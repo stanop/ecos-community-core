@@ -97,7 +97,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
@@ -245,7 +245,7 @@
 								<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 								<control-param name="resultsList">nodes</control-param>
 								<control-param name="valueField">nodeRef</control-param>
-								<control-param name="titleField">cm:title</control-param>
+								<control-param name="titleField">title</control-param>
 								<control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param>
 								<control-param name="style">width:210px</control-param>
 							</control>
@@ -318,7 +318,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
@@ -464,7 +464,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<!--control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param-->
 							<control-param name="style">width:210px</control-param>
 						</control>
@@ -637,7 +637,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
@@ -706,7 +706,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
@@ -811,7 +811,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
@@ -901,7 +901,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<!--control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param-->
 							<control-param name="style">width:103px</control-param>
 						</control>
@@ -930,7 +930,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
@@ -964,7 +964,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
@@ -1357,7 +1357,7 @@
 						<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 						<control-param name="resultsList">nodes</control-param>
 						<control-param name="valueField">nodeRef</control-param>
-						<control-param name="titleField">cm:title</control-param>
+						<control-param name="titleField">title</control-param>
 						<control-param name="style">width:103px</control-param>
 					</control>
 				</field>
@@ -1549,7 +1549,7 @@
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/search/simple?type=idocs:currency&amp;properties=idocs:currencyCode,idocs:currencyName</control-param>
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
-							<control-param name="titleField">cm:title</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
