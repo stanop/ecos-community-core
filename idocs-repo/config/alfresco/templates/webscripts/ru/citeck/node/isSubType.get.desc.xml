@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>isSubType</shortname>
+	<url>/citeck/node/isSubType</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

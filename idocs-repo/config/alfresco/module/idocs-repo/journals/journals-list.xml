@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
+		<import uri="http://www.citeck.ru/model/passport/1.0" prefix="pass" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
+		<import uri="http://www.citeck.ru/model/archive-service-configuration/1.0" prefix="arch" />
+		<import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
+	</imports>
+
+	<journal id="idocs-activity-direction">
+		<option name="type">idocs:activityDirection</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:activityDirectionName" default="true" />
+		</headers>
+	</journal>
+
+	<journal id="legal-entities">
+		<option name="type">idocs:legalEntity</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:code" default="true" />
+			<header key="idocs:fullOrganizationName" default="true" />
+			<header key="idocs:shortOrganizationName" default="true" />
+			<header key="idocs:okpo" default="true" />
+			<header key="idocs:ogrn" default="true" />
+			<header key="idocs:inn" default="true" />
+			<header key="idocs:kpp" default="true" />
+			<header key="idocs:juridicalAddress" default="true" />
+			<header key="idocs:postAddress" default="true" />
+			<header key="idocs:generalDirector" default="true" />
+			<header key="idocs:accountantGeneral" default="true" />
+			<header key="idocs:phoneNumber" default="true" />
+		</headers>
+	</journal>
+	<journal id="idocs-contractor">
+		<option name="type">idocs:contractor</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:fullOrganizationName" default="true" />
+			<header key="idocs:shortOrganizationName" default="true" />
+			<header key="idocs:inn" default="true" />
+			<header key="idocs:kpp" default="true" />
+			<header key="idocs:juridicalAddress" default="true" />
+			<header key="idocs:postAddress" default="true" />
+			<header key="idocs:phone" default="true" />
+			<header key="idocs:fax" default="true" />
+			<header key="idocs:email" default="true" />
+			<header key="idocs:CEOname" default="true" />
+		</headers>
+	</journal>
+	<journal id="files-nomenclature">
+		<option name="type">idocs:filesNomenclature</option>
+		<option name="formId">search</option>
+		<!--option name="actionGroupId">listInjournal</option -->
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:fileIndex" default="true" />
+			<header key="idocs:fileName" default="true" />
+		</headers>
+	</journal>
+	<journal id="currency">
+		<option name="type">idocs:currency</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:currencyCode" default="true" />
+			<header key="cm:title" default="true" />
+		</headers>
+	</journal>
+	<journal id="bank-accounts">
+		<option name="type">idocs:bankAccount</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:legalEntity" default="true" />
+			<header key="idocs:bankTitle" default="true" />
+			<header key="idocs:bankId" default="true" />
+			<header key="idocs:accountNumber" default="true" />
+			<header key="idocs:corresponentBankTitle" default="true" />
+			<header key="idocs:correspondentBankId" default="true" />
+			<header key="idocs:corresponentAccountNumber" default="true" />
+		</headers>
+	</journal>
+	<journal id="budget-items">
+		<option name="type">budget:item</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="budget:itemCode" default="true" />
+			<header key="budget:itemName" default="true" />
+		</headers>
+	</journal>
+	<journal id="passports">
+		<option name="type">pass:passport</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="pass:person" default="true" />
+			<header key="tk:kind" default="true" />
+			<header key="pass:series" default="true" />
+			<header key="pass:number" default="true" />
+			<header key="pass:issueDate" default="true" />
+			<header key="pass:issuingAuthority" />
+			<header key="pass:info" />
+		</headers>
+	</journal>
+
+	<journal id="types-and-kinds">
+		<option name="type">cm:category</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="actionGroupId">buttons</option>
+		<headers>
+			<header key="cm:name" default="true" />
+			<header key="cm:taggable" default="true" />
+			<header key="tk:durationInDays" default="true" />
+			<header key="cm:modified" />
+		</headers>
+	</journal>
+
+	<journal id="archive-service-configs">
+		<option name="type">arch:archConfig</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="actionGroupId">buttons</option>
+		<headers>
+			<header key="arch:nodeType" default="true" />
+			<header key="arch:destination" default="true" />
+		</headers>
+	</journal>
+
+	<journal id="ecos-documents">
+		<option name="type">ecos:document</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="tk:kind" default="true" />
+			<header key="cm:name" default="true" />
+			<header key="idocs:note" default="true" />
+			<header key="ecos:documentNumber" default="true" />
+			<header key="ecos:documentDate" default="true" />
+			<header key="idocs:legalEntity" default="true" />
+			<header key="idocs:contractor" default="true" />
+			<header key="ecos:documentAmount" default="true" />
+			<header key="idocs:currencyDocument" default="true" />
+			<header key="ecos:VAT" default="true" />
+		</headers>
+	</journal>
+
+	<journal id="routes">
+		<option name="type">route:route</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="formId">filters</option>
+		<headers>
+			<header key="cm:name" default="true" />
+			<header key="route:stages" default="true" />
+			<header key="cm:taggable" default="true" />
+		</headers>
+	</journal>
+
+</journals>

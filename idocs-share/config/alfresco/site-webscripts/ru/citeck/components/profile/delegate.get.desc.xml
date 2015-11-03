@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>delegate</shortname>
+    <description>get delegate data for user</description>
+    <url>/components/profile/delegate</url>
+</webscript>

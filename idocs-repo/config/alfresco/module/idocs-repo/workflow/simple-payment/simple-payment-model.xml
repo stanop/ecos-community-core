@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfsp:simple-payment" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/workflow/simple-payment/1.0" prefix="wfsp" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="wfsp:paymentOutcomeOptions" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Paid</value>
+					<value>Extend</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+
+		<type name="wfsp:paymentStartTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>wfsp:paymentAgent</aspect>
+				<aspect>cwf:sendNotification</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfsp:paymentTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="wfsp:extendDate">
+                    <type>d:date</type>
+                    <constraints>
+                        <constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+                            <parameter name="condition"><value>prop_wfsp_paymentOutcome == 'Extend'</value></parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </properties>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/simple-payment/1.0}paymentOutcome</default>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfsp:paymentOutcome</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+			</mandatory-aspects>
+		</type>
+
+	</types>
+
+	<aspects>
+		<aspect name="wfsp:paymentAgent">
+			<associations>
+				<association name="wfsp:paymentAgent">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="wfsp:paymentOutcome">
+			<properties>
+				<property name="wfsp:paymentOutcome">
+					<type>d:text</type>
+					<default>Paid</default>
+					<constraints>
+						<constraint ref="wfsp:paymentOutcomeOptions" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+
+	</aspects>
+
+</model>

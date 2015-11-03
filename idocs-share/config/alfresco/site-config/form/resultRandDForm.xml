@@ -1,0 +1,285 @@
+<alfresco-config>
+
+
+    <!-- Сведения по учету РНТД -->
+
+    <config evaluator="model-type" condition="arc:rsta">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/templates/multipart-form.ftl" />
+                <field-visibility>
+                    <show id="arc:rstaName" />
+                    <show id="arc:rstaDescription" />
+                    <show id="arc:rstaApplicationObject" />
+                    <show id="arc:rstaObjectView" />
+                    <show id="arc:rstaProgram" />
+                    <show id="cm:content" />
+                </field-visibility>
+                <appearance>
+                    <field id="arc:rstaName" />
+                    <field id="arc:rstaDescription" >
+                        <control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+                    </field>
+                    <field id="arc:rstaApplicationObject" />
+                    <field id="arc:rstaObjectView" />
+                    <field id="arc:rstaProgram"/>
+                    <field id="cm:content" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/fileUpload.ftl" />
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <!--field-visibility>
+                    <show id="arc:rstaName" />
+                    <show id="arc:rstaDescription" />
+                    <show id="arc:rstaApplicationObject" />
+                    <show id="arc:rstaObjectView" />
+                    <show id="arc:rstaProgram" />
+                </field-visibility>
+                <appearance>
+                    <field id="arc:rstaName" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:rstaDescription" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:rstaApplicationObject" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:rstaObjectView" >
+                        <control template="/ru/citeck/components/form/controls/select-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:rstaProgram" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                </appearance-->
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="arc:rsta">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="arc:rstaName" />
+                    <show id="arc:rstaDescription" />
+                    <show id="arc:rstaApplicationObject" />
+                    <show id="arc:rstaObjectView" />
+                    <show id="arc:rstaProgram" />
+                </field-visibility>
+                <appearance>
+                    <field id="arc:rstaName" />
+                    <field id="arc:rstaDescription" >
+                        <control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+                    </field>
+                    <field id="arc:rstaApplicationObject" />
+                    <field id="arc:rstaObjectView" />
+                    <field id="arc:rstaProgram"/>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+
+
+    <!-- Охранный документ -->
+
+    <config evaluator="model-type" condition="arc:protectionDoc">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/templates/multipart-form.ftl" />
+                <field-visibility>
+                    <show id="arc:protectionDocName" />
+                    <show id="arc:protectionDocObjectView" />
+                    <show id="arc:protectionDocNumber" />
+                    <show id="arc:protectionDocDate" />
+                    <show id="cm:content" />
+                </field-visibility>
+                <appearance>
+                    <field id="arc:protectionDocName" />
+                    <field id="arc:protectionDocObjectView" />
+                    <field id="arc:protectionDocNumber" />
+                    <field id="arc:protectionDocDate">
+                        <control template="/ru/citeck/components/form/controls/date.ftl">
+                            <control-param name="appendDaysToCurrentValue">0</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:content" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/fileUpload.ftl" />
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <!--field-visibility>
+                    <show id="arc:protectionDocName" />
+                    <show id="arc:protectionDocObjectView" />
+                    <show id="arc:protectionDocNumber" />
+                    <show id="arc:protectionDocDate" />
+                </field-visibility>
+                <appearance>
+                    <field id="arc:protectionDocName" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:protectionDocObjectView" >
+                        <control template="/ru/citeck/components/form/controls/select-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:protectionDocNumber" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="arc:protectionDocDate" >
+                        <control template="/org/alfresco/components/form/controls/daterange.ftl" />
+                    </field>
+                </appearance-->
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="arc:protectionDoc">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="arc:protectionDocName" />
+                    <show id="arc:protectionDocObjectView" />
+                    <show id="arc:protectionDocNumber" />
+                    <show id="arc:protectionDocDate" />
+                </field-visibility>
+                <appearance>
+                    <field id="arc:protectionDocName" />
+                    <field id="arc:protectionDocObjectView" />
+                    <field id="arc:protectionDocNumber" />
+                    <field id="arc:protectionDocDate">
+                        <control template="/ru/citeck/components/form/controls/date.ftl">
+                            <control-param name="appendDaysToCurrentValue">0</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+
+
+    <!-- Акт сдачи-приемки -->
+
+    <config evaluator="model-type" condition="acts:actOfAcceptance">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/templates/multipart-form.ftl" />
+                <field-visibility>
+                    <show id="acts:name" />
+                    <show id="acts:number" />
+                    <show id="acts:date" />
+                    <show id="acts:description" />
+                    <show id="acts:sum" />
+                    <show id="acts:legalEntity" />
+                    <show id="acts:contractor" />
+                    <show id="cm:content" />
+                </field-visibility>
+                <appearance>
+                    <field id="acts:name"/>
+                    <field id="acts:number" />
+                    <field id="acts:date">
+                        <control template="/ru/citeck/components/form/controls/date.ftl">
+                            <control-param name="appendDaysToCurrentValue">0</control-param>
+                        </control>
+                    </field>
+                    <field id="acts:description">
+                        <control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+                    </field>
+                    <field id="acts:sum" />
+                    <field id="acts:legalEntity">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                    <field id="acts:contractor">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:content" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/fileUpload.ftl" />
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <!--field-visibility>
+                    <show id="acts:name" />
+                    <show id="acts:number" />
+                    <show id="acts:date" />
+                    <show id="acts:description" />
+                    <show id="acts:sum" />
+                    <show id="acts:legalEntity" />
+                    <show id="acts:contractor" />
+                </field-visibility>
+                <appearance>
+                    <field id="acts:name" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="acts:number" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="acts:date" >
+                        <control template="/org/alfresco/components/form/controls/daterange.ftl" />
+                    </field>
+                    <field id="acts:description" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="acts:sum" >
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="acts:legalEntity" >
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                    <field id="acts:contractor" >
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                </appearance-->
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="acts:actOfAcceptance">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="acts:name" />
+                    <show id="acts:number" />
+                    <show id="acts:date" />
+                    <show id="acts:description" />
+                    <show id="acts:sum" />
+                    <show id="acts:legalEntity" />
+                    <show id="acts:contractor" />
+                </field-visibility>
+                <appearance>
+                    <field id="acts:name"/>
+                    <field id="acts:number" />
+                    <field id="acts:date">
+                        <control template="/ru/citeck/components/form/controls/date.ftl">
+                            <control-param name="appendDaysToCurrentValue">0</control-param>
+                        </control>
+                    </field>
+                    <field id="acts:description">
+                        <control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+                    </field>
+                    <field id="acts:sum" />
+                    <field id="acts:legalEntity">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                    <field id="acts:contractor">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

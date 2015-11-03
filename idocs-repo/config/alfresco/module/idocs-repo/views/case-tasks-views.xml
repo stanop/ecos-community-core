@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
+        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+
+    </imports>
+
+    <view class="icaseTask:task">
+        <field prop="cm:title">
+            <region name="input" template="text"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="activ:plannedStartDate">
+            <region name="input" template="datetime"/>
+            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
+        </field>
+        <field prop="activ:plannedEndDate">
+            <region name="input" template="datetime"/>
+            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
+        </field>
+        <field prop="icaseTask:priority">
+            <region name="input" template="select"/>
+        </field>
+        <field prop="icaseTask:workflowDefinitionName">
+            <!--<region name="input" template="text"/>-->
+            <region name="input" template="select"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="explicit" xmlns:inv="http://www.citeck.ru/ecos/invariants/1.0">
+                <inv:item>activiti$perform</inv:item>
+                <inv:item>activiti$print</inv:item>
+                <inv:item>activiti$scan</inv:item>
+                <inv:item>activiti$sign</inv:item>
+                <inv:item>activiti$correction</inv:item>
+                <inv:item>activiti$registration</inv:item>
+                <inv:item>activiti$normative-control</inv:item>
+                <inv:item>activiti$prolongation</inv:item>
+                <inv:item>activiti$simple-affirm</inv:item>
+                <inv:item>activiti$simple-payment</inv:item>
+                <inv:item>activiti$move-to-archive</inv:item>
+            </invariant>
+            <invariant on="value-title" language="javascript">
+                message(value.replace("activiti$", "") + ".workflow.title")
+            </invariant>
+        </field>
+        <!--<field assoc="icaseTask:taskRolesMapping">-->
+            <!--<region name="input" template="view"/>-->
+            <!--<region name="select" template="create-object">-->
+                <!--<param name="source">create-views</param>-->
+            <!--</region>-->
+            <!--<invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>-->
+        <!--</field>-->
+        <field assoc="icaseTask:performer">
+            <region name="input" template="select"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity")) 
+                        parent = parent.parent;
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+            <invariant on="value-title" language="javascript">
+                value.properties["cm:title"]
+            </invariant>
+        </field>
+    </view>
+
+    <view class="icaseTask:roleMapping">
+        <view>
+            <field prop="cm:title"/>
+            <field prop="icaseTask:workflowVariableName">
+                <region name="input" template="text"/>
+                <invariant on="mandatory" language="explicit">true</invariant>
+            </field>
+            <field assoc="icaseTask:role">
+                <regions name="input" template="select">
+                    <param name="attribute">cm:title</param>
+                    <param name="predicate">string-contains</param>
+                </regions>
+                <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+            </field>
+        </view>
+    </view>
+
+    <view class="icaseTask:roleMapping" mode="view">
+        <views mode="view" kind="2-column"/>
+        <view>
+            <field prop="icaseTask:workflowVariableName"/>
+            <field assoc="icaseTask:role">
+                <region name="input" template="view">
+                    <param name="attribute">cm:title</param>
+                </region>
+            </field>
+        </view>
+    </view>
+
+</views>

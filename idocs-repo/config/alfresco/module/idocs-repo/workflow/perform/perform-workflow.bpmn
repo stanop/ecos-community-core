@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/perform/1.0">
+  <process id="perform" name="Perform Workflow" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+        <activiti:field name="script">
+          <activiti:expression>if (execution.getVariable("wfperf_enableControl") == null)
+    execution.setVariable("wfperf_enableControl", execution.getVariable("wfperf_controller") != null);</activiti:expression>
+        </activiti:field>
+      </activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="Submit Sign Task" activiti:formKey="wfperf:submitPerformTask"></startEvent>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="subprocess1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>if(execution.getVariable("wfperf_coperformers") != null &amp;&amp; wfperf_coperformers.size() &gt; 0) {
+	var wfdef = workflow.getDefinitionByName("activiti$familiarization");
+	if (wfdef) {
+		var peopleNodeRefs = [];
+		for (var i = 0; i &lt; wfperf_coperformers.size(); i++) {
+			peopleNodeRefs.push(wfperf_coperformers.get(i).nodeRef);
+		}
+		wfparams = new Array();
+		wfparams["wfgfam:people"] = peopleNodeRefs;
+		wfparams["bpm:workflowDueDate"] = bpm_workflowDueDate;
+		wfparams["initiator"] = initiator.nodeRef;
+		wfparams["bpm:workflowPriority"] = bpm_workflowPriority;
+		wfparams["cwf:sendNotification"] = cwf_sendNotification;
+		wfparams["bpm:description"] = bpm_description;
+		wfparams["bpm:workflowDescription"] = bpm_workflowDescription;
+
+		var wfpackage = workflow.createPackage();
+		for (var i = 0; i &lt; bpm_package.children.length; i++)  {
+			wfpackage.addNode(bpm_package.children[i]);
+		}
+		var wfpath = wfdef.startWorkflow(wfpackage, wfparams);
+		var tasks = wfpath.getTasks();
+		for each (task in tasks) {
+			task.endTask(null);
+		}
+		execution.setVariable("wfperf_workflowPath", wfpath.getId());
+	}
+}</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="subprocess1" targetRef="endevent1"></sequenceFlow>
+    <subProcess id="subprocess1" name="Sub Process">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="wfperf_performers" activiti:elementVariable="wfperf_performer"></multiInstanceLoopCharacteristics>
+      <userTask id="usertask1" name="Perform Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfperf:performTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+            <activiti:field name="authority">
+              <activiti:expression>${wfperf_performer}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[grantedPermission]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[wfperf_performerPermission]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="ifNotNullExpr">
+              <activiti:string><![CDATA[true]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="variableExpr">
+              <activiti:string><![CDATA[wfperf_enableControl]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+      </userTask>
+      <startEvent id="startevent2" name="Start"></startEvent>
+      <sequenceFlow id="flow3" sourceRef="startevent2" targetRef="usertask1"></sequenceFlow>
+      <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+      <sequenceFlow id="flow4" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
+      <endEvent id="endevent2" name="End"></endEvent>
+      <sequenceFlow id="flow5" sourceRef="exclusivegateway1" targetRef="endevent2">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!wfperf_enableControl}]]></conditionExpression>
+      </sequenceFlow>
+      <userTask id="usertask2" name="Control Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfperf:controlTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+            <activiti:field name="authority">
+              <activiti:expression>${wfperf_controller}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[grantedPermission]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[wfperf_controllerPermission]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="ifNotNullExpr">
+              <activiti:string><![CDATA[true]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[wfperf_taskDescription]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[bpm_workflowDescription]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[wfperf_taskDueDate]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[bpm_workflowDueDate]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[wfperf_taskPriority]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[bpm_workflowPriority]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[wfperf_taskDescription]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[bpm_workflowDescription]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[wfperf_taskDueDate]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[bpm_workflowDueDate]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+            <activiti:field name="taskVariableExpr">
+              <activiti:string><![CDATA[wfperf_taskPriority]]></activiti:string>
+            </activiti:field>
+            <activiti:field name="executionVariableExpr">
+              <activiti:string><![CDATA[bpm_workflowPriority]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+      </userTask>
+      <sequenceFlow id="flow6" sourceRef="exclusivegateway1" targetRef="usertask2">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfperf_enableControl}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow7" sourceRef="usertask2" targetRef="endevent2">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome != "ReturnToPerform"}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow8" sourceRef="usertask2" targetRef="usertask1">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome == "ReturnToPerform"}]]></conditionExpression>
+      </sequenceFlow>
+    </subProcess>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_perform">
+    <bpmndi:BPMNPlane bpmnElement="perform" id="BPMNPlane_perform">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="20.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="690.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subprocess1" id="BPMNShape_subprocess1">
+        <omgdc:Bounds height="205.0" width="479.0" x="142.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="230.0" y="277.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent2" id="BPMNShape_startevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="170.0" y="287.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="370.0" y="284.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="570.0" y="287.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="440.0" y="277.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="55.0" y="302.0"></omgdi:waypoint>
+        <omgdi:waypoint x="142.0" y="302.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="621.0" y="302.0"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0" y="302.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="205.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="230.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="335.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="370.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="390.0" y="284.0"></omgdi:waypoint>
+        <omgdi:waypoint x="390.0" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="587.0" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="587.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="410.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="440.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="545.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="304.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="492.0" y="332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="492.0" y="373.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="373.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="332.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

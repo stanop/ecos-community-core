@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Digital signature</shortname>
+  <description>Return digital signature of document, if it exists</description>
+  <url>/acm/digitalSignature</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

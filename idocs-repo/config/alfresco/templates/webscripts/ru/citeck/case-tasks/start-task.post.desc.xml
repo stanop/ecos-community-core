@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Start case task</shortname>
+    <description>Start case task</description>
+    <url>/citeck/case-tasks/start-task?nodeRef={nodeRef}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+</webscript>

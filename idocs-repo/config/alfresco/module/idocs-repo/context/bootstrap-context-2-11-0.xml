@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<bean id="idocs.import-spaces.2-11-0" abstract="true" parent="idocs.import-spaces">
+		<property name="sinceVersion" value="2.11.0" />
+		<property name="appliesFromVersion" value="2.11.0" />
+	</bean>
+
+	<bean id="idocs.orgstructBootstrap.clerks" parent="idocs.import-spaces.2-11-0">
+		<property name="name" value="idocs-orgstruct-clerks" />
+		<property name="description" value="idocs-orgstruct-clerks" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.orgstructBootstrap" />
+				<ref bean="idocs.module-component.clerks-group" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/orgstruct/orgstruct-branch.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/orgstruct/groups/group-clerks-department</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/orgstruct/orgstruct-group-to-roles.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/orgstruct/groups/group-clerks</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.site.common-documents" parent="idocs.import-spaces.2-11-0">
+		<property name="name" value="idocs-site-common-documents" />
+		<property name="description" value="idocs-site-common-documents" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.app-share-zone" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/site/common-docs-site</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="common-documents.module-component.journals-list" parent="idocs.import-spaces.2-11-0">
+		<property name="name" value="contracts-journals-list" />
+		<property name="description" value="Contracts Journals List" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/common-documents/journal-list</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="idocs.module-component.ecos-document-journal" parent="idocs.import-spaces.2-11-0">
+        <property name="name" value="ecos-document-journal" />
+        <property name="description" value="ecos document journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.site.common-documents" />
+                <ref bean="common-documents.module-component.journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:common-documents/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/common-documents/ecos-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/common-documents/ecos-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:ecos-documents</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/common-documents/ecos-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:ecos-documents</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/common-documents/ecos-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/common-documents/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/common-documents/ecos-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="idocs.module-component.document-categories" parent="idocs.import-spaces.2-11-0">
+		<property name="name" value="document-categories" />
+		<property name="description" value="Document categories" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.doctype-categories" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/document-categories.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/messages/document-categories</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+</beans>

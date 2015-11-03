@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Create or update component binding</shortname>
+    <description>Create or update component binding</description>
+    <url>/citeck/component?scope={scope}&amp;source-id={sourceId}&amp;region-id={regionId}</url>
+    <format default="json"/>
+	<transaction>required</transaction>
+	<authentication>admin</authentication>
+</webscript>

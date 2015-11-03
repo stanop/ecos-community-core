@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>node-path-details</shortname>
+    <description>Gets node full path with details</description>
+    <url>/citeck/node/path/details?nodeRef={nodeRef}&amp;rootNodePathQname={rootNodePathQname?}</url>
+    <format default="json">extension</format>
+    <authentication>user</authentication>
+</webscript>

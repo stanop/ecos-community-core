@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+		xmlns:cm="http://www.alfresco.org/model/content/1.0"
+		xmlns:sys="http://www.alfresco.org/model/system/1.0"
+		xmlns:org="http://www.citeck.ru/model/orgstruct/1.0">
+
+	<view:reference view:pathref="/org:metaRoot/org:branchTypes">
+		<view:associations>
+			<cm:contains>
+				<org:simpleBranchType view:childName="cm:${branch-type.name}">
+					<view:properties>
+						<cm:name>${branch-type.name}</cm:name>
+						<cm:title>${branch-type.title}</cm:title>
+					</view:properties>
+				</org:simpleBranchType>
+			</cm:contains>
+		</view:associations>
+	</view:reference>
+
+</view:view>

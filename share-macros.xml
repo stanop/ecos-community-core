@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<project name="share-macros">
+	
+	<property name="dist.amps.dir" value="${dist.dir}/amps_share" />
+	<property name="dist.jars.dir" value="${dist.dir}/jars_share" />
+	<property name="dist.deps.dir" value="${dist.dir}/deps_share" />
+	<property name="dist.libs.dir" value="${dist.dir}/libs" />
+	<property name="dist.docs.dir" value="${dist.dir}/docs" />
+	<property name="dist.tests.dir" value="${dist.dir}/tests" />
+
+	<property name="tomcat.home" value="${tomcat.share.home}" />
+	<property name="webapp.name" value="share" />
+	
+	<import file="common-macros.xml" />
+	
+	<target name="create-module">
+		<mkdir dir="${module.id}" />
+		<mkdir dir="${module.id}/config/alfresco/messages" />
+		<mkdir dir="${module.id}/config/alfresco/site-data" />
+		<mkdir dir="${module.id}/config/alfresco/site-webscripts" />
+		<mkdir dir="${module.id}/config/alfresco/web-extension/site-data" />
+		<mkdir dir="${module.id}/config/alfresco/web-extension/site-webscripts" />
+		<mkdir dir="${module.id}/lib" />
+		<mkdir dir="${module.id}/source/java" />
+		<mkdir dir="${module.id}/source/web" />
+		<echo file="${module.id}/module.properties"><![CDATA[# module properties
+module.id=${module.id}
+module.title=${module.id}
+module.description=${module.id}
+module.group=ru.citeck.idocs
+module.version=1.0.0
+]]></echo>
+		<echo file="${module.id}/file-mapping.properties"><![CDATA[include.default=true
+/web=/
+]]></echo>
+		<echo file="${module.id}/build.xml"><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<project name="${module.id}" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<import file="../share-macros.xml" />
+</project>
+]]></echo>
+		<echo file="${module.id}/config/alfresco/web-extension/slingshot-${module.id}-context.xml"><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+</beans>]]></echo>
+	</target>
+</project>

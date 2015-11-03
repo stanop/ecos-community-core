@@ -1,0 +1,19 @@
+syntax: glob
+build
+.classpath
+.project
+.settings
+.springBeans
+*.orig
+*.rej
+build.properties
+*.iml
+.idea
+*.swp
+*~
+target/*
+*/$*
+*.log
+*.todo
+syntax: regexp
+desktop\.ini

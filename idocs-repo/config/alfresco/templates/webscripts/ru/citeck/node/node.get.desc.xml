@@ -1,0 +1,9 @@
+<webscript>
+	<description>It returns node info about properties, associations and child associations</description>
+	<shortname>Get node info</shortname>
+	<url>/citeck/node?nodeRef={nodeRef}&amp;props={props}&amp;assocs={assocs}&amp;childAssocs={childAssocs}&amp;includeNodeRef={includeNodeRef}&amp;getParent={getParent}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

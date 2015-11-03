@@ -1,0 +1,19 @@
+.editProfileButton {
+    padding: 0 15px 15px 40px;
+    background-color: #f0f0f0;
+}
+
+.viewmode-label {
+    display: block;
+}
+
+.form-container .incomplete-warning
+{
+    margin-left: -22px !important;
+}
+
+.form-container .incomplete-warning > *
+{
+    display: inline-block;
+    vertical-align: top;
+}

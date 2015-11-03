@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+	<modules>
+		<module>
+			<id>create-content/show-custom-messages</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.create-content/show-custom-messages</element>
+				</params>
+			</evaluator>
+			<components>
+				<component>
+					<scope>template</scope>
+					<region-id>create-content-mgr</region-id>
+					<source-id>create-content</source-id>
+					<sub-components>
+						<sub-component id="create-content-custom-messages" index="91">
+							<url>/citeck/form/custom/messages</url>
+							<properties>
+								<itemId>{itemId}</itemId>
+								<formId>{formId}</formId>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+	</modules>
+</extension>

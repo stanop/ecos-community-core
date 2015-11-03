@@ -1,0 +1,23 @@
+.actions-cell .yui-button.edit .first-child
+{
+	background-image: url(../../../components/images/edit-16.png)
+}
+
+.actions-cell .yui-button.remove .first-child
+{
+	background-image: url(../../../components/images/remove-16.png)
+}
+
+.actions-cell .yui-button,
+.actions-cell .yui-button .first-child
+{
+	width: 20px;
+	height: 20px;
+	background: 2px 2px transparent no-repeat;
+	border: none;
+}
+
+.actions-cell .yui-button:hover
+{
+	outline: 1px solid gray;
+}

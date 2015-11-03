@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfcf:confirmworkflow" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="wfcf:confirmOutcomeOptions" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Confirmed</value>
+					<value>ConfirmedWithComment</value>
+					<value>Reject</value>
+					<value>CompletedBySystem</value>
+				</list>
+			</parameter>
+		</constraint>
+		<constraint name="wfcf:correctOutcomeOptions" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>answer</value>
+					<value>exit</value>
+					<value>cancel</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+		<type name="wfcf:submitConfirmTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>wfcf:confirmers</aspect>
+				<aspect>wfcf:mandatoryConfirmers</aspect>
+				<aspect>wfcf:additionalConfirmers</aspect>
+				<aspect>wfcf:isInitiatorResponsibility</aspect>
+				<aspect>cwf:workflowStartDate</aspect>
+				<aspect>cwf:sendNotification</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfcf:resubmitConfirmTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>wfcf:confirmers</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfcf:confirmTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/confirm/1.0}confirmOutcome</default>
+				</property>
+				<property name="bpm:packageActionGroup">
+					<default></default>
+				</property>
+				<property name="bpm:comment">
+					<constraints>
+						<constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+							<parameter name="condition"><value>prop_wfcf_confirmOutcome != 'Confirmed'</value></parameter>
+						</constraint>
+					</constraints>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfcf:confirmOutcome</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfcf:correctTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+			<properties>
+				<property name="wfcf:correctOutcome">
+					<type>d:text</type>
+					<default>answer</default>
+					<constraints>
+						<constraint ref="wfcf:correctOutcomeOptions" />
+					</constraints>
+				</property>
+			</properties>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/confirm/1.0}correctOutcome</default>
+				</property>
+				<property name="bpm:packageActionGroup">
+					<default>add_package_item_actions</default>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfcf:confirmOutcome</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<!-- record of confirmer's decision -->
+		<type name="wfcf:confirmDecision">
+			<parent>cm:cmobject</parent>
+			<properties>
+				<property name="wfcf:confirmVersions">
+					<type>d:noderef</type>
+					<multiple>true</multiple>
+				</property>
+				<property name="wfcf:confirmTaskId">
+					<type>d:text</type>
+				</property>
+				<property name="wfcf:confirmerRole">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+
+        <type name="wfcf:submitConfirmStageTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfcf:confirmers</aspect>
+                <aspect>cwf:workflowStartDate</aspect>
+				<aspect>cwf:sendNotification</aspect>
+				<!--aspect>wfcf:subscribers</aspect-->
+            </mandatory-aspects>
+        </type>
+
+	</types>
+
+	<aspects>
+		<aspect name="wfcf:confirmers">
+			<properties>
+				<!-- precedence of confirmers -->
+				<property name="wfcf:precedence">
+					<type>d:text</type>
+				</property>
+			</properties>
+			<associations>
+				<!-- confirmers -->
+				<association name="wfcf:confirmers">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+        <aspect name="wfcf:mandatoryConfirmers">
+            <properties>
+                <!-- precedence of mandatory confirmers -->
+                <property name="wfcf:mandatoryPrecedence">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <!-- mandatory confirmers -->
+                <association name="wfcf:mandatoryConfirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="wfcf:additionalConfirmers">
+            <properties>
+                <!-- precedence of additional confirmers -->
+                <property name="wfcf:additionalPrecedence">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <!-- additional confirmers -->
+                <association name="wfcf:additionalConfirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+		<aspect name="wfcf:confirmOutcome">
+			<properties>
+				<property name="wfcf:confirmOutcome">
+					<type>d:text</type>
+					<default>Reject</default>
+					<constraints>
+						<constraint ref="wfcf:confirmOutcomeOptions" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+
+		<aspect name="wfcf:options">
+			<properties>
+				<property name="wfcf:skipCorrectTask">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+				<property name="wfcf:canConfirmWithComments">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+				<property name="wfcf:hasMandatoryConfirmers">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+				<property name="wfcf:resubmitOnNewVersion">
+					<type>d:boolean</type>
+					<default>true</default>
+				</property>
+				<property name="wfcf:confirmersPermission">
+					<type>d:text</type>
+					<default>Consumer</default>
+				</property>
+			</properties>
+		</aspect>
+
+		<aspect name="wfcf:hasConfirmDecisions">
+			<associations>
+				<child-association name="wfcf:confirmDecisions">
+					<source>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</source>
+					<target>
+						<class>wfcf:confirmDecision</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+			</associations>
+		</aspect>
+
+		<aspect name="wfcf:hasConfirmableVersion">
+			<properties>
+				<!-- fixed version to confirm -->
+				<property name="wfcf:confirmableVersion">
+					<type>d:noderef</type>
+				</property>
+                <!-- current version -->
+                <property name="wfcf:currentVersion">
+                    <type>d:noderef</type>
+                </property>
+			</properties>
+		</aspect>
+
+		<aspect name="wfcf:hasConsideredVersions">
+			<properties>
+				<!-- considered versions in serialized form -->
+				<!-- userName:versionRef,userName:versionRef,... -->
+				<property name="wfcf:consideredVersions">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+
+        <aspect name="wfcf:hasConsiderableVersions">
+            <properties>
+                <!-- considered versions in serialized form -->
+                <!-- userName:versionRef,userName:versionRef,... -->
+                <property name="wfcf:considerableVersions">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="wfcf:isInitiatorResponsibility">
+            <properties>
+                <property name="wfcf:isInitiatorResponsibility">
+                    <title>Под ответственность инициатора</title>
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
+        </aspect>
+
+		<aspect name="wfcf:confirmed">
+			<title>Документ на согласовании</title>
+			<description>Аспект добавляется к документам, по которым есть хотя бы одно решение о согласовании</description>
+		</aspect>
+
+		<aspect name="wfcf:subscribers">
+			<!-- subscribers -->
+			<associations>
+				<association name="wfcf:subscribers">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+	</aspects>
+</model>

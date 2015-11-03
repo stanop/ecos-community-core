@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Print workflow details</shortname>
+	<description>Print workflow details</description>
+	<url>/citeck/print/workflow-details?workflowId={workflowId}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

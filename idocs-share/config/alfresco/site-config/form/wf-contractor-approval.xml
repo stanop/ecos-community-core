@@ -1,0 +1,31 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$contractor-approval">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/contractor-approval/submit-approve-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfca:submitApproveTask">
+		<forms>
+			<form>
+				<view-form template="/ru/citeck/components/form/workflow/contractor-approval/submit-approve-task.ftl" />
+			</form>
+			<form id="workflow-details">
+				<view-form template="/ru/citeck/components/form/workflow/common/workflow-details.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfca:approveTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/contractor-approval/approve-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/contractor-approval/approve-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0">
+
+	<view:reference view:pathref="${perm.path}">
+		<view:acl view:inherit="${perm.inherit}">
+			<view:ace view:access="ALLOWED">
+				<view:authority>${perm.authority}</view:authority>
+				<view:permission>Contributor</view:permission>
+			</view:ace>
+		</view:acl>
+	</view:reference>
+</view:view>

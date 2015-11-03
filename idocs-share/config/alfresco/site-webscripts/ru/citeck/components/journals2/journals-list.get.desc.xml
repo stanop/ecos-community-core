@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	   <shortname>Journals</shortname>
+	   <description>Journals</description>
+	   <family>journals</family>
+	   <url>/components/journals2/journals</url>
+</webscript>

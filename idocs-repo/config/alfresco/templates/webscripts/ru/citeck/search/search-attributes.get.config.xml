@@ -1,0 +1,14 @@
+<attributes>
+	<attribute>
+		<id>type</id>
+		<type>type</type>
+	</attribute>
+	<attribute>
+		<id>path</id>
+		<type>path</type>
+	</attribute>
+	<attribute>
+		<id>aspect</id>
+		<type>aspect</type>
+	</attribute>	
+</attributes>

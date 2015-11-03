@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>document-supervisors</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <header>cardlet.document-supervisors.header</header>
+        <nodeRef>{nodeRef}</nodeRef>
+        <contentType>cm:person</contentType>
+
+        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef={nodeRef}&amp;assocTypes=ds:supervisors&amp;addAssocs=false"</childrenUrl>
+        <responseSchema>
+            { resultsList: 'targets', fields: [
+            {key: 'nodeRef'},
+            {key: 'attributes["cm:firstName"]'},
+            {key: 'attributes["cm:lastName"]'},
+            {key: 'attributes["cm:userName"]'}
+            ] }
+        </responseSchema>
+        <columns>
+            [
+            {key: 'attributes["cm:firstName"]', label: Alfresco.util.message("cardlet.document-supervisors.name")},
+            {key: 'attributes["cm:lastName"]', label: Alfresco.util.message("cardlet.document-supervisors.surname")},
+            {key: 'actions', label: '', formatter: Citeck.format.userAssocActions('{nodeRef}', 'ds:supervisors') }
+            ]
+        </columns>
+
+        <buttonsInHeader>onPanelButtonAssocsAdd</buttonsInHeader>
+        <destination>{nodeRef}</destination>
+        <noElementsMsg>Нет контролеров</noElementsMsg>
+        <assocType>ds:supervisors</assocType>
+        <itemTitleProperties>cm:firstName,cm:lastName</itemTitleProperties>
+        <itemSearchProperties>cm:firstName,cm:lastName</itemSearchProperties>
+        <itemTitle>[[cm_firstName]] [[cm_lastName]]</itemTitle>
+        <twisterKey>document-supervisors</twisterKey>
+    </properties>
+</component>

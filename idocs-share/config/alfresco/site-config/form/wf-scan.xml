@@ -1,0 +1,34 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$scan">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/scan/submit-scan-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfscan:submitScanTask">
+		<forms>
+			<form>
+				<view-form template="/ru/citeck/components/form/workflow/scan/submit-scan-task.ftl" />
+			</form>
+			<form id="workflow-details">
+				<view-form template="/ru/citeck/components/form/workflow/common/workflow-details.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfscan:scanTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/scan/scan-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/scan/scan-task.ftl" />
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/scan/scan-task-inline.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

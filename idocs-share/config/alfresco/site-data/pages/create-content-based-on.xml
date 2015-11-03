@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <title>Create Content</title>
+    <title-id>page.createContentBasedOn.title</title-id>
+    <description>Create content based on other content</description>
+    <description-id>page.createContentBasedOn.description</description-id>
+    <template-instance>create-content-based-on</template-instance>
+    <authentication>user</authentication>
+</page>

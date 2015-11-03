@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	   <shortname>Favorites</shortname>
+	   <description>Favorites</description>
+	   <!--<family>dashlet</family>-->
+       <url>/citeck/components/dashlets/favorites-dashlet</url>
+</webscript>

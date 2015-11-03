@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>node-details-actions</shortname>
+    <description>Node Details Actions Component</description>
+    <url>/citeck/components/document-details/node-actions</url>
+</webscript>

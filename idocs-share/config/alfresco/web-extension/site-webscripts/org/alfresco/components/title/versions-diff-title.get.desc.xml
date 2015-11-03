@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Versions Diff Title</shortname>
+  <description>Title component used in the Versions Diff page</description>
+  <url>/components/title/versions-diff-title</url>
+</webscript>

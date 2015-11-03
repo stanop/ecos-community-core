@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://www.citeck.ru/ecos/invariants/1.0" xmlns:inv="http://www.citeck.ru/ecos/invariants/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- 
+  Generate classes with: 
+    xjc -no-header -p ru.citeck.ecos.invariants.xml alfresco/module/idocs-repo/schema/invariants.xsd alfresco/module/idocs-repo/schema/views.xsd
+   -->
+
+  <xs:element name="invariants">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="imports" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="import" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="uri" type="xs:string" use="required"/>
+                  <xs:attribute name="prefix" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:group ref="inv:scopes" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="scope">
+    <xs:sequence>
+      <xs:group ref="inv:scoped" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:group name="scopes">
+    <xs:choice>
+      <xs:element name="type" type="inv:type"/>
+      <xs:element name="aspect" type="inv:aspect"/>
+      <xs:element name="property" type="inv:property"/>
+      <xs:element name="association" type="inv:association"/>
+      <xs:element name="child-association" type="inv:child-association"/>
+      <xs:element name="properties" type="inv:properties"/>
+      <xs:element name="associations" type="inv:associations"/>
+      <xs:element name="child-associations" type="inv:child-associations"/>
+    </xs:choice>
+  </xs:group>
+  
+  <xs:group name="scoped">
+    <xs:choice>
+      <xs:element name="invariant" type="inv:invariant"/>
+      <xs:element name="type" type="inv:type"/>
+      <xs:element name="aspect" type="inv:aspect"/>
+      <xs:element name="property" type="inv:property"/>
+      <xs:element name="association" type="inv:association"/>
+      <xs:element name="child-association" type="inv:child-association"/>
+      <xs:element name="properties" type="inv:properties"/>
+      <xs:element name="associations" type="inv:associations"/>
+      <xs:element name="child-associations" type="inv:child-associations"/>
+    </xs:choice>
+  </xs:group>
+  
+  <xs:complexType name="classScope">
+    <xs:complexContent>
+      <xs:extension base="inv:scope">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="attributeScope">
+    <xs:complexContent>
+      <xs:extension base="inv:scope">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="attributesScope">
+    <xs:complexContent>
+      <xs:extension base="inv:scope">
+        <xs:attribute name="type" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="type">
+    <xs:complexContent>
+      <xs:extension base="inv:classScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="aspect">
+    <xs:complexContent>
+      <xs:extension base="inv:classScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="property">
+    <xs:complexContent>
+      <xs:extension base="inv:attributeScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="association">
+    <xs:complexContent>
+      <xs:extension base="inv:attributeScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="child-association">
+    <xs:complexContent>
+      <xs:extension base="inv:attributeScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="properties">
+    <xs:complexContent>
+      <xs:extension base="inv:attributesScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="associations">
+    <xs:complexContent>
+      <xs:extension base="inv:attributesScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="child-associations">
+    <xs:complexContent>
+      <xs:extension base="inv:attributesScope"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="invariant" mixed="true">
+    <xs:choice minOccurs="0">
+      <xs:element name="criterion" type="inv:criterion" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="item" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:choice>
+    <xs:attribute name="on" type="inv:feature" use="required"/>
+    <xs:attribute name="language" type="inv:language" use="required"/>
+    <xs:attribute name="final" type="xs:boolean" use="optional"/>
+    <xs:attribute name="description" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="criterion">
+    <xs:attribute name="attribute" type="xs:string" use="required"/>
+    <xs:attribute name="predicate" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:simpleType name="feature">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="value"/>
+      <xs:enumeration value="options"/>
+      <xs:enumeration value="default"/>
+      <xs:enumeration value="mandatory"/>
+      <xs:enumeration value="protected"/>
+      <xs:enumeration value="multiple"/>
+      <xs:enumeration value="relevant"/>
+      <xs:enumeration value="valid"/>
+      <xs:enumeration value="title"/>
+      <xs:enumeration value="description"/>
+      <xs:enumeration value="value-title"/>
+      <xs:enumeration value="value-description"/>
+      <xs:enumeration value="datatype"/>
+      <xs:enumeration value="nodetype"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="language">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="javascript"/>
+      <xs:enumeration value="freemarker"/>
+      <xs:enumeration value="criteria"/>
+      <xs:enumeration value="lucene"/>
+      <xs:enumeration value="explicit"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
+

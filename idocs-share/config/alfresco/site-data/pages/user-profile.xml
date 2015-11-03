@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <id>user-profile</id>
+    <page-type>user-profile</page-type>
+    <title>User profile</title>
+    <title-id>user-profile.title</title-id>
+    <description>User profile</description>
+    <description-id>user-profile.description</description-id>
+    <template-instance>user-node-profile</template-instance>
+    <authentication>user</authentication>
+</page>

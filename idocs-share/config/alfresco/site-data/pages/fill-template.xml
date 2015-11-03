@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+	<title>Fill template</title>
+	<title-id>page.fill-template.title</title-id>
+	<description>A page with a form for filing a document template</description>
+	<description-id>page.fill-template.description</description-id>
+	<template-instance>fill-template</template-instance>
+	<authentication>user</authentication>
+</page>

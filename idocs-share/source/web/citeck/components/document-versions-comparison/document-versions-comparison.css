@@ -1,0 +1,14 @@
+.document-versions-comparison
+{
+    padding: 0px;
+}
+.vers-menu
+{
+    margin-bottom: 10px;
+}
+.compare-link {
+    cursor: pointer;
+}
+.vc-label {
+    font-family: 'Open Sans', arial, helvetica, clean, sans-serif;
+}

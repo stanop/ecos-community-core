@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>node-header-diff</shortname>
+  <description>Node header component - a header component which can handle both folders and documents.</description>
+  <url>/components/node-details/node-header-diff</url>
+</webscript>

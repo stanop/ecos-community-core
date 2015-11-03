@@ -1,0 +1,80 @@
+<webscript>
+    <shortname>Criteria Report</shortname>
+    <description>Search data by criteria and produce a report in different formats.
+		Criteria are set in the input json in the form of triples: field, predicate, value.
+		The input json is a plain object, in which triples are denoted with prefix, e.g. field_0, predicate_0, value_0, field_1, predicate_1, value_1, ...
+	</description>
+    <url>/report/criteria-report</url>
+    <format default="html"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+	<args>
+		<arg>
+			<shortname>field_N</shortname>
+			<description>Name of field to search by. It can be qname of any property or association or one of special values: "type", "aspect".</description>
+		</arg>
+		<arg>
+			<shortname>predicate_N</shortname>
+			<description>Search predicate, e.g. string-equals, number-greater-than, ... Some predicates require value, some do not.</description>
+		</arg>
+		<arg>
+			<shortname>value_N</shortname>
+			<description>Value to search after. It can be omitted, if predicate does not require value.</description>
+		</arg>
+		<arg>
+			<shortname>sortBy</shortname>
+			<description>
+				Array of sort parameters: each sort parameter is an object with keys 'attribute' and 'order':
+				{
+					"attribute": "cm:name",
+					"order": "asc"
+				}.
+				Key 'order' has two variants: "asc" (ascending) and "desc" (descending). 
+				If 'order' is not specified, ascending is assumed.
+			</description>
+		</arg>
+		<arg>
+			<shortname>reportColumns</shortname>
+			<description>
+				Array of output columns with column names: each parameter is an object with keys 'attribute', 'title' and 'dateFormat':
+				{
+					"attribute": "cm:name",
+					"title": "Name",
+					"dateFormat": "dd.MM.yyyy HH:mm"
+				}.
+				
+				Field "attribute" is mandatory, others are optional.
+				If "title" is omitted than "attribute" will be printed as column title.
+				If "dateFormat" is omitted, the default pattern "dd.MM.yyyy HH:mm" will be used.
+				
+				If column's "attribute" is "rowNum" than row number will be printed in this column.
+			</description>
+		</arg>
+		<arg>
+			<shortname>reportType</shortname>
+			<description>Type of report to produce. Available types: html, pdf, docx. Default is html.</description>
+		</arg>
+		<arg>
+			<shortname>reportTitle</shortname>
+			<description>Title of report to print. Optional</description>
+		</arg>
+		<arg>
+            <shortname>reportFilename</shortname>
+            <description>Name of output file with report. Optional</description>
+        </arg>
+	</args>
+	<responses>
+		<response>
+			<format>html</format>
+			<type>HTML</type>
+		</response>
+		<response>
+			<format>pdf</format>
+			<type>PDF</type>
+		</response>
+		<response>
+            <format>docx</format>
+            <type>DOCX</type>
+        </response>
+	</responses>
+</webscript>

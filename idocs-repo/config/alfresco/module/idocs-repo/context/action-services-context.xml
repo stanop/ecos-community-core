@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+    <!-- Action Service Configuration -->
+
+    <bean id="generate-content" class="ru.citeck.ecos.template.GenerateContentActionExecuter" parent="action-executer">
+        <property name="publicAction" value="true"/>
+        <property name="contentFromTemplateGenerator" ref="contentFromTemplateGenerator"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
+	<bean id="script-auto-execute" class="ru.citeck.ecos.action.ScriptContentActionExecuter" parent="action-executer">
+		<property name="publicAction" value="false"/>
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="storeUrl" value="${spaces.store}" />
+		<property name="companyHomePath" value="/${spaces.company_home.childname}" />
+		<property name="sysAdminParams" ref="sysAdminParams" />
+	</bean>
+	
+	<bean id="set-lifecycle-process-variable-action-executer" class="ru.citeck.ecos.action.SetLifecycleProcessVariableActionExecuter" parent="action-executer" />
+	
+	<bean id="fail-action-executer" class="ru.citeck.ecos.action.FailActionExecuter" parent="action-executer" />
+
+    <bean id="user-in-document-evaluator" class="ru.citeck.ecos.action.evaluator.UserInDocumentEvaluator" parent="action-condition-evaluator">
+        <property name="personService" ref="personService" />
+        <property name="namespaceService" ref="namespaceService" />
+    </bean>
+
+    <bean id="user-in-group-evaluator" class="ru.citeck.ecos.action.evaluator.UserInGroupEvaluator" parent="action-condition-evaluator">
+        <property name="personService" ref="personService" />
+        <property name="authorityService" ref="authorityService" />
+    </bean>
+    
+    <bean id="user-has-permission-evaluator" class="ru.citeck.ecos.action.evaluator.UserHasPermissionEvaluator" parent="action-condition-evaluator">
+        <property name="personService" ref="personService" />
+        <property name="permissionService" ref="permissionService" />
+    </bean>
+    
+    <bean id="compare-lifecycle-process-variable-value-evaluator" class="ru.citeck.ecos.action.evaluator.CompareLifecycleProcessVariableValueEvaluator" parent="action-condition-evaluator" />
+    
+</beans>

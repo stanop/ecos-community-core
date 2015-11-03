@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+    <config>
+        <forms>
+            <constraint-handlers>
+                <constraint type="ru.citeck.alfresco.acm.constraints.common.PassportConsentConstraint" validation-handler="Alfresco.forms.validation.passportConsent" event="keyup"/>
+            </constraint-handlers>
+        </forms>
+    </config>
+
+	<config evaluator="model-type" condition="pass:passport">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/passport/passport.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="pass:passport">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/passport/passport.ftl" />
+				<view-form template="/ru/citeck/components/form/passport/passport.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

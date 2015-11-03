@@ -1,0 +1,56 @@
+#alfresco-journals 
+{
+	border-top: solid 1px #CCC
+}
+
+/* filters styles */
+
+#alf-filters .toolbar
+{
+	margin-top: 10px;
+}
+
+.items-list li
+{
+	font-size: 1.1em;
+	padding: 2px 0;
+	position: relative;
+    cursor: pointer;
+}
+
+.items-list li.selected,
+.items-list li.selected:hover
+{
+	background-color: #EEE;
+	font-weight: bold;
+}
+
+.items-list li:hover
+{
+	background-color: #F8F8F8;
+}
+
+.items-list li a.remove
+{
+	position: absolute;
+	top: 0;
+	right: 5px;
+	visibility: hidden;
+}
+.items-list li:hover a.remove
+{
+	visibility: visible;
+}
+
+/* settings panel */
+label.columns-select
+{
+	display: block;
+	margin-left: 5px;
+}
+
+select.columns-select
+{
+    width: 300px;
+}
+

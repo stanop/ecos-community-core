@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="1st-override-repo" default="package-amp">
+	<property file="module.properties" />
+	<property name="no-testing" value="true" />
+	<import file="../repo-macros.xml" />
+	<path id="project.classpath">
+	</path>
+</project>
+

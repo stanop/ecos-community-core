@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="alfresco-module" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<import file="../share-macros.xml" />
+	
+	<property name="override.project.name" value="1st-override-share" />
+	<property name="override.project.dir" value="../${override.project.name}" />
+	
+	<path id="project.classpath">
+		<pathelement path="${override.project.dir}/build/lib/*" />
+	</path>
+	
+	<target name="package-dependencies">
+		<copy file="${dist.amps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp"
+		    tofile="${dist.deps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
+	</target>
+	
+</project>

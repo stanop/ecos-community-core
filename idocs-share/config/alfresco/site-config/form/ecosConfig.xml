@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+    <config evaluator="node-type" condition="config:ecosConfig">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:title" /> <!-- short description of the settings-->
+                    <show id="config:key"/>
+                    <show id="config:value"/>
+                    <show id="cm:description" /> <!-- detailed description of the settings-->
+                </field-visibility>
+            </form>
+
+        </forms>
+    </config>
+
+</alfresco-config>

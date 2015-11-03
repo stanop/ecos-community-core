@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+    <modules>
+        <module>
+            <id>sites/config-presets</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.sites/config-presets</element>
+                </params>
+            </evaluator>
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.alfresco</targetPackageRoot>                
+                    <sourcePackageRoot>ru.citeck.customizations.config-site-presets</sourcePackageRoot>          
+                </customization>
+            </customizations>
+        </module>
+    </modules>
+</extension>

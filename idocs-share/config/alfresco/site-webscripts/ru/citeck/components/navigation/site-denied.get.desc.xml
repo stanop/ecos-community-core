@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>site-denied</shortname>
+  <description>Displays message, that site is denied or does not exist</description>
+  <url>/components/site/denied</url>
+</webscript>

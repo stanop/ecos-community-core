@@ -1,0 +1,38 @@
+.share-form .form-fields .form-field.types-and-kinds select {
+    float: left;
+    width: auto;
+    max-width: 100%;
+    min-width: 50%;
+}
+
+.share-form .form-fields .yui-u .form-field.types-and-kinds select {
+    min-width: 100%;
+}
+
+.share-form .form-fields .form-field.types-and-kinds label {
+  padding: 0 0 0 0;
+  margin: 0 0 10px 0;
+  position: relative;
+}
+
+.share-form .form-fields .form-field.types-and-kinds span.mandatory-indicator {
+  position: absolute;
+  margin: 0;
+  left: -12px;
+  top: 2px;
+}
+
+.share-form .form-fields .form-field.types-and-kinds .select-control {
+  display: inline-block;
+  width: 50%;
+  float: left;
+}
+
+
+.share-form .form-fields .yui-u .form-field.types-and-kinds .select-control {
+  width: 100%;
+}
+
+.share-form .form-fields .yui-u .form-field.types-and-kinds .select-control.second-select-control {
+    margin-top: 10px;
+}

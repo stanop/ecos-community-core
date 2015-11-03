@@ -1,0 +1,6 @@
+<webscript>
+	<shortname>Get messages for specified webscript</shortname>
+	<description>Get messages for specified webscript</description>
+	<url>/components/{webscript_id}/messages?scope={scope?}</url>
+	<url>/components/messages?resource_bundle={resource_bundle}</url>
+</webscript>

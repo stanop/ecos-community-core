@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2008-2015 Citeck LLC.
+ *
+ * This file is part of Citeck EcoS
+ *
+ * Citeck EcoS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Citeck EcoS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
+ */
+package ru.citeck.ecos.model;
+
+import org.alfresco.service.namespace.QName;
+
+/**
+ * Created by maxim.strizhov on 12.10.2015.
+ */
+public class ICaseRoleModel {
+    // model
+    public static final String PREFIX = "icaseRole";
+
+    // namespace
+    public static final String NAMESPACE = "http://www.citeck.ru/model/icaseRole/1.0";
+
+    // types
+    public static final QName TYPE_TASK = QName.createQName(NAMESPACE, "role");
+
+    // aspects
+
+    // properties
+
+    // association
+    public static final QName ASSOC_ASSIGNEES = QName.createQName(NAMESPACE, "assignees");
+    public static final QName ASSOC_ROLES = QName.createQName(NAMESPACE, "roles");
+
+    // constraint
+}

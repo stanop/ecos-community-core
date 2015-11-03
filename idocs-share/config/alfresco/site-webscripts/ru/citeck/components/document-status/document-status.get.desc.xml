@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>document-status</shortname>
+  <description>document-status</description>
+  <url>/citeck/components/document-status</url>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

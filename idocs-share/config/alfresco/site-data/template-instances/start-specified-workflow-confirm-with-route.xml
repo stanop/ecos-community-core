@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<template-instance>
+   <template-type>org/alfresco/start-workflow</template-type>
+   <properties>
+      <pageFamily>documentlibrary</pageFamily>
+   </properties>
+   <components>
+
+      <!-- Title -->
+      <component>
+         <region-id>title</region-id>
+         <url>/citeck/start-specified-workflow/title</url>
+      </component>
+
+      <!-- Site Navigation -->
+      <component>
+         <region-id>navigation</region-id>
+         <sub-components>
+            <sub-component id="default">
+               <evaluations>
+                  <!-- if referred from my tasks page: Task toolbar -->
+                  <evaluation id="tasks">
+                     <evaluators>
+                        <evaluator type="equals.component.evaluator">
+                           <params>
+                              <referer>{referer}</referer>
+                              <tasks>tasks</tasks>
+                           </params>
+                        </evaluator>
+                     </evaluators>
+                     <url>/components/workflow/task-toolbar</url>
+                  </evaluation>
+                  <!-- if referred from my workflows page: Workflows toolbar -->
+                  <evaluation id="workflows">
+                     <evaluators>
+                        <evaluator type="equals.component.evaluator">
+                           <params>
+                              <referer>{referer}</referer>
+                              <workflows>workflows</workflows>
+                           </params>
+                        </evaluator>
+                     </evaluators>
+                     <url>/components/workflow/workflow-toolbar</url>
+                  </evaluation>
+                  <!-- if in site: Site navigation -->
+                  <evaluation id="site">
+                     <evaluators>
+                        <evaluator type="site.component.evaluator"/>
+                     </evaluators>
+                     <url>/components/navigation/collaboration-navigation</url>
+                  </evaluation>
+               </evaluations>
+            </sub-component>
+         </sub-components>
+      </component>
+
+      <!-- Start Workflow Form -->
+      <component>
+         <region-id>start-workflow</region-id>
+         <sub-components>
+            <sub-component id="default">
+               <url>/components/form</url>
+               <properties>
+                  <itemKind>workflow</itemKind>
+                  <itemId>activiti$confirm</itemId>
+                  <formId>workflow-confirm-with-route</formId>
+                  <mode>create</mode>
+                  <submitType>json</submitType>
+                  <showCaption>true</showCaption>
+                  <showCancelButton>true</showCancelButton>
+               </properties>
+            </sub-component>
+            <sub-component id="manager">
+               <url>/citeck/start-specified-workflow/manager</url>
+               <properties>
+                  <workflowId>activiti$confirm</workflowId>
+               </properties>
+            </sub-component>
+         </sub-components>
+      </component>
+   </components>
+
+</template-instance>

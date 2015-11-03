@@ -1,0 +1,16 @@
+
+.related-tasks-details {
+    cursor: pointer;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url("images/task-16.png") no-repeat scroll left center transparent;
+}
+
+.related-tasks-edit {
+    cursor: pointer;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url("images/edit-16.png") no-repeat scroll left center transparent;
+}

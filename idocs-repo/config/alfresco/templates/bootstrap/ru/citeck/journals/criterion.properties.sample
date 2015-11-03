@@ -1,0 +1,12 @@
+# name of criterion: should be unique within journal
+criterion.name=type
+
+# full qname of property or association to search 
+# or special word (type, aspect, path, ...)
+criterion.field=type
+
+# search predicate (see the list of supported predicates in criteria search documentation)
+criterion.predicate=type-equals
+
+# criterion value (for qnames use full qname)
+criterion.value={http://www.alfresco.com/model/content/1.0}content

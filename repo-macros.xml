@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<project name="repo-macros">
+	
+	<!-- copy config to shared folder -->
+	<property name="hotcopy.cfg.dir" value="${tomcat.home}/shared/classes" />
+	
+	<property name="dist.amps.dir" value="${dist.dir}/amps" />
+	<property name="dist.deps.dir" value="${dist.dir}/deps" />
+	<property name="dist.jars.dir" value="${dist.dir}/jars" />
+	<property name="dist.libs.dir" value="${dist.dir}/libs" />
+	<property name="dist.docs.dir" value="${dist.dir}/docs" />
+	<property name="dist.tests.dir" value="${dist.dir}/tests" />
+
+	<property name="tomcat.home" value="${tomcat.repo.home}" />
+	<property name="webapp.name" value="alfresco" />
+
+	<import file="common-macros.xml" />
+	
+	<!-- copy config to shared folder -->
+	<property name="hotcopy.cfg.dir" value="${tomcat.home}/shared/classes" />
+	
+	<target name="create-module">
+		<mkdir dir="${module.id}" />
+		<mkdir dir="${module.id}/config/alfresco/extension" />
+		<mkdir dir="${module.id}/config/alfresco/module/${module.id}" />
+		<mkdir dir="${module.id}/config/alfresco/module/${module.id}/context" />
+		<mkdir dir="${module.id}/lib" />
+		<mkdir dir="${module.id}/source/java" />
+		<echo file="${module.id}/module.properties"><![CDATA[# module properties
+module.id=${module.id}
+module.title=${module.id}
+module.description=${module.id}
+module.group=ru.citeck.idocs
+module.version=1.0.0
+]]></echo>
+		<echo file="${module.id}/build.xml"><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<project name="${module.id}" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<import file="../repo-macros.xml" />
+</project>
+]]></echo>
+		<echo file="${module.id}/config/alfresco/module/${module.id}/module-context.xml"><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+</beans>]]></echo>
+		<echo file="${module.id}/config/alfresco/module/${module.id}/alfresco-global.properties">
+# module-specific repository properties (for ${module.id} module) go here
+</echo>
+	</target>
+	
+</project>

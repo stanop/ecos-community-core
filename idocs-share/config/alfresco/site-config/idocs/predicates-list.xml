@@ -1,0 +1,98 @@
+<alfresco-config>
+
+    <config evaluator="string-compare" condition="Search">
+		<predicate-lists>
+			<predicate-list id="string">
+				<type>text</type>
+				<type>mltext</type>
+				<predicate>string-contains</predicate>
+				<predicate>string-equals</predicate>
+				<predicate>string-not-equals</predicate>
+				<predicate>string-starts-with</predicate>
+				<predicate>string-ends-with</predicate>
+				<predicate needsValue="false">string-empty</predicate>
+				<predicate needsValue="false">string-not-empty</predicate>
+			</predicate-list>
+			<predicate-list id="number">
+				<type>int</type>
+				<type>long</type>
+				<type>float</type>
+				<type>double</type>
+				<predicate>number-equals</predicate>
+				<predicate>number-not-equals</predicate>
+				<predicate>number-less-than</predicate>
+				<predicate>number-less-or-equal</predicate>
+				<predicate>number-greater-than</predicate>
+				<predicate>number-greater-or-equal</predicate>
+			</predicate-list>
+			<predicate-list id="date">
+				<type>date</type>
+				<predicate>date-equals</predicate>
+				<predicate>date-not-equals</predicate>
+				<predicate>date-greater-or-equal</predicate>
+				<predicate>date-less-or-equal</predicate>
+				<predicate needsValue="false">date-empty</predicate>
+				<predicate needsValue="false">date-not-empty</predicate>
+			</predicate-list>
+			<predicate-list id="datetime">
+				<type>datetime</type>
+				<predicate>date-greater-or-equal</predicate>
+				<predicate>date-less-than</predicate>
+				<predicate needsValue="false">date-empty</predicate>
+				<predicate needsValue="false">date-not-empty</predicate>
+			</predicate-list>
+			<predicate-list id="boolean">
+				<type>boolean</type>
+				<predicate needsValue="false">boolean-empty</predicate>
+				<predicate needsValue="false">boolean-not-empty</predicate>
+				<predicate needsValue="false">boolean-true</predicate>
+				<predicate needsValue="false">boolean-false</predicate>
+			</predicate-list>
+            <predicate-list id="simpleBoolean">
+                <type>boolean</type>
+                <predicate needsValue="false">boolean-true</predicate>
+                <predicate needsValue="false">boolean-false</predicate>
+            </predicate-list>
+			<predicate-list id="list">
+				<type>list</type>
+				<predicate>string-equals</predicate>
+				<predicate>string-not-equals</predicate>
+			</predicate-list>
+			<predicate-list id="noderef">
+				<type>noderef</type>
+				<type>category</type>
+				<predicate>noderef-contains</predicate>
+				<predicate>noderef-not-contains</predicate>
+				<predicate needsValue="false">noderef-empty</predicate>
+				<predicate needsValue="false">noderef-not-empty</predicate>
+			</predicate-list>
+			<predicate-list id="assoc">
+				<type>association</type>
+				<predicate>assoc-contains</predicate>
+				<predicate>assoc-not-contains</predicate>
+				<predicate needsValue="false">assoc-empty</predicate>
+				<predicate needsValue="false">assoc-not-empty</predicate>
+			</predicate-list>
+			<predicate-list id="type">
+				<type>type</type>
+				<type>qname</type>
+				<predicate>type-equals</predicate>
+				<predicate>type-not-equals</predicate>
+				<predicate needsValue="false">string-empty</predicate>
+				<predicate needsValue="false">string-not-empty</predicate>
+			</predicate-list>
+			<predicate-list id="aspect">
+				<type>aspect</type>
+				<predicate>aspect-equals</predicate>
+				<predicate>aspect-not-equals</predicate>
+			</predicate-list>
+			<predicate-list id="path">
+				<type>path</type>
+				<predicate>path-equals</predicate>
+				<predicate>path-child</predicate>
+				<predicate>path-descendant</predicate>
+			</predicate-list>
+		</predicate-lists>
+    </config>
+
+</alfresco-config>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0"
+           xmlns:dl="http://www.alfresco.org/model/datalist/1.0">
+
+    <view:reference view:pathref="app:company_home">
+        <cm:contains>
+            <cm:folder view:childName="cm:dataLists">
+                <view:properties>
+                    <sys:node-uuid>common-datalists-folder</sys:node-uuid>
+                    <cm:name>common-datalists-folder</cm:name>
+                </view:properties>
+                <view:associations>
+                    <cm:contains>
+                        <dl:dataList view:childName="cm:filesNomenclature">
+                            <view:properties>
+                                <sys:node-uuid>files-nomenclature-folder</sys:node-uuid>
+                                <cm:name>files-nomenclature-folder</cm:name>
+                                <cm:title>${documents.files-nomenclature}</cm:title>
+                                <dl:dataListItemType>idocs:filesNomenclature</dl:dataListItemType>
+                            </view:properties>
+                        </dl:dataList>
+                        <dl:dataList view:childName="cm:legalEntities">
+                            <view:properties>
+                                <sys:node-uuid>legal-entities-folder</sys:node-uuid>
+                                <cm:name>legal-entities-folder</cm:name>
+                                <cm:title>${documents.legal-entities}</cm:title>
+                                <dl:dataListItemType>idocs:legalEntity</dl:dataListItemType>
+                            </view:properties>
+                        </dl:dataList>
+                    </cm:contains>
+                </view:associations>
+            </cm:folder>
+        </cm:contains>
+    </view:reference>
+    <view:reference view:pathref="app:company_home/app:dictionary">
+        <cm:contains>
+            <cm:folder view:childName="cm:templates">
+                <view:properties>
+                    <sys:node-uuid>common-documents-templates</sys:node-uuid>
+                    <cm:name>common-documents-templates</cm:name>
+                    <!--<cm:title>${documents.folder}</cm:title>-->
+                </view:properties>
+            </cm:folder>
+        </cm:contains>
+    </view:reference>
+
+</view:view>

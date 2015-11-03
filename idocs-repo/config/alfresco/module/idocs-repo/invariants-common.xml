@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+	</imports>
+	
+	<!--                                                -->
+	<!--             value-title invariants             -->
+	<!--                                                -->
+	
+	<properties type="d:text">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:mltext">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:int">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:long">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:float">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:double">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:boolean">
+		<invariant on="value-title" language="javascript">value ? "Да" : "Нет"</invariant>
+	</properties>
+	
+	<properties type="d:date">
+		<invariant on="value-title" language="javascript"><![CDATA[
+		(function() {
+			var day = value.getDate(),
+				month = value.getMonth()+1,
+				year = value.getFullYear();
+			return (day < 10 ? "0" : "") + day + (month < 10 ? ".0" : ".") + month + (year > 1000 ? "." : year > 100 ? ".0" : year > 10 ? ".00" : ".000") + year;
+		})()
+		]]></invariant>
+	</properties>
+	
+	<properties type="d:datetime">
+		<invariant on="value-title" language="javascript">value</invariant>
+	</properties>
+	
+	<properties type="d:qname">
+		<invariant on="value-title" language="javascript">utils.shortQName(value)</invariant>
+	</properties>
+	
+	<properties type="d:content">
+		<invariant on="value-title" language="javascript">value.filename || node.name</invariant>
+	</properties>
+	
+	<properties type="d:category">
+		<invariant on="value-title" language="javascript">value.properties['cm:title'] || value.name</invariant>
+	</properties>
+	
+	<properties type="d:noderef">
+		<invariant on="value-title" language="javascript">value.typeShort != null ? null : "Загрузка..."</invariant>
+		<invariant on="value-title" language="javascript">value.typeShort != 'cm:person' ? null : [ value.properties.firstName, value.properties.lastName ].join(' ').trim() || value.properties.userName</invariant>
+		<invariant on="value-title" language="javascript">value.typeShort != 'cm:authorityContainer' ? null : value.properties.authorityDisplayName || value.properties.authorityName</invariant>
+		<invariant on="value-title" language="javascript">value.name</invariant>
+	</properties>
+	
+	<associations>
+		<invariant on="value-title" language="javascript">value.typeShort != null ? null : "Загрузка..."</invariant>
+		<invariant on="value-title" language="javascript">value.typeShort != 'cm:person' ? null : [ value.properties.firstName, value.properties.lastName ].join(' ').trim() || value.properties.userName</invariant>
+		<invariant on="value-title" language="javascript">value.typeShort != 'cm:authorityContainer' ? null : value.properties.authorityDisplayName || value.properties.authorityName</invariant>
+		<invariant on="value-title" language="javascript">value.name</invariant>
+	</associations>
+	
+	<child-associations>
+		<invariant on="value-title" language="javascript">value.name</invariant>
+	</child-associations>
+	
+	<!--                                                -->
+	<!--          value protection invariants           -->
+	<!--                                                -->
+	
+	<property name="sys:store-protocol">
+		<invariant on="protected" language="explicit">true</invariant>
+		<invariant on="default" language="javascript">node.nodeRef.replace(/^(\w+)\:\/\/(\w+)\/(.+)$/, '$1')</invariant>
+	</property>
+	
+	<property name="sys:store-identifier">
+		<invariant on="protected" language="explicit">true</invariant>
+		<invariant on="default" language="javascript">node.nodeRef.replace(/^(\w+)\:\/\/(\w+)\/(.+)$/, '$2')</invariant>
+	</property>
+	
+	<property name="sys:node-uuid">
+		<invariant on="protected" language="explicit">true</invariant>
+		<invariant on="default" language="javascript">node.nodeRef.replace(/^(\w+)\:\/\/(\w+)\/(.+)$/, '$3')</invariant>
+	</property>
+	
+	<property name="sys:node-dbid">
+		<invariant on="protected" language="explicit">true</invariant>
+	</property>
+	
+	<property name="sys:locale">
+		<invariant on="protected" language="explicit">true</invariant>
+	</property>
+	
+	<!--                                                -->
+	<!--             view-scoped invariants             -->
+	<!--      TODO move them to view configuration      -->
+	<!--                                                -->
+	
+	<property name="parent">
+		<invariant on="value" language="javascript">view.params.destination || null</invariant>
+	</property>
+	<property name="parentassoc">
+		<invariant on="value" language="javascript"><![CDATA[
+			view.params.destinationAssoc || view.params.destination && 'cm:contains' || null
+		]]></invariant>
+	</property>
+</invariants>

@@ -1,0 +1,12 @@
+site.id=siteid
+site.title_en=Title
+site.title_ru=Заголовок
+site.description=Description
+
+# whether site is public or not (inherit permissions or not)
+site.public=false
+# PUBLIC, MODERATED or PRIVATE
+site.visibility=PRIVATE
+
+# site dashboard preset (see in share presets)
+site.preset=site-dashboard

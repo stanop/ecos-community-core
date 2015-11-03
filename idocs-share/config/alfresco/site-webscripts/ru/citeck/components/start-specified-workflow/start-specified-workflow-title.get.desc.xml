@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>start-specified-workflow-title</shortname>
+  <description>Title of start-specified-workflow page</description>
+  <url>/citeck/start-specified-workflow/title</url>
+</webscript>

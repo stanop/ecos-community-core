@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+	<scope>page</scope>
+	<source-id>card-details</source-id>
+    <region-id>web-preview</region-id>
+    <sub-components>
+        <sub-component id="default">
+            <evaluations>
+                <evaluation id="nodeRef">
+                    <evaluators>
+                        <evaluator type="config.component.evaluator">
+                            <params>
+                                <element>DocumentDetails/document-details/display-web-preview
+                                </element>
+                            </params>
+                        </evaluator>
+                        <evaluator type="equals.component.evaluator">
+                            <params>
+                                <nodeRef>{versRef}</nodeRef>
+                                <element></element>
+                            </params>
+                        </evaluator>
+                    </evaluators>
+                    <url>/components/preview/web-preview</url>
+                    <properties>
+                        <nodeRef>{nodeRef}</nodeRef>
+                    </properties>
+                </evaluation>
+                <evaluation id="versRef">
+                    <url>/components/preview/web-preview</url>
+                    <properties>
+                        <nodeRef>{versRef}</nodeRef>
+                    </properties>
+                </evaluation>
+            </evaluations>
+        </sub-component>
+    </sub-components>
+</component>

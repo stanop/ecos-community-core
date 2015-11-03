@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	
+	<!-- NodeAttributeService implementation -->
+	
+	<bean name="nodeAttributeService" class="ru.citeck.ecos.attr.NodeAttributeServiceImpl">
+		<property name="nodeInfoFactory" ref="nodeInfoFactory" />
+	</bean>
+	
+	<bean id="ecos.attribute.provider" class="ru.citeck.ecos.attr.AbstractAttributeProvider" init-method="init" abstract="true">
+		<property name="nodeService" ref="nodeService" />
+		<property name="namespaceService" ref="namespaceService" />
+		<property name="dictionaryService" ref="dictionaryService" />
+		<property name="nodeInfoFactory" ref="nodeInfoFactory" />
+		<property name="nodeAttributeService" ref="nodeAttributeService" />
+	</bean>
+	
+	<bean id="ecos.attribute.single" class="ru.citeck.ecos.attr.SingleAttributeProvider" parent="ecos.attribute.provider" abstract="true">
+	</bean>
+	
+	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.PropertyAttributes" />
+	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.TargetAssocAttributes" />
+	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.SourceAssocAttributes" />
+	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.ChildAssocAttributes" />
+	
+	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.TypesAttribute" />
+	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.AspectsAttribute" />
+	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.NodeRefAttribute" />
+	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.ParentAttribute" />
+	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.ParentAssocAttribute" />
+	
+	<!-- NodeAttributeService Java interface -->
+	
+	<bean id="NodeAttributeService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>ru.citeck.ecos.attr.NodeAttributeService</value>
+			</list>
+		</property>
+		<property name="target" ref="nodeAttributeService" />
+		<property name="interceptorNames">
+			<list>
+				<idref bean="NodeAttributeService_transaction"/>
+				<idref bean="AuditMethodInterceptor" />
+				<idref bean="exceptionTranslator" />
+				<idref bean="NodeAttributeService_security"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="NodeAttributeService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- TODO implement security -->
+	<bean id="NodeAttributeService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+	
+	<!-- NodeAttributeService JavaScript interface -->
+	
+	<bean id="NodeAttributeServiceJS" class="ru.citeck.ecos.attr.NodeAttributeServiceJS"  parent="baseJavaScriptExtension">
+		<property name="extensionName" value="attributes" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="impl" ref="NodeAttributeService" />
+	</bean>
+	
+</beans>

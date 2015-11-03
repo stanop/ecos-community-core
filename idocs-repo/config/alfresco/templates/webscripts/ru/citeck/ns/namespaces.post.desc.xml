@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Get namespace prefixes and URIs</shortname>
+	<description>Get prefixes for namespace URIs or vice versa</description>
+	<url>/citeck/namespaces</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Node view check</shortname>
+	<description>Checks if node view exists</description>
+	<url>/citeck/invariants/view-check?type={type}&amp;viewId={id}</url>
+	<url>/citeck/invariants/view-check?nodeRef={nodeRef}&amp;viewId={id}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

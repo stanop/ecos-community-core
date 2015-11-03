@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template-instance>
+	<template-type>ru/citeck/orgstruct</template-type>
+	<components>
+
+		<!-- Title -->
+		<component>
+			<region-id>title</region-id>
+			<url>/components/title/simple-title</url>
+			<properties>
+				<title>title.orgstruct</title>
+			</properties>
+		</component>
+
+		<!-- Data -->
+		<component>
+			<region-id>data</region-id>
+			<url>/citeck/components/orgstruct/orgstruct</url>
+		</component>
+	</components>
+</template-instance>

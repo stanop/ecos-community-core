@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Search predicates</shortname>
+    <description>Gets search predicates by type</description>
+    <url>/search/search-predicates?datatype={datatype?}</url>
+    <format default="json"></format>
+</webscript>

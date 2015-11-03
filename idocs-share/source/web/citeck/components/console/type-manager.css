@@ -1,0 +1,138 @@
+
+.type-manager .title {
+    font-size: 123.1%;
+    font-weight: bold;
+    padding-bottom: 0.5em;
+}
+
+.type-manager .tree {
+  /* display: none;*/
+   padding: 0.5em 0 1em;
+}
+
+.type-manager .ygtvspacer {
+   display: block;
+   width: 18px;
+}
+
+.type-manager .ygtvchildren {
+   width: 100%;
+}
+
+.type-manager .ygtvitem {
+   background-color: #ffffff;
+   overflow-x: hidden;
+}
+
+.type-manager .ygtvlabel,
+.type-manager .ygtvlabel:link,
+.type-manager .ygtvlabel:visited,
+.type-manager .ygtvlabel:hover {
+   background: none;
+   color: #000;
+   white-space: nowrap;
+   display: inline-flex;
+}
+
+.type-manager .ygtverror,
+.type-manager .ygtverror:link,
+.type-manager .ygtverror:visited,
+.type-manager .ygtverror:hover {
+   background: red;
+   color: white;
+}
+
+.type-manager .selected {
+   background-color: #dceaf4;
+}
+
+.type-manager .ygtvcell {
+  display: inline-flex;
+}
+
+.type-manager .ygtvtn,
+.type-manager .ygtvtm,
+.type-manager .ygtvtmh,
+.type-manager .ygtvtmhh, 
+.type-manager .ygtvtp,
+.type-manager .ygtvtph,
+.type-manager .ygtvtphh,
+.type-manager .ygtvln,
+.type-manager .ygtvlm,
+.type-manager .ygtvlmh,
+.type-manager .ygtvlmhh,
+.type-manager .ygtvlp,
+.type-manager .ygtvlph,
+.type-manager .ygtvlphh,
+.type-manager .ygtvdepthcell {
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 18px;
+}
+
+/* with elements */
+.type-manager .ygtvtp,
+.type-manager .ygtvlp,
+.type-manager .ygtvtph,
+.type-manager .ygtvlph {
+   background-image: url(images/twister-close.png);
+}
+
+/* without elements */
+.type-manager .ygtvtn,
+.type-manager .ygtvln,
+.type-manager .ygtvtnh,
+.type-manager .ygtvlnh {
+
+}
+
+.type-manager .ygtvtm,
+.type-manager .ygtvlm,
+.type-manager .ygtvtmh,
+.type-manager .ygtvlmh {
+   background-image: url(images/twister-open.png);
+}
+
+span[class^="insitu"] {
+   background-repeat: no-repeat;
+   background-position: center;
+   cursor: pointer;
+   height: 18px;
+   visibility: hidden;
+   width: 18px;
+   margin-left: 10px;
+   display: inline-block;
+}
+
+span.insitu-edit-category {
+   background-image: url(images/edit.png);
+}
+
+span.insitu-delete-category {
+   background-image: url(images/delete.png);
+}
+
+span.insitu-add-category,
+span.insitu-add-root-category {
+   background-image: url(images/create.png);
+}
+
+
+span.insitu-edit-category:hover {
+   background-image: url(images/edit-active.png);
+}
+
+span.insitu-delete-category:hover {
+   background-image: url(images/delete-active.png);
+}
+
+span.insitu-add-category:hover,
+span.insitu-add-root-category:hover {
+   background-image: url(images/create-active.png); 
+}
+
+.type-manager form.insitu-edit input {
+   margin-left: 3px;
+   padding: 1px;
+   width: 15em;
+}

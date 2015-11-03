@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Redirect to create-content page</shortname>
+	<url>/site/{siteid}/node-create?type={nodeRef}&amp;viewId={viewId}</url>
+	<url>/node-create?type={nodeRef}&amp;viewId={viewId}</url>
+	<url>/context/{context}/node-create?type={nodeRef}&amp;viewId={viewId}</url>
+</webscript>

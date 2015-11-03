@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Invariants</shortname>
+	<description>Get invariants by nodeRef or type name</description>
+	<url>/citeck/invariants?type={type}&amp;aspects={aspects}&amp;attributes={attributes}</url>
+	<url>/citeck/invariants?nodeRef={nodeRef}&amp;aspects={aspects}&amp;attributes={attributes}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

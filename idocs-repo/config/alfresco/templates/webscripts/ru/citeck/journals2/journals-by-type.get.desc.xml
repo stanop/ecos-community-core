@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>get journals by element type</shortname>
+    <url>/api/journals/type-list?type={type}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction readonly="true">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

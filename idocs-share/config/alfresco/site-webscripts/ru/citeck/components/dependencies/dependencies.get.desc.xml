@@ -1,0 +1,5 @@
+<webscript>
+	<shortname>Get dependencies for specified family</shortname>
+	<description>Get dependencies (js, css) for specified family</description>
+	<url>/components/dependencies/{family}</url>
+</webscript>

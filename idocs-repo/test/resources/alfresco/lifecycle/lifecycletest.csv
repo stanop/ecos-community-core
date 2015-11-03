@@ -1,0 +1,14 @@
+fromState,event,toState,transitionCondition,action
+start,"{""eventType"":""userTransition"",""dateTimeExpression"":""document.properties['cm:modified']"",""actionName"":""Отправить на согласование""}",confirmx1,document.properties.creator == person.properties.userName,
+confirmx1,"{""eventType"":""automaticTransition""}",confirmx2,,
+confirmx1,"{""eventType"":""automaticTransition""}",confirm1,"(orgstruct.getTypedGroupsForUser(person.properties['cm:userName'], ""role"", ""department_manager"").length > 0) || (orgstruct.getTypedGroupsForUser(person.properties['cm:userName'], ""role"", ""branch_manager"").length > 0)","startWorkflow (""activiti$confirm"", {""wfcf_precedence"": person.nodeRef.toString()});"
+confirm1,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",declined,process.wfcf_confirmed == false,
+confirm1,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",confirmx2,,
+confirmx2,"{""eventType"":""automaticTransition""}",confirmed,,
+confirmx2,"{""eventType"":""automaticTransition""}",confirm2,"orgstruct.getTypedGroupsForUser(person.properties['cm:userName'], ""role"", ""division_manager"").length > 0","startWorkflow (""activiti$confirm"", {""wfcf_precedence"": person.nodeRef.toString()});"
+confirm2,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",declined,process.wfcf_confirmed == false,
+confirm2,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",confirmed,,
+confirmed,"{""eventType"":""userTransition"",""actionName"":""Отправить на подписание""}",on-signing,document.properties.creator == person.properties.userName,"startWorkflow (""activiti$sign"", {""wfsgn_signer"": person.nodeRef.toString()});"
+on-signing,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$sign""}",declined,process.outcome == 'Declined',
+on-signing,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$sign""}",signed,,
+signed,"{""eventType"":""userTransition"",""actionName"":""Списать в архив""}",archived,"orgstruct.getTypedGroupsForUser(person.properties['cm:userName'], ""role"", ""archive_manager"").length > 0",

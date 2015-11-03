@@ -1,0 +1,92 @@
+<webscript>
+    <shortname>Criteria search</shortname>
+    <description>Search data by criteria
+		Criteria are set in the input json in the form of triples: field, predicate, value.
+		The input json is a plain object, in which triples are denoted with prefix, e.g. field_0, predicate_0, value_0, field_1, predicate_1, value_1, ...
+	</description>
+    <url>/search/criteria-search</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+	<args>
+		<arg>
+			<shortname>field_N</shortname>
+			<description>Name of field to search by. It can be qname of any property or association or one of special values: "type", "aspect".</description>
+		</arg>
+		<arg>
+			<shortname>predicate_N</shortname>
+			<description>Search predicate, e.g. string-equals, number-greater-than, ... Some predicates require value, some do not.</description>
+		</arg>
+		<arg>
+			<shortname>value_N</shortname>
+			<description>Value to search after. It can be omitted, if predicate does not require value.</description>
+		</arg>
+		<arg>
+			<shortname>skipCount</shortname>
+			<description>Number of elements to skip, used for paging.</description>
+		</arg>
+		<arg>
+			<shortname>maxItems</shortname>
+			<description>Maximum number of elements to output, used for paging.</description>
+		</arg>
+		<arg>
+			<shortname>sortBy</shortname>
+			<description>
+				Array of sort parameters: each sort parameter is an object with keys 'attribute' and 'order':
+				{
+					"attribute": "cm:name",
+					"order": "asc"
+				}.
+				Key 'order' has two variants: "asc" (ascending) and "desc" (descending). 
+				If 'order' is not specified, ascending is assumed.
+			</description>
+		</arg>
+	</args>
+	<responses>
+		<response>
+			<format>json</format>
+			<type><![CDATA[
+{
+	"query": {
+		"language": "lucene",
+		"value": "TYPE:\"cm:content\""
+	},
+	"paging": {
+        "skipCount": 150,
+        "maxItems": 50,
+        "totalCount": 35,
+        "hasMore": true
+	}
+	"results": [
+		{
+			"nodeRef": "workspace://SpacesStore/...",
+			"parent": "workspace://SpacesStore/...",
+			"type": "cm:content",
+			"attributes": {
+				"cm:name": "test.doc",
+				"cm:likesRatingSchemeCount": 100500,
+				"cm:autoVersionOnUpdateProps": false,
+				"cm:created": "2014-04-10T10:51:22.501+07:00",
+				"cm:content": {
+					"mimetype": "application/msword",
+					"encoding": "UTF-8",
+					"size": 100500,
+					"url": "/api/node/workspace/SpacesStore/.../content/test.doc"
+				},
+				"cm:taggable": [
+					{
+						"nodeRef": "workspace://SpacesStore/...",
+						"type": "cm:category",
+						"displayName": "Russian Federation"
+					},
+				],
+				...
+			}
+		},
+		...
+	]
+}
+]]></type>
+		</response>
+	</responses>
+</webscript>

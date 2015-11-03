@@ -1,0 +1,40 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <import resource="classpath:alfresco/module/idocs-repo/context/services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/attribute-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/form-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/workflow-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/orgstruct-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/case-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/cardlet-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/delegate-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/invariant-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/journal-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/lifecycle-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/scheduled-jobs-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/case-tasks-service-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/case-roles-service-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-main-journals-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-9-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-10-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-system-journals-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-cardlets-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/behaviour-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/versions-diff-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/remote-api-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/custom-transformations-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/move-docs-to-archive-sheduled-job.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/lifecycle-document-checker-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/action-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/workflow-mirror-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/security-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-cases-context-2.9.0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-templates-journals-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-1.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-12-0.xml" />
+
+</beans>

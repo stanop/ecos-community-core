@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+	<config evaluator="model-type" condition="arch:archConfig">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="arch:nodeType"/>
+					<show id="arch:assocType"/>
+					<show id="arch:destination"/>
+				</field-visibility>
+				<appearance>
+					<field id="arch:nodeType">
+						<control template="/ru/citeck/components/form/controls/dictionary/type.ftl" />
+					</field>
+					<field id="arch:assocType">
+						<control template="/ru/citeck/components/form/controls/dictionary/association.ftl" />
+					</field>
+					<field id="arch:destination">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="arch:archConfig">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="arch:nodeType"/>
+					<show id="arch:assocType"/>
+					<show id="arch:destination"/>
+				</field-visibility>
+				<appearance>
+					<field id="arch:nodeType">
+						<control template="/ru/citeck/components/form/controls/dictionary/type.ftl" />
+					</field>
+					<field id="arch:assocType">
+						<control template="/ru/citeck/components/form/controls/dictionary/association.ftl" />
+					</field>
+					<field id="arch:destination">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

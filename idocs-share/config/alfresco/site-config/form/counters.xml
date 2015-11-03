@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+    <config evaluator="model-type" condition="count:autonumberTemplate">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="cm:name" />
+                    <show id="count:commonTemplate" />
+                    <show id="count:counterTemplate" />
+                    <show id="count:initialValueTemplate" />
+                    <show id="count:numberTemplate" />
+					<show id="count:errorMessageConfig" />
+                </field-visibility>
+				<appearance>
+					<field id="count:commonTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:counterTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:initialValueTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:numberTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:errorMessageConfig">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+    <config evaluator="node-type" condition="count:autonumberTemplate">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="cm:name" />
+                    <show id="count:commonTemplate" />
+                    <show id="count:counterTemplate" />
+                    <show id="count:initialValueTemplate" />
+                    <show id="count:numberTemplate" />
+					<show id="count:errorMessageConfig" />
+                </field-visibility>
+				<appearance>
+					<field id="count:commonTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:counterTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:initialValueTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:numberTemplate">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+					<field id="count:errorMessageConfig">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl">
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

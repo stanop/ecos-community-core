@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2008-2015 Citeck LLC.
+ *
+ * This file is part of Citeck EcoS
+ *
+ * Citeck EcoS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Citeck EcoS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
+ */
+package ru.citeck.ecos.invariants;
+
+import java.io.InputStream;
+
+import ru.citeck.ecos.utils.AbstractDeployerBean;
+
+public class InvariantsDeployer extends AbstractDeployerBean {
+    
+    protected InvariantsDeployer() {
+        super("invariants");
+    }
+
+    private InvariantService invariantService;
+    private InvariantPriority priority = InvariantPriority.MODULE;
+    
+    public void setInvariantService(InvariantService invariantService) {
+        this.invariantService = invariantService;
+    }
+    
+    public void setPriority(InvariantPriority priority) {
+        this.priority = priority;
+    }
+    
+    @Override
+    protected void load(String location, InputStream invariantsDefinition) {
+        invariantService.deployDefinition(invariantsDefinition, location, priority);
+    }
+    
+}

@@ -1,0 +1,61 @@
+<alfresco-config>
+
+    <config evaluator="string-compare" condition="ModuleConfig.create-content">
+        <show-custom-messages>true</show-custom-messages>
+    </config>
+
+    <config evaluator="string-compare" condition="ModuleConfig.workflow">
+        <hide-start-workflow-button-on-my-tasks>false</hide-start-workflow-button-on-my-tasks>
+        <hide-start-workflow-button-on-my-workflows>false</hide-start-workflow-button-on-my-workflows>
+        <task-edit-redirector>true</task-edit-redirector>
+        <show-history-on-task-edit>false</show-history-on-task-edit>
+        <show-workflow-schema-on-task-edit>true</show-workflow-schema-on-task-edit>
+    </config>
+
+    <config evaluator="string-compare" condition="ModuleConfig.sites">
+            <config-presets>true</config-presets>
+            <hide-widgets>false</hide-widgets>
+    </config>
+    
+    <config evaluator="string-compare" condition="ModuleConfig.global">
+        <show-idocs-logo>false</show-idocs-logo>
+        <show-ecos-logo>true</show-ecos-logo>
+        <hide-share-footer>true</hide-share-footer>
+        <custom-header-tokens>true</custom-header-tokens>
+        <doclib-custom-cache>true</doclib-custom-cache>
+        <chrom-fixes>true</chrom-fixes>
+        <help-information>false</help-information>
+        <chromeless-header>true</chromeless-header>
+    </config>
+    
+    <config evaluator="string-compare" condition="ModuleConfig.forms">
+        <form-uploaders>true</form-uploaders>
+        <form-documentlist>true</form-documentlist>
+        <form-dialogs-support>true</form-dialogs-support>
+        <html-comments>false</html-comments>
+        <show-workflow-owner>false</show-workflow-owner>
+    </config>
+    
+    <config evaluator="string-compare" condition="ModuleConfig.card-details">
+        <hide-version-history-buttons>false</hide-version-history-buttons>
+    </config>
+    
+    <config evaluator="string-compare" condition="ModuleConfig.manage-permissions">
+        <extended-manage-permissions>true</extended-manage-permissions>
+    </config>
+    
+    <config evaluator="string-compare" condition="ModuleConfig.node-header">
+        <hide-node-path>false</hide-node-path>
+        <hide-social>false</hide-social>
+        <hide-modifier>false</hide-modifier>
+        <hide-favourite>false</hide-favourite>
+        <hide-likes>false</hide-likes>
+        <hide-share>false</hide-share>
+    </config>
+    
+    <config evaluator="string-compare" condition="ModuleConfig.versions-difference">
+        <versions-difference-color>false</versions-difference-color>
+    </config>
+    
+
+</alfresco-config>

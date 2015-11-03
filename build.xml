@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<project name="idocs" default="hotcopy-tomcat">
+
+	<!-- Allow override properties -->
+	<property file="build.properties" />
+	<property file="${user.home}/build.properties" />
+	
+	<target name="usage">
+		<echo>Usage:</echo>
+		<echo>ant [command]</echo>
+		<echo>Available commands: clean, package, test, hotcopy-tomcat</echo>
+	</target>
+	
+	<!-- commands -->
+	<target name="clean">
+		<dispatch target="clean" />
+	</target>
+	
+	<target name="package">
+		<dispatch target="package-default" />
+	</target>
+
+	<target name="test">
+		<dispatch target="test" />
+	</target>
+	
+	<target name="hotcopy-tomcat">
+		<dispatch target="hotcopy-tomcat" />
+	</target>
+	
+	<target name="package-localization">
+		<dispatch target="package-localization" />
+	</target>
+	
+	<!-- distributive-scope targets -->
+	<target name="clean-dist">
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="package-default-dist">
+		<mkdir dir="${dist.dir}" />
+	</target>
+	
+	<target name="test-dist">
+	</target>
+	
+	<target name="hotcopy-tomcat-dist">
+	</target>
+	
+	<target name="package-localization-dist">
+	</target>
+	
+	<!-- dispatcher macrodef -->
+	<macrodef name="dispatch">
+		<attribute name="target" />
+		<sequential>
+			<property name="dist.dir" value="${project.dist.dir}/idocs" />
+			<antcall target="@{target}-dist" />
+			<ant target="@{target}" dir="1st-override-repo" />
+			<ant target="@{target}" dir="1st-override-share" />
+			<ant target="@{target}" dir="idocs-repo" />
+			<ant target="@{target}" dir="idocs-share" />
+		</sequential>
+	</macrodef>
+	
+	<target name="create-repo-module">
+		<ant target="create-module" antfile="repo-macros.xml" />
+	</target>
+	
+	<target name="create-share-module">
+		<ant target="create-module" antfile="share-macros.xml" />
+	</target>
+	
+</project>

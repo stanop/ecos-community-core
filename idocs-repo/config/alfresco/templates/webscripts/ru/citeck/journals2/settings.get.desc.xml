@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Selected Attributes</shortname>
+    <description>Journal settings - selected attributes</description>
+    <url>/api/journals/selected-attributes?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

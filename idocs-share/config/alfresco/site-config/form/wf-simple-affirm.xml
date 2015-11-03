@@ -1,0 +1,35 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$simple-affirm">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/simple-affirm/submit-affirm-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfsa:affirmStartTask">
+		<forms>
+			<form>
+				<view-form template="/ru/citeck/components/form/workflow/simple-affirm/submit-affirm-task.ftl" />
+			</form>
+			<form id="workflow-details">
+				<view-form template="/ru/citeck/components/form/workflow/common/workflow-details.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfsa:affirmTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/simple-affirm/affirm-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/simple-affirm/affirm-task.ftl" />
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/simple-affirm/affirm-task-inline.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/simple-affirm/affirm-task-inline.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

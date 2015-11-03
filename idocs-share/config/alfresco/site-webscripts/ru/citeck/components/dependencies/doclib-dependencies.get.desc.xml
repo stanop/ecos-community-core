@@ -1,0 +1,5 @@
+<webscript>
+	<shortname>Get dependencies for documentlist</shortname>
+	<description>Get dependencies (js, css) for documentlist</description>
+	<url>/components/dependencies/documentlist</url>
+</webscript>

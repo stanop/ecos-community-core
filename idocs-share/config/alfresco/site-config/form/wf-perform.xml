@@ -1,0 +1,46 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$perform">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/perform/submit-perform-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfperf:submitPerformTask">
+		<forms>
+			<form>
+				<view-form template="/ru/citeck/components/form/workflow/perform/submit-perform-task.ftl" />
+			</form>
+			<form id="workflow-details">
+				<view-form template="/ru/citeck/components/form/workflow/common/workflow-details.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfperf:performTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/perform/perform-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/perform/perform-task.ftl" />
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/perform/perform-task-inline.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfperf:controlTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/perform/control-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/perform/control-task.ftl" />
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/perform/control-task-inline.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

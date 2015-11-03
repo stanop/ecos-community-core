@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+	<modules>
+		<module>
+			<id>Hide Wingets</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.sites/hide-widgets</element>
+				</params>
+			</evaluator>
+			<customizations>
+				<customization>
+					<targetPackageRoot>org.alfresco.share.header</targetPackageRoot>
+					<sourcePackageRoot>ru.citeck.customizations.hide-widgets</sourcePackageRoot>
+				</customization>
+			</customizations>
+		</module>
+	</modules>
+</extension>

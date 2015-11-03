@@ -1,0 +1,137 @@
+<alfresco-config>
+
+    <config evaluator="node-type" condition="cdl:department">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cdl:departmentIndex"/>
+                    <show id="cm:description" force="true" />
+                </field-visibility>
+                <appearance>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="cdl:department">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cdl:departmentIndex"/>
+					<show id="cm:description" force="true" />
+                </field-visibility>
+                <appearance>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="cdl:currency">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cdl:conversionToEUR"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="cdl:currency">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cdl:conversionToEUR"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+
+    <config evaluator="node-type" condition="cdl:nomenclature">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cdl:nomenclatureIndex"/>
+                    <show id="cdl:nomenclature_to_department"/>
+                    <show id="cdl:defaultFolder"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cdl:nomenclature_to_department">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="childrenQuery">branch=true&amp;group=false&amp;role=false&amp;user=false</control-param>
+							<control-param name="selectable">GROUP-branch</control-param>
+						</control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="cdl:nomenclature">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cdl:nomenclatureIndex"/>
+                    <show id="cdl:nomenclature_to_department"/>
+                    <show id="cdl:defaultFolder"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cdl:nomenclature_to_department">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="childrenQuery">branch=true&amp;group=false&amp;role=false&amp;user=false</control-param>
+							<control-param name="selectable">GROUP-branch</control-param>
+						</control>
+                    </field>
+                </appearance>
+            </form>
+	        <form id="search">
+                <edit-form template="/ru/citeck/components/form/search-form.ftl" />
+		        <field-visibility>
+			        <show id="cm:name"/>
+			        <show id="cdl:nomenclatureIndex"/>
+			        <show id="cdl:nomenclature_to_department"/>
+			        <show id="cdl:defaultFolder"/>
+		        </field-visibility>
+		        <appearance>
+			        <field id="cdl:nomenclature_to_department">
+				        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+					        <control-param name="childrenQuery">branch=true&amp;group=false&amp;role=false&amp;user=false</control-param>
+					        <control-param name="selectable">GROUP-branch</control-param>
+				        </control>
+			        </field>
+			        <field id="cm:name">
+				        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+			        </field>
+			        <field id="cdl:nomenclatureIndex">
+				        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+			        </field>
+		        </appearance>
+	        </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="cdl:cardTemplateType">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:title"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="cdl:cardTemplateType">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:title"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

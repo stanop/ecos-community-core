@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete Org.Struct group subtype</shortname>
+  <description>Delete Org.Struct group subtype</description>
+  <url>/api/orgmeta/{type}/{name}</url>
+  <format default="json">argument</format>
+  <authentication>admin	</authentication>
+  <transaction>required</transaction>
+</webscript>

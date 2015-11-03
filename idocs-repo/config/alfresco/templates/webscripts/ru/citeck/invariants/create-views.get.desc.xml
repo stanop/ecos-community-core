@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Node view</shortname>
+	<description>Get node view by nodeRef or type name</description>
+	<url>/citeck/invariants/create-views?type={type}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

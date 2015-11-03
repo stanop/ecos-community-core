@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Save node view</shortname>
+	<description>Create new node (specify type) or update existing one (specify nodeRef)</description>
+	<url>/citeck/invariants/view?type={type}</url>
+	<url>/citeck/invariants/view?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

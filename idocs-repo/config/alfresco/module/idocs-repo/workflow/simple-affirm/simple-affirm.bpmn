@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/simple-affirm/1.0">
+  <process id="simple-affirm" name="Simple affirming proccess" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.DocumentSetListener"></activiti:executionListener>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+        <activiti:field name="script">
+          <activiti:expression>if (execution.getVariable("bpm_workflowDescription") == "") {
+
+	if (execution.getVariable("document") != null)
+		execution.setVariable("bpm_workflowDescription", document.name);
+
+}
+</activiti:expression>
+        </activiti:field>
+      </activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="Affirm Task" activiti:formKey="wfsa:affirmStartTask"></startEvent>
+    <userTask id="usertask1" name="Affirm Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfsa:affirmTask">
+      <extensionElements>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+          <activiti:field name="authority">
+            <activiti:expression>${wfsa_affirmAgent}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_simple-affirm">
+    <bpmndi:BPMNPlane bpmnElement="simple-affirm" id="BPMNPlane_simple-affirm">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="80.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="180.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="336.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="115.0" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="97.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="285.0" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="336.0" y="97.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

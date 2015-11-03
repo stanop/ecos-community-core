@@ -1,0 +1,172 @@
+<#import "journals.lib.ftl" as journals />
+<#assign id = args.htmlid?html />
+<#assign toolbarId = id + "-toolbar" />
+<#assign pagingOptions = args.pagingOptions!"10,30,50,100" />
+
+<script type="text/javascript">//<![CDATA[
+require(['citeck/components/journals2/journals-dashlet', 'citeck/utils/knockout.yui'], function(JournalsDashlet, koyui) {
+//new Alfresco.widget.DashletResizer("${id}", "");
+var editEvent = new YAHOO.util.CustomEvent("editJournalsDashlet");
+new Alfresco.widget.DashletTitleBarActions("${id}").setOptions({
+	actions: [
+		<#if isPrivileged>
+		{
+			cssClass: "edit",
+			tooltip: "${msg("dashlet.edit.tooltip")}",
+			eventOnClick: editEvent
+		},
+		</#if>
+		{
+			cssClass: "help",
+			tooltip: "${msg("dashlet.help.tooltip")}",
+			bubbleOnClick: {
+				message: "${msg("dashlet.help.text")}"
+			}
+		}
+	]
+});
+var dashlet = new JournalsDashlet("${id}")
+.setOptions({
+	componentId: "${instance.object.id}",
+	model: {
+		<@journals.renderCurrentIds />
+		dashletConfig: {
+			<@journals.renderCurrentIds />
+		},
+		mode: 'table'
+	},
+	cache: <@journals.renderCacheJSON />
+}).setMessages(${messages});
+editEvent.subscribe(dashlet.onEditConfig, dashlet, true);
+})
+//]]></script>
+
+
+<div class="dashlet journals-dashlet" data-bind="css: { loading: loading, filtered: filter() != null }">
+	<!-- ko if: journalsList() != null -->
+    <div class="title" data-bind="text: journalsList().title"></div>
+	<!-- /ko -->
+	<!-- ko if: journalsList() == null && journal() != null -->
+    <div class="title" data-bind="text: journal().title"></div>
+	<!-- /ko -->
+	<!-- ko if: journalsList() == null && journal() == null -->
+    <div class="title">${msg("dashlet.title")}</div>
+	<!-- /ko -->
+	
+    <div class="toolbar flat-button icon-buttons">
+	
+		<div class="content-message" data-bind="css: { hidden: !(journalsList() == null && journal() == null) }">
+			${msg("message.configure-dashlet")}
+		</div>
+
+		<!-- journals list -->
+		<@journals.renderJournalSelectMenu id />
+		
+		<!-- create menu -->
+		<@journals.renderCreateVariantsMenu id=id hide=true />
+		
+		<!-- filters list -->
+		<@journals.renderFilterSelectMenu id />
+
+		<!-- settings list -->
+		<@journals.renderSettingsSelectMenu id />
+
+		<!-- update -->
+		<span class="update" title="${msg("button.update")}" data-bind="yuiButton: { type: 'push' }, css: { hidden: journal() == null}">
+			<span class="first-child">
+				<button data-bind="click: performSearch"></button>
+			</span>
+		</span>
+		
+		<@journals.renderCreateReportMenu id />
+
+		<span class="buttons align-right">
+		
+		<#assign pagingTemplate = '{PreviousPageLink} {CurrentPageReport} {NextPageLink}' />
+		<span id="${id}-paging" data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />" >
+		</span>
+		
+		<span class="fullscreen" title="${msg("button.fullscreen")}" data-bind="yuiButton: {
+			type: 'link', 
+			href: fullscreenLink()
+			}, css: { hidden: journalsList() == null && journal() == null }">
+			<span class="first-child">
+				<a></a>
+			</span>
+		</span>
+		
+		</span>
+		
+    </div>
+    <div class="body">
+        <div id="${id}-body">
+		
+		<div data-bind="css: { hidden: !(mode() == 'table' && journal() != null) }">
+			<@journals.renderJournalTable />
+		</div>
+			
+		<div data-bind="css: { hidden: !(mode() == 'table' && journalsList() != null && journal() == null) }">
+			<@journals.renderJournalsExpressMenu />
+		</div>
+
+		<div class="journals-config" data-bind="css: { hidden: !(mode() == 'config' || journalsList() == null && journal() == null) }">
+			<div class="fields" data-bind="with: _dashletConfig">
+				<div>
+					<label for="${id}-config-listId">${msg("label.journalsList")}</label>
+					<select id="${id}-config-listId" data-bind="
+						options: $root.journalsLists, 
+						value: journalsList, 
+						optionsText: 'title',
+						optionsCaption: '${msg("message.select-list")}'
+					"></select>
+				</div>
+				<div>
+					<label for="${id}-config-journalId">${msg("label.journal")}</label>
+					<select id="${id}-config-journalId" data-bind="
+						options: $root.resolve('_dashletConfig.journalsList.journals', 'journals', []), 
+						value: journal, 
+						optionsText: 'title',
+						optionsCaption: '${msg("message.select-journal")}'
+					"></select>
+				</div>
+				<div>
+					<label for="${id}-config-filterId">${msg("label.filter")}</label>
+					<select id="${id}-config-filterId" data-bind="
+						options: resolve('journal.type.filters', []), 
+						value: filter, 
+						optionsText: 'title',
+						optionsCaption: '${msg("filter.all")}',
+						disable: journal() == null
+					"></select>
+				</div>
+				<div>
+					<label for="${id}-config-settingsId">${msg("label.settings")}</label>
+					<select id="${id}-config-settingsId" data-bind="
+						options: resolve('journal.type.settings', []), 
+						value: settings, 
+						optionsText: 'title',
+						optionsCaption: '${msg("settings.default")}',
+						disable: journal() == null
+					"></select>
+				</div>
+			</div>
+			<div class="buttons">
+				<button data-bind="click: function() { saveConfig(); mode('table'); }">${msg("button.save")}</button>
+				<button data-bind="click: function() { mode('table'); }">${msg("button.cancel")}</button>
+				<button data-bind="click: resetConfig">${msg("button.reset")}</button>
+			</div>
+		</div>
+
+        </div>
+    </div>
+    <div id="${id}-report-form-container" style="display:none;">
+        <form id="${id}-report-form" data-bind="attr: {action: createReportLink, target: createReportTarget}, event: {load: createReportFormInit('${id}-report-form')}" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="jsondata" data-bind="attr: { value: createReportQuery }" />
+        </form>    
+    </div>
+</div>
+
+<!-- ko gotoAddress: gotoAddress -->
+<!-- /ko -->
+
+<!-- ko dependencies: dependencies --><!-- /ko -->

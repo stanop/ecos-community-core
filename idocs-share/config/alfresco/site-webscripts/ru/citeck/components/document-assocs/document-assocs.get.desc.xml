@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>document-assocs</shortname>
+  <description>Associations component for document-details page</description>
+  <url>/citeck/components/document-assocs</url>
+</webscript>

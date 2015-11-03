@@ -1,0 +1,68 @@
+<alfresco-config>
+    <config evaluator="model-type" condition="bpm:workflowTask">
+        <forms>
+            <form id="search">
+                <field-visibility>
+                    <show id="bpm:priority" />
+                    <show id="bpm:description" />
+                    <show id="wfm:assignee" force="true" />
+                    <show id="cwf:sender" force="true" />
+                    <show id="bpm:status" />
+                    <show id="bpm:pooledActors" />
+                    <show id="bpm:startDate" />
+                    <show id="bpm:dueDate" />
+                    <show id="bpm:completionDate" />
+                    <show id="bpm:comment" />
+                    <show id="wfm:documentType" force="true" />
+                    <show id="wfm:taskType" force="true" />
+                    <show id="wfm:workflowName" force="true" />
+                    <show id="wfm:workflowInitiator" force="true" />
+                </field-visibility>
+                <appearance>
+                    <field id="wfm:assignee">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="selectable">USER</control-param>
+                        </control>
+                    </field>
+                    <field id="wfm:workflowInitiator">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="selectable">USER</control-param>
+                        </control>
+                    </field>
+                    <field id="cwf:sender">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="selectable">USER</control-param>
+                            <control-param name="valueField">fullName</control-param>
+                        </control>
+                    </field>
+                    <field id="bpm:pooledActors">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl" />
+                    </field>
+                    <field id="wfm:documentType">
+                        <control template="/ru/citeck/components/form/controls/select-from-config.ftl">
+                            <control-param name="configPath">JournalTasksFilter/documentTypes</control-param>
+                            <control-param name="labelField">label</control-param>
+                        </control>
+                    </field>
+                    <field id="wfm:taskType">
+                        <control template="/ru/citeck/components/form/controls/select-from-config.ftl">
+                            <control-param name="configPath">JournalTasksFilter/taskTypes</control-param>
+                            <control-param name="labelField">label</control-param>
+                        </control>
+                    </field>
+                    <field id="wfm:workflowName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/alfresco/service/api/workflow-definitions</control-param>
+                            <control-param name="titleField">title</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'data', fields: [ {key:'title'}, {key:'name'}] }</control-param>
+                            <control-param name="sortKey">title</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

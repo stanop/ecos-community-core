@@ -1,0 +1,12 @@
+fromState,event,toState,transitionCondition,action
+start,"{""eventType"":""automaticTransition""}",project,,"document.properties['idocs:documentStatus'] = 'project'; document.save();"
+project,"{""eventType"":""onStartProcess"",""workflowId"":""activiti$confirm"",""actionName"":""confirm""}",confirmation,document.properties.creator == person.properties.userName,"document.properties['idocs:documentStatus'] = 'onApproval'; document.save();"
+confirmation,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",confirmed,,"document.properties['idocs:documentStatus'] = 'onSign'; document.save();"
+confirmed,"{""eventType"":""automaticTransition""}",signing,,"startWorkflow(""activiti$sign"", {""wfsgn_signerGroup"": people.getGroup(""GROUP_clerks""), ""bpm_workflowDescription"":document.name}); "
+signing,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$sign""}",signed,process.outcome == 'Signed',"document.properties['idocs:documentStatus'] = 'signed'; document.save();"
+signing,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$sign""}",cancelled,process.outcome == 'Declined',"document.properties['idocs:documentStatus'] = 'canceled'; document.save();"
+signed,"{""eventType"":""automaticTransition""}",registration,,"startWorkflow(""activiti$registration"", {""wfrg_registrator"": people.getGroup(""GROUP_registrars""), ""wfrg_autoNumberTemplate"": ""idocs-internal-number-template"",""bpm_workflowDescription"":document.name});"
+registration,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$registration""}",registered,process.outcome == 'Registered',"document.properties['idocs:documentStatus'] = 'registered'; document.save();"
+registration,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$registration""}",cancelled,process.outcome == 'Declined',"document.properties['idocs:documentStatus'] = 'canceled'; document.save();"
+registered,"{""eventType"":""userTransition"",""actionName"":""move-to-archive""}",archived,,"document.properties['idocs:documentStatus'] = 'archive'; document.save();"
+cancelled,"{""eventType"":""userTransition"",""actionName"":""move-to-archive""}",archived,,"document.properties['idocs:documentStatus'] = 'archive'; document.save();"

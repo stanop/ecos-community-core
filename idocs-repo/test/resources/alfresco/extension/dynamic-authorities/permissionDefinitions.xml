@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE permissions>
+<permissions>
+
+	<namespaces>
+		<namespace uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+		<namespace uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+	</namespaces>
+	
+	<globalPermission permission="Collaborator" authority="ROLE_TEST_SIMPLE"/>
+	
+</permissions>

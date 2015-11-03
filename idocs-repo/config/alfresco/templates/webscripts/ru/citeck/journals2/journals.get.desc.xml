@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get all journals info</shortname>
+    <url>/api/journals/all</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

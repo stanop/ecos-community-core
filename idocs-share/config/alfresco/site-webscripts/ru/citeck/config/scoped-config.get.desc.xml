@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Get scoped config</shortname>
+    <description>Gets scoped config</description>
+    <url>/citeck/config?scope={scope}&amp;formatValue={formatValue?}</url>
+    <format default="json"/>
+</webscript>

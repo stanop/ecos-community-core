@@ -1,0 +1,92 @@
+<alfresco-config>
+
+    <!-- Catalog -->
+    <config evaluator="node-type" condition="lc:status">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="lc:statusId"/>
+                    <show id="lc:statusName"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="lc:status">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="lc:statusId"/>
+                    <show id="lc:statusName"/>
+                </field-visibility>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="lc:statusId"/>
+                    <show id="lc:statusName"/>
+                </field-visibility>
+                <appearance>
+                    <field id="lc:stateId">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="lc:stateName">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="lc:action">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="lc:actionType"/>
+                    <show id="lc:actionId"/>
+                    <show id="lc:actionName"/>
+                    <show id="lc:actionParams"/>
+                    <show id="lc:actionIcon"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="lc:action">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="lc:actionType"/>
+                    <show id="lc:actionId"/>
+                    <show id="lc:actionName"/>
+                    <show id="lc:actionParams"/>
+                    <show id="lc:actionIcon"/>
+                </field-visibility>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="lc:actionType"/>
+                    <show id="lc:actionId"/>
+                    <show id="lc:actionName"/>
+                    <show id="lc:actionParams"/>
+                    <show id="lc:actionIcon"/>
+                </field-visibility>
+                <appearance>
+                    <field id="lc:actionType">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="lc:actionId">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="lc:actionName">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="lc:actionParams">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="lc:actionIcon">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

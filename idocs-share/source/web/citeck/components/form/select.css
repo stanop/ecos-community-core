@@ -1,0 +1,35 @@
+/* do not show empty error */
+.form-container .form-field.select-control div.error:empty
+{
+	display: none;
+}
+
+.form-container .form-field.select-control div.error
+{
+    background: transparent !important;
+}
+
+/* standard width of form control */
+.form-container .form-field.select-control select
+{
+    width: 30em;
+}
+
+/* align width of selects with inputs and textareas */
+.form-container input,
+.form-container select,
+.form-container textarea
+{
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.form-container .form-field.select-control .viewmode-field select
+{
+	-webkit-appearance: none;
+	border: 0;
+	background: transparent;
+	width: auto !important;
+	display: inline;
+}

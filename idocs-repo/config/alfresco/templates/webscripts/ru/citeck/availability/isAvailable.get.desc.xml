@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Is user available</shortname>
+    <description>Check availability for current user</description>
+    <url>/api/availability/is-available</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

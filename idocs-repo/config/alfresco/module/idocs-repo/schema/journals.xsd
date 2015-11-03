@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://www.citeck.ru/ecos/journals/1.0" xmlns:j="http://www.citeck.ru/ecos/journals/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- 
+  Generate classes with: 
+    xjc -no-header -p ru.citeck.ecos.journals alfresco/module/idocs-repo/schema/journals.xsd
+   -->
+
+  <xs:element name="journals">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="imports" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="import" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="uri" type="xs:string" use="required"/>
+                  <xs:attribute name="prefix" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="journal" type="j:journal" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="journal">
+    <xs:sequence>
+      <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="headers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="header" type="j:header" minOccurs="1" maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+  </xs:complexType>
+  
+  <xs:complexType name="option">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  
+  <xs:complexType name="header">
+    <xs:sequence>
+      <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="key" type="xs:string" use="required" />
+    <xs:attribute name="default" type="xs:boolean" default="false" />
+    <xs:attribute name="visible" type="xs:boolean" default="true" />
+    <xs:attribute name="searchable" type="xs:boolean" default="true" />
+    <xs:attribute name="sortable" type="xs:boolean" default="true" />
+    <xs:attribute name="groupable" type="xs:boolean" default="false" />
+  </xs:complexType>
+  
+</xs:schema>
+

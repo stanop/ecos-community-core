@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Journals metadata</shortname>
+    <description>Journals metadata</description>
+    <url>/components/journals/journals-metadata?attributes={attributes}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

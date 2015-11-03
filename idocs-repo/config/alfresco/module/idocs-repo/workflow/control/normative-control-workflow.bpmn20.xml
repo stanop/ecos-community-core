@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/confirm/1.0">
+  <process id="normative-control" name="Normative control workflow" isExecutable="true">
+    <startEvent id="startevent" name="Submit Control Task2" activiti:formKey="wfnc:submitControlTask">
+      <extensionElements>
+        <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>execution.setVariable("cwf_workflowStartDate", new java.util.Date());</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="success_endevent" name="controlled"></endEvent>
+    <endEvent id="faile_endevent" name="cancelled"></endEvent>
+    <userTask id="usertask1" name="Control Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfnc:controlTask">
+      <extensionElements>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+          <activiti:field name="authority">
+            <activiti:expression>${wfnc_controller}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="assignment" class="ru.citeck.ecos.workflow.confirm.AddConsiderableVersion"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:expression>execution.setVariable("wfnc_controlOutcome", task.getVariable("wfnc_controlOutcome"));
+
+execution.setVariable("wfcf_confirmers", task.getVariable("wfcf_confirmers"));
+execution.setVariable("wfcf_precedence", task.getVariable("wfcf_precedence"));
+
+if (task.getVariable("wfcf_precedence") == "" &amp;&amp; task.getVariable("wfnc_controlOutcome") == "ToApprove") {
+    throw("Не выбраны согласующие");
+}
+            </activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:expression>task.setVariable("cwf_workflowStartDate", execution.getVariable("cwf_workflowStartDate"));
+task.setVariableLocal("grantedPermission", "NodeManager");</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow3" sourceRef="usertask1" targetRef="faile_endevent">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfnc_controlOutcome == "Reject"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" name="Проверено" sourceRef="usertask1" targetRef="success_endevent">
+      <extensionElements>
+        <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[execution.setVariable("cwf_sender", initiator.properties.userName);
+execution.setVariable("wfnc_confirmed", true);]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfnc_controlOutcome == "Approve"}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow14" name="Проверено с замечаниями" sourceRef="usertask1" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>execution.setVariable("cwf_sender", initiator.properties.userName);
+execution.setVariable("wfnc_confirmed", true);</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfnc_controlOutcome == "ApproveWhithComment" && cwf_lastcomment != ""}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="startevent" targetRef="usertask1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>execution.setVariable("wfnc_workflowCancelled", false);
+execution.setVariable("wfnc_confirmed", false);</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow16" sourceRef="usertask1" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfnc_controlOutcome == "ToApprove"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_normative-control">
+    <bpmndi:BPMNPlane bpmnElement="normative-control" id="BPMNPlane_normative-control">
+      <bpmndi:BPMNShape bpmnElement="startevent" id="BPMNShape_startevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="173.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="success_endevent" id="BPMNShape_success_endevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="370.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="faile_endevent" id="BPMNShape_faile_endevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="380.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="150.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="380.0" y="173.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="370.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="202.0" y="218.0"></omgdi:waypoint>
+        <omgdi:waypoint x="397.0" y="260.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="202.0" y="163.0"></omgdi:waypoint>
+        <omgdi:waypoint x="387.0" y="125.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="56.0" x="217.0" y="121.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="255.0" y="190.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="190.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="39.0" width="100.0" x="280.0" y="163.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="65.0" y="190.0"></omgdi:waypoint>
+        <omgdi:waypoint x="150.0" y="190.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="202.0" y="218.0"></omgdi:waypoint>
+        <omgdi:waypoint x="387.0" y="330.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,11 @@
+# journal name (should be unique within all journals)
+# it is used to reference journals (e.g. /cm:IDocsRoot/cm:
+journal.name=templates
+
+# title that user will see
+journal.title_en=Templates
+journal.title_ru=Шаблоны
+
+# journal type, that is configured in share
+# e.g. <journal id="templates> ...
+journal.type=templates

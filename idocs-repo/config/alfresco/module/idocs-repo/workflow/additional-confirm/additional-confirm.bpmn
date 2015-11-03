@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/model/workflow/additional-confirm/1.0">
+  <process id="additional-confirm" name="Дополнительное согласование" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.DocumentSetListener"></activiti:executionListener>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+        <activiti:field name="script">
+          <activiti:expression>if(!document) throw "Document is not chosen";</activiti:expression>
+        </activiti:field>
+      </activiti:executionListener>
+      <activiti:executionListener event="end" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+        <activiti:field name="script">
+          <activiti:expression>execution.setVariable("revokeTaskPermissions", false);</activiti:expression>
+        </activiti:field>
+      </activiti:executionListener>
+    </extensionElements>
+    <startEvent id="alfrescoStartevent1" name="Alfresco start" activiti:formKey="wfacf:submitConfirmTask"></startEvent>
+    <subProcess id="subprocess1" name="Дополнительное согласование">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="wfacf_confirmers" activiti:elementVariable="confirmer"></multiInstanceLoopCharacteristics>
+      <userTask id="usertask1" name="Согласование" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfacf:confirmTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+            <activiti:field name="authority">
+              <activiti:expression>${confirmer}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:expression>var wfacf_confirmer = search.findNode(confirmer.nodeRef);
+confirmDecisions.save(execution, wfacf_confirmer.properties.authorityName || wfacf_confirmer.properties.userName, "activiti$" + task.id);</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+            <activiti:field name="variableExpr">
+              <activiti:expression>wfacf_confirmOutcome</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:expression>task.setVariable("grantedPermission", "Consumer");
+task.setVariable("postRevokePermission", "Consumer");</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+      </userTask>
+      <userTask id="usertask2" name="Уведомление о согласовании" activiti:assignee="${initiator.properties.userName}" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfacf:notifyTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="variableExpr">
+              <activiti:expression>wfacf_confirmOutcome</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+            <activiti:field name="variableExpr">
+              <activiti:expression>wfacf_notifyOutcome</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+      </userTask>
+      <startEvent id="startevent1" name="Start"></startEvent>
+      <endEvent id="endevent1" name="End"></endEvent>
+      <sequenceFlow id="flow2" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+      <sequenceFlow id="flow3" sourceRef="usertask2" targetRef="endevent1">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfacf_notifyOutcome == "Done"}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow4" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
+      <sequenceFlow id="flow6" sourceRef="usertask2" targetRef="usertask1">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfacf_notifyOutcome != "Done"}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow9" sourceRef="exclusivegateway1" targetRef="endevent1">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfacf_sendNotifyTask=="Never" || (outcome == "Confirmed" && wfacf_sendNotifyTask=="OnlyIfReject")}]]></conditionExpression>
+      </sequenceFlow>
+      <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+      <sequenceFlow id="flow10" sourceRef="exclusivegateway1" targetRef="usertask2">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfacf_sendNotifyTask=="Always" || (outcome != "Confirmed" && wfacf_sendNotifyTask=="OnlyIfReject")}]]></conditionExpression>
+      </sequenceFlow>
+    </subProcess>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow1" sourceRef="alfrescoStartevent1" targetRef="subprocess1"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="subprocess1" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_additional-confirm">
+    <bpmndi:BPMNPlane bpmnElement="additional-confirm" id="BPMNPlane_additional-confirm">
+      <bpmndi:BPMNShape bpmnElement="alfrescoStartevent1" id="BPMNShape_alfrescoStartevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="195.0" y="197.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subprocess1" id="BPMNShape_subprocess1">
+        <omgdc:Bounds height="221.0" width="381.0" x="280.0" y="104.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="360.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+        <omgdc:Bounds height="65.0" width="105.0" x="500.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="310.0" y="244.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="610.0" y="244.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="460.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="710.0" y="197.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="327.0" y="244.0"></omgdi:waypoint>
+        <omgdi:waypoint x="327.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="605.0" y="192.0"></omgdi:waypoint>
+        <omgdi:waypoint x="627.0" y="196.0"></omgdi:waypoint>
+        <omgdi:waypoint x="627.0" y="244.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="412.0" y="170.0"></omgdi:waypoint>
+        <omgdi:waypoint x="412.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="552.0" y="225.0"></omgdi:waypoint>
+        <omgdi:waypoint x="552.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="412.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="412.0" y="225.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="500.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="627.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="627.0" y="244.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="480.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="199.0"></omgdi:waypoint>
+        <omgdi:waypoint x="500.0" y="192.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="230.0" y="214.0"></omgdi:waypoint>
+        <omgdi:waypoint x="280.0" y="214.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="661.0" y="214.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="214.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

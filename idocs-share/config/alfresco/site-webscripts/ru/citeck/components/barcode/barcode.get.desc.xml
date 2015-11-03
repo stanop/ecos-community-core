@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Draws barcode with specified parameters</shortname>
+	<url>/citeck/components/barcode?nodeRef={nodeRef}&amp;property={property}&amp;barcodeType={barcodeType?}&amp;header={header}&amp;width={width?}&amp;height={height?}</url>
+</webscript>

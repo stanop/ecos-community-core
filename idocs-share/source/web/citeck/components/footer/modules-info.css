@@ -1,0 +1,21 @@
+
+.modules-info-footer {
+    color: lightgray;
+}
+
+.modules-info-footer:hover {
+    color: black;
+}
+
+.modules-info {
+    font-size: 10px; 
+}
+
+.modules-info .modules-title {
+    font-weight: bold;
+    display: none;
+}
+
+.modules-info .module-info {
+    margin: 0 5px;
+}

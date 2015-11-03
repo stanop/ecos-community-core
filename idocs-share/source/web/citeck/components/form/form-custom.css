@@ -1,0 +1,72 @@
+.form-container .yui-g,
+.form-container .yui-gb,
+.yui-g.plain .yui-u,
+.yui-gb.plain .yui-u
+{
+    margin-left: 0;
+    width: 100%;
+    float: none;
+}
+
+/* support for forms in dialogs */
+
+.yui-panel.form-container .bd .yui-u input,
+.yui-panel.form-container .bd .yui-u select,
+.yui-panel.form-container .bd .help-text,
+.yui-panel .bd .form-container .yui-u input,
+.yui-panel .bd .form-container .yui-u select,
+.yui-panel .bd .form-container .help-text
+{
+	max-width: 90%;
+}
+
+.yui-panel .bd .form-container .yui-u.first,
+.yui-panel.form-container .bd .yui-u.first
+{
+	text-align: left;
+}
+
+/* fix for search.css + pickers */
+
+.picker .search
+{
+	margin: 0px;
+}
+
+.yui-g .yui-u,
+.yui-g .yui-g,
+.yui-g .yui-gb,
+.yui-g .yui-gc,
+.yui-g .yui-gd,
+.yui-g .yui-ge,
+.yui-g .yui-gf {
+	width: 49%;
+}
+
+/* search menu styling */
+
+.form-field.search-field input,
+.form-field.search-field span.yui-button
+{
+	vertical-align: middle;
+}
+
+/* flat-button styling */
+
+/*.form-field.flat-button label,
+.form-field.flat-button div.object-finder
+{
+	display: inline-block;
+}*/
+
+.form-field.flat-button label,
+.form-field.flat-button div.object-finder .current-values,
+.form-field.flat-button div.object-finder .show-picker > span.yui-button
+{
+	vertical-align: top;
+}
+
+/*.form-field.flat-button div.object-finder .current-values:empty + .show-picker > span.yui-button
+{
+	margin-top: -9px;
+}*/

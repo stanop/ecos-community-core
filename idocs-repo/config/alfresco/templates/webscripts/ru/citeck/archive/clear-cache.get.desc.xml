@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>Clears archive service cache</shortname>
+	<description>It clears an archive service cache</description>
+	<url>/citeck/archive/clear-cache</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

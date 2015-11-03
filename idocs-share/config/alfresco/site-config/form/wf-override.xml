@@ -1,0 +1,73 @@
+<!--
+    Overrides for default workflow forms configuration.
+-->
+<alfresco-config>
+
+    <config evaluator="string-compare" condition="activiti$activitiAdhoc">
+        <forms>
+            <form>
+                <appearance>
+                    <field id="bpm:assignee">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl" />
+                    </field>
+                    <field id="packageItems">
+                        <control template="/ru/citeck/components/form/controls/doclib-select.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+   <config evaluator="task-type" condition="wf:adhocTask">
+        <forms>
+            <form>
+                <appearance>
+                    <field id="packageItems">
+                        <control template="/ru/citeck/components/form/controls/doclib-select.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="string-compare" condition="activiti$activitiParallelReview">
+        <forms>
+            <form>
+                <appearance>
+                    <field id="bpm:assignees">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="string-compare" condition="activiti$activitiParallelGroupReview">
+        <forms>
+            <form>
+                <appearance>
+                    <field id="bpm:groupAssignee">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="string-compare" condition="activiti$activitiReview">
+        <forms>
+            <form id="popupDialogForm">
+                <create-form template="/ru/citeck/templates/related-workflows/workflow_popup_form.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="string-compare" condition="activiti$activitiReviewPooled">
+        <forms>
+            <form id="popupDialogForm">
+                <create-form template="/ru/citeck/templates/related-workflows/workflow_popup_form.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

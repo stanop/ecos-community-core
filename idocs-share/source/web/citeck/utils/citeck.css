@@ -1,0 +1,7 @@
+.alf-header .dijitMenuItem.yui-menu-button button {
+   background-image: url(../../js/alfresco/header/css/images/MenuArrow.PNG);
+}
+.dijitMenuItem.dijitHover.yui-menu-button button {
+   background-color: #717171;
+   color: #fff;
+}

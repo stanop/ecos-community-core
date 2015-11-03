@@ -1,0 +1,119 @@
+<alfresc-config>
+
+    <config evaluator="string-compare" condition="activiti$correction">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/workflow/correction/correction.ftl" />
+                <!--field-visibility>
+                    <show id="bpm:workflowDueDate" />
+                    <show id="bpm:workflowPriority" />
+                    <show id="bpm:workflowDescription" />
+                    <show id="wfcr:corrector" />
+                    <show id="packageItems"/>
+                    <show id="bpm:sendEMailNotifications" />
+                </field-visibility>
+                <appearance>
+                    <set id="" appearance="title" label-id="workflow.set.general" />
+                    <set id="info" appearance="" template="/org/alfresco/components/form/2-column-set.ftl" />
+                    <set id="assignee" appearance="title" label-id="workflow.set.assignee" />
+                    <set id="items" appearance="title" label-id="workflow.set.items" />
+                    <set id="other" appearance="title" label-id="workflow.set.other" />
+
+                    <field id="bpm:workflowDescription" label-id="workflow.field.message">
+                        <control template="/org/alfresco/components/form/controls/textarea.ftl">
+                            <control-param name="style">width: 95%</control-param>
+                        </control>
+                    </field>
+                    <field id="bpm:workflowDueDate" label-id="workflow.field.due" set="info" />
+                    <field id="bpm:workflowPriority" label-id="workflow.field.priority" set="info">
+                        <control template="/org/alfresco/components/form/controls/workflow/priority.ftl" />
+                    </field>
+                    <field id="wfcr:corrector" set="assignee">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl" />
+                    </field>
+                    <field id="packageItems" set="items" />
+                    <field id="bpm:sendEMailNotifications" set="other">
+                        <control template="/org/alfresco/components/form/controls/workflow/email-notification.ftl" />
+                    </field>
+                </appearance-->
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="wfcr:submitCorrectionTask">
+        <forms>
+            <form>
+                <view-form template="/ru/citeck/components/form/workflow/correction/correction.ftl" />
+            </form>
+			<form id="workflow-details">
+				<view-form template="/ru/citeck/components/form/workflow/common/workflow-details.ftl" />
+			</form>
+        </forms>
+    </config>
+
+
+    <config evaluator="task-type" condition="wfcr:correctionTask">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="wfcr:message" />
+                    <show id="cwf:workflowStartDate" />
+                    <show id="bpm:dueDate" />
+                    <show id="taskOwner" />
+                    <show id="bpm:status" />
+                    <!--<show id="wfcr:projectNumber" />-->
+                    <show id="bpm:priority" />
+                    <show id="packageItems"/>
+                    <show id="wfcr:failureCause"/>
+                    <show id="bpm:comment"/>
+                    <show id="wfcr:correctionOutcome"/>
+                </field-visibility>
+                <appearance>
+                    <set id="" appearance="title" label-id="workflow.set.task.info" />
+                    <set id="info" appearance="" template="/org/alfresco/components/form/3-column-set.ftl" />
+                    <set id="progress" appearance="title" label-id="workflow.set.task.progress" />
+                    <set id="items" appearance="title" label-id="workflow.set.items" />
+                    <set id="response" appearance="title" label-id="workflow.set.response" />
+
+                    <field id="wfcr:message">
+                        <control template="/org/alfresco/components/form/controls/info.ftl" />
+                    </field>
+                    <field id="taskOwner" set="info" />
+                    <field id="bpm:priority" set="info" read-only="true">
+                        <control template="/org/alfresco/components/form/controls/workflow/priority.ftl" />
+                    </field>
+                    <field id="cwf:workflowStartDate" set="info">
+                        <control template="/org/alfresco/components/form/controls/info.ftl" />
+                    </field>
+                    <field id="bpm:dueDate" set="info" label-id="workflow.field.due">
+                        <control template="/org/alfresco/components/form/controls/info.ftl" />
+                    </field>
+                    <!--<field id="wfcr:projectNumber" set="info">-->
+                        <!--<control template="/org/alfresco/components/form/controls/info.ftl" />-->
+                    <!--</field>-->
+                    <field id="wfcr:failureCause" set="info">
+                        <control template="/org/alfresco/components/form/controls/info.ftl" />
+                    </field>
+                    <field id="bpm:status" set="progress" />
+                    <field id="packageItems" set="items" label="Предмет">
+                        <control>
+                            <control-param name="doclibView">correct</control-param>
+                        </control>
+                    </field>
+                    <field id="bpm:comment" set="response">
+                        <control template="/org/alfresco/components/form/controls/textarea.ftl">
+                            <control-param name="style">width: 95%</control-param>
+                        </control>
+                    </field>
+                    <field id="wfcr:correctionOutcome" label-id="workflow.field.outcome" set="response">
+                        <control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl" />
+                    </field>
+                </appearance>
+            </form>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/correction-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresc-config>

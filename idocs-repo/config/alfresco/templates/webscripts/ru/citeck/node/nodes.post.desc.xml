@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Explicit nodes get</shortname>
+	<description>Get node info, explicitly specified in the arguments</description>
+	<url>/citeck/node/nodes</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

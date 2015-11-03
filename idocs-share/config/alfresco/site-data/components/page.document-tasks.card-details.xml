@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>document-tasks</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <header>doctasks.header</header>
+        <childrenFormat>task</childrenFormat>
+        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/tasks/document?nodeRef={nodeRef}"</childrenUrl>
+        <columns>[{key: 'taskType', label: Alfresco.util.message("doctasks.header.taskType"), formatter: Citeck.format.typeName()},
+            {key: 'startDate', label: Alfresco.util.message("doctasks.header.startDate"), formatter: Citeck.format.datetime('dd.MM.yyyy')},
+            {key: 'dueDate', label: Alfresco.util.message("doctasks.header.dueDate"), formatter: Citeck.format.datetime('dd.MM.yyyy')},
+            {key: 'sender', label: Alfresco.util.message("doctasks.header.sender")},
+            {key: 'lastComment', label: Alfresco.util.message("doctasks.header.lastComment"), formatter: Citeck.format.encodeHTML()},
+            {key: 'outcome', label: "", formatter: Citeck.format.taskOutcome() },
+            {key: 'taskButtons', label: "", formatter: Citeck.format.taskButtons() }]
+        </columns>
+        <responseSchema>{resultsList: 'documentTasks',
+            fields: [
+            {key: 'dueDate'},
+            {key: 'startDate'},
+            {key: 'taskType'},
+            {key: 'sender'},
+            {key: 'lastComment'},
+            {key: 'taskId'},
+            {key: 'outcomePropertyName'},
+            {key: 'outcome'},
+            {key: 'reassignable'},
+            {key: 'releasable'},
+            {key: 'claimable'},
+            {key: 'comment'}
+            ]}
+        </responseSchema>
+        <hideEmpty>true</hideEmpty>
+        <twisterKey>document-tasks</twisterKey>
+    </properties>
+</component>

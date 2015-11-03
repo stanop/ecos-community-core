@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfarc:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/to-archive/1.0" prefix="wfarc"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfarc:toArchiveOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>SendToArchive</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="wfarc:submitToArchiveTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfarc:archiver</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfarc:toArchiveTask">
+            <title>Списать в Архив</title>
+            <parent>bpm:activitiOutcomeTask</parent>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/to-archive/1.0}toArchiveOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default/>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfarc:toArchiveOutcome</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfarc:toArchiveOutcome">
+            <properties>
+                <property name="wfarc:toArchiveOutcome">
+                    <type>d:text</type>
+                    <default>SendToArchive</default>
+                    <constraints>
+                        <constraint ref="wfarc:toArchiveOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+		<aspect name="wfarc:archiver">
+			<associations>
+				<association name="wfarc:archiver">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+    </aspects>
+
+</model>

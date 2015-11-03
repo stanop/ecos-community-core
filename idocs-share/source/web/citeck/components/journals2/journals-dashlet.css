@@ -1,0 +1,46 @@
+/* journals dashlet */
+
+.journals-config .fields
+{
+	display: table;
+}
+
+.journals-config .fields > div
+{
+	display: table-row;
+}
+
+.journals-config .fields > div > *
+{
+	display: table-cell;
+}
+
+.journals-config .fields,
+.journals-config .buttons
+{
+	padding: 0.5em 1em;
+}
+
+.journals-config .fields > div > *,
+.journals-config .buttons > button
+{
+	margin: 1px 5px;
+}
+
+.journals-dashlet .yui-dt.content-table
+{
+	width: 100.25%;
+	margin-top: 0;
+	overflow-x: auto;
+}
+.journals-dashlet .yui-dt.content-table table
+{
+	border: none;
+}
+
+
+/* buttons */
+
+.journals-dashlet .toolbar .yui-button.yui-button-active.yui-menu-button.yui-menu-button-active > span.first-child > button {
+  color: red;
+}

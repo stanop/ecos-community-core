@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+    <modules>
+        <module>
+            <id>versions-difference/versions-difference-color</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.versions-difference/versions-difference-color</element>
+                </params>
+            </evaluator>
+			<configurations>
+				<config evaluator="string-compare" condition="VersionsDifferenceColor">
+					<dependencies>
+						<css src="/citeck/components/versions-difference/versions-diff-page.css" />
+					</dependencies>
+				</config>
+			</configurations>
+            <components>
+                <component>
+                    <scope>template</scope>
+                    <source-id>versions-difference</source-id>
+                    <region-id>title</region-id>
+                    <sub-components>
+                        <sub-component id="dependencies-loader" index="10">
+                            <url>/citeck/dependencies-loader</url>
+                            <properties>
+                                <configName>VersionsDifferenceColor</configName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+    </modules>
+</extension>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0" 
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0">
+	<sys:container view:childName="cm:attachmentsRoot">
+		<view:acl view:inherit="true">
+			<view:ace view:access="ALLOWED">
+				<view:authority>GROUP_EVERYONE</view:authority>
+				<view:permission>Contributor</view:permission>
+			</view:ace>
+		</view:acl>
+		<view:properties>
+			<sys:node-uuid>attachments-root</sys:node-uuid>
+		</view:properties>
+	</sys:container>
+</view:view>

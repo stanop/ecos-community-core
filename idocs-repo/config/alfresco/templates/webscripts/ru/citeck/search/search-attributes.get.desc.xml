@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Search attributes</shortname>
+    <description>Gets all searchable attributes and associations</description>
+    <url>/search/search-attributes</url>
+    <url>/search/search-attributes?attribute={attributeName}&amp;attrFull={attrFullName}</url>
+    <format default="json"></format>
+</webscript>

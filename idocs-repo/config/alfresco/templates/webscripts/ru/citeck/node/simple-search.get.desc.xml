@@ -1,0 +1,26 @@
+<webscript>
+	<shortname>Simple search</shortname>
+	<description>
+		Simple search.
+		It returns list of nodes.
+		Input parameters:
+			type -			(required) type of queried nodes
+			site -			(not required) target site, by default it looks up
+			property -		(not required) name or list (divided by comma) of
+						specified property, it is used for searching by its value
+			value -			(not required) value of specified property, it
+						searches value. Searching of the node by value depends
+						on property definition in the model (for exact searching
+						of the value: atomic=true, tonkenised=false)
+			properties -	(not required) list of additional returned properties of nodes,
+						by default it only returns: nodeRef, name, type, title, description
+			replaceColon -	(not required) it is character which is used
+						instead of ':' of returned property names
+			dateFormat - format of returned dates
+	</description>
+	<url>/citeck/search/simple?type={type}&amp;site={site?}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>draft</lifecycle>
+</webscript>

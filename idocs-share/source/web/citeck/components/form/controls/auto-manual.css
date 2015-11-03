@@ -1,0 +1,18 @@
+input[type="text"].auto-manual-input {
+	width: 200px;
+	margin-right: 5px;
+}
+
+input.auto-manual-input:disabled {
+	background-color: #FAFAFA;
+	color: #FAFAFA;
+}
+
+div.auto-manual-select {
+	display: inline-block;
+}
+
+.auto-manual-select label {
+	display: inline !important;
+}
+

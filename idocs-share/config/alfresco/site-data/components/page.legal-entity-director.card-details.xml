@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>legal-entity-director</region-id>
+    <url>/citeck/components/child-forms</url>
+    <properties>
+        <header>Генеральный директор</header>
+        <collapseHeader>true</collapseHeader>
+        <nodeRef>{nodeRef}</nodeRef>
+	<elementsUrl>citeck/assocs?nodeRef=[[nodeRef]]&amp;assocTypes=idocs:generalDirector&amp;addAssocs=false</elementsUrl>
+        <elementsPath>targets</elementsPath>
+	<elementHeader>[[attributes.cm:firstName]] [[attributes.cm:lastName]]</elementHeader>
+	<viewFormUrl>components/form?itemKind=node&amp;itemId=[[nodeRef]]&amp;mode=view</viewFormUrl>
+        <twisterKey>legal-entity-director</twisterKey>
+    </properties>
+</component>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:cdl="http://www.citeck.ru/model/cdl/1.0">
+	<cdl:cardTemplateType view:childName="cm:card">
+		<view:properties>
+			<cm:name>${card-template-type.name}</cm:name>
+			<cm:title>
+				<view:mlvalue view:locale="en_US">${card-template-type.title_en}</view:mlvalue>
+				<view:mlvalue view:locale="ru_RU">${card-template-type.title_ru}</view:mlvalue>
+			</cm:title>
+		</view:properties>
+	</cdl:cardTemplateType>
+</view:view>

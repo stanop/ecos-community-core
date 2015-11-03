@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	   <shortname>is-form-definition-exist</shortname>
+       <url>/api/form/is-definition-exist</url>
+</webscript>

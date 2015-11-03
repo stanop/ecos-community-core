@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+	<config evaluator="node-type" condition="help:configuration">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="help:page" />
+					<show id="help:selector" />
+					<show id="help:infoText" />
+					<show id="help:text" />
+					<show id="help:video" />
+			    </field-visibility>
+				<appearance>
+					<field id="help:text">
+						<control template="/ru/citeck/components/form/controls/doclib-simple-select.ftl" />
+					</field>
+					<field id="help:video">
+						<control template="/ru/citeck/components/form/controls/doclib-simple-select.ftl" />
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="model-type" condition="help:configuration">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="help:page" />
+					<show id="help:selector" />
+					<show id="help:text" />
+					<show id="help:infoText" />
+					<show id="help:video" />
+				</field-visibility>
+				<appearance>
+					<field id="help:text">
+						<control template="/ru/citeck/components/form/controls/doclib-simple-select.ftl" />
+					</field>
+					<field id="help:video">
+						<control template="/ru/citeck/components/form/controls/doclib-simple-select.ftl" />
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

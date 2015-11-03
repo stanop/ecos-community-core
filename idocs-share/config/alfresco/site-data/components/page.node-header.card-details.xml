@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+	<scope>page</scope>
+	<source-id>card-details</source-id>
+    <region-id>node-header</region-id>
+    <sub-components>
+        <sub-component id="default">
+            <evaluations>
+                <evaluation>
+                    <evaluators id="versRef">
+                        <evaluator negate="true" type="equals.component.evaluator">
+                            <params>
+                                <nodeRef>{versRef}</nodeRef>
+                                <element></element>
+                            </params>
+                        </evaluator>
+                    </evaluators>
+                    <url>/components/node-details/vers-node-header</url>
+                    <properties>
+                        <nodeRef>{versRef}</nodeRef>
+                        <rootPage>repository</rootPage>
+                        <rootLabelId>path.repository</rootLabelId>
+                        <showDownload>false</showDownload>
+                    </properties>
+                </evaluation>
+                <!-- if in site: Site header -->
+                <evaluation id="site">
+                    <evaluators>
+                        <evaluator type="site.component.evaluator" />
+                    </evaluators>
+                    <url>/components/card-details/card-header</url>
+                    <properties>
+                        <nodeRef>{nodeRef}</nodeRef>
+                        <rootPage>documentlibrary</rootPage>
+                        <rootLabelId>path.documents</rootLabelId>
+                        <showDownload>false</showDownload>
+                        <template>node.properties['cm:title']</template>
+                    </properties>
+                </evaluation>
+                <!-- otherwise: Repo header -->
+                <evaluation id="repo">
+                    <url>/components/card-details/card-header</url>
+                    <properties>
+                        <nodeRef>{nodeRef}</nodeRef>
+                        <rootPage>repository</rootPage>
+                        <rootLabelId>path.repository</rootLabelId>
+                        <showDownload>false</showDownload>
+                        <template>node.properties['cm:title']</template>
+                    </properties>
+                </evaluation>
+            </evaluations>
+        </sub-component>
+        <sub-component id="hide-social">
+            <url>/citeck/components/node-header/hide-social</url>
+        </sub-component>
+    </sub-components>
+</component>

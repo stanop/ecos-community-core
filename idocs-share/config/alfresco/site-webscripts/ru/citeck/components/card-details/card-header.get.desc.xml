@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>document-caption</shortname>
+    <description>Show customized document caption</description>
+    <url>/components/card-details/card-header</url>
+</webscript>

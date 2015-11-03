@@ -1,0 +1,42 @@
+.node-header-slim {
+    min-height: 0em;
+}
+
+.node-header-slim .node-info {
+    float: left;
+    width: 78%;
+}
+
+.node-header-slim .node-path-visible {
+    padding-bottom: 0.5em;
+    padding-top: 1em;
+    margin-left: -1.2em;
+}
+
+.node-header .node-path {
+    display: none; !important;
+}
+
+.node-header-slim .node-path-visible .separator
+{
+    border: medium none;
+    padding: 0 0.5em;
+}
+
+.node-header-slim .node-path-visible .folder-link {
+    background-position: left 50%;
+    background-repeat: no-repeat;
+    padding: 2px 0 2px 20px;
+}
+
+.node-header-slim .node-path-visible .folder-open {
+    background-image: url(../../components/documentlibrary/images/folder-open-16.png);
+}
+
+.node-header-slim .node-path-visible .folder-closed {
+    background-image: url(../../components/documentlibrary/images/folder-closed-16.png);
+}
+
+.node-header-slim .node-path-visible .document-open {
+    background-image: url(../../components/documentlibrary/images/generic-16.png);
+}

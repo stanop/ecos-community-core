@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Form dialogs support</shortname>
+	<description>Ensures that onFormContentReady is caught by form manager only once</description>
+	<url>/citeck/modules/form-dialogs-support?formManagerName={formManagerName}</url>
+</webscript>

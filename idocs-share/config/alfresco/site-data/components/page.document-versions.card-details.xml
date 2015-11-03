@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+	<scope>page</scope>
+	<source-id>card-details</source-id>
+    <region-id>document-versions</region-id>
+    <url>/components/document-details/document-versions</url>
+    <properties>
+        <nodeRef>{nodeRef}</nodeRef>
+    </properties>
+</component>

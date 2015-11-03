@@ -1,0 +1,18 @@
+<webscript>
+	<shortname>js-css-loader</shortname>
+	<description><![CDATA[
+This component is used to load JS and CSS files which specified in the configuration
+
+Configuration part should be like:
+<config evaluator="string-compare" condition="TaskEditJsCssMessages">
+	<dependencies>
+		<js src="/citeck/components/workflow/task-edit-header.js" />
+		<css src="/citeck/components/workflow/task-edit-header.css" />
+		<messages component="org/alfresco/components/workflow/task-edit-header.get" />
+		<messages resource="alfresco.site-messages.idocs.datatable-property" />
+	</dependencies>
+</config>
+]]>
+	</description>
+	<url>/citeck/dependencies-loader</url>
+</webscript>

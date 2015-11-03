@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfacf:confirmworkflow" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/additional-confirm/1.0" prefix="wfacf"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfacf:confirmOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Confirmed</value>
+                    <value>Reject</value>
+                </list>
+            </parameter>
+        </constraint>
+        <constraint name="wfacf:notifyOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Done</value>
+                    <value>Return</value>
+                </list>
+            </parameter>
+        </constraint>
+        <constraint name="wfacf:sendNotifyTaskOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Always</value>
+                    <value>OnlyIfReject</value>
+                    <value>Never</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+		<type name="wfacf:submitConfirmTask">
+			<parent>bpm:startTask</parent>
+			<associations>
+				<association name="wfacf:confirmers">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>cwf:sendNotification</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfacf:confirmTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/additional-confirm/1.0}confirmOutcome</default>
+				</property>
+				<property name="bpm:packageActionGroup">
+					<default></default>
+				</property>
+				<property name="bpm:comment">
+					<constraints>
+						<constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint" >
+							<parameter name="condition">
+								<value>prop_wfacf_confirmOutcome == 'Reject'</value>
+							</parameter>
+						</constraint>
+					</constraints>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfacf:hasConfirmOutcome</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+				<aspect>cwf:workflowStartDate</aspect>
+			</mandatory-aspects>
+		</type>
+
+        <type name="wfacf:notifyTask">
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="wfacf:notifyOutcome">
+                    <type>d:text</type>
+                    <default>Done</default>
+                    <constraints>
+                        <constraint ref="wfacf:notifyOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/additional-confirm/1.0}notifyOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default>add_package_item_actions</default>
+                </property>
+				<property name="bpm:comment">
+					<constraints>
+						<constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+							<parameter name="condition"><value>prop_wfacf_notifyOutcome == 'Return'</value></parameter>
+						</constraint>
+					</constraints>
+				</property>
+            </overrides>
+			<mandatory-aspects>
+				<aspect>wfacf:hasConfirmOutcome</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+				<aspect>cwf:workflowStartDate</aspect>
+			</mandatory-aspects>
+        </type>
+    </types>
+
+	<aspects>
+		<aspect name="wfacf:hasConfirmOutcome">
+            <properties>
+                <property name="wfacf:confirmOutcome">
+                    <type>d:text</type>
+                    <default>Reject</default>
+                    <constraints>
+                        <constraint ref="wfacf:confirmOutcomeOptions" />
+                    </constraints>
+                </property>
+            </properties>
+		</aspect>
+
+		<aspect name="wfacf:options">
+			<properties>
+				<property name="wfacf:sendNotifyTask">
+                    <type>d:text</type>
+                    <default>Always</default>
+                    <constraints>
+                        <constraint ref="wfacf:sendNotifyTaskOptions" />
+                    </constraints>
+				</property>
+			</properties>
+		</aspect>
+
+	</aspects>
+
+</model>

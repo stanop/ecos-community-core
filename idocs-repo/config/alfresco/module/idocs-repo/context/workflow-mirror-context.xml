@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="workflowMirrorListener" class="ru.citeck.ecos.workflow.mirror.MirrorListener" />
+
+	<bean id="mirrorEndProcessListener" class="ru.citeck.ecos.workflow.mirror.MirrorEndProcessListener">
+		<property name="taskMirrorRoot" value="workspace://SpacesStore/task-mirror-root" />
+	</bean>
+
+	<bean id="workflowMirrorInterceptor" class="ru.citeck.ecos.workflow.mirror.MirrorInterceptor" init-method="init">
+		<property name="workflowMirrorServiceName" value="workflowMirrorService" />
+	</bean>
+	
+	<bean class="ru.citeck.ecos.spring.AddToList">
+		<property name="list" ref="WorkflowService.Interceptors" />
+		<property name="value" value="workflowMirrorInterceptor" />
+	</bean>
+	
+	<bean id="workflowMirrorService" class="ru.citeck.ecos.workflow.mirror.WorkflowMirrorServiceImpl" parent="baseJavaScriptExtension">
+		<property name="nodeService" ref="nodeService" />
+		<property name="actionService" ref="actionService" />
+		<property name="personService" ref="personService" />
+		<property name="workflowService" ref="workflowServiceImpl" />
+		<property name="nodeInfoFactory" ref="nodeInfoFactory" />
+		<property name="taskMirrorRoot" value="workspace://SpacesStore/task-mirror-root" />
+		<property name="taskMirrorAssoc" value="{http://www.alfresco.org/model/content/1.0}contains" />
+        <property name="extensionName" value="workflowMirrorService"/>
+		<property name="orgStructService" ref="orgStructService"/>
+		<property name="authorityService" ref="authorityService" />
+	</bean>
+
+	<bean id="workflowMirrorBehaviour" class="ru.citeck.ecos.workflow.mirror.MirrorBehaviour" init-method="init">
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="nodeService" ref="nodeService" />
+	</bean>
+
+	<bean id="mirrorTasksBehaviour" parent="CopyDocumentIgnoreFieldBehaviour">
+		<property name="className" value="wfm:mirrorTasks" />
+		<property name="ignoredAssociations">
+			<list>
+				<value>wfm_mirrorTask</value>
+			</list>
+		</property>
+	</bean>
+
+    <bean id="mirror-task" class="ru.citeck.ecos.workflow.mirror.MirrorActionExecuter" parent="action-executer">
+        <property name="publicAction" value="false"/>
+        <property name="workflowMirrorService" ref="workflowMirrorService"/>
+    </bean>
+	
+</beans>

@@ -1,0 +1,11 @@
+.auto-number-field input
+{
+	display: inline-block;
+	width: 200px;
+	vertical-align: middle;
+}
+.auto-number-field .yui-button
+{
+	display: inline-block;
+	vertical-align: middle;
+}

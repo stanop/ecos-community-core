@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="journal:journalModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <description>Journals model</description>
+    <version>1.0</version>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/journals/1.0" prefix="journal"/>
+    </namespaces>
+    
+    <types>
+        <type name="journal:base">
+            <parent>dl:dataListItem</parent>
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="journal:journal">
+            <title>Journal</title>
+            <parent>journal:base</parent>
+            <properties>
+                <property name="journal:canImportExport">
+                    <title>Can Import Export</title>
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+            <associations>
+                <child-association name="journal:createVariants">
+                    <title>Create Variant</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>journal:createVariant</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>journal:hasCriteria</aspect>
+                <aspect>journal:journalType</aspect>
+            </mandatory-aspects>
+        </type>
+        <type name="journal:criterion">
+            <title>Criterion</title>
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="journal:fieldQName">
+                    <title>Field QName</title>
+                    <type>d:qname</type>
+                </property>
+                <property name="journal:predicate">
+                    <title>Predicate</title>
+                    <type>d:text</type>
+                </property>
+                <property name="journal:criterionValue">
+                    <title>Criterion Value</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+        <type name="journal:filter">
+            <title>Filter</title>
+            <parent>journal:base</parent>
+            <properties>
+                <property name="journal:showCount">
+                    <title>Show Count</title>
+                    <description>Show Total Count of objects, corresponding to this filter</description>
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>journal:hasCriteria</aspect>
+                <aspect>journal:journalTypes</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="journal:settings">
+            <title>Settings Item</title>
+            <parent>journal:base</parent>
+            <properties>
+                <property name="journal:visibleAttributes">
+                    <title>Visible attributes</title>
+                    <type>d:text</type>
+                    <multiple>true</multiple>
+                    <index enabled="false" />
+                </property>
+                <property name="journal:maxRows">
+                    <title>Max rows number on page</title>
+                    <type>d:int</type>
+                </property>
+                <property name="journal:groupByAttribute">
+                    <title>Group by this attribute</title>
+                    <type>d:text</type>
+                </property>
+                <property name="journal:sortByAttribute">
+                    <title>Order by this field</title>
+                    <type>d:text</type>
+                </property>
+                <property name="journal:sortByAsc">
+                    <title>Ascending order</title>
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>journal:journalTypes</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="journal:journalsList">
+            <title>List</title>
+            <parent>journal:base</parent>
+            <associations>
+               <association name="journal:journals">
+                   <title>Journals</title>
+                   <source>
+                       <mandatory>false</mandatory>
+                       <many>true</many>
+                   </source>
+                   <target>
+                       <class>journal:journal</class>
+                       <mandatory>false</mandatory>
+                       <many>true</many>
+                   </target>
+               </association>
+            </associations>
+        </type>
+
+        <type name="journal:createVariant">
+            <title>Variant of creating objects</title>
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="journal:type">
+                    <title>Type</title>
+                    <type>d:text</type>
+                </property>
+                <property name="journal:formId">
+                    <title>Form ID</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+               <association name="journal:destination">
+                   <title>Destination Folder</title>
+                   <source>
+                       <mandatory>false</mandatory>
+                       <many>true</many>
+                   </source>
+                   <target>
+                       <class>cm:folder</class>
+                       <mandatory>false</mandatory>
+                       <many>false</many>
+                   </target>
+               </association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+                <aspect>journal:default</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+    
+    <aspects>
+    
+        <aspect name="journal:default">
+            <properties>
+                <property name="journal:isDefault">
+                    <title>Is default</title>
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="journal:hasCriteria">
+            <associations>
+                <child-association name="journal:searchCriteria">
+                    <title>Search Criteria</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>journal:criterion</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="journal:journalType">
+            <properties>
+                <property name="journal:journalType">
+                    <title>Journal Type</title>
+                    <type>d:text</type>
+                    <mandatory enforced="true">true</mandatory>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="journal:journalTypes">
+            <properties>
+                <property name="journal:journalTypes">
+                    <title>Journal Types</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+    
+</model>

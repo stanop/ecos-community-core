@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="caseRoleService" class="ru.citeck.ecos.role.CaseRoleServiceImpl" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="NodeService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="caseRoleServiceJS" name="CaseRoleServiceJS" class="ru.citeck.ecos.role.CaseRoleServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="caseRoleService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="caseRoleService" ref="caseRoleService"/>
+    </bean>
+</beans>

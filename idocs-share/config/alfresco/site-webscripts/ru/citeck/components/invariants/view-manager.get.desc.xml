@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Node view manager</shortname>
+	<description>Manages view events</description>
+	<url>/citeck/components/node-view-mgr?key={key}&amp;submit={submit}&amp;cancel={cancel}</url>
+</webscript>

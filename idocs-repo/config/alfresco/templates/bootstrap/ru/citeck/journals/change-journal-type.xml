@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+    <view:reference view:pathref=".">
+        <view:properties>
+            <journal:type>${journal.type}</journal:type>
+        </view:properties>
+    </view:reference>
+
+</view:view>

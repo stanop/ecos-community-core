@@ -1,0 +1,45 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$resolve">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/resolve/submit-resolve-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfres:submitResolveTask">
+		<forms>
+			<form id="workflow-details">
+				<field-visibility>
+					<show id="packageItems" />
+				</field-visibility>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfres:resolveTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/resolve/resolve-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/resolve/resolve-task.ftl" />
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/resolve/resolve-task-inline.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfres:prepareTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/resolve/resolve-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/resolve/resolve-task.ftl" />
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/resolve/resolve-task-inline.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

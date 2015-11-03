@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="alfresco-module" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<property name="no-testing" value="true" />
+	<import file="../share-macros.xml" />
+	<path id="project.classpath">
+	</path>
+</project>

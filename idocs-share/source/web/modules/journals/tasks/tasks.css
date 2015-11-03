@@ -1,0 +1,31 @@
+.priority-high, .priority-medium, .priority-low
+{
+    display: block;
+    width: 16px;
+    height: 16px;
+}
+
+.priority-high
+{
+    background: url(priority-high-16.png);
+}
+.priority-medium
+{
+    background: url(priority-medium-16.png);
+}
+.priority-low
+{
+    background: url(priority-low-16.png);
+}
+
+.yui-dt-col-attributesbpmpriority
+{
+    width: 20px;
+}
+
+th.yui-dt-col-attributesbpmpriority .yui-dt-label
+{
+    display: inline-block;
+    overflow: hidden;
+    width: 0px;
+}

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="caseTaskService" class="ru.citeck.ecos.task.CaseTaskServiceImpl" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="NodeService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+        <property name="workflowService" ref="WorkflowService"/>
+        <property name="criteriaSearchService" ref="criteriaSearchService"/>
+    </bean>
+
+    <bean id="caseTaskServiceJS" name="CaseTaskServiceJS" class="ru.citeck.ecos.task.CaseTaskServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="caseTaskService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="caseTaskService" ref="caseTaskService"/>
+    </bean>
+</beans>

@@ -1,0 +1,222 @@
+.form-field.route table {
+  width: 100%;
+}
+
+.form-field.route table.stages th {
+  padding: 10px 0;
+}
+
+.form-field.route table.stages tbody.stage > tr > td:not(:last-child) {
+  padding: 0 10px 0 0;
+  vertical-align: top;
+  width: 250px;
+}
+
+.form-field.route table.stages tbody.stage tr.stage-managment td {
+  padding-bottom: 10px;
+  text-align: right;
+}
+
+.form-field.route table.stages .stage select {
+  width: 100%;
+}
+
+.form-field.route table.stages .stage .separator > td > div {
+  height: 1px;
+  width: 100%;
+  background-color: #ccc;
+  margin: 10px 0;
+}
+
+.form-field.route table.stages .stage-participants .yui-button {
+  float: left;
+}
+
+
+
+.form-field.route.view table.stages tr.stage td {
+  vertical-align: top;
+  padding: 5px 0;
+}
+
+.form-field.route.view table.stages thead th {
+  border-bottom: 2px solid #ccc;
+}
+
+    
+/* time */
+
+.form-field.route .stage-time .time-title {
+  float: left;
+  margin-top: 8px;
+}
+
+.form-field.route .stage-time .time-control {
+  float: right;
+}
+
+.form-field.route .stage-time .time-control input.time,
+.form-field.route .stage-time .time-control select.time-type {
+  float: none;
+  position: initial;
+}
+
+.form-field.route .stage-time .time-control input.time {
+  width: 50px;
+  margin-right: 10px;
+}
+
+.form-field.route .stage-time .time-control select.time-type {
+  width: 100px;
+}
+
+
+/* buttons */
+
+.form-field.route .buttons:first-child {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.form-field.route .buttons > span.yui-button {
+  margin-right: 10px;
+}
+
+
+
+
+/* SELECT PICKER */
+
+.select-picker-box {
+  position: relative;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  clear: both;
+  float: left;
+}
+
+.select-picker-box a.select-picker-link {
+  border: 1px solid #ccc;
+  padding: 5px;
+  background-color: white;
+  color: #aaa;
+  display: block;
+  line-height: normal;
+  width: 300px;
+  position: relative;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.select-picker-box a.select-picker-link.selected {
+  color: #333;
+}
+
+.select-picker-box a.select-picker-link.disabled {
+  border-color: #ccc !important;
+  cursor: default;
+}
+
+.select-picker-box a.select-picker-link .twister {
+  width: 20px;
+  height: 28px;
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  background-image: url(images/twister-close.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.select-picker-box a.select-picker-link.open .twister {
+    background-image: url(images/twister-open.png)
+}
+
+.select-picker-box a.select-picker-link.disabled .twister {
+  background-image: url(images/twister-close-disabled.png)
+}
+
+.select-picker-box .select-picker-dropdown-list {
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 300px;
+  border-top: none;
+  position: absolute;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-search-box {
+  padding: 7px 7px 0 7px;
+  overflow: hidden;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-search-box input.select-picker-search {
+  background-color: #f0f0f0 !important;
+  font-weight: normal !important;
+  width: 100%;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-search-box .select-picker-search-icon {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background-color: #f0f0f0;
+  background-image: url(images/search.png);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree {
+  padding: 7px;
+  background-color: white;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvcell {
+  padding: 2px 0;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvdepthcell,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtn,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvln {
+  width: 15px;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtp,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvlp,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtph,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvlph {
+   background-image: url(images/yui-twister-close.png);
+   background-position: center;
+   background-repeat: no-repeat;
+   width: 10px;
+}
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtm,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvlm,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtmh,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvlmh {
+   background-image: url(images/yui-twister-open.png);
+   background-position: center;
+   background-repeat: no-repeat;
+   width: 10px;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtable:not(.selectable) .ygtvcontent span.ygtvlabel {
+    cursor: default;
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvtable.selectable .ygtvcontent span.ygtvlabel:hover {
+    color: red;
+    cursor: pointer;  
+}
+
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvfocus,
+.select-picker-box .select-picker-dropdown-list .select-picker-tree .ygtvfocus .ygtvlabel {
+  background-color: transparent;
+}

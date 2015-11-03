@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>installed modules info</shortname>
+    <description>Returns info about installed modules</description>
+    <url>/modules/info</url>
+    <format default="json"/>
+</webscript>

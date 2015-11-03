@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfca:contractor-approval" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/workflow/contractor-approval/1.0" prefix="wfca" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="wfca:approveOutcomeOptions" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Approved</value>
+					<value>Declined</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+
+		<type name="wfca:submitApproveTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>wfca:approvalAgent</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfca:approveTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/contractor-approval/1.0}approveOutcome</default>
+				</property>
+				<property name="bpm:packageActionGroup">
+					<default></default>
+				</property>
+				<property name="bpm:comment">
+					<constraints>
+						<constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+							<parameter name="condition"><value>prop_wfca_approveOutcome == 'Declined'</value></parameter>
+						</constraint>
+					</constraints>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfca:approveOutcome</aspect>
+				<aspect>wfca:options</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+				<aspect>cwf:versionLabelDocument</aspect>
+			</mandatory-aspects>
+		</type>
+
+
+	</types>
+	<aspects>
+	
+		<aspect name="wfca:approvalAgent">
+			<associations>
+				<association name="wfca:approvalAgent">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+		
+		<aspect name="wfca:approveOutcome">
+			<properties>
+				<property name="wfca:approveOutcome">
+					<type>d:text</type>
+					<default>Declined</default>
+					<constraints>
+						<constraint ref="wfca:approveOutcomeOptions" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="wfca:options">
+		</aspect>
+		
+	</aspects>
+</model>

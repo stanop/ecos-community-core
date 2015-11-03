@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>dynamic-tree-picker</shortname>
+	<description>It returns dynamic tree picker HTML</description>
+	<url>/citeck/components/dynamic-tree-picker</url>
+</webscript>

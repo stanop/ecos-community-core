@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>document-journal</shortname>
+  <description>document-journal</description>
+  <url>/citeck/components/document-journal</url>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

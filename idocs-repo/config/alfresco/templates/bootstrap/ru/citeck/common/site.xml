@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+  xmlns:sys="http://www.alfresco.org/model/system/1.0" 
+  xmlns:cm="http://www.alfresco.org/model/content/1.0" 
+  xmlns:st="http://www.alfresco.org/model/site/1.0" 
+  xmlns:dl="http://www.alfresco.org/model/datalist/1.0">
+  <st:site>
+    <view:aspects>
+      <sys:undeletable></sys:undeletable>
+    </view:aspects>
+    <view:acl view:inherit="${site.public}">
+      <view:ace view:access="ALLOWED">
+        <view:authority>GROUP_site_${site.id}_SiteManager</view:authority>
+        <view:permission>SiteManager</view:permission>
+      </view:ace>
+      <view:ace view:access="ALLOWED">
+        <view:authority>GROUP_site_${site.id}_SiteCollaborator</view:authority>
+        <view:permission>SiteCollaborator</view:permission>
+      </view:ace>
+      <view:ace view:access="ALLOWED">
+        <view:authority>GROUP_site_${site.id}_SiteContributor</view:authority>
+        <view:permission>SiteContributor</view:permission>
+      </view:ace>
+      <view:ace view:access="ALLOWED">
+        <view:authority>GROUP_site_${site.id}_SiteConsumer</view:authority>
+        <view:permission>SiteConsumer</view:permission>
+      </view:ace>
+      <view:ace view:access="ALLOWED">
+        <view:authority>GROUP_EVERYONE</view:authority>
+        <view:permission>ReadPermissions</view:permission>
+      </view:ace>
+    </view:acl>
+    <view:properties>
+      <cm:name>${site.id}</cm:name>
+      <cm:title>
+        <view:mlvalue view:locale="en_US">${site.title_en}</view:mlvalue>
+        <view:mlvalue view:locale="ru_RU">${site.title_ru}</view:mlvalue>
+      </cm:title>
+      <cm:description>${site.description}</cm:description>
+      <st:sitePreset>${site.preset}</st:sitePreset>
+      <st:siteVisibility>${site.visibility}</st:siteVisibility>
+    </view:properties>
+    <view:associations>
+      <cm:contains>
+        <cm:folder>
+          <view:aspects>
+            <st:siteContainer></st:siteContainer>
+          </view:aspects>
+          <view:properties>
+            <cm:name>documentLibrary</cm:name>
+            <st:componentId>documentLibrary</st:componentId>
+            <cm:description>
+              <view:mlvalue view:locale="en">Document Library</view:mlvalue>
+            </cm:description>
+          </view:properties>
+        </cm:folder>
+        <cm:folder>
+          <view:aspects>
+            <st:siteContainer></st:siteContainer>
+          </view:aspects>
+          <view:properties>
+            <cm:name>dataLists</cm:name>
+            <st:componentId>dataLists</st:componentId>
+            <cm:description>
+              <view:mlvalue view:locale="en">Data Lists</view:mlvalue>
+            </cm:description>
+          </view:properties>
+        </cm:folder>
+      </cm:contains>
+    </view:associations>
+  </st:site>
+  
+  <view:reference view:pathref="/${system.system_container.childname}/${system.authorities_container.childname}">
+    <view:associations>
+      <sys:children>
+        <cm:authorityContainer view:childName="cm:GROUP_site_${site.id}_SiteManager">
+          <view:properties>
+            <cm:authorityName>GROUP_site_${site.id}_SiteManager</cm:authorityName>
+            <cm:authorityDisplayName>site_${site.id}_SiteManager</cm:authorityDisplayName>
+          </view:properties>
+          <view:associations>
+            <cm:member>
+              <view:reference
+                view:pathref="/sys:system/sys:authorities/cm:GROUP_ALFRESCO_ADMINISTRATORS"
+                view:childName="cm:GROUP_ALFRESCO_ADMINISTRATORS" />
+            </cm:member>
+          </view:associations>
+        </cm:authorityContainer>
+        <cm:authorityContainer view:childName="cm:GROUP_site_${site.id}_SiteCollaborator">
+          <view:properties>
+            <cm:authorityName>GROUP_site_${site.id}_SiteCollaborator</cm:authorityName>
+            <cm:authorityDisplayName>site_${site.id}_SiteCollaborator</cm:authorityDisplayName>
+          </view:properties>
+        </cm:authorityContainer>
+        <cm:authorityContainer view:childName="cm:GROUP_site_${site.id}_SiteContributor">
+          <view:properties>
+            <cm:authorityName>GROUP_site_${site.id}_SiteContributor</cm:authorityName>
+            <cm:authorityDisplayName>site_${site.id}_SiteContributor</cm:authorityDisplayName>
+          </view:properties>
+        </cm:authorityContainer>
+        <cm:authorityContainer view:childName="cm:GROUP_site_${site.id}_SiteConsumer">
+          <view:properties>
+            <cm:authorityName>GROUP_site_${site.id}_SiteConsumer</cm:authorityName>
+            <cm:authorityDisplayName>site_${site.id}_SiteConsumer</cm:authorityDisplayName>
+          </view:properties>
+        </cm:authorityContainer>
+        <cm:authorityContainer view:childName="cm:GROUP_site_${site.id}">
+          <view:properties>
+            <cm:authorityName>GROUP_site_${site.id}</cm:authorityName>
+            <cm:authorityDisplayName>site_${site.id}</cm:authorityDisplayName>
+          </view:properties>
+          <view:associations>
+            <cm:member>
+              <view:reference 
+                view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteManager"
+                view:childName="cm:GROUP_site_${site.id}_SiteManager" />
+              <view:reference 
+                view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteCollaborator"
+                view:childName="cm:GROUP_site_${site.id}_SiteCollaborator" />
+              <view:reference 
+                view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteContributor"
+                view:childName="cm:GROUP_site_${site.id}_SiteContributor" />
+              <view:reference 
+                view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteConsumer"
+                view:childName="cm:GROUP_site_${site.id}_SiteConsumer" />
+            </cm:member>
+          </view:associations>
+        </cm:authorityContainer>
+      </sys:children>
+    </view:associations>
+  </view:reference>
+
+  <view:reference view:pathref="/${system.system_container.childname}/${system.zones_container.childname}/cm:AUTH.ALF">
+    <view:associations>
+      <cm:inZone>
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteManager"
+          view:childName="cm:GROUP_site_${site.id}_SiteManager" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteCollaborator"
+          view:childName="cm:GROUP_site_${site.id}_SiteCollaborator" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteContributor"
+          view:childName="cm:GROUP_site_${site.id}_SiteContributor" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteConsumer"
+          view:childName="cm:GROUP_site_${site.id}_SiteConsumer" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}"
+          view:childName="cm:GROUP_site_${site.id}" />
+      </cm:inZone>
+    </view:associations>
+  </view:reference>
+
+  <view:reference view:pathref="/${system.system_container.childname}/${system.zones_container.childname}/cm:APP.SHARE">
+    <view:associations>
+      <cm:inZone>
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteManager"
+          view:childName="cm:GROUP_site_${site.id}_SiteManager" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteCollaborator"
+          view:childName="cm:GROUP_site_${site.id}_SiteCollaborator" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteContributor"
+          view:childName="cm:GROUP_site_${site.id}_SiteContributor" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}_SiteConsumer"
+          view:childName="cm:GROUP_site_${site.id}_SiteConsumer" />
+        <view:reference 
+          view:pathref="/sys:system/sys:authorities/cm:GROUP_site_${site.id}"
+          view:childName="cm:GROUP_site_${site.id}" />
+      </cm:inZone>
+    </view:associations>
+  </view:reference>
+
+</view:view>

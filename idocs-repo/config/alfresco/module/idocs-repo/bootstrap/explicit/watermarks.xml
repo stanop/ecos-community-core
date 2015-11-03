@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0" xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0">
+
+	<cm:folder view:childName="cm:watermarks">
+        <view:properties>
+            <sys:node-uuid>idocs-watermarks</sys:node-uuid>
+			<cm:name>watermarks</cm:name>
+        </view:properties>
+		<view:associations>
+			<cm:contains>
+				<cm:content view:childName="cm:final.pdf">
+					<view:properties>
+						<sys:node-uuid>idocs-watermark-final</sys:node-uuid>
+						<cm:name>final.pdf</cm:name>
+						<cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit/watermarks/final.pdf|mimetype=application/pdf|encoding=UTF-8</cm:content>
+					</view:properties>
+				</cm:content>
+				<cm:content view:childName="cm:draft.pdf">
+					<view:properties>
+						<sys:node-uuid>idocs-watermark-draft</sys:node-uuid>
+						<cm:name>draft.pdf</cm:name>
+						<cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit/watermarks/draft.pdf|mimetype=application/pdf|encoding=UTF-8</cm:content>
+					</view:properties>
+				</cm:content>
+			</cm:contains>
+		</view:associations>
+	</cm:folder>
+
+</view:view>

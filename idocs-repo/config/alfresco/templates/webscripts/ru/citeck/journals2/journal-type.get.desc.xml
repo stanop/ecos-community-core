@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Journal type</shortname>
+    <description>Journal type configuration</description>
+    <url>/api/journals/types/{journalTypeId}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction readonly="true">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

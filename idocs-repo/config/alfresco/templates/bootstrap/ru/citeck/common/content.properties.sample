@@ -1,0 +1,4 @@
+content.name=filename.ext
+content.path=alfresco/path/to/filename.ext
+content.mimetype=text/plain
+content.encoding=UTF-8

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>document-versions-comparison</region-id>
+    <url>/citeck/components/document-versions-comparison</url>
+    <properties>
+        <nodeRef>{nodeRef}</nodeRef>
+    </properties>
+</component>

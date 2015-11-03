@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<lifecycle
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.citeck.ru/lifecycle/1.0'
+        xsi:schemaLocation='http://www.citeck.ru/lifecycle/1.0 lifecycle.xsd'>
+    <transition>
+        <fromState>start</fromState>
+        <event type="auto"/>
+        <toState>waitUserActionState</toState>
+    </transition>
+    <transition>
+        <fromState>waitUserActionState</fromState>
+        <event type="user">
+            <param name="actionName">Ознакомлен</param>
+        </event>
+        <toState>unreachableState</toState>
+    </transition>
+    <transition>
+        <fromState>waitUserActionState</fromState>
+        <event type="user">
+            <param name="actionName">Переадресовано</param>
+        </event>
+        <toState>endState</toState>
+    </transition>
+    <transition>
+        <fromState>waitUserActionState</fromState>
+        <event type="user">
+            <param name="actionName">Отклонено</param>
+        </event>
+        <toState>unreachableState</toState>
+    </transition>
+    <transition>
+        <fromState>waitUserActionState</fromState>
+        <event type="processStart">
+            <param name="workflowId">activiti$familiarization</param>
+        </event>
+        <toState>unreachableState</toState>
+    </transition>
+</lifecycle>

@@ -1,0 +1,19 @@
+.passports-table table 
+{
+    width: 100%;
+}
+
+.passports-disclaimer
+{
+	font-style: italic;
+}
+
+.passports-vaildation
+{
+	font-style: italic;
+}
+
+.passports-table .yui-dt-col-actions .yui-button
+{
+	display: block;
+}

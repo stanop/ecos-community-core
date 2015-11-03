@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>document-clipboard-capture</shortname>
+    <description>Capture property to clipboard</description>
+    <url>/citeck/components/document-clipboard-capture</url>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

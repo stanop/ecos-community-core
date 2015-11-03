@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<bean id="CardletService" class="ru.citeck.ecos.cardlet.CardletServiceImpl">
+        <property name="nodeService" ref="NodeService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="authorityService" ref="AuthorityService"/>
+        <property name="searchService" ref="SearchService"/>
+        <property name="scriptService" ref="ScriptService"/>
+        <property name="scriptEngine" value="javascript"/>
+        <property name="repositoryHelper" ref="repositoryHelper"/>
+	</bean>
+	
+	<bean id="CardletServiceJS" class="ru.citeck.ecos.cardlet.CardletServiceJS" 
+			parent="baseJavaScriptExtension">
+		<constructor-arg ref="CardletService" />
+		<property name="extensionName" value="cardlets" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Save user journal settings</shortname>
+    <description>Save user journal settings</description>
+    <url>/api/journals/settings-save</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

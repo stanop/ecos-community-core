@@ -1,0 +1,35 @@
+.journals-picker .toolbar-menu.filter .panel-body
+{
+	overflow-y: auto;
+}
+
+.journals-picker .toolbar-menu.create .form-container
+{
+	background-color: transparent;
+}
+.journals-picker .toolbar-menu.create .form-fields
+{
+	max-height: 400px;
+	overflow-x: auto;
+}
+.journals-picker .toolbar-menu.create .form-fields .help-icon,
+.journals-picker .toolbar-menu.create .form-fields .help-text
+{
+	display: none;
+}
+
+.journals-picker .panel.selected-items .item .name
+{
+	vertical-align: middle;
+}
+
+.journals-picker .panel.selected-items .item .remove
+{
+	vertical-align: middle;
+	background: 50% 50% url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkExM0RDREM1OUU4NzExRTE4QzEzQkZENzY0MEM0NkEzIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkExM0RDREM2OUU4NzExRTE4QzEzQkZENzY0MEM0NkEzIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QTEzRENEQzM5RTg3MTFFMThDMTNCRkQ3NjQwQzQ2QTMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QTEzRENEQzQ5RTg3MTFFMThDMTNCRkQ3NjQwQzQ2QTMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6sNSD7AAABJ0lEQVR42kSQvU4CURCFvwuLQUVZEGN4AKMVrY2VjQWJL4Dxt7Ay8VFM9C2sfABDYsUbiBTLooDEtaZYWMbDbow3OTNzZ87MnHuxKDI7vTBrnZuFoemQIlB8dGzWPDFrt80tSRSLpGcygcd7WCi+vIJKBapVCPp4xDF4HvhlWC/B9Q3MlCv7yokYBPA5wlm3Z9zeibQGtS1ING6RyAuDUKQveH4ix96u40HrviOIVey+w5swV9z/SEk0Gs5Lta0UZExTZlorJPPMF3KqZfqdBX2jdQalDYmXzkQNi3m2fjiCUFNfX0Q8ODRKeoQv4nAMIxWnU9ipQ307IwY9vXrZbUmWGEv4eODSXd6q8SPd/qYueXE6HbP9hlmt/v/Zf3BONp9++K8AAwBmzJu/SWvGUQAAAABJRU5ErkJggg==) no-repeat;
+	display: inline-block;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	padding: 4px;
+}

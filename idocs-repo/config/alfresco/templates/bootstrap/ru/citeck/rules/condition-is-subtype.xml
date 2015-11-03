@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:act="http://www.alfresco.org/model/action/1.0">
+	<act:actioncondition view:childName="act:conditions">
+		<view:properties>
+			<act:definitionName>is-subtype</act:definitionName>
+			<act:invert>${condition.invert}</act:invert>
+		</view:properties>
+		<view:associations>
+			<act:parameters>
+				<act:actionparameter view:childName="act:parameters">
+					<view:properties>
+						<act:parameterName>type</act:parameterName>
+						<act:parameterValue>
+							<view:value view:datatype="d:qname">${condition.type}</view:value>
+						</act:parameterValue>
+					</view:properties>
+				</act:actionparameter>
+			</act:parameters>
+		</view:associations>
+	</act:actioncondition>
+</view:view>

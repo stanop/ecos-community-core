@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Node Owner</shortname>
+    <url>/node/owner/{type}?nodeRef={nodeRef}&amp;owner={owner}</url>
+    <url>/node/owner/{type}?nodeRef={nodeRef}&amp;</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction >required</transaction>
+</webscript>

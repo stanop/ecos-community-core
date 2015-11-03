@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+	</imports>
+
+	<view class="cm:category" id="type-kind">
+		<field prop="cm:name" />
+		<field prop="tk:appliedType" />
+		<field prop="tk:appliedAspects" />
+	</view>
+	
+	<view class="cm:content" id="type-kind">
+		<field prop="cm:name" />
+		<field prop="tk:type" />
+		<field prop="tk:kind" />
+	</view>
+	
+</views>

@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>ecosConfig</shortname>
+    <description>get ecos config value</description>
+    <url>/citeck/ecosConfig/ecos-config-value?configName={configName}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly" buffersize="0">required</transaction>
+</webscript>

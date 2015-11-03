@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Delete Journal Settings</shortname>
+    <description>Delete Journal Settings</description>
+    <url>/api/journals/settings?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
+

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfsgn:signworkflow" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/workflow/sign/1.0" prefix="wfsgn" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="wfsgn:signOutcomeOptions" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Signed</value>
+					<value>Declined</value>
+					<value>ToConfirm</value>
+					<value>ToCorrect</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+
+		<type name="wfsgn:submitSignTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>wfsgn:signer</aspect>
+				<aspect>cwf:sendNotification</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfsgn:signTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/sign/1.0}signOutcome</default>
+				</property>
+				<property name="bpm:packageActionGroup">
+					<default></default>
+				</property>
+				<property name="bpm:comment">
+					<constraints>
+						<constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+							<parameter name="condition"><value>prop_wfsgn_signOutcome == 'Declined' || prop_wfsgn_signOutcome == 'ToCorrect'</value></parameter>
+						</constraint>
+					</constraints>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfsgn:signOutcome</aspect>
+				<aspect>wfsgn:options</aspect>
+				<aspect>wfsgn:confirmers</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+                <aspect>cwf:assignDate</aspect>
+				<aspect>wfsgn:confirmDueDate</aspect>
+			</mandatory-aspects>
+		</type>
+
+
+	</types>
+	<aspects>
+	
+		<aspect name="wfsgn:signer">
+			<associations>
+				<association name="wfsgn:signer">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+                <association name="wfsgn:signerGroup">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+			</associations>
+		</aspect>
+		
+		<aspect name="wfsgn:signOutcome">
+			<properties>
+				<property name="wfsgn:signOutcome">
+					<type>d:text</type>
+					<default>Declined</default>
+					<constraints>
+						<constraint ref="wfsgn:signOutcomeOptions" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="wfsgn:options">
+			<properties>
+				<property name="wfsgn:canReturnToConfirm">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+				<property name="wfsgn:canReturnToCorrect">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="wfsgn:confirmers">
+			<associations>
+				<association name="wfsgn:confirmers">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="wfsgn:confirmDueDate">
+			<properties>
+				<property name="wfsgn:dueDate">
+					<type>d:date</type>
+				</property>
+			</properties>
+		</aspect>
+		
+	</aspects>
+</model>

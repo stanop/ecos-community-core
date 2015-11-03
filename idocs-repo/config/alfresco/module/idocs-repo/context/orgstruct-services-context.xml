@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<!-- - - - - - - - - - -->
+	<!-- org struct beans  -->
+	<!-- - - - - - - - - - -->
+	
+	<!-- abstract group sub-type DAO -->
+	<bean id="GroupSubTypeDAO" class="ru.citeck.ecos.orgstruct.GroupSubTypeDAOImpl" abstract="true">
+		<property name="nodeService" ref="dbNodeService" />
+		<property name="typeName" value="{http://www.alfresco.org/model/content/1.0}cmobject" />
+		<property name="assocName" value="{http://www.alfresco.org/model/content/1.0}contains" />
+	</bean>
+	
+	<!-- branch sub-type DAO -->
+	<bean id="OrgBranchTypeDAO" parent="GroupSubTypeDAO">
+		<property name="aspectName" value="{http://www.citeck.ru/model/orgstruct/1.0}branchType" />
+		<property name="rootNode" value="workspace://SpacesStore/org-struct-branch-types-root" />
+	</bean>
+
+	<!-- role sub-type DAO -->
+	<bean id="OrgRoleTypeDAO" parent="GroupSubTypeDAO">
+		<property name="aspectName" value="{http://www.citeck.ru/model/orgstruct/1.0}roleType" />
+		<property name="rootNode" value="workspace://SpacesStore/org-struct-role-types-root" />
+	</bean>
+
+	<!-- org meta service (private) -->
+	<bean id="orgMetaService" class="ru.citeck.ecos.orgstruct.OrgMetaServiceImpl">
+		<property name="components">
+			<map>
+				<entry key="branch" value-ref="OrgBranchTypeDAO" />
+				<entry key="role" value-ref="OrgRoleTypeDAO" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- org meta service (public) -->
+	<bean id="OrgMetaService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>ru.citeck.ecos.orgstruct.OrgMetaService</value>
+			</list>
+		</property>
+		<property name="target" ref="orgMetaService" />
+		<property name="interceptorNames">
+			<list>
+				<idref bean="OrgMetaService_transaction"/>
+				<idref bean="AuditMethodInterceptor" />
+				<idref bean="exceptionTranslator" />
+				<idref bean="OrgMetaService_security"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="OrgMetaService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- TODO define OrgMetaService security -->
+	<bean id="OrgMetaService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+	
+	<!-- org meta service js interface -->
+	<bean id="OrgMetaServiceJS" class="ru.citeck.ecos.orgstruct.OrgMetaServiceJSImpl"  parent="baseJavaScriptExtension">
+		<property name="extensionName" value="orgmeta" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="orgMetaService" ref="OrgMetaService" />
+	</bean>
+
+	<!-- abstract typed group DAO -->
+	<bean id="TypedGroupDAO" class="ru.citeck.ecos.orgstruct.TypedGroupDAOImpl" abstract="true" init-method="init">
+		<property name="nodeService" ref="dbNodeService" />
+		<property name="namespaceService" ref="namespaceService" />
+		<property name="authorityService" ref="authorityService" />
+	</bean>
+	
+	<!-- branch DAO -->
+	<bean id="OrgBranchDAO" parent="TypedGroupDAO">
+		<property name="subTypeDAO" ref="OrgBranchTypeDAO" />
+		<property name="aspectName" value="{http://www.citeck.ru/model/orgstruct/1.0}branch" />
+		<property name="propertyName" value="{http://www.citeck.ru/model/orgstruct/1.0}branchType" />
+	</bean>
+	
+	<!-- role DAO -->
+	<bean id="OrgRoleDAO" parent="TypedGroupDAO">
+		<property name="subTypeDAO" ref="OrgRoleTypeDAO" />
+		<property name="aspectName" value="{http://www.citeck.ru/model/orgstruct/1.0}role" />
+		<property name="propertyName" value="{http://www.citeck.ru/model/orgstruct/1.0}roleType" />
+	</bean>
+	
+	<!-- org struct service (private) -->
+	<bean id="orgStructService" class="ru.citeck.ecos.orgstruct.OrgStructServiceImpl">
+		<property name="authorityService" ref="authorityService" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="orgMetaService" ref="orgMetaService" />
+		<property name="components">
+			<map>
+				<entry key="branch" value-ref="OrgBranchDAO" />
+				<entry key="role" value-ref="OrgRoleDAO" />
+			</map>
+		</property>
+	</bean>
+	
+	<!-- org struct service (public) -->
+	<bean id="OrgStructService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>ru.citeck.ecos.orgstruct.OrgStructService</value>
+			</list>
+		</property>
+		<property name="target" ref="orgStructService" />
+		<property name="interceptorNames">
+			<list>
+				<idref bean="OrgStructService_transaction"/>
+				<idref bean="AuditMethodInterceptor" />
+				<idref bean="exceptionTranslator" />
+				<idref bean="OrgStructService_security"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="OrgStructService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- TODO define OrgStructService security -->
+	<bean id="OrgStructService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+	
+	<!-- org struct service js interface -->
+	<bean id="OrgStructServiceJS" class="ru.citeck.ecos.orgstruct.OrgStructServiceJSImpl"  parent="baseJavaScriptExtension">
+		<property name="extensionName" value="orgstruct" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="orgStructService" ref="OrgStructService" />
+	</bean>
+	
+	<!-- org struct service ftl interface -->
+	<bean id="OrgStructServiceFTL" 
+			class="ru.citeck.ecos.orgstruct.OrgStructServiceFTLImpl" 
+			parent="baseTemplateImplementation">
+		<property name="extensionName" value="orgstruct" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="orgStructService" ref="OrgStructService" />
+	</bean>
+
+</beans>

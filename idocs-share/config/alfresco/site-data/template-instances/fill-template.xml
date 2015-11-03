@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template-instance>
+	<template-type>org/alfresco/edit-metadata</template-type>
+	<components>
+
+		<!-- Title -->
+		<component>
+			<region-id>title</region-id>
+			<url>/components/title/simple-title</url>
+			<properties>
+				<title>title.fill-template</title>
+			</properties>
+		</component>
+
+		<!-- Edit Metadata Form Manager -->
+		<component>
+			<region-id>edit-metadata-mgr</region-id>
+			<url>/components/edit-metadata/edit-metadata-mgr</url>
+		</component>
+
+		<!-- Edit Metadata Form -->
+		<component>
+			<region-id>edit-metadata</region-id>
+			<url>/components/form</url>
+			<properties>
+				<itemKind>node</itemKind>
+				<itemId>{nodeRef}</itemId>
+				<formId>template</formId>
+				<mode>edit</mode>
+				<submitType>json</submitType>
+				<showCaption>true</showCaption>
+				<showCancelButton>true</showCancelButton>
+			</properties>
+		</component>
+
+	</components>
+</template-instance>

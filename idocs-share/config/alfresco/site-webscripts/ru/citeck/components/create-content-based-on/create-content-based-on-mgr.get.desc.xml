@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>create-content-based-on-mgr</shortname>
+    <description>Create Content based on, Manager Component</description>
+    <url>/components/create-content-based-on/create-content-based-on-mgr?itemId={itemId}</url>
+</webscript>

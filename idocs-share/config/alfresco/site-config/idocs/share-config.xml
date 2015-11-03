@@ -1,0 +1,187 @@
+<alfresco-config>
+
+	<config>
+		<forms>
+			<dependencies>
+				<css src="/citeck/components/form/form-custom.css" />
+				<css src="/yui/fonts/fonts.css" />
+				<css src="/yui/datatable/assets/skins/sam/datatable.css" />
+				<js src="/modules/simple-dialog.js" />
+				<js src="/yui/yahoo-dom-event/yahoo-dom-event.js" />
+				<js src="/yui/element/element.js" />
+				<js src="/yui/cookie/cookie.js" />
+				<js src="/yui/datasource/datasource.js" />
+				<js src="/yui/datatable/datatable.js" />
+				<js src="/citeck/components/related-workflows/related-workflows-form-validation.js" />
+				<js src="/jquery/jquery-1.6.2-min.js" />
+				<js src="/lib/jquery.simulate.js" />
+
+				<js src="/lib/grouped-datatable.js" />
+
+				<js src="/citeck/components/dynamic-tree/cell-formatters.js" />
+
+				<!-- utilities -->
+				<js src="/citeck/components/dynamic-tree/error-manager.js" />
+
+				<css src="/citeck/components/form/citeck-object-finder.css" />
+				<js src="/citeck/components/form/citeck-object-finder.js" />
+				<js src="/citeck/components/form/controls/number-richsearch.js" />
+				<js src="/citeck/components/form/controls/text-richsearch.js" />
+				<js src="/citeck/components/form/controls/boolean-richsearch.js" />
+				<js src="/citeck/components/form/controls/select-richsearch.js" />
+				<js src="/citeck/components/form/controls/number-field.js" />
+				<js src="/citeck/components/form/controls/js-variable-value.js" />
+				<js src="/citeck/components/form/controls/groupable.js" />
+				<css src="/citeck/components/form/controls/groupable.css" />
+				<js src="/citeck/components/form/controls/auto-number.js" />
+				<css src="/citeck/components/form/controls/auto-number.css" />
+				<js src="/citeck/components/form/controls/auto-manual.js" />
+				<css src="/citeck/components/form/controls/auto-manual.css" />
+				<js src="/citeck/components/form/multipart-form-support.js" />
+				<js src="/citeck/components/form/selectWithEdit.js" />
+				<js src="/citeck/components/form/constraints.js" />
+				<js src="/components/form/date-range.js" />
+				<js src="/citeck/components/form/select.js" />
+				<css src="/citeck/components/form/select.css" />
+				<css src="/citeck/components/form/setselect.css" />
+				<css src="/citeck/components/form/controls/passports.css" />
+				<css src="/citeck/components/form/controls/img-preview.css" />
+
+				<js src="/citeck/components/form/controls/types-and-kinds.js" />
+				<css src="/citeck/components/form/controls/types-and-kinds.css" />
+
+				<js src="/citeck/components/form/controls/route.js" />
+				<css src="/citeck/components/form/controls/route.css" />
+
+				<!-- dynamic tree picker -->
+				<js src="/citeck/components/dynamic-tree/hierarchy-model.js" />
+				<js src="/citeck/components/dynamic-tree/has-buttons.js" />
+				<js src="/citeck/components/dynamic-tree/dynamic-tree.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-tree.css" />
+				<js src="/citeck/components/dynamic-tree/dynamic-tree-picker.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-tree-picker.css" />
+				<js src="/citeck/components/dynamic-tree/upload-picker.js" />
+				<js src="/citeck/components/dynamic-tree/doclib-picker.js" />
+				<css src="/citeck/components/orgstruct/orgstruct-icons.css" />
+				<js src="/citeck/components/dynamic-tree/dynamic-doclib-table.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-doclib-table.css" />
+				<js src="/citeck/components/dynamic-tree/dynamic-table.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-table.css" />
+
+				<js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
+	            <js src="/yui/resize/resize.js" />
+				
+				<css src="/citeck/components/journals2/journals.css" />
+				<js src="/citeck/components/dynamic-tree/criteria-model.js" />
+			</dependencies>
+			<constraint-handlers>
+				<constraint
+					type="ru.citeck.alfresco.acm.constraints.common.MandatoryIfConstraint"
+					validation-handler="Alfresco.forms.validation.mandatoryIf" />
+				<constraint
+					type="ru.citeck.alfresco.acm.constraints.common.BooleanValueConstraint"
+					validation-handler="Alfresco.forms.validation.booleanValue" />
+			</constraint-handlers>
+		</forms>
+	</config>
+    
+    <config evaluator="string-compare" condition="ShareHeader">
+        <page-titles>
+            <page id="create-content">
+                <title id="custom" template="create.content.header.{formId}.{itemId}" />
+                <title id="default" template="create.content.header.{itemId}" />
+            </page>
+            <page id="node-create-page">
+                <title id="custom" template="create.content.header.{viewId}.{type}" />
+                <title id="default" template="create.content.header.{type}" />
+            </page>
+            <page id="start-specified-workflow">
+                <title id="custom" template="workflow.start.{formId}.{workflowId}" />
+                <title id="default" template="workflow.start.{workflowId}" />
+            </page>
+        </page-titles>
+    </config>
+
+	<!-- Overdue tasks link menu -->
+	<config evaluator="string-compare" condition="SitePages">
+		<pages>
+			<page id="journals">journals2/list/main</page>
+		</pages>
+	</config>
+
+	<!-- Special pages -->
+	<config evaluator="string-compare" condition="UriTemplate">
+		<uri-templates>
+			<uri-template id="journals">/{pageid}/list/{listId}</uri-template>
+			<uri-template id="sitejournals" before="sitepage">/site/{site}/{pageid}/list/{listId}</uri-template>
+		</uri-templates>
+	</config>
+
+	<!-- Configurable site-presets -->
+	<config evaluator="string-compare" condition="SurfPresets">
+		<site-presets>
+			<preset id="document-site-dashboard" name="Сайт для управления документами" />
+			<preset id="file-site-dashboard" name="Сайт для хранения файлов" />
+		</site-presets>
+		<user-presets>
+			<preset id="user-dashboard" name="Стандартная домашняя страница пользователя" />
+			<preset id="manager-user-dashboard" name="Страница руководителя" />
+		</user-presets>
+	</config>
+
+	<!-- disable create documents on common journals by default -->
+	<config evaluator="string-compare" condition="DocsCreatePermissions">
+		<documentTypes>
+			<on-site-only />
+		</documentTypes>
+	</config>
+
+	<config evaluator="string-compare" condition="DocumentListDependencies">
+		<dependencies>
+			<js src="/components/documentlibrary/actions.js" />
+			<css src="/components/documentlibrary/actions.css" />
+			<js src="/modules/documentlibrary/doclib-actions.js" />
+			<js src="/components/documentlibrary/documentlist.js" />
+			<css src="/components/documentlibrary/documentlist.css" />
+			<js src="/components/documentlibrary/documentlist-view-detailed.js" />
+			<js src="/components/documentlibrary/documentlist-view-simple.js" />
+			<js src="/components/documentlibrary/documentlist-view-gallery.js" />
+			<js src="/components/documentlibrary/documentlist-view-filmstrip.js" />
+			<js src="/citeck/components/dynamic-tree/handy-doclist.js" />
+			<js src="/yui/slider/slider.js" />
+			<messages component="org/alfresco/components/documentlibrary/documentlist.get" scope="Alfresco.DocumentList" />
+		</dependencies>
+	</config>
+
+	<config evaluator="string-compare" condition="DocLibCustom">
+		<dependencies>
+			<css src="/citeck/components/documentlibrary/idocs-doclib-custom.css" />
+			<js src="/citeck/components/documentlibrary/custom-actions.js" />
+			<js src="/yui/resize/resize.js" />
+		</dependencies>
+	</config>
+
+	<config evaluator="string-compare" condition="TaskEditDependencies">
+		<dependencies>
+			<js src="/citeck/components/workflow/task-edit-header.js" />
+			<messages resource="alfresco.site-messages.idocs.task-edit-header" />
+		</dependencies>
+	</config>
+
+	<config evaluator="string-compare" condition="ChromeFixesDependencies">
+		<dependencies>
+			<css src="/modules/common/chrome-fix.css" />
+		</dependencies>
+	</config>
+
+	<!-- <config>
+		<forms>
+			<constraint-handlers>
+				<constraint
+					type="ru.citeck.alfresco.acm.constraints.dms.UniqueConstraint"
+					validation-handler="Alfresco.forms.validation.checkunique" event="keyup" />
+			</constraint-handlers>
+		</forms>
+	</config> -->
+
+</alfresco-config>

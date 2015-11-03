@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+	<config evaluator="model-type" condition="icase:keyPropConfig">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/icase/keyPropConfig.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="icase:keyPropConfig">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/icase/keyPropConfig.ftl" />
+				<view-form template="/ru/citeck/components/form/icase/keyPropConfig.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="icase:assocConfig">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/icase/assocConfig.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="icase:assocConfig">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/icase/assocConfig.ftl" />
+				<view-form template="/ru/citeck/components/form/icase/assocConfig.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="icase:categoryConfig">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/icase/categoryConfig.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="icase:categoryConfig">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/icase/categoryConfig.ftl" />
+				<view-form template="/ru/citeck/components/form/icase/categoryConfig.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

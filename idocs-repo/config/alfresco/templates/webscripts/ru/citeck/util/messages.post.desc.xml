@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Explicit messages get</shortname>
+	<description>Get localization for specified keys</description>
+	<url>/citeck/util/messages</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

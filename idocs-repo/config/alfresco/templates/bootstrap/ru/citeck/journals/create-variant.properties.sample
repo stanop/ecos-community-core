@@ -1,0 +1,15 @@
+# create variant name (should be unique within journal)
+create-variant.name=default
+
+# create variant title (that should user see)
+create-variant.title_en=Template
+create-variant.title_ru=Шаблон
+
+# create variant type (short qname)
+create-variant.type=cm:content
+
+# create variant formId (can be left blank, but should not be omitted)
+create-variant.form=
+
+# create variant destination in form of path
+create-variant.destination=/app:company_home/app:dictionary/app:node_templates

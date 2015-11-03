@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>get journals list</shortname>
+    <url>/api/journals/list?journalsList={journalsList}&amp;nodeRef={nodeRef?}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

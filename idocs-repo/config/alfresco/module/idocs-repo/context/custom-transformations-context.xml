@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+ 
+<beans>
+   
+   <!-- Import the ImageMagick transformer from the third party subsystem -->
+
+   <bean id="transformer.ImageTransform" class="org.alfresco.repo.content.transform.ProxyContentTransformer" parent="baseContentTransformer">
+      <property name="worker">
+         <ref bean="transformer.worker.ImageMagick" />
+      </property>
+      
+	  <property name="explicitTransformations">
+         <list>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>image/png</value></property>
+                <property name="targetMimetype"><value>image/tiff</value></property>
+            </bean>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>image/jpeg</value></property>
+                <property name="targetMimetype"><value>image/tiff</value></property>
+            </bean>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>image/gif</value></property>
+                <property name="targetMimetype"><value>image/tiff</value></property>
+            </bean>
+         </list>
+      </property>  
+   </bean>
+
+ <bean id="transformer.complex.Image.PDF"
+        class="org.alfresco.repo.content.transform.ComplexContentTransformer"
+        parent="baseContentTransformer" >
+      <property name="transformers">
+         <list>
+            <ref bean="transformer.ImageTransform" />
+            <ref bean="transformer.ImageTransform" />
+         </list>
+      </property>
+      <property name="intermediateMimetypes">
+         <list>
+            <value>image/tiff</value>
+         </list>
+      </property>
+      <property name="explicitTransformations">
+         <list>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>image/png</value></property>
+                <property name="targetMimetype"><value>application/pdf</value></property>
+            </bean>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>image/gif</value></property>
+                <property name="targetMimetype"><value>application/pdf</value></property>
+            </bean>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>image/jpeg</value></property>
+                <property name="targetMimetype"><value>application/pdf</value></property>
+            </bean>
+         </list>
+      </property>
+   </bean>
+   
+   <bean id="transformer.complex.MSG.PDF"
+        class="org.alfresco.repo.content.transform.ComplexContentTransformer"
+        parent="baseContentTransformer" >
+      <property name="transformers">
+         <list>
+            <ref bean="transformer.OutlookMsg"/>
+            <ref bean="transformer.OpenOffice.Html2Pdf"/>
+         </list>
+      </property>
+      <property name="intermediateMimetypes">
+         <list>
+            <value>text/html</value>
+         </list>
+      </property>
+      
+     <property name="explicitTransformations">
+         <list>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>application/vnd.ms-outlook</value></property>
+                <property name="targetMimetype"><value>application/pdf</value></property>
+            </bean>
+         </list>
+      </property>
+   </bean>
+   
+   <bean id="transformer.complex.Excel.SWF"
+        class="org.alfresco.repo.content.transform.ComplexContentTransformer"
+        parent="baseContentTransformer" >
+      <property name="transformers">
+         <list>
+            <ref bean="transformer.Pdf2swf" />
+            <ref bean="transformer.Pdf2swf" />
+         </list>
+      </property>
+      <property name="intermediateMimetypes">
+         <list>
+            <value>application/pdf</value>
+         </list>
+      </property>
+     <property name="explicitTransformations">
+         <list>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>application/vnd.ms-excel</value></property>
+                <property name="targetMimetype"><value>application/x-shockwave-flash</value></property>
+            </bean>
+         </list>
+      </property>
+   </bean>
+   <bean id="transformer.OpenOffice.Html2Pdf"
+        class="org.alfresco.repo.content.transform.ComplexContentTransformer"
+        parent="baseContentTransformer" >
+      <property name="transformers">
+         <list>
+            <ref bean="transformer.OpenOffice" />
+            <ref bean="transformer.OpenOffice" />
+         </list>
+      </property>
+      <property name="intermediateMimetypes">
+         <list>
+            <value>application/vnd.oasis.opendocument.text</value>
+         </list>
+      </property>
+      <property name="explicitTransformations">
+         <list>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>text/html</value></property>
+                <property name="targetMimetype"><value>application/pdf</value></property>
+            </bean>
+         </list>
+      </property>
+   </bean>
+   
+   <bean id="transformer.MSG.SWF"
+        class="org.alfresco.repo.content.transform.ComplexContentTransformer"
+        parent="baseContentTransformer" >
+      <property name="transformers">
+         <list>
+            <ref bean="transformer.complex.MSG.PDF" />
+            <ref bean="transformer.Pdf2swf" />
+         </list>
+      </property>
+      <property name="intermediateMimetypes">
+         <list>
+            <value>application/pdf</value>
+         </list>
+      </property>
+      <property name="explicitTransformations">
+         <list>
+            <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                <property name="sourceMimetype"><value>application/vnd.ms-outlook</value></property>
+                <property name="targetMimetype"><value>application/x-shockwave-flash</value></property>
+            </bean>
+         </list>
+      </property>
+   </bean>
+   
+    <bean id="openOfficeThreadInterceptor" class="ru.citeck.ecos.utils.TimeLimitedMethodInterceptor" >
+        <property name="timeoutMs" value="${openoffice.transformation.timeoutms}"/>
+    </bean>
+ 
+	<bean id="transformer.OpenOffice.advice"
+		class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+		<property name="mappedName" value="transform" />
+		<property name="advice" ref="openOfficeThreadInterceptor" />
+	</bean>
+   
+   <bean
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>transformer.OpenOffice</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>transformer.OpenOffice.advice</value>
+			</list>
+		</property>
+	</bean>
+
+    <bean id="transformer.MSOffice2Pdf"
+          class="ru.citeck.ecos.content.transform.MSOffice2PdfTransformer"
+          parent="baseContentTransformer"
+          abstract="true">
+    </bean>
+
+    <bean id="transformer.MSOffice2Swf"
+          class="ru.citeck.ecos.content.transform.MSOffice2SwfTransformer"
+          parent="baseComplexContentTransformer"
+          abstract="true">
+        <property name="intermediateMimetypes">
+            <list>
+                <value>application/pdf</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transformer.docx4j"
+          class="ru.citeck.ecos.content.transform.Docx4jTransformer"
+          parent="baseContentTransformer">
+        <property name="explicitTransformations">
+            <list>
+                <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                    <property name="sourceMimetype"><value>application/xhtml+xml</value></property>
+                    <property name="targetMimetype"><value>application/vnd.openxmlformats-officedocument.wordprocessingml.document</value></property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transformer.xhtml"
+          class="ru.citeck.ecos.content.transform.Html2XhtmlTransformer"
+          parent="baseContentTransformer">
+        <property name="explicitTransformations">
+            <list>
+                <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails" >
+                    <property name="sourceMimetype"><value>text/html</value></property>
+                    <property name="targetMimetype"><value>application/xhtml+xml</value></property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transformer.html2docx" parent="baseComplexContentTransformer">
+        <property name="intermediateMimetypes">
+            <list>
+                <value>application/xhtml+xml</value>
+            </list>
+        </property>
+        <property name="transformers">
+            <list>
+                <ref bean="transformer.xhtml"/>
+                <ref bean="transformer.docx4j"/>
+            </list>
+        </property>
+        <property name="explicitTransformations">
+            <list>
+                <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails">
+                    <property name="sourceMimetype">
+                        <value>text/html</value>
+                    </property>
+                    <property name="targetMimetype">
+                        <value>application/vnd.openxmlformats-officedocument.wordprocessingml.document</value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="supportedTransformations">
+            <list>
+                <bean class="org.alfresco.repo.content.transform.ExplictTransformationDetails">
+                    <property name="sourceMimetype">
+                        <value>text/html</value>
+                    </property>
+                    <property name="targetMimetype">
+                        <value>application/vnd.openxmlformats-officedocument.wordprocessingml.document</value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+</beans>

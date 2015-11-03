@@ -1,0 +1,418 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+    <modules>
+        <module>
+            <id>forms/form-uploaders</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.forms/form-uploaders</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>template</scope>
+                    <source-id>start-specified-workflow</source-id>
+                    <region-id>start-workflow</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>start-workflow</source-id>
+                    <region-id>start-workflow</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <source-id>task-edit</source-id>
+                    <region-id>data-form</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <source-id>task-details</source-id>
+                    <region-id>data-form</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>create-content</source-id>
+                    <region-id>create-content</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>edit-metadata</source-id>
+                    <region-id>edit-metadata</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>inline-edit</source-id>
+                    <region-id>inline-edit</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>data-lists</source-id>
+                    <region-id>toolbar</region-id>
+                    <sub-components>
+                        <sub-component id="html-upload">
+                            <url>/components/upload/html-upload</url>
+                        </sub-component>
+                        <sub-component id="flash-upload">
+                            <url>/components/upload/flash-upload</url>
+                        </sub-component>
+                        <sub-component id="file-upload">
+                            <url>/components/upload/file-upload</url>
+                        </sub-component>
+                        <sub-component id="dnd-upload">
+                            <url>/components/upload/dnd-upload</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>forms/form-documentlist</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.forms/form-documentlist</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>template</scope>
+                    <source-id>start-specified-workflow</source-id>
+                    <region-id>start-workflow</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>start-workflow</source-id>
+                    <region-id>start-workflow</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <source-id>task-edit</source-id>
+                    <region-id>data-form</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <source-id>task-edit-with-preview</source-id>
+                    <region-id>data-form</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <source-id>task-details</source-id>
+                    <region-id>data-form</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <source-id>workflow-details</source-id>
+                    <region-id>data-form</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>create-content</source-id>
+                    <region-id>create-content</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>edit-metadata</source-id>
+                    <region-id>edit-metadata</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>inline-edit</source-id>
+                    <region-id>inline-edit</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <source-id>data-lists</source-id>
+                    <region-id>toolbar</region-id>
+                    <sub-components>
+                        <sub-component id="documentlist">
+                            <url>/components/dependencies/documentlist</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>forms/form-dialogs-support</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.forms/form-dialogs-support</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>template</scope>
+                    <region-id>create-content-mgr</region-id>
+                    <source-id>create-content</source-id>
+                    <sub-components>
+                        <sub-component id="form-dialogs-support" index="90">
+                            <url>/citeck/modules/form-dialogs-support</url>
+                            <properties>
+                                <formManagerName>Alfresco.CreateContentMgr</formManagerName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <region-id>edit-metadata-mgr</region-id>
+                    <source-id>edit-metadata</source-id>
+                    <sub-components>
+                        <sub-component id="form-dialogs-support" index="90">
+                            <url>/citeck/modules/form-dialogs-support</url>
+                            <properties>
+                                <formManagerName>Alfresco.component.ShareFormManager</formManagerName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>template</scope>
+                    <region-id>inline-edit-mgr</region-id>
+                    <source-id>inline-edit</source-id>
+                    <sub-components>
+                        <sub-component id="form-dialogs-support" index="90">
+                            <url>/citeck/modules/form-dialogs-support</url>
+                            <properties>
+                                <formManagerName>Alfresco.InlineEditMgr</formManagerName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-edit</source-id>
+                    <sub-components>
+                        <sub-component id="form-dialogs-support" index="90">
+                            <url>/citeck/modules/form-dialogs-support</url>
+                            <properties>
+                                <formManagerName>Alfresco.component.TaskEditHeader</formManagerName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-edit-with-preview</source-id>
+                    <sub-components>
+                        <sub-component id="form-dialogs-support" index="90">
+                            <url>/citeck/modules/form-dialogs-support</url>
+                            <properties>
+                                <formManagerName>Alfresco.component.TaskEditHeader</formManagerName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+		<module>
+			<id>forms/html-comments</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.forms/html-comments</element>
+				</params>
+			</evaluator>
+            <configurations>
+                 <config evaluator="string-compare" condition="HtmlComments">
+                     <dependencies>
+                         <js src="/citeck/modules/html-comments/html-comments.js" />
+                         <css src="/citeck/modules/html-comments/html-comments.css" />
+                     </dependencies>
+                 </config>
+            </configurations>
+			<components>
+				<component>
+					<scope>page</scope>
+					<region-id>data-form</region-id>
+					<source-id>workflow-details</source-id>
+					<sub-components>
+						<sub-component id="html-comments" index="91">
+							<url>/citeck/dependencies-loader</url>
+							<properties>
+								<configName>HtmlComments</configName>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+		<module>
+			<id>forms/show-workflow-owner</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.forms/show-workflow-owner</element>
+				</params>
+			</evaluator>
+			<configurations>
+				<config evaluator="string-compare" condition="WorkflowOwner">
+					<dependencies>
+						<js src="/citeck/modules/workflow-owner/workflow-owner.js" />
+					</dependencies>
+				</config>
+			</configurations>
+			<components>
+				<component>
+					<scope>page</scope>
+					<region-id>data-form</region-id>
+					<source-id>workflow-details</source-id>
+					<sub-components>
+						<sub-component id="how-workflow-owner" index="100">
+							<url>/citeck/dependencies-loader</url>
+							<properties>
+								<configName>WorkflowOwner</configName>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+    </modules>
+</extension>

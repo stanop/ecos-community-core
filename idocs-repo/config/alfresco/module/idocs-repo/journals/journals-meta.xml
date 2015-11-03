@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/journals/1.0" prefix="journal" />
+	</imports>
+
+	<journal id="journals">
+		<option name="type">journal:journal</option>
+		<option name="actionGroupId">buttons</option>
+		<option name="js">modules/journals/buttons.js</option>
+		<option name="css">modules/journals/buttons.css</option>
+		<headers>
+			<header key="cm:name" default="true" />
+			<header key="cm:title" default="true" />
+			<header key="journal:journalType" default="true" />
+			<header key="cm:modified" />
+		</headers>
+	</journal>
+
+	<journal id="journal-filters">
+		<option name="type">journal:filter</option>
+		<option name="actionGroupId">buttons</option>
+		<option name="js">modules/journals/buttons.js</option>
+		<option name="css">modules/journals/buttons.css</option>
+		<headers>
+			<header key="cm:name" default="true" />
+			<header key="cm:title" default="true" />
+			<header key="journal:journalTypes" default="true" />
+			<header key="cm:creator" default="true" />
+			<header key="cm:created" />
+		</headers>
+	</journal>
+
+	<journal id="journals-settings">
+		<option name="type">journal:settings</option>
+		<option name="actionGroupId">buttons</option>
+		<option name="js">modules/journals/buttons.js</option>
+		<option name="css">modules/journals/buttons.css</option>
+		<headers>
+			<header key="cm:name" default="true" />
+			<header key="cm:title" default="true" />
+			<header key="journal:journalTypes" default="true" />
+			<header key="journal:visibleAttributes" />
+			<header key="cm:creator" default="true" />
+			<header key="cm:created" />
+		</headers>
+	</journal>
+
+	<journal id="journal-lists">
+		<option name="type">journal:journalsList</option>
+		<option name="actionGroupId">buttons</option>
+		<option name="js">modules/journals/buttons.js</option>
+		<option name="css">modules/journals/buttons.css</option>
+		<headers>
+			<header key="cm:name" default="true" />
+			<header key="cm:title" default="true" />
+			<header key="journal:journals" default="true" />
+			<header key="cm:modified" />
+		</headers>
+	</journal>
+
+</journals>

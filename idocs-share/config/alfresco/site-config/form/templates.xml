@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+	<config evaluator="aspect" condition="dms:templateable">
+		<forms>
+			<form id="template">
+				<edit-form template="/ru/citeck/components/form/templateable.ftl" />
+				<field-visibility>
+					<show id="dms:updateContent" />
+				</field-visibility>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="aspect" condition="dms:test-template">
+		<forms>
+			<form id="template">
+				<field-visibility>
+					<show id="dms:handField" />
+				</field-visibility>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="cm:content">
+		<forms>
+			<form id="template">
+				<field-visibility>
+					<show id="cm:name" />
+					<show id="dms:templateAssociation" force="true"/>
+				</field-visibility>
+                <appearance>
+                    <field id="dms:templateAssociation">
+                        <control template="/ru/citeck/components/form/controls/select.ftl" >
+                            <control-param name="optionsUrl">/share/proxy/alfresco/acm/templates</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'templates', fields: [ {key:'nodeRef'}, {key:'name'} ] }</control-param>
+                            <control-param name="valueField">nodeRef</control-param>
+                            <control-param name="titleField">name</control-param>
+                        </control>
+                    </field >
+                </appearance>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

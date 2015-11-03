@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+	<modules>
+		<module>
+			<id>HTML Comments</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig/html-comments</element>
+				</params>
+			</evaluator>
+			<components>
+				<component>
+					<scope>page</scope>
+					<region-id>data-header</region-id>
+					<source-id>workflow-details</source-id>
+					<sub-components>
+						<sub-component id="html-comments" index="91">
+							<url>/citeck/dependencies-loader</url>
+							<properties>
+								<configName>HtmlComments</configName>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+	</modules>
+</extension>

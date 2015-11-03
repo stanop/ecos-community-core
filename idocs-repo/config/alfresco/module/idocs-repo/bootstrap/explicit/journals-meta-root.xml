@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+	<cm:systemfolder view:childName="journal:journalMetaRoot">
+		<view:properties>
+			<sys:node-uuid>journal-meta-root</sys:node-uuid>
+		</view:properties>
+		<cm:contains>
+			<cm:systemfolder view:childName="cm:journalLists">
+				<view:properties>
+					<sys:node-uuid>journal-meta-f-lists</sys:node-uuid>
+				</view:properties>
+				<cm:contains>
+					<journal:journalsList view:childName="journal:metaList">
+						<view:properties>
+							<sys:node-uuid>journal-meta-l-meta</sys:node-uuid>
+							<cm:name>global-meta</cm:name>
+							<cm:title>
+								<view:mlvalue view:locale="en_US">${journal.title.list-meta_en}</view:mlvalue>
+								<view:mlvalue view:locale="ru_RU">${journal.title.list-meta_ru}</view:mlvalue>
+							</cm:title>
+						</view:properties>
+					</journal:journalsList>
+				</cm:contains>
+			</cm:systemfolder>
+			<cm:systemfolder view:childName="cm:journals">
+				<view:properties>
+					<sys:node-uuid>journal-meta-f-journals</sys:node-uuid>
+				</view:properties>
+				<cm:contains>
+					<journal:journal view:childName="journal:journals">
+						<view:properties>
+							<sys:node-uuid>journal-meta-j-journals</sys:node-uuid>
+							<cm:name>journals</cm:name>
+							<cm:title>
+								<view:mlvalue view:locale="en_US">${journal.title.journals_en}</view:mlvalue>
+								<view:mlvalue view:locale="ru_RU">${journal.title.journals_ru}</view:mlvalue>
+							</cm:title>
+							<journal:journalType>journals</journal:journalType>
+						</view:properties>
+						<view:associations>
+							<journal:searchCriteria>
+								<journal:criterion view:childName="journal:criterion">
+									<view:properties>
+										<sys:node-uuid>journal-meta-c-journals</sys:node-uuid>
+										<journal:fieldQName>type</journal:fieldQName>
+										<journal:predicate>type-equals</journal:predicate>
+										<journal:criterionValue>{http://www.citeck.ru/model/journals/1.0}journal</journal:criterionValue>
+									</view:properties>
+								</journal:criterion>
+							</journal:searchCriteria>
+							<journal:createVariants>
+								<journal:createVariant view:childName="journal:createVariant">
+									<view:properties>
+										<sys:node-uuid>journal-meta-cv-journals</sys:node-uuid>
+										<cm:title>
+											<view:mlvalue view:locale="en_US">${journal.create.journal_en}</view:mlvalue>
+											<view:mlvalue view:locale="ru_RU">${journal.create.journal_ru}</view:mlvalue>
+										</cm:title>
+										<journal:type>journal:journal</journal:type>
+										<journal:formId></journal:formId>
+									</view:properties>
+								</journal:createVariant>
+							</journal:createVariants>
+						</view:associations>
+					</journal:journal>
+					<journal:journal view:childName="journal:journalLists">
+						<view:properties>
+							<sys:node-uuid>journal-meta-j-lists</sys:node-uuid>
+							<cm:name>journal-lists</cm:name>
+							<cm:title>
+								<view:mlvalue view:locale="en_US">${journal.title.journal-lists_en}</view:mlvalue>
+								<view:mlvalue view:locale="ru_RU">${journal.title.journal-lists_ru}</view:mlvalue>
+							</cm:title>
+							<journal:journalType>journal-lists</journal:journalType>
+						</view:properties>
+						<view:associations>
+							<journal:searchCriteria>
+								<journal:criterion view:childName="journal:criterion">
+									<view:properties>
+										<sys:node-uuid>journal-meta-c-lists</sys:node-uuid>
+										<journal:fieldQName>type</journal:fieldQName>
+										<journal:predicate>type-equals</journal:predicate>
+										<journal:criterionValue>{http://www.citeck.ru/model/journals/1.0}journalsList</journal:criterionValue>
+									</view:properties>
+								</journal:criterion>
+							</journal:searchCriteria>
+							<journal:createVariants>
+								<journal:createVariant view:childName="journal:createVariant">
+									<view:properties>
+										<sys:node-uuid>journal-meta-cv-lists</sys:node-uuid>
+										<cm:title>
+											<view:mlvalue view:locale="en_US">${journal.create.journal-list_en}</view:mlvalue>
+											<view:mlvalue view:locale="ru_RU">${journal.create.journal-list_ru}</view:mlvalue>
+										</cm:title>
+										<journal:type>journal:journalsList</journal:type>
+										<journal:formId></journal:formId>
+									</view:properties>
+								</journal:createVariant>
+							</journal:createVariants>
+						</view:associations>
+					</journal:journal>
+					<journal:journal view:childName="journal:filters">
+						<view:properties>
+							<sys:node-uuid>journal-meta-j-filters</sys:node-uuid>
+							<cm:name>journal-filters</cm:name>
+							<cm:title>
+								<view:mlvalue view:locale="en_US">${journal.title.filters_en}</view:mlvalue>
+								<view:mlvalue view:locale="ru_RU">${journal.title.filters_ru}</view:mlvalue>
+							</cm:title>
+							<journal:journalType>journal-filters</journal:journalType>
+						</view:properties>
+						<view:associations>
+							<journal:searchCriteria>
+								<journal:criterion view:childName="journal:criterion">
+									<view:properties>
+										<sys:node-uuid>journal-meta-c-filters</sys:node-uuid>
+										<journal:fieldQName>type</journal:fieldQName>
+										<journal:predicate>type-equals</journal:predicate>
+										<journal:criterionValue>{http://www.citeck.ru/model/journals/1.0}filter</journal:criterionValue>
+									</view:properties>
+								</journal:criterion>
+							</journal:searchCriteria>
+							<journal:createVariants>
+								<journal:createVariant view:childName="journal:createVariant">
+									<view:properties>
+										<sys:node-uuid>journal-meta-cv-filters</sys:node-uuid>
+										<cm:title>
+											<view:mlvalue view:locale="en_US">${journal.create.filter_en}</view:mlvalue>
+											<view:mlvalue view:locale="ru_RU">${journal.create.filter_ru}</view:mlvalue>
+										</cm:title>
+										<journal:type>journal:filter</journal:type>
+										<journal:formId></journal:formId>
+									</view:properties>
+								</journal:createVariant>
+							</journal:createVariants>
+						</view:associations>
+					</journal:journal>
+				</cm:contains>
+			</cm:systemfolder>
+			<cm:systemfolder view:childName="cm:filters">
+				<view:properties>
+					<sys:node-uuid>journal-meta-f-filters</sys:node-uuid>
+				</view:properties>
+			</cm:systemfolder>
+
+		</cm:contains>
+	</cm:systemfolder>
+
+	<view:reference view:pathref="journal:journalMetaRoot/cm:journalLists/journal:metaList">
+		<view:associations>
+			<journal:journals>
+				<view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:journals" />
+				<view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:journalLists" />
+				<view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:filters" />
+			</journal:journals>
+		</view:associations>
+	</view:reference>
+
+	<view:reference view:pathref="journal:journalMetaRoot/cm:journalLists">
+		<cm:contains>
+			<journal:journalsList view:childName="cm:global-main">
+				<view:properties>
+					<sys:node-uuid>journal-global-main</sys:node-uuid>
+					<cm:name>global-main</cm:name>
+					<cm:title>
+						<view:mlvalue view:locale="en_US">${journal.global.journals_en}</view:mlvalue>
+						<view:mlvalue view:locale="ru_RU">${journal.global.journals_ru}</view:mlvalue>
+					</cm:title>
+				</view:properties>
+			</journal:journalsList>
+		</cm:contains>
+	</view:reference>
+
+	<view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:journals/journal:createVariant">
+		<view:associations>
+			<journal:destination>
+				<view:reference view:pathref="journal:journalMetaRoot/cm:journals" />
+			</journal:destination>
+		</view:associations>
+	</view:reference>
+	<view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:journalLists/journal:createVariant">
+		<view:associations>
+			<journal:destination>
+				<view:reference view:pathref="journal:journalMetaRoot/cm:journalLists" />
+			</journal:destination>
+		</view:associations>
+	</view:reference>
+	<view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:filters/journal:createVariant">
+		<view:associations>
+			<journal:destination>
+				<view:reference view:pathref="journal:journalMetaRoot/cm:filters" />
+			</journal:destination>
+		</view:associations>
+	</view:reference>
+
+</view:view>

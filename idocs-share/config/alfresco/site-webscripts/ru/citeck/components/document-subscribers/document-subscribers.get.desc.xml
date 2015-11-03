@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>document-subscribers</shortname>
+  <description>Subscribe on edit action for document-details page</description>
+  <url>/citeck/components/document-subscribers</url>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

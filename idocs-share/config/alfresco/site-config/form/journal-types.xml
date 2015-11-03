@@ -1,0 +1,24 @@
+<alfresco-config>
+    <config evaluator="node-type" condition="cm:category">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:taggable" for-mode="edit" force="true"/>
+                    <show id="tk:durationInDays" force="true"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/tag:tag-root</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+</alfresco-config>

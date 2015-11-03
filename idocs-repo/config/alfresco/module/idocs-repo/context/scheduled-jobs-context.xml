@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<!-- overdue notification job -->
+ 	<bean id="OverdueNotificationJob" class="org.alfresco.util.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailBean">
+                <property name="jobClass">
+                    <value>ru.citeck.ecos.workflow.utils.OverdueNotificationJob</value>
+                </property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="WorkflowService" value-ref="WorkflowService" />
+						<entry key="NotificationSender" value-ref="OverdueNotificationSender" />
+						<entry key="ServiceRegistry" value-ref="ServiceRegistry" />
+					</map>
+				</property>
+            </bean>
+        </property>
+		<property name="enabled" value="${workflow.notification.overdue.enabled}" />
+        <property name="scheduler" ref="schedulerFactory" />
+        <property name="cronExpression">
+            <value>${workflow.notification.overdue.cronExpression}</value>
+        </property>
+    </bean>
+ 	<bean id="OverdueWorkflowNotificationJob" class="org.alfresco.util.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailBean">
+                <property name="jobClass">
+                    <value>ru.citeck.ecos.workflow.utils.OverdueWorkflowNotificationJob</value>
+                </property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="WorkflowService" value-ref="WorkflowService" />
+						<entry key="NotificationSender" value-ref="OverdueWorkflowNotificationSender" />
+						<entry key="ServiceRegistry" value-ref="ServiceRegistry" />
+					</map>
+				</property>
+            </bean>
+        </property>
+		<property name="enabled" value="${workflow.notification.workflow.overdue.enabled}" />
+        <property name="scheduler" ref="schedulerFactory" />
+        <property name="cronExpression">
+            <value>${workflow.notification.overdue.cronExpression}</value>
+        </property>
+    </bean>
+
+</beans>

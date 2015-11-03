@@ -1,0 +1,48 @@
+<alfresco-config>
+
+    <config evaluator="node-type" condition="ecos:document">
+        <forms>
+            <form>
+                <view-form template="/ru/citeck/components/form/ecos-document.ftl" />
+                <edit-form template="/ru/citeck/components/form/ecos-document.ftl" />
+                <field-visibility>
+                    <show id="tk:type" />
+                    <show id="tk:kind" />
+                    <show id="cm:name" />
+                    <show id="idocs:note" />
+                    <show id="ecos:documentNumber" />
+                    <show id="ecos:documentDate" />
+                    <show id="idocs:legalEntity" />
+                    <show id="idocs:contractor" />
+                    <show id="ecos:documentAmount" />
+                    <show id="ecos:VAT" />
+                    <show id="idocs:currencyDocument" />
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="ecos:document">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/ecos-document.ftl" />
+                <field-visibility>
+                    <show id="tk:type" />
+                    <show id="tk:kind" />
+                    <show id="cm:name" />
+                    <show id="idocs:note" />
+                    <show id="ecos:documentNumber" />
+                    <show id="ecos:documentDate" />
+                    <show id="idocs:legalEntity" />
+                    <show id="idocs:contractor" />
+                    <show id="ecos:documentAmount" />
+                    <show id="ecos:VAT" />
+                    <show id="idocs:currencyDocument" />
+                    <show id="dms:updateContent" />
+                    <show id="cm:content" />
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

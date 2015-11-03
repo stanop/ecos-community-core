@@ -1,0 +1,1 @@
+<#include "view.get.head.ftl" />

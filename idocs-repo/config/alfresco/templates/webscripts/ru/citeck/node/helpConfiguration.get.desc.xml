@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>help configuration</shortname>
+	<url>/citeck/search/help?type={type}&amp;sitePage={sitePage}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>draft</lifecycle>
+</webscript>

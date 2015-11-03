@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/passport/1.0" prefix="pass" />
+		<import uri="http://www.citeck.ru/model/privacy/1.0" prefix="privacy" />
+	</imports>
+	
+	<field property="tk:type">
+		<region name="input" template="select" />
+	</field>
+	
+	<field property="tk:kind">
+		<region name="input" template="select" />
+	</field>
+
+	<view class="pass:passport" id="test">
+		<field prop="tk:type">
+			<region name="input" template="view" />
+		</field>
+		<field prop="tk:kind" />
+		<field assoc="pass:person" />
+		<view>
+			<field prop="pass:series" template="half-width" />
+			<field prop="pass:number" template="half-width" />
+			<field prop="pass:issuingAuthority">
+				<region name="input" template="textarea" />
+			</field>
+			<field prop="pass:issueDate" template="half-width" />
+			<field prop="pass:subdivisionCode" template="half-width" />
+		</view>
+		<view>
+			<field prop="pass:info">
+				<region name="input" template="textarea" />
+			</field>
+		</view>
+		<field prop="cm:content" />
+		<field prop="privacy:consent">
+			<region name="label">
+				<param name="text">
+					I give permission to process my private data, including acquisition, storing, using and transfer to third party within the law
+				</param>
+			</region>
+		</field>
+		<field prop="idocs:documentStatus">
+			<region name="input" template="select" />
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+		<field prop="cm:hits" />
+	</view>
+	
+	<!-- TODO support normal overriding of settings for different modes -->
+	<views mode="view">
+		<fields prop="privacy:consent">
+			<region name="label">
+				<param name="text">Privacy consent</param>
+			</region>
+		</fields>
+	</views>
+	
+</views>

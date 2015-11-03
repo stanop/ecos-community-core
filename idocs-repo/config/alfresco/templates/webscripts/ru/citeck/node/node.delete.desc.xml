@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>Delete node</shortname>
+	<description>Delete node</description>
+	<url>/citeck/node?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

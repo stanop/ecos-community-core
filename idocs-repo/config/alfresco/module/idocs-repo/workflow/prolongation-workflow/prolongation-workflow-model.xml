@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfprolong:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/prolongation/1.0" prefix="wfprolong"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfprolong:prolongationOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Prolongate</value>
+                    <value>SendToArchive</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="wfprolong:submitProlongationTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfprolong:prolongs</aspect>
+                <aspect>cwf:sendNotification</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfprolong:prolongationTask">
+            <title>Продлить договор</title>
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="wfprolong:prolongationDate">
+                    <type>d:date</type>
+                    <constraints>
+                        <constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+                            <parameter name="condition"><value>prop_wfprolong_prolongationOutcome == 'Prolongate'</value></parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </properties>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/prolongation/1.0}prolongationOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default/>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfprolong:prolongationOutcome</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfprolong:prolongationOutcome">
+            <properties>
+                <property name="wfprolong:prolongationOutcome">
+                    <type>d:text</type>
+                    <default>SendToArchive</default>
+                    <constraints>
+                        <constraint ref="wfprolong:prolongationOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+		<aspect name="wfprolong:prolongs">
+			<associations>
+				<association name="wfprolong:prolongs">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+    </aspects>
+
+</model>

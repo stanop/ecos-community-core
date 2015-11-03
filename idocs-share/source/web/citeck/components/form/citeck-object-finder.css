@@ -1,0 +1,15 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.mode .share-form .form-container .form-fields {
+    width: auto;
+    background-color: transparent;
+    border: none !important;
+    border-top: 1px solid !important;
+}
+
+.filter-mode .help-icon,
+.filter-mode .mandatory-indicator {
+	display: none;
+}

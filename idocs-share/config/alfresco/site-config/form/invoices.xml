@@ -1,0 +1,59 @@
+<alfresco-config>
+
+
+    <config evaluator="model-type" condition="inv:invoice">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/invoices/base-invoice-create.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="inv:invoice">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/invoices/base-invoice-edit.ftl" />
+                <view-form template="/ru/citeck/components/form/invoices/base-invoice-edit.ftl" />
+            </form>
+        </forms>
+    </config>
+
+
+
+
+    <config evaluator="model-type" condition="inv:bill">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/invoices/base-invoice-create.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="inv:bill">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/invoices/base-invoice-edit.ftl" />
+            </form>
+        </forms>
+    </config>
+
+
+
+
+    <config evaluator="model-type" condition="inv:acceptanceAct">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/invoices/base-invoice-create.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="inv:acceptanceAct">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/invoices/base-invoice-edit.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+	<modules>
+		<module>
+			<id>manage-permissions/custom-manage-permissions</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.manage-permissions/extended-manage-permissions</element>
+				</params>
+			</evaluator>
+			<components>
+				<component>
+					<scope>template</scope>
+					<region-id>manage-permissions</region-id>
+					<source-id>manage-permissions</source-id>
+					<sub-components>
+						<sub-component id="default">
+							<evaluations>
+								<evaluation id="hide">
+									<render>false</render>
+								</evaluation>
+							</evaluations>
+						</sub-component>
+						<sub-component id="custom-manage-permissions" index="91">
+							<url>/citeck/components/extended-manage-permissions</url>
+							<properties>
+								<pagination>true</pagination>
+								<nodeRef>{nodeRef}</nodeRef>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+	</modules>
+</extension>

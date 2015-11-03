@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Register income</shortname>
+    <description>Register income document</description>
+    <url>/citeck/document-registration/register?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

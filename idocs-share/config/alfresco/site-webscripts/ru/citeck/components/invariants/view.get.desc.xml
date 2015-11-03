@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Node view</shortname>
+	<description>Get node view by nodeRef or type name</description>
+	<url>/citeck/components/node-view?type={type}</url>
+	<url>/citeck/components/node-view?nodeRef={nodeRef}</url>
+</webscript>

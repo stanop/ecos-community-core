@@ -1,0 +1,16 @@
+/* fix to restore default css for lists */
+.restore-lists ol,
+.restore-lists ul {
+	/* Bringing lists on to the page with breathing room. */
+	margin-left: 2em !important;
+}
+
+.restore-lists ol>li {
+	/* Giving OL's LIs generated numbers. */
+	list-style: decimal outside;
+}
+
+.restore-lists ul>li {
+	/* Giving UL's LIs generated disc markers. */
+	list-style: disc outside;
+}

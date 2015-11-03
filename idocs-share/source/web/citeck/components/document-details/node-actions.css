@@ -1,0 +1,167 @@
+.node-actions .doclist
+{
+    visibility: visible;
+}
+
+.node-actions .doclist .action-set
+{
+    margin-top: 1em;
+}
+
+.node-actions .doclist .action-set a:active,
+.node-actions .doclist .action-set a:hover
+{
+    background-color: #fff;
+    text-decoration: none;
+}
+
+.node-actions .doclist .action-set div
+{
+    padding: 0.3em;
+}
+
+.doclist a.action-link,
+.doclist a.simple-link,
+.doclist a.show-more,
+.doclist a.action-link-custom {
+    background-position: left center;
+    background-repeat: no-repeat;
+    border: 1px solid transparent;
+    display: block;
+    min-height: 16px;
+    padding: 2px 0 2px 24px;
+}
+
+
+/* all add link */
+.node-actions [class*="add"] a {
+    background-image: url(../../../themes/citeckTheme/images/create.png) !important; 
+}
+
+.node-actions [class*="add"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/create-active.png) !important; 
+}
+
+/* all edit link */
+.node-actions [class*="edit"] a {
+    background-image: url(../../../themes/citeckTheme/images/edit.png) !important; 
+}
+
+.node-actions [class*="edit"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/edit-active.png) !important; 
+}
+
+/* all delete link */
+.node-actions [class*="delete"] a {
+    background-image: url(../../../themes/citeckTheme/images/remove.png) !important; 
+}
+
+.node-actions [class*="delete"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/remove-active.png) !important; 
+}
+
+
+/* download link */
+
+.node-actions .document-download a,
+.node-actions .folder-download a {
+    background-image: url(../../../themes/citeckTheme/images/download.png) !important;    
+}
+
+.node-actions .document-download a:hover,
+.node-actions .folder-download a:hover {
+    background-image: url(../../../themes/citeckTheme/images/download-active.png) !important;
+}
+
+
+/* edit properties link */
+.node-actions .document-edit-metadata a,
+.node-actions .google-docs-edit-action-link a {
+    background-image: url(../../../themes/citeckTheme/images/edit-properties.png) !important; 
+}
+
+.node-actions .document-edit-metadata a:hover,
+.node-actions .google-docs-edit-action-link a:hover {
+    background-image: url(../../../themes/citeckTheme/images/edit-properties-active.png) !important; 
+}
+
+/* save as template link */
+.node-actions .case-save-as-template a {
+    background-image: url(../../../themes/citeckTheme/images/save.png) !important; 
+}
+
+.node-actions .case-save-as-template a:hover {
+    background-image: url(../../../themes/citeckTheme/images/save-active.png) !important; 
+}
+
+
+/* workflow link and documents*/
+.node-actions .document-start-adhoc a,
+.node-actions .document-start-statement a,
+.node-actions .document-add-payment-for-approved a,
+.node-actions .document-add-closing-doc-for-payment a,
+.node-actions .document-add-payment-for-approved a {
+    background-image: url(../../../themes/citeckTheme/images/create-document.png) !important;
+}
+
+.node-actions .document-start-adhoc a:hover,
+.node-actions .document-start-statement a:hover,
+.node-actions .document-add-payment-for-approved a:hover,
+.node-actions .document-add-closing-doc-for-payment a:hover,
+.node-actions .document-add-payment-for-approved a:hover {
+    background-image: url(../../../themes/citeckTheme/images/create-document-active.png) !important;
+}
+
+
+/* delete link */
+.node-actions .document-delete a {
+    background-image: url(../../../themes/citeckTheme/images/delete-case.png) !important;
+}
+
+.node-actions .document-delete a:hover {
+    background-image: url(../../../themes/citeckTheme/images/delete-case-active.png) !important;
+}
+
+
+/* copy to */
+
+.node-actions .document-copy-to a {
+    background-image: url(../../../themes/citeckTheme/images/copy.png) !important;
+}
+
+.node-actions .document-copy-to a:hover {
+    background-image: url(../../../themes/citeckTheme/images/copy-active.png) !important;
+}
+
+
+/* upload new version */
+
+.node-actions .document-upload-new-version a {
+    background-image: url(../../../themes/citeckTheme/images/upload.png) !important;
+}
+
+.node-actions .document-upload-new-version a:hover {
+    background-image: url(../../../themes/citeckTheme/images/upload-active.png) !important;
+}
+
+
+/* do transition */
+
+.node-actions #onActionDoTransition a {
+    background-image: url(../../../themes/citeckTheme/images/do-transition.png) !important;
+}
+
+.node-actions #onActionDoTransition a:hover {
+    background-image: url(../../../themes/citeckTheme/images/do-transition-active.png) !important;
+}
+
+
+/* template */
+
+.node-actions .document-fill-template a {
+    background-image: url(../../../themes/citeckTheme/images/edit.png) !important; 
+}
+
+.node-actions .document-fill-template a:hover {
+    background-image: url(../../../themes/citeckTheme/images/edit-active.png) !important; 
+}

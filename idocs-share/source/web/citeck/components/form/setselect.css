@@ -1,0 +1,31 @@
+.set-panel-heading, .setselector {
+	margin: 0 -13px 20px;
+	padding: 5px 13px;
+	background-color: #EEEEEE;
+	display: block;
+	text-align: center;
+}
+
+.set-panel-heading {
+	font-weight: bold;
+}
+
+.setselector .yui-u {
+	margin-left: 0;
+}
+
+.setselector input[type="radio"] {
+	display: none;
+}
+
+.setselector label {
+	display: block;
+	margin: 0 auto;
+	width: 80%;
+}
+
+.setselector input:checked + label {
+	font-weight: bold;
+	background-color: #FFFFFF;
+}
+

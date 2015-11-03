@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfscan:scanworkflow" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/workflow/scan/1.0" prefix="wfscan" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="wfscan:scanOutcomeOptions" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Scanned</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+
+		<type name="wfscan:submitScanTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>wfscan:clerk</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="wfscan:scanTask">
+			<parent>bpm:activitiOutcomeTask</parent>
+			<overrides>
+				<property name="bpm:outcomePropertyName">
+					<default>{http://www.citeck.ru/model/workflow/scan/1.0}scanOutcome</default>
+				</property>
+				<property name="bpm:packageActionGroup">
+					<default></default>
+				</property>
+			</overrides>
+			<mandatory-aspects>
+				<aspect>wfscan:scanOutcome</aspect>
+				<aspect>wfscan:options</aspect>
+				<aspect>cwf:sender</aspect>
+				<aspect>cwf:lastcomment</aspect>
+			</mandatory-aspects>
+		</type>
+
+
+	</types>
+	<aspects>
+	
+		<aspect name="wfscan:clerk">
+			<associations>
+				<association name="wfscan:clerk">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+		
+		<aspect name="wfscan:scanOutcome">
+			<properties>
+				<property name="wfscan:scanOutcome">
+					<type>d:text</type>
+					<default>Scanned</default>
+					<constraints>
+						<constraint ref="wfscan:scanOutcomeOptions" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="wfscan:options">
+		</aspect>
+		
+	</aspects>
+</model>

@@ -1,0 +1,127 @@
+#bd {
+   width: auto !important;
+   background-color: #f0f0f0;
+}
+
+#bd > div:not(:last-child):after {
+  content: "";
+  display: block;
+  margin: 0 40px 10px 40px;
+  height: 1px;
+  background-color: #ccc;
+}
+
+
+
+.customise-layout {
+  overflow: hidden;
+}
+
+.customise-layout h2,
+.customise-layout h3 {
+   font-weight: 900;
+   color: #333;
+}
+
+.customise-layout h2 {
+   text-transform: uppercase;
+}
+
+/* INFORMATION */
+.customise-layout .information {
+   width: 300px;
+   float: left;
+}
+
+.customise-layout .information > div:not(:last-child) {
+   padding-bottom: 15px;
+   border-bottom: 1px solid #ccc;
+   margin-bottom: 15px;
+}
+
+.customise-layout .information .text {
+   margin-top: 5px;
+}
+
+
+/* LAYOUTS */
+
+.customise-layout .layouts {
+   margin-left: 315px;
+}
+
+.customise-layout .layouts .layout {
+   float: left;
+   margin: 0 15px 15px 0;
+   text-align: left;
+}
+
+.customise-layout .layouts .layout .layoutIcon {
+   cursor: pointer; 
+   background-color: white;
+}
+
+.customise-layout .layouts .layout-current .layoutIcon {
+   outline: 1px solid #008c03 !important;
+}
+
+.customise-layout div.layouts ul li .layoutDescription {
+   color: #333;
+   margin-top: 5px;
+   font-size: 12px;
+}
+
+.customise-layout .layouts .layout-current .layoutDescription {
+   color: #008c03;
+}
+
+/* Add padding and make sure left: float doesn't place them in a row */
+.customise-layout div.currentLayout,
+.customise-layout div.layouts,
+{
+   padding-top: 1em;
+   padding-bottom: 1em;
+   clear: both;
+}
+
+/* Make sure left: float doesn't place them in a row */
+.customise-layout hr
+{
+   clear: both;
+}
+
+/* Center buttons */
+.customise-layout div.buttons
+{
+   padding: 1em 0;
+   text-align: center;
+}
+
+/* Style the lists containing dashlets */
+.customise-layout ul
+{
+   list-style: none;
+   padding: 1em;
+   margin-left: auto;
+   margin-right: auto;
+}
+
+
+/* Set the layout width and let them flow in the list */
+
+
+/* Align the layout description to the left */
+
+
+/* Make the layout box gray and center it's content*/
+.customise-layout .layoutBox
+{
+   background-color: #f7f7f7;
+   text-align: center;
+}
+
+
+.customise-layout div.currentLayout .layoutIcon
+{
+   border-bottom: 1px solid #ccc;
+}

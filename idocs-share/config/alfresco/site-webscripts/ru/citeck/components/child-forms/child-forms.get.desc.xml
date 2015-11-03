@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>child-forms</shortname>
+	<description>It shows elements as a set of collapsible forms.
+		Parameters description:
+			header							- module header
+			collapseHeader					- should have only true or false.
+											true should be used when child element could be only one.
+			nodeRef							- it is node reference of the current document
+			elementsUrl						- it is web-script URL to get child element or elements.
+			elementsPath					- it is path in returned JSON with elementsUrl.
+			elementHeader					- it is header for element, if child form represents
+											only one element, this parameter can be empty.
+			viewFormUrl						- it is web-script URL to get view form.
+			editFormUrl						- it is web-script URL to get edit form.
+			twisterKey						- it is key for twister.
+			destination						- it is URL or node reference for added new child
+											element or elements.
+			contentType						- it is content type of added child element or elements.
+			assocType						- it is association type of added child element or elements.
+			calcDestinationChildrenCount	- it enables calculation of number of children with
+											specified contentType and assocType
+	</description>
+	<url>/citeck/components/child-forms</url>
+</webscript>

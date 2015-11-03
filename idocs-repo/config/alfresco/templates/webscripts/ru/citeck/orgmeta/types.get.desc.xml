@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Org.Struct group types</shortname>
+  <description>All registered group types</description>
+  <url>/api/orgmeta</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction allow="readonly">required</transaction>
+</webscript>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	
+	<!-- ========================= -->
+	<!--   form service override   -->
+	<!-- ========================= -->
+
+	<util:list id="FormService.Interceptors">
+		<idref bean="FormLoggingInterceptor" />
+		<idref bean="FormService_transaction" />
+		<idref bean="AuditMethodInterceptor" />
+		<idref bean="exceptionTranslator" />
+		<idref bean="FormService_security" />
+	</util:list>
+	
+	<bean id="FormLoggingInterceptor" class="ru.citeck.ecos.spring.aop.LoggingInterceptor">
+		<property name="loggerName" value="org.alfresco.repo.forms" />
+		<property name="exceptionLevel" value="WARN" />
+	</bean>
+
+    <!-- Form service transaction bean -->
+    <bean id="FormService_transaction" class="org.alfresco.repo.transaction.RetryingTransactionInterceptor">
+        <property name="transactionService">
+            <ref bean="TransactionService"/>
+        </property>
+        <property name="transactionManager">
+            <ref bean="transactionManager"/>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

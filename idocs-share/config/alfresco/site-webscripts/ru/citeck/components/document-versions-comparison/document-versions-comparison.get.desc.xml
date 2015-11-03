@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>document-versions-comparison</shortname>
+  <description>Versions Comparison component for document-details page</description>
+  <url>/citeck/components/document-versions-comparison</url>
+</webscript>

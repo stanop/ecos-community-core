@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>Inline Form</shortname>
+    <description>Renders a inline form if exists repository form model otherwise renders comment and outcome controls</description>
+    <url>/citeck/form/inline?itemKind={itemKind}&amp;itemId={itemId}&amp;formId={formId}&amp;mode={mode?}&amp;htmlid={htmlid}</url>
+</webscript>

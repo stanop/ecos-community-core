@@ -1,0 +1,20 @@
+.task-history {
+    margin-bottom: 2em;
+}
+
+.task-history h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.task-history table {
+    width: 100%;
+}
+
+.task-history-title {
+    font-size: 116%;
+    border-bottom: 1px solid #eeeeee;
+    padding-bottom: 0.1em;
+    margin-bottom: 0.6em;
+    margin-top: 0.2em;
+}

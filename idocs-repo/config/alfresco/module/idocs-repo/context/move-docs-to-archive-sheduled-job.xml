@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+
+    <bean id="moveDocsTOArchiveJobDetailBean" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass">
+            <value>ru.citeck.ecos.action.CustomExecuteScriptJob</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="scriptService">
+                    <ref bean="ScriptService" />
+                </entry>
+                <entry key="scriptLocation">
+                    <bean class="org.alfresco.repo.jscript.ClasspathScriptLocation">
+                        <constructor-arg>
+                            <value>alfresco/extension/scripts/moveToArchive.js</value>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry key="authenticationComponent">
+                    <ref bean="authenticationComponent" />
+                </entry>
+                <entry key="params">
+                    <map>
+                        <entry>
+                            <key>
+                              <value>archiveDirectory</value>
+                        </key>
+                            <value>${job.replace-docs-to-archive.archiveDir}</value>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="moveDocsTOArchiveCron" class="org.alfresco.util.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="moveDocsTOArchiveJobDetailBean" />
+        </property>
+        <property name="scheduler">
+            <ref bean="schedulerFactory" />
+        </property>
+        <property name="cronExpression">
+            <value>${job.replace-docs-to-archive.cronExpression}</value>
+        </property>
+        <property name="enabled" value="#{ '${job.replace-docs-to-archive.enabled}' == 'true'}"/>
+
+
+    </bean>
+
+
+
+</beans>

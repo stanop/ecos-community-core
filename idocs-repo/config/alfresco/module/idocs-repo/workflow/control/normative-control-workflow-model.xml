@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfnc:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/normative-control/1.0" prefix="wfnc"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfnc:correctOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>answer</value>
+                    <value>exit</value>
+                    <value>cancel</value>
+                </list>
+            </parameter>
+        </constraint>
+        <constraint name="wfnc:controlOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Approve</value>
+                    <value>ApproveWhithComment</value>
+                    <value>Reject</value>
+                    <value>ToApprove</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="wfnc:submitControlTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfnc:controller</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfnc:controlTask">
+            <parent>bpm:activitiOutcomeTask</parent>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/normative-control/1.0}controlOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default/>
+                </property>
+                <property name="bpm:comment">
+                    <constraints>
+                        <constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+                            <parameter name="condition"><value>prop_wfnc_controlOutcome != 'Approve' &amp;&amp; prop_wfnc_controlOutcome != 'ToApprove'</value></parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfnc:controlOutcome</aspect>
+                <aspect>cwf:sender</aspect>
+                <aspect>cwf:lastcomment</aspect>
+                <aspect>cwf:workflowStartDate</aspect>
+                <aspect>wfcf:confirmers</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfnc:correctTask">
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="wfnc:correctOutcome">
+                    <type>d:text</type>
+                    <default>answer</default>
+                    <constraints>
+                        <constraint ref="wfnc:correctOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/normative-control/1.0}correctOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default>add_package_item_actions</default>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfnc:controlOutcome</aspect>
+                <aspect>cwf:sender</aspect>
+                <aspect>cwf:lastcomment</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfnc:controller">
+            <associations>
+                <association name="wfnc:controller">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="wfnc:controlOutcome">
+            <properties>
+                <property name="wfnc:controlOutcome">
+                    <type>d:text</type>
+                    <default>Reject</default>
+                    <constraints>
+                        <constraint ref="wfnc:controlOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

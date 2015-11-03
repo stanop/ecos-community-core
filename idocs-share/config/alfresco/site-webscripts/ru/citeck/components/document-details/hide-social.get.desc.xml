@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>hide social items</shortname>
+	<description>Hides social items (likes, comment, ...) on document-details page</description>
+	<url>/citeck/components/document-details/hide-social</url>
+	<url>/citeck/components/node-header/hide-social</url>
+</webscript>

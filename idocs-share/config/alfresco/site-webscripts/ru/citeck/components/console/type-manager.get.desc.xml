@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>Admin Console Type Manager</shortname>
+  <description>Administration Console - Type Manager</description>
+  <url>/components/console/type-manager</url>
+  <family>admin-console</family>
+</webscript>

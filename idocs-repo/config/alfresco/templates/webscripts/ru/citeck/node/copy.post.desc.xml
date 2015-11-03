@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>Simple copy</shortname>
+	<description>Simple copy</description>
+	<url>/citeck/node/copy?source={source}&amp;destination={destination}&amp;deep={deep?}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>draft</lifecycle>
+</webscript>

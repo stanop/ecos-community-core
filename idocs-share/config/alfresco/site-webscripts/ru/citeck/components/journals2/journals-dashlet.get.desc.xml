@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Journals dashlet</shortname>
+	<description>Journals dashlet</description>
+	<family>journals</family>
+	<family>dashlet</family>
+	<url>/components/journals2/dashlet</url>
+</webscript>

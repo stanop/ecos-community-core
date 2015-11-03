@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfpr:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/print/1.0" prefix="wfpr"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfpr:printOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Printed</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="wfpr:submitPrintTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfpr:printer</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfpr:printTask">
+            <title>Печать</title>
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="wfpr:message">
+                    <title>Сообщение</title>
+                    <type>d:text</type>
+                    <default>Печать документа</default>
+                </property>
+            </properties>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/print/1.0}printOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default/>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfpr:printer</aspect>
+                <aspect>wfpr:printOutcome</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfpr:printer">
+            <title>Корректор</title>
+            <associations>
+                <association name="wfpr:printer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        <aspect name="wfpr:printOutcome">
+            <properties>
+                <property name="wfpr:printOutcome">
+                    <type>d:text</type>
+                    <default>Printed</default>
+                    <constraints>
+                        <constraint ref="wfpr:printOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
+
+</model>

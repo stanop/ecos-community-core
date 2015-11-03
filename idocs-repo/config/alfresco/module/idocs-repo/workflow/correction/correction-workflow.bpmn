@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/correction/1.0">
+  <process id="correction" name="Correction Workflow" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.DocumentSetListener"></activiti:executionListener>
+    </extensionElements>
+    <userTask id="usertask1" name="Correction Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcr:correctionTask">
+      <extensionElements>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+          <activiti:field name="authority">
+            <activiti:expression>${wfcr_corrector}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:expression>if(document.hasAspect("idocs:hasFailureCause")) {
+	task.setVariable("wfcr:failureCause", document.properties["idocs:failureCause"]);
+}
+task.setVariable("cwf_workflowStartDate", execution.getVariable("cwf_workflowStartDate"));</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_dueDate]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_priority]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_canChooseConfirmers]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_canChangeDueDate]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_canChangePriority]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_confirmers]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_allConfirmers]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_rejectedConfirmers]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_confirmers]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_dueDate]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+          <activiti:field name="variableExpr">
+            <activiti:string><![CDATA[wfcr_priority]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="startevent1" name="Submit Correction Task" activiti:formKey="wfcr:submitCorrectionTask">
+      <extensionElements>
+        <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>execution.setVariable("cwf_workflowStartDate", new java.util.Date());</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome == "ForAll"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_correction">
+    <bpmndi:BPMNPlane bpmnElement="correction" id="BPMNPlane_correction">
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="420.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="270.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="630.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="305.0" y="277.0"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="277.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="525.0" y="277.0"></omgdi:waypoint>
+        <omgdi:waypoint x="630.0" y="277.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

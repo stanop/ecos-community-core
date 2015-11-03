@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+    <view:reference view:pathref="journal:journalMetaRoot">
+        <cm:contains>
+            <cm:systemfolder view:childName="cm:settings">
+                <view:properties>
+                    <sys:node-uuid>journal-meta-f-settings</sys:node-uuid>
+                </view:properties>
+            </cm:systemfolder>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="journal:journalMetaRoot/cm:journals">
+        <cm:contains>
+            <journal:journal view:childName="journal:settings">
+                <view:properties>
+                    <sys:node-uuid>journal-meta-j-settings</sys:node-uuid>
+                    <cm:name>journals-settings</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.title.settings_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.title.settings_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalType>journals-settings</journal:journalType>
+                </view:properties>
+                <view:associations>
+                    <journal:searchCriteria>
+                        <journal:criterion view:childName="journal:criterion">
+                            <view:properties>
+                                <sys:node-uuid>journal-meta-c-settings</sys:node-uuid>
+                                <journal:fieldQName>type</journal:fieldQName>
+                                <journal:predicate>type-equals</journal:predicate>
+                                <journal:criterionValue>{http://www.citeck.ru/model/journals/1.0}settings</journal:criterionValue>
+                            </view:properties>
+                        </journal:criterion>
+                    </journal:searchCriteria>
+                    <journal:createVariants>
+                        <journal:createVariant view:childName="journal:createVariant">
+                            <view:properties>
+                                <sys:node-uuid>journal-meta-cv-settings</sys:node-uuid>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${journal.create.settings_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${journal.create.settings_ru}</view:mlvalue>
+                                </cm:title>
+                                <journal:type>journal:settings</journal:type>
+                                <journal:formId></journal:formId>
+                            </view:properties>
+                        </journal:createVariant>
+                    </journal:createVariants>
+                </view:associations>
+            </journal:journal>
+        </cm:contains>
+    </view:reference>
+
+
+    <view:reference view:pathref="journal:journalMetaRoot/cm:journalLists/journal:metaList">
+        <view:associations>
+            <journal:journals>
+                <view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:settings" />
+            </journal:journals>
+        </view:associations>
+    </view:reference>
+
+    <view:reference view:pathref="journal:journalMetaRoot/cm:journals/journal:settings/journal:createVariant">
+        <view:associations>
+            <journal:destination>
+                <view:reference view:pathref="journal:journalMetaRoot/cm:settings" />
+            </journal:destination>
+        </view:associations>
+    </view:reference>
+
+</view:view>

@@ -1,0 +1,1 @@
+<input id="${fieldId}" type="checkbox" data-bind="checked: value, disable: protected" />

@@ -1,0 +1,12 @@
+<alfresco-config>
+
+    <plug-ins>
+        <element-readers>
+            <element-reader element-name="actionGroups" class="ru.citeck.ecos.surf.config.IdBasedElementReader"/>
+            <element-reader element-name="multi-select" class="ru.citeck.ecos.surf.config.IdBasedElementReader"/>
+            <element-reader element-name="journals" class="ru.citeck.ecos.surf.config.IdBasedElementReader"/>
+            <element-reader element-name="page-titles" class="ru.citeck.ecos.surf.config.IdBasedElementReader"/>
+        </element-readers>
+    </plug-ins>
+
+</alfresco-config>

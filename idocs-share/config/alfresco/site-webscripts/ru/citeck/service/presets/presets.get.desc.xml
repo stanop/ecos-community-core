@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Get surf presets</shortname>
+    <description>Get Surf presets of specified type</description>
+    <url>/citeck/presets/{type}</url>
+    <format default="json"/>
+</webscript>

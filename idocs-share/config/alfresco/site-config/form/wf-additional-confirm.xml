@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$additional-confirm">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/additional-confirm/submit-confirm-task.ftl" />
+			</form>
+			<form id="popupForm">
+				<create-form template="/ru/citeck/components/form/workflow/additional-confirm/submit-confirm-task-popup.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfacf:submitConfirmTask">
+		<forms>
+			<form>
+				<view-form template="/ru/citeck/components/form/workflow/additional-confirm/submit-confirm-task.ftl" />
+			</form>
+			<form id="workflow-details">
+				<view-form template="/ru/citeck/components/form/workflow/common/workflow-details.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfacf:confirmTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/additional-confirm/confirm-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/additional-confirm/confirm-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfacf:notifyTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/additional-confirm/notify-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/additional-confirm/notify-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

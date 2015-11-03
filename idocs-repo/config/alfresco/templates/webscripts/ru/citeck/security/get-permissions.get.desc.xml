@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get-permissions</shortname>
+  <url>/api/permissions/get-permissions</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+  <lifecycle>public_api</lifecycle>
+</webscript>

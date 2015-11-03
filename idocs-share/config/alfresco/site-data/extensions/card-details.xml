@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+	<modules>
+		<module>
+			<id>card-details/hide-node-path</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.card-details/hide-node-path</element>
+				</params>
+			</evaluator>
+			<components>
+				<component>
+					<scope>page</scope>
+					<region-id>node-header</region-id>
+					<source-id>card-details</source-id>
+					<sub-components>
+						<sub-component id="links-node-header" index="75">
+							<url>/citeck/components/node-header/hide-node-path</url>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+		<module>
+			<id>card-details/hide-version-history-buttons</id>
+			<auto-deploy>true</auto-deploy>
+			<evaluator type="config.module.evaluator">
+				<params>
+					<element>ModuleConfig.card-details/hide-version-history-buttons</element>
+				</params>
+			</evaluator>
+			<configurations>
+				 <config evaluator="string-compare" condition="VerionHistoryButtons">
+					 <dependencies>
+						 <css src="/citeck/components/document-versions/document-versions.css" />
+					 </dependencies>
+				 </config>
+			</configurations>
+			<components>
+				<component>
+					<scope>page</scope>
+					<region-id>document-versions</region-id>
+					<source-id>card-details</source-id>
+					<sub-components>
+						<sub-component id="hide-version-history-buttons" index="91">
+							<url>/citeck/dependencies-loader</url>
+							<properties>
+								<configName>VerionHistoryButtons</configName>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
+	</modules>
+</extension>

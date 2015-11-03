@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete Association</shortname>
+  <description>Delete association from agreement</description>
+  <url>/acm/deleteAssociation</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

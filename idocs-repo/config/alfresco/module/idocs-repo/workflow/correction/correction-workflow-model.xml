@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfcr:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/correction/1.0" prefix="wfcr"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfcr:correctionOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>ForAll</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="wfcr:submitCorrectionTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfcr:corrector</aspect>
+                <aspect>cwf:sendNotification</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfcr:correctionTask">
+            <title>Доработка</title>
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <!--<property name="wfcr:projectNumber">-->
+                    <!--<title>Номер проекта</title>-->
+                    <!--<type>d:text</type>-->
+                <!--</property>-->
+                <property name="wfcr:failureCause">
+                    <title>замечания</title>
+                    <type>d:text</type>
+                </property>
+                <property name="wfcr:message">
+                    <title>Сообщение</title>
+                    <type>d:text</type>
+                    <default>Отредактировать и доработать проект документа</default>
+                </property>
+            </properties>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/correction/1.0}correctionOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default/>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfcr:correctionOutcome</aspect>
+                <aspect>wfcr:options</aspect>
+                <aspect>wfcr:confirmers</aspect>
+                <aspect>wfcr:dueDate</aspect>
+                <aspect>wfcr:priority</aspect>
+                <aspect>cwf:workflowStartDate</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfcr:corrector">
+            <title>Корректор</title>
+            <associations>
+                <association name="wfcr:corrector">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        <aspect name="wfcr:correctionOutcome">
+            <properties>
+                <property name="wfcr:correctionOutcome">
+                    <type>d:text</type>
+                    <default>ForAll</default>
+                    <constraints>
+                        <constraint ref="wfcr:correctionOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="wfcr:options">
+            <properties>
+                <property name="wfcr:canChooseConfirmers">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+                <property name="wfcr:canChangeDueDate">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+                <property name="wfcr:canChangePriority">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="wfcr:confirmers">
+            <associations>
+                <association name="wfcr:confirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="wfcr:allConfirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="wfcr:rejectedConfirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        <aspect name="wfcr:dueDate">
+            <properties>
+                <property name="wfcr:dueDate">
+                    <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="wfcr:priority">
+            <properties>
+                <property name="wfcr:priority">
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

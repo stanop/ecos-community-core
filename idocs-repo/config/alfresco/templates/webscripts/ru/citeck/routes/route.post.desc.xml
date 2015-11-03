@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>Create Route</shortname>
+  <description>Create route through form</description>
+  <url>/api/citeck/route</url>
+  <method>POST</method>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+  <lifecycle>public_api</lifecycle>
+</webscript>

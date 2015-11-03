@@ -1,0 +1,1127 @@
+.static .invariants-form .template-table {
+  margin-left: -40px;
+  width: 800px;
+}
+
+.invariants-form .template-table,
+.invariants-form .template-table .template-rowset {
+  position: relative;
+}
+
+.invariants-form .template-table .template-row,
+.invariants-form .template-table [class*="template-row-"] {
+  margin: 0 0 10px 0;
+  position: relative;
+  padding: 0 0 10px 0;
+  
+  clear: both;
+
+  box-sizing: border-box;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row,
+.invariants-form:not(.view-form) .template-table [class*="template-row-"] {
+  padding-right: 15px;
+}
+
+.static .invariants-form .template-table .template-row,
+.static .invariants-form .template-table [class*="template-row-"] {
+  margin-left: 40px;
+  width: 95%;
+}
+
+
+/* one column */
+.invariants-form .template-table .template-row .form-region,
+.invariants-form .template-table [class*="template-row-"] .form-region {
+  display: inline-block;
+  vertical-align: text-top;
+}
+
+
+/* two column */
+.invariants-form .template-table .template-half-width,
+.invariants-form .template-table [class*="template-half-width-"] {
+  float: left;
+  position: relative;
+  margin-left: 5%;
+  width: 45%;
+}
+
+/* three column */
+.invariants-form .template-table .template-third-width,
+.invariants-form .template-table [class*="template-third-width-"] {
+  float: left;
+  position: relative;
+  margin-left: 5%;
+  width: 28.333%;
+}
+
+
+/* rowset */
+.invariants-form .template-table .template-rowset {
+  clear: both;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset:after {
+  margin-bottom: 10px;
+  height: 1px;
+  background-color: #ccc;
+  width: 95%;
+  margin-left: 5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset .template-rowset:last-child:after {
+  margin: 0;
+  height: 0;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset .template-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.invariants-form .template-table .template-rowset .title {
+  font-size: 18px;
+  color: #E97527;
+  margin-bottom: 10px;
+  font-family: Open Sans Bold, Arial, sans-serif;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset .title {
+  margin-left: 5%;
+}
+
+
+/* row field width */
+.invariants-form .template-table .template-row .template-select,
+.invariants-form .template-table .template-row .template-date,
+.invariants-form .template-table .template-row .template-datetime,
+.invariants-form .template-table .template-row .template-text,
+.invariants-form .template-table .template-row .template-textarea,
+.invariants-form .template-table .template-row .template-auto-number,
+.invariants-form .template-table .template-row .template-autocomplete,
+.invariants-form .template-table .template-row .template-number {
+  width: 54.5%;
+  float: right;
+}
+
+
+/* clearfix */
+.invariants-form .template-table .template-row:after,
+.invariants-form .template-table .template-rowset:after,
+.invariants-form .template-table .template-half-width:after,
+.invariants-form .template-table .template-third-width:after,
+.invariants-form .template-table [class*="template-row-"]:after,
+.invariants-form .template-table [class*="template-half-width-"]:after,
+.invariants-form .template-table [class*="template-third-width-"]:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+
+/* block min height */
+.form-region.template-textarea {
+  margin-bottom: -3px;
+}
+
+
+/* separator line */
+.invariants-form .template-table .template-row,
+.invariants-form .template-table [class*="template-row-"] {
+  border-bottom: 1px solid #ccc;
+}
+
+
+/* general */
+.invariants-form .template-table .template-textarea textarea,
+.invariants-form .template-table .template-text input[type="text"],
+.invariants-form .template-table .template-number input[type="number"],
+.invariants-form .template-table .template-datetime input[type="datetime-local"],
+.invariants-form .template-table .template-select select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* region select group */
+.invariants-form .template-table .template-row .region-select-group {
+  overflow: hidden;
+  float: right;
+  max-width: 25%;
+  clear: right;
+}
+
+.invariants-form .template-table .template-row .template-view + .region-select-group {
+  margin-top: -10px;
+}
+
+
+/* default */
+.invariants-form .template-table .region-select-group .template-default {
+  display: none;
+}
+
+
+/* mandatory */
+.invariants-form .template-table .template-mandatory {
+  color: green;
+  position: absolute;
+  left: -15px;
+  top: 3px;
+}
+
+.invariants-form .template-table .template-row .template-mandatory {
+  top: 8px;
+}
+
+
+/* label */
+.invariants-form:not(.view-form) .template-table .template-row-checkbox .template-label {
+  width: 96.5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-half-width-checkbox .template-label,
+.invariants-form:not(.view-form) .template-table .template-third-width-checkbox .template-label {
+  width: 89.5%;
+  display: inline-block;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row .template-label {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.invariants-form .template-table .template-row .template-label {
+  width: 45%;
+  float: left;
+}
+
+.invariants-form .template-table .template-half-width .template-label,
+.invariants-form .template-table .template-third-width .template-label {
+  margin-bottom: 10px;
+  float: none;
+}
+
+.invariants-form:not(.view-form) .template-table .template-label label {
+  font-family: Open Sans Bold, Arial, sans-serif;
+  line-height: normal;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row .template-label label {
+  padding-bottom: 2px;
+  display: block;
+}
+
+
+/* label in view-mode */
+.invariants-form.view-form .template-table .template-label label {
+  padding: 0;
+  margin: 0;
+
+  color: #333;
+  line-height: normal;
+  font-family: Open Sans, Arial,  sans-serif;
+}
+
+
+/* textarea */
+.invariants-form .template-table .template-row .template-textarea {
+  min-width: 54.5%;
+  max-width: 100%;
+  width: auto;
+}
+
+/* select */
+.invariants-form .template-table .template-row .template-select select {
+  width: 100%;
+}
+
+
+/* select- */
+.invariants-form .template-table .template-row .region-select-group > .form-region {
+  float: right;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.invariants-form .template-table .template-half-width [class*="template-select-"],
+.invariants-form .template-table .template-third-width [class*="template-select-"] {
+  margin-top: 10px;
+}
+
+.invariants-form .template-table .template-half-width [class*="template-select-"]:not(:only-of-type),
+.invariants-form .template-table .template-third-width [class*="template-select-"]:not(:only-of-type) {
+  float: left;
+  margin-right: 10px;
+}
+
+
+/* help */
+.invariants-form .template-table .template-help {
+  cursor: help;
+  font-weight: 900;
+}
+
+.invariants-form .template-table .template-row .template-help,
+.invariants-form .template-table [class*="template-row-"] .template-help {
+  position: absolute;
+  right: 2px;
+  top: 7px;
+}
+
+.invariants-form .template-table [class*="template-row-"] .template-help {
+  top: 2px;
+}
+
+.invariants-form .template-table .template-row .template-textarea + .template-help {
+  top: 1px;
+}
+
+.invariants-form .template-table .template-half-width .template-help,
+.invariants-form .template-table [class*="template-half-width-"] .template-help,
+.invariants-form .template-table .template-third-width .template-help,
+.invariants-form .template-table [class*="template-third-width-"] .template-help {
+  position: absolute;
+  right: 0;
+  top: 1px;
+}
+
+.invariants-form .template-table .template-row .template-number + .template-help {
+  position: initial;
+  margin-left: 5px;
+}
+
+
+/* none */
+.invariants-form .template-table .template-row .template-none {
+  display: none;
+}
+
+
+/* checkbox */
+.invariants-form .template-table .template-checkbox {
+  float: left;
+  margin-right: 10px;
+}
+
+.invariants-form .template-table .template-checkbox input[type="checkbox"] {
+  vertical-align: bottom;
+}
+
+
+/* message */
+
+.invariants-form .template-table .template-message {
+    display: block !important;
+    clear: both;
+}
+
+.invariants-form .template-table .template-row .template-message,
+.invariants-form .template-table [class*="template-row-"] .template-message {
+  margin-left: 45.5%;
+}
+
+.static .invariants-form .template-table .template-row .template-message,
+.static .invariants-form .template-table [class*="template-row-"] .template-message {
+  position: absolute;
+  left: 105%;
+  white-space: nowrap;
+  top: 1px;
+  margin-left: 0;
+}
+
+.invariants-form .template-table .template-row > .template-textarea + .template-help + .template-message {
+  position: initial;
+}
+
+
+/* date and datetime */
+.invariants-form .template-table .template-date a.calendar-link-button,
+.invariants-form .template-table .template-datetime a.calendar-link-button {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.invariants-form .template-table .template-date img.datepicker-icon,
+.invariants-form .template-table .template-datetime img.datepicker-icon {
+  position: relative;
+  top: 3px;
+}
+
+
+/* date */
+.invariants-form .template-table .template-row .template-date input {
+  width: 45%;
+}
+
+
+/* datetime */
+.invariants-form .template-table .template-row .template-datetime input[type="text"] {
+  width: 60%;
+}
+
+
+/* auto-number */
+.invariants-form .template-table .template-row .template-auto-number:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.invariants-form .template-table .template-row .template-auto-number input {
+  width: 45%;
+  margin-right: 10px;
+  float: left;
+}
+
+
+/* number-generate */
+.invariants-form .template-table .template-row .template-number-generate {
+  float: right;
+  clear: right;
+  margin-top: 10px;
+}
+
+/* orgstruct-picker */
+.orgstruct-header {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.orgstruct-layout {
+  background-color: white;
+}
+
+.orgstruct-layout .selected-object {
+  padding: 10px 35px 10px 32px;
+  position: relative;
+  line-height: normal;
+  cursor: pointer;
+
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+.orgstruct-layout .selected-object:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+}
+
+.orgstruct-layout .selected-object:after {
+  content: "";
+  display: block;
+
+  position: absolute;
+  right: 10px;
+  top: 13px;
+
+  background-image: url(images/remove.png);
+  background-position: center;
+  background-repeat: no-repeat;
+
+  width: 12px;
+  height: 12px;
+}
+
+.orgstruct-layout .selected-object:hover {
+  color: red;
+}
+
+.orgstruct-layout .selected-object:hover:after {
+  background-image: url(images/remove-active.png);
+}
+
+.orgstruct-header .orgstruct-search {
+  position: relative;
+}
+
+.orgstruct-header .orgstruct-search input[type="text"].search-input {
+  padding: 5px 10px 5px 30px;
+  border-radius: 10px;
+  width: 335px;
+}
+
+.orgstruct-header .orgstruct-search .search-icon {
+  background-image: url(images/search.png);
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 3px;
+  background-position: center;
+  background-repeat: no-repeat;
+  left: 3px;
+}
+
+.orgstruct-tree {
+  height: 250px;
+  overflow-y: auto;
+}
+
+.orgstruct-tree > .ygtvitem > .ygtvchildren > .ygtvitem {
+  padding: 5px 10px;
+}
+
+.orgstruct-tree > .ygtvitem > .ygtvchildren > .ygtvitem:not(:first-child) {
+  border-top: 1px solid #ccc;
+}
+
+.orgstruct-tree .ygtvtable {
+  width: 100%;
+}
+
+.orgstruct-tree .ygtvcontent {
+  padding: 5px 0;
+  text-align: left;
+  cursor: default;
+}
+
+.orgstruct-tree .selectable .ygtvrow .ygtvcontent {
+  padding-right: 25px;
+
+  background-image: url(images/add.png);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.orgstruct-tree .selectable .ygtvrow:hover .ygtvcontent {
+  background-image: url(images/add-active.png);
+}
+
+.orgstruct-tree .selectable .ygtvrow .ygtvcontent.selected {
+  background-image: none;
+}
+
+.orgstruct-tree .ygtvcontent .ygtvlabel {
+  display: block;
+  cursor: default;
+  margin: 0;
+  padding-left: 21px;
+  line-height: normal;
+
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-USER .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-USER {
+  background-image: url(images/user.png)
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-GROUP .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-GROUP {
+  background-image: url(images/group.png)
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-GROUP.groupType-BRANCH .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-GROUP.groupType-BRANCH {
+  background-image: url(images/branch.png)
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-GROUP.groupType-ROLE .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-GROUP.groupType-ROLE {
+  background-image: url(images/role.png)
+}
+
+.orgstruct-tree .ygtvtable.selectable .ygtvrow:hover .ygtvcontent,
+.orgstruct-tree .ygtvtable.selectable .ygtvrow:hover .ygtvcontent .ygtvlabel {
+  color: red;
+  cursor: pointer;
+}
+
+.orgstruct-tree .ygtvdepthcell,
+.orgstruct-tree .ygtvtn,
+.orgstruct-tree .ygtvln {
+  width: 15px;
+}
+
+.orgstruct-tree .ygtvtp, .orgstruct-tree .ygtvlp,
+.orgstruct-tree .ygtvtph, .orgstruct-tree .ygtvlph,
+.orgstruct-tree .ygtvtm, .orgstruct-tree .ygtvlm,
+.orgstruct-tree .ygtvtmh, .orgstruct-tree .ygtvlmh,
+.orgstruct-tree .ygtvloading {
+  background-position: left;
+  background-repeat: no-repeat;
+  width: 10px;
+}
+
+.orgstruct-tree .ygtvtp,
+.orgstruct-tree .ygtvlp,
+.orgstruct-tree .ygtvtph,
+.orgstruct-tree .ygtvlph {
+   background-image: url(images/yui-twister-close.png);
+}
+.orgstruct-tree .ygtvtm,
+.orgstruct-tree .ygtvlm,
+.orgstruct-tree .ygtvtmh,
+.orgstruct-tree .ygtvlmh {
+   background-image: url(images/yui-twister-open.png);
+}
+
+.orgstruct-tree .ygtvloading {
+  background-image: url(images/small-loading.gif);
+}
+
+.orgstruct-tree .ygtvfocus,
+.orgstruct-tree .ygtvfocus .ygtvlabel {
+  background-color: transparent;
+}
+
+.orgstruct-control-objects {
+  float: left;
+  width: 72.5%;
+  position: relative;
+}
+
+.orgstruct-control-objects .selected-object-list li.selected-object {
+  line-height: 200%;
+}
+
+
+/* autocomplete */
+.autocomplete-control {
+  position: relative;
+}
+
+.autocomplete-control .autocomplete-select,
+.autocomplete-control .autocomplete-container {
+  background-color: white;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.autocomplete-control .autocomplete-select {
+  height: 30px;
+  padding: 4px 35px 4px 7px;
+  line-height: normal;
+  color: black;
+  position: relative;
+}
+
+.autocomplete-control .autocomplete-select.disabled {
+  color: #aaa;
+}
+
+.autocomplete-control .autocomplete-select:not(.disabled):hover {
+  border-color: #aaa;
+}
+
+.autocomplete-control .autocomplete-select:not(.disabled):focus {
+  border-color: #1c55da;
+}
+
+.autocomplete-control .autocomplete-select .autocomplete-value {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: default;
+}
+
+.autocomplete-control .autocomplete-select a.clear-button {
+  height: 28px;
+  width: 9px;
+  position: absolute;
+  top: 0px;
+  right: 18px;
+  text-indent: -9999px;
+  cursor: pointer;
+
+  background-image: url(images/remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 9px;
+}
+
+.autocomplete-control .autocomplete-select .autocomplete-twister {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 28px;
+  width: 18px;
+
+  background-image: url(images/autocomplete-closed-twister.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 7px;
+}
+
+.autocomplete-control .autocomplete-select.opened .autocomplete-twister {
+  background-image: url(images/autocomplete-opened-twister.jpg);
+}
+
+.autocomplete-control .autocomplete-select.disabled .autocomplete-twister {
+  background-image: url(images/autocomplete-disabled-close-twister.jpg);
+}
+
+.autocomplete-control .autocomplete-container {
+  position: absolute;
+  padding: 7px;
+  z-index: 5;
+  border-top: none;
+  box-shadow: 0 0 25px -5px gray;
+}
+
+.autocomplete-container .autocomplete-search-container {
+  position: relative;
+}
+
+.autocomplete-container .autocomplete-search-container .help-message {
+  margin-bottom: 7px;
+}
+
+.autocomplete-container .autocomplete-search-container input.autocomplete-search {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 7px;
+  padding-right: 30px !important;
+}
+
+.autocomplete-container .autocomplete-search-container .loading-indicator {
+  background-color: white;
+  background-image: url(images/spinner.gif);
+  background-position: center;
+  background-repeat: no-repeat;
+
+  right: 1px;
+  bottom: 1px;
+  width: 28px;
+  height: 28px;
+
+  position: absolute;
+  border-radius: 5px;
+}
+
+
+.autocomplete-container ul.autocomplete-list {
+  margin-top: 7px;
+}
+
+.autocomplete-container ul.autocomplete-list a {
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+  line-height: normal;
+}
+
+.autocomplete-container ul.autocomplete-list li.selected a {
+  font-weight: 900;
+  color: red;
+}
+
+.autocomplete-container .emplty-message {
+    margin-top: 7px;
+    color: #777;
+}
+
+
+/* file-upload */
+.invariants-form .template-table .template-row .file-upload-control button.file-upload-open-dialog-button {
+  float: right;
+}
+
+.invariants-form .template-table .file-upload-control.loading button.file-upload-open-dialog-button {
+  color: transparent;
+  background-image: url(images/loading.gif);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+
+/* create-object */
+.invariants-form .template-table .create-variants {
+  background-color: white;
+  position: absolute;
+  box-shadow: 0 0 5px 0px gray;
+  padding: 7px;
+  z-index: 5;
+}
+
+.invariants-form .template-table .create-variants .create-variant {
+  padding: 5px;
+  line-height: normal;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.invariants-form .template-table .create-variants .create-variant:hover {
+  color: red;
+  background-color: #f0f0f0;
+}
+
+.invariants-form .template-table .create-variants .create-variant.default {
+  font-weight: 900;
+}
+
+
+/* journal */
+.journal-picker-header {
+  padding: 5px 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.journal-picker-header:after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.journal-picker-header a.journal-tab-button {
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 200%;
+}
+
+.journal-picker-header a.journal-tab-button:hover,
+.journal-picker-header a.journal-tab-button.selected {
+  color: red;
+}
+
+.journal-picker-header .journal-filter {
+  float: right;
+  width: 30%;
+}
+
+.journal-picker-header .journal-filter input.journal-filter-input {
+  padding: 3px 5px;
+  border-radius: 7px;
+  width: 100%;
+}
+
+.journal-capture {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+}
+
+.journal-picker-page-container {
+  height: 501px;
+}
+
+.journal-picker-page-container.with-collapsible-block {
+  min-height: 501px;
+  height: auto;
+}
+
+.journal-container {
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow-x: auto; 
+}
+
+.journal-container {
+  height: 371px;
+}
+
+.journal-container.selected-elements {
+  height: 92px;
+  overflow-y: auto; 
+}
+
+.journal-container .loading {
+    position: absolute;
+    z-index: 10;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+
+    background-image: url(../journals2/images/loading.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.journal-container .journal {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.journal-container .journal th,
+.journal-container .journal tr.journal-element td {
+  padding: 7px 0 7px 15px;
+}
+
+.journal-container .journal th {
+    white-space: nowrap;
+}
+
+.journal-container .journal th:last-child, 
+.journal-container .journal tr.journal-element td:last-child {
+    padding-right: 15px;
+}
+
+.journal-container .journal .journal-element td {
+  border-top: 1px solid #ccc; 
+}
+
+.journal-container .journal .journal-element:hover td {
+  background-color: #f0f0f0;
+}
+
+.journal-container .journal .journal-element td:last-child {
+  padding-right: 15px;
+}
+
+.journal-container .journal .journal-element td.actions a {
+  cursor: pointer;
+}
+
+
+.journal-pagination {
+  padding: 7px 15px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+
+.journal-pagination span.page-label {
+  margin: 0 10px;
+}
+
+.journal-pagination span.next-page,
+.journal-pagination span.previous-page {
+  color: #aaa;
+}
+
+
+.search-criteria-actions {
+  padding: 0 15px;
+  overflow: hidden;
+  border-top: 1px solid #ccc;
+}
+
+.search-criteria-actions > ul {
+    float: right;
+}
+
+.search-criteria-actions li.search-critetia-option {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.search-criteria-actions a.search-criteria-button {
+  line-height: 200%;
+  cursor: pointer;
+}
+
+.search-criteria-actions li.search-critetia-option .search-criteria-variants {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 0 5px 2px gray;
+  padding: 7px;
+  min-width: 150px;
+  z-index: 10;
+}
+
+.search-criteria-actions li.search-critetia-option .search-criteria-variants a.search-criterion {
+  width: 100%;
+  display: block;
+  line-height: normal;
+  cursor: pointer;
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+.search-criteria-actions li.search-critetia-option .search-criteria-variants a.search-criterion:hover {
+  background-color: #f0f0f0;
+}
+
+.selected-search-criteria-container {
+  padding: 10px 15px;
+  max-height: 452px;
+  overflow-y: auto;
+}
+
+.with-collapsible-block .selected-search-criteria-container {
+  max-height: 215;
+}
+
+.selected-search-criteria-container table.selected-criteria-list {
+  width: 100%;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td:not(:last-child) {
+  padding-right: 10px;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.action-col {
+  width: 5%;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.name-col {
+  width: 30%;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.predicate-col {
+  width: 30%;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.predicate-col select.predicate {
+  width: 100%;
+  background-color: white;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.value-col {
+  width: 35%;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.value-col input[type="text"],
+.selected-search-criteria-container table.selected-criteria-list td.value-col input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* object-finder */
+.selected-search-criteria-container table.selected-criteria-list td.value-col .object-finder-items {
+  margin: 0;
+  float: left;
+  min-height: 26px;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.value-col .object-finder-items > div {
+  margin-top: 3px;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.value-col .object-finder-items img {
+  vertical-align: -3px;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.value-col .show-picker {
+  float: right;
+  clear: none;
+}
+
+.selected-search-criteria-container table.selected-criteria-list td.value-col .show-picker .yui-button button {
+  line-height: 125%;
+}
+
+
+/* view */
+.invariants-form:not(.view-form) .template-table .template-row .template-view {
+    padding-top: 5px; 
+    width: 30%;
+    box-sizing: border-box;
+    float: left;
+}
+
+.invariants-form .template-table .template-view span.value-item {
+  display: block;
+  line-height: normal;
+  padding-right: 20px;
+  position: relative;
+}
+
+.invariants-form .template-table .template-view span.value-item span.value-item-text {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* view in view-mode */
+.invariants-form.view-form .template-table .template-view {
+  font-family: Open Sans Bold, Arial, sans-serif;
+  float: right;
+  width: 55%;
+}
+
+.invariants-form .template-table .template-view span.value-item .value-item-actions {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+/* view-table */
+.invariants-form .template-table .template-view-table,
+.invariants-form .template-table .template-view-table .view-table-container {
+  width: 100%;
+}
+
+.invariants-form .template-table .template-view-table .view-table-container {
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 10px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-view-table .view-table-container {
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.invariants-form .template-table .template-view-table table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.invariants-form .template-table .template-view-table table thead tr th,
+.invariants-form .template-table .template-view-table table tbody tr td {
+  padding: 5px 10px;
+}
+
+.invariants-form .template-table .template-view-table table thead tr th:not(:last-child),
+.invariants-form .template-table .template-view-table table tbody tr td:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.invariants-form .template-table .template-view-table table thead tr th {
+  border-bottom: 1px solid #ccc;
+}
+
+.invariants-form .template-table .template-view-table table tbody tr td {
+  border-top: 1px solid #ccc;
+}
+
+.invariants-form .template-table .template-row .template-view-table + .region-select-group {
+  max-width: 100%;
+}
+
+
+/* view-actions */
+.invariants-form .template-table .template-view span.value-item .value-item-actions a,
+.invariants-form .template-table .template-view-table tr.value-item td.value-item-actions a {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.invariants-form .template-table .template-view span.value-item .value-item-actions a.edit-value-item,
+.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.edit-value-item {
+  background-image: url(images/edit.png);
+}
+
+.invariants-form .template-table .template-view span.value-item .value-item-actions a.edit-value-item:hover,
+.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.edit-value-item:hover {
+  background-image: url(images/edit-active.png);
+}
+
+.invariants-form .template-table .template-view span.value-item .value-item-actions a.delete-value-item,
+.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item {
+  background-image: url(images/remove.png);
+  background-size: 10px;
+}
+
+.invariants-form .template-table .template-view span.value-item .value-item-actions a.delete-value-item:hover,
+.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
+  background-image: url(images/remove-active.png);
+}
+
+
+/* VALIDATION */
+
+/* invalid */
+.invariants-form .template-table .invalid .template-message {
+  color: red;
+}
+
+.invariants-form .template-table .invalid .form-region:not(.template-autocomplete) input,
+.invariants-form .template-table .invalid textarea,
+.invariants-form .template-table .invalid select {
+  border-color: red !important;
+}

@@ -1,0 +1,52 @@
+<webscript>
+  <shortname>Create orgstruct branch</shortname>
+  <description>Create orgstruct branch or convert from group</description>
+  <url>/api/orgstruct/people/{username}/groups?branch={includeBranches?}&amp;role={includeRoles?}&amp;group={includeGroups?}</url>
+  <url>/api/orgstruct/people/groups?nodeRef={nodeRef}</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction allow="readonly">required</transaction>
+  <args>
+    <arg>
+	  <shortname>username</shortname>
+	  <description>username of user, whose groups are fetched</description>
+	</arg>
+    <arg>
+	  <shortname>includeBranches</shortname>
+	  <description>include branch groups or not (true by default)</description>
+	</arg>
+    <arg>
+	  <shortname>includeRoles</shortname>
+	  <description>include role groups or not (true by default)</description>
+	</arg>
+    <arg>
+	  <shortname>includeGroups</shortname>
+	  <description>include simple groups or not (true by default)</description>
+	</arg>
+  </args>
+  <responses>
+    <response>
+	  <format>json</format>
+	  <type>
+        <![CDATA[
+		[
+			{
+				authorityType: ... // "GROUP" or "USER"
+				shortName: ...
+				fullName: ...
+				displayName: ...
+				groupType: ... // only for groups
+				groupSubType: ... // only for groups
+				... // custom attributes
+				nodeRef: ...
+			},
+			{
+				...
+			},
+			...
+		]
+        ]]>
+	  </type>
+	</response>
+  </responses>
+</webscript>

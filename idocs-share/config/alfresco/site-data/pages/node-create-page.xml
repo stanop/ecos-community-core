@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+	<title>Node Create</title>
+	<title-id>page.node-create.title</title-id>
+	<description>Page for creating node</description>
+	<description-id>page.node-create.description</description-id>
+	<template-instance>node-view</template-instance>
+	<authentication>user</authentication>
+	<components>
+
+		<component>
+			<region-id>node-view</region-id>
+			<url>/citeck/components/node-view</url>
+			<properties>
+				<type>{type}</type>
+				<viewId>{viewId}</viewId>
+				<mode>create</mode>
+				<param_destination>{destination}</param_destination>
+				<runtimeKey>node-create</runtimeKey>
+			</properties>
+		</component>
+
+		<component>
+			<region-id>node-view-mgr</region-id>
+			<url>/citeck/components/node-view-mgr</url>
+			<properties>
+				<runtimeKey>node-create</runtimeKey>
+				<onsubmit>card</onsubmit>
+				<oncancel>back</oncancel>
+			</properties>
+		</component>
+
+	</components>
+</page>

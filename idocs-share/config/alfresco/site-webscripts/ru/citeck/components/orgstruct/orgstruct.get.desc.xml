@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Organization Structure Component</shortname>
+    <description>Administration Console - Organization Structure Console</description>
+    <url>/citeck/components/orgstruct/orgstruct</url>
+    <!--<family>admin-console</family>-->
+    <!--<family>edition:ENTERPRISE</family>-->
+</webscript>

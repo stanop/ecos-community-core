@@ -1,0 +1,55 @@
+
+/**
+ * confirm status styles
+ */
+ 
+.doclist .item.confirmStatus.confirm b
+{
+    color: #00A000;
+}
+
+.doclist .item.confirmStatus.decline b
+{
+    color: #A00000;
+}
+
+.doclist .item.confirmStatus
+{
+    background-repeat: no-repeat;
+    padding-left: 20px;
+}
+
+.doclist .item.confirmStatus.confirm
+{
+    background-image: url("/share/res/components/documentlibrary/indicators/document-confirmed-16.png");
+}
+
+.doclist .item.confirmStatus.decline
+{
+    background-image: url("/share/res/components/documentlibrary/indicators/document-declined-16.png");
+}
+
+.doclist .item.confirmStatus.not-considered
+{
+    background-image: url("/share/res/components/documentlibrary/indicators/version-not-considered-16.png");
+}
+
+.doclist .inline-action
+{
+    display: inline !important;
+}
+
+.doclist .inline-action .action-link
+{
+    display: inline !important;
+	padding: 0;
+}
+
+/* Details Form */
+
+.form-container .edit-metadata a,
+.form-container .edit-metadata a:visited
+{
+   background: transparent url(actions/document-edit-metadata-16.png) no-repeat 12px 4px;
+   padding-left: 32px;
+}

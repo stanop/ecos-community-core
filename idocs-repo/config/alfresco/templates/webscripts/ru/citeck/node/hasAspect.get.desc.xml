@@ -1,0 +1,9 @@
+<webscript>
+	<description>It checks existing of node aspect</description>
+	<shortname>Checks node aspect</shortname>
+	<url>/citeck/hasAspect?nodeRef={nodeRef}&amp;aspect={aspect}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

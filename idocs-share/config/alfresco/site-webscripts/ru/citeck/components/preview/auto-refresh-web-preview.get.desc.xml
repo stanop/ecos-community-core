@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Web Preview with auto-refresh</shortname>
+  <description>Web Preview with auto-refresh on metadata update</description>
+  <url>/components/preview/auto-refresh-web-preview</url>
+</webscript>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alfresco-config>
+
+	<config evaluator="model-type" condition="ia:calendarEvent">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="ia:whatEvent"/>
+					<show id="ia:whereEvent"/>
+					<show id="ia:descriptionEvent"/>
+					<show id="ia:fromDate"/>
+					<show id="ia:toDate"/>
+					<show id="ia:isOutlook"/>
+					<show id="ia:outlookUID"/>
+					<show id="ia:recurrenceRule"/>
+					<show id="ia:recurrenceLastMeeting"/>
+					<show id="cm:taggable" force="true"/>
+					<show id="ia:docFolder" force="true"/>
+				</field-visibility>
+				<create-form template="/ru/citeck/components/form/calendar/calendar.ftl" />
+			</form>
+			<form id="search">
+				<field-visibility>
+					<show id="ia:whatEvent"/>
+					<show id="ia:whereEvent"/>
+					<show id="ia:descriptionEvent"/>
+					<show id="ia:fromDate"/>
+					<show id="ia:toDate"/>
+					<show id="cm:taggable" force="true"/>
+				</field-visibility>
+				<edit-form template="/ru/citeck/components/form/calendar/calendar-search.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="ia:calendarEvent">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="ia:whatEvent"/>
+					<show id="ia:whereEvent"/>
+					<show id="ia:descriptionEvent"/>
+					<show id="ia:fromDate"/>
+					<show id="ia:toDate"/>
+					<show id="cm:taggable" force="true"/>
+					<show id="ia:docFolder" force="true"/>
+				</field-visibility>
+				<edit-form template="/ru/citeck/components/form/calendar/calendar.ftl" />
+				<view-form template="/ru/citeck/components/form/calendar/calendar.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

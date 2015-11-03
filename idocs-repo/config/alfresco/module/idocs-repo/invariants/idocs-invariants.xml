@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+    </imports>
+
+    <aspect name="idocs:pagesInfo">
+        <property name="idocs:pagesNumber">
+            <invariant on="valid" language="javascript" description="Количество листов не может быть меньше нуля.">+value >= 0 ? true : false</invariant>
+        </property>
+        <property name="idocs:appendixPagesNumber">
+            <invariant on="valid" language="javascript" description="Количество листов приложений не может быть меньше нуля.">+value >= 0 ? true : false</invariant>
+        </property>
+    </aspect>
+
+</invariants>

@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Add journal folders to header tokens</shortname>
+  <description>Add journal folders to header tokens</description>
+  <url>/citeck/components/header/journals</url>
+</webscript>

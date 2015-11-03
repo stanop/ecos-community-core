@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>hide node path</shortname>
+    <description>Hides node path on node-header</description>
+    <url>/citeck/components/node-header/hide-node-path</url>
+</webscript>

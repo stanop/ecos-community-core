@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/sign/1.0">
+  <process id="registration" name="Registration Workflow" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+        <activiti:field name="script">
+          <activiti:string><![CDATA[execution.setVariable("document", activitiUtils.getSerializable(bpm_package.children[0]));]]></activiti:string>
+        </activiti:field>
+      </activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="Submit Registration Task" activiti:formKey="wfrg:submitRegistrationTask"></startEvent>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <userTask id="usertask1" name="Registration Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfrg:registrationTask">
+      <extensionElements>
+        <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+          <activiti:field name="authority">
+            <activiti:expression>${wfrg_registrator}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="assignment" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:expression>var registrator = document.assocs["idocs:registrator"];
+if(registrator)
+{
+  document.removeAssociation(registrator[0], "idocs:registrator");
+}
+document.createAssociation(people.getPerson(task.assignee), "idocs:registrator");</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:expression>var regNumber = task.getVariable("idocs_registrationNumber");
+if(task.getVariable("wfrg_registrationOutcome")=="Registered")
+{
+if(regNumber == "" || !regNumber) { throw ("Необходимо ввести регистрационный номер");}
+else
+{
+   if(regNumber=="-") { regNumber = enumeration.getNumber(wfrg_autoNumberTemplate, document);}
+var regDate = task.getVariable("idocs_registrationDate");
+if(!regDate || regDate =="")
+{
+	regDate = new java.util.Date();
+}
+task.setVariable("idocs_registrationDate", regDate );
+execution.setVariable("idocs_registrationDate", regDate);
+task.setVariable("idocs_registrationNumber", regNumber );
+execution.setVariable("idocs_registrationNumber", regNumber);
+document.properties["idocs:registrationDate"] = regDate ;
+document.properties["idocs:registrationNumber"] = regNumber;
+document.save();}
+}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <sequenceFlow id="flow2" name="Зарегистрировано" sourceRef="usertask1" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome == "Registered"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow3" name="Отклонено" sourceRef="usertask1" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome == "Declined"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_registration">
+    <bpmndi:BPMNPlane bpmnElement="registration" id="BPMNPlane_registration">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="50.0" y="106.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="46.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="156.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="240.0" y="96.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="85.0" y="123.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="123.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="292.0" y="96.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="81.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="96.0" x="379.0" y="6.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="345.0" y="123.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="156.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="55.0" x="450.0" y="126.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

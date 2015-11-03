@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>custom-manage-permissions</shortname>
+	<description>custom-manage-permissions</description>
+	<family>edit</family>
+	<url>/citeck/components/extended-manage-permissions</url>
+</webscript>

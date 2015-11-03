@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:dl="http://www.alfresco.org/model/datalist/1.0">
+	<dl:dataList>
+		<view:properties>
+			<cm:name>${datalist.name}</cm:name>
+			<cm:title>
+				<view:mlvalue view:locale="en_US">${datalist.title_en}</view:mlvalue>
+				<view:mlvalue view:locale="ru_RU">${datalist.title_ru}</view:mlvalue>
+			</cm:title>
+            <dl:dataListItemType>${datalist.itemtype}</dl:dataListItemType>
+		</view:properties>
+	</dl:dataList>
+</view:view>

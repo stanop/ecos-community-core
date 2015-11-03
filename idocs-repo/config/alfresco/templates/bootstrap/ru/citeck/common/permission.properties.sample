@@ -1,0 +1,15 @@
+# it is a path of object 
+perm.path=/app:company_home/st:sites/cm:attorneys/cm:documentLibrary/cm:documents/cm:attorneyForms/cm:approved-attorneyForms
+
+# it takes true or false
+perm.inherit=true
+
+# it is a full name of authority
+perm.authority=GROUP_do
+
+# it takes one of: FullControl, ReadProperties, ReadChildren, WriteProperties, ReadContent,
+#    WriteContent, ExecuteContent, DeleteNode, DeleteChildren, CreateChildren, LinkChildren,
+#    DeleteAssociations, ReadAssociations, CreateAssociations, ReadPermissions, ChangePermissions,
+#    Read, Write, Delete, AddChildren, Execute,
+#    Administrator, Coordinator, Collaborator, Contributor, Editor, Consumer, RecordAdministrator
+# perm.permission=Contributor

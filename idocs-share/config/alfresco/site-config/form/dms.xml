@@ -1,0 +1,556 @@
+<alfresco-config>
+
+    <config evaluator="node-type" condition="dms:cardTemplate">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="dms:cardType"/>
+                    <show id="dms:templateType" />
+                    <show id="dms:templateProcessor"/>
+                    <show id="dms:filenameTemplate" />
+                    <show id="mimetype"/>
+                    <show id="encoding"/>
+                </field-visibility>
+                <appearance>
+                    <field id="dms:cardType" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=type</control-param>
+                            <control-param name="titleField">prefixedName</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
+                    <field id="dms:templateType" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/citeck/templates/card-template-types</control-param>
+                            <control-param name="titleField">title</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
+                    <field id="mimetype" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+                    </field>
+                    <field id="encoding" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="dms:cardTemplate">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/templates/multipart-form.ftl"/>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="dms:cardType"/>
+                    <show id="dms:templateType" />
+                    <show id="dms:templateProcessor"/>
+                    <show id="dms:filenameTemplate" />
+                    <show id="cm:content" force="true"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:content" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/fileUpload.ftl"/>
+                    </field>
+                    <field id="dms:cardType" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=type</control-param>
+                            <control-param name="titleField">prefixedName</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
+                    <field id="dms:templateType" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/citeck/templates/card-template-types</control-param>
+                            <control-param name="titleField">title</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
+            </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="dms:cardType"/>
+                    <show id="dms:templateType" />
+                    <show id="dms:templateProcessor"/>
+                    <show id="dms:filenameTemplate" />
+                    <show id="mimetype"/>
+                    <show id="encoding"/>
+                </field-visibility>
+                <appearance>
+                    <field id="dms:cardType" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=type</control-param>
+                            <control-param name="titleField">prefixedName</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
+                    <field id="dms:templateType" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/citeck/templates/card-template-types</control-param>
+                            <control-param name="titleField">title</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
+                    <field id="mimetype" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+                    </field>
+                    <field id="encoding" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+	<config evaluator="node-type" condition="dms:template">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/templates/multipart-form.ftl"/>
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="dms:aspect"/>
+					<show id="dms:errorMessageConfig"/>
+                    <show id="cm:taggable" force="true"/>
+                    <show id="tk:appliesToType" force="true"/>
+                    <show id="tk:appliesToKind" force="true"/>
+                </field-visibility>
+				<appearance>
+					<field id="dms:aspect">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=aspect</control-param>
+							<control-param name="titleField">prefixedName</control-param>
+							<control-param name="valueField">name</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+						</control>
+					</field>
+					<field id="dms:errorMessageConfig">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+					</field>
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/tag:tag-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToType">
+                        <!--control template="/org/alfresco/components/form/controls/category.ftl"-->
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToKind">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+				</appearance>
+			</form>
+			<form id="edit">
+				<create-form template="/ru/citeck/templates/multipart-form.ftl"/>
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="dms:aspect"/>
+					<show id="dms:errorMessageConfig"/>
+                    <show id="cm:taggable" force="true"/>
+                    <show id="tk:appliesToType" />
+                    <show id="tk:appliesToKind" />
+					<show id="mimetype"/>
+					<show id="encoding"/>
+				</field-visibility>
+				<appearance>
+					<field id="dms:aspect">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=aspect</control-param>
+							<control-param name="titleField">prefixedName</control-param>
+							<control-param name="valueField">name</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+						</control>
+					</field>
+					<field id="dms:errorMessageConfig">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+					</field>
+					<field id="mimetype" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+					</field>
+					<field id="encoding" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+					</field>
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/tag:tag-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToType">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToKind">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+				</appearance>
+			</form>
+			<form id="search">
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="dms:aspect"/>
+					<show id="dms:errorMessageConfig"/>
+					<show id="mimetype"/>
+					<show id="encoding"/>
+				</field-visibility>
+				<appearance>
+					<field id="dms:aspect">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=aspect</control-param>
+							<control-param name="titleField">prefixedName</control-param>
+							<control-param name="valueField">name</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+						</control>
+					</field>
+					<field id="dms:errorMessageConfig">
+						<control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+					</field>
+					<field id="mimetype" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+					</field>
+					<field id="encoding" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="dms:template">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/templates/multipart-form.ftl"/>
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="dms:aspect"/>
+					<show id="dms:errorMessageConfig"/>
+                    <show id="cm:taggable" force="true"/>
+                    <show id="tk:appliesToType" force="true"/>
+                    <show id="tk:appliesToKind" force="true"/>
+					<show id="cm:content"/>
+				</field-visibility>
+				<appearance>
+					<field id="dms:aspect">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=aspect</control-param>
+							<control-param name="titleField">prefixedName</control-param>
+							<control-param name="valueField">name</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+						</control>
+					</field>
+					<field id="dms:errorMessageConfig">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+					</field>
+					<field id="cm:content">
+						<control template="/ru/citeck/components/form/controls/fileUpload.ftl"/>
+					</field>
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/tag:tag-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToType">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToKind">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+				</appearance>
+			</form>
+			<form id="edit">
+				<create-form template="/ru/citeck/templates/multipart-form.ftl"/>
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="dms:aspect"/>
+					<show id="dms:errorMessageConfig"/>
+                    <show id="cm:taggable" force="true"/>
+                    <show id="tk:appliesToType" />
+                    <show id="tk:appliesToKind" />
+					<show id="mimetype"/>
+					<show id="encoding"/>
+				</field-visibility>
+				<appearance>
+					<field id="dms:aspect">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=aspect</control-param>
+							<control-param name="titleField">prefixedName</control-param>
+							<control-param name="valueField">name</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+						</control>
+					</field>
+					<field id="dms:errorMessageConfig">
+						<control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+					</field>
+					<field id="mimetype" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+					</field>
+					<field id="encoding" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+					</field>
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/tag:tag-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToType">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+                    <field id="tk:appliesToKind">
+                        <control template="/org/alfresco/components/form/controls/category.ftl">
+                            <control-param name="multipleSelectMode">true</control-param>
+                            <control-param name="parentNodeRef">workspace://SpacesStore/category-document-type-root</control-param>
+                        </control>
+                    </field>
+				</appearance>
+			</form>
+			<form id="search">
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="dms:aspect"/>
+					<show id="dms:errorMessageConfig"/>
+					<show id="mimetype"/>
+					<show id="encoding"/>
+				</field-visibility>
+				<appearance>
+					<field id="dms:aspect">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=aspect</control-param>
+							<control-param name="titleField">prefixedName</control-param>
+							<control-param name="valueField">name</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+						</control>
+					</field>
+					<field id="dms:errorMessageConfig">
+						<control template="/ru/citeck/components/form/controls/text-richsearch.ftl">
+						</control>
+					</field>
+					<field id="mimetype" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+					</field>
+					<field id="encoding" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+    <config evaluator="node-type" condition="dms:notificationTemplate">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="dms:notificationType"/>
+                    <show id="dms:workflowName"/>
+                    <show id="dms:taskName"/>
+                    <show id="dms:sendToOwner"/>
+                    <show id="dms:sendToInitiator"/>
+                    <show id="dms:sendToAssignee"/>
+                    <show id="dms:taskSubscribers"/>
+                    <show id="dms:additionRecipients"/>
+                    <show id="dms:titleForResending"/>
+                    <show id="dms:subjectTemplate"/>
+                    <show id="mimetype"/>
+                    <show id="encoding"/>
+                </field-visibility>
+                <appearance>
+                     <field id="dms:workflowName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/workflow-definitions</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'data', fields: [ {key:'name'}, {key:'title'} ] }</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="titleField">title</control-param>
+                        </control>
+                    </field>
+                     <field id="dms:taskName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classes/bpm_task/subclasses</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="titleField">title</control-param>
+                        </control>
+                    </field>
+                    <field id="mimetype" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+                    </field>
+                    <field id="encoding" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="dms:notificationTemplate">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/templates/multipart-form.ftl"/>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="dms:notificationType"/>
+                    <show id="dms:workflowName"/>
+                    <show id="dms:taskName"/>
+                    <show id="dms:sendToOwner"/>
+                    <show id="dms:sendToInitiator"/>
+                    <show id="dms:sendToAssignee"/>
+                    <show id="dms:taskSubscribers"/>
+                    <show id="dms:additionRecipients"/>
+                    <show id="dms:titleForResending"/>
+                    <show id="dms:subjectTemplate"/>
+                    <show id="cm:content" force="true"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:content" mandatory="true">
+                        <control template="/ru/citeck/components/form/controls/fileUpload.ftl"/>
+                    </field>
+                    <field id="dms:workflowName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/workflow-definitions</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'data', fields: [ {key:'name'}, {key:'title'} ] }</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="titleField">title</control-param>
+                        </control>
+                    </field>
+                     <field id="dms:taskName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classes/bpm_task/subclasses</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="titleField">name</control-param>
+                        </control>
+                    </field>
+                    <!--field id="dms:taskSubscribers">
+                        <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
+                            <control-param name="itemType">d:qname</control-param>
+                            <control-param name="itemKey">shortName</control-param>
+                            <control-param name="itemTitle">{shortName}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/get-all-association</control-param>
+                            <control-param name="rootURLresults"></control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/get-all-association?association={shortName}</control-param>
+                            <control-param name="itemURLresults">0</control-param>
+                            <control-param name="searchURL">/share/proxy/alfresco/api/get-all-association?association={query}</control-param>
+                            <control-param name="searchURLresults"></control-param>
+                        </control>
+                    </field-->
+				</appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="dms:notificationType"/>
+                    <show id="dms:workflowName"/>
+                    <show id="dms:taskName"/>
+                    <show id="mimetype"/>
+                    <show id="encoding"/>
+                </field-visibility>
+                <appearance>
+                    <field id="mimetype" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+                    </field>
+                    <field id="encoding" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/encoding.ftl"/>
+                    </field>
+                     <field id="dms:workflowName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/workflow-definitions?exclude=activiti$activitiAdhoc,activiti</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'data', fields: [ {key:'name'}, {key:'title'} ] }</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="titleField">title</control-param>
+                        </control>
+                    </field>
+                     <field id="dms:taskName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classes/bpm_task/subclasses</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="titleField">title</control-param>
+                        </control>
+                    </field>
+               </appearance>
+            </form>
+        </forms>
+    </config>
+   <config evaluator="model-type" condition="dms:applicationFile">
+		<forms>
+			<form>
+                <create-form template="/ru/citeck/templates/multipart-form.ftl" />
+				<field-visibility>
+					<show id="dms:applicationFileName"/>
+					<show id="cm:content" force="true" />
+				</field-visibility>
+				<appearance>
+					<field id="dms:applicationFileName" mandatory="true"/>
+					<field id="cm:content">
+						<control template="/ru/citeck/components/form/controls/fileUpload.ftl" />
+					</field>
+				</appearance>
+			</form>
+		</forms>
+   </config>
+   <config evaluator="node-type" condition="dms:applicationFile">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="dms:applicationFileName" />
+					<show id="cm:title" force="true" />
+					<show id="cm:description" force="true" />
+					<show id="mimetype" />
+					<show id="cm:author" force="true" />
+					<show id="size" for-mode="view" />
+					<show id="cm:creator" for-mode="view" />
+					<show id="cm:created" for-mode="view" />
+					<show id="cm:modifier" for-mode="view" />
+					<show id="cm:modified" for-mode="view" />
+				</field-visibility>
+			</form>
+		</forms>
+   </config>
+</alfresco-config>

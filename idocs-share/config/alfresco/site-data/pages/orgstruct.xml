@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+   <id>orgstruct</id>
+   <page-type>orgstruct</page-type>
+   <title>Organization structure</title>
+   <title-id>page.orgstruct.title</title-id>
+   <description>Organization structure: organizations, branches, roles</description>
+   <description-id>page.orgstruct.description</description-id>
+   <template-instance>orgstruct</template-instance>
+   <authentication>admin</authentication>
+</page>

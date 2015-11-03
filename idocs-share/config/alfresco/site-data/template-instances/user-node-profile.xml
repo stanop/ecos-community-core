@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<template-instance>
+    <template-type>ru/citeck/user-node-profile</template-type>
+    <components>
+
+        <!-- Title -->
+        <component>
+            <region-id>title</region-id>
+            <url>/components/title/profile-title</url>
+        </component>
+
+        <!-- Toolbar -->
+        <component>
+            <region-id>toolbar</region-id>
+            <url>/components/profile/userprofile-toolbar</url>
+        </component>
+
+        <!-- User Profile -->
+        <component>
+            <region-id>user-node-profile</region-id>
+            <url>/citeck/components/profile/user-profile</url>
+            <properties>
+                <mode>{mode}</mode>
+                <runtimeKey>profile-view</runtimeKey>
+            </properties>
+        </component>
+
+        <component>
+            <region-id>node-view-mgr</region-id>
+            <url>/citeck/components/node-view-mgr</url>
+            <properties>
+                <runtimeKey>profile-view</runtimeKey>
+                <onsubmit>back</onsubmit>
+                <oncancel>back</oncancel>
+            </properties>
+        </component>
+
+        <!-- Uploaders -->
+        <component>
+            <region-id>html-upload</region-id>
+            <url>/components/upload/html-upload</url>
+        </component>
+        <component>
+            <region-id>flash-upload</region-id>
+            <url>/components/upload/flash-upload</url>
+        </component>
+        <component>
+            <region-id>file-upload</region-id>
+            <url>/components/upload/file-upload</url>
+        </component>
+        <component>
+            <region-id>dnd-upload</region-id>
+            <url>/components/upload/dnd-upload</url>
+        </component>
+
+    </components>
+</template-instance>

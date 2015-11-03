@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+    <modules>
+        <module>
+            <id>workflow/hide-start-workflow-button-on-my-tasks</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.workflow/hide-start-workflow-button-on-my-tasks</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>template</scope>
+                    <region-id>toolbar</region-id>
+                    <source-id>my-tasks</source-id>
+                    <sub-components>
+                        <sub-component id="default">
+                            <evaluations>
+                                <evaluation id="hide-defult-toolbar">
+                                    <render>false</render>
+                                </evaluation>
+                            </evaluations>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>workflow/hide-start-workflow-button-on-my-workflows</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.workflow/hide-start-workflow-button-on-my-workflows</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>template</scope>
+                    <region-id>toolbar</region-id>
+                    <source-id>my-workflows</source-id>
+                    <sub-components>
+                        <sub-component id="default">
+                            <evaluations>
+                                <evaluation id="hide-defult-toolbar">
+                                    <render>false</render>
+                                </evaluation>
+                            </evaluations>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>workflow/task-edit-redirector</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.workflow/task-edit-redirector</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-edit</source-id>
+                    <sub-components>
+                        <sub-component id="dependencies-loader" index="90">
+                            <url>/citeck/dependencies-loader</url>
+                            <properties>
+                                <configName>TaskEditDependencies</configName>
+                                <group>workflow</group>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>workflow/show-history-on-task-edit</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.workflow/show-history-on-task-edit</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-edit</source-id>
+                    <sub-components>
+                        <sub-component id="history" index="70">
+                            <url>/citeck/workflow/task-history</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-edit-with-preview</source-id>
+                    <sub-components>
+                        <sub-component id="history" index="70">
+                            <url>/citeck/workflow/task-history</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>workflow/show-workflow-schema-on-task-edit</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="config.module.evaluator">
+                <params>
+                    <element>ModuleConfig.workflow/show-workflow-schema-on-task-edit</element>
+                </params>
+            </evaluator>
+            <components>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-edit</source-id>
+                    <sub-components>
+                        <sub-component id="view-workflow-diagram-button" index="50">
+                            <url>/citeck/workflow/view-workflow-diagram</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+                <component>
+                    <scope>page</scope>
+                    <region-id>data-header</region-id>
+                    <source-id>task-details</source-id>
+                    <sub-components>
+                        <sub-component id="view-workflow-diagram-button" index="50">
+                            <url>/citeck/workflow/view-workflow-diagram</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+    </modules>
+</extension>

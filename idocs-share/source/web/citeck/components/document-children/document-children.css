@@ -1,0 +1,20 @@
+.document-children .dynamic-table
+{
+	max-height: 500px !important;
+	overflow-y: auto;
+}
+
+.document-children table
+{
+	width: 100%;
+}
+
+.document-children .button-panel
+{
+	margin-top: 1em;
+}
+
+.document-children .panel-body
+{
+	padding: 1em 1em 0 0;
+}

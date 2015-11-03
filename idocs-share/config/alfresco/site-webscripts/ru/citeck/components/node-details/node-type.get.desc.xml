@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>node-type</shortname>
+    <description>Get node type by nodeRef</description>
+    <url>/citeck/components/node-details/node-type</url>
+    <format default="html">extension</format>
+    <authentication>user</authentication>
+</webscript>

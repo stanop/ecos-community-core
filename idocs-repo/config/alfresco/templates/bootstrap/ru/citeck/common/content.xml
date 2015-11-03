@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0">
+
+	<cm:content view:childName="cm:${content.name}">
+		<view:aspects>
+			<cm:auditable></cm:auditable>
+			<sys:referenceable></sys:referenceable>
+		</view:aspects>
+		<view:properties>
+			<cm:name>${content.name}</cm:name>
+			<cm:content>contentUrl=classpath:${content.path}|mimetype=${content.mimetype}|encoding=${content.encoding}</cm:content>
+		</view:properties>
+	</cm:content>
+
+</view:view>

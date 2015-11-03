@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/confirm/1.0">
+  <process id="confirm-stage" name="Confirm stage" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.DocumentSetListener"></activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="Submit Confirm Task" activiti:formKey="wfcf:submitConfirmTask"></startEvent>
+    <subProcess id="subprocess2" name=" ">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[if(execution.getVariable("wfcf_confirmOutcome") == "Reject") {
+  execution.setVariable("wfcf_notAllConfirmed", true);
+}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${wfcf_confirmers}" activiti:elementVariable="wfcf_confirmer"></multiInstanceLoopCharacteristics>
+      <userTask id="confirm" name="Confirm Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:confirmTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+            <activiti:field name="authority">
+              <activiti:expression>${wfcf_confirmer}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="assignment" class="ru.citeck.ecos.workflow.confirm.AddConsiderableVersion"></activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:expression>execution.setVariable("wfcf_confirmOutcome", task.getVariable("wfcf_confirmOutcome"));
+if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOutcome") != "Confirmed") {
+  throw("Необходимо ввести комментарии");
+}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:expression>
+               var owner = wfcf_confirmer; var lastTaskOwner = task.getVariable("cwf_lastTaskOwner");
+                if(lastTaskOwner &amp;&amp; lastTaskOwner != wfcf_confirmer){
+                    owner = lastTaskOwner;
+                }
+                confirmDecisions.save(execution, owner, "activiti$" + task.id);
+              </activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="variableExpr">
+              <activiti:expression>wfcf_canConfirmWithComments</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+      </userTask>
+      <userTask id="correct" name="Correct Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:correctTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+            <activiti:field name="authority">
+              <activiti:expression>${wfcf_corrector}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:expression>task.setVariableLocal("wfcf_confirmOutcome", execution.getVariable("wfcf_confirmOutcome"));</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:expression>execution.setVariable("wfcf_correctOutcome", task.getVariable("wfcf_correctOutcome"));</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+      </userTask>
+      <startEvent id="startevent3" name="Start"></startEvent>
+      <endEvent id="endevent3" name="End"></endEvent>
+      <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+      <sequenceFlow id="flow4" sourceRef="startevent3" targetRef="confirm"></sequenceFlow>
+      <sequenceFlow id="flow5" sourceRef="confirm" targetRef="exclusivegateway1"></sequenceFlow>
+      <sequenceFlow id="flow6" sourceRef="exclusivegateway1" targetRef="correct">
+        <extensionElements>
+          <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+            <activiti:field name="script">
+              <activiti:expression>if(!document.hasAspect("idocs:hasFailureCause")) {
+	document.addAspect("idocs:hasFailureCause");
+}
+document.properties["idocs:failureCause"] = cwf_lastcomment;
+document.save();</activiti:expression>
+            </activiti:field>
+          </activiti:executionListener>
+        </extensionElements>
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!(wfcf_confirmOutcome == "Confirmed" && cwf_lastcomment == "" || wfcf_skipCorrectTask)}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow7" sourceRef="exclusivegateway1" targetRef="endevent3">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfcf_confirmOutcome == "Confirmed" && cwf_lastcomment == "" || wfcf_skipCorrectTask}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow8" sourceRef="correct" targetRef="confirm">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfcf_correctOutcome == "answer"}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow23" sourceRef="correct" targetRef="endevent3">
+        <extensionElements>
+          <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+            <activiti:field name="script">
+              <activiti:expression>if(wfcf_correctOutcome == "cancel") {
+  execution.setVariable("wfcf_workflowCancelled", true);
+}</activiti:expression>
+            </activiti:field>
+          </activiti:executionListener>
+        </extensionElements>
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wfcf_correctOutcome != "answer"}]]></conditionExpression>
+      </sequenceFlow>
+    </subProcess>
+    <endEvent id="endevent4" name="cancelled"></endEvent>
+    <sequenceFlow id="flow24" sourceRef="subprocess2" targetRef="endevent4">
+      <extensionElements>
+        <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>execution.setVariable("wfcf_versionChanged", versions.isConfirmable(execution));</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow25" sourceRef="startevent1" targetRef="subprocess2">
+      <extensionElements>
+        <activiti:executionListener event="take" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:expression>if(execution.getVariable("bpm_workflowDescription") == "") {
+  if(document) {
+    execution.setVariable("bpm_workflowDescription", document.name);
+  }
+}
+if(execution.getVariable("wfcf_corrector") == null) {
+  execution.setVariable("wfcf_corrector", execution.getVariable("initiator"));
+}
+if(execution.getVariable("wfcf_skipCorrectTask") == null) {
+  execution.setVariable("wfcf_skipCorrectTask", false);
+}
+execution.setVariable("wfcf_workflowCancelled", false);
+execution.setVariable("wfcf_notAllConfirmed", false);
+versions.saveConfirmable(execution);</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_confirm-stage">
+    <bpmndi:BPMNPlane bpmnElement="confirm-stage" id="BPMNPlane_confirm-stage">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="120.0" y="129.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="subprocess2" id="BPMNShape_subprocess2">
+        <omgdc:Bounds height="214.0" width="351.0" x="205.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="confirm" id="BPMNShape_confirm">
+        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="correct" id="BPMNShape_correct">
+        <omgdc:Bounds height="71.0" width="105.0" x="300.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent3" id="BPMNShape_startevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="230.0" y="113.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="500.0" y="113.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="440.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
+        <omgdc:Bounds height="35.0" width="35.0" x="610.0" y="129.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="247.0" y="113.0"></omgdi:waypoint>
+        <omgdi:waypoint x="247.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="77.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="405.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="459.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="110.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="460.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="459.0" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="405.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="480.0" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="500.0" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="352.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="352.0" y="105.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="352.0" y="221.0"></omgdi:waypoint>
+        <omgdi:waypoint x="352.0" y="234.0"></omgdi:waypoint>
+        <omgdi:waypoint x="517.0" y="234.0"></omgdi:waypoint>
+        <omgdi:waypoint x="517.0" y="148.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="556.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="146.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="155.0" y="146.0"></omgdi:waypoint>
+        <omgdi:waypoint x="205.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

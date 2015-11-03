@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>document-children</shortname>
+	<description>It shows document children of specified association type</description>
+	<url>/citeck/components/document-children</url>
+</webscript>

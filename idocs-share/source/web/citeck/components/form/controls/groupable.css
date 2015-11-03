@@ -1,0 +1,75 @@
+/* look-and-feel */
+
+div.item-group {
+	display: block !important;
+	padding: 0 0 10px 0;
+	margin: 0;
+}
+
+p.item-group-caption {
+    font-weight: bold;
+    margin: 0 -5px 3px -5px;
+    padding: 3px 10px;
+    min-height: 1em;
+    border-bottom: 1px solid;
+}
+
+.draggable:hover
+{
+    color: #AAAAFF;
+    cursor: move;
+}
+
+/* enumeration of groups */
+
+.current-values {
+    counter-reset: groupIndex;
+}
+
+div.item-group .item-group-caption {
+    counter-increment: groupIndex;
+}
+
+div.item-group.proxy {
+	counter-increment: groupIndexNo;
+}
+
+p.item-group-caption:after {
+    content: counter(groupIndex) attr(titlesuffix);
+}
+
+div.item-group.proxy p.item-group-caption:after {
+    content: "..." attr(titlesuffix);
+}
+
+/* viewmode look */
+
+/* do not enumerate and show empty */
+.current-values.read-only div.item-group .item-group-caption:only-child {
+    counter-increment: groupIndexNo;
+    display: none;
+}
+
+/* remove margin/padding from item groups */
+/* so that empty groups would not take any space */
+.viewmode-field .current-values div.item-group {
+    margin: 0;
+    padding: 0;
+}
+
+/* dynamic-tree-picker integration */
+
+div.item-group.proxy .ygtvcell.ygtvcontent
+{
+    display: table-cell;
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left: 20px;
+	height: 16px;
+}
+
+div.item-group.proxy .ygtvcell,
+div.item-group.proxy .item-buttons
+{
+    display: none;
+}

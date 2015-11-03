@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+	<config evaluator="model-type" condition="cardlet:cardlet">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/cardlet/cardlet.ftl" />
+				<appearance>
+					<field id="cardlet:allowedType">
+						<control template="/ru/citeck/components/form/controls/dictionary/class.ftl" />
+					</field>
+					<field id="cardlet:allowedAuthorities">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="valueField">fullName</control-param>
+							<control-param name="searchRoot"></control-param>
+							<control-param name="selectable">USER,GROUP</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="cardlet:cardlet">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/cardlet/cardlet.ftl" />
+				<view-form template="/ru/citeck/components/form/cardlet/cardlet.ftl" />
+				<appearance>
+					<field id="cardlet:allowedType">
+						<control template="/ru/citeck/components/form/controls/dictionary/class.ftl" />
+					</field>
+					<field id="cardlet:allowedAuthorities">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="valueField">fullName</control-param>
+							<control-param name="searchRoot"></control-param>
+							<control-param name="selectable">USER,GROUP</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="cardlet:cardMode">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/cardlet/cardmode.ftl" />
+				<appearance>
+					<field id="cardlet:allowedType">
+						<control template="/ru/citeck/components/form/controls/dictionary/class.ftl" />
+					</field>
+					<field id="cardlet:allowedAuthorities">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="valueField">fullName</control-param>
+							<control-param name="searchRoot"></control-param>
+							<control-param name="selectable">USER,GROUP</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="cardlet:cardMode">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/cardlet/cardmode.ftl" />
+				<view-form template="/ru/citeck/components/form/cardlet/cardmode.ftl" />
+				<appearance>
+					<field id="cardlet:allowedType">
+						<control template="/ru/citeck/components/form/controls/dictionary/class.ftl" />
+					</field>
+					<field id="cardlet:allowedAuthorities">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="valueField">fullName</control-param>
+							<control-param name="searchRoot"></control-param>
+							<control-param name="selectable">USER,GROUP</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

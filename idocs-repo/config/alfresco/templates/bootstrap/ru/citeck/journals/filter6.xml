@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+    <journal:filter>
+        <view:properties>
+            <cm:name>${filter6.name}</cm:name>
+            <cm:title>${filter6.title}</cm:title>
+            <journal:journalTypes>
+                <view:values>
+                    <view:value>${journal.type}</view:value>
+                </view:values>
+            </journal:journalTypes>
+        </view:properties>
+    </journal:filter>
+</view:view>
