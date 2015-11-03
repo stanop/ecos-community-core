@@ -1,0 +1,27 @@
+<alfresco-config>
+
+
+    <config evaluator="string-compare" condition="activiti$confirm">
+        <forms>
+            <form id="approve-contractor-form">
+                <create-form template="/ru/citeck/components/form/contracts/workflow/submit-confirm-task.ftl" />
+                <field-visibility>
+                    <show id="bpm:workflowDescription" />
+                    <show id="bpm:workflowDueDate" />
+                    <show id="bpm:workflowPriority" />
+                    <show id="wfcf:confirmers" />
+                    <show id="wfcf:precedence" />
+                    <show id="packageItems" />
+                    <show id="cwf:hasContractorApproval" force="true"/>
+                </field-visibility>
+            </form>
+            <form id="workflow-confirm-with-route">
+                <create-form template="/ru/citeck/components/form/workflow/confirm/submit-confirm-task-with-route.ftl" />
+            </form>
+            <form id="mandatory">
+                <create-form template="/ru/citeck/components/form/workflow/confirm/submit-mandatory-confirm-task.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

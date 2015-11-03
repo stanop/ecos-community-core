@@ -1,0 +1,16 @@
+﻿<alfresco-config>
+
+    <config evaluator="string-compare" condition="ModuleConfig.document-details">
+        <hide-node-path>true</hide-node-path>
+        <!--show-document-assocs>true</show-document-assocs-->
+    </config>
+	
+	<config evaluator="string-compare" condition="ModuleConfig.card-details">
+        <hide-node-path>true</hide-node-path>
+    </config>
+	
+    <config evaluator="string-compare" condition="ModuleConfig.sites">
+        <hide-widgets>true</hide-widgets>
+    </config>
+
+</alfresco-config>

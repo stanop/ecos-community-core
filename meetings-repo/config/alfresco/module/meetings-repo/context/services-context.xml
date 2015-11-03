@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="MeetingsQuestionsRegistrar" class="ru.citeck.ecos.form.ChildAssociationsRegistrar" 
+			depends-on="idocs.dictionaryBootstrap" init-method="init">
+		<property name="childAssociationsFormFilters" >
+			<list>
+				<ref bean="ChildAssociationsFilesCreateFilter" />
+				<ref bean="ChildAssociationsFilesEditFilter" />
+			</list>
+		</property>
+		<property name="associations">
+			<list>
+				<value>meet:childQuestions</value>
+				<value>meet:answeredQuestions</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

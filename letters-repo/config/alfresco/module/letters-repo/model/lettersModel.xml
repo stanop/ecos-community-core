@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="letters:lettersModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Citeck EcoS letters model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/letters/1.0" prefix="letters" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="letters:constraint:deliveryMethod" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>snailmail</value>
+					<value>courier</value>
+					<value>fax</value>
+					<value>express</value>
+					<value>registeredLetter</value>
+					<value>registeredLetterWithNotification</value>
+					<value>huntsmanCourier</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+
+		<type name="letters:income">
+			<parent>idocs:doc</parent>
+			<properties>
+				<property name="letters:outcomeDate">
+					<title>Date outgoing document</title>
+					<type>d:date</type>
+				</property>
+				<property name="letters:letterWriter">
+					<title>The letter writer</title>
+					<type>d:text</type>
+				</property>
+				<property name="letters:receiver">
+					<title>The letter recipient</title>
+					<type>d:text</type>
+				</property>
+				<property name="letters:outcomeNumber">
+					<title>Outcome number</title>
+					<type>d:text</type>
+				</property>
+				<property name="letters:removalControl">
+					<title>Note of removal from control</title>
+					<type>d:text</type>
+				</property>
+
+				<property name="letters:originalLocation">
+					<title>Местонахождение оригинала</title>
+					<type>d:text</type>
+				</property>
+				<property name="letters:listCount">
+					<title>Количество листов</title>
+					<type>d:text</type>
+				</property>
+				<property name="letters:copiesCount">
+					<title>Количество экземпляров</title>
+					<type>d:text</type>
+				</property>
+
+				<property name="letters:deliveryType">
+					<title>Вид доставки</title>
+					<type>d:text</type>
+				</property>
+				<property name="letters:comment">
+					<title>Комментарий</title>
+					<type>d:text</type>
+				</property>
+			</properties>
+			<associations>
+				<association name="letters:submittedForResolution">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="letters:reporterOrganization">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:contractor</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+				<association name="letters:subdivision">
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authorityContainer</class>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="letters:nomenclature">
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:filesNomenclature</class>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="letters:activityDirection">
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:activityDirection</class>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="letters:outcome">
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>letters:outcome</class>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>letters:incomeType</aspect>
+				<aspect>letters:hasDelivery</aspect>
+				<aspect>idocs:hasDocumentStatus</aspect>
+			</mandatory-aspects>
+		</type>
+		
+		<type name="letters:outcome">
+			<parent>idocs:doc</parent>
+			<associations>
+				<association name="letters:addressee">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:contractor</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="letters:income">
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>letters:income</class>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>letters:outcomeType</aspect>
+				<aspect>idocs:hasPerformer</aspect>
+				<aspect>letters:hasDelivery</aspect>
+				<aspect>idocs:hasSignatory</aspect>
+			</mandatory-aspects>
+		</type>
+		
+	</types>
+	
+	<aspects>
+	
+		<aspect name="letters:hasDelivery">
+			<properties>
+				<property name="letters:deliveryMethod">
+					<title>Delivery</title>
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="letters:constraint:deliveryMethod" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="letters:incomeType">
+			<parent>tk:documentTypeKind</parent>
+			<overrides>
+				<property name="tk:type">
+					<default>workspace://SpacesStore/letter-doctype-income</default>
+				</property>
+			</overrides>
+		</aspect>
+		
+		<aspect name="letters:outcomeType">
+			<parent>tk:documentTypeKind</parent>
+			<overrides>
+				<property name="tk:type">
+					<default>workspace://SpacesStore/letter-doctype-outcome</default>
+				</property>
+			</overrides>
+		</aspect>
+		
+	</aspects>
+
+</model>

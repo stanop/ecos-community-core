@@ -61,6 +61,14 @@
 			<ant target="@{target}" dir="1st-override-share" />
 			<ant target="@{target}" dir="idocs-repo" />
 			<ant target="@{target}" dir="idocs-share" />
+			<ant target="@{target}" dir="contracts-repo" />
+			<ant target="@{target}" dir="contracts-share" />
+			<ant target="@{target}" dir="letters-repo" />
+			<ant target="@{target}" dir="letters-share" />
+			<ant target="@{target}" dir="meetings-repo" />
+			<ant target="@{target}" dir="meetings-share" />
+			<ant target="@{target}" dir="orders-repo" />
+			<ant target="@{target}" dir="orders-share" />
 		</sequential>
 	</macrodef>
 	

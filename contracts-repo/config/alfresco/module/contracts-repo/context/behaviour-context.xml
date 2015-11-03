@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="contracts.AgreementNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="contracts:agreement" />
+		<property name="nameTemplate"
+			value="Договор №#{'$'}{node.properties['contracts:agreementNumber']!'б-н'}" />
+	</bean>
+
+	<bean id="contracts.agreementTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="contracts:agreement" />
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[Договор №#{'$'}{node.properties['contracts:agreementNumber']!'б-н'}]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[Contract №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="contracts.supAgreementNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="contracts:supplementaryAgreement" />
+		<property name="nameTemplate"
+				  value="Доп.соглашение №#{'$'}{node.properties['contracts:agreementNumber']!'б-н'}" />
+	</bean>
+
+	<bean id="contracts.supAgreementTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="contracts:supplementaryAgreement" />
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[Доп.соглашение №#{'$'}{node.properties['contracts:agreementNumber']!'б-н'}]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[Add'l agreement №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="contracts.subjectNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="contracts:subject" />
+		<property name="nameTemplate"
+			value="#{'$'}{node.properties['contracts:subjectName']!'no-name'}" />
+	</bean>
+
+	<bean id="contracts.paymentNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="payments:payment" />
+		<property name="nameTemplate">
+			<value><![CDATA[Счет №#{'$'}{node.properties['payments:paymentNumber']!'б-н'} для<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+		</property>
+	</bean>
+
+	<bean id="contracts.paymentTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="payments:payment" />
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[Счет №#{'$'}{node.properties['payments:paymentNumber']!'б-н'} для<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} for<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="contracts.paymentDraftNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="payments:paymentDraft" />
+		<property name="nameTemplate">
+			<value><![CDATA[Платеж<#if node.parent.nodeRef??> для договора №#{'$'}{node.parent.properties['contracts:agreementNumber']!'б-н'}</#if>]]></value>
+		</property>
+	</bean>
+
+	<bean id="contracts.paymentDraftTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="payments:paymentDraft" />
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[Платеж<#if node.parent.nodeRef??> для договора №#{'$'}{node.parent.properties['contracts:agreementNumber']!'б-н'}</#if>]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[Payment<#if node.parent.nodeRef??> for contract №#{'$'}{node.parent.properties['contracts:agreementNumber']!'n/a'}</#if>]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="contracts.paymentPeriodNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="payments:period" />
+		<property name="nameTemplate"
+			value="Период #{'$'}{node.properties['payments:periodStart']?string('dd.MM.yyyy')}-#{'$'}{node.properties['payments:periodEnd']?string('dd.MM.yyyy')}" />
+	</bean>
+
+	<bean id="contracts.agreementNumberBehaviour" parent="EnumerationBehaviour">
+        <property name="className" value="contracts:agreement" /> 
+        <property name="numberField" value="contracts:agreementNumber" />
+		<property name="enabledState" value="-" />
+        <property name="templateName" value="agreement-number-template" />
+    </bean>
+
+	<bean id="contracts.closingDocumentNumberBehaviour" parent="EnumerationBehaviour">
+		<property name="className" value="contracts:closingDocument" />
+		<property name="numberField" value="contracts:closingDocumentNumber" />
+		<property name="enabledState" value="-" />
+		<property name="templateName" value="closing-doc-number-template" />
+	</bean>
+
+	<bean id="contracts.supAgreementNumberBehaviour" parent="EnumerationBehaviour">
+		<property name="className" value="contracts:supplementaryAgreement" />
+		<property name="numberField" value="contracts:agreementNumber" />
+		<property name="enabledState" value="-" />
+		<property name="templateName" value="supAgreement-number-template" />
+	</bean>
+
+	<bean id="contracts.paymentNumberBehaviour" parent="EnumerationBehaviour">
+		<property name="className" value="payments:payment" />
+		<property name="numberField" value="payments:paymentNumber" />
+		<property name="enabledState" value="-" />
+		<property name="templateName" value="payment-number-template" />
+	</bean>
+
+</beans>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="orders:orders" xmlns="http://www.alfresco.org/model/dictionary/1.0"
+       xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <description>Orders Model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/orders/common/1.0" prefix="orders" />
+    </namespaces>
+
+    <constraints>
+        <constraint name="orders:constraint:fingerboard" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>ДСП</value>
+                    <value>Общего доступа</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="orders:internal">
+            <parent>idocs:doc</parent>
+            <properties>
+                <property name="orders:executionReport">
+                    <title>Execution Report</title>
+                    <type>d:text</type>
+                </property>
+                <property name="orders:projectNumber">
+                    <title>№ проекта</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="orders:projectNumberSort">
+                    <type>d:long</type>
+                </property>
+                <property name="orders:creationDate">
+                    <title>Дата создания</title>
+                    <type>d:date</type>
+                </property>
+                <property name="orders:header">
+                    <title>Заголовок</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="orders:fingerboard">
+                    <title>Гриф</title>
+                    <type>d:text</type>
+                    <default>ДСП</default>
+                    <constraints>
+                        <constraint ref="orders:constraint:fingerboard"/>
+                    </constraints>
+                </property>
+                <property name="orders:expirationDate">
+                    <title>Дата окончания срока хранения</title>
+                    <type>d:date</type>
+                </property>
+                <property name="orders:appendixNumber">
+                    <title>Количество приложений</title>
+                    <type>d:text</type>
+                </property>
+                <property name="orders:placeOfOriginal">
+                    <title>Местонахождение оригинала документа</title>
+                    <type>d:text</type>
+                </property>
+                <property name="orders:signComment">
+                    <title>Комментарий подписанта</title>
+                    <type>d:text</type>
+                </property>
+                <property name="orders:confirmComment">
+                    <title>Комментарий согласующего</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="orders:toEmployee">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="orders:subject">
+                    <title>Тематика</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>orders:subject</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="orders:branch">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authorityContainer</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="orders:fileCode">
+                    <title>Код дела</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:filesNomenclature</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+            <overrides>
+                <property name="idocs:summary">
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="cm:content">
+                    <constraints>
+                        <constraint type="ru.citeck.ecos.constraints.common.MandatoryIfConstraint">
+                            <parameter name="condition"><value>prop_dms_updateContent == 'false'</value></parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>orders:internalType</aspect>
+                <aspect>idocs:hasPerformer</aspect>
+                <aspect>idocs:hasSignatory</aspect>
+                <aspect>idocs:hasDocumentStatus</aspect>
+                <aspect>idocs:hasRegistrator</aspect>
+                <aspect>idocs:hasInitiator</aspect>
+                <aspect>dms:templateable</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="orders:subject">
+            <title>Тематика</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="orders:subjectCode">
+                    <title>Код тематики</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="orders:subjectName">
+                    <title>Наименование тематики документа</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+            </properties>
+        </type>
+
+    </types>
+
+	<aspects>
+	
+		<aspect name="orders:internalType">
+			<parent>tk:documentTypeKind</parent>
+			<overrides>
+				<property name="tk:type">
+					<default>workspace://SpacesStore/orders-cat-doctype-internal</default>
+				</property>
+			</overrides>
+		</aspect>
+		
+	</aspects>
+
+</model>

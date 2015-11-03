@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>parent-node-ref</shortname>
+	<description>It returns parent node reference by child node reference</description>
+	<url>/api/citeck/meetings/parent-node-ref?child={childNodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>agenda-participants</shortname>
+	<description>It returns agenda articipants in orgstruct format</description>
+	<url>/api/citeck/meetings/agenda-participants?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

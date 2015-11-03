@@ -1,0 +1,108 @@
+<alfresco-config>
+
+	<config evaluator="model-type" condition="meet:meeting">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/meeting.ftl" />
+			</form>
+			<form id="filters">
+				<edit-form template="/ru/citeck/components/form/meetings/meeting-search.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="meet:meeting">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/meeting.ftl" />
+				<edit-form template="/ru/citeck/components/form/meetings/meeting.ftl" />
+				<view-form template="/ru/citeck/components/form/meetings/meeting.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="meet:question">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/question.ftl" />
+			</form>
+			<form id="filters">
+				<edit-form template="/ru/citeck/components/form/meetings/question-search.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="meet:question">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/question.ftl" />
+				<edit-form template="/ru/citeck/components/form/meetings/question.ftl" />
+				<view-form template="/ru/citeck/components/form/meetings/question.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="meet:agenda">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/agenda.ftl" />
+			</form>
+			<form id="filters">
+				<edit-form template="/ru/citeck/components/form/meetings/agenda-search.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="meet:agenda">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/agenda.ftl" />
+				<edit-form template="/ru/citeck/components/form/meetings/agenda.ftl" />
+				<view-form template="/ru/citeck/components/form/meetings/agenda.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="meet:protocol">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/protocol.ftl" />
+			</form>
+			<form id="filters">
+				<edit-form template="/ru/citeck/components/form/meetings/protocol-search.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="meet:protocol">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/protocol.ftl" />
+				<edit-form template="/ru/citeck/components/form/meetings/protocol.ftl" />
+				<view-form template="/ru/citeck/components/form/meetings/protocol.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="model-type" condition="meet:answeredQuestion">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/answered-question.ftl" />
+			</form>
+			<form id="filters">
+				<edit-form template="/ru/citeck/components/form/meetings/answered-question-search.ftl" />
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="meet:answeredQuestion">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/meetings/answered-question.ftl" />
+				<edit-form template="/ru/citeck/components/form/meetings/answered-question.ftl" />
+				<view-form template="/ru/citeck/components/form/meetings/answered-question.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

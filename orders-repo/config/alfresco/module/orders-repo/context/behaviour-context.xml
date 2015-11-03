@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING/DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="orders.InternalNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="orders:internal" />
+        <property name="nameTemplate">
+            <value><![CDATA[<#if node.properties['idocs:documentStatus']?? >
+                <#if node.properties['idocs:documentStatus'] == 'registered'>Документ № #{'$'}{node.properties['idocs:registrationNumber']!}
+                <#else>Проект документа № #{'$'}{node.properties['orders:projectNumber']!}</#if>
+            <#else>Проект документа № #{'$'}{node.properties['orders:projectNumber']!}
+            </#if>]]></value>
+        </property>
+    </bean>
+
+    <bean id="orders.subjects.NamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="orders:subject" />
+        <property name="nameTemplate" value="#{'$'}{node.properties['orders:subjectName']!} (#{'$'}{node.properties['orders:subjectCode']!})" />
+    </bean>
+    
+    <bean id="orders.internal.projectNumber.EnumerationBiehaviour" parent="EnumerationBehaviour" depends-on="orders.dictionaryBootstrap">
+        <property name="className" value="orders:internal" />
+        <property name="numberField" value="orders:projectNumber" />
+        <property name="templateName" value="projectNumber-template" />
+    </bean>
+
+    <bean id="orders.CountChildAssociations" parent="CountChildAssociations">
+        <property name="className" value="orders:internal" />
+        <property name="propertyForCountChild" value="orders:appendixNumber" />
+        <property name="childAssocType" value="dms:supplementaryFiles" />
+    </bean>
+
+
+    
+    <bean id="orders.internal.projectNumber" parent="fillUtilityNumberField">
+        <property name="className" value="orders:internal" />
+        <property name="stringField" value="orders:projectNumber" />
+        <property name="numericField" value="orders:projectNumberSort" />
+    </bean>
+
+</beans>

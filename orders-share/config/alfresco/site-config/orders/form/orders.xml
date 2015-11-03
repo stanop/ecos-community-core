@@ -1,0 +1,149 @@
+<alfresco-config>
+
+    <config>
+        <forms>
+            <dependencies>
+                <js src="/citeck/components/form/date-picker-custom.js"/>
+            </dependencies>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="orders:internal">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/orders/internal-edit.ftl"/>
+                <view-form template="/ru/citeck/components/form/orders/internal-edit.ftl"/>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="orders:internal">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/orders/internal-create.ftl"/>
+				<appearance>
+					<field id="tk:kind">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/subcategories?nodeRef=workspace://SpacesStore/orders-cat-doctype-internal</control-param>
+							<control-param name="titleField">name</control-param>
+							<control-param name="valueField">nodeRef</control-param>
+							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+							<control-param name="responseSchema">{ resultsList: 'nodes', fields: [ {key:'nodeRef'}, {key:'name'} ] }</control-param>
+						</control>
+					</field>
+					<field id="orders:branch">
+						<control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+							<control-param name="searchQuery">branch=true&amp;default=false</control-param>
+							<control-param name="selectable">GROUP-branch</control-param>
+						</control>
+					</field>
+					<field id="orders:subject">
+						<control template="/ru/citeck/components/form/controls/association_search.ftl">
+							<control-param name="searchWholeRepo">true</control-param>
+						</control>
+					</field>
+					<field id="orders:fileCode">
+						<control template="/ru/citeck/components/form/controls/association_search.ftl">
+							<control-param name="searchWholeRepo">true</control-param>
+						</control>
+					</field>
+				</appearance>
+            </form>
+            <form id="search">
+                <edit-form template="/ru/citeck/components/form/search-form.ftl"/>
+                <field-visibility>
+                    <show id="orders:creationDate"/>
+                    <show id="idocs:initiator"/>
+                    <show id="idocs:status" />
+                    <show id="tk:kind"/>
+                    <show id="idocs:registrationNumber" />
+                    <show id="idocs:registrationDate" />
+                    <show id="orders:projectNumber"/>
+                    <show id="orders:branch"/>
+                    <show id="orders:header"/>
+                    <show id="idocs:signatory"/>
+                    <show id="idocs:registrator"/>
+
+                </field-visibility>
+                <appearance>
+                    <!--<field id="idocs:documentType">-->
+                        <!--<control template="/ru/citeck/components/form/controls/association_search.ftl">-->
+                            <!--<control-param name="flatButtonMode">true</control-param>-->
+                            <!--<control-param name="searchWholeRepo">true</control-param>-->
+                        <!--</control>-->
+                    <!--</field>-->
+                    <field id="orders:projectNumber">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="orders:creationDate">
+                        <control template="/org/alfresco/components/form/controls/daterange.ftl"/>
+                    </field>
+                    <field id="orders:header">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:summary">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="orders:subject">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true</control-param>
+                            <control-param name="searchWholeRepo">true</control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:initiator">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true</control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:signatory">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true</control-param>
+                        </control>
+                    </field>
+                    <field id="orders:branch">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="orders:subject">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="orders:subjectCode"/>
+                    <show id="orders:subjectName"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="orders:subject">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="orders:subjectCode"/>
+                    <show id="orders:subjectName"/>
+                </field-visibility>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="orders:subjectCode"/>
+                    <show id="orders:subjectName"/>
+                </field-visibility>
+                <appearance>
+                    <field id="orders:subjectCode">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="orders:subjectName">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

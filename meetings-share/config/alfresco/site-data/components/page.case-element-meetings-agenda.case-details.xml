@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>case-details</source-id>
+    <region-id>case-element-meetings-agenda</region-id>
+    <url>/citeck/components/child-forms</url>
+    <properties>
+        <header>cardlet.meetings-agenda.header</header>
+        <collapseHeader>true</collapseHeader>
+        <nodeRef>{nodeRef}</nodeRef>
+        <elementsUrl>citeck/assocs?nodeRef=[[nodeRef]]&amp;assocTypes=meet:childAgenda&amp;addAssocs=false</elementsUrl>
+        <elementsPath>children</elementsPath>
+        <elementHeader></elementHeader>
+        <viewFormUrl>components/form?itemKind=node&amp;itemId=[[nodeRef]]&amp;mode=view</viewFormUrl>
+        <editFormUrl>true</editFormUrl>
+        <twisterKey>agenda</twisterKey>
+
+		<destination>{nodeRef}</destination>
+		<calcDestinationChildrenCount>true</calcDestinationChildrenCount>
+		<contentType>meet:agenda</contentType>
+		<assocType>meet:childAgenda</assocType>
+    </properties>
+</component>

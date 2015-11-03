@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0">
+
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>orders-cat-doctype-internal</sys:node-uuid>
+            <cm:name>${doctype.internal.name}</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${doctype.internal.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${doctype.internal.title_ru}</view:mlvalue>
+            </cm:title>
+        </view:properties>
+        <cm:subcategories>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>orders-cat-internal-order</sys:node-uuid>
+                    <cm:name>${doctype.internal.order.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.order.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.order.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>orders-cat-internal-adm-order</sys:node-uuid>
+                    <cm:name>${doctype.internal.adm.order.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.adm.order.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.adm.order.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>orders-cat-internal-disposal</sys:node-uuid>
+                    <cm:name>${doctype.internal.disposal.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.disposal.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.disposal.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>orders-cat-internal-adm-disp</sys:node-uuid>
+                    <cm:name>${doctype.internal.adm.disp.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.adm.disp.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.adm.disp.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>orders-cat-internal-protocol</sys:node-uuid>
+                    <cm:name>${doctype.internal.protocol.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.protocol.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.protocol.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>orders-cat-internal-other</sys:node-uuid>
+                    <cm:name>${doctype.internal.other.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.other.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.other.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+        </cm:subcategories>
+    </cm:category>
+
+</view:view>

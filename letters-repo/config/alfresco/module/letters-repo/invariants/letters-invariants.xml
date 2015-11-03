@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/letters/1.0" prefix="letters" />
+	</imports>
+	
+	<type name="letters:income">
+		<property name="parent">
+			<invariant on="default" language="criteria">
+				<criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:letters/cm:documentLibrary/cm:income" />
+			</invariant>
+		</property>
+		<property name="tk:type">
+			<invariant on="value" language="explicit">workspace://SpacesStore/letter-doctype-income</invariant>
+		</property>
+		<property name="tk:kind">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</property>
+		<association name="letters:nomenclature">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</association>
+		<association name="letters:reporterOrganization">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</association>
+		<property name="letters:letterWriter">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</property>
+		<association name="letters:subdivision">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</association>
+		<property name="letters:receiver">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</property>
+		<property name="letters:copiesCount">
+			<invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">+value >= 0 ? true : false</invariant>
+		</property>
+	</type>
+	
+	<type name="letters:outcome">
+		<property name="parent">
+			<invariant on="default" language="criteria">
+				<criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:letters/cm:documentLibrary/cm:outcome" />
+			</invariant>
+		</property>
+		<property name="tk:type">
+			<invariant on="value" language="explicit">workspace://SpacesStore/letter-doctype-outcome</invariant>
+		</property>
+		<property name="tk:kind">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</property>
+		<association name="idocs:legalEntity">
+			<invariant on="default" language="javascript">node.assocs["letters:income"][0].assocs["idocs:legalEntity"][0]</invariant>
+		</association>
+		<association name="letters:addressee">
+			<invariant on="mandatory" language="explicit">true</invariant>
+			<invariant on="default" language="javascript">node.assocs["letters:income"][0].assocs["letters:reporterOrganization"][0]</invariant>
+		</association>
+	</type>
+	
+</invariants>

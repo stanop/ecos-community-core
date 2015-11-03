@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="meet:meetingsModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Meetings Model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+		<import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/meetings/1.0" prefix="meet" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="meet:constraint:meetingDocumentStatus" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>new</value>
+					<value>onFamiliarization</value>
+					<value>familiarized</value>
+					<value>conducted</value>
+					<value>onConfirm</value>
+					<value>approved</value>
+					<value>onPerformance</value>
+					<value>performed</value>
+					<value>closed</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+		<type name="meet:meeting">
+			<title>Совещание</title>
+			<parent>cm:folder</parent>
+			<properties>
+				<property name="meet:meetingNumber">
+					<title>Номер</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="meet:subject">
+					<title>Предмет совещания</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="meet:where">
+					<title>Где</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="meet:when">
+					<title>Когда</title>
+					<type>d:datetime</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="meet:confirmDueDate">
+					<title>Срок завершения согласования</title>
+					<type>d:date</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+			<associations>
+				<association name="meet:initiator">
+					<title>Организатор встречи</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+				<child-association name="meet:childAnsweredQuestions">
+					<title>Решения</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>meet:answeredQuestion</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+				<child-association name="meet:childAgenda">
+					<title>Повестка</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>meet:agenda</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</child-association>
+				<child-association name="meet:childProtocol">
+					<title>Протокол</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>meet:protocol</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</child-association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>icase:case</aspect>
+				<aspect>meet:participants</aspect>
+				<aspect>meet:plannedReporters</aspect>
+				<aspect>idocs:lifeCycle</aspect>
+				<aspect>history:historical</aspect>
+				<aspect>meet:hasDocumentStatus</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="meet:question">
+			<title>Вопрос</title>
+			<parent>cm:content</parent>
+			<properties>
+				<property name="meet:question">
+					<title>Вопрос</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>meet:plannedReporters</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="meet:agenda">
+			<title>Повестка</title>
+			<parent>cm:content</parent>
+			<mandatory-aspects>
+				<aspect>meet:plannedParticipants</aspect>
+				<aspect>meet:hasChildQuestions</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="meet:answeredQuestion">
+			<title>Решение</title>
+			<parent>cm:content</parent>
+			<properties>
+				<property name="meet:answer">
+					<title>Рассмотренный вопрос (Решение)</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+			<associations>
+				<association name="meet:askedQuestion">
+					<title>Вопрос</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>meet:question</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+
+		<type name="meet:protocol">
+			<title>Протокол</title>
+			<parent>cm:content</parent>
+			<mandatory-aspects>
+				<aspect>meet:participants</aspect>
+				<aspect>meet:absent</aspect>
+				<aspect>meet:answeredQuestions</aspect>
+				<aspect>idocs:hasDocumentStatus</aspect>
+			</mandatory-aspects>
+		</type>
+
+	</types>
+
+	<aspects>
+		<aspect name="meet:plannedParticipants">
+			<associations>
+				<association name="meet:plannedParticipants">
+					<title>Участники</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="meet:plannedReporters">
+			<associations>
+				<association name="meet:plannedReporters">
+					<title>Докладчик(и)</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="meet:participants">
+			<associations>
+				<association name="meet:participants">
+					<title>Присутствовали</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="meet:absent">
+			<associations>
+				<association name="meet:absent">
+					<title>Отсутствовали</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="meet:answeredQuestions">
+			<associations>
+				<association name="meet:answeredQuestions">
+					<title>Решения</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>meet:answeredQuestion</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="meet:hasChildQuestions">
+			<associations>
+				<child-association name="meet:childQuestions">
+					<title>Вопросы</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>meet:question</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+			</associations>
+		</aspect>
+
+		<aspect name="meet:hasDocumentStatus">
+			<parent>idocs:hasDocumentStatus</parent>
+			<overrides>
+				<property name="idocs:documentStatus">
+					<constraints>
+						<constraint ref="meet:constraint:meetingDocumentStatus"/>
+					</constraints>
+				</property>
+			</overrides>
+		</aspect>
+
+	</aspects>
+
+</model>

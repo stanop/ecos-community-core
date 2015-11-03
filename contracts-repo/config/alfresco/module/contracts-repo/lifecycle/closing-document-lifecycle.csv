@@ -1,0 +1,6 @@
+fromState,event,toState,transitionCondition,action
+start,"{""eventType"":""automaticTransition""}",project,,"document.addAspect('idocs:hasDocumentStatus'); document.properties['idocs:documentStatus'] = 'new'; document.save();"
+project,"{""eventType"":""onStartProcess"",""workflowId"":""activiti$confirm"",""actionName"":""confirm""}",confirmation,"document.properties.creator == person.properties.userName","document.properties['idocs:documentStatus'] = 'onApproval'; document.save();"
+confirmation,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",archive,process.wfcf_confirmed == true,"document.properties['idocs:documentStatus'] = 'approved'; document.save();"
+confirmation,"{""eventType"":""onEndProcess"",""workflowId"":""activiti$confirm""}",declined,process.wfcf_confirmed == false,"document.properties['idocs:documentStatus'] = 'canceled'; document.save();"
+archive,"{""eventType"":""userTransition"",""actionName"":""move-to-archive""}",archived,,"document.properties['idocs:documentStatus'] = 'archive'; document.save();"

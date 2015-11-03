@@ -1,0 +1,50 @@
+﻿<alfresco-config>
+
+    <config evaluator="node-type" condition="cm:person">
+    <forms>
+        <form>
+            <edit-form template="/ru/citeck/components/form/contracts/orgstruct.ftl" />
+            <view-form template="/ru/citeck/components/form/contracts/orgstruct.ftl" />
+            <field-visibility>
+                <show id="cm:userName"/>
+                <show id="cm:firstName" force="true"/>
+                <show id="cm:lastName" force="true"/>
+                <show id="cm:middleName" force="true"/>
+                <show id="idocs:nameInGenitiveCase" force="true"/>
+                <show id="cm:email"/>
+                <show id="cm:organization"/>
+                <show id="cm:jobtitle"/>
+                <show id="cm:telephone"/>
+                <show id="cm:userStatus"/>
+                <show id="uc:preset" force="true" />
+                <show id="delegate:available" force="true" />
+            </field-visibility>
+            <appearance>
+                <field id="cm:userName" read-only="true"/>
+                <field id="cm:middleName"/>
+                <field id="idocs:nameInGenitiveCase" help="Например, Ивановой Марии Петровны" />
+                <field id="cm:email"/>
+                <field id="cm:organization"/>
+                <field id="cm:jobtitle"/>
+                <field id="cm:telephone"/>
+                <field id="uc:preset">
+                    <control template="/ru/citeck/components/form/controls/select.ftl">
+                        <control-param name="optionsUrl">/share/service/citeck/presets/user.json</control-param>
+                        <control-param name="titleField">name</control-param>
+                        <control-param name="valueField">id</control-param>
+                        <control-param name="resultsList">presets</control-param>
+                    </control>
+                </field>
+                <field id="cm:userStatus" label="Комментарий">
+                    <control template="/org/alfresco/components/form/controls/textarea.ftl"/>
+                </field>
+                <field id="delegate:available">
+                    <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
+                </field>
+            </appearance>
+        </form>
+
+    </forms>
+</config>
+
+</alfresco-config>

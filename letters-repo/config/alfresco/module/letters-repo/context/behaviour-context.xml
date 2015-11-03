@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="idocs.IncomeNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="letters:income"/>
+		<property name="nameTemplate" value="Входящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}"/>
+	</bean>
+
+	<bean id="idocs.OutcomeNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="letters:outcome"/>
+		<property name="nameTemplate" value="Исходящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}"/>
+	</bean>
+
+</beans>

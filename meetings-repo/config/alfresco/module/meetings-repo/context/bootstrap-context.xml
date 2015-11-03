@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<!-- models -->
+	<bean id="meetings.modelBootstrap" parent="dictionaryModelBootstrap"
+		  depends-on="idocs.dictionaryBootstrap">
+		<property name="models">
+			<list>
+				<value>alfresco/module/meetings-repo/model/meetingsModel.xml</value>
+			</list>
+		</property>
+		<property name="labels">
+			<list>
+				<value>alfresco/module/meetings-repo/messages/meetings</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="meetings.import-spaces" abstract="true"
+		class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+		<property name="moduleId" value="meetings-repo" />
+		<property name="importer" ref="spacesBootstrap" />
+	</bean>
+
+	<bean id="meetings.enumeration.templates.spacesBootstrap" parent="spacesStoreImporter">
+		<property name="useExistingStore">
+			<value>true</value>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/meetings-repo/bootstrap/enumeration-templates.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+</beans>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0" xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:count="http://www.citeck.ru/model/counter/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0">
+
+    <cm:folder view:childName="count:autonumber">
+        <view:properties>
+            <sys:node-uuid>idocs-autonumber-templates</sys:node-uuid>
+            <cm:name>autonumber-templates</cm:name>
+        </view:properties>
+        <view:associations>
+            <cm:contains>
+                <count:autonumberTemplate view:childName="projectNumber-template">
+                    <view:properties>
+                        <sys:node-uuid>projectNumber-template</sys:node-uuid>
+                        <cm:name>projectNumber-template</cm:name>
+                        <count:counterTemplate>projectNumberTemplate</count:counterTemplate>
+                        <!--<count:numberTemplate><![CDATA[Входящий-${count}]]></count:numberTemplate>-->
+                    </view:properties>
+                </count:autonumberTemplate>
+                <count:autonumberTemplate view:childName="internal-regNumber-template">
+                    <view:properties>
+                        <sys:node-uuid>internal-regNumber-template</sys:node-uuid>
+                        <cm:name>internal-regNumber-template</cm:name>
+                        <count:counterTemplate>internal-regNumber-template</count:counterTemplate>
+                        <!--count:commonTemplate><![CDATA[<#assign branch=node.properties["orders:branch"]/>  <#assign year=.now?string("yy")/>]]></count:commonTemplate>
+                        <count:numberTemplate><![CDATA[Префикс/${branch}/${year}/${count}]]></count:numberTemplate-->
+                    </view:properties>
+                </count:autonumberTemplate>
+            </cm:contains>
+        </view:associations>
+    </cm:folder>
+</view:view>

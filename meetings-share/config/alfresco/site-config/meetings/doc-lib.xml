@@ -1,0 +1,29 @@
+<alfresco-config>
+	<config evaluator="string-compare" condition="DocLibActions">
+
+		<!-- Action definitions -->
+		<actions>
+
+			<!-- Start familiarization workflow -->
+			<action id="document-start-familiarization-for-meeting" type="link" icon="document-assign-workflow" label="Рассылка на ознакомление">
+				<param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$familiarization</param>
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>evaluator.doclib.meetings.meeting</evaluator>
+				<evaluator negate="true">evaluator.doclib.meetings.document.isNew</evaluator>
+			</action>
+
+		</actions>
+
+	</config>
+
+	<config evaluator="string-compare" condition="DocLibActions">
+
+		<actionGroups>
+			<actionGroup id="folder-details">
+				<action index="200" id="document-start-familiarization-for-meeting" /> 
+			</actionGroup>
+		</actionGroups>
+	</config>
+</alfresco-config>

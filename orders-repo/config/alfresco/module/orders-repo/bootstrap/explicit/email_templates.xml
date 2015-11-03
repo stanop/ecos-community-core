@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0" xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:dms="http://www.citeck.ru/model/content/dms/1.0" xmlns:sys="http://www.alfresco.org/model/system/1.0">
+    <dms:notificationTemplate view:childName="cm:wf-familiartask-email-notification.html.ftl">
+        <view:properties>
+            <sys:node-uuid>wf-familiarizationtask-email</sys:node-uuid>
+            <cm:name>wf-familiartask-email-notification.html.ftl</cm:name>
+            <dms:notificationType>start_task</dms:notificationType>
+            <dms:workflowName>activiti$familiarization</dms:workflowName>
+            <dms:taskName>wfgf:familiarizeTask</dms:taskName>
+            <cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/explicit\notification\wf-familiartask-email-notification.html.ftl|mimetype=text/plain|encoding=UTF-8</cm:content>
+            <dms:sendToAssignee>true</dms:sendToAssignee>
+        </view:properties>
+    </dms:notificationTemplate>
+    <dms:notificationTemplate view:childName="cm:wf-familiartask-email-notification.html.ftl">
+        <view:properties>
+            <sys:node-uuid>wf-familiartask-complete</sys:node-uuid>
+            <cm:name>wf-familiartask-complete-notification.html.ftl</cm:name>
+            <cm:title>Ознакомление завершено</cm:title>
+            <dms:notificationType>complete_task</dms:notificationType>
+            <dms:workflowName>activiti$familiarization</dms:workflowName>
+            <dms:taskName>wfgf:familiarizeTask</dms:taskName>
+            <cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/explicit\notification\wf-familiartask-complete-notification.html.ftl|mimetype=text/plain|encoding=UTF-8</cm:content>
+            <dms:taskSubscribers>orders_header</dms:taskSubscribers>
+        </view:properties>
+    </dms:notificationTemplate>
+</view:view>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns="" xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:view="http://www.alfresco.org/view/repository/1.0" xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:dms="http://www.citeck.ru/model/content/dms/1.0" xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
+	<view:reference view:pathref=".">
+		<view:associations>
+			<cm:contains>
+				<dms:template view:childName="cm:default-contract-content-template.docx">
+				  <view:properties>
+					<cm:name>default-contract-content-template.docx</cm:name>
+					<sys:node-uuid>default-contract-content-template</sys:node-uuid>
+					<cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/contract-template.docx|mimetype=application/vnd.openxmlformats-officedocument.wordprocessingml.document|encoding=UTF-8</cm:content>
+					<tk:type>workspace://SpacesStore/contracts-cat-doctype-contract</tk:type>
+					<tk:appliesToType>workspace://SpacesStore/contracts-cat-doctype-contract</tk:appliesToType>
+				  </view:properties>
+				</dms:template>
+			</cm:contains>
+		</view:associations>
+	</view:reference>
+</view:view>

@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="letters.import-spaces.1-0-0" abstract="true" parent="letters.import-spaces">
+		<property name="sinceVersion" value="1.0.0" />
+		<property name="appliesFromVersion" value="1.0.0" />
+	</bean>
+
+    <bean id="letters.module-component.doctype-categories-ext" parent="letters.import-spaces.1-0-0">
+        <property name="name" value="doctype-categories" />
+        <property name="description" value="Document Type Categories" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                <prop key="location">alfresco/module/letters-repo/bootstrap/document-type-categories.xml</prop>
+                <prop key="messages">alfresco/module/letters-repo/bootstrap/document-type-categories</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+	<bean id="letters.module-component.letters-site" parent="letters.import-spaces.1-0-0">
+		<property name="name" value="letters-site" />
+		<property name="description" value="Letters Site" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/site/letters-site</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="letters.module-component.journals-list" parent="letters.import-spaces.1-0-0">
+		<property name="name" value="letters-journals-list" />
+		<property name="description" value="Payment Periods Journal" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/journal-list</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="letters.module-component.income-journal" parent="letters.import-spaces.1-0-0">
+		<property name="name" value="income-journal" />
+		<property name="description" value="Income Journal" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="letters.module-component.letters-site" />
+				<ref bean="letters.module-component.journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites/cm:letters/cm:documentLibrary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/income</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/income</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:income</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/income</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:income</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/income</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/letters-repo/bootstrap/journals/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/income</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="letters.module-component.outcome-journal" parent="letters.import-spaces.1-0-0">
+		<property name="name" value="outcome-journal" />
+		<property name="description" value="Outcome Journal" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="letters.module-component.letters-site" />
+				<ref bean="letters.module-component.journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites/cm:letters/cm:documentLibrary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/outcome</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/outcome</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:outcome</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/outcome</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:outcome</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/outcome</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/letters-repo/bootstrap/journals/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/letters-repo/bootstrap/journals/outcome</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+</beans>

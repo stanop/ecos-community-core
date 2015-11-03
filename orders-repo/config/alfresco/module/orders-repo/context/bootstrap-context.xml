@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <!-- models -->
+    <bean id="orders.dictionaryBootstrap" parent="dictionaryModelBootstrap"
+          depends-on="idocs.dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/orders-repo/model/ordersModel.xml</value>
+            </list>
+        </property>
+        <property name="labels">
+            <list>
+                <value>alfresco/module/orders-repo/messages/orders</value>
+            </list>
+        </property>
+    </bean>
+    
+	<bean id="orders.import-spaces" abstract="true" class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+		<property name="moduleId" value="orders-repo" />
+		<property name="importer" ref="spacesBootstrap"/>
+	</bean>
+
+    <!-- orders site -->
+	<bean id="orders.siteBootstrap" parent="orders.import-spaces">
+		<property name="name" value="orders-site" />
+		<property name="description" value="Orders site" />
+		<property name="sinceVersion" value="0.1" />
+		<property name="appliesFromVersion" value="0.1" />
+		<property name="bootstrapView">
+			<props>
+				<prop key="path">/${spaces.company_home.childname}/${spaces.sites.childname}</prop>
+				<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+				<prop key="messages">alfresco/module/orders-repo/bootstrap/orders-site</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+
+    <bean id="orders.documentFolders" parent="orders.import-spaces">
+        <property name="name" value="document-folders" />
+        <property name="description" value="Document folders" />
+        <property name="sinceVersion" value="0.1" />
+        <property name="appliesFromVersion" value="0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.siteBootstrap" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/app:company_home/st:sites/cm:orders</prop>
+                <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/orders/document-folders.xml</prop>
+                <prop key="messages">alfresco/module/orders-repo/bootstrap/document-folders</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="orders.module-component.journals-subject" parent="orders.import-spaces">
+        <property name="name" value="journals-subject" />
+        <property name="description" value="Subject Journals" />
+        <property name="sinceVersion" value="0.1" />
+        <property name="appliesFromVersion" value="0.1" />
+        <!--<property name="executeOnceOnly" value="false" />-->
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="orders.documentFolders" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
+                <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/orders/journals-subject.xml</prop>
+                <prop key="messages">alfresco/module/orders-repo/messages/journals-subject</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="orders.module-component.journals-internal" parent="orders.import-spaces">
+        <property name="name" value="journals-internal" />
+        <property name="description" value="Internals Journals" />
+        <property name="sinceVersion" value="0.1" />
+        <property name="appliesFromVersion" value="0.1" />
+        <!--<property name="executeOnceOnly" value="false" />-->
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="orders.documentFolders" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
+                <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/orders/journals-internal.xml</prop>
+                <prop key="messages">alfresco/module/orders-repo/messages/journals-internal</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="orders.spacesBootstrap" parent="spacesStoreImporter"
+          singleton="true">
+        <property name="useExistingStore">
+            <value>true</value> <!-- set this to false after data will get imported on production -->
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/orders/enumeration-template.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="uuidBinding">REPLACE_EXISTING</prop>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.workflowemailnotification.childname}</prop>
+                    <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/email_templates.xml</prop>
+                    <!-- TODO refactor -->
+                    <prop key="messages">alfresco/module/idocs-repo/messages/notification-templates</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="orders.categoryBootstrap" parent="spacesStoreImporter" singleton="true"
+            depends-on="orders.spacesBootstrap">
+        <property name="useExistingStore">
+            <value>true</value>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                    <prop key="location">alfresco/module/orders-repo/bootstrap/doctype-categories.xml</prop>
+                    <prop key="messages">alfresco/module/orders-repo/bootstrap/doctype-categories</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

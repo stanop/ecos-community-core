@@ -1,0 +1,74 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$perform">
+		<forms>
+			<form id="meetings">
+				<field-visibility>
+					<show id="bpm:workflowDescription" />
+					<show id="bpm:workflowDueDate" />
+					<show id="bpm:workflowPriority" />
+					<show id="wfperf:performers" />
+					<show id="wfperf:coperformers" />
+					<show id="wfperf:enableControl" />
+					<show id="wfperf:controller" />
+					<show id="packageItems" />
+					<show id="cwf:sendNotification" force="true"/>
+				</field-visibility>
+				<create-form template="/ru/citeck/components/form/meetings/workflow/submit-perform-task.ftl" />
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="task-type" condition="wfperf:performTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/perform/perform-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/perform/perform-task.ftl" />
+				<appearance>
+					<field id="wfperf:performOutcomeOptions">
+						<control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl">
+							<control-param name="options">Performed|Исполнено#alf#Question|Задать вопрос#alf#NotPerformed|Не исполнено</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/perform/perform-task-inline.ftl" />
+				<appearance>
+					<field id="wfperf:performOutcomeOptions">
+						<control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl">
+							<control-param name="options">Performed|Исполнено#alf#Question|Задать вопрос</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="task-type" condition="wfperf:controlTask">
+		<forms>
+			<form>
+				<edit-form template="/ru/citeck/components/form/workflow/perform/control-task.ftl" />
+				<view-form template="/ru/citeck/components/form/workflow/perform/control-task.ftl" />
+				<appearance>
+					<field id="wfperf:controlOutcome">
+						<control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl">
+							<control-param name="options">PerformAccepted|Исполнить#alf#ReturnToPerform|На доработку</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+			<form id="inline">
+				<edit-form template="/ru/citeck/components/form/workflow/perform/control-task-inline.ftl" />
+				<appearance>
+					<field id="wfperf:controlOutcome">
+						<control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl">
+							<control-param name="options">PerformAccepted|Исполнить#alf#ReturnToPerform|На доработку</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

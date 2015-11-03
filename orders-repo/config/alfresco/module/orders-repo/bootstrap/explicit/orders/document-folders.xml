@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:dl="http://www.alfresco.org/model/datalist/1.0">
+
+    <view:reference view:pathref="cm:documentLibrary">
+        <cm:contains>
+            <cm:folder view:childName="cm:documents">
+                <view:properties>
+                    <sys:node-uuid>orders-documents-folder</sys:node-uuid>
+                    <cm:name>orders-documents-folder</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${documents.folder.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${documents.folder.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+                <view:associations>
+                    <cm:contains>
+                        <cm:folder view:childName="cm:internals">
+                            <view:properties>
+                                <sys:node-uuid>orders-documents-internal</sys:node-uuid>
+                                <cm:name>orders-documents-internal</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${documents.internal.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${documents.internal.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:folder>
+                    </cm:contains>
+                </view:associations>
+            </cm:folder>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="cm:dataLists">
+        <cm:contains>
+            <dl:dataList view:childName="cm:subjects">
+                <view:properties>
+                    <sys:node-uuid>orders-subject-folder</sys:node-uuid>
+                    <cm:name>orders-subject-folder</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${documents.subject.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${documents.subject.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <dl:dataListItemType>orders:subject</dl:dataListItemType>
+                </view:properties>
+            </dl:dataList>
+        </cm:contains>
+    </view:reference>
+
+</view:view>

@@ -1,0 +1,19 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="activiti$familiarization">
+		<forms>
+			<form id="meetings">
+				<field-visibility>
+					<show id="bpm:workflowDescription" />
+					<show id="bpm:workflowDueDate" />
+					<show id="bpm:workflowPriority" />
+					<show id="wfgfam:people"/>
+					<show id="packageItems"/>
+					<show id="cwf:sendNotification" force="true"/>
+				</field-visibility>
+				<create-form template="/ru/citeck/components/form/meetings/workflow/submit-familiarization-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>

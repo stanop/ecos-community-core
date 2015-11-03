@@ -1,0 +1,56 @@
+<alfresco-config>
+
+	<config evaluator="string-compare" condition="DocLibActions">
+
+		<!-- Action definitions -->
+		<actions>
+
+			<action id="document-add-income-doc" type="pagelink" icon="plus" label="actions.create-income.label">
+				<param name="page">node-create?type=letters:income&amp;param_outcome={node.nodeRef}</param>
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+                <evaluator>evaluator.doclib.letters.outcome</evaluator>
+			</action>
+
+			<action id="document-add-outcome-doc" type="pagelink" icon="plus" label="actions.create-outcome.label">
+				<param name="page">node-create?type=letters:outcome&amp;param_income={node.nodeRef}</param>
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>evaluator.doclib.letters.income</evaluator>
+			</action>
+
+	</actions>
+
+	</config>
+
+	<config evaluator="string-compare" condition="DocumentLibrary">
+
+		<associations>
+			<doctype id="letters:income">
+				<visible>
+					<association name="letters:outcome" direction="target" />
+					<association name="letters:income" direction="source" />
+				</visible>
+			</doctype>
+			<doctype id="letters:outcome">
+				<visible>
+					<association name="letters:income" direction="target" />
+					<association name="letters:outcome" direction="source" />
+				</visible>
+			</doctype>
+		</associations>
+
+	</config>
+
+	<config evaluator="string-compare" condition="DocLibActions">
+		<actionGroups>
+			<actionGroup id="document-details">
+				<action index="300" id="document-add-income-doc" />
+				<action index="301" id="document-add-outcome-doc" />
+			</actionGroup>
+        </actionGroups>
+	</config>
+
+</alfresco-config>

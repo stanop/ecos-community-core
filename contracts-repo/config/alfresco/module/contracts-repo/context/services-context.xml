@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+        "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="contracts.PaymentDraftRegistrar"
+          class="ru.citeck.ecos.form.ChildAssociationsRegistrar"
+          depends-on="contracts.modelBootstrap" init-method="init">
+        <property name="childAssociationsFormFilters">
+            <list>
+                <ref bean="ChildAssociationsFilesCreateFilter"/>
+                <ref bean="ChildAssociationsFilesEditFilter"/>
+            </list>
+        </property>
+        <property name="associations">
+            <list>
+                <value>payments:payments</value>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="prolongateFillDocumentPropertiesFromTaskListener" class="ru.citeck.ecos.workflow.listeners.FillDocumentPropertiesFromTask">
+		<property name="taskName" value="wfprolong:prolongationTask"/>
+		<property name="propertiesList">
+			<map>
+				<entry key="wfprolong_prolongationDate" value="contracts_duration" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="paymentFillDocumentPropertiesFromTaskListener" class="ru.citeck.ecos.workflow.listeners.FillDocumentPropertiesFromTask">
+		<property name="taskName" value="wfsp:paymentTask"/>
+		<property name="propertiesList">
+			<map>
+				<entry key="wfsp_extendDate" value="payments_paymentDate" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="paymentDateFillDocumentPropertiesFromTaskListener" class="ru.citeck.ecos.workflow.listeners.FillDocumentPropertiesFromTask">
+		<property name="taskName" value="wfsa:affirmTask"/>
+		<property name="propertiesList">
+			<map>
+				<entry key="wfsa_affirmDate" value="payments_paymentDate" />
+			</map>
+		</property>
+	</bean>
+	
+	<bean parent="activiti-listener.task.complete">
+		<property name="values">
+			<list>
+				<ref bean="prolongateFillDocumentPropertiesFromTaskListener" />
+				<ref bean="paymentFillDocumentPropertiesFromTaskListener" />
+				<ref bean="paymentDateFillDocumentPropertiesFromTaskListener" />
+			</list>
+		</property>
+	</bean>
+	
+</beans>

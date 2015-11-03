@@ -1,0 +1,10 @@
+<webscript>
+	<shortname>search-questions</shortname>
+	<description>It returns all questions defined in meeting agenda.</description>
+	<url>/api/citeck/meetings/search-questions?caseNodeRef={caseNodeRef}</url>
+	<url>/api/citeck/meetings/search-questions?caseNodeRef={caseNodeRef}&amp;meetQuestion={meetQuestion}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

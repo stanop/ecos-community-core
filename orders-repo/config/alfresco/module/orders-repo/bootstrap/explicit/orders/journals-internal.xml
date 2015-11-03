@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+    <view:reference view:pathref="cm:journals">
+        <cm:contains>
+            <journal:journal view:childName="journal:orders-internal">
+                <view:properties>
+                    <sys:node-uuid>journal-orders-internal</sys:node-uuid>
+                    <cm:name>orders-internal</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.orders-internal.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.orders-internal.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalType>orders-internal</journal:journalType>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion-type">
+                        <view:properties>
+                            <journal:fieldQName>type</journal:fieldQName>
+                            <journal:predicate>type-equals</journal:predicate>
+                            <journal:criterionValue>{http://www.citeck.ru/model/orders/common/1.0}internal</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+                <journal:createVariants>
+                    <journal:createVariant view:childName="journal:createVariant">
+                        <view:properties>
+                            <sys:node-uuid>journal-orders-internal-cv</sys:node-uuid>
+                            <cm:title>
+                                <view:mlvalue view:locale="en_US">${journal.create.orders-internal.title_en}</view:mlvalue>
+                                <view:mlvalue view:locale="ru_RU">${journal.create.orders-internal.title_ru}</view:mlvalue>
+                            </cm:title>
+                            <journal:type>orders:internal</journal:type>
+                            <journal:formId></journal:formId>
+                        </view:properties>
+                    </journal:createVariant>
+                </journal:createVariants>
+            </journal:journal>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="cm:filters">
+        <cm:contains>
+            <journal:filter view:childName="journal:orders-internal-onApproval">
+                <view:properties>
+                    <sys:node-uuid>journal-orders-internal-onApproval</sys:node-uuid>
+                    <cm:name>orders-internal-onApproval</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.onApproval.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.onApproval.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-equals</journal:predicate>
+                            <journal:criterionValue>onApproval</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-onNormcontrol">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-onNormcontrol</sys:node-uuid>
+                    <cm:name>orders-internal-onNormcontrol</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.onNormcontrol.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.onNormcontrol.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-equals</journal:predicate>
+                            <journal:criterionValue>onNormcontrol</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-onSign">
+                <view:properties>
+                    <sys:node-uuid>journal-orders-internal-onSign</sys:node-uuid>
+                    <cm:name>orders-internal-onSign</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.onSign.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.onSign.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-equals</journal:predicate>
+                            <journal:criterionValue>onSign</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-onRegistration">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-onRegistration</sys:node-uuid>
+                    <cm:name>orders-internal-onRegistration</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.onRegistration.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.onRegistration.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-equals</journal:predicate>
+                            <journal:criterionValue>onRegistration</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-onPerformance">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-onPerformance</sys:node-uuid>
+                    <cm:name>orders-internal-onPerformance</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.onPerformance.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.onPerformance.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-equals</journal:predicate>
+                            <journal:criterionValue>onPerformance</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-archive">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-archive</sys:node-uuid>
+                    <cm:name>orders-internal-archive</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.archive.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.archive.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-equals</journal:predicate>
+                            <journal:criterionValue>archive</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-me-reg">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-me-reg</sys:node-uuid>
+                    <cm:name>orders-internal-me-reg</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.meReg.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.meReg.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}registrator_added</journal:fieldQName>
+                            <journal:predicate>noderef-contains</journal:predicate>
+                            <journal:criterionValue>#{person.nodeRef}</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-me-init">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-me-init</sys:node-uuid>
+                    <cm:name>orders-internal-me-init</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.meInit.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.meInit.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}initiator_added</journal:fieldQName>
+                            <journal:predicate>noderef-contains</journal:predicate>
+                            <journal:criterionValue>#{person.nodeRef}</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-me-signer">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-me-signer</sys:node-uuid>
+                    <cm:name>orders-internal-me-signer</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.meSigner.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.meSigner.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}signatory_added</journal:fieldQName>
+                            <journal:predicate>noderef-contains</journal:predicate>
+                            <journal:criterionValue>#{person.nodeRef}</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+            <journal:filter view:childName="journal:orders-internal-current">
+                <view:properties>
+                    <sys:node-uuid>journal-internal-me-current</sys:node-uuid>
+                    <cm:name>orders-internal-me-current</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filter.current.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filter.current.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalTypes>
+                        <view:values>
+                            <view:value>orders-internal</view:value>
+                        </view:values>
+                    </journal:journalTypes>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/content/idocs/1.0}documentStatus</journal:fieldQName>
+                            <journal:predicate>string-not-equals</journal:predicate>
+                            <journal:criterionValue>archive</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+            </journal:filter>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="cm:journalLists">
+        <cm:contains>
+            <journal:journalsList view:childName="journal:orders-list">
+                <view:properties>
+                    <sys:node-uuid>journal-orders-list</sys:node-uuid>
+                    <cm:name>site-orders-main</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.list.orders.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.list.orders.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+                <view:associations>
+                    <journal:journals>
+                        <view:reference view:pathref="cm:journals/journal:orders-internal" />
+                        <view:reference view:pathref="cm:journals/journal:orders-subject" />
+                        <view:reference view:pathref="cm:journals/journal:files-nomenclature" />
+                    </journal:journals>
+                </view:associations>
+            </journal:journalsList>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:orders-internal/journal:createVariant">
+        <view:associations>
+            <journal:destination>
+                <view:reference view:pathref="/app:company_home/st:sites/cm:orders/cm:documentLibrary/cm:documents/cm:internals" />
+            </journal:destination>
+        </view:associations>
+    </view:reference>
+
+</view:view>

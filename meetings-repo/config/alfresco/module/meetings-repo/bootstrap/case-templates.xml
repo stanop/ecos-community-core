@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+			xmlns:app="http://www.alfresco.org/model/application/1.0"
+			xmlns:cm="http://www.alfresco.org/model/content/1.0"
+			xmlns:count="http://www.citeck.ru/model/counter/1.0"
+			xmlns:sys="http://www.alfresco.org/model/system/1.0"
+			xmlns:icase="http://www.citeck.ru/model/icase/1.0"
+			xmlns:meet="http://www.citeck.ru/model/meetings/1.0">
+
+	<meet:meeting view:childName="cm:meetingTemplate">
+		<view:aspects>
+			<icase:case />
+			<icase:caseTemplate />
+		</view:aspects>
+		<view:properties>
+			<sys:node-uuid>meeting-template</sys:node-uuid>
+			<cm:name>${meeting.template.title}</cm:name>
+		</view:properties>
+		<view:associations>
+			<icase:elementConfigs>
+				<view:reference view:pathref="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs/cm:element-configs" />
+				<view:reference view:pathref="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs/cm:meetings-agenda" />
+				<view:reference view:pathref="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs/cm:meetings-protocol" />
+				<view:reference view:pathref="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs/cm:documents" />
+				<!-- This leads to a creation of an association between a template create event and a new meeting node.
+				<view:reference view:pathref="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs/cm:events" />
+				-->
+			</icase:elementConfigs>
+		</view:associations>
+	</meet:meeting>
+</view:view>

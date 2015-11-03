@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>payments-list-draft</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <header>payment-schedule.header</header>
+        <nodeRef>{nodeRef}</nodeRef>
+        <destination>{nodeRef}</destination>
+        <contentType>payments:paymentDraft</contentType>
+        <assocType>payments:payments</assocType>
+        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef={nodeRef}&amp;assocTypes=payments:payments&amp;addAssocs=false"</childrenUrl>
+
+        <columns>[
+
+            {key: 'attributes["payments:typePayment"]', label: '${msg("payment-schedule.payment-type")}',formatter: Citeck.format.code({advance:"Аванс", rest:"Остаток"})},
+            {key: 'attributes["payments:plannedPaymentDate"]', label: '${msg("payment-schedule.date")}', formatter: Citeck.format.datetime('dd.MM.yyyy')},
+            {key: 'attributes["payments:currency_added"]', label: '${msg("payment-schedule.currency")}', formatter: Citeck.format.nodeRef("")},
+            {key: 'attributes["payments:paymentAmount"]', label: '${msg("payment-schedule.sum")}'},
+            {key: 'attributes["payments:paymentVAT"]', label: '${msg("payment-schedule.VAT")}' },
+            {key: 'actions', label: '${msg("payment-schedule.actions")}', formatter: Citeck.format.actions('supplementary-files', 'nodeRef')}
+            ]
+        </columns>
+        <responseSchema>{resultsList: 'children', fields: [
+            {key: 'attributes["payments:typePayment"]'},
+            {key: 'attributes["payments:plannedPaymentDate"]'},
+            {key: 'attributes["payments:currency_added"]'},
+            {key: 'attributes["payments:paymentAmount"]'},
+            {key: 'attributes["payments:paymentVAT"]'},
+            {key: 'nodeRef'}
+            ]
+            }
+        </responseSchema>
+        <buttonsInHeader>onPanelButtonCreate</buttonsInHeader>
+        <noElementsMsg>Нет платежей</noElementsMsg>
+        <showCreateButton>true</showCreateButton>
+        <!--formId>createOnApplication</formId-->
+        <twisterKey>payments-list-draft</twisterKey>
+    </properties>
+</component>

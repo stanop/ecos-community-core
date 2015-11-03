@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<!-- models -->
+	<bean id="contracts.modelBootstrap" parent="dictionaryModelBootstrap"
+		depends-on="idocs.dictionaryBootstrap">
+		<property name="models">
+			<list>
+				<value>alfresco/module/contracts-repo/model/paymentsModel.xml</value>
+				<value>alfresco/module/contracts-repo/model/contractsModel.xml</value>
+			</list>
+		</property>
+		<property name="labels">
+			<list>
+				<value>alfresco/module/contracts-repo/messages/contracts</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- life cycles -->
+	<bean id="contracts.agreement-lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/contracts-repo/lifecycle/agreement-lifecycle.csv" />
+		<property name="entityType" value="contracts:agreement" />
+	</bean>
+	
+	<bean id="contracts.supplementary-agreement-lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/contracts-repo/lifecycle/agreement-lifecycle.csv" />
+		<property name="entityType" value="contracts:supplementaryAgreement" />
+	</bean>
+	
+	<bean id="contracts.payment-lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/contracts-repo/lifecycle/payment-lifecycle.csv" />
+		<property name="entityType" value="payments:payment" />
+	</bean>
+
+	<bean id="contracts.closing-document-lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/contracts-repo/lifecycle/closing-document-lifecycle.csv" />
+		<property name="entityType" value="contracts:closingDocument" />
+	</bean>
+	
+	<!-- spaces -->
+	<bean id="contracts.import-spaces" abstract="true"
+		class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+		<property name="moduleId" value="contracts-repo" />
+		<property name="importer" ref="spacesBootstrap" />
+	</bean>
+
+	<!-- enumeration template -->
+	<bean id="contracts.import.enumeration-template" parent="spacesStoreImporter">
+		<property name="useExistingStore">
+			<value>true</value>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/contracts-repo/bootstrap/enumeration-template.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+</beans>

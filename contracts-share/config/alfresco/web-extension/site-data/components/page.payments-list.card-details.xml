@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>payments-list</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <header>Счета</header>
+        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef={nodeRef}&amp;assocTypes=payments:basis&amp;addAssocs=false"</childrenUrl>
+        <columns>[
+            {key: 'attributes["idocs:documentStatus"]', label: "Статус", formatter: Citeck.format.code({draft:"Черновик",onApproval:"На согласовании",approved:"Согласован",forPayment:"На оплате",paid:"Оплачено",canceled:"Отменен"})},
+            {key: 'attributes["payments:plannedPaymentDate"]', label: "Дата", formatter: Citeck.format.datetime('dd.MM.yyyy')},
+            {key: 'attributes["payments:currency_added"]', label: "Валюта", formatter: Citeck.format.nodeRef("")},
+            {key: 'attributes["payments:paymentAmount"]', label: "Сумма"},
+            {key: 'attributes["payments:paymentVAT"]', label: "НДС" },
+            {key: 'actions', label: 'Действия', formatter: Citeck.format.actions('supplementary-files', 'nodeRef')}
+            ]
+        </columns>
+        <responseSchema>{resultsList: 'sources', fields: [
+            {key: 'attributes["idocs:documentStatus"]'},
+            {key: 'attributes["payments:plannedPaymentDate"]'},
+            {key: 'attributes["payments:currency_added"]'},
+            {key: 'attributes["payments:paymentAmount"]'},
+            {key: 'attributes["payments:paymentVAT"]'},
+            {key: 'nodeRef'},
+            {key: 'attributes'}
+            ]
+            }
+        </responseSchema>
+        <twisterKey>payments-list</twisterKey>
+    </properties>
+</component>

@@ -1,0 +1,608 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.import-spaces.1-1-0" parent="contracts.import-spaces" abstract="true">
+        <property name="sinceVersion" value="1.1.0" />
+        <property name="appliesFromVersion" value="1.1.0" />
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-agreement" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-document-agreement" />
+        <property name="description" value="contract-application-cardlets-document-agreement" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/web-preview</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/payments-list</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/payments-list-draft</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-payment" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-document-payment" />
+        <property name="description" value="contract-application-cardlets-document-payment" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/payment/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/payment/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/payment/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/payment/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/payment/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-subject" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-document-subject" />
+        <property name="description" value="contract-application-cardlets-document-subject" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/subject/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/subject/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/subject/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/subject/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/subject/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-documentType" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-document-documentType" />
+        <property name="description" value="contract-application-cardlets-document-documentType" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/documentType/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/documentType/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/documentType/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/documentType/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/documentType/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-period" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-document-period" />
+        <property name="description" value="contract-application-cardlets-document-period" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/period/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/period/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/period/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/period/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/period/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.defaultLegalEntity" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="defaultLegalEntity" />
+        <property name="description" value="default legal entity" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/default-legal-entity</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.doctype-categories1" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="doctype-categories" />
+        <property name="description" value="Doctype categories" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/doctype-categories.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/doctype-categories</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.groups.payment-affirm" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="group payment-affirm" />
+        <property name="description" value="Groups Payment Affirm" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/group.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/groups/group-payment-affirm</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.closing-document-journal" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="closing-document-journal" />
+        <property name="description" value="Closing Document Journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.contracts-site" />
+                <ref bean="contracts.module-component.journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:contracts/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/closing-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/closing-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts-closing-document</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/closing-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts-closing-document</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/closing-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/journals/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/closing-document</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.supplementary-agreement-journal" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="supplementary-agreement-journal" />
+        <property name="description" value="Supplementary Agreement Journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.contracts-site" />
+                <ref bean="contracts.module-component.journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:contracts/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/supplementary-agreement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/supplementary-agreement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts-supplementary-agreement</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/supplementary-agreement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts-supplementary-agreement</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/supplementary-agreement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/journals/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/supplementary-agreement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-closing-document" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-closing-document" />
+        <property name="description" value="contract-application-cardlets-closing-document" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/closingDocument/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/closingDocument/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/closingDocument/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/closingDocument/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/closingDocument/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.contract-application-cardlets-supplementary-agreement" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="contract-application-cardlets-supplementary-agreement" />
+        <property name="description" value="contract-application-cardlets-supplementary-agreement" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/document-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/history</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/supplementary-files</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="contracts.module-component.original-location" parent="contracts.import-spaces.1-0-0">
+		<property name="name" value="original-location" />
+		<property name="description" value="Original Location Journal" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="contracts.module-component.contracts-site" />
+				<ref bean="contracts.module-component.journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites/cm:contracts/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/original-location</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/original-location</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:original-location</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/original-location</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:original-location</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/original-location</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/original-location</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="contracts.module-component.groups.contract-manager" parent="contracts.import-spaces.1-1-0">
+		<property name="name" value="group-contract-manager" />
+		<property name="description" value="Groups Contract Manager" />
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/group.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/groups/group-contract-manager</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="contracts.module-component.groups.contract-manager-members" parent="contracts.import-spaces.1-1-0">
+		<property name="name" value="group-contract-manager-members" />
+		<property name="description" value="Groups Contract Manager Members" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="contracts.module-component.groups.contract-manager" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/contracts-repo/bootstrap/groups/contract-manager-group-members.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="contracts.module-component.contracts-folder-permissions" parent="contracts.import-spaces.1-1-0">
+		<property name="name" value="contracts-folder-permissions" />
+		<property name="description" value="contracts-folder-permissions" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="contracts.module-component.groups.contract-manager" />
+				<ref bean="contracts.module-component.contracts-journal" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/rules/permission-folder.xml</prop>
+					<prop key="messages">alfresco/module/contracts-repo/bootstrap/folders/folder-contract-permission</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+    <bean id="contracts.module-component.default-contract-duration-in-month" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="default-contract-duration" />
+        <property name="description" value="default-contract-duration" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/default-contract-duration</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.default-payment-notification" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="default-payment-notification" />
+        <property name="description" value="default-payment-notification" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/default-payment-notification</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="idocs.module-component.default-contract-content-template" parent="contracts.import-spaces.1-1-0">
+		<property name="name" value="default-contract-content-template" />
+		<property name="description" value="default-contract-content-template" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="contracts.module-component.doctype-categories1" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:templates</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/contract-content-template.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="contracts.module-component.groups.payment-affirm-members" parent="contracts.import-spaces.1-1-0">
+		<property name="name" value="group-payment-affirm-members" />
+		<property name="description" value="Groups Payment Affirm Members" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="contracts.module-component.groups.payment-affirm" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/contracts-repo/bootstrap/groups/group-payment-affirm-members.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="contracts.module-component.groups.skipMandatoryConfirm-members" parent="contracts.import-spaces.1-1-0">
+		<property name="name" value="group-skipMandatoryConfirm-members" />
+		<property name="description" value="Groups skipMandatoryConfirm Members" />
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/contracts-repo/bootstrap/groups/group-skipMandatoryConfirm-members.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+    <bean id="contracts.module-component.defaultSignatory" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="defaultSignatory" />
+        <property name="description" value="default signatory" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/default-signatory</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.email-confirm-templates" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="email-confirm-templates" />
+        <property name="description" value="Email Confirm Template" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.workflowemailnotification.childname}</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/email-confirm-templates.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+</beans>

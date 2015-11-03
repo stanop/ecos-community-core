@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>current-tasks</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <header>cardlet.current-tasks.header</header>
+        <childrenUrl>Alfresco.constants.PROXY_URI + "/citeck/tasks-active/document?nodeRef={nodeRef}"
+        </childrenUrl>
+        <columns>[{key: 'attributes["wfm:taskType"].shortQName', label: '${msg("cardlet.current-tasks.task.title")}', formatter: Citeck.format.typeName()},
+            {key: 'attributes["wfm:actors"][0].nodeRef', label: '${msg("cardlet.current-tasks.assignee.title")}', formatter: Citeck.format.userOrGroup()},
+            {key: 'attributes["bpm:dueDate"]', label: '${msg("cardlet.current-tasks.due-date.title")}', formatter: Citeck.format.date()}]</columns>
+        <responseSchema>{resultsList: 'documentTasks',
+		fields: [
+            {key: 'attributes["wfm:taskType"].shortQName'}, 
+            {key: 'attributes["wfm:actors"][0].nodeRef'}, 
+            {key: 'attributes["bpm:dueDate"]'}
+		]}
+        </responseSchema>
+        <twisterKey>current-tasks</twisterKey>
+    </properties>
+</component>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/letters/1.0" prefix="letters" />
+	</imports>
+
+	<views any="true">
+		<fields prop="letters:deliveryMethod">
+			<region name="input" template="select" />
+		</fields>
+		
+		<fields prop="idocs:summary">
+			<region name="input" template="textarea" />
+		</fields>
+		<fields prop="idocs:note">
+			<region name="input" template="textarea" />
+		</fields>
+		
+		<!-- TODO support subdivision in orgstruct control -->
+		<fields assoc="letters:subdivision">
+			<regions name="input" template="autocomplete" >
+				<param name="attribute">cm:authorityDisplayName</param>
+				<param name="predicate">string-contains</param>
+			</regions>
+			<region name="select" template="none" />
+		</fields>
+	</views>
+	
+	<views mode="create">
+		<fields assoc="letters:outcome">
+			<invariant on="default" language="javascript">view.params.outcome</invariant>
+			<invariant on="protected" language="javascript"><![CDATA[view.params.outcome != null]]></invariant>
+		</fields>
+		
+		<fields assoc="letters:income">
+			<invariant on="default" language="javascript">view.params.income</invariant>
+			<invariant on="protected" language="javascript"><![CDATA[view.params.income != null]]></invariant>
+		</fields>
+	</views>
+	
+	<view class="letters:income">
+		<views mode="create" kind="2-column" />
+		<views mode="edit" kind="2-column" />
+		
+		<view>
+			<field prop="tk:kind" />
+			<field prop="letters:deliveryMethod" />
+		</view>
+		<view>
+			<field assoc="letters:outcome" />
+			<field assoc="letters:nomenclature">
+				<region name="input" template="view" />
+				<region name="select" id="select" template="select-journal">
+					<param name="journalType">files-nomenclature</param>
+				</region>
+				<region name="select" id="create" template="select-create-object" />
+			</field>
+		</view>
+		<view>
+			<field assoc="letters:reporterOrganization" />
+			<field prop="letters:letterWriter" />
+		</view>
+		<view>
+			<field assoc="letters:subdivision">
+				<region name="input" template="view" />
+				<region name="select" template="select-orgstruct" />
+			</field>
+			<field prop="letters:receiver" />
+		</view>
+
+		<field prop="idocs:summary" />
+		<field prop="idocs:note" />
+
+		<view>
+			<field prop="idocs:pagesNumber" />
+			<field prop="idocs:appendixPagesNumber" />
+		</view>
+
+		<view>
+			<field prop="letters:originalLocation" />
+			<field prop="letters:copiesCount" />
+		</view>
+		
+		<field prop="cm:content">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+	</view>
+	
+	<view class="letters:income" id="doclib-simple-metadata">
+		<field prop="tk:kind" />
+		<field prop="letters:deliveryMethod" />
+
+		<field assoc="letters:outcome" />
+		<field assoc="letters:nomenclature" />
+
+		<field assoc="letters:reporterOrganization" />
+		<field prop="letters:letterWriter" />
+		
+		<field assoc="letters:subdivision" />
+		<field prop="letters:receiver" />
+	</view>
+	
+	<view class="letters:income" id="register">
+		<field prop="idocs:registrationNumber">
+			<region name="select" template="number-generate">
+				<param name="template">idocs-income-number-template</param>
+			</region>
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+		<field prop="idocs:registrationDate">
+			<invariant on="mandatory" language="explicit">true</invariant>
+			<invariant on="default" language="javascript">new Date()</invariant>
+		</field>
+	</view>
+	
+	<view class="letters:outcome">
+		<views mode="create" kind="2-column" />
+		<views mode="edit" kind="2-column" />
+		
+		<view>
+			<field prop="tk:kind" />
+			<field prop="letters:deliveryMethod" />
+		</view>
+		
+		<view>
+			<field assoc="letters:income" />
+			<field assoc="idocs:legalEntity" />
+		</view>
+
+		<view>
+			<field assoc="idocs:performer" />
+			<field assoc="idocs:signatory" />
+		</view>
+
+		<field assoc="letters:addressee" />
+
+		<field prop="idocs:summary" />
+		<field prop="idocs:note" />
+
+		<view>
+			<field prop="idocs:pagesNumber" />
+			<field prop="idocs:appendixPagesNumber" />
+		</view>
+
+		<field prop="cm:content">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+	</view>
+
+	<view class="letters:outcome" id="doclib-simple-metadata">
+		<views mode="create" kind="2-column" />
+		<views mode="edit" kind="2-column" />
+		
+		<field prop="tk:kind" />
+		<field prop="letters:deliveryMethod" />
+
+		<field assoc="letters:income" />
+		<field assoc="idocs:legalEntity" />
+
+		<field assoc="idocs:performer" />
+		<field assoc="idocs:signatory" />
+
+		<field assoc="letters:addressee" />
+	</view>
+	
+</views>

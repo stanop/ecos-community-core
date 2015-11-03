@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <!-- contracts type evaluators -->
+
+    <bean id="evaluator.doclib.letters.income" parent="evaluator.doclib.action.nodeType">
+        <property name="types">
+            <list>
+                <value>letters:income</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="evaluator.doclib.letters.outcome" parent="evaluator.doclib.action.nodeType">
+        <property name="types">
+            <list>
+                <value>letters:outcome</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

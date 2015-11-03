@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+    <view:reference view:pathref="cm:journals">
+        <cm:contains>
+            <journal:journal view:childName="journal:orders-subject">
+                <view:properties>
+                    <sys:node-uuid>journal-orders-subject</sys:node-uuid>
+                    <cm:name>orders-subject</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.orders-subject.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.orders-subject.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalType>orders-subject</journal:journalType>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:criterion-type">
+                        <view:properties>
+                            <journal:fieldQName>type</journal:fieldQName>
+                            <journal:predicate>type-equals</journal:predicate>
+                            <journal:criterionValue>{http://www.citeck.ru/model/orders/common/1.0}subject</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+                <journal:createVariants>
+                    <journal:createVariant view:childName="journal:createVariant">
+                        <view:properties>
+                            <sys:node-uuid>journal-orders-subject-cv</sys:node-uuid>
+                            <cm:title>
+                                <view:mlvalue view:locale="en_US">${journal.create.orders-subject.title_en}</view:mlvalue>
+                                <view:mlvalue view:locale="ru_RU">${journal.create.orders-subject.title_ru}</view:mlvalue>
+                            </cm:title>
+                            <journal:type>orders:subject</journal:type>
+                            <journal:formId></journal:formId>
+                        </view:properties>
+                    </journal:createVariant>
+                </journal:createVariants>
+            </journal:journal>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:orders-subject/journal:createVariant">
+        <view:associations>
+            <journal:destination>
+                <view:reference view:pathref="/app:company_home/st:sites/cm:orders/cm:dataLists/cm:subjects" />
+            </journal:destination>
+        </view:associations>
+    </view:reference>
+
+</view:view>
