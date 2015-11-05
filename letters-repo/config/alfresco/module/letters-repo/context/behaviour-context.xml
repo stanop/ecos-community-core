@@ -7,9 +7,37 @@
 		<property name="nameTemplate" value="Входящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}"/>
 	</bean>
 
+	<bean id="idocs.IncomeTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="letters:income" />
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[Входящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[Incoming №#{'$'}{node.properties['idocs:registrationNumber']!'n/a'}]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
 	<bean id="idocs.OutcomeNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="letters:outcome"/>
 		<property name="nameTemplate" value="Исходящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}"/>
+	</bean>
+
+	<bean id="idocs.OutcomeTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="letters:outcome" />
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[Исходящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[Outcoming №#{'$'}{node.properties['idocs:registrationNumber']!'n/a'}]]></value>
+				</entry>
+			</map>
+		</property>
 	</bean>
 
 </beans>
