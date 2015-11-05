@@ -13,12 +13,11 @@
               var selectedOptions = $parent.value() || [];
               if (newValue) {
                 selectedOptions.push($data);
-                selectedElements = selectedOptions;
               } else {
                 var index = selectedOptions.indexOf($data);
                 selectedOptions.splice(index, 1);
-                value(selectedOptions);
               }
+              value(selectedOptions);
             } 
           })" />
         <!-- /ko -->
