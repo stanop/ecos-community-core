@@ -6,8 +6,8 @@
         <!-- ko if: $parent.multiple -->
           <input type="checkbox" data-bind="checked: ko.computed({ 
             read: function() {
-              if (selectedElements)
-                return selectedElements.indexOf($data) != -1;
+              if ($parent.value())
+                return $parent.value().indexOf($data) != -1;
             }, 
             write: function(newValue) {
               var selectedOptions = $parent.value() || [];
