@@ -58,6 +58,7 @@
 			<properties>
 				<site>{site}</site>
 				<listId>{listId}</listId>
+                <settingsControlMode>checkbox</settingsControlMode>
 			</properties>
         </component>
 
