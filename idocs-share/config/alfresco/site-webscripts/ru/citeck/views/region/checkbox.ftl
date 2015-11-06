@@ -17,7 +17,7 @@
                 var index = selectedOptions.indexOf($data);
                 selectedOptions.splice(index, 1);
               }
-              value(selectedOptions);
+              $parent.value(selectedOptions);
             } 
           })" />
         <!-- /ko -->
