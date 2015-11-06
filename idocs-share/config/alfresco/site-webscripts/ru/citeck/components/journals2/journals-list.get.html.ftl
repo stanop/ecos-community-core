@@ -7,7 +7,7 @@
 new Alfresco.widget.Resizer("journals").setOptions({
 	initialWidth: 250
 });
-require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui'], function(JournalsPage, koyui) {
+require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.invariants-controls'], function(JournalsPage, koyui, koic) {
 	new JournalsPage("${id}")
 	.setOptions({
 		model: {
@@ -187,8 +187,20 @@ require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui
 				</div>
 				
 				<!-- ko if: resolve('journal.type.visibleAttributes.length', 0) > 0 -->
-				<label for="${id}-columns-select" class="columns-select">${msg("label.columns-select")}</label>
-				<select id="${id}-columns-select" class="columns-select" multiple="true" data-bind="options: journal().type().visibleAttributes, selectedOptions: _settings().visibleAttributes, optionsText: 'displayName'" size="10"></select>
+					<label for="${id}-columns-select" class="columns-select">${msg("label.columns-select")}</label>
+
+					<#if settingsControlMode??>
+						<#if settingsControlMode == "checkbox">
+							<!-- ko component: { name: "checkbox", params: {
+								options: journal().type().visibleAttributes,
+								value: _settings().visibleAttributes,
+								optionText: function(option) { return option.displayName },
+								multiple: true
+							}} --><!-- /ko -->
+						</#if>
+					<#elseif !settingsControlMode?? || settingsControlMode == "select">
+						<select id="${id}-columns-select" class="columns-select" multiple="true" data-bind="options: journal().type().visibleAttributes, selectedOptions: _settings().visibleAttributes, optionsText: 'displayName'" size="10"></select>
+					</#if>
 				<!-- /ko -->
 
 			</div>
