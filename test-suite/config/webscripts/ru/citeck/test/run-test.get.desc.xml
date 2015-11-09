@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Run JUNit test</shortname>
+	<description>Run specified JUnit 4 test</description>
+	<url>/test/run?class={class}</url>
+	<format default="json">argument</format>
+	<authentication>admin</authentication>
+	<transaction>none</transaction>
+</webscript>

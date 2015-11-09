@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="alfresco-module" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<import file="../repo-macros.xml" />
+	<path id="project.classpath">
+		<fileset refid="junit.jar" />
+	</path>
+	
+	<target name="resolve-dependencies">
+		<resolve-dependency groupId="junit" artifactId="junit" version="4.5" />
+	</target>
+	
+	<target name="package-default" depends="package-jar" />
+	
+</project>
+

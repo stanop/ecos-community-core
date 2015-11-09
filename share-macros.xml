@@ -28,7 +28,7 @@
 module.id=${module.id}
 module.title=${module.id}
 module.description=${module.id}
-module.group=ru.citeck.idocs
+module.group=ru.citeck.ecos
 module.version=1.0.0
 ]]></echo>
 		<echo file="${module.id}/file-mapping.properties"><![CDATA[include.default=true
