@@ -39,7 +39,7 @@ var Event = YAHOO.util.Event,
 // CHECKBOX
 // ---------------
 
-ko.components.register("checkbox", {
+ko.components.register("checkbox-radio", {
     viewModel: function(params) {
         var self = this;
         this.optionText = params["optionText"];
