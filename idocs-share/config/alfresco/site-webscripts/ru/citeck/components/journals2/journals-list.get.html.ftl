@@ -191,7 +191,7 @@ require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui
 
 					<#if settingsControlMode??>
 						<#if settingsControlMode == "checkbox">
-							<!-- ko component: { name: "checkbox", params: {
+							<!-- ko component: { name: "checkbox-radio", params: {
 								options: journal().type().visibleAttributes,
 								value: _settings().visibleAttributes,
 								optionText: function(option) { return option.displayName },

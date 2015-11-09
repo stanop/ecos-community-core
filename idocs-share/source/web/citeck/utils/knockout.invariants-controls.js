@@ -39,7 +39,7 @@ var Event = YAHOO.util.Event,
 // CHECKBOX
 // ---------------
 
-ko.components.register("checkbox", {
+ko.components.register("checkbox-radio", {
     viewModel: function(params) {
         var self = this;
         this.optionText = params["optionText"];
@@ -61,10 +61,7 @@ ko.components.register("checkbox", {
                   })" />\
                 <!-- /ko -->\
                 <!-- ko ifnot: $parent.multiple -->\
-                  <input type="checkbox" data-bind="checked: ko.computed({\
-                    read: function() { return $parent.value() == $data; },\
-                    write: function(newValue) { newValue ? $parent.value($data) : $parent.value(null) }\
-                  })" />\
+                  <input type="radio" data-bind="checked: $parent.value, attr: { value: $data }" />\
                 <!-- /ko -->\
                 <!-- ko text: $parent.optionText($data) --><!-- /ko -->\
             </span>\
