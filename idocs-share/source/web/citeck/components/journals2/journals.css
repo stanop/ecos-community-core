@@ -520,6 +520,14 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 	background-image: url(images/save-disabled.png);
 }
 
+/* settings checkbox */
+
+.toolbar-menu .checkbox-option {
+  display: inline-block;
+  min-width: 200px;
+}
+
+
 a.criterion-remove,
 a.remove {
 	background: 50% 50% url(images/cross.png) no-repeat;
