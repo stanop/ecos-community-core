@@ -380,8 +380,7 @@
                         </control>
                     </field>
                     <field id="journal:journals">
-                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
-                        </control>
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl"></control>
                     </field>
                 </appearance>
             </form>
@@ -414,6 +413,7 @@
                     <show id="cm:name" />
                     <show id="cm:title" />
                     <show id="journal:journals" />
+                    <show id="journal:default" />
                     <show id="cm:modified" />
                 </field-visibility>
                 <appearance>
@@ -424,6 +424,9 @@
                     <field id="journal:journals">
                         <control template="/ru/citeck/components/form/controls/association_search.ftl">
                         </control>
+                    </field>
+                    <field id="journal:default">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl"></control>
                     </field>
                 </appearance>
             </form>
