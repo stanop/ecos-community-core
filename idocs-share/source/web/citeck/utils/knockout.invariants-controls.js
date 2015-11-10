@@ -58,7 +58,7 @@ ko.components.register("checkbox-radio", {
                       newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
                       $parent.value(selectedOptions);\
                     }\
-                  })" />\
+                  })" style="position: relative; top: 3px;" />\
                 <!-- /ko -->\
                 <!-- ko ifnot: $parent.multiple -->\
                   <input type="radio" data-bind="checked: $parent.value, attr: { value: $data }" />\
