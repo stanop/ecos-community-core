@@ -122,8 +122,6 @@
                     <prop key="uuidBinding">REPLACE_EXISTING</prop>
                     <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.workflowemailnotification.childname}</prop>
                     <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/email_templates.xml</prop>
-                    <!-- TODO refactor -->
-                    <prop key="messages">alfresco/module/idocs-repo/messages/notification-templates</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
             </list>
