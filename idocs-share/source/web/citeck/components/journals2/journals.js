@@ -64,6 +64,7 @@ JournalsList
 	.property('documentNodeRef', s)
 	.property('title', s)
 	.property('journals', [ Journal ])
+	.property('default', Journal)
 	.computed('scope', function() {
 		return this.id() ? this.id().replace(journalsListIdRegexp, '$1') : '';
 	})
@@ -442,11 +443,7 @@ JournalsWidget
 			return this.resolve('journalsList.id', '');
 		},
 		write: function(value) {
-			if(value) {
-				this.journalsList(new JournalsList(value, this.documentNodeRef()));
-			} else {
-				this.journalsList(null);
-			}
+			value ? this.journalsList(new JournalsList(value, this.documentNodeRef())) : this.journalsList(null);
 		}
 	})
 	.computed('journalId', {
@@ -454,11 +451,7 @@ JournalsWidget
 			return this.resolve('journal.nodeRef', '');
 		},
 		write: function(value) {
-			if(value) {
-				this.journal(new Journal(value));
-			} else {
-				this.journal(null);
-			}
+			value ? this.journal(new Journal(value)) : this.journal(this.resolve('journalsList.default'));
 		}
 	})
 	.computed('filterId', {

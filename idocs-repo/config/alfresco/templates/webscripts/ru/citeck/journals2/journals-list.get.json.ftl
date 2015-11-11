@@ -2,7 +2,12 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "id": "${args.journalsList}",
-    "title": <#if journalLists?? && journalLists[0]??>"${journalLists[0].properties["cm:title"]!}"<#else>""</#if>,   
+    "title": <#if journalLists?? && journalLists[0]??>"${journalLists[0].properties["cm:title"]!}"<#else>""</#if>,
+
+    <#if journalByDefault??>
+        "default": <@journals.renderJournal journal=journalByDefault full=false />,
+    </#if>
+
     "journals": [
         <#if args.nodeRef?? && journalsWithNode??>
             <#list journalsWithNode as jwn>

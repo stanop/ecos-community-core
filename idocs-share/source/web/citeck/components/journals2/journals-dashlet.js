@@ -52,7 +52,7 @@ JournalsDashlet
 			var config = this.resolve('dashletConfig.clone');
 			this._dashletConfig(config);
 			this.journalsList(config.journalsList());
-			this.journal(config.journal());
+			this.journal(config.journal() || this.resolve('journalsList.default'));
 			this.filter(config.filter());
 			this.settings(config.settings());
 		}, this);

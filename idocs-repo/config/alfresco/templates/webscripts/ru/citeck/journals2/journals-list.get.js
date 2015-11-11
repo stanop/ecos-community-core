@@ -12,18 +12,25 @@ if (journalListName) {
   return;
 }
 
-var journalList = search.luceneSearch(query);
+var journalList = search.luceneSearch(query),
+    journals, journalByDefault;
 
-if (nodeRef && journalList) {
+if (journalList) {
+  if (journalList[0].assocs["journal:default"]) {
+    journalByDefault = journalList[0].assocs["journal:default"][0];
+  }
+
+  if (journalList[0].assocs["journal:journals"]) {
+    journals = journalList[0].assocs["journal:journals"];
+  }
+}
+
+if (nodeRef) {
   // java services
   var journalService = services.get("journalService"),
       dictionaryService = services.get("dictionaryService");
 
-  // all about node.
-  var node = search.findNode(nodeRef);
-
-  // all journals and journals valid for node
-  var journals = journalList[0].assocs["journal:journals"],
+  var node = search.findNode(nodeRef),
       journalsWithNode = [];
 
   if (journals) {
@@ -74,6 +81,13 @@ if (nodeRef && journalList) {
         }
       }
     }
+  }
+}
+
+for (var j in journals) {
+  if (journals[j].equals(journalByDefault)) {
+    model.journalByDefault = journalByDefault;
+    break;
   }
 }
 
