@@ -47,10 +47,12 @@ public interface LifeCycleService extends LifeCycleServiceGeneric<NodeRef,
 
     LifeCycleDefinition getLifeCycleDefinitionByDocType(QName docType);
 
-    void deployLifeCycle(InputStream lifeСycleDefinitionStream, String formatName, QName docType, String title) throws IOException;
+    void deployLifeCycle(InputStream lifeCycleDefinitionStream, String formatName, QName docType, String title) throws IOException;
 
     void undeployLifeCycle(QName docType);
 
+    // TODO refactor stored lifecycles!
+    
     void deployStoredLifeCycle(NodeRef lifeCycleDefinitionNodeRef);
 
     void deployStoredLifeCycles();

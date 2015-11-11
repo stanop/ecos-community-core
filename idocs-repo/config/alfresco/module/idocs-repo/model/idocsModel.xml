@@ -749,7 +749,7 @@
         </aspect>
 
         <aspect name="idocs:entityInfo">
-            <title>Applicability</title>
+            <title>Entity info</title>
             <properties>
                 <property name="idocs:juridicalAddress">
                     <title>Juridical address</title>

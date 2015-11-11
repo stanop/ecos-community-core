@@ -26,18 +26,18 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="idocs:code" default="true" />
+			<header key="idocs:code" />
 			<header key="idocs:fullOrganizationName" default="true" />
-			<header key="idocs:shortOrganizationName" default="true" />
-			<header key="idocs:okpo" default="true" />
-			<header key="idocs:ogrn" default="true" />
+			<header key="idocs:shortOrganizationName" />
 			<header key="idocs:inn" default="true" />
 			<header key="idocs:kpp" default="true" />
-			<header key="idocs:juridicalAddress" default="true" />
-			<header key="idocs:postAddress" default="true" />
+			<header key="idocs:okpo" />
+			<header key="idocs:ogrn" />
+			<header key="idocs:juridicalAddress" />
+			<header key="idocs:postAddress" />
 			<header key="idocs:generalDirector" default="true" />
-			<header key="idocs:accountantGeneral" default="true" />
-			<header key="idocs:phoneNumber" default="true" />
+			<header key="idocs:accountantGeneral" />
+			<header key="idocs:phoneNumber" />
 		</headers>
 	</journal>
 	<journal id="idocs-contractor">
@@ -46,14 +46,14 @@
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:fullOrganizationName" default="true" />
-			<header key="idocs:shortOrganizationName" default="true" />
+			<header key="idocs:shortOrganizationName" />
 			<header key="idocs:inn" default="true" />
 			<header key="idocs:kpp" default="true" />
-			<header key="idocs:juridicalAddress" default="true" />
-			<header key="idocs:postAddress" default="true" />
-			<header key="idocs:phone" default="true" />
-			<header key="idocs:fax" default="true" />
-			<header key="idocs:email" default="true" />
+			<header key="idocs:juridicalAddress" />
+			<header key="idocs:postAddress" />
+			<header key="idocs:phone" />
+			<header key="idocs:fax" />
+			<header key="idocs:email" />
 			<header key="idocs:CEOname" default="true" />
 		</headers>
 	</journal>

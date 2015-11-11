@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+	</imports>
+
+	<view class="idocs:organizationInfo">
+		<field prop="idocs:fullOrganizationName" />
+		<field prop="idocs:shortOrganizationName" />
+	</view>
+	
+	<view class="idocs:publicRegInfo">
+		<field prop="idocs:inn" />
+		<field prop="idocs:kpp" />
+		<field prop="idocs:okpo" />
+		<field prop="idocs:ogrn" />
+		<field prop="idocs:bill" />
+	</view>
+	
+	<view class="idocs:entityInfo">
+		<field assoc="idocs:generalDirector" />
+		<field assoc="idocs:accountantGeneral" />
+		<field prop="idocs:juridicalAddress" />
+		<field prop="idocs:postAddress" />
+		<field prop="idocs:phoneNumber" />
+	</view>
+	
+	<view class="idocs:legalEntity">
+		<view class="idocs:organizationInfo" />
+		<view class="idocs:publicRegInfo" />
+		<view class="idocs:entityInfo" />
+	</view>
+	
+</views>

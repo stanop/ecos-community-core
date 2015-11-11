@@ -19,6 +19,7 @@
 package ru.citeck.ecos.lifecycle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -294,8 +295,8 @@ public class LifeCycleDefinition {
 		private List<LifeCycleAction> actionList;
 
 		public LifeCycleTransition() {
-			conditionList = new ArrayList<LifeCycleCondition>();
-			actionList = new ArrayList<LifeCycleAction>();
+			conditionList = Collections.emptyList();
+			actionList = Collections.emptyList();
 		}
 
 		public String getFromState() {
