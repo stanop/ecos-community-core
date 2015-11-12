@@ -295,8 +295,8 @@ public class LifeCycleDefinition {
 		private List<LifeCycleAction> actionList;
 
 		public LifeCycleTransition() {
-			conditionList = Collections.emptyList();
-			actionList = Collections.emptyList();
+			conditionList = new ArrayList<LifeCycleCondition>();
+			actionList = new ArrayList<LifeCycleAction>();
 		}
 
 		public String getFromState() {
