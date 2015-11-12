@@ -96,7 +96,7 @@
 				<props>
 					<prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
 					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode.xml</prop>
-					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/documents-mode</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmfolder/documents-mode</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
