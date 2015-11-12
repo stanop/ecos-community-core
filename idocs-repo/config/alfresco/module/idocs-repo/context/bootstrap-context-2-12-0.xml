@@ -335,4 +335,24 @@
 		</property>
 	</bean>
 
+	<bean id="idocs.module-component.cardlet-documents" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="cardlet-documents" />
+		<property name="description" value="Documents Cardlet" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.cardlets-cmobject" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmfolder/documents</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+	
 </beans>
