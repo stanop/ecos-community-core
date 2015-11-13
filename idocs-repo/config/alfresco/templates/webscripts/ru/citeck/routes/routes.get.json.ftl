@@ -1,5 +1,6 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
-    {   
+    {
+        "canCreate": ${canCreate?string},
         "data": [
             <#if data??>
                 <#list data as route>
@@ -10,6 +11,8 @@
 
                         "name": "${route.name?string}",
                         "nodeRef": "${route.nodeRef?string}",
+                        "canEdit": ${route.hasPermission("Editor")?string},
+                        "canDelete": ${route.hasPermission("Delete")?string},
                         
                         <#-- Stages -->
                         "stages": [
