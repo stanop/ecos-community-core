@@ -61,6 +61,22 @@
                 </div>
                 <div class="ft"></div>
             </div>
+
+            <script type="text/javascript">
+                $("#routeName").bind("input" , function() {
+                    if (citeckWidgetRoute) {
+                        if (citeckWidgetRoute.buttons.saveAsTemplateSubmit) {
+                            if (this.value) {
+                                // if (!submitButton.disabled)
+                                    citeckWidgetRoute.buttons.saveAsTemplateSubmit._setDisabled(false);
+                            } else {
+                                // if (submitButton.disabled)
+                                    citeckWidgetRoute.buttons.saveAsTemplateSubmit._setDisabled(true);
+                            }
+                        }
+                    }
+                });
+            </script>
         </#if>
     </#if>
 
