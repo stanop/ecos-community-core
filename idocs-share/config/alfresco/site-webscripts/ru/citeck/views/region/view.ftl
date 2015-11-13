@@ -1,13 +1,9 @@
 <#assign params = viewScope.region.params!{} />
 <#assign isViewMode = (viewScope.view.mode == "view")/>
-<!-- ko ifnot: empty -->
 <!-- ko foreach: multipleValues -->
 <span class="value-item">
-            <#if !params.isLinked??>
-                <#assign showLink = isViewMode?string/>
-            <#else>
-                <#assign showLink = params.isLinked/>
-            </#if>
+            <#assign showLink = params.isLinked!(isViewMode?string) />
+
             <#if showLink == "true">
                 <!-- ko if: $data instanceof koutils.koclass("invariants.Node") -->
                 <a class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: Alfresco.util.siteURL('card-details?nodeRef='+$data.nodeRef)}"></a>
@@ -28,7 +24,6 @@
                 </span>
             </#if>
        </span>
-<!-- /ko -->
 <!-- /ko -->
 
 <!-- ko if: empty -->
