@@ -58,7 +58,8 @@
 		<div class="form-buttons" data-bind="with: node().impl">
 			<input id="${id}-form-submit" type="submit" 
 					value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>" 
-					data-bind="enable: valid, click: $root.submit.bind($root)" />
+					data-bind="enable: valid && !$root.inSubmitProcess(), click: $root.submit.bind($root)" />
+
 			<#-- TODO support create and continue -->
 			<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
 			<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />

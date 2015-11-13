@@ -1384,12 +1384,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .key('key', s)
         .property('node', Node)
         .property('invariants', InvariantSet)
+        .property('inSubmitProcess', b)
         .constant('rootObjects', rootObjects)
         
         .method('submit', function() {
             if(this.node().impl().valid()) {
                 this.broadcast('node-view-submit');
             }
+
+            this.inSubmitProcess(true);
         })
         
         .method('cancel', function() {
@@ -1403,7 +1406,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 node: this.node(),
             });
         })
-        
+
+        .init(function() {
+            this.inSubmitProcess(false)
+        })
         ;
     
     
