@@ -63,6 +63,10 @@
             this.routes = [];
             this.stages = [];
 
+            this.permissions = {
+                canCreate: false
+            }
+
             this.fn = {
                 viewRender: function(stages) {
                     for (var s in stages) {
@@ -296,6 +300,29 @@
                 }
             }
 
+            // check permissions
+            Alfresco.util.Ajax.jsonGet({
+                url: Alfresco.constants.PROXY_URI + "api/citeck/routes?onlyPermissions=true",
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        var result = response.json;
+                        this.permissions.canCreate = result.canCreate;
+
+                        // show saveAsTemplate if permission 'canCreate' is true
+                        if (result.canCreate) this.buttons.saveAsTemplateDialog.removeClass("hidden");
+                    }
+                },
+                failureCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        console.log("error")
+                    }
+                }
+            });
+            
+            // hide saveAsTemplate if permission 'canCreate' is FALSE
+            if (!this.permissions.canCreate) this.buttons.saveAsTemplateDialog.addClass("hidden");
 
             // 
             //  PUBLIC FUNCTIONS
@@ -346,11 +373,15 @@
                     if (this.buttons.saveAsTemplateDialog && this.buttons.loadTemplateDialog) {
                         switch (visibility) {
                             case "hidden":
-                                this.buttons.saveAsTemplateDialog.addClass("hidden");
+                                // hide saveAsTemplate button only if permission 'canCreate' is TRUE
+                                if (this.permissions.canCreate) { this.buttons.saveAsTemplateDialog.addClass("hidden"); }
+                                
                                 this.buttons.loadTemplateDialog.addClass("hidden");
                                 break
                             case "visible":
-                                this.buttons.saveAsTemplateDialog.removeClass("hidden");
+                                // visible saveAsTemplate button only if permission 'canCreate' is TRUE
+                                if (this.permissions.canCreate) { this.buttons.saveAsTemplateDialog.removeClass("hidden"); }
+
                                 this.buttons.loadTemplateDialog.removeClass("hidden");
                                 break
                         }
@@ -812,7 +843,7 @@
 
             trHead
                 .append($("<th/>", { html: stageTitle }))
-                .append($("<th/>", { html: this.msg("route.participants") }));
+                .append($("<th/>", { html: this.msg("route.participants") + "<span class=\"mandatory-indicator\">*</span>" }));
 
             divTimeControl
                 .append(inputDuoDateExpr)

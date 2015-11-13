@@ -3,40 +3,43 @@
         routes = [];
 
     if (routesRootFolder) {
-        if (args.nodeRef) {
-            var node = search.findNode(args.nodeRef);
-            if (node) {
-                if (node.typeShort == "route:route") {
-                    routes.push(node);
-                } else {
-                    var type = node.properties["tk:type"] || node.properties["tk:appliesToType"], 
-                        kind = node.properties["tk:kind"] || node.properties["tk:appliesToKind"];
+        if (!args.onlyPermissions || args.onlyPermissions == "false") {
+            if (args.nodeRef) {
+                var node = search.findNode(args.nodeRef);
+                if (node) {
+                    if (node.typeShort == "route:route") {
+                        routes.push(node);
+                    } else {
+                        var type = node.properties["tk:type"] || node.properties["tk:appliesToType"], 
+                            kind = node.properties["tk:kind"] || node.properties["tk:appliesToKind"];
 
-                    var routeNodes = routesRootFolder.children;
+                        var routeNodes = routesRootFolder.children;
 
-                    if (kind) {
-                        var filteredKindRoutes = filterKind(routeNodes, kind);
-                        if (filteredKindRoutes) routes = filteredKindRoutes;
-                    }
-
-                    if (routes.length == 0) {
-                        if (type) {
-                            var filteredTypeRoutes = filterType(routeNodes, type);
-                            if (filteredTypeRoutes) routes = filteredTypeRoutes;
+                        if (kind) {
+                            var filteredKindRoutes = filterKind(routeNodes, kind);
+                            if (filteredKindRoutes) routes = filteredKindRoutes;
                         }
-                    }
 
+                        if (routes.length == 0) {
+                            if (type) {
+                                var filteredTypeRoutes = filterType(routeNodes, type);
+                                if (filteredTypeRoutes) routes = filteredTypeRoutes;
+                            }
+                        }
+
+                    }
+                } else {
+                    status.setCode(404);
+                    status.message = "Can't find node with nodeRef: " + args.nodeRef;
+                    return;
                 }
             } else {
-                status.setCode(404);
-                status.message = "Can't find node with nodeRef: " + args.nodeRef;
-                return;
+                routes = routesRootFolder.children;
             }
-        } else {
-            routes = routesRootFolder.children;
+
+            model.data = routes;
         }
 
-        model.data = routes;
         model.canCreate = routesRootFolder.hasPermission("CreateChildren");
     } else {
         status.setCode(500);
