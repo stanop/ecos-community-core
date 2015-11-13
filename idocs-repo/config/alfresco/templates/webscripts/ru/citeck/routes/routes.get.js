@@ -36,9 +36,8 @@
             routes = routesRootFolder.children;
         }
 
-        if (routes) {
-            model.data = routes;
-        }
+        model.data = routes;
+        model.canCreate = routesRootFolder.hasPermission("CreateChildren");
     } else {
         status.setCode(500);
         status.message = "Can't find root folder of routes.";

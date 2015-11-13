@@ -4,6 +4,12 @@
             xmlns:cm="http://www.alfresco.org/model/content/1.0">
 
     <cm:folder view:childName="cm:routes">
+		<view:acl view:inherit="true">
+			<view:ace view:access="ALLOWED">
+				<view:authority>GROUP_EVERYONE</view:authority>
+				<view:permission>Contributor</view:permission>
+			</view:ace>
+		</view:acl>
         <view:properties>
             <cm:name>routes</cm:name>
             <cm:title>Routes</cm:title>
