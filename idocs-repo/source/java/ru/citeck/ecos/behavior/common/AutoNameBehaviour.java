@@ -182,7 +182,8 @@ public class AutoNameBehaviour implements
                         String newName = finalBaseName + finalExtension;
                         while (true) {
                             NodeRef existingNode = nodeService.getChildByName(parentRef, parentAssoc.getTypeQName(), newName);
-                            if(existingNode == null || nodeRef.equals(existingNode)) {
+                            if(nodeRef.equals(existingNode)) break;
+							if(existingNode == null) {
                                 
                                 // check name cache
                                 final Object key = new Pair<NodeRef,String>(parentRef, newName);
