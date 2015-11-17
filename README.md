@@ -1,29 +1,23 @@
-# README #
+# Citeck EcoS Community #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Citeck Ecos Community 3.0.a Release Candidate 1
 
-### What is this repository for? ###
+Citeck EcoS Community is a new open source solution based on the Alfresco ECM for managing corporate content and cases. This version is available through free download and doesn't require any payment. Citeck EcoS Community is perfect for IT specialists and developers who would like to set up and support the system. Citeck Ecos Community helps with managing the corporate content of any kind, as well as implements the basic features of case management.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### Community ###
 
-### How do I get set up? ###
+* Issue tracking system - https://citeck.atlassian.net
+* Wiki - https://citeck.atlassian.net/wiki/display/CEW/Citeck+EcoS+Community+Wiki
+* Main repository - https://bitbucket.org/citeck/ecos-community
+* Features description - http://www.citeck.com
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### Documentation and tutorials ###
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+* Alfresco ECM and Citeck EcoS Installation - http://ecos24.com/s/NEwSbCfOSbyw_rwsi--ekg
+* Citeck EcoS Architecture - http://ecos24.com/s/6tfsLQchRja69LmZORNTNg
+* Alfresco Share Setup - http://ecos24.com/s/t9K9TBp1RdKH3_KSBGQlig
+* Cards and journals in Citeck EcoS - http://ecos24.com/s/d7yyukC6QAy6dWdhgKZAyg
+* Import and Export in Citeck EcoS - http://ecos24.com/s/9VSEaTkATr6r3huoGTazEw
+* Content modeling in Alfresco ECM and Citeck EcoS - http://ecos24.com/s/e33EFEjrTfaKFefXGNtREg
+* Processes in Citeck EcoS - http://ecos24.com/s/-ncV-u0PQ6m2qZG10-ceCg
+* Forms in Citeck EcoS - http://ecos24.com/s/b6pAC1wOQSSGYUnjIF5oYw
