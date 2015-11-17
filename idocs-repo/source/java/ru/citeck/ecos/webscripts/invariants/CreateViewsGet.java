@@ -66,6 +66,7 @@ public class CreateViewsGet extends DeclarativeWebScript {
         }
         
         for(QName childClassName : DictionaryUtils.getChildClassNames(className, true, dictionaryService)) {
+            if(childClassName.equals(className)) continue;
             if(nodeViewExists(builder, childClassName)) {
                 existingViewClasses.add(childClassName);
             }
