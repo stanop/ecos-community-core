@@ -35,7 +35,7 @@
                         </#if>
                     <!-- /ko -->
 
-                    <!-- ko ifnot: $parents[1].inViewMode && $parent.protected -->
+                    <!-- ko ifnot: $parents[1].inViewMode || $parent.protected -->
                         <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
                     <!-- /ko -->
                 </tr>
@@ -64,7 +64,7 @@
                         </#if>
                     <!-- /ko -->
 
-                    <!-- ko ifnot: $parents[1].inViewMode && $parent.protected -->
+                    <!-- ko ifnot: $parents[1].inViewMode || $parent.protected -->
                         <td class="value-item-actions">
                             <a class="edit-value-item" title="${msg('button.edit')}" 
                                data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(){}), clickBubble: false"></a>
@@ -79,5 +79,5 @@
 <!-- /ko -->
 
 <!-- ko if: empty -->
-    <span data-bind="click: function(){ console.log($data) }">${msg("label.none")}</span>
+    <span>${msg("label.none")}</span>
 <!-- /ko -->
