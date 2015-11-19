@@ -105,14 +105,19 @@ public interface CaseElementService {
             throws AlfrescoRuntimeException;
 
     /**
-     * Copy case configuration: all element configs and its elements, if necessary.
-     * 
-     * Either source, or target case can be a template case, or be marked as template later.
-     * 
-     * @param sourceCase case from which to copy
-     * @param targetCase case to which to copy
+     * Copy case configuration to specified template.
+     *  
+     * @param caseNodeRef
+     * @param templateRef
      */
-    void copyConfiguration(NodeRef sourceCase, NodeRef targetCase);
+    void copyCaseToTemplate(NodeRef caseNodeRef, NodeRef templateRef);
     
+    /**
+     * Copy case configuration from specified template.
+     *  
+     * @param templateRef
+     * @param caseNodeRef
+     */
+    void copyTemplateToCase(NodeRef templateRef, NodeRef caseNodeRef);
     
 }

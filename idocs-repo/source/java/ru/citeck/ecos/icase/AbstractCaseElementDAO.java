@@ -36,6 +36,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 public abstract class AbstractCaseElementDAO implements CaseElementDAO {
@@ -152,6 +153,20 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
 		}
 	}
 	
+    @Override
+    public void copyElementsToTemplate(NodeRef caseNodeRef, NodeRef template, NodeRef config) {
+        List<NodeRef> elements = get(caseNodeRef, config);
+        for(NodeRef element : elements) {
+            nodeService.createAssociation(template, element, ICaseTemplateModel.ASSOC_EXTERNAL_ELEMENTS);
+        }
+    }
+    
+    @Override
+    public void copyElementsFromTemplate(NodeRef template, NodeRef caseNodeRef, NodeRef config) {
+        List<NodeRef> elements = RepoUtils.getTargetNodeRefs(template, ICaseTemplateModel.ASSOC_EXTERNAL_ELEMENTS, nodeService);
+        addAll(elements, caseNodeRef, config);
+    }
+
     protected QName needElementType(NodeRef config) {
         return RepoUtils.getMandatoryProperty(config, ICaseModel.PROP_ELEMENT_TYPE, nodeService);
     }

@@ -17,10 +17,10 @@
         return;
     }
     
-    var template = caseTemplateRoot.createNode(null, proto.typeShort, "cm:contains");
-    template.addAspect("icase:case");
-    template.addAspect("icase:caseTemplate");
-    caseService.copyConfiguration(proto, template);
+    var template = caseTemplateRoot.createNode(null, "icase:template", {
+    	"icase:caseType": proto.type
+    }, "cm:contains");
+    caseService.copyCaseToTemplate(proto, template);
 
     model.success = true;
     model.template = template;

@@ -45,15 +45,18 @@ public interface CaseElementDAO {
 
 	/**
 	 * It returns list of case elements.
+	 * 
 	 * @param caseNode - case node reference
 	 * @param config - config node reference
+	 * 
 	 * @return list of element node references
+	 * 
 	 * @throws AlfrescoRuntimeException
 	 * @throws IllegalArgumentException
 	 */
 	List<NodeRef> get(NodeRef caseNode, NodeRef config)
 			throws AlfrescoRuntimeException, IllegalArgumentException;
-
+	
 	/**
 	 * It returns list of cases for the element.
 	 * If element is not of required type, it returns empty list.
@@ -68,9 +71,11 @@ public interface CaseElementDAO {
 
     /**
      * It adds case element.
+     * 
      * @param nodeRef - element node reference
      * @param caseNode - case node reference
      * @param config - config node reference
+     * 
      * @throws AlfrescoRuntimeException
      * @throws IllegalArgumentException
      */
@@ -83,6 +88,7 @@ public interface CaseElementDAO {
      * @param nodeRefs - elements to be added
      * @param caseNode - case node reference
      * @param config - config node reference
+     * 
      * @throws AlfrescoRuntimeException
      * @throws IllegalArgumentException
      */
@@ -126,5 +132,25 @@ public interface CaseElementDAO {
 	 * @return type, for which this strategy applies.
 	 */
 	QName getElementConfigType();
+
+	/**
+	 * Copy elements from case to case template.
+	 * Additionally, it should adjust links between copied elements.
+	 * 
+	 * @param caseNodeRef case
+	 * @param elementType case template part
+	 * @param config element config
+	 */
+    void copyElementsToTemplate(NodeRef caseNodeRef, NodeRef elementType, NodeRef config);
+
+    /**
+     * Copy elements from case template to case.
+     * Additionally, it should adjust links between copied elements.
+     * 
+     * @param elementType case template part
+     * @param caseNodeRef case
+     * @param config element config
+     */
+    void copyElementsFromTemplate(NodeRef elementType, NodeRef caseNodeRef, NodeRef config);
 
 }
