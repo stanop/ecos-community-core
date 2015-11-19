@@ -31,9 +31,6 @@ import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
@@ -41,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import org.alfresco.service.cmr.repository.ScriptService;
 
 import ru.citeck.ecos.model.ICaseModel;
-import java.text.MessageFormat;
 import ru.citeck.ecos.search.CriteriaSearchService;
 import ru.citeck.ecos.search.SearchCriteriaFactory;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -63,7 +59,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     private String scriptEngine;
 	
     private CriteriaSearchService searchService;
-    private SearchCriteriaFactory сriteriaFactory;
+    private SearchCriteriaFactory criteriaFactory;
     private String language;
 	
 	public void resetCaseTemplates() {
@@ -114,10 +110,10 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         }
 		for(NodeRef template : templates)
 		{
-			caseElementService.copyConfiguration(template, caseNode);
-
+		    caseElementService.copyTemplateToCase(template, caseNode);
+		    
 			if (logger.isDebugEnabled())
-				logger.debug("Case configuration is successfully copied from template. nodeRef="
+				logger.debug("Case elements are successfully copied from template. nodeRef="
 						+ caseNode + "; template=" + template);
 		}
     }
@@ -134,8 +130,8 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 		this.searchService = searchService;
 	}
 
-	public void setCriteriaFactory(SearchCriteriaFactory сriteriaFactory) {
-		this.сriteriaFactory = сriteriaFactory;
+	public void setCriteriaFactory(SearchCriteriaFactory criteriaFactory) {
+		this.criteriaFactory = criteriaFactory;
 	}
 
     public void setLanguage(String language) {
@@ -163,33 +159,33 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     }
 
 	protected List<NodeRef> getCaseTemplateByType(NodeRef caseNode, QName type) {
-        SearchCriteria searchCriteria = сriteriaFactory.createSearchCriteria()
+        SearchCriteria searchCriteria = criteriaFactory.createSearchCriteria()
                 .addCriteriaTriplet(FieldType.TYPE, SearchPredicate.TYPE_EQUALS, ICaseModel.TYPE_CASE_TEMPLATE)
                 .addCriteriaTriplet(ICaseModel.PROP_CASE_TYPE, SearchPredicate.STRING_EQUALS, type.toString());
         List<NodeRef> nodeRefs = searchService.query(searchCriteria, language).getResults();
 		logger.debug("searchCriteria for getting case template "+searchCriteria);
 		List<NodeRef> resultTemplates = new ArrayList<NodeRef>();
-		ResultSet rs = null;
-			Map<String, Object> model = new HashMap<String, Object>();
-			model.put("caseNode", caseNode);
-			for(NodeRef template : nodeRefs)
+
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("caseNode", caseNode);
+		for(NodeRef template : nodeRefs)
+		{
+			String condition = (String)nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
+			if(condition!=null)
 			{
-				String condition = (String)nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
-				if(condition!=null)
-				{
-					Object result = scriptService.executeScriptString(scriptEngine, condition, model);
-					logger.debug("condition "+condition);
-					logger.debug("result "+result);
-					if(Boolean.TRUE.equals(result))
-						resultTemplates.add(template);
-				}
-				else
-				{
+				Object result = scriptService.executeScriptString(scriptEngine, condition, model);
+				logger.debug("condition "+condition);
+				logger.debug("result "+result);
+				if(Boolean.TRUE.equals(result))
 					resultTemplates.add(template);
-				}
 			}
-			
-			return resultTemplates;
+			else
+			{
+				resultTemplates.add(template);
+			}
+		}
+		
+		return resultTemplates;
 	}
 
 }

@@ -35,6 +35,7 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 
 import ru.citeck.ecos.behavior.ParameterizedJavaBehaviour;
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 /**
@@ -51,26 +52,26 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         TARGET {
             @Override
             public List<NodeRef> getTarget(NodeRef caseNode, QName assocName,
-                    NodeService nodeService) {
-                return searchTargetAssocs(caseNode, assocName, nodeService);
+                    AssociationCaseElementDAOImpl config) {
+                return config.searchTargetAssocs(caseNode, assocName);
             }
 
             @Override
             public List<NodeRef> getSource(NodeRef element, QName assocName,
-                    NodeService nodeService) {
-                return searchSourceAssocs(element, assocName, nodeService);
+                    AssociationCaseElementDAOImpl config) {
+                return config.searchSourceAssocs(element, assocName);
             }
 
             @Override
             public void create(NodeRef caseNode, NodeRef element,
-                    QName assocName, NodeService nodeService) {
-                nodeService.createAssociation(caseNode, element, assocName);
+                    QName assocName, AssociationCaseElementDAOImpl config) {
+                config.nodeService.createAssociation(caseNode, element, assocName);
             }
 
             @Override
             public void remove(NodeRef caseNode, NodeRef element,
-                    QName assocName, NodeService nodeService) {
-                nodeService.removeAssociation(caseNode, element, assocName);
+                    QName assocName, AssociationCaseElementDAOImpl config) {
+                config.nodeService.removeAssociation(caseNode, element, assocName);
             }
 
             @Override
@@ -87,26 +88,26 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         SOURCE {
             @Override
             public List<NodeRef> getTarget(NodeRef caseNode, QName assocName,
-                    NodeService nodeService) {
-                return searchSourceAssocs(caseNode, assocName, nodeService);
+                    AssociationCaseElementDAOImpl config) {
+                return config.searchSourceAssocs(caseNode, assocName);
             }
 
             @Override
             public List<NodeRef> getSource(NodeRef element, QName assocName,
-                    NodeService nodeService) {
-                return searchTargetAssocs(element, assocName, nodeService);
+                    AssociationCaseElementDAOImpl config) {
+                return config.searchTargetAssocs(element, assocName);
             }
 
             @Override
             public void create(NodeRef caseNode, NodeRef element,
-                    QName assocName, NodeService nodeService) {
-                nodeService.createAssociation(element, caseNode, assocName);
+                    QName assocName, AssociationCaseElementDAOImpl config) {
+                config.nodeService.createAssociation(element, caseNode, assocName);
             }
 
             @Override
             public void remove(NodeRef caseNode, NodeRef element,
-                    QName assocName, NodeService nodeService) {
-                nodeService.removeAssociation(element, caseNode, assocName);
+                    QName assocName, AssociationCaseElementDAOImpl config) {
+                config.nodeService.removeAssociation(element, caseNode, assocName);
             }
 
             @Override
@@ -118,53 +119,35 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
             public NodeRef getElementNode(AssociationRef assocRef) {
                 return assocRef.getSourceRef();
             }
-            
         },
 
         CHILD {
             @Override
             public List<NodeRef> getTarget(NodeRef caseNode, QName assocName,
-                    NodeService nodeService) {
-                return searchChildAssocs(caseNode, assocName, nodeService);
+                    AssociationCaseElementDAOImpl config) {
+                return config.searchChildAssocs(caseNode, assocName);
             }
 
             @Override
             public List<NodeRef> getSource(NodeRef element, QName assocName,
-                    NodeService nodeService) {
-                return searchParentAssocs(element, assocName, nodeService);
+                    AssociationCaseElementDAOImpl config) {
+                return config.searchParentAssocs(element, assocName);
             }
 
             @Override
             public void create(NodeRef caseNode, NodeRef element,
-                    QName assocName, NodeService nodeService) {
-//                nodeService.addChild(caseNode, element, assocName, nodeService.getPrimaryParent(element).getQName());
-                nodeService.moveNode(element, caseNode, assocName, nodeService.getPrimaryParent(element).getQName());
+                    QName assocName, AssociationCaseElementDAOImpl config) {
+                NodeService nodeService = config.nodeService;
+                ChildAssociationRef elementAssoc = nodeService.getPrimaryParent(element);
+                nodeService.moveNode(element, caseNode, assocName, elementAssoc.getQName());
             }
 
             @Override
             public void remove(NodeRef caseNode, NodeRef element,
-                    QName assocName, NodeService nodeService) {
-                // first check if the association is primary
-                ChildAssociationRef primaryAssoc = nodeService.getPrimaryParent(element);
-                if(matches(primaryAssoc, caseNode, assocName)) {
-                    nodeService.deleteNode(element);
-                    return;
-                }
-                
-                // otherwise remove all matching parent assocs
-                // (presumably, there are less parent assocs of element, than child assocs of case)
-                List<ChildAssociationRef> parentAssocs = nodeService.getParentAssocs(element, assocName, RegexQNamePattern.MATCH_ALL);
-                for(ChildAssociationRef parentAssoc : parentAssocs) {
-                    if(matches(parentAssoc, caseNode, assocName)) {
-                        nodeService.removeChildAssociation(parentAssoc);
-                    }
-                }
+                    QName assocName, AssociationCaseElementDAOImpl config) {
+            	config.removeChildElement(caseNode, element, assocName);
             }
 
-            private boolean matches(ChildAssociationRef assoc, NodeRef requiredParent, QName requiredType) {
-                return assoc.getParentRef().equals(requiredParent) && assoc.getTypeQName().equals(requiredType);
-            }
-            
             public NodeRef getCaseNode(ChildAssociationRef assocRef) {
                 return assocRef.getParentRef();
             }
@@ -185,16 +168,16 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         }
 
         public abstract List<NodeRef> getTarget(NodeRef caseNode,
-                QName assocName, NodeService nodeService);
+                QName assocName, AssociationCaseElementDAOImpl config);
 
         public abstract List<NodeRef> getSource(NodeRef element,
-                QName assocName, NodeService nodeService);
+                QName assocName, AssociationCaseElementDAOImpl config);
 
         public abstract void create(NodeRef caseNode, NodeRef element,
-                QName assocName, NodeService nodeService);
+                QName assocName, AssociationCaseElementDAOImpl config);
 
         public abstract void remove(NodeRef caseNode, NodeRef element,
-                QName assocName, NodeService nodeService);
+                QName assocName, AssociationCaseElementDAOImpl config);
         
         public NodeRef getCaseNode(AssociationRef assocRef) {
             throw new IllegalStateException();
@@ -211,13 +194,12 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         public NodeRef getElementNode(ChildAssociationRef assocRef) {
             throw new IllegalStateException();
         }
-        
-        
+
     }
     
     private AssociationType needAssociationType(NodeRef config) {
         String associationType = RepoUtils.getMandatoryProperty(config, ICaseModel.PROP_ASSOC_TYPE, nodeService);
-        return AssociationType.valueOf(associationType.toUpperCase());
+        return AssociationType.forName(associationType);
     }
 
     public QName needAssocName(NodeRef config) {
@@ -238,7 +220,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
 		AssociationType associationType = needAssociationType(config);
 		QName assocName = needAssocName(config);
 		try {
-		    List<NodeRef> elements = associationType.getTarget(caseNode, assocName, nodeService);
+		    List<NodeRef> elements = associationType.getTarget(caseNode, assocName, this);
 			QName elementType = needElementType(config);
 			return filterByClass(elements, elementType);
 		}
@@ -256,7 +238,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         AssociationType associationType = needAssociationType(config);
         QName assocName = needAssocName(config);
         try {
-            return associationType.getSource(element, assocName, nodeService);
+            return associationType.getSource(element, assocName, this);
         }
         catch(IllegalArgumentException e) {
             throw e;
@@ -282,7 +264,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
 		AssociationType associationType = needAssociationType(config);
 		QName assocName = needAssocName(config);
 		try {
-			associationType.create(caseNode, nodeRef, assocName, nodeService);
+			associationType.create(caseNode, nodeRef, assocName, this);
 		}
 		catch (IllegalArgumentException e) {
 			throw e;
@@ -308,7 +290,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
 		AssociationType associationType = needAssociationType(config);
 		QName assocName = needAssocName(config);
 		try {
-			associationType.remove(caseNode, nodeRef, assocName, nodeService);
+			associationType.remove(caseNode, nodeRef, assocName, this);
 		}
 		catch(IllegalArgumentException e) {
 			throw e;
@@ -318,7 +300,43 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
 		}
 	}
 
-    private static List<NodeRef> searchSourceAssocs(NodeRef nodeRef, QName association, NodeService nodeService) {
+    @Override
+    public void copyElementsToTemplate(NodeRef caseNodeRef, NodeRef template, NodeRef config) {
+        AssociationType associationType = needAssociationType(config);
+        if(AssociationType.CHILD == associationType) {
+            List<NodeRef> elements = associationType.getTarget(caseNodeRef, 
+                    needAssocName(config), this);
+            for(NodeRef element : elements) {
+                copyElement(element, template, ICaseTemplateModel.ASSOC_INTERNAL_ELEMENTS);
+            }
+        } else {
+            super.copyElementsToTemplate(caseNodeRef, template, config);
+        }
+    }
+
+    @Override
+    public void copyElementsFromTemplate(NodeRef template, NodeRef caseNodeRef, NodeRef config) {
+        AssociationType associationType = needAssociationType(config);
+        if(AssociationType.CHILD == associationType) {
+            QName assocName = needAssocName(config);
+            List<NodeRef> elements = RepoUtils.getChildrenByAssoc(template, 
+                    ICaseTemplateModel.ASSOC_INTERNAL_ELEMENTS, nodeService);
+            for(NodeRef element : elements) {
+                copyElement(element, caseNodeRef, assocName);
+            }
+        } else {
+            super.copyElementsFromTemplate(template, caseNodeRef, config);
+        }
+    }
+
+    private void copyElement(NodeRef element, NodeRef destination, QName assocType) {
+        NodeRef copy = copyService.copy(element, destination, assocType, 
+                nodeService.getPrimaryParent(element).getQName(), 
+                true);
+        caseElementService.registerElementCopy(element, copy);
+    }
+    
+    private List<NodeRef> searchSourceAssocs(NodeRef nodeRef, QName association) {
         List<AssociationRef> sourceAssocs = nodeService.getSourceAssocs(nodeRef, association);
         ArrayList<NodeRef> caseObjects = new ArrayList<NodeRef>();
         for (AssociationRef sourceAssoc : sourceAssocs) {
@@ -327,7 +345,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         return caseObjects;
     }
 
-    private static List<NodeRef> searchTargetAssocs(NodeRef nodeRef, QName association, NodeService nodeService) {
+    private List<NodeRef> searchTargetAssocs(NodeRef nodeRef, QName association) {
         List<AssociationRef> targetAssocs = nodeService.getTargetAssocs(nodeRef, association);
         ArrayList<NodeRef> caseObjects = new ArrayList<NodeRef>();
         for (AssociationRef targetAssoc : targetAssocs) {
@@ -336,7 +354,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         return caseObjects;
     }
 
-    private static List<NodeRef> searchChildAssocs(NodeRef nodeRef, QName association, NodeService nodeService) {
+    private List<NodeRef> searchChildAssocs(NodeRef nodeRef, QName association) {
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(nodeRef, association, RegexQNamePattern.MATCH_ALL);
         ArrayList<NodeRef> caseObjects = new ArrayList<NodeRef>(childAssocs.size());
         for (ChildAssociationRef childAssoc : childAssocs) {
@@ -345,13 +363,39 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         return caseObjects;
     }
 
-    private static List<NodeRef> searchParentAssocs(NodeRef nodeRef, QName association, NodeService nodeService) {
+    private List<NodeRef> searchParentAssocs(NodeRef nodeRef, QName association) {
         List<ChildAssociationRef> parentAssocs = nodeService.getParentAssocs(nodeRef, association, RegexQNamePattern.MATCH_ALL);
         ArrayList<NodeRef> caseObjects = new ArrayList<NodeRef>(parentAssocs.size());
         for (ChildAssociationRef parentAssoc : parentAssocs) {
             caseObjects.add(parentAssoc.getParentRef());
         }
         return caseObjects;
+    }
+
+    private void removeChildElement(NodeRef caseNode, NodeRef element,
+            QName assocName) {
+        // first check if the association is primary
+        ChildAssociationRef primaryAssoc = nodeService.getPrimaryParent(element);
+        if (matches(primaryAssoc, caseNode, assocName)) {
+            nodeService.deleteNode(element);
+            return;
+        }
+
+        // otherwise remove all matching parent assocs
+        // (presumably, there are less parent assocs of element, than child
+        // assocs of case)
+        List<ChildAssociationRef> parentAssocs = nodeService.getParentAssocs(
+                element, assocName, RegexQNamePattern.MATCH_ALL);
+        for (ChildAssociationRef parentAssoc : parentAssocs) {
+            if (matches(parentAssoc, caseNode, assocName)) {
+                nodeService.removeChildAssociation(parentAssoc);
+            }
+        }
+    }
+
+    private static boolean matches(ChildAssociationRef assoc, NodeRef requiredParent, QName requiredType) {
+        return assoc.getParentRef().equals(requiredParent)
+            && assoc.getTypeQName().equals(requiredType);
     }
 
     @Override
@@ -450,5 +494,5 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         BehaviourEnvironment env = new BehaviourEnvironment(assocRef, config);
         env.invokeCaseElementRemoveEvent();
     }
-    
+
 }

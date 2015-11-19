@@ -36,23 +36,29 @@ import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
 public class CaseElementServiceImpl extends AbstractLifecycleBean implements CaseElementService {
     
+    private static final String KEY_COPIES = "case-copies";
+
     private static Log logger = LogFactory.getLog(CaseElementServiceImpl.class);
 
     private NodeService nodeService;
@@ -116,8 +122,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         return RepoUtils.getChildNodeRefs(configAssocs);
     }
     
-    // TODO change to package private back, after moving to ru.citeck.ecos namespace
-    /*package*/ public NodeRef getConfig(String configName) {
+    /*package*/ NodeRef getConfig(String configName) {
         NodeRef root = caseElementConfigRoot.getNodeRef();
         NodeRef config = nodeService.getChildByName(root, ContentModel.ASSOC_CONTAINS, configName);
         if(config == null) {
@@ -147,9 +152,13 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
     private List<String> getConfigNames(List<NodeRef> configs) {
         List<String> configNames = new ArrayList<>(configs.size());
         for(NodeRef config : configs) {
-            configNames.add((String) nodeService.getProperty(config, ContentModel.PROP_NAME));
+            configNames.add(getConfigName(config));
         }
         return configNames;
+    }
+
+    private String getConfigName(NodeRef config) {
+        return (String) nodeService.getProperty(config, ContentModel.PROP_NAME);
     }
 
     @Override
@@ -221,30 +230,108 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
 	}
 	
     @Override
-    public void copyConfiguration(NodeRef sourceCase, NodeRef targetCase) {
-        List<NodeRef> configs = getElements(sourceCase, CaseConstants.ELEMENT_TYPES);
+    public void copyCaseToTemplate(NodeRef caseNodeRef, NodeRef templateRef) {
+        exists(caseNodeRef);
+        exists(templateRef);
+        NodeRef elementTypesConfig = needConfig(CaseConstants.ELEMENT_TYPES);
+        CaseElementDAO elementTypesStrategy = getStrategy(elementTypesConfig);
+        List<NodeRef> elementConfigs = elementTypesStrategy.get(caseNodeRef, elementTypesConfig);
         
-        try {
-            // as addAll is intended to use by copyConfig
-            // it can be run concurrently, and we need not to block this
-            // so we disable auditable behaviour, to prevent update element
-            // nodes
-            behaviourFilter.disableBehaviour(ContentModel.ASPECT_AUDITABLE);
-            for (NodeRef config : configs) {
-                if(!shouldCopyElements(config)) continue;
-                
+        for(NodeRef config : elementConfigs) {
+            if(elementTypesConfig.equals(config))
+                continue;
+            NodeRef elementType = getOrCreateElementType(templateRef, config);
+            
+            if(shouldCopyElements(config)) {
                 CaseElementDAO strategy = getStrategy(config);
-                List<NodeRef> elements = strategy.get(sourceCase, config);
-                strategy.addAll(elements, targetCase, config);
+                strategy.copyElementsToTemplate(caseNodeRef, elementType, config);
             }
-        } finally {
-            behaviourFilter.enableBehaviour(ContentModel.ASPECT_AUDITABLE);
         }
+        
+        adjustCopies();
+    }
+
+    @Override
+    public void copyTemplateToCase(NodeRef templateRef, NodeRef caseNodeRef) {
+        exists(caseNodeRef);
+        exists(templateRef);
+        NodeRef elementTypesConfig = needConfig(CaseConstants.ELEMENT_TYPES);
+        CaseElementDAO elementTypesStrategy = getStrategy(elementTypesConfig);
+
+        List<NodeRef> elementTypes = RepoUtils.getChildrenByAssoc(templateRef, ICaseTemplateModel.ASSOC_ELEMENT_TYPES, nodeService);
+        for(NodeRef elementType : elementTypes) {
+            NodeRef config = getTemplateElementConfig(elementType);
+            elementTypesStrategy.add(config, caseNodeRef, elementTypesConfig);
+            
+            if(shouldCopyElements(config)) {
+                CaseElementDAO strategy = getStrategy(config);
+                strategy.copyElementsFromTemplate(elementType, caseNodeRef, config);
+            }
+        }
+        
+        adjustCopies();
+    }
+
+    private NodeRef getOrCreateElementType(NodeRef templateRef, NodeRef config) {
+        String configName = getConfigName(config);
+        NodeRef elementType = nodeService.getChildByName(templateRef, ICaseTemplateModel.ASSOC_ELEMENT_TYPES, configName);
+        if(elementType == null) {
+            elementType = nodeService.createNode(templateRef, 
+                    ICaseTemplateModel.ASSOC_ELEMENT_TYPES, 
+                    QName.createQName(ICaseTemplateModel.NAMESPACE, configName), 
+                    ICaseTemplateModel.TYPE_ELEMENT_TYPE).getChildRef();
+            nodeService.createAssociation(elementType, config, ICaseTemplateModel.ASSOC_ELEMENT_CONFIG);
+        }
+        return elementType;
+    }
+
+    private NodeRef getTemplateElementConfig(NodeRef elementType) {
+        List<NodeRef> elementConfigs = RepoUtils.getTargetNodeRefs(elementType, ICaseTemplateModel.ASSOC_ELEMENT_CONFIG, nodeService);
+        if(elementConfigs.size() == 0) {
+            throw new IllegalStateException("Template element type does not contain element config reference: " + elementType);
+        }
+        return elementConfigs.get(0);
     }
 
     private boolean shouldCopyElements(NodeRef config) {
         Boolean copyElements = RepoUtils.getMandatoryProperty(config, ICaseModel.PROP_COPY_ELEMENTS, nodeService);
         return copyElements != null ? copyElements : false;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<NodeRef, NodeRef> getCopyMap() {
+        return (Map<NodeRef,NodeRef>) AlfrescoTransactionSupport.getResource(KEY_COPIES);
+    }
+    
+    /*package*/ void registerElementCopy(NodeRef original, NodeRef copy) {
+        Map<NodeRef,NodeRef> copyMap = getCopyMap();
+        if(copyMap == null) {
+            copyMap = new HashMap<>();
+            AlfrescoTransactionSupport.bindResource(KEY_COPIES, copyMap);
+        }
+        // the same original should not be copied twice
+        NodeRef previousCopy = copyMap.put(original, copy);
+        if(previousCopy != null) {
+            throw new IllegalStateException("Each original element can only be copied once. Attemting to register second copy of: " + original);
+        }
+    }
+    
+    private void adjustCopies() {
+        Map<NodeRef,NodeRef> copyMap = getCopyMap();
+        if(copyMap == null) return;
+        Collection<NodeRef> copies = copyMap.values();
+        for(NodeRef copy : copies) {
+            List<AssociationRef> targetAssocs = nodeService.getTargetAssocs(copy, RegexQNamePattern.MATCH_ALL);
+            for(AssociationRef assoc : targetAssocs) {
+                NodeRef targetOriginal = assoc.getTargetRef();
+                NodeRef targetCopy = copyMap.get(targetOriginal);
+                if(targetCopy == null) continue;
+                QName assocType = assoc.getTypeQName();
+                nodeService.removeAssociation(copy, targetOriginal, assocType);
+                nodeService.createAssociation(copy, targetCopy, assocType);
+            }
+        }
+        AlfrescoTransactionSupport.unbindResource(KEY_COPIES);
     }
     
 	protected void exists(NodeRef nodeRef) throws AlfrescoRuntimeException {
