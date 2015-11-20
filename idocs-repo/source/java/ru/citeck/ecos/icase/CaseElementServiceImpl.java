@@ -24,8 +24,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
@@ -43,7 +45,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
+import org.alfresco.service.namespace.QNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationEvent;
@@ -52,6 +54,7 @@ import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
+import ru.citeck.ecos.utils.ExceptQNamePattern;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -319,9 +322,26 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
     private void adjustCopies() {
         Map<NodeRef,NodeRef> copyMap = getCopyMap();
         if(copyMap == null) return;
+        AlfrescoTransactionSupport.unbindResource(KEY_COPIES);
+        
+        // step 1: add children to copy map
+        Queue<NodeRef> queue = new LinkedList<>();
+        queue.addAll(copyMap.values());
+        while(!queue.isEmpty()) {
+            NodeRef node = queue.poll();
+            List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(node);
+            for(ChildAssociationRef childAssoc : childAssocs) {
+                NodeRef childRef = childAssoc.getChildRef();
+                NodeRef original = nodeService.getTargetAssocs(childRef, ContentModel.ASSOC_ORIGINAL).get(0).getTargetRef();
+                copyMap.put(original, childRef);
+            }
+        }
+        
+        // step 2: adjust all links
         Collection<NodeRef> copies = copyMap.values();
+        QNamePattern assocPattern = new ExceptQNamePattern(ContentModel.ASSOC_ORIGINAL);
         for(NodeRef copy : copies) {
-            List<AssociationRef> targetAssocs = nodeService.getTargetAssocs(copy, RegexQNamePattern.MATCH_ALL);
+            List<AssociationRef> targetAssocs = nodeService.getTargetAssocs(copy, assocPattern);
             for(AssociationRef assoc : targetAssocs) {
                 NodeRef targetOriginal = assoc.getTargetRef();
                 NodeRef targetCopy = copyMap.get(targetOriginal);
@@ -331,7 +351,6 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
                 nodeService.createAssociation(copy, targetCopy, assocType);
             }
         }
-        AlfrescoTransactionSupport.unbindResource(KEY_COPIES);
     }
     
 	protected void exists(NodeRef nodeRef) throws AlfrescoRuntimeException {
