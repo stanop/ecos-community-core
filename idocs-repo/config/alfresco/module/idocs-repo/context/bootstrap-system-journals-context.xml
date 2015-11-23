@@ -244,4 +244,52 @@
 		</property>
 	</bean>
 
+	<bean id="idocs.module-component.journal-business-calendar" parent="idocs.import-spaces">
+		<property name="name" value="journal-business-calendar" />
+		<property name="description" value="Journal for business calendar" />
+		<property name="sinceVersion" value="2.12" />
+		<property name="appliesFromVersion" value="2.12" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.system-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/business-calendar</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/business-calendar</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:business-calendar</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/business-calendar</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:business-calendar</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/business-calendar</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/business-calendar</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
 </beans>

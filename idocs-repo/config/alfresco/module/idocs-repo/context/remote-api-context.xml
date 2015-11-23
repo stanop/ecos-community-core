@@ -480,4 +480,9 @@
         <property name="personService" ref="personService"/>
 	</bean>
 
+	<bean id="webscript.ru.citeck.calendar.business-calendar.get" class="ru.citeck.ecos.webscripts.calendar.BusinessCalendarGet" 
+			parent="webscript">
+		<property name="searchService" ref="searchService"/>
+	</bean>
+
 </beans>
