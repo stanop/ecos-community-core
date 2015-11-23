@@ -253,3 +253,14 @@ function checkCompletenessLevel(doc) {
 		return false;
 	}
 }
+
+function calculateDate(date, field, amount) {
+	var cal = businessCalendar.getInstance();
+	cal.setTime(date);
+	if(field=="days")
+	{
+		cal.add(Packages.java.util.Calendar.DAY_OF_YEAR, amount);
+	}
+	return cal.getTime();
+}
+

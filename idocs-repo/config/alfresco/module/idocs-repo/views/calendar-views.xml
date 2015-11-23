@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/bcalendar/1.0" prefix="bcal" />
+	</imports>
+
+	<view class="bcal:calendar">
+		<field prop="bcal:dateFrom">
+			<region name="input" template="datetime"/>
+		</field>
+		<field prop="bcal:dateTo">
+			<region name="input" template="datetime"/>
+		</field>
+		<field prop="bcal:remark">
+			<region name="input" template="select"/>
+		</field>
+	</view>
+	
+</views>

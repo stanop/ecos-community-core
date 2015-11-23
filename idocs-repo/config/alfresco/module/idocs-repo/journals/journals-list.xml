@@ -10,6 +10,7 @@
 		<import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
 		<import uri="http://www.citeck.ru/model/archive-service-configuration/1.0" prefix="arch" />
 		<import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
+		<import uri="http://www.citeck.ru/model/bcalendar/1.0" prefix="bcal" />
 	</imports>
 
 	<journal id="idocs-activity-direction">
@@ -166,6 +167,17 @@
 			<header key="cm:name" default="true" />
 			<header key="route:stages" default="true" />
 			<header key="cm:taggable" default="true" />
+		</headers>
+	</journal>
+
+	<journal id="business-calendar">
+		<option name="type">bcal:calendar</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="bcal:dateFrom" default="true" />
+			<header key="bcal:dateTo" default="true" />
+			<header key="bcal:remark" default="true" />
 		</headers>
 	</journal>
 
