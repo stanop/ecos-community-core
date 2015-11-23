@@ -1162,4 +1162,13 @@
         </property>
 	</bean>
 	
+	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
+		<property name="searchService" ref="searchService" />
+	</bean-->
+
+	<bean id="BusinessCalendarJS" class="ru.citeck.ecos.calendar.BusinessCalendarJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="businessCalendar" />
+		<property name="searchService" ref="searchService" />
+	</bean>
+	
 </beans>
