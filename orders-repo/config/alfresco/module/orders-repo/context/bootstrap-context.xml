@@ -67,7 +67,6 @@
         <!--<property name="executeOnceOnly" value="false" />-->
         <property name="dependsOn">
             <list>
-                <ref bean="idocs.module-component.journals-meta-root" />
                 <ref bean="orders.documentFolders" />
             </list>
         </property>
@@ -90,8 +89,8 @@
         <!--<property name="executeOnceOnly" value="false" />-->
         <property name="dependsOn">
             <list>
-                <ref bean="idocs.module-component.journals-meta-root" />
                 <ref bean="orders.documentFolders" />
+                <ref bean="orders.module-component.journals-subject" />
             </list>
         </property>
         <property name="bootstrapView">
