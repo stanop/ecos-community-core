@@ -16,27 +16,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.action;
+package ru.citeck.ecos.action.evaluator;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.action.executer.ActionExecuterAbstractBase;
+import org.alfresco.repo.action.ParameterDefinitionImpl;
+import org.alfresco.repo.action.evaluator.ActionConditionEvaluatorAbstractBase;
 import org.alfresco.repo.admin.SysAdminParams;
-import org.alfresco.repo.jscript.ScriptAction;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.action.ActionCondition;
 import org.alfresco.service.cmr.action.ParameterDefinition;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.util.UrlUtil;
 
-public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
+public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
 {
-    public static final String NAME = "script-auto-execute";
+    public static final String NAME = "evaluate-script";
+    public static final String PARAM_SCRIPT = "script";
     
     private ServiceRegistry serviceRegistry;
     private SysAdminParams sysAdminParams;
@@ -82,45 +83,31 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
     /**
      * @see org.alfresco.repo.action.executer.ActionExecuterAbstractBase#executeImpl(org.alfresco.service.cmr.action.Action, org.alfresco.service.cmr.repository.NodeRef)
      */
-    protected void executeImpl(Action action, NodeRef actionedUponNodeRef)
+    @Override
+    protected boolean evaluateImpl(ActionCondition actionCondition, NodeRef actionedUponNodeRef)
     {
         NodeService nodeService = this.serviceRegistry.getNodeService();
-        if (nodeService.exists(actionedUponNodeRef))
-        {
-            NodeRef scriptRef = actionedUponNodeRef;
-            NodeRef spaceRef = this.serviceRegistry.getRuleService().getOwningNodeRef(action);
-            
-            // get the references we need to build the default scripting data-model
-            String userName = this.serviceRegistry.getAuthenticationService().getCurrentUserName();
-            NodeRef personRef = this.serviceRegistry.getPersonService().getPerson(userName);
-            NodeRef homeSpaceRef = (NodeRef)nodeService.getProperty(personRef, ContentModel.PROP_HOMEFOLDER);
-            
-            // the default scripting model provides access to well known objects and searching
-            // facilities - it also provides basic create/update/delete/copy/move services
-            Map<String, Object> model = this.serviceRegistry.getScriptService().buildDefaultModel(
-                    personRef,
-                    getCompanyHome(),
-                    homeSpaceRef,
-                    scriptRef,
-                    actionedUponNodeRef,
-                    spaceRef);
-            
-            // Add the action to the default model
-            ScriptAction scriptAction = new ScriptAction(this.serviceRegistry, action, this.actionDefinition);
-            model.put("action", scriptAction);
-            model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
+        if (!nodeService.exists(actionedUponNodeRef))
+            return false;
+        
+        String script = (String) actionCondition.getParameterValue(PARAM_SCRIPT);
+        
+        // get the references we need to build the default scripting data-model
+        String userName = this.serviceRegistry.getAuthenticationService().getCurrentUserName();
+        NodeRef personRef = this.serviceRegistry.getPersonService().getPerson(userName);
+        NodeRef homeSpaceRef = (NodeRef) nodeService.getProperty(personRef, ContentModel.PROP_HOMEFOLDER);
+        
+        // the default scripting model provides access to well known objects and searching
+        // facilities - it also provides basic create/update/delete/copy/move services
+        Map<String, Object> model = this.serviceRegistry.getScriptService().buildDefaultModel(
+                personRef, getCompanyHome(), homeSpaceRef, null, actionedUponNodeRef, null);
+        
+        // Add the action to the default model
+        model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
 
-            Object result = this.serviceRegistry.getScriptService().executeScript(
-                scriptRef,
-                ContentModel.PROP_CONTENT,
-                model);
-            
-            // Set the result
-            if (result != null)
-            {
-                action.setParameterValue(PARAM_RESULT, (Serializable)result);
-            }
-        }
+        Object result = this.serviceRegistry.getScriptService().executeScriptString(script, model);
+        
+        return Boolean.TRUE.equals(result);
     }
     
     /**
@@ -128,6 +115,7 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
      */
     protected void addParameterDefinitions(List<ParameterDefinition> paramList)
     {
+        paramList.add(new ParameterDefinitionImpl(PARAM_SCRIPT, DataTypeDefinition.TEXT, true, getParamDisplayLabel(PARAM_SCRIPT), false));
     }
     
     /**
@@ -153,4 +141,5 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
 
         return companyHomeRef;
     }
+
 }

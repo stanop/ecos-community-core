@@ -42,7 +42,7 @@ public class UserInDocumentEvaluator extends ComparePropertyValueEvaluator {
     /**
      * Evaluator constants
      */
-    public static final String NAME = "user-in-document-evaluator";
+    public static final String NAME = "user-in-document";
     public static final String PARAM_USER = "userName";
 
     PersonService personService;
