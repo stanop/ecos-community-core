@@ -37,9 +37,9 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         return JavaScriptImplUtils.wrapNodes(stages, this);
     }
 
-    public ScriptNode getNotActivityParent(Object nodeRef) {
+    public ScriptNode getDocument(Object nodeRef) {
         NodeRef ref = getNodeRef(nodeRef);
-        NodeRef parent = caseActivityService.getNotActivityParent(ref);
+        NodeRef parent = caseActivityService.getDocument(ref);
         return JavaScriptImplUtils.wrapNode(parent, this);
     }
 

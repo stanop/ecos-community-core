@@ -28,5 +28,9 @@ public interface CaseActivityService {
      */
     List<NodeRef> getActivities(NodeRef nodeRef, QName type);
 
-    NodeRef getNotActivityParent(NodeRef activityRef);
+    /**
+     * @param activityRef activity node reference
+     * @return document which is owner of activity
+     */
+    NodeRef getDocument(NodeRef activityRef);
 }
