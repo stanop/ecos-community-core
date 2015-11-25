@@ -5,6 +5,6 @@
         return;
     }
 
-    model.tasks = caseTaskService.getTasks(nodeRef);
+    model.tasks = caseActivityService.getActivities(nodeRef, "icaseTask:task");
 
 })();
