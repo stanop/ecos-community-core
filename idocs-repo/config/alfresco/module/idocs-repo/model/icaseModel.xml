@@ -8,6 +8,7 @@
 
 	<imports>
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
 		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
 	</imports>
@@ -15,6 +16,8 @@
 	<namespaces>
 		<namespace uri="http://www.citeck.ru/model/icase/1.0"
 				prefix="icase" />
+		<namespace uri="http://www.citeck.ru/model/icase/template/1.0"
+				prefix="icasetpl" />
 	</namespaces>
 
 	<constraints>
@@ -143,13 +146,13 @@
                     <type>d:qname</type>
                     <mandatory>true</mandatory>
                 </property>
-				<!-- id of template processor -->
+				<!-- condition, when the template is applicable -->
                 <property name="icase:condition">
                     <title>Condition</title>
                     <type>d:text</type>
                 </property>
             </properties>
-			<associations>
+            <associations>
 				<association name="icase:caseElements">
 					<title>Сase Elements</title>
 					<source>
@@ -162,8 +165,60 @@
 						<many>true</many>
 					</target>
 				</association>
-			</associations>
+            	<child-association name="icasetpl:elementTypes">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>icasetpl:elementType</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+					<duplicate>false</duplicate>
+            	</child-association>
+            </associations>
         </type>
+        
+        <type name="icasetpl:elementType">
+        	<parent>cm:cmobject</parent>
+        	<associations>
+        		<association name="icasetpl:elementConfig">
+        			<source>
+        				<mandatory>false</mandatory>
+        				<many>true</many>
+        			</source>
+        			<target>
+        				<class>icase:elementConfig</class>
+        				<mandatory>true</mandatory>
+        				<many>false</many>
+        			</target>
+        		</association>
+        		<association name="icasetpl:externalElements">
+        			<source>
+        				<mandatory>false</mandatory>
+        				<many>true</many>
+        			</source>
+        			<target>
+        				<class>sys:base</class>
+        				<mandatory>false</mandatory>
+        				<many>true</many>
+        			</target>
+        		</association>
+        		<child-association name="icasetpl:internalElements">
+        			<source>
+        				<mandatory>false</mandatory>
+        				<many>true</many>
+        			</source>
+        			<target>
+        				<class>sys:base</class>
+        				<mandatory>false</mandatory>
+        				<many>true</many>
+        			</target>
+        		</child-association>
+        	</associations>
+        </type>
+        
 	</types>
 
 	<aspects>

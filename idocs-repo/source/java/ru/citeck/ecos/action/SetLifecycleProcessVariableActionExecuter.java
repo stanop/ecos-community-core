@@ -42,7 +42,7 @@ public class SetLifecycleProcessVariableActionExecuter extends ActionExecuterAbs
     /**
      * Action executor constants
      */
-    public static final String NAME = "set-lifecycle-process-variable-action-executer";
+    public static final String NAME = "set-process-variable";
     public static final String PARAM_VARIABLE = "variable";
     public static final String PARAM_VALUE = "value";
 

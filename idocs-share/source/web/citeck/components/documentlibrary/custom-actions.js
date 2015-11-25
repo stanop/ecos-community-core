@@ -993,7 +993,7 @@ YAHOO.Bubbling.fire("registerAction", {
 							text: this.msg("actions.button.ok"),
 							handler: function dlA_onActionOk() {
 								Alfresco.util.Ajax.jsonPost({
-									url: Alfresco.constants.PROXY_URI + "citeck/case-tasks/start-task?nodeRef=" + record.nodeRef,
+									url: Alfresco.constants.PROXY_URI + "citeck/case-activity/start-activity?nodeRef=" + record.nodeRef,
 									successCallback: {
 										scope: this,
 										fn: function(response) {

@@ -209,7 +209,9 @@ define(['lib/knockout'], function(ko) {
 						fn: function(response) {
 						    // TODO make correct error message handling
 							fail("Failure response for request: " + url);
-							YAHOO.Bubbling.fire("failure-save");
+							YAHOO.Bubbling.fire("failure-save", {
+								key: callback.scope.key
+							});
 						}
 					}
 				});

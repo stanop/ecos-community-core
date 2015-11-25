@@ -38,7 +38,7 @@ public class FailActionExecuter extends ActionExecuterAbstractBase {
     /**
      * Action executor constants
      */
-    public static final String NAME = "fail-action-executer";
+    public static final String NAME = "fail";
     public static final String PARAM_MESSAGE = "message";
 
 

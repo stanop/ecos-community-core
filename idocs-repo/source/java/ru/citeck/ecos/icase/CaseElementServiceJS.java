@@ -26,8 +26,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 
 /**
  * This implementation is used in JS side.
@@ -77,13 +79,18 @@ public class CaseElementServiceJS extends AlfrescoScopableProcessorExtension {
         NodeRef destNr = caseElementService.destination(caseNr, configName);
         return JavaScriptImplUtils.wrapNode(destNr, this);
     }
+    
+    public void copyCaseToTemplate(Object caseNode, Object template) {
+        NodeRef caseNodeRef = getNodeRef(caseNode);
+        NodeRef templateRef = getNodeRef(template);
+        caseElementService.copyCaseToTemplate(caseNodeRef, templateRef);
+    }
 
-    public void copyConfiguration(Object sourceCase, Object targetCase)
-            throws AlfrescoRuntimeException {
-       NodeRef source = getNodeRef(sourceCase);
-       NodeRef target = getNodeRef(targetCase);
-       caseElementService.copyConfiguration(source, target);
-   }
+    public void copyTemplateToCase(Object template, Object caseNode) {
+        NodeRef caseNodeRef = getNodeRef(caseNode);
+        NodeRef templateRef = getNodeRef(template);
+        caseElementService.copyTemplateToCase(caseNodeRef, templateRef);
+    }
 
     private NodeRef getNodeRef(Object object) {
         if(object == null)

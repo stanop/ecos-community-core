@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Stop case activity</shortname>
+    <description>Stop case activity</description>
+    <url>/citeck/case-activity/stop-activity?nodeRef={nodeRef}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+</webscript>

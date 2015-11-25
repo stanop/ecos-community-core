@@ -1390,6 +1390,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .method('submit', function() {
             if(this.node().impl().valid() && !this.inSubmitProcess()) {
                 this.broadcast('node-view-submit');
+                this.inSubmitProcess(true);
             }
         })
         .method('cancel', function() {
@@ -1399,7 +1400,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             YAHOO.Bubbling.fire(eventName, {
                 key: this.key(),
                 runtime: this,
-                node: this.node(),
+                node: this.node()
             });
         })
 
@@ -1425,12 +1426,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
 
-            YAHOO.Bubbling.on("node-view-submit", function() {
-                this.inSubmitProcess(true);
-            }, this.runtime);
-
-            YAHOO.Bubbling.on("failure-save", function() {
-                this.inSubmitProcess(false);
+            YAHOO.Bubbling.on("failure-save", function(layer, args, scope) {
+                if (args && args[1] && args[1].key == this.key()) {
+                    this.inSubmitProcess(false);                   
+                }
             }, this.runtime);
         }
         

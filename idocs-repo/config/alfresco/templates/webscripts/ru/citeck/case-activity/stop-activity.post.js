@@ -1,7 +1,7 @@
 (function() {
     var nodeRef = args.nodeRef;
     if (nodeRef) {
-        caseTaskService.startTask(nodeRef);
+        caseActivityService.stopActivity(nodeRef);
     }
     model.success = true;
 })();

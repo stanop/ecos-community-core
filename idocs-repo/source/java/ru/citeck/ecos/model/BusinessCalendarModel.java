@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.task;
 
-import org.alfresco.service.cmr.repository.NodeRef;
+package ru.citeck.ecos.model;
 
-import java.util.List;
-import java.util.Map;
+import org.alfresco.service.namespace.QName;
 
-/**
- * Created by maxim.strizhov on 13.10.2015.
- */
-public interface CaseTaskService {
-    List<NodeRef> getTasks(NodeRef nodeRef);
-    void startTask(NodeRef taskNodeRef);
-    void onTaskCompleted(NodeRef nodeRef, String processType, String processInstanceId);
+public interface BusinessCalendarModel {
+	
+	public static final String NAMESPACE = "http://www.citeck.ru/model/bcalendar/1.0";
+	
+	public static final QName TYPE_CALENDAR = QName.createQName(NAMESPACE, "calendar");
+	public static final QName PROP_DATE_FROM = QName.createQName(NAMESPACE, "dateFrom");
+	public static final QName PROP_DATE_TO = QName.createQName(NAMESPACE, "dateTo");
+	public static final QName PROP_REMARK = QName.createQName(NAMESPACE, "remark");
+
 }

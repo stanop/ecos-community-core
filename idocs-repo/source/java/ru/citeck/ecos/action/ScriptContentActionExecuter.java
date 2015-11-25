@@ -36,7 +36,7 @@ import org.alfresco.util.UrlUtil;
 
 public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
 {
-    public static final String NAME = "script-execute-content";
+    public static final String NAME = "script-auto-execute";
     
     private ServiceRegistry serviceRegistry;
     private SysAdminParams sysAdminParams;
