@@ -27,7 +27,6 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ICaseRoleModel;
-import ru.citeck.ecos.task.CaseTaskService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
  * @author Maxim Strizhov
  */
 public class CaseRoleServiceImpl implements CaseRoleService {
-    private static final Log log = LogFactory.getLog(CaseTaskService.class);
+    private static final Log log = LogFactory.getLog(CaseRoleService.class);
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private DictionaryService dictionaryService;

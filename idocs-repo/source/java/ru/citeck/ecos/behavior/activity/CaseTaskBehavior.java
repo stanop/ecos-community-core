@@ -1,5 +1,6 @@
 package ru.citeck.ecos.behavior.activity;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
@@ -62,10 +63,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
         Map<String, String> propertiesMapping = workflowProperties.get(workflowDefinitionName);
         if(propertiesMapping == null){
-            if(log.isErrorEnabled()) {
-                log.error(String.format("CaseTaskBehavior don't know about workflow %s", workflowDefinitionName));
-            }
-            return;
+            throw new AlfrescoRuntimeException(String.format("CaseTaskBehavior don't know about workflow %s", workflowDefinitionName));
         }
 
         String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
