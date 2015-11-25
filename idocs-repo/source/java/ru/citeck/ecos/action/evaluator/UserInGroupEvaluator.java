@@ -41,7 +41,7 @@ public class UserInGroupEvaluator extends ActionConditionEvaluatorAbstractBase {
     /**
      * Evaluator constants
      */
-    public static final String NAME = "user-in-group-evaluator";
+    public static final String NAME = "user-in-group";
     public static final String PARAM_USER = "userName";
     public static final String PARAM_GROUP = "groupName";
 

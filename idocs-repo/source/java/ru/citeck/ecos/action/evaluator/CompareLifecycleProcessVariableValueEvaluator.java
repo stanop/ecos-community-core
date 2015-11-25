@@ -42,7 +42,7 @@ public class CompareLifecycleProcessVariableValueEvaluator extends ActionConditi
     /**
      * Evaluator constants
      */
-    public static final String NAME = "compare-lifecycle-process-variable-value-evaluator";
+    public static final String NAME = "compare-process-variable";
     public static final String PARAM_VARIABLE = "variable";
     public static final String PARAM_VALUE = "value";
 

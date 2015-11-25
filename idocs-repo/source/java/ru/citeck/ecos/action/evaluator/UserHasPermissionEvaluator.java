@@ -41,7 +41,7 @@ public class UserHasPermissionEvaluator extends ActionConditionEvaluatorAbstract
     /**
      * Evaluator constants
      */
-    public static final String NAME = "user-has-permission-evaluator";
+    public static final String NAME = "user-has-permission";
     public static final String PARAM_USER = "userName";
     public static final String PARAM_PERMISSION = "permission";
 
