@@ -24,9 +24,9 @@ public interface CaseActivityService {
 
     /**
      * @param nodeRef document with activities in children
-     * @param assocName association name
+     * @param type activity type
      */
-    List<NodeRef> getActivities(NodeRef nodeRef, QName assocName);
+    List<NodeRef> getActivities(NodeRef nodeRef, QName type);
 
     NodeRef getNotActivityParent(NodeRef activityRef);
 }

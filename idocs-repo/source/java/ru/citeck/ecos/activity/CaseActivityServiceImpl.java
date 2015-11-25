@@ -20,6 +20,9 @@ import java.util.*;
  */
 public class CaseActivityServiceImpl implements CaseActivityService {
 
+    public static final String STATE_STARTED = "Started";
+    public static final String STATE_COMPLETED = "Completed";
+
     private static final Log log = LogFactory.getLog(CaseActivityService.class);
 
     private DictionaryService dictionaryService;
@@ -36,7 +39,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void startActivity(NodeRef activityRef) {
-        if(!setState(activityRef, "Started")) return;
+        if(!setState(activityRef, STATE_STARTED)) return;
 
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, new Date());
 
@@ -47,7 +50,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void stopActivity(NodeRef activityRef) {
-        if(!setState(activityRef, "Completed")) return;
+        if(!setState(activityRef, STATE_COMPLETED)) return;
 
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, new Date());
 
