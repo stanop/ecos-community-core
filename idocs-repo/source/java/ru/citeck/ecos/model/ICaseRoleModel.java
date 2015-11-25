@@ -31,7 +31,7 @@ public class ICaseRoleModel {
     public static final String NAMESPACE = "http://www.citeck.ru/model/icaseRole/1.0";
 
     // types
-    public static final QName TYPE_TASK = QName.createQName(NAMESPACE, "role");
+    public static final QName TYPE_ROLE = QName.createQName(NAMESPACE, "role");
 
     // aspects
 
