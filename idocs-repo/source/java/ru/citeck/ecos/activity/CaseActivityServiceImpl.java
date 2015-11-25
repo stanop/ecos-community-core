@@ -72,7 +72,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
-    public NodeRef getNotActivityParent(NodeRef activityRef) {
+    public NodeRef getDocument(NodeRef activityRef) {
         ChildAssociationRef parent = nodeService.getPrimaryParent(activityRef);
         while (parent.getParentRef() != null
                 && RepoUtils.isSubType(parent.getParentRef(), ActivityModel.TYPE_ACTIVITY, nodeService, dictionaryService)) {

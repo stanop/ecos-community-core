@@ -26,57 +26,57 @@
             <map>
                 <entry key="activiti$print">
                     <map>
-                        <!--<entry key="" value="wfpr:printer"/>-->
+                        <entry key="icaseTask:performer" value="wfpr:printer"/>
                     </map>
                 </entry>
                 <entry key="activiti$scan">
                     <map>
-                        <!--<entry key="" value="wfscan:clerk"/>-->
+                        <entry key="icaseTask:performer" value="wfscan:clerk"/>
                     </map>
                 </entry>
                 <entry key="activiti$sign">
                     <map>
-                        <!--<entry key="" value="wfsgn:signer"/>-->
+                        <entry key="icaseTask:performer" value="wfsgn:signer"/>
                     </map>
                 </entry>
                 <entry key="activiti$correction">
                     <map>
-                        <!--<entry key="" value="wfcr:corrector"/>-->
+                        <entry key="icaseTask:performer" value="wfcr:corrector"/>
                     </map>
                 </entry>
                 <entry key="activiti$registration">
                     <map>
-                        <!--<entry key="" value="wfrg:registrator"/>-->
+                        <entry key="icaseTask:performer" value="wfrg:registrator"/>
                     </map>
                 </entry>
                 <entry key="activiti$normative-control">
                     <map>
-                        <!--<entry key="" value="wfnc:controller"/>-->
+                        <entry key="icaseTask:performer" value="wfnc:controller"/>
                     </map>
                 </entry>
                 <entry key="activiti$prolongation">
                     <map>
-                        <!--<entry key="" value="wfprolong:prolongs"/>-->
+                        <entry key="icaseTask:performer" value="wfprolong:prolongs"/>
                     </map>
                 </entry>
                 <entry key="activiti$simple-affirm">
                     <map>
-                       <!-- <entry key="" value="wfsa:affirmAgent"/>-->
+                        <entry key="icaseTask:performer" value="wfsa:affirmAgent"/>
                     </map>
                 </entry>
                 <entry key="activiti$simple-payment">
                     <map>
-                        <!--<entry key="" value="wfsp:paymentAgent"/>-->
+                        <entry key="icaseTask:performer" value="wfsp:paymentAgent"/>
                     </map>
                 </entry>
                 <entry key="activiti$move-to-archive">
                     <map>
-                        <!--<entry key="" value="wfarc:archiver"/>-->
+                        <entry key="icaseTask:performer" value="wfarc:archiver"/>
                     </map>
                 </entry>
                 <entry key="activiti$perform">
                     <map>
-                        <!--<entry key="" value="wfperf:performers"/>-->
+                        <entry key="icaseTask:performer" value="wfperf:performers"/>
                     </map>
                 </entry>
             </map>
