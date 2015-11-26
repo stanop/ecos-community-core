@@ -27,7 +27,7 @@ fieldNames = [
 <@formLib.renderFormContainer formId=formId>
 
     <@forms.renderField field="prop_tk_kind" extension = {
-        "label" : "Вид документа",
+        "label" : msg("ecos-document.prop_tk_kind.label"),
         "control" : {
         "template" : "/ru/citeck/components/form/controls/types-and-kinds.ftl",
         "params": {
@@ -44,7 +44,7 @@ fieldNames = [
         } />
 
     <@forms.renderField field="prop_cm_name" extension = {
-        "label": "Название",
+        "label": msg("ecos-document.prop_cm_name.label"),
         "control": {
         "template": "/org/alfresco/components/form/controls/textarea.ftl",
         "params": {
@@ -53,7 +53,7 @@ fieldNames = [
         }} />
 
     <@forms.renderField field="prop_idocs_note" extension = extensions.controls.textarea + {
-        "label": "Описание"
+        "label": msg("ecos-document.prop_idocs_note.label")
     } />
 
 <div class="${twoColumnClass}">
@@ -148,7 +148,7 @@ fieldNames = [
 
     <div id="${args.htmlid}_content">
         <@forms.renderField field="prop_cm_content" extension = {
-        "label": "Вложение",
+        "label": msg("ecos-document.prop_cm_content.label"),
         "control": {
         "template": "/ru/citeck/components/form/controls/fileUpload.ftl"
         } } />
