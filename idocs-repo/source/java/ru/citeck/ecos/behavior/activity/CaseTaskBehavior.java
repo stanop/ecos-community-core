@@ -22,7 +22,6 @@ import ru.citeck.ecos.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
-import ru.citeck.ecos.model.LifeCycleModel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -76,7 +75,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         workflowProps.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
         workflowProps.put(WorkflowModel.PROP_DUE_DATE, workflowDueDate);
         workflowProps.put(WorkflowModel.PROP_PRIORITY, workflowPriority);
-        NodeRef parent = caseActivityService.getNotActivityParent(taskRef);
+        NodeRef parent = caseActivityService.getDocument(taskRef);
 
         this.nodeService.addChild(wfPackage, parent, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
