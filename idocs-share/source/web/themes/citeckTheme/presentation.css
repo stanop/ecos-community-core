@@ -2533,6 +2533,10 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    font-weight: bold;
 }
 
+#bd .yui-gc > .yui-u .document-details-panel > h2 .alfresco-twister-actions {
+   text-transform: none;
+}
+
 #bd .yui-gc > .yui-u .document-details-panel > h2,
 #bd .yui-gc > .yui-u .document-details-panel .panel-body h3.alfresco-twister.alfresco-twister-open {
    margin-bottom: 10px;

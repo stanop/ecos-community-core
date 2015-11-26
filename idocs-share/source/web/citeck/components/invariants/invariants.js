@@ -277,7 +277,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             }
         });
 
-        return null;
+        return undefined;
     }
     
     InvariantScope
@@ -378,8 +378,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         };
     };
     
-    var notNull = function(value) { return value != null; }
-    var isFalse = function(value) { return value == false; }
+    var notNull = function(value) { return value !== null; }
+    var isFalse = function(value) { return value === false; }
     
     var classMapping = {
         'java.lang.Object': o,
