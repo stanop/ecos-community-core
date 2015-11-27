@@ -22,6 +22,12 @@
 		<property name="moduleId" value="meetings-repo" />
 		<property name="importer" ref="spacesBootstrap" />
 	</bean>
+	
+	<bean id="meetings.lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/meetings-repo/lifecycle/meetings-lifecycle.csv" />
+		<property name="entityType" value="meet:meeting" />
+	</bean>
+	
 
 	<bean id="meetings.enumeration.templates.spacesBootstrap" parent="spacesStoreImporter">
 		<property name="useExistingStore">
