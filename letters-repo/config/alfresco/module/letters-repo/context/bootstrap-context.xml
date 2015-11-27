@@ -30,5 +30,21 @@
 		<property name="moduleId" value="letters-repo" />
 		<property name="importer" ref="spacesBootstrap"/>
 	</bean>
+	
+	<bean id="letters.enumeration.templates.spacesBootstrap" parent="spacesStoreImporter">
+		<property name="useExistingStore">
+			<value>true</value>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<prop key="path">/</prop>
+					<prop key="location">alfresco/module/letters-repo/bootstrap/enumeration-templates.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
 
 </beans>
