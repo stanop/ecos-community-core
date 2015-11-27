@@ -68,6 +68,35 @@ public class DictionaryUtils {
     public static List<QName> getAllNodeClassNames(NodeRef nodeRef, NodeService nodeService, DictionaryService dictionaryService) {
         return getClassNames(getAllNodeClasses(nodeRef, nodeService, dictionaryService));
     }
+
+    /**
+     * Return class name of specified node and class names of aspects.
+     *
+     * @param nodeRef reference to node to retrieve classes
+     * @param nodeService
+     * @return list of class names
+     */
+    public static List<QName> getNodeClassNames(NodeRef nodeRef, NodeService nodeService) {
+        List<QName> classNames = new ArrayList<QName>();
+        classNames.add(nodeService.getType(nodeRef));
+        classNames.addAll(nodeService.getAspects(nodeRef));
+        return classNames;
+    }
+
+    /**
+     * Return class definition of specified node and class definitions of aspects.
+     *
+     * @param nodeRef reference to node to retrieve classes
+     * @param nodeService
+     * @return list of class definitions
+     */
+    public static List<ClassDefinition> getNodeClasses(NodeRef nodeRef, NodeService nodeService, DictionaryService dictionaryService) {
+        List<ClassDefinition> classes = new LinkedList<ClassDefinition>();
+        QName typeName = nodeService.getType(nodeRef);
+        classes.add(dictionaryService.getClass(typeName));
+        classes.addAll(getClasses(nodeService.getAspects(nodeRef), dictionaryService));
+        return classes;
+    }
     
     public static List<ClassDefinition> getAllNodeClasses(NodeRef nodeRef, NodeService nodeService, DictionaryService dictionaryService) {
         List<ClassDefinition> classes = new LinkedList<ClassDefinition>();

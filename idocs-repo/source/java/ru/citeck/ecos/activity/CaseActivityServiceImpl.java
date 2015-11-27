@@ -43,8 +43,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, new Date());
 
-        List<QName> classes = DictionaryUtils.getAllNodeClassNames(activityRef, nodeService, dictionaryService);
-        CaseActivityPolicies.OnCaseActivityStartedPolicy policy = onActivityStartedDelegate.get(new HashSet<QName>(classes));
+        HashSet<QName> classes = new HashSet<QName>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
+        CaseActivityPolicies.OnCaseActivityStartedPolicy policy = onActivityStartedDelegate.get(classes);
         policy.onCaseActivityStarted(activityRef);
     }
 
@@ -54,8 +54,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, new Date());
 
-        List<QName> classes = DictionaryUtils.getAllNodeClassNames(activityRef, nodeService, dictionaryService);
-        CaseActivityPolicies.OnCaseActivityStoppedPolicy policy = onActivityStoppedDelegate.get(new HashSet<QName>(classes));
+        HashSet<QName> classes = new HashSet<QName>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
+        CaseActivityPolicies.OnCaseActivityStoppedPolicy policy = onActivityStoppedDelegate.get(classes);
         policy.onCaseActivityStopped(activityRef);
     }
 
@@ -64,7 +64,10 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             return false;
         }
         String currentState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
-        if(state.equals(currentState)) {
+
+        if(state.equals(currentState)
+                || currentState == null && !state.equals(STATE_STARTED)
+                || currentState != null && currentState.equals(STATE_COMPLETED)) {
             return false;
         }
         nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, state);

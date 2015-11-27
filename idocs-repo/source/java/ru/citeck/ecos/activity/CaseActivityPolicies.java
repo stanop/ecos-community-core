@@ -10,12 +10,12 @@ import ru.citeck.ecos.service.CiteckServices;
  */
 public interface CaseActivityPolicies {
 
-    // NOTE: this is important, that this field is here
-    // if it is removed, this behaviours will be registered with
-    // default namespace and will not be matched
-    public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-
     public interface OnCaseActivityStartedPolicy extends ClassPolicy {
+        // NOTE: this is important, that this field is here
+        // if it is removed, this behaviours will be registered with
+        // default namespace and will not be matched
+        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseActivityStarted");
 
         /**
@@ -26,6 +26,11 @@ public interface CaseActivityPolicies {
     }
 
     public interface OnCaseActivityStoppedPolicy extends ClassPolicy {
+        // NOTE: this is important, that this field is here
+        // if it is removed, this behaviours will be registered with
+        // default namespace and will not be matched
+        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseActivityStopped");
 
         /**
