@@ -1,10 +1,12 @@
 (function() {
     var nodeRef = args.nodeRef;
     var type = args.type;
-    if(!nodeRef || !type) {
+    var lcformat = args.lcformat;
+    if(!nodeRef || !type || !lcformat) {
         model.success = false;
         return;
     }
-    lifecycle.createTableFromCSV(nodeRef, type);
+
+    lifecycle.createTableFromFile(nodeRef, type, lcformat);
     model.success = true;
 })();

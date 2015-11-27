@@ -84,7 +84,7 @@ public class LifeCycleServiceJSImpl extends AlfrescoScopableProcessorExtension
         return wrapNodes(lifeCycleService.getDocumentsWithTimer(), this);
     }
 
-    public void createTableFromCSV(String nodeRef, String type) throws IOException {
+    public void createTableFromFile(String nodeRef, String type, String format) throws IOException {
         QName docType = QName.resolveToQName(namespaceService, type);
         ScriptNode node = wrapNode(nodeRef, this);
         ScriptContentData contentData = (ScriptContentData)node.getProperties().get(ContentModel.PROP_CONTENT);
@@ -92,7 +92,11 @@ public class LifeCycleServiceJSImpl extends AlfrescoScopableProcessorExtension
             throw new IllegalArgumentException("Node " + nodeRef + " does not have content");
         }
         InputStream inputStream = contentData.getInputStream();
-        lifeCycleService.deployLifeCycle(inputStream, LifeCycleCSVFormat.NAME, docType, "csv");
+        String formatName = LifeCycleCSVFormat.NAME;
+        if (format.equalsIgnoreCase("xml")) {
+            formatName = LifeCycleXMLFormat.NAME;
+        }
+        lifeCycleService.deployLifeCycle(inputStream, formatName, docType, format);
     }
 
     public void setLifeCycleService(LifeCycleService lifeCycleService) {
