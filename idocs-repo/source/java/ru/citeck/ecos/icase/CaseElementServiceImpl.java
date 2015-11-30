@@ -362,19 +362,19 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         if(!nodeService.hasAspect(element, ICaseModel.ASPECT_ELEMENT)) {
             nodeService.addAspect(element, ICaseModel.ASPECT_ELEMENT, null);
         }
-        List<QName> classes = DictionaryUtils.getAllNodeClassNames(caseRef, nodeService, dictionaryService);
+        List<QName> classes = DictionaryUtils.getNodeClassNames(caseRef, nodeService);
         CaseElementPolicies.OnCaseElementAddPolicy policy = onCaseElementAddDelegate.get(new HashSet<>(classes));
         policy.onCaseElementAdd(caseRef, element, config);
     }
     
     /*package*/ void invokeOnCaseElementUpdate(NodeRef caseRef, NodeRef element, NodeRef config) {
-        List<QName> classes = DictionaryUtils.getAllNodeClassNames(caseRef, nodeService, dictionaryService);
+        List<QName> classes = DictionaryUtils.getNodeClassNames(caseRef, nodeService);
         CaseElementPolicies.OnCaseElementUpdatePolicy policy = onCaseElementUpdateDelegate.get(new HashSet<>(classes));
         policy.onCaseElementUpdate(caseRef, element, config);
     }
     
     /*package*/ void invokeOnCaseElementRemove(NodeRef caseRef, NodeRef element, NodeRef config) {
-        List<QName> classes = DictionaryUtils.getAllNodeClassNames(caseRef, nodeService, dictionaryService);
+        List<QName> classes = DictionaryUtils.getNodeClassNames(caseRef, nodeService);
         CaseElementPolicies.OnCaseElementRemovePolicy policy = onCaseElementRemoveDelegate.get(new HashSet<>(classes));
         policy.onCaseElementRemove(caseRef, element, config);
     }
