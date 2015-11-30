@@ -4,7 +4,7 @@
 
 	<bean id="idocs.IncomeNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="letters:income"/>
-		<property name="nameTemplate" value="Входящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}"/>
+		<property name="nameTemplate" value="Incoming №#{'$'}{node.properties['idocs:registrationNumber']!'n/a'}"/>
 	</bean>
 
 	<bean id="idocs.IncomeTitleBehaviour" parent="TitleGenerationBehaviour">
@@ -23,7 +23,7 @@
 
 	<bean id="idocs.OutcomeNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="letters:outcome"/>
-		<property name="nameTemplate" value="Исходящий №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}"/>
+		<property name="nameTemplate" value="Outcoming №#{'$'}{node.properties['idocs:registrationNumber']!'n/a'}"/>
 	</bean>
 
 	<bean id="idocs.OutcomeTitleBehaviour" parent="TitleGenerationBehaviour">
