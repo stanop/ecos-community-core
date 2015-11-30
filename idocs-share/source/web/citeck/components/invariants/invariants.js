@@ -863,6 +863,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         .property('node', Node)
         .property('type', s)
+        .shortcut('typeShort', 'type')
+        .computed('typeFull', function() {
+            if(this.type() == null) return null;
+            var qnameType = new QName(this.type());
+            return qnameType.fullQName();
+        })
+        
         .property('_attributes', o)
         .computed('attributes', function() {
             var node = this.node(),
@@ -1068,10 +1075,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         .nativeProperty('type', function() {
-            return this.resolve('impl.types.0.fullQName', null);
+            return this.resolve('impl.typeFull', null);
         })
         .nativeProperty('typeShort', function() {
-            return this.resolve('impl.types.0.shortQName', null);
+            return this.resolve('impl.typeShort', null);
         })
         .method('isSubType', function(name) {
             return _.any(this.resolve('impl.types', []), function(type) {
