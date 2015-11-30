@@ -120,6 +120,7 @@
 		depends-on="idocs.dictionaryBootstrap" init-method="init">
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="nodeService" ref="nodeService"/>
 	</bean>
 	
 	<bean id="DelegateServiceJS" class="ru.citeck.ecos.delegate.DelegateServiceJSImpl" 
