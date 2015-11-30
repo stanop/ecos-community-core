@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.alfresco.model.ContentModel;
@@ -34,6 +36,7 @@ import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -172,40 +175,91 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	public void persist(NodeRef nodeRef, NodeInfo nodeInfo) {
 		persist(nodeRef, nodeInfo, false);
 	}
+    
+    private QName getRequiredType(NodeRef nodeRef, QName originalType, QName requiredType) {
+        if(requiredType == null) return originalType;
+        if(requiredType.equals(originalType)) return originalType;
+        if(dictionaryService.isSubClass(originalType, requiredType)) return originalType;
+        if(dictionaryService.isSubClass(requiredType, originalType)) return requiredType;
+        throw new RuntimeException("Can not change type of " + nodeRef + " from " + originalType + " to " + requiredType + ", as it is not child type");
+    }
 	
 	/* (non-Javadoc)
 	 * @see ru.citeck.ecos.node.NodeInfoService#persist(org.alfresco.service.cmr.repository.NodeRef, ru.citeck.ecos.node.NodeInfo, boolean)
 	 */
 	@Override
 	public void persist(NodeRef nodeRef, NodeInfo nodeInfo, boolean full) {
-		QName type = nodeInfo.getType();
-		if(type != null) {
-			QName originalType = nodeService.getType(nodeRef);
-			if(!type.equals(originalType)) {
-				// check consistence by dictionary 
-				if(!dictionaryService.isSubClass(type, originalType)) {
-					throw new RuntimeException("Can not change type of " + nodeRef + " from " + originalType + " to " + type + ", as it is not child type");
-				}
-				nodeService.setType(nodeRef, type);
-			}
-		}
+	    
+        // firstly get classes requirements:
+        QName originalType = nodeService.getType(nodeRef), 
+              requiredType = getRequiredType(nodeRef, originalType, nodeInfo.getType());
+        Set<QName> originalAspects = nodeService.getAspects(nodeRef),
+                   requiredAspects = nodeInfo.getAspects() != null ? new HashSet<QName>(nodeInfo.getAspects()) : new HashSet<QName>();
+        
+        Map<QName, Serializable> properties = nodeInfo.getProperties();
+        Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
+        Map<QName, List<NodeRef>> sourceAssocs = nodeInfo.getSourceAssocs();
+        Map<QName, List<NodeRef>> childAssocs = nodeInfo.getChildAssocs();
+        
+        Set<ClassDefinition> classes = new HashSet<>();
+        
+        if(properties != null) {
+            for(QName propertyName : properties.keySet()) {
+                PropertyDefinition property = dictionaryService.getProperty(propertyName);
+                classes.add(property.getContainerClass());
+            }
+        }
+        
+        if(targetAssocs != null) {
+            for(QName assocName : targetAssocs.keySet()) {
+                AssociationDefinition association = dictionaryService.getAssociation(assocName);
+                classes.add(association.getSourceClass());
+            }
+        }
+        
+        if(sourceAssocs != null) {
+            for(QName assocName : sourceAssocs.keySet()) {
+                AssociationDefinition association = dictionaryService.getAssociation(assocName);
+                classes.add(association.getTargetClass());
+            }
+        }
+        
+        if(childAssocs != null) {
+            for(QName assocName : childAssocs.keySet()) {
+                AssociationDefinition association = dictionaryService.getAssociation(assocName);
+                classes.add(association.getSourceClass());
+            }
+        }
+        
+        for(ClassDefinition classDef : classes) {
+            if(classDef.isAspect()) {
+                requiredAspects.add(classDef.getName());
+            } else {
+                requiredType = getRequiredType(nodeRef, requiredType, classDef.getName());
+            }
+        }
+        
+        if(!originalType.equals(requiredType)) {
+            nodeService.setType(nodeRef, requiredType);
+        }
+        
+        requiredAspects.removeAll(originalAspects);
+        for(QName aspect : requiredAspects) {
+            nodeService.addAspect(nodeRef, aspect, null);
+        }
 		
-		Map<QName, Serializable> properties = nodeInfo.getProperties();
 		if(properties != null) {
 			persistProperties(nodeRef, properties, full);
 		}
 
-		Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
 		if(targetAssocs != null) {
 			RepoUtils.setAssocs(nodeRef, targetAssocs, true, full, nodeService);
 		}
 
-		Map<QName, List<NodeRef>> sourceAssocs = nodeInfo.getSourceAssocs();
 		if(sourceAssocs != null) {
 			RepoUtils.setAssocs(nodeRef, sourceAssocs, false, full, nodeService);
 		}
 		
-		Map<QName, List<NodeRef>> childAssocs = nodeInfo.getChildAssocs();
 		if(childAssocs != null) {
 		    boolean primary = true;
 		    RepoUtils.setChildAssocs(nodeRef, childAssocs, primary, full, nodeService);
