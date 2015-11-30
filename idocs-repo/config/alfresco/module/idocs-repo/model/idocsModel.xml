@@ -91,6 +91,19 @@
                     <value>early-repayment-change-credit</value>
                     <value>early-repayment-completed</value>
                     <value>credit-paid</value>
+
+                    <value>purchase-project</value>
+                    <value>purchase-on-approval</value>
+                    <value>purchase-on-signing</value>
+                    <value>purchase-on-correction</value>
+                    <value>bids-project</value>
+                    <value>bids-on-approval</value>
+                    <value>bids-on-signing</value>
+                    <value>bids-on-correction</value>
+                    <value>additional-bids-on-approval</value>
+                    <value>additional-bids-on-signing</value>
+                    <value>additional-bids-on-correction</value>
+                    <value>purchase-signed</value>
                 </list>
             </parameter>
         </constraint>
