@@ -32,7 +32,7 @@ public enum Feature {
     PROTECTED(Boolean.class, false, "attribute is protected"),
     MULTIPLE(Boolean.class, false, "attribute is multiple"),
     RELEVANT(Boolean.class, true, "attribute is relevant"),
-    VALID(Boolean.class, true, "attribute is valid") {
+    VALID(Boolean.class, true, "attribute should be valid") {
         @Override
         public boolean isSearchedValue(Object value) {
             return Boolean.FALSE.equals(value);

@@ -184,7 +184,7 @@ define(['lib/knockout'], function(ko) {
 
 		simpleSave: function(config) {
 			assert(config.url != null, "url is required in simpleSave");
-			return function(viewModel, callback) {
+			return function(viewModel, callback, failureCallback) {
 				var url = _.isFunction(config.url) 
 				        ? config.url(viewModel) 
 				        : koutils.renderTemplate(config.url, viewModel),
@@ -198,6 +198,7 @@ define(['lib/knockout'], function(ko) {
 						fn: function(response) {
 							var result = response.json;
 							if(config.toResult) result = config.toResult(result);
+							if(config.onSuccess) config.onSuccess(viewModel, result);
 							if(typeof callback == "function") {
 								callback(result);
 							} else {
@@ -207,11 +208,18 @@ define(['lib/knockout'], function(ko) {
 					},
 					failureCallback: {
 						fn: function(response) {
-						    // TODO make correct error message handling
-							fail("Failure response for request: " + url);
-							YAHOO.Bubbling.fire("failure-save", {
-								key: callback.scope.key
-							});
+							// somehow response.json is not available for failure response
+							var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+							var message = config.toFailureMessage && config.toFailureMessage(json) || "Failure response for request: " + url;
+							if(config.onFailure) config.onFailure(viewModel, message);
+							switch(typeof failureCallback) {
+							case "function": 
+								return failureCallback(message);
+							case "object": 
+								return failureCallback.fn.call(failureCallback.scope, message);
+							default:
+								return fail(message);
+							}
 						}
 					}
 				});

@@ -22,8 +22,8 @@ public abstract class InvariantsRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -62097206512212400L;
 
-    /*package*/ InvariantsRuntimeException() {
-        
+    /*package*/ InvariantsRuntimeException(String message) {
+        super(message);
     }
     
 }

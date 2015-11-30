@@ -1014,6 +1014,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 attributes: attributes
             };
         })
+        
+        .property('inSubmitProcess', b)
+        .init(function() {
+        	this.inSubmitProcess(false);
+        })
         ;
     
     var assocsComputed = function(type) {
@@ -1146,6 +1151,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 }
             },
             toRequest: function(node) {
+            	node.impl().inSubmitProcess(true);
                 return {
                     view: node.impl().invariants().defaultModel().view(),
                     attributes: node.impl().data().attributes
@@ -1153,6 +1159,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             },
             toResult: function(response) {
                 return new Node(response.result);
+            },
+            toFailureMessage: function(response) {
+            	return response.message;
+            },
+            onSuccess: function(node, result) {
+            	node.impl().inSubmitProcess(false);
+            },
+            onFailure: function(node, message) {
+            	node.impl().inSubmitProcess(false);
             }
         }))
         ;
@@ -1384,13 +1399,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .key('key', s)
         .property('node', Node)
         .property('invariants', InvariantSet)
-        .property('inSubmitProcess', b)
         .constant('rootObjects', rootObjects)
         
         .method('submit', function() {
-            if(this.node().impl().valid() && !this.inSubmitProcess()) {
+            if(this.node().impl().valid()) {
                 this.broadcast('node-view-submit');
-                this.inSubmitProcess(true);
             }
         })
         .method('cancel', function() {
@@ -1402,10 +1415,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 runtime: this,
                 node: this.node()
             });
-        })
-
-        .init(function() {
-            this.inSubmitProcess(false);
         })
         ;
     
@@ -1425,12 +1434,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
-
-            YAHOO.Bubbling.on("failure-save", function(layer, args, scope) {
-                if (args && args[1] && args[1].key == this.key()) {
-                    this.inSubmitProcess(false);                   
-                }
-            }, this.runtime);
         }
         
     });
