@@ -29,8 +29,7 @@ import java.util.*;
 /**
  * @author Pavel Simonov
  */
-public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStartedPolicy,
-                                         CaseActivityPolicies.OnCaseActivityStoppedPolicy {
+public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStartedPolicy {
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
 
@@ -47,11 +46,6 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
                 CaseActivityPolicies.OnCaseActivityStartedPolicy.QNAME,
                 ICaseTaskModel.TYPE_TASK,
                 new JavaBehaviour(this, "onCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
-        );
-        this.policyComponent.bindClassBehaviour(
-                CaseActivityPolicies.OnCaseActivityStoppedPolicy.QNAME,
-                ICaseTaskModel.TYPE_TASK,
-                new JavaBehaviour(this, "onCaseActivityStopped", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
     }
 
@@ -120,16 +114,6 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
             }
         }
         return result;
-    }
-
-    @Override
-    public void onCaseActivityStopped(NodeRef taskRef) {
-        String workflowId = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
-        WorkflowInstance workflowInstance = workflowService.getWorkflowById(workflowId);
-
-        if(workflowInstance != null && workflowInstance.isActive()) {
-            workflowService.cancelWorkflow(workflowId);
-        }
     }
 
     public void setWorkflowProperties(Map<String, Map<String, String>> workflowProperties) {
