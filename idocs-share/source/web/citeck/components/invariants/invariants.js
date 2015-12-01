@@ -277,7 +277,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             }
         });
 
-        return null;
+        return undefined;
     }
     
     InvariantScope
@@ -378,8 +378,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         };
     };
     
-    var notNull = function(value) { return value != null; }
-    var isFalse = function(value) { return value == false; }
+    var notNull = function(value) { return value !== null; }
+    var isFalse = function(value) { return value === false; }
     
     var classMapping = {
         'java.lang.Object': o,
@@ -436,7 +436,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .shortcut('javaclass', 'info.javaclass')
         .constructor([Node, String], function(node, name) {
             var attr = new Attribute({
-                key: node.nodeRef + ":" + name,
+                key: node.key() + ":" + name,
                 info: name
             });
             attr.node(node);
@@ -845,21 +845,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         ;
     
     NodeImpl
-        .constructor([Node], function(node) {
+        .constructor([Node, Object], function(node, model) {
             var that = NodeImpl.call(this, node.key());
             that.node(node);
-            return that;
-        })
-        .constructor([Node, Object], function(node, model) {
-            var that = NodeImpl.call(this, node);
             that.updateModel(model);
             return that;
         })
         
-        .key('nodeRef', s)
+        .key('key', s)
+        .property('nodeRef', s)
         .computed('isPersisted', function() {
-            var nodeRef = this.nodeRef();
-            return nodeRef.match(/^workspace\:\/\/SpacesStore\//);
+            return this.nodeRef() != null;
         })
         .property('node', Node)
         .property('type', s)
@@ -924,7 +920,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 // so we need to fetch aspects by hand
                 var aspects = _.pluck(node.attribute('attr:aspects').rawValue(), 'shortQName');
                 node.invariants(new InvariantSet({
-                    key: node.nodeRef(),
+                    key: node.key(),
                     type: node.type(),
                     aspects: aspects
                 }));
@@ -943,7 +939,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         
         .shortcut('forcedAttributes', 'invariants.attributes', [])
         
-        .method('updateModel', function(model, isNotDefined) {
+        .method('updateModel', function(model) {
             this.model(_.omit(model, 'attributes'));
             if(model.attributes) {
                 this.model({ _attributes: model.attributes })
@@ -952,17 +948,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         
         .load('definedAttributeNames', koutils.simpleLoad({
             url: function(impl) {
-                var nodeRef = impl.nodeRef();
-                return Alfresco.constants.PROXY_URI + "citeck/attributes/defined?" + (impl.isPersisted() ? "nodeRef=" + nodeRef : "type=" + impl.type());
+                return Alfresco.constants.PROXY_URI + "citeck/attributes/defined?" + (impl.isPersisted() ? "nodeRef=" + impl.nodeRef() : "type=" + impl.type());
             },
             resultsMap: { definedAttributeNames : 'attributes' }
         }))
         
         .load('*', function(impl) {
-            var nodeRef = impl.nodeRef();
             // existing nodes:
             if(impl.isPersisted()) {
-                Citeck.utils.nodeInfoLoader.load(nodeRef, function(nodeRef, model) {
+                Citeck.utils.nodeInfoLoader.load(impl.nodeRef(), function(nodeRef, model) {
                     impl.updateModel(model);
                 });
             }
@@ -1021,6 +1015,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 attributes: attributes
             };
         })
+        
+        .property('inSubmitProcess', b)
+        .init(function() {
+        	this.inSubmitProcess(false);
+        })
         ;
     
     var assocsComputed = function(type) {
@@ -1048,30 +1047,32 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .key('key', s)
         .property('impl', NodeImpl)
         
-        .constructor([String], function(nodeRef) {
+        .constructor([String], function(key) {
         }, true)
         .init(function() {
             if(this.impl() == null) {
-                this.impl(new NodeImpl(this));
+                this.impl(new NodeImpl(this, {
+                    nodeRef: this.key()
+                }));
             }
         })
         .constructor([Object], function(model) {
-            var that = Node.call(this, model.nodeRef);
+            var that = Node.call(this, model.key || model.nodeRef);
             that.impl(new NodeImpl(that, model));
             return that;
         })
         
         .nativeProperty('nodeRef', function() {
-            return this.key();
+            return this.impl().nodeRef();
         })
         .nativeProperty('storeType', function() {
-            return this.key().replace(/^(.+):\/\/(.+)\/(.+)$/, '$1');
+            return this.nodeRef.replace(/^(.+):\/\/(.+)\/(.+)$/, '$1');
         })
         .nativeProperty('storeId', function() {
-            return this.key().replace(/^(.+):\/\/(.+)\/(.+)$/, '$2');
+            return this.nodeRef.replace(/^(.+):\/\/(.+)\/(.+)$/, '$2');
         })
         .nativeProperty('id', function() {
-            return this.key().replace(/^(.+):\/\/(.+)\/(.+)$/, '$3');
+            return this.nodeRef.replace(/^(.+):\/\/(.+)\/(.+)$/, '$3');
         })
         
         .nativeProperty('type', function() {
@@ -1153,6 +1154,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 }
             },
             toRequest: function(node) {
+            	node.impl().inSubmitProcess(true);
                 return {
                     view: node.impl().invariants().defaultModel().view(),
                     attributes: node.impl().data().attributes
@@ -1160,6 +1162,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             },
             toResult: function(response) {
                 return new Node(response.result);
+            },
+            toFailureMessage: function(response) {
+            	return response.message;
+            },
+            onSuccess: function(node, result) {
+            	node.impl().inSubmitProcess(false);
+            },
+            onFailure: function(node, message) {
+            	node.impl().inSubmitProcess(false);
             }
         }))
         ;
@@ -1391,13 +1402,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .key('key', s)
         .property('node', Node)
         .property('invariants', InvariantSet)
-        .property('inSubmitProcess', b)
         .constant('rootObjects', rootObjects)
         
         .method('submit', function() {
-            if(this.node().impl().valid() && !this.inSubmitProcess()) {
+            if(this.node().impl().valid()) {
                 this.broadcast('node-view-submit');
-                this.inSubmitProcess(true);
             }
         })
         .method('cancel', function() {
@@ -1409,10 +1418,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 runtime: this,
                 node: this.node()
             });
-        })
-
-        .init(function() {
-            this.inSubmitProcess(false);
         })
         ;
     
@@ -1432,12 +1437,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
-
-            YAHOO.Bubbling.on("failure-save", function(layer, args, scope) {
-                if (args && args[1] && args[1].key == this.key()) {
-                    this.inSubmitProcess(false);                   
-                }
-            }, this.runtime);
         }
         
     });

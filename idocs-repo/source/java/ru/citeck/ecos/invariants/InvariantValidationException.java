@@ -30,6 +30,7 @@ public class InvariantValidationException extends InvariantsRuntimeException {
     private InvariantDefinition violatedInvariant;
 
     public InvariantValidationException(NodeRef nodeRef, QName attributeName, InvariantDefinition violatedInvariant) {
+        super("Invariant validation failed on node " + nodeRef + ", attribute " + attributeName + ": " + violatedInvariant.getDescription());
         this.nodeRef = nodeRef;
         this.attributeName = attributeName;
         this.violatedInvariant = violatedInvariant;
@@ -45,11 +46,6 @@ public class InvariantValidationException extends InvariantsRuntimeException {
 
     public InvariantDefinition getViolatedInvariant() {
         return violatedInvariant;
-    }
-    
-    @Override
-    public String toString() {
-        return "Invariant validation failed on node " + nodeRef + ", attribute " + attributeName + ": " + violatedInvariant.getDescription();
     }
     
 }
