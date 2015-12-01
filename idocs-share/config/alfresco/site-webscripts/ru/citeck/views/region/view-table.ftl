@@ -7,7 +7,7 @@
 -->
 
 <!-- ko ifnot: empty -->
-    <div class="view-table-container" style="max-height: <#if params.maxheight??>${params.maxheight}</#if>;">
+    <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
         <table>
             <thead data-bind="with: singleValue">
                 <tr>
