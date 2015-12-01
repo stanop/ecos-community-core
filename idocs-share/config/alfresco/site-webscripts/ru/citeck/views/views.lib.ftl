@@ -192,7 +192,8 @@
 				model: {
 					key: "${runtimeKey}",
 					node: {
-						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>"${args.htmlid}"</#if>,
+						key: "${args.htmlid}",
+						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
 						invariants: "${runtimeKey}"
 					},
