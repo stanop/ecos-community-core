@@ -14,10 +14,8 @@
 	</imports>
 
 	<namespaces>
-		<namespace uri="http://www.citeck.ru/model/icase/1.0"
-				prefix="icase" />
-		<namespace uri="http://www.citeck.ru/model/icase/template/1.0"
-				prefix="icasetpl" />
+		<namespace uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+		<namespace uri="http://www.citeck.ru/model/icase/template/1.0" prefix="icasetpl" />
 	</namespaces>
 
 	<constraints>

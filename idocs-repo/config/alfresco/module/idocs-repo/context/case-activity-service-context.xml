@@ -2,13 +2,13 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
 
-    <bean id="caseActivityService" name="CaseActivityService" class="ru.citeck.ecos.activity.CaseActivityServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
+    <bean id="caseActivityService" name="CaseActivityService" class="ru.citeck.ecos.icase.activity.CaseActivityServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
         <property name="dictionaryService" ref="DictionaryService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
     </bean>
 
-    <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.activity.CaseActivityServiceJS"
+    <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
           parent="baseJavaScriptExtension">
         <property name="caseActivityService" ref="caseActivityService"/>
         <property name="extensionName" value="caseActivityService"/>
@@ -22,7 +22,7 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="workflowService" ref="WorkflowService"/>
         <property name="nodeService" ref="nodeService"/>
-        <property name="workflowProperties">
+        <property name="attributesMappingByWorkflow">
             <map>
                 <entry key="activiti$print">
                     <map>

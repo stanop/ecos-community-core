@@ -1,4 +1,4 @@
-package ru.citeck.ecos.activity;
+package ru.citeck.ecos.icase.activity;
 
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;

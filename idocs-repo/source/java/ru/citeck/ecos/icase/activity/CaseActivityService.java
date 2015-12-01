@@ -1,4 +1,4 @@
-package ru.citeck.ecos.activity;
+package ru.citeck.ecos.icase.activity;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;

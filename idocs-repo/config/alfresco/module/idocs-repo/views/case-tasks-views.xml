@@ -11,7 +11,7 @@
 
     </imports>
 
-    <view class="icaseTask:task">
+    <views class="icaseTask:task">
         <field prop="cm:title">
             <region name="input" template="text"/>
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -27,6 +27,10 @@
         <field prop="icaseTask:priority">
             <region name="input" template="select"/>
         </field>
+    </views>
+
+    <view class="icaseTask:simpleTask">
+        <view class="icaseTask:task"/>
         <field prop="icaseTask:workflowDefinitionName">
             <!--<region name="input" template="text"/>-->
             <region name="input" template="select"/>
@@ -48,20 +52,13 @@
                 message(value.replace("activiti$", "") + ".workflow.title")
             </invariant>
         </field>
-        <!--<field assoc="icaseTask:taskRolesMapping">-->
-            <!--<region name="input" template="view"/>-->
-            <!--<region name="select" template="create-object">-->
-                <!--<param name="source">create-views</param>-->
-            <!--</region>-->
-            <!--<invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>-->
-        <!--</field>-->
         <field assoc="icaseTask:performer">
             <region name="input" template="select"/>
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="options" language="javascript">
                 (function() {
                     var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity")) 
+                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
                         parent = parent.parent;
                     return parent.childAssocs["icaseRole:roles"] || [];
                 })()
@@ -70,35 +67,6 @@
                 value.properties["cm:title"]
             </invariant>
         </field>
-    </view>
-
-    <view class="icaseTask:roleMapping">
-        <view>
-            <field prop="cm:title"/>
-            <field prop="icaseTask:workflowVariableName">
-                <region name="input" template="text"/>
-                <invariant on="mandatory" language="explicit">true</invariant>
-            </field>
-            <field assoc="icaseTask:role">
-                <regions name="input" template="select">
-                    <param name="attribute">cm:title</param>
-                    <param name="predicate">string-contains</param>
-                </regions>
-                <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
-            </field>
-        </view>
-    </view>
-
-    <view class="icaseTask:roleMapping" mode="view">
-        <views mode="view" kind="2-column"/>
-        <view>
-            <field prop="icaseTask:workflowVariableName"/>
-            <field assoc="icaseTask:role">
-                <region name="input" template="view">
-                    <param name="attribute">cm:title</param>
-                </region>
-            </field>
-        </view>
     </view>
 
 </views>
