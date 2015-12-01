@@ -1666,10 +1666,10 @@ function updatedControlValue(valueObject, ulSelected, tree) {
         if (typeof valueObject == "object") {
             if (valueObject instanceof Array) {
                for (var i in valueObject) {
-                    valueArray.push(valueObject[i].key())
+                    valueArray.push(valueObject[i].nodeRef)
                 }
             } else {
-                valueArray.push(valueObject.key());
+                valueArray.push(valueObject.nodeRef);
             }
         }
 
