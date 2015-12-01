@@ -10,15 +10,14 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowDefinition;
-import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowPath;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.activity.CaseActivityPolicies;
-import ru.citeck.ecos.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -33,7 +32,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
 
-    private Map<String, Map<String, String>> workflowProperties;
+    private Map<String, Map<String, String>> attributesMappingByWorkflow;
 
     private CaseActivityService caseActivityService;
     private NamespaceService namespaceService;
@@ -54,53 +53,58 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
 
-        Map<String, String> propertiesMapping = workflowProperties.get(workflowDefinitionName);
-        if(propertiesMapping == null){
+        if(!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
             throw new AlfrescoRuntimeException(String.format("CaseTaskBehavior don't know about workflow %s", workflowDefinitionName));
         }
 
-        String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
-        Date workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
-        Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
+        Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
         NodeRef wfPackage = workflowService.createPackage(null);
-        Map<QName, Serializable> workflowProps = new HashMap<QName, Serializable>();
-        workflowProps.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
-        workflowProps.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
-        workflowProps.put(WorkflowModel.PROP_DUE_DATE, workflowDueDate);
-        workflowProps.put(WorkflowModel.PROP_PRIORITY, workflowPriority);
+        workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
+
         NodeRef parent = caseActivityService.getDocument(taskRef);
 
         this.nodeService.addChild(wfPackage, parent, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
                 QName.createValidLocalName((String) this.nodeService.getProperty(parent, ContentModel.PROP_NAME))));
 
-        for(Map.Entry<String, String> entry : propertiesMapping.entrySet()) {
+        WorkflowDefinition wfDefinition = workflowService.getDefinitionByName(workflowDefinitionName);
+        WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), workflowProperties);
+        nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, wfPath.getInstance().getId());
+    }
+
+    private Map<QName, Serializable> getWorkflowProperties(NodeRef taskRef, String workflowDefinitionName) {
+
+        Map<QName, Serializable> workflowProperties = new HashMap<QName, Serializable>();
+
+        String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
+        Date workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
+        Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
+
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
+        workflowProperties.put(WorkflowModel.PROP_DUE_DATE, workflowDueDate);
+        workflowProperties.put(WorkflowModel.PROP_PRIORITY, workflowPriority);
+
+        Map<String, String> attributesMapping = attributesMappingByWorkflow.get(workflowDefinitionName);
+
+        for(Map.Entry<String, String> entry : attributesMapping.entrySet()) {
             QName key = QName.createQName(entry.getKey(), namespaceService);
             QName value = QName.createQName(entry.getValue(), namespaceService);
 
             Serializable property = nodeService.getProperty(taskRef, key);
 
             if(property != null) {
-                workflowProps.put(value, property);
+                workflowProperties.put(value, property);
                 continue;
             }
 
-            ArrayList<NodeRef> assocs = getAssocs(taskRef, key);
-            if(assocs.size() > 0) {
-                workflowProps.put(value, assocs);
-                continue;
-            }
-
-            //todo child assocs
+            workflowProperties.put(value, getAssociations(taskRef, key));
         }
 
-        WorkflowDefinition wfDefinition = workflowService.getDefinitionByName(workflowDefinitionName);
-        WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), workflowProps);
-        nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, wfPath.getInstance().getId());
+        return workflowProperties;
     }
 
-    private ArrayList<NodeRef> getAssocs(NodeRef nodeRef, QName assocType) {
+    private ArrayList<NodeRef> getAssociations(NodeRef nodeRef, QName assocType) {
         ArrayList<NodeRef> result = new ArrayList<>();
         List<AssociationRef> assocsRefs = nodeService.getTargetAssocs(nodeRef, assocType);
         for(AssociationRef assocRef : assocsRefs) {
@@ -108,7 +112,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
             QName targetType = nodeService.getType(targetRef);
 
             if(targetType.equals(ICaseRoleModel.TYPE_ROLE)) {
-                result.addAll(getAssocs(targetRef, ICaseRoleModel.ASSOC_ASSIGNEES));
+                result.addAll(getAssociations(targetRef, ICaseRoleModel.ASSOC_ASSIGNEES));
             } else {
                 result.add(targetRef);
             }
@@ -116,8 +120,12 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         return result;
     }
 
-    public void setWorkflowProperties(Map<String, Map<String, String>> workflowProperties) {
-        this.workflowProperties = workflowProperties;
+    public void registerAttributesMapping(Map<String, Map<String, String>> attributesMappingByWorkflow) {
+        this.attributesMappingByWorkflow.putAll(attributesMappingByWorkflow);
+    }
+
+    public void setAttributesMappingByWorkflow(Map<String, Map<String, String>> attributesMappingByWorkflow) {
+        this.attributesMappingByWorkflow = attributesMappingByWorkflow;
     }
 
     public void setNodeService(NodeService nodeService) {

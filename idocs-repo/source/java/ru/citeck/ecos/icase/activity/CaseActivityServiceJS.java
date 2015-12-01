@@ -1,4 +1,4 @@
-package ru.citeck.ecos.activity;
+package ru.citeck.ecos.icase.activity;
 
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;

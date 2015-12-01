@@ -31,9 +31,10 @@
 				<value>alfresco/module/idocs-repo/model/journalsModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/historyModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/idocsTemplateModel.xml</value>
-                <value>alfresco/module/idocs-repo/model/icaseModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/icaseRoleModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/icaseTaskModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/icase/icaseActivityModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/icase/icaseModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/icase/icaseRoleModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/icase/icaseTaskModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/cardletModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
@@ -66,6 +67,7 @@
 				<value>alfresco/module/idocs-repo/messages/history</value>
 				<value>alfresco/module/idocs-repo/messages/journal</value>
 				<value>alfresco/module/idocs-repo/messages/icase</value>
+				<value>alfresco/module/idocs-repo/messages/icaseActivityModel</value>
 				<value>alfresco/module/idocs-repo/messages/icaseRoleModel</value>
 				<value>alfresco/module/idocs-repo/messages/icaseTaskModel</value>
 				<value>alfresco/module/idocs-repo/messages/classification</value>

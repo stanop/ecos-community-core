@@ -25,7 +25,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
-import ru.citeck.ecos.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.search.*;
 import ru.citeck.ecos.service.CiteckServices;
