@@ -92,6 +92,11 @@
   margin-left: 5%;
 }
 
+.invariants-form .template-table .template-rowset .template-half-width {
+  padding-bottom: 0 !important;
+  border-bottom: 0 !important;
+}
+
 
 /* row field width */
 .invariants-form .template-table .template-row .template-select,
