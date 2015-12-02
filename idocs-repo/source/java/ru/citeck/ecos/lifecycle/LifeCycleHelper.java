@@ -199,43 +199,4 @@ public class LifeCycleHelper {
 	    return executorName;
 	}
 
-	/**
-     * Converts parameter value to type required by condition evaluator implementation
-     */
-	public static Serializable getPreparedConditionParameter(String actionType, String paramName, String paramValue, ServiceRegistry serviceRegistry) {
-        if (LifeCycleConstants.VAL_DOCUMENT_ATTRIBUTE.equals(actionType)) {
-            if (ComparePropertyValueEvaluator.PARAM_PROPERTY.equals(paramName))
-                return QName.createQName(paramValue, serviceRegistry.getNamespaceService());
-            else
-                return paramValue;
-        }
-
-        return paramValue;
-    }
-
-	/**
-	 * Converts parameter value to type required by native executer implementations
-	 */
-	public static Serializable getPreparedActionParameter(String actionType, String paramName, String paramValue, ServiceRegistry serviceRegistry) {
-	    if (LifeCycleConstants.VAL_DOCUMENT_ATTRIBUTE.equals(actionType)) {
-	        if (SetPropertyValueActionExecuter.PARAM_PROPERTY.equals(actionType))
-	            return QName.createQName(paramValue, serviceRegistry.getNamespaceService());
-	    } else if (LifeCycleConstants.VAL_START_PROCESS.equals(actionType)) {
-            if (StartWorkflowActionExecuter.PARAM_END_START_TASK.equals(actionType))
-                return Boolean.valueOf(paramValue);
-	    } else if (LifeCycleConstants.VAL_SEND_EMAIL.equals(actionType)) {
-	        if (MailActionExecuter.PARAM_TO_MANY.equals(paramName))
-	            return (Serializable) getJSONStringAsList(paramValue);
-	        else if (MailActionExecuter.PARAM_IGNORE_SEND_FAILURE.equals(paramName))
-                return Boolean.valueOf(paramValue);
-	        else if (MailActionExecuter.PARAM_SEND_AFTER_COMMIT.equals(paramName))
-                return Boolean.valueOf(paramValue);
-	        else if (MailActionExecuter.PARAM_TEMPLATE.equals(paramName))
-	            return new NodeRef(paramValue);
-	        else if (MailActionExecuter.PARAM_TEMPLATE_MODEL.equals(paramName))
-                return (Serializable) getJSONStringAsMap(paramValue);
-	    }
-
-	    return paramValue;
-	}
 }

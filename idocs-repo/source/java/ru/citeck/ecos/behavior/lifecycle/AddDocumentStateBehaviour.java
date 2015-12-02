@@ -27,14 +27,16 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+
 import ru.citeck.ecos.lifecycle.LifeCycleService;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.LifeCycleModel;
 
 /**
  * @author: Alexander Nemerov
  * @date: 26.02.14
  */
-public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNodePolicy {
+public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
 
     private PolicyComponent policyComponent;
     private QName className;
@@ -46,6 +48,7 @@ public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNo
 
     public void init() {
         bind(NodeServicePolicies.OnCreateNodePolicy.QNAME, "onCreateNode");
+        bind(NodeServicePolicies.OnAddAspectPolicy.QNAME, "onAddAspect");
     }
 
     private void bind(QName policy, String method) {
@@ -56,7 +59,17 @@ public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNo
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
-        final NodeRef nodeRef = childAssocRef.getChildRef();
+        startLifecycle(childAssocRef.getChildRef());
+    }
+
+    @Override
+    public void onAddAspect(NodeRef nodeRef, QName aspectName) {
+        if(!IdocsModel.ASPECT_LIFECYCLE.equals(aspectName))
+            return;
+        startLifecycle(nodeRef);
+    }
+
+    private void startLifecycle(final NodeRef nodeRef) {
         if(!nodeService.exists(nodeRef)) {
             return;
         }

@@ -44,7 +44,13 @@ import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionCondition;
+import org.alfresco.service.cmr.action.ActionConditionDefinition;
+import org.alfresco.service.cmr.action.ActionDefinition;
 import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.action.ParameterDefinition;
+import org.alfresco.service.cmr.action.ParameterizedItemDefinition;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
@@ -71,6 +77,7 @@ import ru.citeck.ecos.lifecycle.LifeCycleDefinition.LifeCycleCondition;
 import ru.citeck.ecos.lifecycle.LifeCycleDefinition.LifeCycleState;
 import ru.citeck.ecos.lifecycle.LifeCycleDefinition.LifeCycleTransition;
 import ru.citeck.ecos.model.LifeCycleModel;
+import ru.citeck.ecos.utils.ConvertUtils;
 
 /**
  * @author alexander.nemerov
@@ -398,16 +405,13 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private boolean checkConditions(NodeRef nodeRef, LifeCycleTransition transition) {
-    	boolean result = true;
-
-    	List<LifeCycleCondition> conditions = transition.getConditionList();
-
+        List<LifeCycleCondition> conditions = transition.getConditionList();
         for (LifeCycleCondition condition : conditions) {
-        	boolean conditionResult = checkCondition(nodeRef, condition);
-        	result &= conditionResult;
+            boolean conditionResult = checkCondition(nodeRef, condition);
+            if(!conditionResult) return false;
         }
-
-        return result;
+        
+        return true;
     }
 
     private boolean checkCondition(NodeRef nodeRef, LifeCycleCondition condition) {
@@ -438,16 +442,20 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 ActionCondition actionCondition = actionService.createActionCondition(actionConditionName);
 
                 if (actionCondition != null) {
+                    ActionConditionDefinition actionConditionDefinition = actionService.getActionConditionDefinition(actionCondition.getActionConditionDefinitionName());
                     for (String paramName : condition.getParamsNames()) {
-                        actionCondition.setParameterValue(paramName,
-                                LifeCycleHelper.getPreparedConditionParameter(conditionType, paramName,
-                                        condition.getParam(paramName), serviceRegistry));
+                        actionCondition.setParameterValue(paramName, 
+                                convertParameterValue(actionConditionDefinition, 
+                                        paramName, condition.getParam(paramName)));
                     }
 
                     conditionResult = actionService.evaluateActionCondition(actionCondition, nodeRef);
                 } else {
                     logger.error("Given condition type " + conditionType + " is unsupported");
                 }
+            }
+            if(logger.isDebugEnabled()) {
+                logger.debug((conditionResult ? "Condition passed: " : "Condition not passed: ") + condition.getType() + condition.getParams());
             }
 
             return conditionResult;
@@ -472,10 +480,11 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 Action alfrescoAction = actionService.createAction(actionExecutorName);
 
                 if (alfrescoAction != null) {
+                    ActionDefinition actionDefinition = actionService.getActionDefinition(alfrescoAction.getActionDefinitionName());
                     for (String paramName : action.getParamsNames()) {
-                        alfrescoAction.setParameterValue(paramName,
-                                LifeCycleHelper.getPreparedActionParameter(actionType, paramName,
-                                        action.getParam(paramName), serviceRegistry));
+                        alfrescoAction.setParameterValue(paramName, 
+                                convertParameterValue(actionDefinition, 
+                                        paramName, action.getParam(paramName)));
                     }
 
                     actionService.executeAction(alfrescoAction, nodeRef);
@@ -483,7 +492,26 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                     logger.error("Given action type " + actionType + " is unsupported");
                 }
             }
+            if(logger.isDebugEnabled()) {
+                logger.debug("Action performed: " + action.getType() + action.getParams());
+            }
         }
+    }
+
+    private Serializable convertParameterValue(
+            ParameterizedItemDefinition itemDefinition,
+            String paramName, Serializable value) {
+        ParameterDefinition paramDef = itemDefinition.getParameterDefintion(paramName);
+        if(paramDef != null) {
+            DataTypeDefinition typeDef = serviceRegistry.getDictionaryService().getDataType(paramDef.getType());
+            try {
+                Class<?> typeClass = Class.forName(typeDef.getJavaClassName());
+                value = (Serializable) ConvertUtils.convertValue(value, typeClass, paramDef.isMultiValued());
+            } catch (ClassNotFoundException e) {
+                logger.warn("Could not convert value for condition: " + e.getMessage(), e);
+            }
+        }
+        return value;
     }
 
     private Map<String, Object> fillModel(NodeRef nodeRef) {

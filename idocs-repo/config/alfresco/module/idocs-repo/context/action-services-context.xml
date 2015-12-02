@@ -55,4 +55,16 @@
     
     <bean id="compare-process-variable" class="ru.citeck.ecos.action.evaluator.CompareLifecycleProcessVariableValueEvaluator" parent="action-condition-evaluator" />
     
+    <bean id="text-property-value-comparator" class="ru.citeck.ecos.action.evaluator.TextPropertyValueComparator" init-method="register">
+        <property name="evaluator" ref="compare-property-value" />
+    </bean>
+    
+    <bean id="numeric-property-value-comparator" class="ru.citeck.ecos.action.evaluator.NumericPropertyValueComparator" init-method="register">
+        <property name="evaluator" ref="compare-property-value" />
+    </bean>
+    
+    <bean id="boolean-property-value-comparator" class="ru.citeck.ecos.action.evaluator.BooleanPropertyValueComparator" init-method="register">
+        <property name="evaluator" ref="compare-property-value" />
+    </bean>
+    
 </beans>
