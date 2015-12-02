@@ -3,9 +3,11 @@ package ru.citeck.ecos.behavior.activity;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -16,6 +18,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
@@ -35,6 +38,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
     private Map<String, Map<String, String>> attributesMappingByWorkflow;
 
     private CaseActivityService caseActivityService;
+    private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private WorkflowService workflowService;
     private PolicyComponent policyComponent;
@@ -44,7 +48,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         this.policyComponent.bindClassBehaviour(
                 CaseActivityPolicies.OnCaseActivityStartedPolicy.QNAME,
                 ICaseTaskModel.TYPE_TASK,
-                new JavaBehaviour(this, "onCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
+                new ChainingJavaBehaviour(this, "onCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
     }
 
@@ -66,7 +70,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
         this.nodeService.addChild(wfPackage, parent, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
-                QName.createValidLocalName((String) this.nodeService.getProperty(parent, ContentModel.PROP_NAME))));
+                        QName.createValidLocalName((String) this.nodeService.getProperty(parent, ContentModel.PROP_NAME))));
 
         WorkflowDefinition wfDefinition = workflowService.getDefinitionByName(workflowDefinitionName);
         WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), workflowProperties);
@@ -90,18 +94,24 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         for(Map.Entry<String, String> entry : attributesMapping.entrySet()) {
             QName key = QName.createQName(entry.getKey(), namespaceService);
             QName value = QName.createQName(entry.getValue(), namespaceService);
-
-            Serializable property = nodeService.getProperty(taskRef, key);
-
-            if(property != null) {
-                workflowProperties.put(value, property);
-                continue;
-            }
-
-            workflowProperties.put(value, getAssociations(taskRef, key));
+            workflowProperties.put(value, getAttribute(taskRef, key, value));
         }
 
         return workflowProperties;
+    }
+
+    private Serializable getAttribute(NodeRef nodeRef, QName source, QName target) {
+        PropertyDefinition propertyDef = dictionaryService.getProperty(source);
+        if(propertyDef != null) {
+            return nodeService.getProperty(nodeRef, source);
+        }
+        AssociationDefinition associationDef = dictionaryService.getAssociation(source);
+        if(associationDef != null) {
+            ArrayList<NodeRef> assocs = getAssociations(nodeRef, source);
+            boolean isTargetMany = dictionaryService.getAssociation(target).isTargetMany();
+            return isTargetMany ? assocs : assocs.get(0);
+        }
+        return null;
     }
 
     private ArrayList<NodeRef> getAssociations(NodeRef nodeRef, QName assocType) {
@@ -146,5 +156,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
     }
 }
