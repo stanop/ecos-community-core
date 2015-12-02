@@ -18,6 +18,7 @@
 
     <bean id="caseTaskBehavior" name="CaseTaskBehavior" class="ru.citeck.ecos.behavior.activity.CaseTaskBehavior" init-method="init">
         <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
         <property name="namespaceService" ref="namespaceService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="workflowService" ref="WorkflowService"/>
