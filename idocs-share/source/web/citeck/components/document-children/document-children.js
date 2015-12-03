@@ -86,9 +86,9 @@
 
         onChildrenUpdated: function (args) {
             if (this.options.hideEmpty && args.items && args.items.length == 0) {
-                $("#" + this.id).show();
-            } else {
                 $("#" + this.id).hide();
+            } else {
+                $("#" + this.id).show();
             }
         },
 
