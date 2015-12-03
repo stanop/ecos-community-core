@@ -92,6 +92,11 @@
   margin-left: 5%;
 }
 
+.invariants-form .template-table .template-rowset .template-half-width {
+  padding-bottom: 0 !important;
+  border-bottom: 0 !important;
+}
+
 
 /* row field width */
 .invariants-form .template-table .template-row .template-select,
@@ -1052,6 +1057,10 @@
   background-color: white;
 }
 
+.invariants-form .template-table .template-view-table .view-table-container .value-item.highlighted {
+  background-color: #F0F0F0;
+}
+
 .invariants-form .template-table .template-view-table table {
   border-collapse: collapse;
   width: 100%;
@@ -1074,6 +1083,8 @@
 .invariants-form .template-table .template-view-table table tbody tr td {
   border-top: 1px solid #ccc;
 }
+
+.invariants-form .template-table .template-view-table tr.view-time
 
 .invariants-form .template-table .template-row .template-view-table + .region-select-group {
   max-width: 100%;
