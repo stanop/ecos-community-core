@@ -206,28 +206,28 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
         if(properties != null) {
             for(QName propertyName : properties.keySet()) {
                 PropertyDefinition property = dictionaryService.getProperty(propertyName);
-                classes.add(property.getContainerClass());
+                if(property != null) classes.add(property.getContainerClass());
             }
         }
         
         if(targetAssocs != null) {
             for(QName assocName : targetAssocs.keySet()) {
                 AssociationDefinition association = dictionaryService.getAssociation(assocName);
-                classes.add(association.getSourceClass());
+                if(association != null) classes.add(association.getSourceClass());
             }
         }
         
         if(sourceAssocs != null) {
             for(QName assocName : sourceAssocs.keySet()) {
                 AssociationDefinition association = dictionaryService.getAssociation(assocName);
-                classes.add(association.getTargetClass());
+                if(association != null) classes.add(association.getTargetClass());
             }
         }
         
         if(childAssocs != null) {
             for(QName assocName : childAssocs.keySet()) {
                 AssociationDefinition association = dictionaryService.getAssociation(assocName);
-                classes.add(association.getSourceClass());
+                if(association != null) classes.add(association.getSourceClass());
             }
         }
         

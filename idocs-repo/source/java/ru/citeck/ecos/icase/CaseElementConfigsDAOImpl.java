@@ -144,11 +144,13 @@ public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
         } else {
             QName caseType = nodeService.getType(caseNode);
             
-            if(!dictionaryService.isSubClass(classToAdd.getName(), caseType)) {
+            if(dictionaryService.isSubClass(caseType, classToAdd.getName())) {
+                // nothing to do: it already has this class
+            } else if(dictionaryService.isSubClass(classToAdd.getName(), caseType)) {
+                nodeService.setType(caseNode, classToAdd.getName());
+            } else {
                 throw new IllegalArgumentException("Can not specialize case type from " + caseType + " to " + classToAdd.getName());
             }
-            
-            nodeService.setType(caseNode, classToAdd.getName());
         }
     }
 

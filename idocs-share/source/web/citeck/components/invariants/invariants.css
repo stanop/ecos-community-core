@@ -1022,8 +1022,9 @@
 }
 
 /* view in view-mode */
-.invariants-form.view-form .template-table .template-view {
-  font-family: Open Sans Bold, Arial, sans-serif;
+.invariants-form.view-form .template-table .template-view,
+.invariants-form.view-form .template-table .template-select {
+	font-family: Open Sans Bold, Arial, sans-serif;
   float: right;
   width: 55%;
 }
