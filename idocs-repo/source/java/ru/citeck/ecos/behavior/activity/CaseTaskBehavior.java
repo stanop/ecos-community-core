@@ -58,7 +58,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
 
         if(!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
-            throw new AlfrescoRuntimeException(String.format("CaseTaskBehavior don't know about workflow %s", workflowDefinitionName));
+            throw new AlfrescoRuntimeException(String.format("Workflow %s is not registered", workflowDefinitionName));
         }
 
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
@@ -100,18 +100,34 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         return workflowProperties;
     }
 
-    private Serializable getAttribute(NodeRef nodeRef, QName source, QName target) {
+
+    /**
+     * @param taskRef reference to task node
+     * @param source task attribute QName to get value
+     * @param target target attribute QName which will be set from source
+     * @return Serializable value of source attribute or null if value is not defined
+     * @throws AlfrescoRuntimeException when source or target QName is not association or property
+     */
+    private Serializable getAttribute(NodeRef taskRef, QName source, QName target) {
         PropertyDefinition propertyDef = dictionaryService.getProperty(source);
         if(propertyDef != null) {
-            return nodeService.getProperty(nodeRef, source);
+            return nodeService.getProperty(taskRef, source);
         }
         AssociationDefinition associationDef = dictionaryService.getAssociation(source);
         if(associationDef != null) {
-            ArrayList<NodeRef> assocs = getAssociations(nodeRef, source);
-            boolean isTargetMany = dictionaryService.getAssociation(target).isTargetMany();
-            return isTargetMany ? assocs : assocs.get(0);
+            AssociationDefinition targetAssoc = dictionaryService.getAssociation(target);
+            if(targetAssoc == null) {
+                throw new AlfrescoRuntimeException(
+                        "Error occurred during workflow attribute getting. Make sure that QName \""+target+"\" exists.");
+            }
+            ArrayList<NodeRef> assocs = getAssociations(taskRef, source);
+            if(assocs.size() > 0) {
+                return targetAssoc.isTargetMany() ? assocs : assocs.get(0);
+            } else {
+                return null;
+            }
         }
-        return null;
+        throw new AlfrescoRuntimeException(source+" is not a property or association (child associations is not allowed)");
     }
 
     private ArrayList<NodeRef> getAssociations(NodeRef nodeRef, QName assocType) {

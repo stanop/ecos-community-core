@@ -18,13 +18,16 @@
  */
 package ru.citeck.ecos.action.evaluator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.action.ParameterDefinitionImpl;
 import org.alfresco.repo.action.evaluator.ActionConditionEvaluatorAbstractBase;
 import org.alfresco.repo.admin.SysAdminParams;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.ActionCondition;
 import org.alfresco.service.cmr.action.ParameterDefinition;
@@ -33,6 +36,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.util.UrlUtil;
+import ru.citeck.ecos.icase.activity.CaseActivityServiceImpl;
 
 public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
 {
@@ -104,6 +108,17 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
         
         // Add the action to the default model
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
+
+        // add context variables
+        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(CaseActivityServiceImpl.ACTION_CONDITION_VARIABLES);
+        for(Map.Entry<String, Object> variable : variables.entrySet()) {
+            if(!model.containsKey(variable.getKey())) {
+                model.put(variable.getKey(), variable.getValue());
+            } else {
+                throw new AlfrescoRuntimeException(String.format("Error occurred during reading context variables. " +
+                                                   "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
+            }
+        }
 
         Object result = this.serviceRegistry.getScriptService().executeScriptString(script, model);
         
