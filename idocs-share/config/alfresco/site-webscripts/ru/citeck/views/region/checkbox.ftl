@@ -1,6 +1,7 @@
 <#-- many checkboxes with label -->
 <!-- ko if: options -->
   <!-- ko component: { name: "checkbox-radio", params: {
+    groupName: name,
     options: options,
     value: value,
     multiple: multiple,

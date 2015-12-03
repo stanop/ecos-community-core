@@ -106,6 +106,7 @@
 .invariants-form .template-table .template-row .template-textarea,
 .invariants-form .template-table .template-row .template-auto-number,
 .invariants-form .template-table .template-row .template-autocomplete,
+.invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number {
   width: 54.5%;
   float: right;
@@ -306,12 +307,13 @@
 
 
 /* checkbox */
-.invariants-form .template-table .template-checkbox {
+.invariants-form .template-table :not(.template-row) .template-checkbox {
   float: left;
   margin-right: 10px;
 }
 
-.invariants-form .template-table .template-checkbox input[type="checkbox"] {
+.invariants-form .template-table .template-checkbox input[type="checkbox"],
+.invariants-form .template-table .template-checkbox input[type="radio"] {
   vertical-align: bottom;
 }
 
@@ -1029,7 +1031,7 @@
 /* view in view-mode */
 .invariants-form.view-form .template-table .template-view,
 .invariants-form.view-form .template-table .template-select {
-	font-family: Open Sans Bold, Arial, sans-serif;
+  font-family: Open Sans Bold, Arial, sans-serif;
   float: right;
   width: 55%;
 }
