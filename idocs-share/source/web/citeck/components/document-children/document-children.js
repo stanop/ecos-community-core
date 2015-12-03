@@ -86,7 +86,9 @@
 
         onChildrenUpdated: function (args) {
             if (this.options.hideEmpty && args.items && args.items.length == 0) {
-                $("<style type='text/css'> #" + this.id +"{ display: none; } </style>").appendTo(document.head);
+                $("#" + this.id).show();
+            } else {
+                $("#" + this.id).hide();
             }
         },
 
