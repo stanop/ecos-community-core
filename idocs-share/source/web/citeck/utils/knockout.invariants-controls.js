@@ -42,6 +42,8 @@ var Event = YAHOO.util.Event,
 ko.components.register("checkbox-radio", {
     viewModel: function(params) {
         var self = this;
+
+        this.groupName = params["groupName"];
         this.optionText = params["optionText"];
         this.options = params["options"];
         this.value = params["value"];
@@ -61,13 +63,15 @@ ko.components.register("checkbox-radio", {
                   })" style="position: relative; top: 3px;" />\
                 <!-- /ko -->\
                 <!-- ko ifnot: $parent.multiple -->\
-                  <input type="radio" data-bind="checked: $parent.value, attr: { value: $data }" />\
+                  <input type="radio" data-bind="checked: ko.computed({\
+                    read: function() { if ($parent.value()) return $parent.value().id; },\
+                    write: function(newValue) { $parent.value($data.nodeRef); }\
+                  }), attr: { value: $data.id, name: $parent.groupName }" />\
                 <!-- /ko -->\
                 <!-- ko text: $parent.optionText($data) --><!-- /ko -->\
             </span>\
         <!-- /ko -->'
 });
-
 
 // ---------------
 // DATETIME
