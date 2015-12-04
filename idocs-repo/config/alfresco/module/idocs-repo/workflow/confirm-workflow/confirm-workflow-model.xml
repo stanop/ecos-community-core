@@ -238,6 +238,10 @@
 					<type>d:text</type>
 					<default>Consumer</default>
 				</property>
+				<property name="wfcf:terminateOnReject">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
 			</properties>
 		</aspect>
 
