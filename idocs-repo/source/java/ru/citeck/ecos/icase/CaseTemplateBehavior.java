@@ -19,15 +19,18 @@
 package ru.citeck.ecos.icase;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -45,6 +48,8 @@ import ru.citeck.ecos.search.FieldType;
 import ru.citeck.ecos.search.SearchPredicate;
 
 public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
+	private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
+
 	private static final Log logger = LogFactory.getLog(CaseTemplateBehavior.class);
 
 	protected PolicyComponent policyComponent;
@@ -103,6 +108,13 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         if (logger.isDebugEnabled())
             logger.debug("Creating node with icase:case aspect. nodeRef="
                     + caseNode);
+        
+        Set<NodeRef> filledCaseNodes = AlfrescoTransactionSupport.getResource(KEY_FILLED_CASE_NODES);
+        if(filledCaseNodes == null) {
+            AlfrescoTransactionSupport.bindResource(KEY_FILLED_CASE_NODES, filledCaseNodes = new HashSet<>());
+        }
+        if(filledCaseNodes.contains(caseNode)) return;
+        filledCaseNodes.add(caseNode);
 
         List<NodeRef> templates = getCaseTemplateByType(caseNode, nodeService.getType(caseNode));
         if (templates.isEmpty()) {
