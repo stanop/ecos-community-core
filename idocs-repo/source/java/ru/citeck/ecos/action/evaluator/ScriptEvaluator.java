@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.action.evaluator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.util.UrlUtil;
-import ru.citeck.ecos.icase.activity.CaseActivityServiceImpl;
+import ru.citeck.ecos.action.ActionConstants;
 
 public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
 {
@@ -110,7 +109,7 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
 
         // add context variables
-        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(CaseActivityServiceImpl.ACTION_CONDITION_VARIABLES);
+        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
         for(Map.Entry<String, Object> variable : variables.entrySet()) {
             if(!model.containsKey(variable.getKey())) {
                 model.put(variable.getKey(), variable.getValue());

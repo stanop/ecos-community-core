@@ -20,8 +20,6 @@ import java.util.*;
  */
 public class CaseActivityServiceImpl implements CaseActivityService {
 
-    public static final String ACTION_CONDITION_VARIABLES = "action-condition-variables";
-
     public static final String STATE_STARTED = "Started";
     public static final String STATE_COMPLETED = "Completed";
 
