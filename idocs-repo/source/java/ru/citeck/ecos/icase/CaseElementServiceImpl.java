@@ -334,6 +334,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
                 NodeRef childRef = childAssoc.getChildRef();
                 NodeRef original = nodeService.getTargetAssocs(childRef, ContentModel.ASSOC_ORIGINAL).get(0).getTargetRef();
                 copyMap.put(original, childRef);
+                queue.add(childRef);
             }
         }
         

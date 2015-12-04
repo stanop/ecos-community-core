@@ -17,6 +17,12 @@
       </div>
 
       <script type="text/javascript">//<![CDATA[
+         YAHOO.Bubbling.on("metadataRefresh", function(layer, args) {
+            var component = Alfresco.util.ComponentManager.get("${el}-form");
+            if(!component) return;
+            var full = true;
+            component.runtime.node().impl().reset(full);
+         });
          Alfresco.util.createTwister("${el}-heading", "node-view");
       //]]></script>
 

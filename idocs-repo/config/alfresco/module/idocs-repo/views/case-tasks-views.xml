@@ -6,8 +6,9 @@
 
         <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
         <import uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
-        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
         <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" />
+        <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
 
     </imports>
 
@@ -32,40 +33,40 @@
     <view class="icaseTask:simpleTask">
         <view class="icaseTask:task"/>
         <field prop="icaseTask:workflowDefinitionName">
-            <!--<region name="input" template="text"/>-->
             <region name="input" template="select"/>
-            <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="options" language="explicit" xmlns:inv="http://www.citeck.ru/ecos/invariants/1.0">
-                <inv:item>activiti$perform</inv:item>
-                <inv:item>activiti$print</inv:item>
-                <inv:item>activiti$scan</inv:item>
-                <inv:item>activiti$sign</inv:item>
-                <inv:item>activiti$correction</inv:item>
-                <inv:item>activiti$registration</inv:item>
-                <inv:item>activiti$normative-control</inv:item>
-                <inv:item>activiti$prolongation</inv:item>
-                <inv:item>activiti$simple-affirm</inv:item>
-                <inv:item>activiti$simple-payment</inv:item>
-                <inv:item>activiti$move-to-archive</inv:item>
-            </invariant>
-            <invariant on="value-title" language="javascript">
-                message(value.replace("activiti$", "") + ".workflow.title")
-            </invariant>
         </field>
         <field assoc="icaseTask:performer">
             <region name="input" template="select"/>
-            <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="options" language="javascript">
-                (function() {
-                    var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
-                        parent = parent.parent;
-                    return parent.childAssocs["icaseRole:roles"] || [];
-                })()
-            </invariant>
-            <invariant on="value-title" language="javascript">
-                value.properties["cm:title"]
-            </invariant>
+        </field>
+    </view>
+    
+    <view class="icaseTask:confirmTask">
+        <view class="icaseTask:task"/>
+        <field assoc="icaseTask:confirmers">
+            <region name="input" template="checkbox"/>
+        </field>
+        <field prop="wfcf:skipCorrectTask" />
+        <field prop="wfcf:canConfirmWithComments" />
+        <field prop="wfcf:terminateOnReject" />
+        <field prop="wfcf:confirmersPermission">
+            <region name="input" template="select"/>
+        </field>
+    </view>
+
+    <view class="icaseTask:performTask">
+        <view class="icaseTask:task"/>
+        <field assoc="icaseTask:performers">
+            <region name="input" template="checkbox"/>
+        </field>
+        <field prop="wfperf:performerPermission">
+            <region name="input" template="select"/>
+        </field>
+        <field prop="wfperf:enableControl" />
+        <field assoc="icaseTask:controller">
+            <region name="input" template="checkbox"/>
+        </field>
+        <field prop="wfperf:controllerPermission">
+            <region name="input" template="select"/>
         </field>
     </view>
 

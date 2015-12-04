@@ -2,6 +2,7 @@
 <@forms.renderFormsRuntime formId=formId />
 
 <@formLib.renderFormContainer formId=formId>
+	<@forms.renderField field="prop_bpm_workflowDescription" extension=extensions.controls.info />
 	<#if !(form.data.wfcf_canConfirmWithComments!false)>
 		<#assign outcomes = [ "Confirmed", "Reject" ] />
 	</#if>

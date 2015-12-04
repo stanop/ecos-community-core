@@ -77,7 +77,19 @@
                 </entry>
                 <entry key="activiti$perform">
                     <map>
-                        <entry key="icaseTask:performer" value="wfperf:performers"/>
+                        <entry key="icaseTask:performers" value="wfperf:performers"/>
+                        <entry key="icaseTask:controller" value="wfperf:controller"/>
+                        <entry key="wfperf:enableControl" value="wfperf:enableControl"/>
+                        <entry key="wfperf:performerPermission" value="wfperf:performerPermission"/>
+                        <entry key="wfperf:controllerPermission" value="wfperf:controllerPermission"/>
+                    </map>
+                </entry>
+                <entry key="activiti$confirm-stage">
+                    <map>
+                        <entry key="icaseTask:confirmers" value="wfcf:confirmers"/>
+                        <entry key="wfcf:skipCorrectTask" value="wfcf:skipCorrectTask"/>
+                        <entry key="wfcf:canConfirmWithComments" value="wfcf:canConfirmWithComments"/>
+                        <entry key="wfcf:confirmersPermission" value="wfcf:confirmersPermission"/>
                     </map>
                 </entry>
             </map>
