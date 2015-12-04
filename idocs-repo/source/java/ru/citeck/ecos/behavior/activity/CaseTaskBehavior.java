@@ -100,7 +100,6 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         return workflowProperties;
     }
 
-
     /**
      * @param taskRef reference to task node
      * @param source task attribute QName to get value
@@ -121,11 +120,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
                         "Error occurred during workflow attribute getting. Make sure that QName \""+target+"\" exists.");
             }
             ArrayList<NodeRef> assocs = getAssociations(taskRef, source);
-            if(assocs.size() > 0) {
-                return targetAssoc.isTargetMany() ? assocs : assocs.get(0);
-            } else {
-                return null;
-            }
+            return targetAssoc.isTargetMany() ? assocs : (assocs.size() > 0 ? assocs.get(0) : null);
         }
         throw new AlfrescoRuntimeException(source+" is not a property or association (child associations is not allowed)");
     }

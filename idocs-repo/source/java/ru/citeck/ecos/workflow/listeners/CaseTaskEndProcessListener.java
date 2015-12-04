@@ -26,6 +26,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
+import ru.citeck.ecos.action.ActionConstants;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.icase.activity.CaseActivityServiceImpl;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -59,13 +60,13 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
                 String processId = delegateExecution.getProcessInstanceId();
 
                 Map<String, Object> actionConditionVariables =
-                        AlfrescoTransactionSupport.getResource(CaseActivityServiceImpl.ACTION_CONDITION_VARIABLES);
+                        AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
                 if(actionConditionVariables == null) {
                     actionConditionVariables = new HashMap<String, Object>();
                 }
 
                 actionConditionVariables.put("process", new ActivitiVariableScopeMap(delegateExecution, serviceRegistry));
-                AlfrescoTransactionSupport.bindResource(CaseActivityServiceImpl.ACTION_CONDITION_VARIABLES, actionConditionVariables);
+                AlfrescoTransactionSupport.bindResource(ActionConstants.ACTION_CONDITION_VARIABLES, actionConditionVariables);
 
                 SearchCriteria searchCriteria = new SearchCriteria(namespaceService)
                         .addCriteriaTriplet(FieldType.TYPE, SearchPredicate.TYPE_EQUALS, ICaseTaskModel.TYPE_TASK)
