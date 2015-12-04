@@ -185,7 +185,7 @@
 
 /* label */
 .invariants-form:not(.view-form) .template-table .template-row-checkbox .template-label {
-  width: 90%;
+  width: 96.5%;
 }
 
 .invariants-form:not(.view-form) .template-table .template-half-width-checkbox .template-label,
@@ -316,6 +316,16 @@
 .invariants-form .template-table .template-checkbox input[type="radio"] {
   vertical-align: bottom;
 }
+
+.invariants-form .template-table .template-checkbox .checkbox-option * {
+  cursor: pointer;
+}
+
+.invariants-form .template-table .template-checkbox .checkbox-option label {
+  font: 13px/1.231 Open Sans,arial,helvetica,clean,sans-serif;
+}
+
+
 
 
 /* message */
