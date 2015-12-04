@@ -1005,9 +1005,9 @@ ko.components.register("autocomplete", {
             minQueryLength: 3,
 
             // titles
-            label: "Select...",
-            helpMessage: "Start typing...",
-            emptyMessage: "No options...",
+            labelMessage: "Select...",
+            helpMessage:  "Start typing...",
+            emptyMessage: "No options..."
         }
 
         // observables and computed
@@ -1019,7 +1019,7 @@ ko.components.register("autocomplete", {
         self.searchFocused = ko.observable(false);
        
         self.label = ko.computed(function() { 
-            return self.value() ? self.data.getValueTitle(self.value()) : self.parameters.label; 
+            return self.value() ? self.data.getValueTitle(self.value()) : (params.labelMessage || self.parameters.labelMessage); 
         });
 
         self.criteria = ko.computed(function() {
