@@ -3189,7 +3189,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry {
-   width: 75px;
+   width: 100px;
 }
 
 .share-form .form-container .form-fields .form-field .yui-u .format-info {
@@ -3218,7 +3218,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 .share-form .form-container .form-fields .yui-u .form-field > .format-info > span.date-format,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info > span.date-format {
-  margin-left: 5px;
+  margin-left: 20px;
 }
 
 .share-form .form-container .form-fields .yui-u .form-field > a,
