@@ -1,6 +1,8 @@
 <#assign el = args.htmlid?html />
+
 <#if view??>
-   <div id="${el}-body" class="document-details-panel node-view">
+   <div id="${el}-body" 
+        class="document-details-panel node-view <#if args.class??>${args.class?string}</#if>">
 
       <h2 id="${el}-heading" class="thin dark">
          ${msg(args.header!"header.view")}
@@ -24,5 +26,11 @@
          Alfresco.util.createTwister("${el}-heading", "node-view");
       //]]></script>
 
+      <#if args.style??>
+         <style type="text/css">
+            ${args.style?string}
+         </style>
+      </#if>
    </div>
 </#if>
+

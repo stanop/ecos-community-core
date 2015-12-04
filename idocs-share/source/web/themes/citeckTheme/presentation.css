@@ -87,7 +87,6 @@
 }
 
 .sticky-footer {
-  z-index: 2;
   position: relative;
 }
 
@@ -3508,6 +3507,10 @@ div#HEADER_USER_STATUS {
   padding: 0 15px 0 40px;
 }
 
+.comments-list .comment-details {
+  width: 100% !important;
+  box-sizing: border-box;
+}
 
 /* ALF-FILTERS */
 

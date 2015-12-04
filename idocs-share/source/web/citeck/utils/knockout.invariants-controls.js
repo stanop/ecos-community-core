@@ -42,6 +42,8 @@ var Event = YAHOO.util.Event,
 ko.components.register("checkbox-radio", {
     viewModel: function(params) {
         var self = this;
+
+        this.groupName = params["groupName"];
         this.optionText = params["optionText"];
         this.options = params["options"];
         this.value = params["value"];
@@ -50,24 +52,28 @@ ko.components.register("checkbox-radio", {
     template: 
         '<!-- ko foreach: options -->\
             <span class="checkbox-option" style="margin-right: 15px; white-space: nowrap;">\
-                <!-- ko if: $parent.multiple -->\
-                  <input type="checkbox" data-bind="checked: ko.computed({\
-                    read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
-                    write: function(newValue) {\
-                      var selectedOptions = $parent.value() || [];\
-                      newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
-                      $parent.value(selectedOptions);\
-                    }\
-                  })" style="position: relative; top: 3px;" />\
-                <!-- /ko -->\
-                <!-- ko ifnot: $parent.multiple -->\
-                  <input type="radio" data-bind="checked: $parent.value, attr: { value: $data }" />\
-                <!-- /ko -->\
-                <!-- ko text: $parent.optionText($data) --><!-- /ko -->\
+                <label>\
+                    <!-- ko if: $parent.multiple -->\
+                      <input type="checkbox" data-bind="checked: ko.computed({\
+                        read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                        write: function(newValue) {\
+                          var selectedOptions = $parent.value() || [];\
+                          newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                          $parent.value(selectedOptions);\
+                        }\
+                      })" style="position: relative; top: 3px;" />\
+                    <!-- /ko -->\
+                    <!-- ko ifnot: $parent.multiple -->\
+                      <input type="radio" data-bind="checked: ko.computed({\
+                        read: function() { if ($parent.value()) return $parent.value().id; },\
+                        write: function(newValue) { $parent.value($data.nodeRef); }\
+                      }), attr: { value: $data.id, name: $parent.groupName }" />\
+                    <!-- /ko -->\
+                    <!-- ko text: $parent.optionText($data) --><!-- /ko -->\
+                </label>\
             </span>\
         <!-- /ko -->'
 });
-
 
 // ---------------
 // DATETIME
@@ -1001,9 +1007,9 @@ ko.components.register("autocomplete", {
             minQueryLength: 3,
 
             // titles
-            label: "Select...",
-            helpMessage: "Start typing...",
-            emptyMessage: "No options...",
+            labelMessage: "Select...",
+            helpMessage:  "Start typing...",
+            emptyMessage: "No options..."
         }
 
         // observables and computed
@@ -1015,7 +1021,7 @@ ko.components.register("autocomplete", {
         self.searchFocused = ko.observable(false);
        
         self.label = ko.computed(function() { 
-            return self.value() ? self.data.getValueTitle(self.value()) : self.parameters.label; 
+            return self.value() ? self.data.getValueTitle(self.value()) : (params.labelMessage || self.parameters.labelMessage); 
         });
 
         self.criteria = ko.computed(function() {

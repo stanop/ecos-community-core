@@ -4,10 +4,14 @@
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
         * columns     - attributes name on string ("cm:name,tk:type") [optional]
         * maxheight   - maximum height of view-table-container ("150px", "50%") [optional]
+        * style       - individual styles. added in the end of control (".style { font-size: 13px; }") [optional]
+        
+        * highlightedColumnMarker    - marked rows as 'highlighted' if specified attribute exists and 'true' ("cm:content") [optional]
+        * highlightedAdditionalClass - additional classes for highlighted rows. use only with 'highlightedColumnMarker' ("selected my-item") [optional]
 -->
 
 <!-- ko ifnot: empty -->
-    <div class="view-table-container" style="max-height: <#if params.maxheight??>${params.maxheight}</#if>;">
+    <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
         <table>
             <thead data-bind="with: singleValue">
                 <tr>
@@ -41,8 +45,20 @@
                 </tr>
             </thead>
             <tbody data-bind="foreach: multipleValues">
-                <tr class="value-item">
-                    <!-- ko with: impl -->
+                <!-- ko with: impl -->
+                    <#if params.highlightedColumnMarker??>
+                        <tr class="value-item" 
+                            data-bind="css: { 
+                                'highlighted ${params.highlightedAdditionalClass!""}': ko.computed(function() {
+                                    if ($data.attribute('${params.highlightedColumnMarker?js_string}'))
+                                        return $data.attribute('${params.highlightedColumnMarker?js_string}').value();
+                                    return false;
+                                })
+                            }">
+                    <#else>
+                        <tr class="value-item">
+                    </#if>
+
                         <#if params.journalType??>
                             <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
                                 <!-- ko foreach: defaultAttributes -->
@@ -62,17 +78,17 @@
                                 <td data-bind="text: textValue"></td>
                             <!-- /ko -->
                         </#if>
-                    <!-- /ko -->
 
-                    <!-- ko ifnot: $parents[1].inViewMode || $parent.protected -->
-                        <td class="value-item-actions">
-                            <a class="edit-value-item" title="${msg('button.edit')}" 
-                               data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(){}), clickBubble: false"></a>
-                            <a class="delete-value-item" title="${msg('button.delete')}" 
-                               data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
-                        </td>
-                    <!-- /ko -->
-                </tr>
+                        <!-- ko ifnot: $parents[2].inViewMode || $parents[1].protected -->
+                            <td class="value-item-actions">
+                                <a class="edit-value-item" title="${msg('button.edit')}" 
+                                   data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $parent.nodeRef, null, function(){}), clickBubble: false"></a>
+                                <a class="delete-value-item" title="${msg('button.delete')}" 
+                                   data-bind="click: $parents[1].remove.bind($parents[1], $index()), clickBubble: false"></a>
+                            </td>
+                        <!-- /ko -->
+                    </tr>
+                <!-- /ko -->
             </tbody>
         </table> 
     </div>
@@ -81,3 +97,9 @@
 <!-- ko if: empty -->
     <span>${msg("label.none")}</span>
 <!-- /ko -->
+
+<#if params.style??>
+    <style type="text/css">
+        ${params.style?string}
+    </style>
+</#if>
