@@ -74,6 +74,7 @@
 			</overrides>
 			<mandatory-aspects>
 				<aspect>wfcf:confirmOutcome</aspect>
+				<aspect>wfcf:options</aspect>
 				<aspect>cwf:sender</aspect>
 				<aspect>cwf:lastcomment</aspect>
 			</mandatory-aspects>

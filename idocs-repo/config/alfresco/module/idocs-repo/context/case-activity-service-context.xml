@@ -90,6 +90,7 @@
                         <entry key="wfcf:skipCorrectTask" value="wfcf:skipCorrectTask"/>
                         <entry key="wfcf:canConfirmWithComments" value="wfcf:canConfirmWithComments"/>
                         <entry key="wfcf:confirmersPermission" value="wfcf:confirmersPermission"/>
+                        <entry key="wfcf:terminateOnReject" value="wfcf:terminateOnReject"/>
                     </map>
                 </entry>
             </map>
