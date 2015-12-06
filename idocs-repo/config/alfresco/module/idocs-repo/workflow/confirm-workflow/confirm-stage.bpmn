@@ -15,7 +15,9 @@
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
-      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${wfcf_confirmers}" activiti:elementVariable="wfcf_confirmer"></multiInstanceLoopCharacteristics>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${wfcf_confirmers}" activiti:elementVariable="wfcf_confirmer">
+        <completionCondition>${wfcf_terminateOnReject &amp;&amp; wfcf_notAllConfirmed}</completionCondition>
+      </multiInstanceLoopCharacteristics>
       <userTask id="confirm" name="Confirm Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:confirmTask">
         <extensionElements>
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
@@ -131,6 +133,9 @@ if(execution.getVariable("wfcf_corrector") == null) {
 }
 if(execution.getVariable("wfcf_skipCorrectTask") == null) {
   execution.setVariable("wfcf_skipCorrectTask", false);
+}
+if(execution.getVariable("wfcf_terminateOnReject") == null) {
+  execution.setVariable("wfcf_terminateOnReject", false);
 }
 execution.setVariable("wfcf_workflowCancelled", false);
 execution.setVariable("wfcf_notAllConfirmed", false);

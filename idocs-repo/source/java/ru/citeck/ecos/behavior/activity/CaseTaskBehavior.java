@@ -86,8 +86,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
 
         workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
-        workflowProperties.put(WorkflowModel.PROP_DUE_DATE, workflowDueDate);
-        workflowProperties.put(WorkflowModel.PROP_PRIORITY, workflowPriority);
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DUE_DATE, workflowDueDate);
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_PRIORITY, workflowPriority);
 
         Map<String, String> attributesMapping = attributesMappingByWorkflow.get(workflowDefinitionName);
 
