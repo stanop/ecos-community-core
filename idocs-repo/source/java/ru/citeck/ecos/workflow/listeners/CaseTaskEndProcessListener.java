@@ -20,15 +20,19 @@ package ru.citeck.ecos.workflow.listeners;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.context.Context;
+import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.ActionConstants;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
-import ru.citeck.ecos.icase.activity.CaseActivityServiceImpl;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.search.*;
 import ru.citeck.ecos.service.CiteckServices;
@@ -42,10 +46,11 @@ import java.util.Map;
  * @author Maxim Strizhov
  */
 public class CaseTaskEndProcessListener extends AbstractExecutionListener {
+
+    private static final Log log = LogFactory.getLog(CaseTaskEndProcessListener.class);
+
     private CaseActivityService caseActivityService;
     private NodeService nodeService;
-    private NamespaceService namespaceService;
-    private CriteriaSearchService criteriaSearchService;
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
@@ -56,28 +61,27 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
                 if (docRef == null) {
                     return null;
                 }
-                String processType = "activiti$" + Context.getExecutionContext().getProcessDefinition().getKey();
-                String processId = delegateExecution.getProcessInstanceId();
+                ActivitiVariableScopeMap activitiVariables = new ActivitiVariableScopeMap(delegateExecution, serviceRegistry);
 
-                Map<String, Object> actionConditionVariables =
-                        AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-                if(actionConditionVariables == null) {
-                    actionConditionVariables = new HashMap<String, Object>();
-                }
+                Object bpmPackage = activitiVariables.get("bpm_package");
+                if(bpmPackage == null) return null;
 
-                actionConditionVariables.put("process", new ActivitiVariableScopeMap(delegateExecution, serviceRegistry));
-                AlfrescoTransactionSupport.bindResource(ActionConstants.ACTION_CONDITION_VARIABLES, actionConditionVariables);
+                NodeRef packageRef = ((ScriptNode)bpmPackage).getNodeRef();
+                List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(packageRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 
-                SearchCriteria searchCriteria = new SearchCriteria(namespaceService)
-                        .addCriteriaTriplet(FieldType.TYPE, SearchPredicate.TYPE_EQUALS, ICaseTaskModel.TYPE_TASK)
-                        .addCriteriaTriplet(ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME, SearchPredicate.STRING_EQUALS, processType);
-                CriteriaSearchResults searchResults = criteriaSearchService.query(searchCriteria, SearchService.LANGUAGE_LUCENE);
-                List<NodeRef> results = searchResults.getResults();
-                for (NodeRef result : results) {
-                    String workflowId = (String) nodeService.getProperty(result, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
-                    if (workflowId != null && workflowId.equals("activiti$"+processId)) {
-                        caseActivityService.stopActivity(result);
+                if(packageAssocs != null && packageAssocs.size() > 0) {
+
+                    Map<String, Object> actionConditionVariables =
+                                        AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
+
+                    if(actionConditionVariables == null) {
+                        actionConditionVariables = new HashMap<String, Object>();
                     }
+
+                    actionConditionVariables.put("process", activitiVariables);
+                    AlfrescoTransactionSupport.bindResource(ActionConstants.ACTION_CONDITION_VARIABLES, actionConditionVariables);
+
+                    caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
                 }
 
                 return null;
@@ -88,8 +92,6 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
     @Override
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
-        this.namespaceService = serviceRegistry.getNamespaceService();
         this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
-        this.criteriaSearchService = (CriteriaSearchService) serviceRegistry.getService(CiteckServices.CRITERIA_SEARCH_SERVICE);
     }
 }
