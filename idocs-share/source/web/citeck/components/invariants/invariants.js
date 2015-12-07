@@ -744,7 +744,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                     this.getInvariantsModel(value), String, '', notNull).value;
         })
         .computed('valueTitle', function() {
-            return this.getValueTitle(this.value());
+            return this.getValueTitle(this.singleValue());
         })
         .shortcut('value-title', 'valueTitle')
 
@@ -1018,7 +1018,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         
         .property('inSubmitProcess', b)
         .init(function() {
-        	this.inSubmitProcess(false);
+            this.inSubmitProcess(false);
         })
         ;
     
@@ -1154,7 +1154,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 }
             },
             toRequest: function(node) {
-            	node.impl().inSubmitProcess(true);
+                node.impl().inSubmitProcess(true);
                 return {
                     view: node.impl().invariants().defaultModel().view(),
                     attributes: node.impl().data().attributes
@@ -1164,13 +1164,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 return new Node(response.result);
             },
             toFailureMessage: function(response) {
-            	return response.message;
+                return response.message;
             },
             onSuccess: function(node, result) {
-            	node.impl().inSubmitProcess(false);
+                node.impl().inSubmitProcess(false);
             },
             onFailure: function(node, message) {
-            	node.impl().inSubmitProcess(false);
+                node.impl().inSubmitProcess(false);
             }
         }))
         ;
