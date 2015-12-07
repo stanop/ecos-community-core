@@ -32,7 +32,6 @@ public class ICaseTaskModel {
 
     // types
     public static final QName TYPE_TASK = QName.createQName(NAMESPACE, "task");
-    public static final QName TYPE_ROLE_MAPPING = QName.createQName(NAMESPACE, "roleMapping");
 
     // aspects
     public static final QName ASPECT_HAS_TASKS = QName.createQName(NAMESPACE, "hasTasks");
@@ -49,6 +48,7 @@ public class ICaseTaskModel {
     public static final QName ASSOC_TASK_ROLES_MAPPING = QName.createQName(NAMESPACE, "taskRolesMapping");
     public static final QName ASSOC_TASKS = QName.createQName(NAMESPACE, "tasks");
     public static final QName ASSOC_PERFORMER = QName.createQName(NAMESPACE, "performer");
+    public static final QName ASSOC_WORKFLOW_PACKAGE = QName.createQName(NAMESPACE, "workflowPackage");
 
     // constraint
 }

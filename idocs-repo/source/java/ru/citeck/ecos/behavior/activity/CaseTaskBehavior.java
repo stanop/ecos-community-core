@@ -64,6 +64,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
         NodeRef wfPackage = workflowService.createPackage(null);
+        nodeService.createAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
         workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
 
         NodeRef parent = caseActivityService.getDocument(taskRef);
