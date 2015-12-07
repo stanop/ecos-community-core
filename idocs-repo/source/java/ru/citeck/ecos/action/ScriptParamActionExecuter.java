@@ -22,11 +22,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.action.ParameterDefinitionImpl;
 import org.alfresco.repo.action.executer.ActionExecuterAbstractBase;
 import org.alfresco.repo.admin.SysAdminParams;
 import org.alfresco.repo.jscript.ScriptAction;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ParameterDefinition;
@@ -107,6 +109,17 @@ public class ScriptParamActionExecuter extends ActionExecuterAbstractBase
         ScriptAction scriptAction = new ScriptAction(this.serviceRegistry, action, this.actionDefinition);
         model.put("action", scriptAction);
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
+
+        // add context variables
+        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
+        for(Map.Entry<String, Object> variable : variables.entrySet()) {
+            if(!model.containsKey(variable.getKey())) {
+                model.put(variable.getKey(), variable.getValue());
+            } else {
+                throw new AlfrescoRuntimeException(String.format("Error occurred during reading context variables. " +
+                                                   "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
+            }
+        }
 
         Object result = this.serviceRegistry.getScriptService().executeScriptString(script, model);
         
