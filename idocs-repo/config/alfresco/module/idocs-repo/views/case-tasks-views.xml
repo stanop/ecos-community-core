@@ -51,6 +51,7 @@
         <field prop="wfcf:confirmersPermission">
             <region name="input" template="select"/>
         </field>
+        <field prop="wfcf:confirmOutcomeI18nPrefix" />
     </view>
 
     <view class="icaseTask:performTask">

@@ -50,6 +50,11 @@ if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOu
               <activiti:expression>wfcf_canConfirmWithComments</activiti:expression>
             </activiti:field>
           </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="variableExpr">
+              <activiti:expression>wfcf_confirmOutcomeI18nPrefix</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
         </extensionElements>
       </userTask>
       <userTask id="correct" name="Correct Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:correctTask">

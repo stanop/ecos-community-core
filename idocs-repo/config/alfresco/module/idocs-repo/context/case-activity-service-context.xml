@@ -91,6 +91,7 @@
                         <entry key="wfcf:canConfirmWithComments" value="wfcf:canConfirmWithComments"/>
                         <entry key="wfcf:confirmersPermission" value="wfcf:confirmersPermission"/>
                         <entry key="wfcf:terminateOnReject" value="wfcf:terminateOnReject"/>
+                        <entry key="wfcf:confirmOutcomeI18nPrefix" value="wfcf:confirmOutcomeI18nPrefix"/>
                     </map>
                 </entry>
             </map>

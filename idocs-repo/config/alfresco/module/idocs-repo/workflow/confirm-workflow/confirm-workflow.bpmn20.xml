@@ -87,7 +87,9 @@ execution.setVariable("wfcf_confirmOutcome", null);</activiti:expression>
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
-      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${stage.confirmers}" activiti:elementVariable="wfcf_confirmer"></multiInstanceLoopCharacteristics>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${stage.confirmers}" activiti:elementVariable="wfcf_confirmer">
+        <completionCondition>${wfcf_terminateOnReject &amp;&amp; wfcf_notAllConfirmed}</completionCondition>
+      </multiInstanceLoopCharacteristics>
       <userTask id="confirm-task" name="Confirm Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:confirmTask">
         <extensionElements>
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
@@ -124,6 +126,11 @@ confirmDecisions.save(execution, confirmer.properties.authorityName || confirmer
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
             <activiti:field name="variableExpr">
               <activiti:expression>wfcf_canConfirmWithComments</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="variableExpr">
+              <activiti:expression>wfcf_confirmOutcomeI18nPrefix</activiti:expression>
             </activiti:field>
           </activiti:taskListener>
         </extensionElements>
@@ -217,6 +224,9 @@ execution.setVariable("versionChanged", wfcf_resubmitOnNewVersion &amp;&amp; ver
 execution.setVariable("wfcf_confirmed", false);
 if(execution.getVariable("wfcf_skipCorrectTask") == null) {
   execution.setVariable("wfcf_skipCorrectTask", false);
+}
+if(execution.getVariable("wfcf_terminateOnReject") == null) {
+  execution.setVariable("wfcf_terminateOnReject", false);
 }
 if(execution.getVariable("wfcf_resubmitOnNewVersion") == null) {
   execution.setVariable("wfcf_resubmitOnNewVersion", true);
