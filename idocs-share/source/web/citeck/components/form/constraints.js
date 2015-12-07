@@ -151,6 +151,31 @@
 		}
 		return result;
 	};
+
+    Citeck.forms.simpleDeleteDialog = function(successCallback, failureCallback) {
+        Alfresco.util.PopupManager.displayPrompt({
+            title: Alfresco.util.message("message.confirm.delete.1.title"),
+            text: Alfresco.util.message("message.confirm.delete"),
+            noEscape: true,
+            buttons: [
+                {
+                    text: Alfresco.util.message("button.delete"),
+                    handler: function() {
+                        if (successCallback && _.isFunction(successCallback)) successCallback();
+                        this.hide();
+                    }
+                },
+                {
+                    text: Alfresco.util.message("button.cancel"),
+                    handler: function() {
+                        if (failureCallback && _.isFunction(failureCallback)) failureCallback();
+                        this.hide();
+                    },
+                    isDefault: true
+                }
+            ]
+        });
+    };
 	
 	Citeck.forms.dialog = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
