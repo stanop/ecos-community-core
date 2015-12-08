@@ -336,7 +336,7 @@
 			var query = input.value, context = this.options.currentRoot;
 			if(query) {
 				var search = this.model.getItem("search");
-				search.query = query;
+				search.query = query+"*";
 				context = "search";
 			}
 			this.widgets.tree.setContext(context, "none");
