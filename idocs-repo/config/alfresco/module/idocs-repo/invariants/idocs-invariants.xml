@@ -6,6 +6,10 @@
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
     </imports>
+    
+    <associations type="idocs:legalEntity">
+        <invariant on="value-title" language="javascript">value.properties["idocs:shortOrganizationName"] || value.properties["idocs:fullOrganizationName"]</invariant>
+    </associations>
 
     <aspect name="idocs:pagesInfo">
         <property name="idocs:pagesNumber">
