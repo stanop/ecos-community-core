@@ -47,6 +47,17 @@ if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOu
           </activiti:taskListener>
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
             <activiti:field name="variableExpr">
+              <activiti:expression>wfcf_confirmersPermission</activiti:expression>
+            </activiti:field>
+            <activiti:field name="taskVariableExpr">
+              <activiti:expression>grantedPermission</activiti:expression>
+            </activiti:field>
+            <activiti:field name="ifNotNullExpr">
+              <activiti:expression>true</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.VariablePull">
+            <activiti:field name="variableExpr">
               <activiti:expression>wfcf_canConfirmWithComments</activiti:expression>
             </activiti:field>
           </activiti:taskListener>
