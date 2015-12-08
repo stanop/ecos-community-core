@@ -33,8 +33,8 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     public ScriptNode[] getActivities(Object nodeRef, String type) {
         NodeRef nRef = getNodeRef(nodeRef);
         QName typeQName = QName.createQName(type, namespaceService);
-        List<NodeRef> stages = caseActivityService.getActivities(nRef, typeQName);
-        return JavaScriptImplUtils.wrapNodes(stages, this);
+        List<NodeRef> activities = caseActivityService.getActivities(nRef, typeQName);
+        return JavaScriptImplUtils.wrapNodes(activities, this);
     }
 
     public ScriptNode getDocument(Object nodeRef) {

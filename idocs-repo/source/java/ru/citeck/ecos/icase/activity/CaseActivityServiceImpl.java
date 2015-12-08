@@ -20,6 +20,7 @@ import java.util.*;
  */
 public class CaseActivityServiceImpl implements CaseActivityService {
 
+    public static final String STATE_NOT_STARTED = "Not started";
     public static final String STATE_STARTED = "Started";
     public static final String STATE_COMPLETED = "Completed";
 
@@ -64,10 +65,11 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             return false;
         }
         String currentState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
-
+        if(currentState == null) currentState = STATE_NOT_STARTED;
+        
         if(state.equals(currentState)
-                || currentState == null && !state.equals(STATE_STARTED)
-                || currentState != null && currentState.equals(STATE_COMPLETED)) {
+                || currentState.equals(STATE_NOT_STARTED) && !state.equals(STATE_STARTED)
+                || currentState.equals(STATE_STARTED) && !state.equals(STATE_COMPLETED)) {
             return false;
         }
         nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, state);

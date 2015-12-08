@@ -54,6 +54,7 @@
             </properties>
             <mandatory-aspects>
                 <aspect>cm:titled</aspect>
+                <aspect>activ:hasState</aspect>
             </mandatory-aspects>
         </type>
     </types>
@@ -74,6 +75,15 @@
                     <propagateTimestamps>true</propagateTimestamps>
                 </child-association>
             </associations>
+        </aspect>
+
+        <aspect name="activ:hasState">
+            <parent>lc:hasState</parent>
+            <overrides>
+                <property name="lc:state">
+                    <default>Not started</default>
+                </property>
+            </overrides>
         </aspect>
     </aspects>
 </model>

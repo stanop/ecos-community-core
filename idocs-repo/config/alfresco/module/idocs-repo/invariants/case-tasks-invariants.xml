@@ -12,6 +12,10 @@
 
     </imports>
 
+    <associations type="icaseRole:role">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </associations>
+
     <type name="icaseTask:task">
         <associations type="icaseRole:role">
             <invariant on="options" language="javascript" final="true">
@@ -21,9 +25,6 @@
                         parent = parent.parent;
                     return parent.childAssocs["icaseRole:roles"] || [];
                 })()
-            </invariant>
-            <invariant on="value-title" language="javascript">
-                value.properties["cm:title"]
             </invariant>
         </associations>
     </type>
@@ -48,7 +49,7 @@
             </invariant>
         </property>
     </type>
-    
+
     <type name="icaseTask:confirmTask">
         <property name="wfcf:confirmersPermission">
             <invariant on="mandatory" language="explicit">true</invariant>

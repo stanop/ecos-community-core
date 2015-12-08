@@ -4,6 +4,7 @@ import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -18,6 +19,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.action.ActionConstants;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
@@ -36,6 +38,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
 
     private Map<String, Map<String, String>> attributesMappingByWorkflow;
+    private Map<String, List<String>> workflowTransmittedVariables;
 
     private CaseActivityService caseActivityService;
     private DictionaryService dictionaryService;
@@ -50,6 +53,13 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
                 ICaseTaskModel.TYPE_TASK,
                 new ChainingJavaBehaviour(this, "onCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
+
+        if(attributesMappingByWorkflow == null) {
+            attributesMappingByWorkflow = new HashMap<String, Map<String, String>>();
+        }
+        if(workflowTransmittedVariables == null) {
+            workflowTransmittedVariables = new HashMap<String, List<String>>();
+        }
     }
 
     @Override
@@ -96,6 +106,21 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
             QName key = QName.createQName(entry.getKey(), namespaceService);
             QName value = QName.createQName(entry.getValue(), namespaceService);
             workflowProperties.put(value, getAttribute(taskRef, key, value));
+        }
+
+        //transmit variables from previous process
+        List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
+        if(transmittedParameters != null && transmittedParameters.size() > 0) {
+            Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
+            if(variables != null) {
+                Object processVariablesObj = variables.get("process");
+                if(processVariablesObj != null && processVariablesObj instanceof Map) {
+                    Map<String, Serializable> processVariables = (Map)processVariablesObj;
+                    for(String parameter : transmittedParameters) {
+                        workflowProperties.put(QName.createQName(parameter), processVariables.get(parameter));
+                    }
+                }
+            }
         }
 
         return workflowProperties;
@@ -172,5 +197,19 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    /**
+     * @param workflowTransmittedVariables variables which would be transmitted from completed task to next
+     */
+    public void setWorkflowTransmittedVariables(Map<String, List<String>> workflowTransmittedVariables) {
+        this.workflowTransmittedVariables = workflowTransmittedVariables;
+    }
+
+    /**
+     * @param workflowTransmittedVariables variables which would be transmitted from completed task to next
+     */
+    public void registerWorkflowTransmittedVariables(Map<String, List<String>> workflowTransmittedVariables) {
+        this.workflowTransmittedVariables.putAll(workflowTransmittedVariables);
     }
 }
