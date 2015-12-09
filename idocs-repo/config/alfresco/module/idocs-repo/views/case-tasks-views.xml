@@ -9,8 +9,13 @@
         <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
         <import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" />
         <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
-
     </imports>
+
+    <views any="true">
+        <fields assoc="icaseTask:performer">
+            <region name="input" template="select"/>
+        </fields>
+    </views>
 
     <views class="icaseTask:task">
         <field prop="cm:title">
@@ -35,9 +40,7 @@
         <field prop="icaseTask:workflowDefinitionName">
             <region name="input" template="select"/>
         </field>
-        <field assoc="icaseTask:performer">
-            <region name="input" template="select"/>
-        </field>
+        <field assoc="icaseTask:performer" />
     </view>
     
     <view class="icaseTask:confirmTask">

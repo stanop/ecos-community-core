@@ -17,6 +17,7 @@
                 <param name="attribute">cm:title</param>
             </region>
             <region name="select" template="select-orgstruct"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
         </field>
     </view>
 </views>
