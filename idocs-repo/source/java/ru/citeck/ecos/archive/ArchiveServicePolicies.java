@@ -23,10 +23,12 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.service.CiteckServices;
+
 public interface ArchiveServicePolicies {
-	public static final String NAMESPACE = "http://www.citeck.ru";
 
 	public interface BeforeMovePolicy extends ClassPolicy {
+		public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
 		public static final QName QNAME = QName.createQName(NAMESPACE, "beforeMoveDocument");
 		
 		/**
@@ -42,6 +44,7 @@ public interface ArchiveServicePolicies {
 	}
 
 	public interface OnMovePolicy extends ClassPolicy {
+		public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
 		public static final QName QNAME = QName.createQName(NAMESPACE, "onMoveDocument");
 		
 		/**
