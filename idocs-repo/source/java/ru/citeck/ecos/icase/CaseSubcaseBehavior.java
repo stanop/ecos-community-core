@@ -26,6 +26,8 @@ import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -53,9 +55,9 @@ public class CaseSubcaseBehavior implements
 	public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ICaseModel.ASPECT_CASE, 
                 new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
-        policyComponent.bindAssociationBehaviour(CaseElementPolicies.OnCaseElementAddPolicy.QNAME, ICaseModel.ASPECT_CASE, 
+        policyComponent.bindClassBehaviour(CaseElementPolicies.OnCaseElementAddPolicy.QNAME, ICaseModel.ASPECT_CASE, 
                 new JavaBehaviour(this, "onCaseElementAdd", NotificationFrequency.EVERY_EVENT));
-        policyComponent.bindAssociationBehaviour(CaseElementPolicies.OnCaseElementRemovePolicy.QNAME, ICaseModel.ASPECT_CASE, 
+        policyComponent.bindClassBehaviour(CaseElementPolicies.OnCaseElementRemovePolicy.QNAME, ICaseModel.ASPECT_CASE, 
                 new JavaBehaviour(this, "onCaseElementRemove", NotificationFrequency.EVERY_EVENT));
 	}
 
@@ -115,6 +117,8 @@ public class CaseSubcaseBehavior implements
         if(subcase != null) return;
         
         // perform actual creation of subcase
+        Boolean createSubcase = (Boolean) nodeService.getProperty(config, ICaseModel.PROP_CREATE_SUBCASE);
+        if(!Boolean.TRUE.equals(createSubcase)) return;
         QName subcaseType = (QName) nodeService.getProperty(config, ICaseModel.PROP_SUBCASE_TYPE);
         QName subcaseAssoc = (QName) nodeService.getProperty(config, ICaseModel.PROP_SUBCASE_ASSOC);
         if(subcaseType == null) subcaseType = ContentModel.TYPE_FOLDER;
@@ -134,7 +138,7 @@ public class CaseSubcaseBehavior implements
         if(Boolean.TRUE != removeSubcase && Boolean.TRUE != removeEmptySubcase)
             return;
         
-        NodeRef subcase = getSubcase(caseRef, element, config);
+        final NodeRef subcase = getSubcase(caseRef, element, config);
         if(subcase == null)
             return;
         
@@ -142,12 +146,24 @@ public class CaseSubcaseBehavior implements
             return;
         
         // perform actual removal of subcase
-        nodeService.deleteNode(subcase);
+        // we should remove it in the end of transaction,
+        // because direct execution will cause concurrency conflict
+        // (both deletes would try to remove icase:subcaseElement association)
+        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+            @Override
+            public void beforeCommit(boolean readOnly) {
+                nodeService.deleteNode(subcase);
+            }
+        });
+        
     }
     
     private boolean isEmptyCase(NodeRef caseNodeRef) {
-        List<NodeRef> configs = CaseUtils.getConfigs(caseNodeRef, caseElementService);
+        NodeRef elementTypesConfig = caseElementService.getConfig(CaseConstants.ELEMENT_TYPES);
+        CaseElementDAO elementTypesDAO = CaseUtils.getStrategy(elementTypesConfig, caseElementService);
+        List<NodeRef> configs = elementTypesDAO.get(caseNodeRef, elementTypesConfig);
         for(NodeRef config : configs) {
+            if(elementTypesConfig.equals(config)) continue;
             List<NodeRef> elements = getElements(caseNodeRef, config);
             if(elements.size() > 0) {
                 return false;
