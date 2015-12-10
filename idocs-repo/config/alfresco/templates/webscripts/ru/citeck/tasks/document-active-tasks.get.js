@@ -11,7 +11,7 @@
                     } else {
                         for each(task in tasks)
                             if(task != null && task.length != 0 && task.hasPermission("Read")) {
-								if(task.properties['bpm:status']=='Not Yet Started')
+								if(task.properties['bpm:completionDate'] == null)
 								{
 									taskNodeRef.push({
 										'nodeRef': task.nodeRef.toString(),

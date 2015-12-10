@@ -20,12 +20,15 @@ package ru.citeck.ecos.workflow.mirror;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
+import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
 
 import java.util.List;
@@ -39,6 +42,7 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
     private static final Log logger = LogFactory.getLog(MirrorEndProcessListener.class);
     private NodeService nodeService;
     private NodeRef taskMirrorRoot;
+    private WorkflowMirrorService service;
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) {
@@ -60,12 +64,21 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
                     logger.debug(String.format("Mirror node removed after workflow was %s. nodeRef:%s", deleteReason, taskMirror));
                 }
             }
+        } else if(entity.getProcessInstance().isEnded()) {
+            String workflowId = "activiti$" + entity.getProcessInstanceId();
+            List<ChildAssociationRef> associations =
+                    nodeService.getChildAssocsByPropertyValue(taskMirrorRoot, WorkflowMirrorModel.PROP_WORKFLOW_ID, workflowId);
+            for(ChildAssociationRef assoc : associations) {
+                String taskId = (String) nodeService.getProperty(assoc.getChildRef(), ContentModel.PROP_NAME);
+                TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
+            }
         }
     }
 
     @Override
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
+        this.service = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
     }
 
     public void setTaskMirrorRoot(NodeRef taskMirrorRoot) {
