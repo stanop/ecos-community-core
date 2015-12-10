@@ -152,7 +152,8 @@ public class CaseSubcaseBehavior implements
         AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
             @Override
             public void beforeCommit(boolean readOnly) {
-                nodeService.deleteNode(subcase);
+                if(nodeService.exists(subcase))
+                    nodeService.deleteNode(subcase);
             }
         });
         
