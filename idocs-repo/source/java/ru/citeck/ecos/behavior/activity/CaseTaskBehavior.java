@@ -26,6 +26,7 @@ import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -33,7 +34,8 @@ import java.util.*;
 /**
  * @author Pavel Simonov
  */
-public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStartedPolicy {
+public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStartedPolicy,
+                                         CaseActivityPolicies.OnCaseActivityResetPolicy {
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
 
@@ -53,6 +55,11 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
                 ICaseTaskModel.TYPE_TASK,
                 new ChainingJavaBehaviour(this, "onCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
+        this.policyComponent.bindClassBehaviour(
+                CaseActivityPolicies.OnCaseActivityResetPolicy.QNAME,
+                ICaseTaskModel.TYPE_TASK,
+                new ChainingJavaBehaviour(this, "onCaseActivityReset", Behaviour.NotificationFrequency.EVERY_EVENT)
+        );
 
         if(attributesMappingByWorkflow == null) {
             attributesMappingByWorkflow = new HashMap<String, Map<String, String>>();
@@ -68,7 +75,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
 
         if(!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
-            throw new AlfrescoRuntimeException(String.format("Workflow %s is not registered", workflowDefinitionName));
+            throw new AlfrescoRuntimeException(String.format("Task start failed. Attributes mapping is " +
+                                                             "not registered for workflow %s.", workflowDefinitionName));
         }
 
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
@@ -165,6 +173,21 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
             }
         }
         return result;
+    }
+
+    @Override
+    public void onCaseActivityReset(NodeRef taskRef) {
+        String workflowInstanceId = (String)nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
+
+        if(workflowInstanceId != null && workflowService.getWorkflowById(workflowInstanceId).isActive()) {
+            workflowService.cancelWorkflow(workflowInstanceId);
+        }
+
+        nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, null);
+        NodeRef wfPackage = RepoUtils.getFirstTargetAssoc(taskRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE, nodeService);
+        if(wfPackage != null) {
+            nodeService.removeAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+        }
     }
 
     public void registerAttributesMapping(Map<String, Map<String, String>> attributesMappingByWorkflow) {
