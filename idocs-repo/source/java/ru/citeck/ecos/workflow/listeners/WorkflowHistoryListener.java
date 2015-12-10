@@ -66,8 +66,7 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 	private NamespaceService namespaceService;
 	private WorkflowService workflowService;
 
-	private WorkflowQNameConverter qNameConverter;
-	private String VAR_PACKAGE;
+	private String VAR_PACKAGE, VAR_DESCRIPTION;
 	
 	/* (non-Javadoc)
 	 * @see ru.citeck.ecos.workflow.listeners.AbstractExecutionListener#notifyImpl(org.activiti.engine.delegate.DelegateExecution)
@@ -118,6 +117,7 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(5);
 		eventProperties.put(HistoryModel.PROP_NAME, eventName);
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + execution.getProcessInstanceId());
+		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) execution.getVariable(VAR_DESCRIPTION));
 		if(workflowDefinition != null) {
 			eventProperties.put(HistoryModel.PROP_WORKFLOW_TYPE, workflowDefinition.getName());
 		}
@@ -134,8 +134,9 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 		namespaceService = serviceRegistry.getNamespaceService();
 		workflowService = serviceRegistry.getWorkflowService();
 		
-		qNameConverter = new WorkflowQNameConverter(namespaceService);
+		WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_PACKAGE = qNameConverter.mapQNameToName(WorkflowModel.ASSOC_PACKAGE);
+		VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
 	}
 
 }

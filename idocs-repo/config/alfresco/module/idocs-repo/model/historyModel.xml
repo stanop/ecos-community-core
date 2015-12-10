@@ -101,6 +101,9 @@
                     <type>d:text</type>
                     <mandatory>true</mandatory>
                 </property>
+                <property name="event:workflowDescription">
+                    <type>d:text</type>
+                </property>
             </properties>
         </aspect>
         
