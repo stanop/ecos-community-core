@@ -43,6 +43,11 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         return JavaScriptImplUtils.wrapNode(parent, this);
     }
 
+    public void reset(Object nodeRef) {
+        NodeRef ref = getNodeRef(nodeRef);
+        caseActivityService.reset(ref);
+    }
+
     private NodeRef getNodeRef(Object object) {
         if(object == null)
             return null;

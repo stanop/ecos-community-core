@@ -39,4 +39,19 @@ public interface CaseActivityPolicies {
          */
         public void onCaseActivityStopped(NodeRef activityRef);
     }
+
+    public interface OnCaseActivityResetPolicy extends ClassPolicy {
+        // NOTE: this is important, that this field is here
+        // if it is removed, this behaviours will be registered with
+        // default namespace and will not be matched
+        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+
+        public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseActivityReset");
+
+        /**
+         * Called when activity reset event occurs
+         * @param activityRef instance reference
+         */
+        public void onCaseActivityReset(NodeRef activityRef);
+    }
 }

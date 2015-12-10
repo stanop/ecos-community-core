@@ -32,10 +32,12 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStartedPolicy> onActivityStartedDelegate;
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStoppedPolicy> onActivityStoppedDelegate;
+    private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityResetPolicy> onActivityResetDelegate;
 
     public void init() {
         onActivityStartedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStartedPolicy.class);
         onActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStoppedPolicy.class);
+        onActivityResetDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityResetPolicy.class);
     }
 
     @Override
@@ -89,6 +91,36 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QName type) {
         return RepoUtils.getChildrenByType(nodeRef, type, nodeService);
+    }
+
+    @Override
+    public void reset(NodeRef nodeRef) {
+        QName nodeType = nodeService.getType(nodeRef);
+        if (dictionaryService.isSubClass(nodeType, ActivityModel.TYPE_ACTIVITY)) {
+            resetActivity(nodeRef);
+        } else {
+            resetActivitiesInChildren(nodeRef);
+        }
+    }
+
+    private void resetActivity(NodeRef activityRef) {
+
+        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
+        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
+        nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
+
+        HashSet<QName> classes = new HashSet<QName>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
+        CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
+        policy.onCaseActivityReset(activityRef);
+
+        resetActivitiesInChildren(activityRef);
+    }
+
+    private void resetActivitiesInChildren(NodeRef nodeRef) {
+        List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
+        for(NodeRef activityRef : children) {
+            resetActivity(activityRef);
+        }
     }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {

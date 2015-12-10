@@ -23,6 +23,12 @@ public interface CaseActivityService {
     void stopActivity(NodeRef activityRef);
 
     /**
+     * Recursively resets all activities in children and nodeRef if it is an activity
+     * @param nodeRef activity or document with activities in children
+     */
+    void reset(NodeRef nodeRef);
+
+    /**
      * @param nodeRef document with activities in children
      * @param type activity type
      */
