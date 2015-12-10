@@ -62,7 +62,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 	private AuthorityService authorityService;
 
 	private WorkflowQNameConverter qNameConverter;
-	private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT;
+	private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
 	
 	/* (non-Javadoc)
 	 * @see ru.citeck.ecos.workflow.listeners.AbstractTaskListener#notifyImpl(org.activiti.engine.delegate.DelegateTask)
@@ -119,6 +119,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
 		
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
+		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(VAR_DESCRIPTION));
 		eventProperties.put(HistoryModel.ASSOC_INITIATOR, assignee != null ? assignee : HistoryService.SYSTEM_USER);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, document);
 		historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
@@ -166,6 +167,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
 		VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
+		VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
 	}
 
 }

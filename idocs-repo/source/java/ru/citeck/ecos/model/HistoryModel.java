@@ -59,6 +59,7 @@ public final class HistoryModel {
 
     public static final QName PROP_WORKFLOW_INSTANCE_ID = QName.createQName(EVENT_NAMESPACE, "workflowInstanceId");
     public static final QName PROP_WORKFLOW_TYPE = QName.createQName(EVENT_NAMESPACE, "workflowType");
+    public static final QName PROP_WORKFLOW_DESCRIPTION = QName.createQName(EVENT_NAMESPACE, "workflowDescription");
 
     public static final QName PROP_ADDITIONAL_PROPERTIES = QName.createQName(EVENT_NAMESPACE, "additionalProperties");
     
