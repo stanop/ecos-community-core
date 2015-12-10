@@ -20,38 +20,23 @@ package ru.citeck.ecos.workflow.mirror;
 
 import org.activiti.engine.delegate.DelegateTask;
 
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
 
 public class MirrorListener extends AbstractTaskListener {
 
-	private WorkflowMirrorService service;
-	
-	@Override
-	protected void notifyImpl(DelegateTask task) {
-        final String taskId = "activiti$" + task.getId();
-        //service.mirrorTaskAsync(taskId);
-        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
-            @Override
-            public void beforeCommit(boolean readOnly) {
+    private WorkflowMirrorService service;
 
-                // ensure, that it is executed after all behaviours
-                AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
-                    public void beforeCommit(boolean readOnly) {
-                        service.mirrorTask(taskId);
-                    }
-                });
-
-            }
-        });
+    @Override
+    protected void notifyImpl(DelegateTask task) {
+        TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, "activiti$" + task.getId()));
     }
 
-	public void initImpl() {
-		if(service == null) {
-			service = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
-		}
-	}
-	
+    public void initImpl() {
+        if (service == null) {
+            service = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
+        }
+    }
+
 }

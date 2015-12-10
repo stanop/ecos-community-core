@@ -76,7 +76,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 		if(!nodeService.exists(taskMirror)) {
 			return;
 		}
-		String taskId = (String) nodeService.getProperty(taskMirror, WorkflowModel.PROP_TASK_ID);
+		String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
 		mirrorTask(getTask(taskId), taskMirror);
 	}
 
@@ -158,7 +158,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         // delete
         } else if(task == null && taskMirror != null) {
 			if(logger.isDebugEnabled()) {
-				String taskId = (String) nodeService.getProperty(taskMirror, WorkflowModel.PROP_TASK_ID);
+				String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
 				logger.debug("Deleting mirror for task " + taskId + " (" + taskMirror + ")");
 			}
 			nodeService.deleteNode(taskMirror);
