@@ -991,7 +991,7 @@
                     elCell.innerHTML = "";
                     return;
                 }
-                elCell.innerHTML = '<a href="' + Alfresco.constants.URL_PAGECONTEXT + 'task-details?taskId=' + sData + '" target="_blank">' + 
+                elCell.innerHTML = '<a title="' + Alfresco.util.message("related_workflows.task_details") + '" href="' + Alfresco.constants.URL_PAGECONTEXT + 'task-details?taskId=' + sData + '" target="_blank">' + 
                     '<img src="' + Alfresco.constants.URL_RESCONTEXT + 'citeck/images/task-16.png"></a>';
             }
         },
