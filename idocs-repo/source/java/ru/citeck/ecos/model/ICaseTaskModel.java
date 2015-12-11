@@ -34,7 +34,6 @@ public class ICaseTaskModel {
     public static final QName TYPE_TASK = QName.createQName(NAMESPACE, "task");
 
     // aspects
-    public static final QName ASPECT_HAS_TASKS = QName.createQName(NAMESPACE, "hasTasks");
 
     // properties
     public static final QName PROP_WORKFLOW_DEFINITION_NAME = QName.createQName(NAMESPACE, "workflowDefinitionName");
