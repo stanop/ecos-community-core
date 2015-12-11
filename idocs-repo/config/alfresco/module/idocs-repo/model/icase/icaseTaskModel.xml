@@ -137,6 +137,7 @@
     </types>
 
     <aspects>
+        <!--Deprecated. Use activ:hasActivities instead-->
         <aspect name="icaseTask:hasTasks">
             <associations>
                 <child-association name="icaseTask:tasks">
