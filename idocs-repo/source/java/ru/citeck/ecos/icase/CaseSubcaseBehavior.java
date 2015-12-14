@@ -124,8 +124,12 @@ public class CaseSubcaseBehavior implements
         if(subcaseType == null) subcaseType = ContentModel.TYPE_FOLDER;
         if(subcaseAssoc == null) subcaseAssoc = ContentModel.ASSOC_CONTAINS;
         
+        if(logger.isDebugEnabled()) {
+            logger.debug("Trying to create subcase for case " + caseRef + " and element " + elementRef + " (type " + subcaseType + "; assoc " + subcaseAssoc + ")");
+        }
+        
         subcase = nodeService.createNode(caseRef, 
-            ContentModel.ASSOC_CONTAINS, 
+            subcaseAssoc, 
             QName.createQName(ICaseModel.NAMESPACE, elementRef.getId()), 
             subcaseType).getChildRef();
         nodeService.createAssociation(subcase, elementRef, ICaseModel.ASSOC_SUBCASE_ELEMENT);
@@ -145,6 +149,10 @@ public class CaseSubcaseBehavior implements
         if(Boolean.TRUE != removeSubcase && !isEmptyCase(subcase))
             return;
         
+        if(logger.isDebugEnabled()) {
+            logger.debug("Deferring subcase removal for case " + caseRef + " and element " + element + " (subcase " + subcase + ")");
+        }
+        
         // perform actual removal of subcase
         // we should remove it in the end of transaction,
         // because direct execution will cause concurrency conflict
@@ -152,8 +160,12 @@ public class CaseSubcaseBehavior implements
         AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
             @Override
             public void beforeCommit(boolean readOnly) {
-                if(nodeService.exists(subcase))
+                if(nodeService.exists(subcase)) {
                     nodeService.deleteNode(subcase);
+                    logger.debug("Subcase " + subcase + " was removed");
+                } else if(logger.isDebugEnabled()) {
+                    logger.debug("Subcase " + subcase + " does not exist");
+                }
             }
         });
         
