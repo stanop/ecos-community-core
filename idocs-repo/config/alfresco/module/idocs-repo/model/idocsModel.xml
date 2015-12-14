@@ -65,6 +65,12 @@
                     <value>credit-accounts</value>
                     <value>credit-active</value>
                     <value>credit-cancelled</value>
+                    <value>credit-committee-preparation</value>
+                    <value>credit-disbursement-preparation</value>
+                    <value>credit-disbursement</value>
+                    <value>credit-internal-report</value>
+                    <value>credit-external-report</value>
+                    <value>credit-attach-documents</value>
 
                     <value>financial-monitoring</value>
                     <value>on-credit-committee</value>
