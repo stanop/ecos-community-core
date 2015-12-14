@@ -81,8 +81,10 @@ public class BusinessCalendarGet extends DeclarativeWebScript
 
         Map<String, Object> model = new HashMap<String, Object>();
 		BusinessCalendar calendar = new BusinessCalendar();
-		calendar.setTime(currentDate);
 		calendar.setSearchService(searchService);
+		calendar.setWorkingDays();
+		calendar.setDayOff();
+		calendar.setTime(currentDate);
 		if("days".equals(add_field))
 		{
 			calendar.add(Calendar.DAY_OF_YEAR, amount);
