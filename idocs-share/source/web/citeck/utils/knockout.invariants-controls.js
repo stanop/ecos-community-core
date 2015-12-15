@@ -991,7 +991,7 @@ ko.components.register('createObjectButton', {
 // ------------
 
 // TODO:
-// - add message for no found
+// - suppourt many criterion
 
 ko.components.register("autocomplete", {
     viewModel: function(params) {
@@ -1008,23 +1008,25 @@ ko.components.register("autocomplete", {
 
             // titles
             labelMessage: "Select...",
-            helpMessage:  "Start typing...",
-            emptyMessage: "No options..."
+            helpMessage:  "Start typing..."
         }
 
-        // observables and computed
+        // observables
         self.containerVisibility = ko.observable(false);
-        self.searchQuery = ko.observable().extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
         self.highlightedElement = ko.observable();
-        self.searching = ko.observable(false);
         self.componentFocused = ko.observable(false);
+        self.searchQuery = ko.observable();
+        self.searchInput = ko.observable();
+        self.searching = ko.observable(false);
         self.searchFocused = ko.observable(false);
-       
-        self.label = ko.computed(function() { 
+
+        
+        // computed
+        self.label = ko.pureComputed(function() { 
             return self.value() ? self.data.getValueTitle(self.value()) : (params.labelMessage || self.parameters.labelMessage); 
         });
 
-        self.criteria = ko.computed(function() {
+        self.criteria = ko.pureComputed(function() {
             return [{
                 attribute: (params.criterion ? params.criterion.attribute : null) || self.parameters.defaultCriterion.attribute,
                 predicate: (params.criterion ? params.criterion.predicate : null) || self.parameters.defaultCriterion.predicate,
@@ -1032,25 +1034,32 @@ ko.components.register("autocomplete", {
             }]
         });
 
-        self.options = ko.computed(function() {
+        self.search = ko.computed(function() {
+            var input = self.searchInput();
+            if (input && input.length >= (params.minQueryLength || self.parameters.minQueryLength)) {
+                self.searching(true);
+                self.searchQuery(input);
+            }
+        }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
+
+        self.options = ko.pureComputed(function() {
             return self.data.filterOptions(self.criteria(), { maxItems: 10, skipCount: 0 });
         });
 
-        self.search = ko.computed({
-            read: function() { return self.searchQuery() },
-            write: function(data) { 
-                if (data.length >= (params.minQueryLength || self.parameters.minQueryLength)) {
-                    self.searching(true);
-                    self.searchQuery(data);
-                }
+
+        // subscription and events
+        self.options.subscribe(function(newValue) {
+            // highlight first element of list
+            if (newValue && newValue.pagination) {
+                if (newValue.length > 0) self.highlightedElement(newValue[0]);
+                if (newValue.length == 0) self.searching(false);
             }
-        })
+        });
 
 
         // public methods
         self.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()) };
         self.helpMessage = function() { return params.helpMessage || self.parameters.helpMessage };
-        self.emptyMessage = function() { return params.emptyMessage || self.parameters.emptyMessage };
         self.searchBlur = function() { self.containerVisibility(false) };
 
         self.selectItem = function(data, event) {
@@ -1104,17 +1113,10 @@ ko.components.register("autocomplete", {
             return true;
         };
 
-        self.renderHandler = function(elements, data) {
+        self.renderHandler = function(element, data) {
             // stop loading when all elements was rendred
             if(this.foreach()[this.foreach().length - 1] === data) self.searching(false);
         };
-
-
-        // subscription and events
-        self.options.subscribe(function(newValue) {
-            if (newValue && newValue.length > 0) self.highlightedElement(newValue[0]);
-            if (newValue && newValue.length == 0) self.searching(false);
-        });
     },
     template: 
        '<!-- ko if: disabled -->\
@@ -1142,7 +1144,7 @@ ko.components.register("autocomplete", {
                     <!-- /ko -->\
                     <input type="text" class="autocomplete-search"\
                         data-bind="\
-                            textInput: search,\
+                            textInput: searchInput,\
                             event: { keydown: keyAction, blur: searchBlur },\
                             keydownBubble: false,\
                             attr: { placeholder: helpMessage() },\
