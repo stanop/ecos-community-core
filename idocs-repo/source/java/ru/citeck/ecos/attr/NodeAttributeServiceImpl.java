@@ -131,7 +131,8 @@ public class NodeAttributeServiceImpl implements NodeAttributeService {
 
     @Override
     public void setAttributes(NodeRef nodeRef, Map<QName, Object> attributes) {
-        NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
+        NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo();
+        nodeInfo.setNodeRef(nodeRef);
         setAttributes(nodeInfo, attributes);
         nodeInfoFactory.persist(nodeInfo, false);
     }
