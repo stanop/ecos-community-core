@@ -929,6 +929,8 @@ CreateObjectButton
     .property('value', Function)
     .property('source', String)
     .property('buttonTitle', String)
+    .property('parentRuntime', String)
+    .property('virtualParent', Boolean)
     .computed('createVariants', function() {
         if(!this.type()) return [];
         var list = this.source() == 'create-views' 
@@ -952,7 +954,9 @@ CreateObjectButton
             }, 
             { 
                 title: this.buttonTitle() + ": " + createVariant.title(), 
-                destination: createVariant.destination() 
+                destination: createVariant.destination(),
+                parentRuntime: this.parentRuntime(),
+                virtualParent: this.virtualParent()
             }
         ); 
     })
