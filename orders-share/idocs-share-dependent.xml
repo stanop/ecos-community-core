@@ -22,14 +22,14 @@
 
     <target name="resolve-dependencies" depends="declare-repository">
         <resolve-dependency
-                groupId="ru.citeck.idocs.core"
+                groupId="ru.citeck.ecos"
                 artifactId="1st-override-share"
                 version="${1st-override-share.version}"
                 classifier="${1st-override-share.classifier}"
                 type="jar"
                 repository="citeck.repository"/>
         <resolve-dependency
-                groupId="ru.citeck.idocs.core"
+                groupId="ru.citeck.ecos"
                 artifactId="idocs-share"
                 version="${idocs-share.version}"
                 classifier="${idocs-share.classifier}"
@@ -39,14 +39,14 @@
 
     <target name="package-dependencies" depends="declare-repository">
         <copy-dependency todir="${dist.deps.dir}"
-                groupId="ru.citeck.idocs.core"
+                groupId="ru.citeck.ecos"
                 artifactId="1st-override-share"
                 version="${1st-override-share.version}"
                 classifier="${1st-override-share.classifier}"
                 type="amp"
                 repository="citeck.repository"/>
         <copy-dependency todir="${dist.deps.dir}"
-                groupId="ru.citeck.idocs.core"
+                groupId="ru.citeck.ecos"
                 artifactId="idocs-share"
                 version="${idocs-share.version}"
                 classifier="${idocs-share.classifier}"
