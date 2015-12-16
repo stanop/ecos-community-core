@@ -1068,7 +1068,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         .nativeProperty('nodeRef', function() {
-            return this.impl().nodeRef();
+            return this.impl().nodeRef() || '';
         })
         .nativeProperty('storeType', function() {
             return this.nodeRef.replace(/^(.+):\/\/(.+)\/(.+)$/, '$1');
