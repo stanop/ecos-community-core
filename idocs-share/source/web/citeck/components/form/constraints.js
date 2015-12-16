@@ -200,19 +200,22 @@
             destinationAssoc = params.destinationAssoc || "";
 
         var newDialog = function() {
-            var viewUrl = YAHOO.lang.substitute(Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view?htmlid={htmlid}&{paramName}={itemId}&mode={mode}&viewId={formId}&param_destination={destination}&param_destinationAssoc={destinationAssoc}",
+            var dataObj = 
                 {
                     htmlid: viewId,
-                    paramName: paramName,
-                    itemId: itemId,
                     mode: mode,
-                    formId: formId,
-                    destination: destination,
-                    destinationAssoc: destinationAssoc
-                });
+                    viewId: formId
+                };
+            dataObj[paramName] = itemId;
+            for(var name in params) {
+                if(params[name] != null) 
+                    dataObj['param_' + name] = params[name];
+            }
 
             Alfresco.util.Ajax.request({
-                url: viewUrl,
+                method: "GET",
+                url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view",
+                dataObj: dataObj,
                 execScripts: true,
                 successCallback: {
                     fn: function(response) {

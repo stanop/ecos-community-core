@@ -188,11 +188,13 @@
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
-			new InvariantsRuntime("${args.htmlid}-form").setOptions({
+			new InvariantsRuntime("${args.htmlid}-form", "${runtimeKey}").setOptions({
 				model: {
 					key: "${runtimeKey}",
+					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					node: {
-						key: "${args.htmlid}",
+						key: "${runtimeKey}",
+						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
 						invariants: "${runtimeKey}"
