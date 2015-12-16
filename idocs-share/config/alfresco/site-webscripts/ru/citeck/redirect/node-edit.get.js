@@ -16,7 +16,7 @@
     } else if(data.defaultExists) {
         var argsCopy = [];
         for(var name in args) {
-            if(name == 'viewId') continue;
+            //if(name == 'viewId') continue;
             argsCopy.push(name + "=" + encodeURIComponent(args[name]));
         }
         status.location = (url.service+'').replace(/node-edit$/, 'node-edit-page?') + argsCopy.join('&');
