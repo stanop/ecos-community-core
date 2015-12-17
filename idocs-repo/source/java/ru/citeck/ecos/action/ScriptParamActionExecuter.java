@@ -112,6 +112,7 @@ public class ScriptParamActionExecuter extends ActionExecuterAbstractBase
 
         // add context variables
         Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
+        if(variables != null)
         for(Map.Entry<String, Object> variable : variables.entrySet()) {
             if(!model.containsKey(variable.getKey())) {
                 model.put(variable.getKey(), variable.getValue());

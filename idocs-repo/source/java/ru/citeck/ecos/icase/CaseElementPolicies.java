@@ -26,14 +26,8 @@ import ru.citeck.ecos.service.CiteckServices;
 
 public interface CaseElementPolicies {
     
-    // NOTE: this is important, that this field is here
-    // if it is removed, this behaviours will be registered with
-    // default namespace and will not be matched
-    public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-    
-    
     public interface OnCaseElementAddPolicy extends ClassPolicy {
-        
+        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementAdd");
         
         /**
@@ -48,7 +42,7 @@ public interface CaseElementPolicies {
     }
 
     public interface OnCaseElementUpdatePolicy extends ClassPolicy {
-        
+        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementUpdate");
         
         /**
@@ -63,7 +57,7 @@ public interface CaseElementPolicies {
     }
 
     public interface OnCaseElementRemovePolicy extends ClassPolicy {
-        
+        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementRemove");
         
         /**

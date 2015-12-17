@@ -744,7 +744,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                     this.getInvariantsModel(value), String, '', notNull).value;
         })
         .computed('valueTitle', function() {
-            return this.getValueTitle(this.value());
+            return this.getValueTitle(this.singleValue());
         })
         .shortcut('value-title', 'valueTitle')
 
@@ -900,7 +900,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             return this.resolve('invariants.defaultModel.view.mode') == "view";
         })
         
+        .property('virtualParent', Node)
         .computed('parent', function() {
+            var virtualParent = this.virtualParent();
+            if(virtualParent) return virtualParent;
             var parent = this.attribute('attr:parent');
             return parent ? parent.value() : null;
         })
@@ -919,8 +922,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 // and invariants are necessary to display aspects correctly
                 // so we need to fetch aspects by hand
                 var aspects = _.pluck(node.attribute('attr:aspects').rawValue(), 'shortQName');
+                var key = node.type() + "," + aspects.sort().join(",");
                 node.invariants(new InvariantSet({
-                    key: node.key(),
+                    key: key,
                     type: node.type(),
                     aspects: aspects
                 }));
@@ -946,6 +950,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             }
         })
         
+        // TODO (important!) refactor this so, that not more than one request is made per type/aspect (and better, they are bulk)
         .load('definedAttributeNames', koutils.simpleLoad({
             url: function(impl) {
                 return Alfresco.constants.PROXY_URI + "citeck/attributes/defined?" + (impl.isPersisted() ? "nodeRef=" + impl.nodeRef() : "type=" + impl.type());
@@ -1018,7 +1023,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         
         .property('inSubmitProcess', b)
         .init(function() {
-        	this.inSubmitProcess(false);
+            this.inSubmitProcess(false);
         })
         ;
     
@@ -1063,7 +1068,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         .nativeProperty('nodeRef', function() {
-            return this.impl().nodeRef();
+            return this.impl().nodeRef() || '';
         })
         .nativeProperty('storeType', function() {
             return this.nodeRef.replace(/^(.+):\/\/(.+)\/(.+)$/, '$1');
@@ -1104,7 +1109,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .method('hasAspect', function(name) {
             return _.find(this.resolve('impl.aspects'), function(aspect) {
                 return aspect.shortQName() == name || aspect.fullQName() == name;
-            });
+            }) != null;
         })
 
         .nativeProperty('parent', function() {
@@ -1154,7 +1159,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 }
             },
             toRequest: function(node) {
-            	node.impl().inSubmitProcess(true);
+                node.impl().inSubmitProcess(true);
                 return {
                     view: node.impl().invariants().defaultModel().view(),
                     attributes: node.impl().data().attributes
@@ -1164,13 +1169,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 return new Node(response.result);
             },
             toFailureMessage: function(response) {
-            	return response.message;
+                return response.message;
             },
             onSuccess: function(node, result) {
-            	node.impl().inSubmitProcess(false);
+                node.impl().inSubmitProcess(false);
             },
             onFailure: function(node, message) {
-            	node.impl().inSubmitProcess(false);
+                node.impl().inSubmitProcess(false);
             }
         }))
         ;
@@ -1401,6 +1406,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     Runtime
         .key('key', s)
         .property('node', Node)
+        .property('parent', Runtime)
         .property('invariants', InvariantSet)
         .constant('rootObjects', rootObjects)
         
@@ -1426,9 +1432,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
     Attribute.extend('*', rateLimit);
     
-    var InvariantsRuntime = function(htmlid) {
+    var InvariantsRuntime = function(htmlid, runtimeKey) {
         InvariantsRuntime.superclass.constructor.call(this, "Citeck.invariants.InvariantsRuntime", htmlid);
-        this.runtime = new Runtime({});
+        this.runtime = new Runtime(runtimeKey);
     };
     
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {

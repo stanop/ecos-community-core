@@ -9,6 +9,8 @@
 		source: '${source}',
 		value: lastValue, 
 		id: '${controlId}',
-		buttonTitle: '${msg("button.create")}'
+		buttonTitle: '${msg("button.create")}',
+		parentRuntime: $root.key(),
+		virtualParent: ${((params.virtualParent!"false") == "true")?string}
 	}
 }" ></div>

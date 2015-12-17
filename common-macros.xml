@@ -538,10 +538,10 @@ esac
 		<!--<fileset refid="spring-webscripts.jar" />-->
 	</path>
 	
-	<artifact:remoteRepository id="citeck.ext-releases" url="http://tools.citeck.ru/artifactory/ext-release-local/">
+	<artifact:remoteRepository id="citeck.ext-releases" url="http://artifactory.citeck.ru/artifactory/ext-release-local/">
 		<authentication username="ext" password="Qq123456"/>
 	</artifact:remoteRepository>
-	<artifact:remoteRepository id="citeck.ext-snapshots" url="http://tools.citeck.ru/artifactory/ext-snapshot-local/">
+	<artifact:remoteRepository id="citeck.ext-snapshots" url="http://artifactory.citeck.ru/artifactory/ext-snapshot-local/">
 		<authentication username="ext" password="Qq123456"/>
 	</artifact:remoteRepository>
 	

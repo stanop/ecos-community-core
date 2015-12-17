@@ -243,6 +243,9 @@
 					<type>d:boolean</type>
 					<default>false</default>
 				</property>
+				<property name="wfcf:confirmOutcomeI18nPrefix">
+					<type>d:text</type>
+				</property>
 			</properties>
 		</aspect>
 

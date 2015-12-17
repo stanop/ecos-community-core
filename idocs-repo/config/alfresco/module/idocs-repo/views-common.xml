@@ -28,11 +28,13 @@
 	
 	<views template="table">
 		<views any="true" template="rowset" />
+		<fields datatype="d:boolean" template="row-checkbox" />
 		<fields any="true" template="row" />
 	</views>
 	
 	<views template="rowset">
 		<views any="true" template="rowset" />
+		<fields datatype="d:boolean" template="row-checkbox" />
 		<fields any="true" template="row" />
 	</views>
 	
@@ -106,7 +108,7 @@
 			<regions name="input" template="datetime" />
 		</fields>
 		
-		<fields datatype="d:boolean" template="row-checkbox">
+		<fields datatype="d:boolean">
 			<regions name="mandatory" template="none" />
 			<regions name="input" template="checkbox" />
 		</fields>

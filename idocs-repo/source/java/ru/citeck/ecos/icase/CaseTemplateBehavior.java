@@ -183,7 +183,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 		for(NodeRef template : nodeRefs)
 		{
 			String condition = (String)nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
-			if(condition!=null)
+			if(condition!=null && !condition.isEmpty())
 			{
 				Object result = scriptService.executeScriptString(scriptEngine, condition, model);
 				logger.debug("condition "+condition);

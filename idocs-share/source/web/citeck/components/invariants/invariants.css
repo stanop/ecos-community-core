@@ -185,7 +185,7 @@
 
 /* label */
 .invariants-form:not(.view-form) .template-table .template-row-checkbox .template-label {
-  width: 96.5%;
+  width: 90%;
 }
 
 .invariants-form:not(.view-form) .template-table .template-half-width-checkbox .template-label,

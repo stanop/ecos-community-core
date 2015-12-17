@@ -3189,7 +3189,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry {
-   width: 75px;
+   width: 100px;
 }
 
 .share-form .form-container .form-fields .form-field .yui-u .format-info {
@@ -3218,7 +3218,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 .share-form .form-container .form-fields .yui-u .form-field > .format-info > span.date-format,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info > span.date-format {
-  margin-left: 5px;
+  margin-left: 20px;
 }
 
 .share-form .form-container .form-fields .yui-u .form-field > a,
@@ -4127,9 +4127,38 @@ div#HEADER_USER_STATUS {
 .sticky-wrapper h3,
 .yui-overlay h3,
 .comments-list .alfresco-datatable td .yui-dt-liner {
-   overflow: hidden; 
+  overflow: hidden; 
 }
 
+
+/* create-site */
+
+.create-site .moderated {
+  padding: 0 !important;
+  margin-top: 5px;
+  margin-left: 17px;
+}
+
+.create-site span.help {
+  display: block;
+  white-space: normal !important; 
+  margin-top: 5px;
+}
+
+.create-site .moderated span.help {
+  margin-left: 17px;
+}
+
+.create-site input[type="radio"],
+.create-site input[type="checkbox"] {
+  position: relative;
+  top: 2px;
+}
+
+.create-site label {
+  display: inline-block;
+  margin-top: 3px;
+}
 
 
 /* ECOS INVARIANT FORM */

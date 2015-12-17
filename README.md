@@ -1,7 +1,5 @@
 # Citeck EcoS Community #
 
-Citeck Ecos Community 3.0.a Release Candidate 1
-
 Citeck EcoS Community is a new open source solution based on the Alfresco ECM for managing corporate content and cases. This version is available through free download and doesn't require any payment. Citeck EcoS Community is perfect for IT specialists and developers who would like to set up and support the system. Citeck Ecos Community helps with managing the corporate content of any kind, as well as implements the basic features of case management.
 
 ### Community ###

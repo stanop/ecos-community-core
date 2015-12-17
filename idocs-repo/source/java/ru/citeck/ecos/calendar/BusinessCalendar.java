@@ -100,13 +100,13 @@ public class BusinessCalendar extends GregorianCalendar {
 	
 	public void setWorkingDays()
 	{
-		log.error("fillDateSet(working-day)");
+		log.debug("fillDateSet(working-day)");
 		extraWorkingDays = fillDateSet("working-day");
 	}
 	
 	public void setDayOff()
 	{
-		log.error("fillDateSet(day-off)");
+		log.debug("fillDateSet(day-off)");
 		extraDayOff = fillDateSet("day-off");
 	}
 
@@ -131,16 +131,17 @@ public class BusinessCalendar extends GregorianCalendar {
 	public Map<Date, Date> fillDateSet(String remark)
 	{
 		Map<Date, Date> dateSet = new HashMap<Date, Date>();
-		String query = "TYPE:\""+BusinessCalendarModel.TYPE_CALENDAR+"\" AND @bcal\\:remark:\""+remark+"\"";
+		String search_query = "TYPE:\""+BusinessCalendarModel.TYPE_CALENDAR+"\" AND @bcal\\:remark:\""+remark+"\"";
 		//if (log.isDebugEnabled())
-			log.error("   Search query: " + query);
+			log.debug("   Search query: " + search_query);
 		ResultSet rs = null;
 		try {
-			rs = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, query);
-					log.error("      Query result contains " + rs.length() + " records.");
+			log.debug("SearchService "+searchService);
+			rs = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, search_query);
+					log.debug("      Query result contains " + rs.length() + " records.");
 			if (rs.length() > 0) {
 				//if (log.isDebugEnabled())
-					log.error("      Query result contains " + rs.length() + " records.");
+					log.debug("      Query result contains " + rs.length() + " records.");
 				for (ResultSetRow row : rs) {
 					dateSet.put((Date)row.getValue(BusinessCalendarModel.PROP_DATE_FROM), (Date)row.getValue(BusinessCalendarModel.PROP_DATE_TO));
 				}
@@ -154,7 +155,7 @@ public class BusinessCalendar extends GregorianCalendar {
 			if (rs != null)
 				rs.close();
 		}
-		log.error("COMPLETED!!!!!!!!!!");
+		log.debug("COMPLETED!!!!!!!!!!");
 		return dateSet;
 	}
 

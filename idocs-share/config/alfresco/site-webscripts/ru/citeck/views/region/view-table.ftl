@@ -82,9 +82,11 @@
                         <!-- ko ifnot: $parents[2].inViewMode || $parents[1].protected -->
                             <td class="value-item-actions">
                                 <a class="edit-value-item" title="${msg('button.edit')}" 
-                                   data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $parent.nodeRef, null, function(){}), clickBubble: false"></a>
+                                    data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $parent.nodeRef, null, function() { $data.reset(true) }), clickBubble: false"></a>
                                 <a class="delete-value-item" title="${msg('button.delete')}" 
-                                   data-bind="click: $parents[1].remove.bind($parents[1], $index()), clickBubble: false"></a>
+                                    data-bind="click: function() { 
+                                        Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
+                                    }, clickBubble: false"></a>
                             </td>
                         <!-- /ko -->
                     </tr>
