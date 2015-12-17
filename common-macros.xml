@@ -100,6 +100,10 @@
 	<path id="groovy.classpath">
 		<fileset dir="${tomcat.home}/webapps/${webapp.name}/WEB-INF/lib" includes="*.jar" />
 	</path>
+	
+	<target name="skip">
+		<!-- do nothing -->
+	</target>
 
 	<!--====================================-->
 	<!--   conditional execution support    -->

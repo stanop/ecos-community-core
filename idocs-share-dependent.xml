@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant" name="idocs-share-dependent" default="package-dependencies">
+    <import file="share-macros.xml"/>
+
+	<property name="core.project.name" value="idocs-share" />
+	<property name="core.project.version" value="2.12.0${module.release}" />
+	<property name="core.project.dir" value="${core.project.name}" />
+	
+	<path id="project.classpath">
+		<pathelement path="${core.project.dir}/build/lib/*" />
+	</path>
+	
+	<target name="package-dependencies">
+		<copy file="${dist.amps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp"
+		    tofile="${dist.deps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
+	</target>
+
+</project>
