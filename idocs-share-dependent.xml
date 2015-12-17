@@ -14,15 +14,15 @@
 	</path>
 	
 	<target name="package-dependencies">
-		<copy file="${dist.amps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp"
-		    tofile="${dist.deps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
+		<copy file="${dist.amps.dir}/${override.project.name}/${core.project.version}${module.release}/${override.project.name}-${core.project.version}${module.release}-${build.classifier}.amp"
+		    tofile="${dist.deps.dir}/${override.project.name}/${core.project.version}${module.release}/${override.project.name}-${core.project.version}${module.release}-${build.classifier}.amp" />
 		<copy file="${dist.amps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp"
 		    tofile="${dist.deps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
 	</target>
 
 	<target name="install-dependencies">
 		<install-amp war-file="${test.webapp.path}"
-			amp-file="${dist.amps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
+			amp-file="${dist.amps.dir}/${override.project.name}/${core.project.version}${module.release}/${override.project.name}-${core.project.version}${module.release}-${build.classifier}.amp" />
 		<install-amp war-file="${test.webapp.path}"
 			amp-file="${dist.amps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
 	</target>
