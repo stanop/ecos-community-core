@@ -36,6 +36,7 @@
 	<property name="test.java.dir" location="test/java" />
 	<property name="test.res.dir" location="test/resources" />
 	<property name="test.lib.file" location="${test.dir}/${module.id}-${module.version}${module.release}-tests_${build.classifier}.jar" />
+	<property name="test.is.critical" value="true" />
 	
 	<property name="lib.file" location="${build.lib.dir}/${module.id}-${module.version}${module.release}-${build.classifier}.jar" />
 	<property name="javadoc.file" location="${build.lib.dir}/${module.id}-${module.version}${module.release}-javadoc.jar" />
@@ -636,7 +637,14 @@ esac
 			</batchtest>
 		</junit>
 		
-		<fail message="Some of the tests failed" if="tests.failed" />
+		<condition property="build.failed.through.tests">
+			<and>
+				<equals arg1="tests.failed" arg2="true" />
+				<equals arg1="test.is.critical" arg2="true" />
+			</and>
+		</condition>
+		
+		<fail message="Some of the tests failed" if="build.failed.through.tests" />
 		
 	</target>
 	
