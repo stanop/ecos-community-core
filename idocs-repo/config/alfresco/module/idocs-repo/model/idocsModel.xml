@@ -70,6 +70,7 @@
                     <value>credit-disbursement</value>
                     <value>credit-internal-report</value>
                     <value>credit-external-report</value>
+                    <value>credit-documents-checking</value>
                     <value>credit-attach-documents</value>
 
                     <value>financial-monitoring</value>
