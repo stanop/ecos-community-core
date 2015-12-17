@@ -1625,6 +1625,9 @@ ko.bindingHandlers.orgstructControl = {
                     clearUnselectedElements(tree);
                     updatedControlValue(value(), selectedItems, tree);
                 }, orgstructPanel, true);
+
+                // for first run
+                updatedControlValue(value(), selectedItems, tree);
             }
 
             orgstructPanel.show();
