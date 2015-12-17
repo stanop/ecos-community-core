@@ -15,5 +15,10 @@
 		    tofile="${dist.deps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
 	</target>
 	
+	<target name="install-dependencies">
+		<install-amp war-file="${test.webapp.path}"
+			amp-file="${dist.amps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
+	</target>
+	
 </project>
 
