@@ -68,60 +68,29 @@
 		<sequential>
 			<property name="dist.dir" value="${project.dist.dir}/ecos-community" />
 			<antcall target="@{target}-dist" />
-
-			<condition property="target.1st-override" value="@{target}" else="skip">
-				<contains substring="|${scope}|" string="|all|core|1st-override|" />
+			
+			<dispatch-module target="@{target}" scopes="all,core,1st-override" module="1st-override" />
+			<dispatch-module target="@{target}" scopes="all,core,idocs"        module="idocs" />
+			<dispatch-module target="@{target}" scopes="all,apps,contracts"    module="contracts" />
+			<dispatch-module target="@{target}" scopes="all,apps,letters"      module="letters" />
+			<dispatch-module target="@{target}" scopes="all,apps,orders"       module="orders" />
+			<dispatch-module target="@{target}" scopes="all,apps,meetings"     module="meetings" />
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="dispatch-module">
+		<attribute name="target" />
+		<attribute name="module" />
+		<attribute name="scopes" />
+		<sequential>
+			<condition property="@{target}.@{module}" value="@{target}" else="skip">
+				<contains substring=",${scope}," string=",@{scopes}," />
 			</condition>
 			<echo>=======================================================</echo>
-			<echo>    1st-override modules - ${target.1st-override}      </echo>
+			<echo>    @{module} modules - ${@{target}.@{module}}         </echo>
 			<echo>=======================================================</echo>
-			<ant target="${target.1st-override}" dir="1st-override-repo" />
-			<ant target="${target.1st-override}" dir="1st-override-share" />
-
-			<condition property="target.idocs" value="@{target}" else="skip">
-				<contains substring="|${scope}|" string="|all|core|idocs|" />
-			</condition>
-			<echo>=======================================================</echo>
-			<echo>    idocs modules - ${target.idocs}                    </echo>
-			<echo>=======================================================</echo>
-			<ant target="${target.idocs}" dir="idocs-repo" />
-			<ant target="${target.idocs}" dir="idocs-share" />
-
-			<condition property="target.contracts" value="@{target}" else="skip">
-				<contains substring="|${scope}|" string="|all|apps|contracts|" />
-			</condition>
-			<echo>=======================================================</echo>
-			<echo>    contracts modules - ${target.contracts}            </echo>
-			<echo>=======================================================</echo>
-			<ant target="${target.contracts}" dir="contracts-repo" />
-			<ant target="${target.contracts}" dir="contracts-share" />
-
-			<condition property="target.letters" value="@{target}" else="skip">
-				<contains substring="|${scope}|" string="|all|apps|letters|" />
-			</condition>
-			<echo>=======================================================</echo>
-			<echo>    letters modules - ${target.letters}                </echo>
-			<echo>=======================================================</echo>
-			<ant target="${target.letters}" dir="letters-repo" />
-			<ant target="${target.letters}" dir="letters-share" />
-
-			<condition property="target.orders" value="@{target}" else="skip">
-				<contains substring="|${scope}|" string="|all|apps|orders|" />
-			</condition>
-			<echo>=======================================================</echo>
-			<echo>    orders modules - ${target.orders}                  </echo>
-			<echo>=======================================================</echo>
-			<ant target="${target.orders}" dir="orders-repo" />
-			<ant target="${target.orders}" dir="orders-share" />
-
-			<condition property="target.meetings" value="@{target}" else="skip">
-				<contains substring="|${scope}|" string="|all|apps|meetings|" />
-			</condition>
-			<echo>=======================================================</echo>
-			<echo>    meetings modules - ${target.meetings}              </echo>
-			<echo>=======================================================</echo>
-			<ant target="${target.meetings}" dir="meetings-repo" />
-			<ant target="${target.meetings}" dir="meetings-share" />
+			<ant target="${@{target}.@{module}}" dir="@{module}-repo" />
+			<ant target="${@{target}.@{module}}" dir="@{module}-share" />
 		</sequential>
 	</macrodef>
 	
