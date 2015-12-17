@@ -631,7 +631,7 @@ esac
 				<pathelement path="${test.cls.dir}" />
 			</classpath>
 			<formatter type="xml" />
-			<test todir="${test.reports.dir}" name="ru.citeck.alfresco.acm.test.ApplicationContextTest" />
+			<test todir="${test.reports.dir}" name="ru.citeck.ecos.test.ApplicationContextTest" />
 			<batchtest todir="${test.reports.dir}" if="has.compiled.tests">
 				<fileset dir="${test.cls.dir}" includes="**/*Test.class" excludes="**/*IntegrationTest.class" erroronmissingdir="false" />
 			</batchtest>
