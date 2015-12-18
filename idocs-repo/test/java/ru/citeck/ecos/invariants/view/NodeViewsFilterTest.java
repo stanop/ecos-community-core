@@ -47,7 +47,7 @@ public class NodeViewsFilterTest {
 
     private List<NodeViewElement> parseTestElements() {
         NodeViewsParser parser = new NodeViewsParser();
-        ClassPathResource resource = new ClassPathResource("alfresco/invariants/test-views.xml");
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-views.xml");
         InputStream viewsFile = null;
         try {
             viewsFile = resource.getInputStream();

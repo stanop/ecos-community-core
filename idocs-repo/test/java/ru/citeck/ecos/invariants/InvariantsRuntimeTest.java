@@ -93,7 +93,7 @@ public class InvariantsRuntimeTest {
 
     private List<InvariantDefinition> getTestInvariants() throws IOException {
         InvariantsParser parser = new InvariantsParser();
-        ClassPathResource resource = new ClassPathResource("alfresco/invariants/test-invariants.xml");
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-invariants.xml");
         InputStream invariantsFile = resource.getInputStream();
         List<InvariantDefinition> parsedInvariants;
         try {
