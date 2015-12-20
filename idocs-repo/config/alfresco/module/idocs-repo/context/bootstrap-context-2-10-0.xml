@@ -59,7 +59,7 @@
 	</bean>
 	
 	<!-- bugfix: #5204 - APP.SHARE zone should exist before creating any sites -->
-	<bean id="idocs.module-component.app-share-zone" parent="idocs.import-spaces.2-10-0">
+	<!--bean id="idocs.module-component.app-share-zone" parent="idocs.import-spaces.2-10-0">
 		<property name="name" value="app-share-zone" />
 		<property name="description" value="APP.SHARE zone" />
 		<property name="bootstrapViews">
@@ -73,7 +73,7 @@
 				</props>
 			</list>
 		</property>
-	</bean>
+	</bean-->
 
 	<bean id="idocs.orgmetaBootstrap" parent="idocs.import-spaces.2-10-0">
 		<property name="name" value="idocs-orgmeta" />

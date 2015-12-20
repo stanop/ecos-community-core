@@ -45,11 +45,11 @@
 	<bean id="idocs.site.common-documents" parent="idocs.import-spaces.2-11-0">
 		<property name="name" value="idocs-site-common-documents" />
 		<property name="description" value="idocs-site-common-documents" />
-		<property name="dependsOn">
+		<!--property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.app-share-zone" />
 			</list>
-		</property>
+		</property-->
 		<property name="bootstrapViews">
 			<list>
 				<props>
