@@ -460,7 +460,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
                 && caseRef != null && nodeService.exists(caseRef)
                 && element != null && nodeService.exists(element)
                 && nodeService.hasAspect(caseRef, ICaseModel.ASPECT_CASE)
-                && dictionaryService.isSubClass(nodeService.getType(element), requiredType);
+                && RepoUtils.isSubClass(element, requiredType, nodeService, dictionaryService);
         }
         
         public void invokeCaseElementAddEvent() {

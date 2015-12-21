@@ -61,6 +61,7 @@ public class ICaseModel {
 	public static final QName ASPECT_SUBCASE = QName.createQName(NAMESPACE, "subcase");
 	public static final QName ASSOC_SUBCASE_ELEMENT = QName.createQName(NAMESPACE, "subcaseElement");
 	public static final QName ASSOC_SUBCASE_ELEMENT_CONFIG = QName.createQName(NAMESPACE, "subcaseElementConfig");
+	public static final QName ASSOC_PARENT_CASE = QName.createQName(NAMESPACE, "parentCase");
 
 	// subcase configuration properties
 	public static final QName PROP_CREATE_SUBCASE = QName.createQName(NAMESPACE, "createSubcase");

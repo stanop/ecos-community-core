@@ -264,6 +264,17 @@
 						<many>false</many>
 					</target>
 				</association>
+				<association name="icase:parentCase">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>icase:case</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
 			</associations>
 			<mandatory-aspects>
 				<aspect>icase:case</aspect>
