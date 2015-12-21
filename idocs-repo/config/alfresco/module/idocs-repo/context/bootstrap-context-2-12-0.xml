@@ -354,5 +354,16 @@
 			</list>
 		</property>
 	</bean>
-	
+
+	<bean id="idocs.import-scripts.2-12-0" parent="idocs.import-scripts" abstract="true">
+		<property name="sinceVersion" value="2.12.0" />
+		<property name="appliesFromVersion" value="2.12.0" />
+	</bean>
+
+	<bean id="idocs.module-component.script.check-app-share" parent="idocs.import-scripts.2-12-0">
+		<property name="name" value="check-app-share" />
+		<property name="description" value="check-app-share" />
+		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/check-app-share.js"/>
+	</bean>
+
 </beans>
