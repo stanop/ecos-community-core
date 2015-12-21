@@ -924,18 +924,18 @@ CreateVariantsByView
 
 CreateObjectButton
     .key('id', String)
-    .property('attribute', String)
-    .property('type', String)
-    .property('value', Function)
+    .property('scope', Object)
+    .property('constraint', Function)
+    .property('constraintMessage', String)
     .property('source', String)
     .property('buttonTitle', String)
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
     .computed('createVariants', function() {
-        if(!this.type()) return [];
+        if(!this.scope().nodetype()) return [];
         var list = this.source() == 'create-views' 
-            ? new CreateVariantsByView(this.type())
-            : new CreateVariantsByType(this.type());
+            ? new CreateVariantsByView(this.scope().nodetype())
+            : new CreateVariantsByType(this.scope().nodetype());
         return list.createVariants();
     })
     .method('execute', function(createVariant) {
@@ -943,11 +943,31 @@ CreateObjectButton
             {
                 scope: this, 
                 fn: function(value) {
-                    var setter = this.value();
-                    setter(value);
+                    if (this.constraint() && _.isFunction(this.constraint())) {                       
+                        var constraint = ko.computed(this.constraint(), { 
+                            oldValue: this.scope().multipleValues(), 
+                            newValue: value 
+                        });
+
+                        koutils.subscribeOnce(ko.pureComputed(function() {
+                            var result = constraint();
+                            if (result != null || result != undefined) return result;
+                        }), function(result) {
+                            if (_.isBoolean(result)) {
+                                if (result) { this.scope().lastValue(value); }
+                                else { 
+                                    Alfresco.util.PopupManager.displayMessage({
+                                        text: this.constraintMessage() || Alfresco.util.message("create-object.message")
+                                    });
+                                }
+                            }
+                        }, this);
+                    } else {
+                        this.scope().lastValue(value);
+                    }
 
                     YAHOO.Bubbling.fire("object-was-created", { 
-                        fieldId: this.attribute(),
+                        fieldId: this.scope().name(),
                         value: value
                     });
                 }
@@ -960,6 +980,9 @@ CreateObjectButton
             }
         ); 
     })
+    .init(function() {
+        console.log(this.scope());
+    })    
     ;
 
 ko.components.register('createObjectButton', {
