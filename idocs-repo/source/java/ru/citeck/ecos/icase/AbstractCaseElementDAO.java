@@ -106,8 +106,8 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
             throw new IllegalArgumentException("Config node does not exist: " + config);
         }
 
-        QName elementType = (QName) nodeService.getProperty(config, ICaseModel.PROP_ELEMENT_TYPE);
-        if(!RepoUtils.isSubType(element, elementType, nodeService, dictionaryService)) {
+        QName elementType = needElementType(config);
+        if(!RepoUtils.isSubClass(element, elementType, nodeService, dictionaryService)) {
             return Collections.emptyList();
         }
         

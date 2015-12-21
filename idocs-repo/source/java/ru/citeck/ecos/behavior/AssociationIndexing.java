@@ -93,12 +93,7 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
         if (!nodeService.exists(node)) {
             return;
         }
-        try {
-            behaviourFilter.disableBehaviour(node);
-            updateAssociationMirrorProperty(node, nodeAssocRef.getTypeQName());
-        } finally {
-            behaviourFilter.enableBehaviour(node);
-        }
+        updateAssociationMirrorProperty(node, nodeAssocRef.getTypeQName());
     }
 
     @Override
@@ -107,12 +102,7 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
         if (!nodeService.exists(node)) {
             return;
         }
-        try {
-            behaviourFilter.disableBehaviour(node);
-            updateAssociationMirrorProperty(node, nodeAssocRef.getTypeQName());
-        } finally {
-            behaviourFilter.enableBehaviour(node);
-        }
+        updateAssociationMirrorProperty(node, nodeAssocRef.getTypeQName());
     }
 
     private void updateAssociationMirrorProperty(NodeRef node, QName assocQName) {
@@ -158,7 +148,7 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
 
         } finally {
             behaviourFilter.enableBehaviour(node);
-        }            
+        }
     }
 
 }

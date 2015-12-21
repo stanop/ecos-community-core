@@ -108,6 +108,10 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         // hook updating and deleting elements:
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, ICaseModel.ASPECT_ELEMENT, 
                 new JavaBehaviour(this, "onElementUpdated", NotificationFrequency.EVERY_EVENT));
+        policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME, ICaseModel.ASPECT_ELEMENT, 
+                new JavaBehaviour(this, "onElementUpdated", NotificationFrequency.EVERY_EVENT));
+        policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, ICaseModel.ASPECT_ELEMENT, 
+                new JavaBehaviour(this, "onElementUpdated", NotificationFrequency.EVERY_EVENT));
         policyComponent.bindClassBehaviour(NodeServicePolicies.BeforeDeleteNodePolicy.QNAME, ICaseModel.ASPECT_ELEMENT, 
                 new JavaBehaviour(this, "onElementDeleted", NotificationFrequency.EVERY_EVENT));
     }
@@ -405,7 +409,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         // TODO support unbinding behaviours
     }
 
-    public void onElementUpdated(NodeRef element, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+    private void onCaseElementUpdated(NodeRef element) {
         if(!nodeService.exists(element)) return;
         
         boolean elementHasCases = false;
@@ -424,6 +428,14 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         if(!elementHasCases) {
             nodeService.removeAspect(element, ICaseModel.ASPECT_ELEMENT);
         }
+    }
+    
+    public void onElementUpdated(NodeRef element, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        onCaseElementUpdated(element);
+    }
+
+    public void onElementUpdated(AssociationRef assocRef) {
+        onCaseElementUpdated(assocRef.getSourceRef());
     }
     
     public void onElementDeleted(NodeRef element) {

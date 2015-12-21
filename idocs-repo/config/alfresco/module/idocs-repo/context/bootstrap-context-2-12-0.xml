@@ -91,6 +91,26 @@
 		</property>
 	</bean>
 
+	<bean id="idocs.module-component.subcases-case-element-config" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="subcases-case-element-config" />
+		<property name="description" value="Subcases case element config" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/subcases</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="idocs.module-component.categories-case-element-configs" parent="idocs.import-spaces.2-12-0">
 		<property name="name" value="categories-case-element-configs" />
 		<property name="description" value="Categories case element configs" />

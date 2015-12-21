@@ -10,7 +10,7 @@
 	"params": {}
 } } />
 <@forms.renderField field="prop_icase_elementType" extension = { "control": {
-	"template" : "/ru/citeck/components/form/controls/dictionary/type.ftl",
+	"template" : "/ru/citeck/components/form/controls/dictionary/class.ftl",
 	"params": {}
 } } />
 <@forms.renderField field="prop_icase_copyElements" />
