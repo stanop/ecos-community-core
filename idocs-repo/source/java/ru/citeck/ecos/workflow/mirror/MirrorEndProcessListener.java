@@ -30,6 +30,8 @@ import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 
 import java.util.List;
 
@@ -58,8 +60,15 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
             List<ChildAssociationRef> associations =
                     nodeService.getChildAssocsByPropertyValue(taskMirrorRoot, WorkflowMirrorModel.PROP_WORKFLOW_ID, workflowId);
             for(ChildAssociationRef assoc : associations) {
-                NodeRef taskMirror = assoc.getChildRef();
-                nodeService.deleteNode(taskMirror);
+                final NodeRef taskMirror = assoc.getChildRef();
+                AuthenticationUtil.runAs(new RunAsWork<Void>() {
+                    @Override
+                    public Void doWork() throws Exception {
+
+                        nodeService.deleteNode(taskMirror);
+                        return null;
+                    }
+                }, AuthenticationUtil.getSystemUserName());
                 if(logger.isDebugEnabled()) {
                     logger.debug(String.format("Mirror node removed after workflow was %s. nodeRef:%s", deleteReason, taskMirror));
                 }
