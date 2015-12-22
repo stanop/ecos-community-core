@@ -60,6 +60,7 @@
 
 /* max width of current value item */
 .dynamic-tree-picker .current-values .ygtvtable {
+    max-width: 300px;
 	border: none;
 }
 
