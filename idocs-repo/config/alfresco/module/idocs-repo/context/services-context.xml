@@ -1112,7 +1112,7 @@
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 
-	<bean id="mail"	class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="action-executer">
+	<!--bean id="mail" class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="action-executer">
 		<property name="contentService" ref="ContentService" />
 
         <property name="mailService">
@@ -1160,7 +1160,7 @@
         <property name="testMessageText">
             <value>${mail.testmessage.text}</value>
         </property>
-	</bean>
+	</bean-->
 	
 	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
 		<property name="searchService" ref="searchService" />
