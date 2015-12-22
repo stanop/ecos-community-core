@@ -979,10 +979,7 @@ CreateObjectButton
                 virtualParent: this.virtualParent()
             }
         ); 
-    })
-    .init(function() {
-        console.log(this.scope());
-    })    
+    })   
     ;
 
 ko.components.register('createObjectButton', {
