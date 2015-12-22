@@ -59,9 +59,7 @@
 }
 
 /* max width of current value item */
-.dynamic-tree-picker .current-values .ygtvtable
-{
-    max-width: 300px;
+.dynamic-tree-picker .current-values .ygtvtable {
 	border: none;
 }
 
@@ -69,6 +67,10 @@
 .dynamic-tree-picker.single-selector.selected .item-buttons .itemSelect
 {
     display: none;
+}
+
+.dynamic-tree-list.current-values .item-buttons {
+    right: 0px;
 }
 
 /* do not show item buttons in read-only mode */
