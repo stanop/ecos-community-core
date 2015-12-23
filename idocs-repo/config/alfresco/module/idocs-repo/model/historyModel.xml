@@ -58,6 +58,9 @@
                 <property name="event:propertyName">
                     <type>d:qname</type>
                 </property>
+                <property name="event:propertyValue">
+                    <type>d:text</type>
+                </property>
 				<property name="event:targetNodeKind">
 					<type>d:category</type>
 				</property>

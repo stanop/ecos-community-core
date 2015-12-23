@@ -1389,7 +1389,44 @@
 					);
 				}
 			}
-		}
+		},
+
+
+		assocOrProps: function(props) {
+			return function(elCell, oRecord, oColumn, sData) {
+				if(!sData) {
+					elCell.innerHTML = "";
+					return;
+				}
+				else {
+					Alfresco.util.Ajax.request({
+						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + sData + (props ? '&props=' + props + '&replaceColon=_' : ''),
+						successCallback: {
+							scope: this,
+							fn: function(response) {
+								if (response.json && response.json.props) {
+									props = props ? ('' + props).split(',') : ["cm:name"];
+									var value = '';
+									for (var i = 0; i < props.length; i++) {
+										var v1 = response.json.props[props[i]];
+										var v2 = response.json.props[props[i].replace(':', '_')];
+										value += (v1 || v2 || ' ') + ( i < props.length - 1 ? ', ' : '');
+									}
+									elCell.innerHTML = value;
+								}
+							}
+						},
+						failureCallback: {
+							scope: this,
+							fn: function(response) {
+								elCell.innerHTML = sData;
+							}
+						},
+						execScripts: true
+					});
+				}
+			};
+		},
 
 	});
 
