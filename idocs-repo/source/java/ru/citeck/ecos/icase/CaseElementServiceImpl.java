@@ -254,7 +254,9 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
                 strategy.copyElementsToTemplate(caseNodeRef, elementType, config);
             }
         }
-        
+
+        registerElementCopy(caseNodeRef, templateRef);
+
         adjustCopies();
     }
 
@@ -275,7 +277,9 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
                 strategy.copyElementsFromTemplate(elementType, caseNodeRef, config);
             }
         }
-        
+
+        registerElementCopy(templateRef, caseNodeRef);
+
         adjustCopies();
     }
 
@@ -336,8 +340,11 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
             List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(node);
             for(ChildAssociationRef childAssoc : childAssocs) {
                 NodeRef childRef = childAssoc.getChildRef();
-                NodeRef original = nodeService.getTargetAssocs(childRef, ContentModel.ASSOC_ORIGINAL).get(0).getTargetRef();
-                copyMap.put(original, childRef);
+                List<AssociationRef> assocs = nodeService.getTargetAssocs(childRef, ContentModel.ASSOC_ORIGINAL);
+                if(assocs != null && !assocs.isEmpty()) {
+                    NodeRef original = assocs.get(0).getTargetRef();
+                    copyMap.put(original, childRef);
+                }
                 queue.add(childRef);
             }
         }
