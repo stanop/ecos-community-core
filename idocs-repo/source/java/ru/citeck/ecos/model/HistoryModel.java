@@ -47,6 +47,7 @@ public final class HistoryModel {
     public static final QName PROP_DOCUMENT_VERSION = QName.createQName(EVENT_NAMESPACE, "documentVersion");
 	
     public static final QName PROP_PROPERTY_NAME = QName.createQName(EVENT_NAMESPACE, "propertyName");
+    public static final QName PROP_PROPERTY_VALUE = QName.createQName(EVENT_NAMESPACE, "propertyValue");
     public static final QName PROP_TARGET_NODE_TYPE = QName.createQName(EVENT_NAMESPACE, "targetNodeType");
     public static final QName PROP_TARGET_NODE_KIND = QName.createQName(EVENT_NAMESPACE, "targetNodeKind");
     

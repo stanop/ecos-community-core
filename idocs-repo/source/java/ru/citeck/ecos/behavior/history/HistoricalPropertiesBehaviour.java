@@ -176,6 +176,7 @@ public class HistoricalPropertiesBehaviour implements
 							eventProperties.put(HistoryModel.PROP_NAME, NODE_UPDATED);
 							eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 							eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, entry.getKey());
+							eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, propAfter.toString());
 							historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 
 						}
@@ -199,6 +200,7 @@ public class HistoricalPropertiesBehaviour implements
 				eventProperties.put(HistoryModel.PROP_NAME, ASSOC_ADDED);
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
+				eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, nodeTarget.toString());
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
 		}
@@ -237,6 +239,7 @@ public class HistoricalPropertiesBehaviour implements
 				eventProperties.put(HistoryModel.PROP_NAME, ASSOC_ADDED);
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
+				eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, nodeTarget.toString());
 				eventProperties.put(HistoryModel.PROP_TARGET_NODE_TYPE, nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE));
 				eventProperties.put(HistoryModel.PROP_TARGET_NODE_KIND, nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND));
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
