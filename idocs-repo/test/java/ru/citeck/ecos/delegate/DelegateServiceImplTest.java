@@ -28,7 +28,11 @@ import org.alfresco.service.namespace.QName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import ru.citeck.ecos.model.DelegateModel;
 import ru.citeck.ecos.orgstruct.OrgMetaService;
@@ -36,6 +40,9 @@ import ru.citeck.ecos.orgstruct.OrgStructService;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.test.ApplicationContextHelper;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader=ApplicationContextHelper.class)
+@Transactional
 public class DelegateServiceImplTest {
 
 	private DelegateService delegateService;
@@ -74,17 +81,6 @@ public class DelegateServiceImplTest {
 	
 	@Before
 	public void beforeTest() {
-		
-		// mark transaction as rollback-only, so that repository state does not change
-		// regardless of test execution status (success/failure)
-		UserTransaction transaction = RetryingTransactionHelper.getActiveUserTransaction();
-		if(transaction != null) {
-			try {
-				transaction.setRollbackOnly();
-			} catch (SystemException e) {
-				throw new IllegalStateException(e);
-			}
-		}
 		
 		ApplicationContext context = ApplicationContextHelper.getApplicationContext();
 		

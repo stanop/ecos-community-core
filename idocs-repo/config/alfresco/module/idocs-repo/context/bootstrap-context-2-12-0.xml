@@ -91,6 +91,26 @@
 		</property>
 	</bean>
 
+	<bean id="idocs.module-component.subcases-case-element-config" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="subcases-case-element-config" />
+		<property name="description" value="Subcases case element config" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/subcases</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="idocs.module-component.categories-case-element-configs" parent="idocs.import-spaces.2-12-0">
 		<property name="name" value="categories-case-element-configs" />
 		<property name="description" value="Categories case element configs" />
@@ -354,5 +374,16 @@
 			</list>
 		</property>
 	</bean>
-	
+
+	<bean id="idocs.import-scripts.2-12-0" parent="idocs.import-scripts" abstract="true">
+		<property name="sinceVersion" value="2.12.0" />
+		<property name="appliesFromVersion" value="2.12.0" />
+	</bean>
+
+	<bean id="idocs.module-component.script.check-app-share" parent="idocs.import-scripts.2-12-0">
+		<property name="name" value="check-app-share" />
+		<property name="description" value="check-app-share" />
+		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/check-app-share.js"/>
+	</bean>
+
 </beans>

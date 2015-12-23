@@ -65,7 +65,7 @@ public class InvariantsFilterTest {
 
     private List<InvariantDefinition> parseTestInvariants() throws IOException {
         InvariantsParser parser = new InvariantsParser();
-        ClassPathResource resource = new ClassPathResource("alfresco/invariants/test-invariants.xml");
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-invariants.xml");
         InputStream invariantsFile = resource.getInputStream();
         try {
             return parser.parse(invariantsFile, InvariantPriority.CUSTOM);

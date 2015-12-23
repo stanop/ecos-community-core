@@ -60,9 +60,10 @@
 	min-height: 2em;
 }
 
+
+
 /* item button */
-.dynamic-tree-list .item-buttons button
-{
+.dynamic-tree-list .item-buttons button {
 	width: 16px;
 	height: 100%;
 	margin: 0px 2px;
@@ -70,6 +71,7 @@
 	background-color: transparent;
 	background-position: center;
 	background-repeat: no-repeat;
+	cursor: pointer;
 }
 
 /* hide-buttons class */

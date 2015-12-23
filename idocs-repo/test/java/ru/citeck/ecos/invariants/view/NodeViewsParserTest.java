@@ -27,7 +27,7 @@ public class NodeViewsParserTest {
 
     @Before
     public void setUp() throws Exception {
-        ClassPathResource resource = new ClassPathResource("alfresco/invariants/test-views.xml");
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-views.xml");
         viewsFile = resource.getInputStream();
         parser = new NodeViewsParser();
     }

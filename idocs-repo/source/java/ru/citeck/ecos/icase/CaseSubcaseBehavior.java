@@ -133,6 +133,7 @@ public class CaseSubcaseBehavior implements
             QName.createQName(ICaseModel.NAMESPACE, elementRef.getId()), 
             subcaseType).getChildRef();
         nodeService.createAssociation(subcase, elementRef, ICaseModel.ASSOC_SUBCASE_ELEMENT);
+        nodeService.createAssociation(subcase, caseRef, ICaseModel.ASSOC_PARENT_CASE);
         nodeService.createAssociation(subcase, config, ICaseModel.ASSOC_SUBCASE_ELEMENT_CONFIG);
     }
     

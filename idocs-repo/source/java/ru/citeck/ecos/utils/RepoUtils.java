@@ -826,6 +826,13 @@ public class RepoUtils {
         QName nodeType = nodeService.getType(nodeRef);
         return dictionaryService.isSubClass(nodeType, typeName);
     }
+    
+    public static boolean isSubClass(NodeRef nodeRef, QName className,
+            NodeService nodeService, DictionaryService dictionaryService) {
+        return dictionaryService.getClass(className).isAspect() ?
+                nodeService.hasAspect(nodeRef, className) :
+                dictionaryService.isSubClass(nodeService.getType(nodeRef), className);
+    }
 
     public static boolean isAssociated(NodeRef sourceRef, NodeRef targetRef, QName assocType, NodeService nodeService) {
         if(sourceRef == null || !nodeService.exists(sourceRef)) return false;

@@ -88,16 +88,18 @@ public class RoleMembershipDelegateListener extends AbstractDelegateListener
 	}
 	
 	private void delegate(String roleFullName, Set<String> delegateUsers) {
-		
+		Set<String> members = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
 		for(String delegate : delegateUsers) {
+			if(members.contains(delegate)) continue;
 			authorityService.addAuthority(roleFullName, delegate);
 		}
 		
 	}
 	
 	private void undelegate(String roleFullName, Set<String> delegateUsers) {
-		
+		Set<String> members = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
 		for(String delegate : delegateUsers) {
+			if(!members.contains(delegate)) continue;
 			authorityService.removeAuthority(roleFullName, delegate);
 		}
 		

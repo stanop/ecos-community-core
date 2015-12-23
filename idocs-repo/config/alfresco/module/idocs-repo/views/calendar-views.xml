@@ -8,10 +8,10 @@
 
 	<view class="bcal:calendar">
 		<field prop="bcal:dateFrom">
-			<region name="input" template="datetime"/>
+			<region name="input" template="date"/>
 		</field>
 		<field prop="bcal:dateTo">
-			<region name="input" template="datetime"/>
+			<region name="input" template="date"/>
 		</field>
 		<field prop="bcal:remark">
 			<region name="input" template="select"/>

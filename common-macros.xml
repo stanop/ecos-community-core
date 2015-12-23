@@ -36,6 +36,8 @@
 	<property name="test.java.dir" location="test/java" />
 	<property name="test.res.dir" location="test/resources" />
 	<property name="test.lib.file" location="${test.dir}/${module.id}-${module.version}${module.release}-tests_${build.classifier}.jar" />
+	<property name="test.webapp.path" location="${test.dir}/webapps/${webapp.name}.war" />
+	<property name="test.is.critical" value="true" />
 	
 	<property name="lib.file" location="${build.lib.dir}/${module.id}-${module.version}${module.release}-${build.classifier}.jar" />
 	<property name="javadoc.file" location="${build.lib.dir}/${module.id}-${module.version}${module.release}-javadoc.jar" />
@@ -100,6 +102,10 @@
 	<path id="groovy.classpath">
 		<fileset dir="${tomcat.home}/webapps/${webapp.name}/WEB-INF/lib" includes="*.jar" />
 	</path>
+	
+	<target name="skip">
+		<!-- do nothing -->
+	</target>
 
 	<!--====================================-->
 	<!--   conditional execution support    -->
@@ -155,6 +161,7 @@
 					version="@{version}" classifier="@{classifier}" type="@{type}" />
 				<remoteRepository refid="@{repository}" />
 			</artifact:dependencies>
+			<pathconvert refid="@{artifactId}.@{type}" property="@{artifactId}.@{type}.path" />
 		</sequential>
 	</macrodef>
 
@@ -170,10 +177,8 @@
 			<resolve-dependency groupId="@{groupId}" artifactId="@{artifactId}" 
 					version="@{version}" classifier="@{classifier}" type="@{type}" 
 					repository="@{repository}" />
-			<copy todir="@{todir}/@{artifactId}/@{version}/">
-				<fileset refid="@{artifactId}.@{type}" />
-				<mapper type="glob" from="*.@{type}" to="@{artifactId}-@{version}-@{classifier}.@{type}" />
-			</copy>
+			<copy file="${@{artifactId}.@{type}.path}"
+			    tofile="@{todir}/@{artifactId}/@{version}/@{artifactId}-@{version}-@{classifier}.@{type}" />
 		</sequential>
 	</macrodef>
 
@@ -433,7 +438,8 @@ esac
 		<attribute name="amp-file" />
 		<attribute name="war-file" />
 		<sequential>
-			<java jar="${tomcat.home}/../bin/alfresco-mmt.jar" fork="true">
+			<echo>Installing module "@{amp-file}" into application "@{war-file}"</echo>
+			<java jar="${tomcat.home}/../bin/alfresco-mmt.jar" fork="true" failonerror="true">
 				<arg value="install" />
 				<arg value="@{amp-file}" />
 				<arg value="@{war-file}" />
@@ -447,7 +453,7 @@ esac
 		<attribute name="amp-dir" />
 		<attribute name="war-file" />
 		<sequential>
-			<java jar="${tomcat.home}/../bin/alfresco-mmt.jar" fork="true">
+			<java jar="${tomcat.home}/../bin/alfresco-mmt.jar" fork="true" failonerror="true">
 				<arg value="install" />
 				<arg value="@{amp-dir}" />
 				<arg value="@{war-file}" />
@@ -565,27 +571,35 @@ esac
             </classpath>
         </javac>
     </target>
+	
+	<target name="test-get-webapp">
+		<copy file="${webapp.war.file}" tofile="${test.webapp.path}" overwrite="true" />
+	</target>
 
-    <target name="test" depends="compile-tests,resolve-test-dependencies,package-amp,package-dependencies" unless="no-testing">
-        <mkdir dir="${test.dir}" />
-
-        <!-- compile the tests -->
-		<!-- get webapp -->
-		<mkdir dir="${test.dir}/webapps/${webapp.name}" />
-		<copy file="${webapp.war.file}" tofile="${test.dir}/webapps/${webapp.name}.war" overwrite="true" />
-
-		<!-- put this amps and its dependencies in one directory -->
-		<mkdir dir="${test.dir}/amps" />
-		<copy todir="${test.dir}/amps">
-			<fileset file="${amp.file}" />
-			<fileset dir="${dist.deps.dir}" includes="**/*.amp" />
-			<mapper type="flatten" />
-		</copy>
+	<target name="install-dependencies">
+	</target>
+	
+	<macrodef name="install-dependency">
+		<attribute name="webapp" />
+		<attribute name="groupId" />
+		<attribute name="artifactId" />
+		<attribute name="version" />
+		<attribute name="type" default="amp" />
+		<attribute name="classifier" default="" />
+		<attribute name="repository" default="maven.central" />
+		<sequential>
+			<resolve-dependency groupId="@{groupId}" artifactId="@{artifactId}" 
+					version="@{version}" classifier="@{classifier}" type="@{type}" 
+					repository="@{repository}" />
+			<install-amp war-file="@{webapp}" amp-file="${@{artifactId}.@{type}.path}" />
+		</sequential>
+	</macrodef>
+	
+    <target name="test" depends="compile-tests,resolve-test-dependencies,package-amp,test-get-webapp,install-dependencies" unless="no-testing">
+	
+		<!-- install amp file -->
+		<install-amp war-file="${test.webapp.path}" amp-file="${amp.file}" />
 		
-		<!-- install amps to war -->
-		<install-amps war-file="${test.dir}/webapps/${webapp.name}.war" 
-			amp-dir="${test.dir}/amps" />
-
 		<!-- "deploy" war -->
 		<unzip src="${test.dir}/webapps/${webapp.name}.war" dest="${test.dir}/webapps/${webapp.name}" />
 		
@@ -626,13 +640,20 @@ esac
 				<pathelement path="${test.cls.dir}" />
 			</classpath>
 			<formatter type="xml" />
-			<test todir="${test.reports.dir}" name="ru.citeck.alfresco.acm.test.ApplicationContextTest" />
+			<test todir="${test.reports.dir}" name="ru.citeck.ecos.test.ApplicationContextTest" />
 			<batchtest todir="${test.reports.dir}" if="has.compiled.tests">
 				<fileset dir="${test.cls.dir}" includes="**/*Test.class" excludes="**/*IntegrationTest.class" erroronmissingdir="false" />
 			</batchtest>
 		</junit>
 		
-		<fail message="Some of the tests failed" if="tests.failed" />
+		<condition property="build.failed.through.tests">
+			<and>
+				<equals arg1="tests.failed" arg2="true" />
+				<equals arg1="test.is.critical" arg2="true" />
+			</and>
+		</condition>
+		
+		<fail message="Some of the tests failed" if="build.failed.through.tests" />
 		
 	</target>
 	

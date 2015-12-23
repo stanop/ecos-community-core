@@ -47,7 +47,7 @@
 		<property name="description" value="idocs-site-common-documents" />
 		<property name="dependsOn">
 			<list>
-				<ref bean="idocs.module-component.app-share-zone" />
+				<ref bean="idocs.module-component.script.check-app-share" />
 			</list>
 		</property>
 		<property name="bootstrapViews">

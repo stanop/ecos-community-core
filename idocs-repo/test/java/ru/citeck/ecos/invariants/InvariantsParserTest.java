@@ -24,7 +24,7 @@ public class InvariantsParserTest {
 
     @Before
     public void setUp() throws Exception {
-        ClassPathResource resource = new ClassPathResource("alfresco/invariants/test-invariants.xml");
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-invariants.xml");
         invariantsFile = resource.getInputStream();
         parser = new InvariantsParser();
     }
