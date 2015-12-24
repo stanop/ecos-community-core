@@ -110,6 +110,7 @@
 		<value>alfresco/module/idocs-repo/workflow/perform/perform-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/prolongation-workflow/prolongation-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment-model.xml</value>
+		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow-model.xml</value>
 	</util:list>
 
 	<util:list id="idocs.workflowLabelsList">
@@ -130,6 +131,7 @@
 		<value>alfresco/module/idocs-repo/workflow/perform/perform-workflow</value>
 		<value>alfresco/module/idocs-repo/workflow/prolongation-workflow/prolongation-workflow</value>
 		<value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment</value>
+		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow</value>
 	</util:list>
 
 	<bean id="idocs.workflowModelsBootstrap" parent="dictionaryModelBootstrap" 
@@ -246,6 +248,12 @@
                 <props>
                     <prop key="engineId">activiti</prop>
                     <prop key="location">alfresco/module/idocs-repo/workflow/simple-payment/simple-payment.bpmn</prop>
+                    <prop key="mimetype">text/xml</prop>
+                    <prop key="redeploy">true</prop>
+                </props>
+                <props>
+                    <prop key="engineId">activiti</prop>
+                    <prop key="location">alfresco/module/idocs-repo/workflow/review-workflow/review-workflow.bpmn</prop>
                     <prop key="mimetype">text/xml</prop>
                     <prop key="redeploy">true</prop>
                 </props>
