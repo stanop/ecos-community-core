@@ -15,7 +15,7 @@ if (journalListName) {
 var journalList = search.luceneSearch(query),
     journals, journalByDefault;
 
-if (journalList) {
+if (journalList && journalList.length > 0) {
   if (journalList[0].assocs["journal:default"]) {
     journalByDefault = journalList[0].assocs["journal:default"][0];
   }
