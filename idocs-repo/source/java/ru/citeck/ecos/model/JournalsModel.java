@@ -29,7 +29,7 @@ public final class JournalsModel {
     public static final String JOURNAL_NAMESPACE = "http://www.citeck.ru/model/journals/1.0";
 
     // types
-    public static final QName TYPE_JOURNAL_CONFIG = QName.createQName(JOURNAL_NAMESPACE, "journalConfig");
+//    public static final QName TYPE_JOURNAL_CONFIG = QName.createQName(JOURNAL_NAMESPACE, "journalConfig");
     public static final QName TYPE_BASE = QName.createQName(JOURNAL_NAMESPACE, "base");
     public static final QName TYPE_JOURNAL = QName.createQName(JOURNAL_NAMESPACE, "journal");
     public static final QName TYPE_CRITERION = QName.createQName(JOURNAL_NAMESPACE, "criterion");

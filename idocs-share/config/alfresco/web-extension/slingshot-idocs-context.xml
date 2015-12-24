@@ -98,7 +98,7 @@
 			<list>
 				<value>data</value>
 				<value>properties</value>
-				<value>{http://www.citeck.ru/model/uc/1.0}preset</value>
+				<value>{http://www.citeck.ru/model/orgstruct/1.0}preset</value>
 			</list>
 		</property>
 	</bean>
