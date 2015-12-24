@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfrev:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/review/1.0" prefix="wfrev"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="wfrev:reviewOutcomeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Reviewed</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="wfrev:submitReviewTask">
+            <parent>bpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>wfrev:reviewers</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfrev:reviewTask">
+            <title>Review Task</title>
+            <parent>bpm:activitiOutcomeTask</parent>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/review/1.0}reviewOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default/>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfrev:reviewOutcome</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfrev:reviewOutcome">
+            <properties>
+                <property name="wfrev:reviewOutcome">
+                    <type>d:text</type>
+                    <default>Reviewed</default>
+                    <constraints>
+                        <constraint ref="wfrev:reviewOutcomeOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+		<aspect name="wfrev:reviewers">
+			<associations>
+				<association name="wfrev:reviewers">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+    </aspects>
+
+</model>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="review" name="Review" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.DocumentSetListener"></activiti:executionListener>
+    </extensionElements>
+    <subProcess id="subProcess" name="subProcess">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${wfrev_reviewers}" activiti:elementVariable="wfrev_reviewer"></multiInstanceLoopCharacteristics>
+      <startEvent id="startevent1" name="Start"></startEvent>
+      <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="reviewTask"></sequenceFlow>
+      <userTask id="reviewTask" name="Review Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfrev:reviewTask">
+        <extensionElements>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
+            <activiti:field name="authority">
+              <activiti:expression>${wfrev_reviewer}</activiti:expression>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:string><![CDATA[execution.setVariable("wfrev_reviewOutcome", task.getVariable("wfrev_reviewOutcome"));]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+            <activiti:field name="script">
+              <activiti:string><![CDATA[if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;]]></activiti:string>
+            </activiti:field>
+          </activiti:taskListener>
+        </extensionElements>
+	  </userTask>
+      <sequenceFlow id="flow2" sourceRef="reviewTask" targetRef="endevent1"></sequenceFlow>
+      <endEvent id="endevent1" name="End"></endEvent>
+    </subProcess>
+    <startEvent id="startevent2" name="Start" activiti:formKey="wfrev:submitReviewTask"></startEvent>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow3" sourceRef="startevent2" targetRef="subProcess"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="subProcess" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_review">
+    <bpmndi:BPMNPlane bpmnElement="review" id="BPMNPlane_review">
+      <bpmndi:BPMNShape bpmnElement="review" id="BPMNShape_review">
+        <omgdc:Bounds height="181.0" width="321.0" x="150.0" y="67.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="170.0" y="142.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviewTask" id="BPMNShape_reviewTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="260.0" y="132.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="420.0" y="142.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent2" id="BPMNShape_startevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="20.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="550.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="205.0" y="159.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="159.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="365.0" y="159.0"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="159.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="55.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="150.0" y="157.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="471.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="550.0" y="157.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
