@@ -11,13 +11,20 @@
             <#if controlParams.minQueryLength??>
                 minQueryLength: "${controlParams.minQueryLength}",
             </#if>
-            <#if controlParams.queryStringMinial??>
-                criterion: { attribute: "${controlParams.attribute}", predicate: "${controlParams.predicate}" },
+            <#if controlParams.searchScript??>
+                searchScript: "${controlParams.searchScript}",
+            </#if>
+            <#if controlParams.criteria?? || >
+                criteria: ${criteria},
+            <#elseif controlParams.attribute?? && controlParams.predicate??>
+                criteria: [{
+                    attribute: "${controlParams.attribute}",
+                    predicate: "${controlParams.predicate}"
+                }],
             </#if>
 
             protected: protected,
             helpMessage: "${helpMessage}",
-            emptyMessage: "${emptyMessage}",
             labelMessage: "${labelMessage}",
 
             value: singleValue,
@@ -25,3 +32,7 @@
         }
     }'>
 </div>
+
+<#-- TODO:
+    - remove deprecated params attribute and predicate
+ -->

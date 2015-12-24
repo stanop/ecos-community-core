@@ -216,8 +216,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     
     function evalCriteriaQuery(criteria, model, pagination) {
         var query = {
-                skipCount: 0,
-                maxItems: 50
+            skipCount: 0,
+            maxItems: 50
         };
 
         if (pagination) {
@@ -252,20 +252,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         }
         
         var query = evalCriteriaQuery(criteria, model, pagination);
-        if(query == null) {
-            return null;
-        }
-     
+        if(query == null) return null;
+
         var previousResult = cache.result(); // always call this to create dependency
         if(cache.query) {
             if(_.isEqual(query, cache.query)) {
                 return previousResult;
             }
         }
+
+        // select search script by parameter from pagination
+        // criteria-search by default
+        var searchScripts = {
+                "light-search": "citeck/light-search",
+                "criteria-search": "search/criteria-search"
+            },
+            selectedSearchScript = pagination ? pagination.searchScript : undefined,
+            searchScriptUrl = selectedSearchScript ? searchScripts[selectedSearchScript] : searchScripts["criteria-search"];
         
         cache.query = query;
         Alfresco.util.Ajax.jsonPost({
-            url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+            url: Alfresco.constants.PROXY_URI + searchScriptUrl,
             dataObj: query,
             successCallback: {
                 fn: function(response) {

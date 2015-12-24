@@ -703,10 +703,10 @@ ko.bindingHandlers.journalControl = {
                                 </div>\
                                 <div class="search-criteria-actions">\
                                     <ul>\
-                                        <li class="search-critetia-option">\
+                                        <li class="search-criteria-option">\
                                             <a class="apply-criteria search-criteria-button" data-bind="click: applyCriteria">' + localization.applyCriteria + '</a>\
                                         </li>\
-                                        <li class="search-critetia-option">\
+                                        <li class="search-criteria-option">\
                                             <a class="search-criteria-button" data-bind="click: addSearchCriterion">' + localization.addSearchCriterion + '</a>\
                                             <div class="search-criteria-variants" data-bind="visible: criteriaListShow">\
                                                 <ul class="search-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
@@ -979,7 +979,10 @@ CreateObjectButton
                 virtualParent: this.virtualParent()
             }
         ); 
-    })   
+    })
+    .init(function() {
+        console.log(this.scope());
+    })    
     ;
 
 ko.components.register('createObjectButton', {
@@ -1014,65 +1017,69 @@ ko.components.register('createObjectButton', {
 // AUTOCOMPLETE
 // ------------
 
-// TODO:
-// - suppourt many criterion
-
 ko.components.register("autocomplete", {
     viewModel: function(params) {
-        var self = this;
-
-        self.disabled = params["protected"];
-        self.value = params["value"];
-        self.data  = params["data"];
-
-        // default parameters
-        self.parameters = {
-            defaultCriterion: { attribute: "all", predicate: "string-contains" },
+        this.defaults = {
+            criteria: [{ attribute: "all", predicate: "string-contains" }],
+            searchScript: "criteria-search",
             minQueryLength: 3,
 
-            // titles
+            // messages
             labelMessage: "Select...",
             helpMessage:  "Start typing..."
         }
 
+        var self = this;
+
+        this.data  = params["data"];
+        
+        this.value = this.data.value;
+        this.disabled = this.data.protected;
+
+        this.searchScript = params["searchScript"] || self.defaults.searchScript;
+        this.minQueryLength = params["minQueryLength"] || self.defaults.minQueryLength;
+
         // observables
-        self.containerVisibility = ko.observable(false);
-        self.highlightedElement = ko.observable();
-        self.componentFocused = ko.observable(false);
-        self.searchQuery = ko.observable();
-        self.searchInput = ko.observable();
-        self.searching = ko.observable(false);
-        self.searchFocused = ko.observable(false);
+        this.containerVisibility = ko.observable(false);
+        this.highlightedElement = ko.observable();
+        this.componentFocused = ko.observable(false);
+        this.searchQuery = ko.observable();
+        this.searchInput = ko.observable();
+        this.searching = ko.observable(false);
+        this.searchFocused = ko.observable(false);
 
         
         // computed
-        self.label = ko.pureComputed(function() { 
-            return self.value() ? self.data.getValueTitle(self.value()) : (params.labelMessage || self.parameters.labelMessage); 
+        this.label = ko.pureComputed(function() { 
+            return self.value() ? self.data.getValueTitle(self.value()) : (params.labelMessage || self.defaults.labelMessage); 
         });
 
-        self.criteria = ko.pureComputed(function() {
-            return [{
-                attribute: (params.criterion ? params.criterion.attribute : null) || self.parameters.defaultCriterion.attribute,
-                predicate: (params.criterion ? params.criterion.predicate : null) || self.parameters.defaultCriterion.predicate,
-                value: self.searchQuery()
-            }]
-        });
-
-        self.search = ko.computed(function() {
+        this.search = ko.computed(function() {
             var input = self.searchInput();
-            if (input && input.length >= (params.minQueryLength || self.parameters.minQueryLength)) {
+            if (input && input.length >= self.minQueryLength) {
                 self.searching(true);
                 self.searchQuery(input);
             }
         }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
-        self.options = ko.pureComputed(function() {
-            return self.data.filterOptions(self.criteria(), { maxItems: 10, skipCount: 0 });
+        this.criteria = ko.pureComputed(function() {
+            return _.map(params["criteria"] || self.defaults.criteria, function(item) {
+                item.value = self.searchQuery();
+                return item;
+            });
         });
 
+        this.options = ko.pureComputed(function() {
+            return self.criteria().length > 0 ? self.data.filterOptions(self.criteria(), { 
+                                                    maxItems: 10, 
+                                                    skipCount: 0, 
+                                                    searchScript: self.searchScript 
+                                                }) : [];
+        });
+        
 
         // subscription and events
-        self.options.subscribe(function(newValue) {
+        this.options.subscribe(function(newValue) {
             // highlight first element of list
             if (newValue && newValue.pagination) {
                 if (newValue.length > 0) self.highlightedElement(newValue[0]);
@@ -1080,22 +1087,21 @@ ko.components.register("autocomplete", {
             }
         });
 
-
         // public methods
-        self.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()) };
-        self.helpMessage = function() { return params.helpMessage || self.parameters.helpMessage };
-        self.searchBlur = function() { self.containerVisibility(false) };
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()) };
+        this.helpMessage = function() { return params.helpMessage || self.defaults.helpMessage };
+        this.searchBlur = function() { self.containerVisibility(false) };
 
-        self.selectItem = function(data, event) {
+        this.selectItem = function(data, event) {
             if (event.which == 1) {
                 self.value(data);
                 self.containerVisibility(false);
             }
         };
 
-        self.clear = function(data, event) { if (event.which == 1) self.value(null) };
+        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
 
-        self.keyAction = function(data, event) {
+        this.keyAction = function(data, event) {
             if ([9, 13, 27, 38, 40].indexOf(event.keyCode) != -1) {
                 // apply element for value
                 if (event.keyCode == 9 || event.keyCode == 13) {
@@ -1123,7 +1129,7 @@ ko.components.register("autocomplete", {
             return true;
         };
 
-        self.keyManagment = function(data, event) {
+        this.keyManagment = function(data, event) {
             if ([40, 46].indexOf(event.keyCode) != -1) {
                 // open container if 'down'
                 if (event.keyCode == 40) self.containerVisibility(true);
@@ -1137,7 +1143,7 @@ ko.components.register("autocomplete", {
             return true;
         };
 
-        self.renderHandler = function(element, data) {
+        this.renderHandler = function(element, data) {
             // stop loading when all elements was rendred
             if(this.foreach()[this.foreach().length - 1] === data) self.searching(false);
         };
@@ -1175,7 +1181,7 @@ ko.components.register("autocomplete", {
                             hasFocus: true">\
                     <div class="loading-indicator" data-bind="css: { hidden: !searching() }"></div>\
                 </div>\
-                <!-- ko if: options -->\
+                <!-- ko if: searchQuery() && options() -->\
                     <!-- ko if: options().length > 0 -->\
                         <ul class="autocomplete-list" data-bind="foreach: { data: options, afterRender: renderHandler }">\
                             <li data-bind="\
