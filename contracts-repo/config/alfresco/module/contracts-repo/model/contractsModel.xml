@@ -55,15 +55,20 @@
 			<parameter name="allowedValues">
 				<list>
 					<value>new</value>
+					<value>project</value>
 					<value>onApproval</value>
 					<value>approved</value>
 					<value>onSign</value>
+					<value>onConfirm</value>
+					<value>confirmed</value>
 					<value>active</value>
+					<value>notActive</value>
 					<value>onRegistration</value>
 					<value>registered</value>
 					<value>canceled</value>
 					<value>archive</value>
 					<value>onCorrection</value>
+					<value>rescinded</value>
 				</list>
 			</parameter>
 		</constraint>

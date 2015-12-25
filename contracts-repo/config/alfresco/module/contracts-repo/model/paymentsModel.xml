@@ -63,6 +63,7 @@
 		<constraint name="payments:constraint:paymentDocumentStatus" type="LIST">
 			<parameter name="allowedValues">
 				<list>
+					<value>new</value>
 					<value>draft</value>
 					<value>onApproval</value>
 					<value>approved</value>
