@@ -15,7 +15,7 @@
                 searchScript: "${controlParams.searchScript}",
             </#if>
             <#if controlParams.criteria??>
-                criteria: ${criteria},
+                criteria: ${controlParams.criteria},
             <#elseif controlParams.attribute?? && controlParams.predicate??>
                 criteria: [{
                     attribute: "${controlParams.attribute}",
