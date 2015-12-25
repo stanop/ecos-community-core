@@ -1034,7 +1034,7 @@ ko.components.register("autocomplete", {
         this.data  = params["data"];
         
         this.value = this.data.value;
-        this.disabled = this.data.protected;
+        this.disabled = this.data['protected'];
 
         this.searchScript = params["searchScript"] || self.defaults.searchScript;
         this.minQueryLength = params["minQueryLength"] || self.defaults.minQueryLength;
