@@ -980,9 +980,6 @@ CreateObjectButton
             }
         ); 
     })
-    .init(function() {
-        console.log(this.scope());
-    })    
     ;
 
 ko.components.register('createObjectButton', {
@@ -1032,10 +1029,8 @@ ko.components.register("autocomplete", {
         var self = this;
 
         this.data  = params["data"];
-        
-        this.value = this.data.value;
-        this.disabled = this.data['protected'];
-
+        this.value = this.data["singleValue"];
+        this.disabled = this.data["protected"];
         this.searchScript = params["searchScript"] || self.defaults.searchScript;
         this.minQueryLength = params["minQueryLength"] || self.defaults.minQueryLength;
 
@@ -1050,8 +1045,9 @@ ko.components.register("autocomplete", {
 
         
         // computed
-        this.label = ko.pureComputed(function() { 
-            return self.value() ? self.data.getValueTitle(self.value()) : (params.labelMessage || self.defaults.labelMessage); 
+        this.label = ko.pureComputed(function() {
+            var defaultLabel = params.labelMessage || self.defaults.labelMessage;
+            return self.value() ? self.data.getValueTitle(self.value()) : defaultLabel; 
         });
 
         this.search = ko.computed(function() {
@@ -1162,7 +1158,9 @@ ko.components.register("autocomplete", {
                     css: { opened: containerVisibility },\
                     hasFocus: componentFocused">\
                 <span class="autocomplete-value" data-bind="text: label"></span>\
-                <!-- ko if: value --><a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a><!-- /ko -->\
+                <!-- ko if: value -->\
+                    <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
+                <!-- /ko -->\
                 <div class="autocomplete-twister"></div>\
             </div>\
         <!-- /ko -->\
