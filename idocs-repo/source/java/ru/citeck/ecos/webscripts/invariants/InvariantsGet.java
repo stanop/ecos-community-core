@@ -48,6 +48,7 @@ public class InvariantsGet extends DeclarativeWebScript {
     private static final String PARAM_ASPECTS = "aspects";
     private static final String PARAM_ATTRIBUTES = "attributes";
     private static final String MODEL_INVARIANTS = "invariants";
+    private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
     
     private InvariantService invariantService;
@@ -92,6 +93,7 @@ public class InvariantsGet extends DeclarativeWebScript {
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);
+        model.put(MODEL_CLASS_NAMES, DictionaryUtils.expandClassNames(classNames, dictionaryService));
         model.put(MODEL_MODEL, RepoUtils.buildDefaultModel(serviceRegistry));
         return model;
     }

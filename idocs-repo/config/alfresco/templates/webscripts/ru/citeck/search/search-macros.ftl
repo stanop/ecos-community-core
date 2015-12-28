@@ -12,6 +12,11 @@
             "nodeRef": "${node.nodeRef}",
             "parent": <#if node.parent??>"${node.parent.nodeRef}"<#else>null</#if>,
             "type": "${node.getTypeShort()}",
+            "classNames": [
+                <#list nodeService.getNodeClasses(node) as className>
+                "${shortQName(className)}"<#if className_has_next>,</#if>
+                </#list>
+            ],
             "isDocument": ${node.isDocument?string},
             "isContainer": ${node.isContainer?string},
             "attributes": {
@@ -133,6 +138,11 @@
     {
         "nodeRef": "${node.nodeRef}",
         "type": "${node.typeShort}",
+        "classNames": [
+            <#list nodeService.getNodeClasses(node) as className>
+            "${shortQName(className)}"<#if className_has_next>,</#if>
+            </#list>
+        ],
 		<#assign propNames = getExtraProp(node) />
 		<#list propNames as prop>
 		"${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,

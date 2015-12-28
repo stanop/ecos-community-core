@@ -147,6 +147,10 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
         return DictionaryUtils.getAllNodeTypeNames(node.getNodeRef(), nodeService, dictionaryService);
     }
     
+    public List<QName> getNodeClasses(TemplateNode node) {
+        return DictionaryUtils.getAllNodeClassNames(node.getNodeRef(), nodeService, dictionaryService);
+    }
+    
     public Collection<QName> getChildClasses(String className, boolean recursive) {
         QName classQName = QName.resolveToQName(namespaceService, className);
         return DictionaryUtils.getChildClassNames(classQName, recursive, dictionaryService);
