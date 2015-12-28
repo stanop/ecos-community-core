@@ -60,20 +60,21 @@
 				</list>
 			</parameter>
 		</constraint>
-		<constraint name="payments:constraint:paymentDocumentStatus" type="LIST">
-			<parameter name="allowedValues">
-				<list>
-					<value>new</value>
-					<value>draft</value>
-					<value>onApproval</value>
-					<value>approved</value>
-					<value>forPayment</value>
-					<value>paid</value>
-					<value>canceled</value>
-				</list>
-			</parameter>
-		</constraint>
-	</constraints>
+        <constraint name="payments:constraint:paymentDocumentStatus" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>new</value>
+                    <value>draft</value>
+                    <value>onApproval</value>
+                    <value>approved</value>
+                    <value>confirmed</value>
+                    <value>forPayment</value>
+                    <value>paid</value>
+                    <value>canceled</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
 
 	<types>
 
