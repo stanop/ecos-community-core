@@ -69,6 +69,7 @@
 					<value>archive</value>
 					<value>onCorrection</value>
 					<value>rescinded</value>
+					<value>transferredToAccountant</value>
 				</list>
 			</parameter>
 		</constraint>
