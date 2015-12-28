@@ -101,7 +101,7 @@
 				<bean parent="dbp.model">
 					<property name="model">
 						<map>
-							<entry key="filename" value="${companyhome.nodeByReference[args.nodeRef].properties['cm:name']}" />
+							<entry key="filename" value="#{'$'}{companyhome.nodeByReference[args.nodeRef].properties['cm:name']}" />
 						</map>
 					</property>
 				</bean>
