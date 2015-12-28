@@ -370,6 +370,20 @@ Citeck.utils.attributeValueLoader = new Citeck.utils.BulkLoader({
     }
 });
 
+Citeck.utils.definedAttributesLoader = new Citeck.utils.BulkLoader({
+    url: Alfresco.constants.PROXY_URI + "citeck/attributes/defined",
+    method: "POST",
+    emptyFn: function() { return { types: [], nodes: [] }},
+    addFn: function(query, id) {
+        if(Citeck.utils.isNodeRef(id)) {
+            query.nodes.push(id);
+        } else {
+            query.types.push(id);
+        }
+    },
+    getFn: function(response) { return response.json; }
+})
+
 YAHOO.lang.augmentObject(Citeck.utils.attributeValueLoader, {
     
     separator: "|---|",
@@ -520,6 +534,14 @@ Citeck.utils.isNodeRef = function(string) {
 
 Citeck.utils.isFilename = function(string) {
   return /\..{3}$/.test(string);
+};
+
+Citeck.utils.isShortQName = function(string) {
+  return /^(.+)[:](.+)$/.test(string);
+};
+
+Citeck.utils.isLongQName = Citeck.utils.isFullQName = function(string) {
+  return /^[{](.+)[}](.+)$/.test(string);
 };
 
 Citeck.utils.arrayChunk = function(array, count) {

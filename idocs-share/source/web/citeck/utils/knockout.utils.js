@@ -487,18 +487,21 @@ define(['lib/knockout'], function(ko) {
                     _.each(nativeProperties, function(definition, name) {
                         definition = _.clone(definition);
                         if(definition.cache) {
+                            // create computed
                             var computed = ko.computed({
                                 owner: this,
                                 read: definition.get,
                                 write: definition.set,
                                 deferEvaluation: true
-                            })
+                            }).extend({ rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } })
+                            //}).extend({ deferred: true })
                             definition.get = computed;
                             if(definition.set) {
                                 definition.set = computed;
                             }
                             delete definition.cache;
                         } else {
+                            // make property without computed
                             definition.get = _.bind(definition.get, this);
                             if(definition.set) {
                                 definition.set = _.bind(definition.set, this);
@@ -661,6 +664,8 @@ define(['lib/knockout'], function(ko) {
 					computedProperties[propertyName] = definition;
 					return ViewModelClass;
 				},
+				// if cache == true, the computed will be created for this property
+				// otherwise it will be calculated each time
                 nativeProperty: function(propertyName, definition, cache) {
                     assertNewAttribute("Native", propertyName, definition);
                     if(_.isFunction(definition)) {
