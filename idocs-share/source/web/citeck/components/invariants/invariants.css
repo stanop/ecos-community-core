@@ -1027,15 +1027,14 @@
 .invariants-form .template-table .template-view span.value-item {
   display: block;
   line-height: normal;
-  padding-right: 20px;
+  padding-right: 29px;
   position: relative;
+  margin-bottom: 5px;
 }
 
 .invariants-form .template-table .template-view span.value-item span.value-item-text {
   display: block;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* view in view-mode */
@@ -1048,7 +1047,7 @@
 
 .invariants-form .template-table .template-view span.value-item .value-item-actions {
   position: absolute;
-  top: 0px;
+  top: 2px;
   right: 0px;
 }
 
