@@ -17,6 +17,8 @@
 			<icase:caseClass>${config.caseClass}</icase:caseClass>
 			<icase:elementType>${config.elementType}</icase:elementType>
 			<icase:copyElements>${config.copyElements}</icase:copyElements>
+			<icase:assocName>${config.assocName}</icase:assocName>
+			<icase:assocType>${config.assocType}</icase:assocType>
 		</view:properties>
 	</view:reference>
 </view:view>
