@@ -49,6 +49,7 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.alfresco.service.cmr.repository.TemplateService;
 
 import ru.citeck.ecos.security.NodeOwnerDAO;
 /**
@@ -108,6 +109,10 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 	private Map<String, List<String>> supervisors;
 	private Map<String, List<String>> mandatoryFields;
 	List<String> allowDocList;
+	Map<String, Map<String,String>> subjectTemplates;
+	private TemplateService templateService;
+	private String nodeVariable;
+	private String templateEngine = "freemarker";
 
 	@Override
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
@@ -279,8 +284,21 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 						if(template!=null && nodeService.exists(template))
 						{
 							subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
-							if(subject == null) {
-								subject = task.getName();
+							if (subject == null) {
+								String taskFormKey = (String) task.getVariableLocal("taskFormKey");
+								if (subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
+									Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
+									if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(docsInfo)))) {
+										HashMap<String, Object> model = new HashMap<>(1);
+										model.put(nodeVariable, docsInfo);
+										subject = services.getTemplateService().processTemplateString(templateEngine,
+												taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))),
+												model);
+									}
+								}
+								if (subject == null) {
+									subject = task.getName();
+								}
 							}
 							recipient.addAll(getRecipients(task, template, docsInfo));
 							setBodyTemplate(notificationContext, template);
@@ -417,5 +435,21 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 				}
 			}
 		}
+	}
+	
+	public void setSubjectTemplates(Map<String, Map<String,String>> subjectTemplates) {
+		this.subjectTemplates = subjectTemplates;
+	}
+	
+	public void setTemplateService(TemplateService templateService) {
+		this.templateService = templateService;
+	}
+
+	public void setTemplateEngine(String templateEngine) {
+		this.templateEngine = templateEngine;
+	}
+
+	public void setNodeVariable(String nodeVariable) {
+		this.nodeVariable = nodeVariable;
 	}
 }
