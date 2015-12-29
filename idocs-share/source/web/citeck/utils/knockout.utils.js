@@ -1087,9 +1087,17 @@ define(['lib/knockout'], function(ko) {
     };
 	ko.virtualElements.allowedBindings.API = true;
 	
-	ko.observable.fn.equalityComparer = function simpleComparer(a, b) {
-	    return a === b;
-	};
+    ko.observable.fn.equalityComparer = ko.computed.fn.equalityComparer = function simpleComparer(a, b) {
+        var aa = _.isArray(a),
+            ba = _.isArray(b);
+        if(aa != ba) return false;
+        if(!aa) return a === b;
+        if(a.length != b.length) return false;
+        for(var i = a.length; i--; ) {
+            if(a[i] !== b[i]) return false;
+        }
+        return true;
+    };
 	
 	return koutils;
 	
