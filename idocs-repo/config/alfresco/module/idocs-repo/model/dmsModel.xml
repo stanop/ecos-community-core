@@ -612,6 +612,11 @@
                     <title>Subject Template</title>
                     <type>d:text</type>
                 </property>
+                <property name="dms:documentType">
+                    <title>Document Type</title>
+                    <type>d:qname</type>
+                    <mandatory>false</mandatory>
+                </property>
             </properties>
         </type>
         <type name="dms:applicationFile">

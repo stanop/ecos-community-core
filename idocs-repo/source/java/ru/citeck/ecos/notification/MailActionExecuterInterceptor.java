@@ -191,10 +191,10 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 			for(int i=0; i<mailToMany.size(); i++)
 			{
 				NodeRef recipient = authorityService.getAuthorityNodeRef((String)mailToMany.get(i));
-				logger.debug("mailToMany "+mailToMany+" nodeService.getType(recipient) "+nodeService.getType(recipient));
-				logger.debug("recipient "+recipient);
 				if(recipient!=null && nodeService.exists(recipient))
 				{
+					logger.debug("mailToMany "+mailToMany+" nodeService.getType(recipient) "+nodeService.getType(recipient));
+					logger.debug("recipient "+recipient);
 					recipients.add(recipient);
 					if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
 					{

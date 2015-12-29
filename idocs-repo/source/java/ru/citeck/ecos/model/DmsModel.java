@@ -107,6 +107,7 @@ public final class DmsModel {
 	public static final Object PROP_WORKFLOW_NAME = QName.createQName(DMS_NAMESPACE, "workflowName");
 	public static final QName PROP_TITLE_FOR_RESENDING = QName.createQName(DMS_NAMESPACE, "titleForResending");
 	public static final QName PROP_SUBJECT_TEMPLATE = QName.createQName(DMS_NAMESPACE, "subjectTemplate");
+	public static final QName PROP_DOC_TYPE = QName.createQName(DMS_NAMESPACE, "documentType");
 	
 	// aspect hasApplicationFiles
 	public static final QName ASPECT_HAS_APPLICATION_FILES = QName.createQName(DMS_NAMESPACE, "hasApplicationFiles");

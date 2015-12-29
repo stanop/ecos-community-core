@@ -271,7 +271,7 @@ private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationS
 		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
 		String tkey = (String)task.getVariableLocal("taskFormKey");
 		logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
-		return getNotificationTemplate(wfkey, tkey);
+		return getNotificationTemplate(wfkey, tkey, nodeService.getType(docsInfo));
 	}
 
 	/**
