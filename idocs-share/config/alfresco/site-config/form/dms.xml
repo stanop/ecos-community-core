@@ -395,6 +395,7 @@
                     <show id="dms:additionRecipients"/>
                     <show id="dms:titleForResending"/>
                     <show id="dms:subjectTemplate"/>
+                    <show id="dms:documentType"/>
                     <show id="mimetype"/>
                     <show id="encoding"/>
                 </field-visibility>
@@ -422,6 +423,14 @@
                     <field id="encoding" mandatory="true">
                         <control template="/org/alfresco/components/form/controls/encoding.ftl"/>
                     </field>
+                    <field id="dms:documentType">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=type</control-param>
+                            <control-param name="titleField">prefixedName</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
                 </appearance>
             </form>
         </forms>
@@ -443,6 +452,7 @@
                     <show id="dms:additionRecipients"/>
                     <show id="dms:titleForResending"/>
                     <show id="dms:subjectTemplate"/>
+                    <show id="dms:documentType"/>
                     <show id="cm:content" force="true"/>
                 </field-visibility>
                 <appearance>
@@ -479,6 +489,14 @@
                             <control-param name="searchURLresults"></control-param>
                         </control>
                     </field-->
+                    <field id="dms:documentType">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/classesWithFullQname?cf=type</control-param>
+                            <control-param name="titleField">prefixedName</control-param>
+                            <control-param name="valueField">name</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                        </control>
+                    </field>
 				</appearance>
             </form>
             <form id="search">
