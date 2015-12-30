@@ -72,6 +72,8 @@
                     <value>credit-external-report</value>
                     <value>credit-documents-checking</value>
                     <value>credit-attach-documents</value>
+                    <value>credit-issue</value>
+                    <value>credit-checklist</value>
 
                     <value>financial-monitoring</value>
                     <value>on-credit-committee</value>
