@@ -98,6 +98,7 @@
 		<value>alfresco/module/idocs-repo/workflow/contractor-approval/contractor-approval-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/sign-workflow/sign-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/scan-workflow/scan-workflow-model.xml</value>
+		<value>alfresco/module/idocs-repo/workflow/simple-statement/simple-statement-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/familiarization-workflow/familiar-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/registration/registration-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/confirm-workflow/confirm-workflow-model.xml</value>
