@@ -152,7 +152,7 @@ class KeyPropertyCaseElementDAOImpl extends AbstractCaseElementDAO {
 			throw e;
 		}
 		catch(Throwable e) {
-			throw new AlfrescoRuntimeException("Can not add node reference to case. nodeRef=" + nodeRef + "; caseNode=" + caseNode + "; config=" + config, e);
+			throw new AlfrescoRuntimeException("Can not remove node reference to case. nodeRef=" + nodeRef + "; caseNode=" + caseNode + "; config=" + config, e);
 		}
 	}
 
