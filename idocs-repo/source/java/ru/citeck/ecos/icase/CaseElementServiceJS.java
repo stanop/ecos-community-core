@@ -87,9 +87,9 @@ public class CaseElementServiceJS extends AlfrescoScopableProcessorExtension {
     }
 
     public void copyTemplateToCase(Object template, Object caseNode) {
-        NodeRef caseNodeRef = getNodeRef(caseNode);
         NodeRef templateRef = getNodeRef(template);
-        caseElementService.copyTemplateToCase(caseNodeRef, templateRef);
+        NodeRef caseNodeRef = getNodeRef(caseNode);
+        caseElementService.copyTemplateToCase(templateRef, caseNodeRef);
     }
 
     private NodeRef getNodeRef(Object object) {
