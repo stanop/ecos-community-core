@@ -31,7 +31,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         InvariantScope = koclass('invariants.InvariantScope'),
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
-        ClassInvariantSet = koclass('invariants.ClassInvariantSet'),
+        ExplicitInvariantSet = koclass('invariants.ExplicitInvariantSet', InvariantSet),
+        ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
+        MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
         Message = koclass('invariants.Message'),
         Feature = koclass('invariants.Feature'),
@@ -343,18 +345,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         
     var COMMON_DEFAULT_MODEL_KEY = "default";
     
-    InvariantSet
-        .key('key', s)
-        .property('type', s)
-        .property('aspects', [s])
-        .property('attributes', [s])
-        .property('invariants', [Invariant])
-        .load([ 'invariants' ], koutils.simpleLoad({
-            url: Alfresco.constants.PROXY_URI + "citeck/invariants?type={type}&aspects={aspects}&attributes={attributes}",
-            resultsMap: { invariants: "invariants" }
-        }))
-        ;
-        
     var COMMON_INVARIANTS_KEY = "default";
     
     var invariantsLoader = new Citeck.utils.BulkLoader({
@@ -371,41 +361,119 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         }
     });
     
+    InvariantSet
+        /*.property('invariants', [Invariant])*/
+        .computed('groupedInvariants', function() {
+            return _.groupBy(this.invariants(), this.getInvariantKey, this);
+        })
+        .method('getInvariantKey', function(invariant) {
+            return this.getKey(
+                    invariant.scope().attributeKind(), 
+                    invariant.scope().attribute(),
+                    invariant.feature(),
+                    invariant.isFinal());
+        })
+        .method('getKey', function(kind, name, feature, isFinal) {
+            var sep = "::";
+            return kind + (name ? sep + name : '') + sep + feature + (isFinal ? sep + 'final' : '');
+        })
+        ;
+        
+    ExplicitInvariantSet
+        .key('key', s)
+        .property('invariants', [Invariant])
+        ;
+    
     ClassInvariantSet
         .key('className', s)
         .property('invariants', [Invariant])
         .load('invariants', koutils.bulkLoad(invariantsLoader, "className", "invariants"))
         ;
-        
+    
+    MultiClassInvariantSet
+        .key('classNames', s)
+        .computed('invariants', function() {
+            var classNames = this.classNames().split(',');
+            var invariants = _.flatten(_.map(classNames, function(className) {
+                return new ClassInvariantSet(className).invariants();
+            }));
+            return invariants.sort(function(i1, i2) {
+                // final first
+                if(i1.isFinal() != i2.isFinal()) return i1.isFinal() ? -1 : 1;
+                
+                // highest attribute priority first
+                var a1 = i1.attributeScopeKind().match(/_type$/) == null;
+                var a2 = i2.attributeScopeKind().match(/_type$/) == null;
+                if(a1 != a2) return a1 ? -1 : 1;
+                
+                // highest invariant priority first
+                var priorities = { "common": 1, "module": 2, "extend": 3, "custom": 4, "view-scoped": 5 };
+                var p1 = priorities[i1.priority()] || 0;
+                var p2 = priorities[i2.priority()] || 0;
+                if(p1 != p2) return p1 > p2 ? -1 : 1;
+                
+                // highest class priority first
+                var c1 = i1.classScope();
+                var c2 = i2.classScope();
+                var cp1 = classNames.indexOf(c1);
+                var cp2 = classNames.indexOf(c2);
+                if(cp1 != cp2) return cp1 > cp2 ? -1 : 1;
+                
+                return 0;
+            });
+        })
+        ;
+
     var featureInvariants = function(featureName) {
         return function() {
-            return _.filter(this.invariants(), function(invariant) {
-                return invariant.feature() == featureName;
-            }, this);
-        }
+            var invariantSet = this.invariantSet();
+            if(!invariantSet) return [];
+            
+            var groupedInvariants = invariantSet.groupedInvariants();
+            
+            var info = this.info(),
+                name = info.name(),
+                type = info.type(),
+                kind = type == 'property' ? info.datatype() : info.nodetype();
+                
+            var keys = [
+                invariantSet.getKey(type, name, featureName, true),
+                invariantSet.getKey(type + '_type', kind, featureName, true),
+                invariantSet.getKey(type + '_type', null, featureName, true),
+                invariantSet.getKey(type, name, featureName, false),
+                invariantSet.getKey(type + '_type', kind, featureName, false),
+                invariantSet.getKey(type + '_type', null, featureName, false)
+            ];
+            
+            return _.union.apply(_, _.map(keys, function(key) {
+                return groupedInvariants[key] || [];
+            }, this));
+        };
+    };
+        
+    var featureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
+        return function(model) {
+            var invariantSet = this.invariantSet(),
+                invariant = null,
+                invariantValue = null,
+                invariants = featureInvariants(featureName).call(this);
+            
+            invariant = _.find(invariants, function(invariant) {
+                invariantValue = invariant.evaluate(model);
+                return isTerminate(invariantValue, invariant);
+            });
+            
+            return {
+                invariant: invariant,
+                value: koutils.instantiate(invariant != null ? invariantValue : defaultValue, requiredClass)
+            }
+        };
     };
     
-    var evalInvariants = function(invariants, model, requiredClass, defaultValue, isTerminate) {
-        var invariantValue = null;
-        var invariant = _.find(invariants, function(invariant) {
-            invariantValue = invariant.evaluate(model);
-            return isTerminate(invariantValue, invariant);
-        }, this);
-        return {
-            invariant: invariant,
-            value: koutils.instantiate(isTerminate(invariantValue, invariant) ? invariantValue : defaultValue, requiredClass)
-        };
-    }
-    
-    var featuredProperty = function(featureName, requiredClass, defaultValue, isTerminate) {
+    var featuredProperty = function(featureName) {
         return function() {
-            return evalInvariants(
-                    this[featureName + 'Invariants'](), 
-                    this.invariantsModel(), 
-                    requiredClass, 
-                    defaultValue, 
-                    isTerminate).value;
-        };
+            return this[featureName + 'Evaluator'](this.invariantsModel()).value;
+        }
     };
     
     var notNull = function(value) { return value !== null; }
@@ -531,17 +599,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         .property('node', Node)
-        .computed('invariants', function() {
-            var attrName = this.name(),
-                attrKind = this.type(),
-                attrType = attrKind == 'property' ? this.datatype() : this.nodetype();
-            if(attrKind == null) return [];
-            return _.filter(this.node().impl().invariants(), function(invariant) {
-                var scopeName = invariant.scope().attribute(),
-                    scopeKind = invariant.scope().attributeKind();
-                return scopeKind == attrKind           && (scopeName == attrName || scopeName == null)
-                    || scopeKind == attrKind + "_type" && (scopeName == attrType || scopeName == null);
-            }, this);
+        .computed('invariantSet', function() {
+            return this.node().impl().invariantSet();
         })
         
         .method('getInvariantsModel', function(value, cache) {
@@ -559,27 +618,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             return this.getInvariantsModel(this.value, this.cache = this.cache || {});
         })
         
-        // invariants lists
-        .computed('valueInvariants', featureInvariants('value'))
-        .computed('defaultInvariants', featureInvariants('default'))
-        .computed('optionsInvariants', featureInvariants('options'))
+        // feature evaluators
+        .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
+        .method('defaultEvaluator', featureEvaluator('default', o, null, notNull))
+        .method('optionsEvaluator', featureEvaluator('options', o, null, notNull))
         
-        .computed('titleInvariants', featureInvariants('title'))
-        .computed('descriptionInvariants', featureInvariants('description'))
-        .computed('valueTitleInvariants', featureInvariants('value-title'))
-        .computed('valueDescriptionInvariants', featureInvariants('value-description'))
+        .method('titleEvaluator', featureEvaluator('title', s, '', notNull))
+        .method('descriptionEvaluator', featureEvaluator('description', s, '', notNull))
+        .method('valueTitleEvaluator', featureEvaluator('value-title', s, '', notNull))
+        .method('valueDescriptionEvaluator', featureEvaluator('value-description', s, '', notNull))
 
-        .computed('relevantInvariants', featureInvariants('relevant'))
-        .computed('multipleInvariants', featureInvariants('multiple'))
-        .computed('mandatoryInvariants', featureInvariants('mandatory'))
-        .computed('protectedInvariants', featureInvariants('protected'))
-        .computed('validInvariants', featureInvariants('valid'))
+        .method('relevantEvaluator', featureEvaluator('relevant', b, true, notNull))
+        .method('multipleEvaluator', featureEvaluator('multiple', b, false, notNull))
+        .method('mandatoryEvaluator', featureEvaluator('mandatory', b, false, notNull))
+        .method('protectedEvaluator', featureEvaluator('protected', b, false, notNull))
+        .method('validEvaluator', featureEvaluator('valid', b, true, isFalse))
         
         // value properties:
         .property('newValue', o) // value, set by user
         .property('persistedValue', o) // value, persisted in repository
-        .computed('invariantValue', featuredProperty('value', o, null, notNull))
-        .computed('invariantDefault', featuredProperty('default', o, null, notNull))
+        .computed('invariantValue', featuredProperty('value'))
+        .computed('invariantDefault', featuredProperty('default'))
         .computed('defaultValue', function() {
             return this.convertValue(this.invariantDefault(), this.multiple());
         })
@@ -774,7 +833,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         // options properties
-        .computed('invariantOptions', featuredProperty('options', o, null, notNull))
+        .computed('invariantOptions', featuredProperty('options'))
+        .computed('optionsInvariants', function() {
+            return featureInvariants('options').call(this);
+        })
         .computed('options', function() {
             var options = this.invariantOptions();
             return options ? this.convertValue(options, true) : null;
@@ -802,12 +864,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 return optionsWithConvertedValues;
             }
 
-            return null
+            return [];
         })
         
         .method('getValueTitle', function(value) {
-            return evalInvariants(this.valueTitleInvariants(), 
-                    this.getInvariantsModel(value), String, '', notNull).value;
+            return this.valueTitleEvaluator(this.getInvariantsModel(value)).value;
         })
         .computed('valueTitle', function() {
             return this.getValueTitle(this.singleValue());
@@ -815,20 +876,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .shortcut('value-title', 'valueTitle')
 
         .method('getValueDescription', function(value) {
-            return evalInvariants(_.union(this.valueDescriptionInvariants(), this.valueTitleInvariants()),
-                    this.getInvariantsModel(value), String, '', notNull).value;
+            var model = this.getInvariantsModel(value);
+            return this.valueDescriptionEvaluator(model).value || this.getValueTitle(value);
         })
         .computed('valueDescription', function() {
-            return this.getValueDescription(this.value());
+            return this.getValueDescription(this.singleValue());
         })
         .shortcut('value-description', 'valueDescription')
 
-        .computed('title', featuredProperty('title', s, '', notNull))
-        .computed('description', featuredProperty('description', s, '', notNull))
-        .computed('multiple', featuredProperty('multiple', b, false, notNull))
-        .computed('mandatory', featuredProperty('mandatory', b, false, notNull))
+        .computed('title', featuredProperty('title'))
+        .computed('description', featuredProperty('description'))
+        .computed('multiple', featuredProperty('multiple'))
+        .computed('mandatory', featuredProperty('mandatory'))
 
-        .computed('invariantRelevant', featuredProperty('relevant', b, true, notNull))
+        .computed('invariantRelevant', featuredProperty('relevant'))
         .computed('relevant', function() {
             var forcedAttributes = this.node().impl().forcedAttributes();
             if(!_.isEmpty(forcedAttributes) // is a view attribute
@@ -837,7 +898,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             return this.invariantRelevant();
         })
         
-        .computed('invariantProtected', featuredProperty('protected', b, false, notNull))
+        .computed('invariantProtected', featuredProperty('protected'))
         .computed('protected', function() {
             var invariantValue = this.invariantValue();
             if(invariantValue != null && (!_.isArray(invariantValue) || invariantValue.length > 0)) return true;
@@ -851,7 +912,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         .computed('evaluatedValid', function() {
-            return evalInvariants(this.validInvariants(), this.invariantsModel(), b, true, isFalse);
+            return this.validEvaluator(this.invariantsModel());
         })
         .computed('invariantValid', function() {
             return this.evaluatedValid().value;
@@ -957,49 +1018,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             var processAttributeName = function(name) {
                 if(!createdNames[name]) {
                     createdNames[name] = true;
-                    // this attribute is not persisted (false)
-                    // because either the node is not persisted,
-                    // or the attribute was not in the list of persisted attributes
-                    attributes.push(new Attribute(node, name, false));
+                    // we can't be sure, whether this this attribute is persisted or not
+                    // because not all persisted attributes are in the default attributes list
+                    attributes.push(new Attribute(node, name));
                 }
             };
             _.each(this.definedAttributeNames(), processAttributeName);
             _.each(this.forcedAttributes(), processAttributeName);
             return attributes;
         })
-        .computed('invariants', function() {
-            var runtimeInvariants = this.resolve('runtime.invariants');
-            if(runtimeInvariants) return runtimeInvariants;
-            
-            var classNames = this.node().impl().classNames()
-                    .concat(COMMON_INVARIANTS_KEY);
-            var invariants = _.flatten(_.map(classNames, function(className) {
-                return new ClassInvariantSet(className).invariants();
-            }));
-            return invariants.sort(function(i1, i2) {
-                // final first
-                if(i1.isFinal() != i2.isFinal()) return i1.isFinal() ? -1 : 1;
-                
-                // highest attribute priority first
-                var a1 = i1.attributeScopeKind().match(/_type$/) == null;
-                var a2 = i2.attributeScopeKind().match(/_type$/) == null;
-                if(a1 != a2) return a1 ? -1 : 1;
-                
-                // highest invariant priority first
-                var priorities = { "common": 1, "module": 2, "extend": 3, "custom": 4, "view-scoped": 5 };
-                var p1 = priorities[i1.priority()] || 0;
-                var p2 = priorities[i2.priority()] || 0;
-                if(p1 != p2) return p1 > p2 ? -1 : 1;
-                
-                // highest class priority first
-                var c1 = i1.classScope();
-                var c2 = i2.classScope();
-                var cp1 = classNames.indexOf(c1);
-                var cp2 = classNames.indexOf(c2);
-                if(cp1 != cp2) return cp1 > cp2 ? -1 : 1;
-                
-                return 0;
-            });
+        .computed('invariantSet', function() {
+            return this.resolve('runtime.invariantSet') 
+                || new MultiClassInvariantSet(this.classNames().join(','));
         })
         .property('permissions', o)
         
@@ -1503,7 +1533,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .key('key', s)
         .property('node', Node)
         .property('parent', Runtime)
-        .property('invariants', [Invariant])
+        .property('invariantSet', ExplicitInvariantSet)
         .constant('rootObjects', rootObjects)
         
         .method('submit', function() {

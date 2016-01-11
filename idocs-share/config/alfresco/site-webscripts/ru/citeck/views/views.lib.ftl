@@ -202,7 +202,10 @@
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderModel defaultModel />,
 					},
-					invariants: <@views.renderInvariants invariants />
+					invariantSet: {
+						key: "${runtimeKey}",
+						invariants: <@views.renderInvariants invariants />
+					}
 				}
 			});
 		});
