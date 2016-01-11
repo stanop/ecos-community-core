@@ -6,7 +6,7 @@
         var types = json.get('types');
         for(var i = 0, ii = types.length(); i < ii; i++) {
             var typeName = types.get(i);
-            defined[typeName] = attributes.getDefined(typeName);
+            defined[typeName] = attributes.getDefined(typeName, false);
         }
     }
     

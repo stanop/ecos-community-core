@@ -78,8 +78,10 @@ public class ChildAssocAttributes extends AbstractAttributeProvider {
     }
 
     @Override
-    public Set<QName> getDefinedAttributeNames(QName typeName) {
-        return DictionaryUtils.getAllChildAssociationNames(Collections.singleton(typeName), dictionaryService);
+    public Set<QName> getDefinedAttributeNames(QName typeName, boolean inherit) {
+        return inherit 
+                ? DictionaryUtils.getAllChildAssociationNames(Collections.singleton(typeName), dictionaryService)
+                : DictionaryUtils.getDefinedChildAssociationNames(typeName, dictionaryService);
     }
 
     @Override

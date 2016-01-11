@@ -843,8 +843,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         
         .method('filterOptions', function(criteria, pagination) {
-            if(_.isEmpty(criteria)) return this.options();
-            
             // find invariant with correct query
             var model = this.getInvariantsModel(this.value, criteria.cache = criteria.cache || {}),
                 optionsInvariant = _.find(this.optionsInvariants(), function(invariant) {
@@ -1602,7 +1600,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     _.each({
         "cm:auditable": [ "cm:created", "cm:creator", "cm:modified", "cm:modifier", "cm:accessed" ],
         "sys:localized": [ "sys:locale" ],
-        "sys:referenceable": [ "sys:store-protocol", "sys:store-identifier", "sys:node-uuid", "sys:node-dbid" ],
+        "sys:referenceable": [ "sys:store-protocol", "sys:store-identifier", "sys:node-uuid", "sys:node-dbid", "attr:noderef" ],
         "sys:incomplete": [],
         "cm:ownable": ["cm:owner"],
     }, function(attributes, name) {
@@ -1610,6 +1608,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             name: name,
             qname: name,
             isAspect: true,
+            attributes: attributes
+        })
+    });
+    
+    // create common types statically
+    _.each({
+        "sys:base": [ "attr:types", "attr:aspects", "attr:parent", "attr:parentassoc" ],
+        "cm:cmobject": ["cm:name"],
+        "cm:content": ["cm:content"],
+        "cm:folder": ["cm:contains"],
+        "cm:authority": [],
+        "cm:authorityContainer": ["cm:authorityName", "cm:authorityDisplayName", "cm:member"],
+        "cm:category": ["cm:subcategories"],
+        "dl:dataListItem": []
+    }, function(attributes, name) {
+        new DDClass({
+            name: name,
+            qname: name,
+            isAspect: false,
             attributes: attributes
         })
     });

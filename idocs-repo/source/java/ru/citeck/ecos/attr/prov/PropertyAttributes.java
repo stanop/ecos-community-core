@@ -64,8 +64,10 @@ public class PropertyAttributes extends AbstractAttributeProvider {
     }
 
     @Override
-    public Set<QName> getDefinedAttributeNames(QName typeName) {
-        return DictionaryUtils.getAllPropertyNames(Collections.singleton(typeName), dictionaryService);
+    public Set<QName> getDefinedAttributeNames(QName typeName, boolean inherit) {
+        return inherit
+                ? DictionaryUtils.getAllPropertyNames(Collections.singleton(typeName), dictionaryService)
+                : DictionaryUtils.getDefinedPropertyNames(typeName, dictionaryService);
     }
 
     @Override

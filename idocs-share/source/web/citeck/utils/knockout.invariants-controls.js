@@ -613,12 +613,13 @@ ko.bindingHandlers.journalControl = {
 
         // hide loading indicator if options got elements
         options.subscribe(function(newValue) {
-            loading(false);
+            loading(_.isUndefined(newValue.pagination));
         })
 
         // extend notify
         criteria.extend({ notify: 'always' });
         pageNumber.extend({ notify: 'always' });
+        options.extend({ notify: 'always' });
 
     
         if (!journalType) {

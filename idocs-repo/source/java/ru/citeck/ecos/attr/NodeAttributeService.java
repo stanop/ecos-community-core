@@ -85,12 +85,21 @@ public interface NodeAttributeService {
     public Set<QName> getDefinedAttributeNames(NodeRef nodeRef);
     
     /**
-     * Get names of attributes, that are defined for the given class in data dictionary.
+     * Get names of attributes, that are defined for the given class in data dictionary (including inherited attributes).
      * 
-     * @param nodeRef
-     * @return
+     * @param className name of type/aspect for which to get defined attributes
+     * @return list of defined attributes
      */
     public Set<QName> getDefinedAttributeNames(QName className);
+    
+    /**
+     * Get names of attributes, that are defined for the given class in data dictionary.
+     * 
+     * @param className name of type/aspect for which to get defined attributes
+     * @param inherit inherit attributes from parent type and default aspects or not
+     * @return list of defined attributes
+     */
+    public Set<QName> getDefinedAttributeNames(QName className, boolean inherit);
     
     /**
      * Get attribute value for the specified node, that is currently persisted in repository.
