@@ -104,29 +104,29 @@ var containerKinds = [
                 "multiple": false
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-fam-composition",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-fam-composition",
                 "mandatory": null,
                 "multiple": false
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-workplace-appl",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-workplace-appl",
                 "mandatory": "credit-project",
                 "multiple": true,
                 "containerType": "workspace://SpacesStore/type-c-individual"
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-salary-appl",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-salary-appl",
                 "mandatory": "credit-project",
                 "multiple": true,
                 "containerType": "workspace://SpacesStore/type-c-individual"
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-сommittee",
+                "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-committee",
                 "mandatory": "credit-project",
                 "multiple": false,
                 "containerType": "workspace://SpacesStore/type-c-legal"
             },{
-                "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-сommittee-chp",
+                "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-committee-chp",
                 "mandatory": "credit-project",
                 "multiple": false,
                 "containerType": ["workspace://SpacesStore/type-c-chp", "workspace://SpacesStore/type-c-ip"]
@@ -137,7 +137,7 @@ var containerKinds = [
                 "multiple": false
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сert-nodbt-wth-tax-committee",
+                "nodeRef": "workspace://SpacesStore/kind-d-cert-nodbt-wth-tax-committee",
                 "mandatory": null,
                 "multiple": false
             },
@@ -229,14 +229,14 @@ var containerKinds = [
                 "multiple": false
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-workplace-grnt",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-workplace-grnt",
                 "mandatory": "credit-agreement",
                 "multiple": true,
                 "containerType":["workspace://SpacesStore/type-c-individual", "workspace://SpacesStore/type-c-legal", "workspace://SpacesStore/type-c-ip"]
 
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-salary-grnt",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-salary-grnt",
                 "mandatory": "credit-agreement",
                 "multiple": true,
                 "containerType":["workspace://SpacesStore/type-c-individual", "workspace://SpacesStore/type-c-legal", "workspace://SpacesStore/type-c-ip"]
@@ -290,13 +290,13 @@ var containerKinds = [
                 "multiple": true
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-Interpol",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-Interpol",
                 "mandatory": null,
                 "multiple": false,
                 "containerType": "workspace://SpacesStore/type-c-vehicle"
             },
             {
-                "nodeRef": "workspace://SpacesStore/kind-d-сertificate-no-debt",
+                "nodeRef": "workspace://SpacesStore/kind-d-certificate-no-debt",
                 "mandatory": null,
                 "multiple": false,
                 "containerType": "workspace://SpacesStore/type-c-vehicle"
@@ -560,37 +560,37 @@ var documentKinds = [
         "type": "workspace://SpacesStore/type-d-personal"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-fam-composition",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-fam-composition",
         "name": "Справка о составе семьи",
         "type": "workspace://SpacesStore/type-d-personal"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-workplace-appl",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-workplace-appl",
         "name": "Справка с места работы заявителя",
         "type": "workspace://SpacesStore/type-d-personal"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-workplace-grnt",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-workplace-grnt",
         "name": "Справка с места работы поручителя",
         "type": "workspace://SpacesStore/type-d-guarantor"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-salary-appl",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-salary-appl",
         "name": "Справка о зарплате заявителя",
         "type": "workspace://SpacesStore/type-d-personal"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-salary-grnt",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-salary-grnt",
         "name": "Справка о зарплате поручителя",
         "type": "workspace://SpacesStore/type-d-guarantor"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-Interpol",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-Interpol",
         "name": "Справка из Интерпола",
         "type": "workspace://SpacesStore/type-d-deposit"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сertificate-no-debt",
+        "nodeRef": "workspace://SpacesStore/kind-d-certificate-no-debt",
         "name": "Справка о не задолженности с ГАИ по камера",
         "type": "workspace://SpacesStore/type-d-deposit"
     },
@@ -680,12 +680,12 @@ var documentKinds = [
         "type": "workspace://SpacesStore/type-d-credit"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-сommittee",
+        "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-committee",
         "name": "Свидетельство о регистрации в налоговом комитете",
         "type": "workspace://SpacesStore/type-d-personal"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-сommittee-chp",
+        "nodeRef": "workspace://SpacesStore/kind-d-cert-reg-tax-committee-chp",
         "name": "Свидетельство о регистрации в налоговом комитете (патент) выписка к свидетельству",
         "type": "workspace://SpacesStore/type-d-personal"
     },
@@ -695,7 +695,7 @@ var documentKinds = [
         "type": "workspace://SpacesStore/type-d-personal"
     },
     {
-        "nodeRef": "workspace://SpacesStore/kind-d-сert-nodbt-wth-tax-committee",
+        "nodeRef": "workspace://SpacesStore/kind-d-cert-nodbt-wth-tax-committee",
         "name": "Справка о не задолженности с налогового комитета",
         "type": "workspace://SpacesStore/type-d-personal"
     },
