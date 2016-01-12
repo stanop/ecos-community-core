@@ -74,7 +74,7 @@ public interface AttributeProvider {
      * @param className
      * @return
      */
-    public Set<QName> getDefinedAttributeNames(QName className);
+    public Set<QName> getDefinedAttributeNames(QName className, boolean inherit);
     
     /**
      * Get names of attributes, that are exposed in {@link NodeAttributeService#getAttributes(NodeRef)} method.

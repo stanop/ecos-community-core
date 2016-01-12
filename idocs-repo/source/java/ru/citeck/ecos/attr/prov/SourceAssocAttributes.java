@@ -53,7 +53,7 @@ public class SourceAssocAttributes extends AbstractAttributeProvider {
 
     @Override
     public boolean provides(QName attributeName) {
-        return getDefinition(attributeName) != null;
+        return getDefinition(getAssociationName(attributeName)) != null;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class SourceAssocAttributes extends AbstractAttributeProvider {
     }
 
     @Override
-    public Set<QName> getDefinedAttributeNames(QName typeName) {
+    public Set<QName> getDefinedAttributeNames(QName typeName, boolean inherit) {
         // for type no source assocs are considered as defined
         return Collections.emptySet();
     }

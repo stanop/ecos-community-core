@@ -613,12 +613,13 @@ ko.bindingHandlers.journalControl = {
 
         // hide loading indicator if options got elements
         options.subscribe(function(newValue) {
-            loading(false);
+            loading(_.isUndefined(newValue.pagination));
         })
 
         // extend notify
         criteria.extend({ notify: 'always' });
         pageNumber.extend({ notify: 'always' });
+        options.extend({ notify: 'always' });
 
     
         if (!journalType) {
@@ -1059,9 +1060,9 @@ ko.components.register("autocomplete", {
         }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
         this.criteria = ko.pureComputed(function() {
+            var query = self.searchQuery();
             return _.map(params["criteria"] || self.defaults.criteria, function(item) {
-                item.value = self.searchQuery();
-                return item;
+                return _.defaults({ value: query }, item);
             });
         });
 
@@ -1071,7 +1072,7 @@ ko.components.register("autocomplete", {
                                                     skipCount: 0, 
                                                     searchScript: self.searchScript 
                                                 }) : [];
-        });
+        }).extend({ notify: 'always' });
         
 
         // subscription and events

@@ -84,9 +84,14 @@ public class NodeAttributeServiceImpl implements NodeAttributeService {
 
     @Override
     public Set<QName> getDefinedAttributeNames(QName className) {
+        return getDefinedAttributeNames(className, true);
+    }
+
+    @Override
+    public Set<QName> getDefinedAttributeNames(QName className, boolean inherit) {
         Set<QName> attributeNames = new HashSet<>(attributeProviders.size() * ATTRIBUTE_PROVIDER_BUCKETS);
         for(AttributeProvider provider : attributeProviders) {
-            attributeNames.addAll(provider.getDefinedAttributeNames(className));
+            attributeNames.addAll(provider.getDefinedAttributeNames(className, inherit));
         }
         return attributeNames;
     }

@@ -38,8 +38,8 @@ public class NodeAttributeServiceJS extends AlfrescoScopableProcessorExtension {
         return convert(impl.getDefinedAttributeNames(node.getNodeRef()));
     }
     
-    public String[] getDefined(String className) {
-        return convert(impl.getDefinedAttributeNames(convert(className)));
+    public String[] getDefined(String className, boolean inherit) {
+        return convert(impl.getDefinedAttributeNames(convert(className), inherit));
     }
 
     public Object get(ScriptNode node, String attributeName) {
