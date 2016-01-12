@@ -56,7 +56,7 @@ public class CaseSubcaseBehavior implements
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ICaseModel.ASPECT_CASE, 
                 new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
         policyComponent.bindClassBehaviour(CaseElementPolicies.OnCaseElementAddPolicy.QNAME, ICaseModel.ASPECT_CASE, 
-                new JavaBehaviour(this, "onCaseElementAdd", NotificationFrequency.EVERY_EVENT));
+                new JavaBehaviour(this, "onCaseElementAdd", NotificationFrequency.TRANSACTION_COMMIT));
         policyComponent.bindClassBehaviour(CaseElementPolicies.OnCaseElementRemovePolicy.QNAME, ICaseModel.ASPECT_CASE, 
                 new JavaBehaviour(this, "onCaseElementRemove", NotificationFrequency.EVERY_EVENT));
 	}
