@@ -32,7 +32,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 
 import ru.citeck.ecos.behavior.ParameterizedJavaBehaviour;
 import ru.citeck.ecos.model.ICaseModel;
@@ -407,23 +406,20 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         switch(associationType) {
         case CHILD:
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME,
-                    ICaseModel.ASPECT_CASE, assocName,
-                    ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", NotificationFrequency.TRANSACTION_COMMIT, config)));
+                    ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", config)));
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteChildAssociationPolicy.QNAME, 
                     ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementRemove", config)));
             break;
         case TARGET:
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
-                    ICaseModel.ASPECT_CASE, assocName,
-                    ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", NotificationFrequency.TRANSACTION_COMMIT, config)));
+                    ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", config)));
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
                     ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementRemove", config)));
             break;
         case SOURCE:
             QName elementType = needElementType(config);
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
-                    elementType, assocName,
-                    ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", NotificationFrequency.TRANSACTION_COMMIT, config)));
+                    elementType, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", config)));
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
                     elementType, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementRemove", config)));
             break;
