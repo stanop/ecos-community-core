@@ -138,6 +138,24 @@
 					</field>
                 </appearance>
             </form>
+            <form id="inline">
+                <field-visibility>
+                    <show id="bpm:comment"/>
+                    <show id="wfgfam:familiarizeOutcome"/>
+                </field-visibility>
+                <appearance>
+                    <set id="response" appearance="whitespace"/>
+
+                    <field id="bpm:comment" label-id="workflow.field.comment" set="response">
+                        <control template="/ru/citeck/components/form/controls/autoresizable-textarea.ftl"/>
+                    </field>
+                    <field id="wfgfam:familiarizeOutcome" label-id="workflow.field.outcome" set="response">
+                        <control template="/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl">
+                            <control-param name="options">familiarized|workflowtask.outcome.familiarized</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
         </forms>
 	</config>
 

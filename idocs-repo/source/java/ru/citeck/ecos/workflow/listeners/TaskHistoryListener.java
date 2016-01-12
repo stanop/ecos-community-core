@@ -165,7 +165,6 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		
 		qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
-		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
 		VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
 		VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
 	}
