@@ -53,7 +53,7 @@ public class SourceAssocAttributes extends AbstractAttributeProvider {
 
     @Override
     public boolean provides(QName attributeName) {
-        return getDefinition(getAssociationName(attributeName)) != null;
+        return getDefinition(attributeName) != null;
     }
 
     @Override
