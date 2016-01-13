@@ -138,16 +138,20 @@
     {
         "nodeRef": "${node.nodeRef}",
         "type": "${node.typeShort}",
+    <#if node.hasPermission("Read")>
         "classNames": [
             <#list nodeService.getNodeClasses(node) as className>
             "${shortQName(className)}"<#if className_has_next>,</#if>
             </#list>
         ],
-		<#assign propNames = getExtraProp(node) />
-		<#list propNames as prop>
-		"${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,
-		</#list>
-        "displayName": <#if node.hasPermission("Read")>"${node.properties["cm:title"]!node.properties["itmpl:generatedName"]!node.name}"<#else>""</#if>
+        <#assign propNames = getExtraProp(node) />
+        <#list propNames as prop>
+        "${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,
+        </#list>
+        "displayName": "${node.properties["cm:title"]!node.properties["itmpl:generatedName"]!node.name}"
+    <#else>
+        "displayName": ""
+    </#if>
     }
     </#escape>
 </#macro>
