@@ -7,6 +7,7 @@
 	<imports>
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
 	</imports>
 
 	<namespaces>
@@ -29,13 +30,8 @@
     <types>
         <type name="bcal:calendar">
 			<title>Business Calendar</title>
-            <parent>cm:cmobject</parent>
+            <parent>dl:dataListItem</parent>
 			<properties>
-				<!--property name="bcal:date">
-					<title>Date</title>
-					<type>d:date</type>
-				</property-->
-
 				<property name="bcal:dateFrom">
 					<title>Date From</title>
 					<type>d:date</type>
