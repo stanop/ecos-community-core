@@ -15,6 +15,7 @@
 		</field>
 		<field prop="bcal:remark">
 			<region name="input" template="select"/>
+			<invariant on="mandatory" language="explicit">true</invariant>
 		</field>
 	</view>
 	
