@@ -839,7 +839,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         .computed('options', function() {
             var options = this.invariantOptions();
-            return options ? this.convertValue(options, true) : null;
+            return options ? this.convertValue(options, true) : [];
         })
         
         .method('filterOptions', function(criteria, pagination) {
@@ -1027,7 +1027,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         .computed('invariantSet', function() {
             return this.resolve('runtime.invariantSet') 
-                || new MultiClassInvariantSet(this.classNames().join(','));
+                || new MultiClassInvariantSet(this.classNames().concat(COMMON_INVARIANTS_KEY).join(','));
         })
         .property('permissions', o)
         
@@ -1044,11 +1044,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         })
         .computed('types', function() {
             var types = this.attribute('attr:types');
-            return types ? types.value() : [];
+            return types ? types.multipleValues() : [];
         })
         .computed('aspects', function() {
             var aspects = this.attribute('attr:aspects');
-            return aspects ? aspects.value() : [];
+            return aspects ? aspects.multipleValues() : [];
         })
         
         .property('forcedAttributes', [s])

@@ -62,17 +62,17 @@
                         <#if params.journalType??>
                             <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
                                 <!-- ko foreach: defaultAttributes -->
-                                    <!-- ko if: $parents[1].attribute($data.name()) -->
-                                        <td data-bind="text: $parents[1].attribute($data.name()).value"></td>
+                                    <!-- ko with: $parents[1].attribute($data.name()) -->
+                                        <td data-bind="text: valueTitle"></td>
                                     <!-- /ko -->
                                 <!-- /ko -->
                             <!-- /ko -->
                         <#elseif params.columns??>
-                            <!-- ko foreach: "${params.columns}".split(",") -->
-                                <!-- ko if: $parent.attribute($data) -->
-                                    <td data-bind="text: $parent.attribute($data).valueTitle"></td>
+                            <#list params.columns?split(",") as column>
+                                <!-- ko with: attribute("${column}") -->
+                                    <td data-bind="text: valueTitle"></td>
                                 <!-- /ko -->
-                            <!-- /ko -->
+                            </#list>
                         <#else>
                             <!-- ko foreach: attributes -->
                                 <td data-bind="text: textValue"></td>
