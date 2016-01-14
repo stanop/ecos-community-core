@@ -124,6 +124,20 @@ public class DictionaryUtils {
         }
     }
     
+    public static Collection<ClassDefinition> getParentClasses(ClassDefinition classDef, DictionaryService dictionaryService) {
+        Collection<ClassDefinition> parentClasses = new ArrayList<>();
+        ClassDefinition parent = classDef.getParentClassDefinition();
+        while(parent != null) {
+            parentClasses.add(parent);
+            parent = parent.getParentClassDefinition();
+        }
+        return parentClasses;
+    }
+    
+    public static Collection<QName> getParentClassNames(QName className, DictionaryService dictionaryService) {
+        return getClassNames(getParentClasses(dictionaryService.getClass(className), dictionaryService));
+    }
+    
     /**
      * Expand list of class names to another list of class names, which contains all parents and aspects.
      * The most basic classes appear first in the list.
