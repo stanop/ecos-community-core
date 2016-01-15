@@ -1093,6 +1093,10 @@ define(['lib/knockout'], function(ko) {
         if(aa != ba) return false;
         if(!aa) return a === b;
         if(a.length != b.length) return false;
+        // note: if push, pop or other array functions are called on observableArray
+        // equalityComparer is called with two equal arrays
+        // so we have to return false notify about change
+        if(a === b) return false;
         for(var i = a.length; i--; ) {
             if(a[i] !== b[i]) return false;
         }
