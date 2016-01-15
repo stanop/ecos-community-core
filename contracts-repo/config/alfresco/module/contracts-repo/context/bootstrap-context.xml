@@ -62,4 +62,9 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean parent="nodeViewsDeployer">
+		<property name="location"
+			value="alfresco/module/contracts-repo/views/contracts-views.xml" />
+	</bean>
 </beans>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0"
+			prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0"
+			prefix="tk" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0"
+			prefix="idocs" />
+		<import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
+		<import uri="http://www.citeck.ru/model/dms/1.0" prefix="dms" />
+		<import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
+	</imports>
+
+	<views mode="create">
+		<fields assoc="contracts:closingDocument">
+			<invariant on="default" language="javascript">view.params.contracts
+			</invariant>
+			<invariant on="protected" language="javascript"><![CDATA[view.params.contracts != null]]></invariant>
+		</fields>
+
+		<fields assoc="contracts:agreement">
+			<invariant on="default" language="javascript">view.params.contracts
+			</invariant>
+			<invariant on="protected" language="javascript"><![CDATA[view.params.contracts != null]]></invariant>
+		</fields>
+		
+		<fields assoc="contracts:supplementaryAgreement">
+			<invariant on="default" language="javascript">view.params.contracts
+			</invariant>
+			<invariant on="protected" language="javascript"><![CDATA[view.params.contracts != null]]></invariant>
+		</fields>
+		
+	</views>
+
+	<view class="contracts:closingDocument">
+		<views mode="create" kind="3-column" />
+		<views mode="edit" kind="3-column" />
+		<view kind="1-column">
+			<field prop="cm:name">
+				<region name="input" template="textarea" />
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+		</view>
+
+
+		<view>
+			<field assoc="contracts:closingDocumentPayment" >
+				<region name="select" template="select-journal" >
+					 <param name="journalType">payments</param>
+				</region>
+			</field>
+			<field assoc="contracts:closingDocumentAgreement" >
+				<param name="compactMode">false</param>
+				<param name="defaultMode">picker</param>
+				<region name="select" template="select-journal" >
+					 <param name="journalType">contract-agreements</param>
+				</region>
+			</field>
+			<field assoc="contracts:closingDocumentOriginalLocation" >
+				<param name="compactMode">false</param>
+				<param name="defaultMode">picker</param>
+				<region name="select" template="select-journal" >
+					 <param name="journalType">original-location</param>
+				</region>
+			</field>
+		</view>
+
+		<view>
+			<field assoc="contracts:closingDocumentSigner" >
+				<param name="compactMode">false</param>
+			</field>
+			<field assoc="idocs:legalEntity" >
+				<param name="compactMode">false</param>
+			</field>
+		</view>
+
+		<view>
+			<field prop="tk:kind" >
+				<param name="compactMode">false</param>
+			</field>
+			<field prop="contracts:closingDocumentDate" />
+			<field prop="contracts:closingDocumentNumber">
+				<region name="select" template="number-generate">
+					<param name="template">closing-doc-number-template</param>
+				</region>
+			</field>
+		</view>
+
+		<view>
+			<field prop="cm:content" />
+		</view>
+
+	</view>
+
+	<view class="contracts:agreement">
+		<views mode="create" kind="3-column" />
+		<views mode="edit" kind="3-column" />
+		<view>
+			<field assoc="contracts:agreementLegalEntity" >
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+			<field assoc="contracts:contractor" >
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+			<field prop="contracts:contractWith" />
+		</view>
+		<view>
+			<field assoc="contracts:agreementSubject" />			
+			<field prop="tk:kind" >
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+		</view>
+		<view>
+			<field prop="contracts:agreementNumber">
+				<region name="select" template="number-generate">
+					<param name="template">agreement-number-template</param>
+				</region>
+			</field>
+			<field prop="contracts:agreementDate" />
+			<field prop="contracts:duration" />
+		</view>
+		<view>
+			<field assoc="contracts:agreementCurrency" />
+
+			<field prop="contracts:agreementAmount" />
+			<field prop="contracts:VAT" />
+		</view>
+		<view kind="1-column">
+			<field prop="idocs:summary" />
+		</view>
+		<view>
+			<field prop="idocs:appendixPagesNumber" />
+			<field prop="idocs:pagesNumber" />
+		</view>
+		<view>
+			<field assoc="idocs:signatory" />
+			<field assoc="idocs:performer" />
+		</view>
+		<view>
+			<field assoc="payments:payments" />
+		</view>
+	</view>
+	
+	<view class="contracts:supplementaryAgreement">
+		<views mode="create" kind="3-column" />
+		<views mode="edit" kind="3-column" />
+		<view>
+			<field assoc="contracts:agreementLegalEntity" >
+				<region name="select" template="select-journal" >
+					 <param name="journalType">legal-entities</param>
+				</region>
+				<invariant on="mandatory" language="explicit">true</invariant> 
+			</field>
+			<field assoc="contracts:contractor" >
+				<region name="select" template="select-journal" >
+					 <param name="journalType">idocs-contractor</param>
+				</region>
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+			<field prop="contracts:contractWith" >
+				<region name="select" template="select-journal" >
+					 <param name="journalType">idocs-contractor</param>
+				</region>
+			</field>
+			
+		</view>
+		<view>
+			<field assoc="contracts:agreementSubject" >
+				<region name="select" template="select-journal" >
+					 <param name="journalType">contract-subjects</param>
+				</region>
+			</field>
+			
+			<field prop="tk:kind" >
+				<region name="select" template="select-journal" >
+					 <param name="journalType">idocs-contractor</param>
+				</region>
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+		</view>
+		<view>
+			<field prop="contracts:agreementNumber">
+				<region name="select" template="number-generate">
+					<param name="template">supAgreement-number-template</param>
+				</region>
+			</field>
+			<field prop="contracts:agreementDate" />
+			<field prop="contracts:duration" />
+		</view>
+		<view>
+			<field assoc="contracts:agreementCurrency" />
+
+			<field prop="contracts:agreementAmount" />
+			<field prop="contracts:VAT" />
+		</view>
+		<view kind="1-column">
+			<field prop="idocs:summary" />
+		</view>
+		<view>
+			<field prop="idocs:appendixPagesNumber" />
+			<field prop="idocs:pagesNumber" />
+		</view>
+		<view>
+			<field assoc="idocs:signatory" />
+			<field assoc="idocs:performer" />
+		</view>
+		<view>
+			<field assoc="payments:payments" />
+		</view>
+	</view>
+	
+	<view class="payments:payment">
+		<views mode="create" kind="3-column" />
+		<views mode="edit" kind="3-column" />
+		<view>
+			<field assoc="payments:basis" >
+			</field>
+			<field assoc="payments:budgetItem" />
+			<field prop="payments:paymentFor" />
+		</view>
+		<view kind="1-column">
+			<field prop="payments:paymentPurpose" />
+		</view>
+		<view>
+			<field assoc="payments:payer" />
+			<field prop="payments:paymentArrangement" />
+			<field prop="payments:paymentNumber">
+				<region name="select" template="number-generate">
+					<param name="template">payment-number-template</param>
+				</region>
+			</field>
+		</view>
+		<view>
+			<field assoc="payments:beneficiaryAccount" />
+			<field prop="payments:beneficiaryType" />
+		</view>
+		<view>
+			<field prop="payments:plannedPaymentDate" />
+			<field assoc="payments:period" />
+		</view>
+		<view>
+			<field assoc="payments:currency" />
+			<field prop="payments:paymentAmount" />
+			<field prop="payments:paymentVAT" />
+		</view>
+		<view>
+			<field prop="payments:billDate" />
+		</view>
+		<view>
+			<field prop="payments:overexpenditure" />
+			</view>
+		<view>
+			<field prop="payments:paymentComment" />
+		</view>
+	</view>
+	
+	
+</views>
