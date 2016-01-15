@@ -225,8 +225,14 @@ function applyOrgstruct(scope, items, existingGroups, existingUsers, cfg) {
 			var user = existingUsers[item.userName];
 
 			if(user == null) {
-				logger.warn("Couldn't find user " + item.userName);
-				continue;
+				if(args.createMissingUsers) {
+					user = existingUsers = people.createPerson(item.userName);
+					user.properties["cm:firstName"] = item.userName;
+					user.save();
+				} else {
+					logger.warn("Couldn't find user " + item.userName);
+					continue;
+				}
 			}
 			var userName = user.properties["cm:userName"];
 

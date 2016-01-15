@@ -1,5 +1,5 @@
 <#-- many checkboxes with label -->
-<!-- ko if: options -->
+<!-- ko ifnot: datatype() == 'd:boolean' -->
   <!-- ko component: { name: "checkbox-radio", params: {
     groupName: name,
     options: options,
@@ -10,6 +10,6 @@
 <!-- /ko -->
 
 <#-- single checkbox without label -->
-<!-- ko ifnot: options -->
+<!-- ko if: datatype() == 'd:boolean' -->
     <input id="${fieldId}" type="checkbox" data-bind="checked: value, disable: protected" />
 <!-- /ko -->

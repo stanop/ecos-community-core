@@ -122,14 +122,6 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		process(template, model, outputStream);
 		
 		try {
-		    OutputStream test = new FileOutputStream("C:/work/test-docx-freemarker-template.docx");
-		    test.write(outputStream.toByteArray());
-		    test.close();
-		} catch (Exception e1) {
-		    logger.error("test failed", e1);
-		}
-		
-		try {
 			out.write(new String(outputStream.toByteArray(), Charset.forName("ISO-8859-1")));
 		} catch (IOException e) {
 			logger.error("Write failed", e);

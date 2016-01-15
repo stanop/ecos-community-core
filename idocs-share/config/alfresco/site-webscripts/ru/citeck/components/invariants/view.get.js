@@ -6,7 +6,7 @@
     if(view == null) return;
 
     var attributes = getAttributes(view);
-    var invariantSet = getInvariantSet(view['class'], attributes);
+    var invariantSet = getInvariantSet(args, attributes);
     var viewScopedInvariants = getViewScopedInvariants(view);
     var defaultModel = {};
     for(var name in invariantSet.model) {
@@ -23,6 +23,7 @@
     model.view = view;
     model.attributes = attributes;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
+    model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
 
 })()

@@ -405,20 +405,20 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
         QName assocName = needAssocName(config);
         switch(associationType) {
         case CHILD:
-            behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME, 
+            behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME,
                     ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", config)));
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteChildAssociationPolicy.QNAME, 
                     ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementRemove", config)));
             break;
         case TARGET:
-            behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME, 
+            behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
                     ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", config)));
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
                     ICaseModel.ASPECT_CASE, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementRemove", config)));
             break;
         case SOURCE:
             QName elementType = needElementType(config);
-            behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME, 
+            behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
                     elementType, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementAdd", config)));
             behaviours.add(policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
                     elementType, assocName, ParameterizedJavaBehaviour.newInstance(this, "onCaseElementRemove", config)));

@@ -12,6 +12,11 @@
             "nodeRef": "${node.nodeRef}",
             "parent": <#if node.parent??>"${node.parent.nodeRef}"<#else>null</#if>,
             "type": "${node.getTypeShort()}",
+            "classNames": [
+                <#list nodeService.getNodeClasses(node) as className>
+                "${shortQName(className)}"<#if className_has_next>,</#if>
+                </#list>
+            ],
             "isDocument": ${node.isDocument?string},
             "isContainer": ${node.isContainer?string},
             "attributes": {
@@ -133,11 +138,20 @@
     {
         "nodeRef": "${node.nodeRef}",
         "type": "${node.typeShort}",
-		<#assign propNames = getExtraProp(node) />
-		<#list propNames as prop>
-		"${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,
-		</#list>
-        "displayName": <#if node.hasPermission("Read")>"${node.properties["cm:title"]!node.properties["itmpl:generatedName"]!node.name}"<#else>""</#if>
+    <#if node.hasPermission("Read")>
+        "classNames": [
+            <#list nodeService.getNodeClasses(node) as className>
+            "${shortQName(className)}"<#if className_has_next>,</#if>
+            </#list>
+        ],
+        <#assign propNames = getExtraProp(node) />
+        <#list propNames as prop>
+        "${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,
+        </#list>
+        "displayName": "${node.properties["cm:title"]!node.properties["itmpl:generatedName"]!node.name}"
+    <#else>
+        "displayName": ""
+    </#if>
     }
     </#escape>
 </#macro>

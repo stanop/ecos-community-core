@@ -20,9 +20,12 @@ package ru.citeck.ecos.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.alfresco.service.cmr.dictionary.AspectDefinition;
@@ -119,6 +122,20 @@ public class DictionaryUtils {
         } else {
             return dictionaryService.getSubTypes(className, recursive);
         }
+    }
+    
+    public static Collection<ClassDefinition> getParentClasses(ClassDefinition classDef, DictionaryService dictionaryService) {
+        Collection<ClassDefinition> parentClasses = new ArrayList<>();
+        ClassDefinition parent = classDef.getParentClassDefinition();
+        while(parent != null) {
+            parentClasses.add(parent);
+            parent = parent.getParentClassDefinition();
+        }
+        return parentClasses;
+    }
+    
+    public static Collection<QName> getParentClassNames(QName className, DictionaryService dictionaryService) {
+        return getClassNames(getParentClasses(dictionaryService.getClass(className), dictionaryService));
     }
     
     /**
@@ -234,6 +251,94 @@ public class DictionaryUtils {
     public static Set<AssociationDefinition> getAllChildAssociations(Collection<ClassDefinition> classes, DictionaryService dictionaryService) {
         return getAllAssociations(classes, true, dictionaryService);
     }
+    
+    //
+    // Defined Attributes Methods
+    //
+    
+    private static Map<QName, PropertyDefinition> getDefinedPropertiesMap(
+            ClassDefinition classDef, DictionaryService dictionaryService) {
+        Map<QName, PropertyDefinition> definedProps = classDef.getProperties();
+        Map<QName, PropertyDefinition> inheritedProps = Collections.emptyMap();
+        if(classDef.getParentClassDefinition() != null) {
+            inheritedProps = classDef.getParentClassDefinition().getProperties();
+        }
+        Map<QName, PropertyDefinition> result = new HashMap<>();
+        for(Map.Entry<QName, PropertyDefinition> entry : definedProps.entrySet()) {
+            if(!inheritedProps.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    public static Set<PropertyDefinition> getDefinedProperties(ClassDefinition classDef, DictionaryService dictionaryService) {
+        return new HashSet<>(getDefinedPropertiesMap(classDef, dictionaryService).values());
+    }
+    
+    public static Set<PropertyDefinition> getDefinedProperties(QName className, DictionaryService dictionaryService) {
+        return getDefinedProperties(dictionaryService.getClass(className), dictionaryService);
+    }
+    
+    public static Set<QName> getDefinedPropertyNames(ClassDefinition classDef, DictionaryService dictionaryService) {
+        return getDefinedPropertiesMap(classDef, dictionaryService).keySet();
+    }
+    
+    public static Set<QName> getDefinedPropertyNames(QName className, DictionaryService dictionaryService) {
+        return getDefinedPropertyNames(dictionaryService.getClass(className), dictionaryService);
+    }
+    
+    
+    private static Map<QName, AssociationDefinition> getDefinedAssociationsMap(
+            ClassDefinition classDef, boolean needChild,
+            DictionaryService dictionaryService) {
+        Map<QName, AssociationDefinition> definedAssocs = classDef.getAssociations();
+        Map<QName, AssociationDefinition> inheritedAssocs = Collections.emptyMap();
+        if(classDef.getParentClassDefinition() != null) {
+            inheritedAssocs = classDef.getParentClassDefinition().getAssociations();
+        }
+        Map<QName, AssociationDefinition> result = new HashMap<>();
+        for(Map.Entry<QName, AssociationDefinition> entry : definedAssocs.entrySet()) {
+            if(entry.getValue().isChild() == needChild && !inheritedAssocs.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    public static Set<AssociationDefinition> getDefinedAssociations(ClassDefinition classDef, DictionaryService dictionaryService) {
+        return new HashSet<>(getDefinedAssociationsMap(classDef, false, dictionaryService).values());
+    }
+    
+    public static Set<AssociationDefinition> getDefinedAssociations(QName className, DictionaryService dictionaryService) {
+        return getDefinedAssociations(dictionaryService.getClass(className), dictionaryService);
+    }
+    
+    public static Set<QName> getDefinedAssociationNames(ClassDefinition classDef, DictionaryService dictionaryService) {
+        return getDefinedAssociationsMap(classDef, false, dictionaryService).keySet();
+    }
+    
+    public static Set<QName> getDefinedAssociationNames(QName className, DictionaryService dictionaryService) {
+        return getDefinedAssociationNames(dictionaryService.getClass(className), dictionaryService);
+    }
+    
+    public static Set<AssociationDefinition> getDefinedChildAssociations(ClassDefinition classDef, DictionaryService dictionaryService) {
+        return new HashSet<>(getDefinedAssociationsMap(classDef, true, dictionaryService).values());
+    }
+    
+    public static Set<AssociationDefinition> getDefinedChildAssociations(QName className, DictionaryService dictionaryService) {
+        return getDefinedChildAssociations(dictionaryService.getClass(className), dictionaryService);
+    }
+    
+    public static Set<QName> getDefinedChildAssociationNames(ClassDefinition classDef, DictionaryService dictionaryService) {
+        return getDefinedAssociationsMap(classDef, true, dictionaryService).keySet();
+    }
+    
+    public static Set<QName> getDefinedChildAssociationNames(QName className, DictionaryService dictionaryService) {
+        return getDefinedChildAssociationNames(dictionaryService.getClass(className), dictionaryService);
+    }
+    
+    
 
     /**
      * Get defining classes for specified attributes (properties and/or associations).

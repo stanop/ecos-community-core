@@ -78,10 +78,10 @@
 	<#return false />
 </#function>
 
-<#macro renderAttributes attributes>
+<#macro renderQNames qnames>
 	[
-		<#list attributes as attribute>
-			"${attribute}"<#if attribute_has_next>,</#if>
+		<#list qnames as qname>
+			"${qname}"<#if qname_has_next>,</#if>
 		</#list>
 	]
 </#macro>
@@ -197,12 +197,13 @@
 						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
-						invariants: "${runtimeKey}"
-					},
-					invariants: {
-						key: "${runtimeKey}",
+						classNames: <@views.renderQNames classNames />,
+						forcedAttributes: <@views.renderQNames attributes />,
+						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderModel defaultModel />,
-						attributes: <@views.renderAttributes attributes />,
+					},
+					invariantSet: {
+						key: "${runtimeKey}",
 						invariants: <@views.renderInvariants invariants />
 					}
 				}

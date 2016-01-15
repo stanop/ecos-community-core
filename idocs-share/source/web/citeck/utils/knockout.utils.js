@@ -487,18 +487,21 @@ define(['lib/knockout'], function(ko) {
                     _.each(nativeProperties, function(definition, name) {
                         definition = _.clone(definition);
                         if(definition.cache) {
+                            // create computed
                             var computed = ko.computed({
                                 owner: this,
                                 read: definition.get,
                                 write: definition.set,
                                 deferEvaluation: true
-                            })
+                            }).extend({ rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } })
+                            //}).extend({ deferred: true })
                             definition.get = computed;
                             if(definition.set) {
                                 definition.set = computed;
                             }
                             delete definition.cache;
                         } else {
+                            // make property without computed
                             definition.get = _.bind(definition.get, this);
                             if(definition.set) {
                                 definition.set = _.bind(definition.set, this);
@@ -661,6 +664,8 @@ define(['lib/knockout'], function(ko) {
 					computedProperties[propertyName] = definition;
 					return ViewModelClass;
 				},
+				// if cache == true, the computed will be created for this property
+				// otherwise it will be calculated each time
                 nativeProperty: function(propertyName, definition, cache) {
                     assertNewAttribute("Native", propertyName, definition);
                     if(_.isFunction(definition)) {
@@ -1082,9 +1087,17 @@ define(['lib/knockout'], function(ko) {
     };
 	ko.virtualElements.allowedBindings.API = true;
 	
-	ko.observable.fn.equalityComparer = function simpleComparer(a, b) {
-	    return a === b;
-	};
+    ko.observable.fn.equalityComparer = ko.computed.fn.equalityComparer = function simpleComparer(a, b) {
+        var aa = _.isArray(a),
+            ba = _.isArray(b);
+        if(aa != ba) return false;
+        if(!aa) return a === b;
+        if(a.length != b.length) return false;
+        for(var i = a.length; i--; ) {
+            if(a[i] !== b[i]) return false;
+        }
+        return true;
+    };
 	
 	return koutils;
 	

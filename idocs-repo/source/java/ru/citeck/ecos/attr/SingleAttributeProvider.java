@@ -87,8 +87,8 @@ public abstract class SingleAttributeProvider<T> extends AbstractAttributeProvid
     }
     
     @Override
-    public Set<QName> getDefinedAttributeNames(QName typeName) {
-        return getAttributeNameSet(isDefined(typeName));
+    public Set<QName> getDefinedAttributeNames(QName typeName, boolean inherit) {
+        return getAttributeNameSet(isDefined(typeName, inherit));
     }
 
     @Override
@@ -120,8 +120,8 @@ public abstract class SingleAttributeProvider<T> extends AbstractAttributeProvid
         return true;
     }
 
-    protected boolean isDefined(QName typeName) {
-        return true;
+    protected boolean isDefined(QName typeName, boolean inherit) {
+        return inherit;
     }
 
     protected boolean isDefault() {

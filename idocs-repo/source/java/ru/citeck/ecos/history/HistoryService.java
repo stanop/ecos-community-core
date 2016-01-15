@@ -29,11 +29,14 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.AssociationRef;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -49,6 +52,8 @@ import java.util.Map;
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
 public class HistoryService {
+
+    private static Log logger = LogFactory.getLog(HistoryService.class);
 
     public static final String SYSTEM_USER = "system";
 
@@ -107,7 +112,11 @@ public class HistoryService {
                 NodeRef historyEvent = nodeService.createNode(getHistoryRoot(), ContentModel.ASSOC_CONTAINS, assocName, type, properties).getChildRef();
 
                 if (initiator != null) {
-                    nodeService.createAssociation(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR);
+                    if (!RepoUtils.isAssociated(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR, nodeService)) {
+                        nodeService.createAssociation(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR);
+                    } else {
+                        logger.warn("Association " + HistoryModel.ASSOC_INITIATOR.toString() + " already exists between " + historyEvent.toString() + " and " + initiator.toString());
+                    }
                     persistAdditionalProperties(historyEvent, initiator);
                 }
                 if (document != null) {

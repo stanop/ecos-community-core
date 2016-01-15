@@ -16,8 +16,8 @@ function getAttributesRecursively(element, attributes) {
     }
 }
 
-function getInvariantSet(type, attributes) {
-    var response = remote.call('/citeck/invariants?type=' + type +
+function getInvariantSet(args, attributes) {
+    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
         (attributes && attributes.length ? "&attributes=" + attributes.join(',') : ''));
     return eval('(' + response + ')');
 }
