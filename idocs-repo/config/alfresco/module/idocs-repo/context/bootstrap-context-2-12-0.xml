@@ -386,4 +386,10 @@
 		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/check-app-share.js"/>
 	</bean>
 
+	<bean id="idocs.module-component.script.add-admin-to-orgstruct-groups" parent="idocs.import-scripts.2-12-0">
+		<property name="name" value="add-admin-to-orgstruct-groups" />
+		<property name="description" value="Add admin to all orgstruct groups" />
+		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-admin-to-orgstruct-groups.js"/>
+	</bean>
+
 </beans>
