@@ -554,12 +554,33 @@ JournalsWidget
 		// init columns
 		var columns = _.map(visibleAttributes, function(attr) {
 			var options = journalType ? journalType.attribute(attr.name()) : null;
-			return new Column({
+			return {
 				id: attr.name(),
 				sortable: options ? options.sortable() : false,
 				formatter: options ? options.settings().formatter : null
-			});
+			};
 		}, this);
+		
+		// support link column
+		var linkFormatterName = 'doubleClickLink',
+		    recordUrl = this.recordUrl();
+		var linkColumn = _.find(columns, function(column) { 
+		    return (column.formatter || "").startsWith(linkFormatterName) 
+		});
+		if(linkColumn) {
+		    if(linkColumn.formatter != linkFormatterName) 
+		        linkColumn = null;
+		} else if (recordUrl) {
+		    linkColumn = _.find(columns, function(column) { return column.formatter == null });
+		}
+		if(linkColumn) {
+		    linkColumn.formatter = recordUrl ? 
+		            Citeck.format[linkFormatterName](recordUrl, this.recordIdField()) : 
+		            null;
+		}
+		
+		columns = _.map(columns, function(data) { return new Column(data) });
+		
 		// init action column
 		var actionGroupId = this.actionGroupId();
 		if(actionGroupId == buttonsActionGroupId) {
@@ -625,9 +646,10 @@ JournalsWidget
 	})
 	.property('selectedId', s)
 	.shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
+	.shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
 	.computed('gotoAddress', function() {
 		var id = this.selectedId(),
-			url = this.resolve('journal.type.options.doubleClickLink');
+			url = this.recordUrl();
 		if(!id || !url) return null;
 		return YAHOO.lang.substitute(url, {
 			id: id
