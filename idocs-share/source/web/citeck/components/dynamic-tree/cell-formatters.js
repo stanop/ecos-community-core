@@ -493,8 +493,18 @@
                 if (sData) {
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
                     var label = YAHOO.lang.substitute(labelTemplate, sData);
-                    elCell.innerHTML = '<a class="document-link" href="' + url + '">' + label + '</a>';
+                    elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" href="' + url + '">' + label + '</a>';
                 }
+            }
+        },
+        
+        doubleClickLink: function(urlTemplate, fieldId) {
+            return function (elCell, oRecord, oColumn, sData) {
+                var label = sData || Alfresco.util.message("label.none");
+                var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, {
+                    id: oRecord.getData(fieldId)
+                }));
+                elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" href="' + url + '">' + label + '</a>';
             }
         },
 
