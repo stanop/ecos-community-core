@@ -102,10 +102,11 @@
         </page-titles>
     </config>
 
-	<!-- Overdue tasks link menu -->
+	<!-- Site pages -->
 	<config evaluator="string-compare" condition="SitePages">
 		<pages>
 			<page id="journals">journals2/list/main</page>
+			<page id="site-document-types">site-document-types</page>
 		</pages>
 	</config>
 

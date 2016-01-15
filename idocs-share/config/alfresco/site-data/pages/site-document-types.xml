@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <id>site-document-types</id>
+    <title>Customize site types</title>
+    <title-id>page.site-document-types.title</title-id>
+    <description>Add types to site</description>
+    <description-id>page.site-document-types.description</description-id>
+    <template-instance>site-document-types</template-instance>
+    <authentication>user</authentication>
+</page>
