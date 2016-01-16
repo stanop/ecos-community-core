@@ -8,21 +8,18 @@ var demoGroups = [
     {"name" : "GROUP_company_director"}
 ];
 
-function isDemoGroup(groupName) {
-    for (var i = 0; i < demoGroups.length; i++) {
-        if (groupName.localeCompare(demoGroups[i].name)) {
+function userInGroup(group, userName) {
+    var allUsers = group.allUsers;
+    for(var i in allUsers) {
+        if(allUsers[i].userName == userName)
             return true;
-        }
     }
     return false;
 }
 
-var groupTypes = orgstruct.getGroupTypes();
-for (var i = 0; i < groupTypes.length; i++) {
-    var groupList = orgstruct.getAllTypedGroups(groupTypes[i], false);
-    for (var j = 0; j < groupList.length; j++) {
-        if (isDemoGroup(groupList[j].getFullName())) {
-            groupList[j].addAuthority("admin");
-        }
-    }
+for (var i = 0; i < demoGroups.length; i++) {
+    var group = groups.getGroupForFullAuthorityName(demoGroups[i].name);
+    if(!group) continue;
+    if(userInGroup(group, "admin")) continue;
+    group.addAuthority("admin");
 }
