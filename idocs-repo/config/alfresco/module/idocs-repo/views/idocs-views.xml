@@ -32,5 +32,17 @@
 		<view class="idocs:publicRegInfo" />
 		<view class="idocs:entityInfo" />
 	</view>
-	
+
+	<view class="idocs:unit">
+		<field prop="cm:title"/>
+	</view>
+
+	<view class="idocs:procductsAndServices">
+		<field prop="cm:title"/>
+		<field prop="cm:description"/>
+		<field prop="idocs:PaSType"/>
+		<field prop="idocs:pricePerUnit"/>
+		<field assoc="idocs:elementUnit"/>
+	</view>
+
 </views>
