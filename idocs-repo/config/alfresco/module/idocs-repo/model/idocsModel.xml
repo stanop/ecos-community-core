@@ -126,6 +126,14 @@
             </parameter>
         </constraint>
 
+        <constraint name="idocs:constraint:alowedPaSTypes" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>product</value>
+                    <value>service</value>
+                </list>
+            </parameter>
+        </constraint>
     </constraints>
 
     <types>
@@ -438,6 +446,30 @@
         <type name="idocs:entity">
             <title>Entity</title>
             <parent>dl:dataListItem</parent>
+        </type>
+
+        <type name="idocs:unit">
+            <title>Units</title>
+            <parent>dl:dataListItem</parent>
+        </type>
+
+        <type name="idocs:procductsAndServices">
+            <title>Products and services</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:pricePerUnit">
+                    <type>d:double</type>
+                </property>
+                <property name="idocs:PaSType">
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="idocs:constraint:alowedPaSTypes"/>
+                    </constraints>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>idocs:hasUnit</aspect>
+            </mandatory-aspects>
         </type>
 
     </types>
@@ -970,6 +1002,23 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="idocs:hasUnit">
+            <associations>
+                <association name="idocs:elementUnit">
+                    <title>Unit</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:unit</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
 
     </aspects>
