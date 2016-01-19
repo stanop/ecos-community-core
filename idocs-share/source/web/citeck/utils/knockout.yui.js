@@ -77,9 +77,7 @@ ko.bindingHandlers.yuiPaginator = {
     }
 };
 
-var formatters = Citeck.format,
-    msg = Alfresco.util.message,
-    DT = {
+var DT = {
     getColumns: function(columns, columnTemplate) {
         if(!columnTemplate) return columns;
         return _.map(columns, function(column) {
@@ -98,48 +96,8 @@ var formatters = Citeck.format,
             }
         });
     },
-    formatters: {
-        "qname": formatters.qname(false),
-        "date": formatters.date("dd.MM.yyyy"),
-        "datetime": formatters.date("dd.MM.yyyy HH:mm"),
-        "noderef": formatters.node(),
-        "category": formatters.node(),
-        "association": formatters.node(),
-        "boolean": formatters.bool(msg('label.yes'), msg('label.no')),
-        "filesize": formatters.fileSize("attributes['cm:content']"),
-        "mimetype": formatters.icon(16, "attributes['cm:name']"),
-        "typeName": formatters.typeName()
-    },
     getFormatter: function(column) {
-    
-        // custom formatter
-        var formatter = column.formatter();
-        if(formatter) {
-            if(typeof formatter == "function") {
-                return formatter;
-            } else {
-                return formatters.multiple(formatters.loadedFormatter(formatter));
-            }
-        }
-        
-        // labels formatter
-        var labels = column.labels();
-        if(labels) {
-            var classPrefix = column.id().replace(/\W/g, '_') + "-";
-            formatter = formatters.code(labels, classPrefix, classPrefix);
-        } else if(column.datatype()) {
-            // type formatter
-            formatter = this.formatters[column.datatype()];
-        } else {
-            formatter = formatters.loading();
-        }
-        
-        // multiple values wrapper
-        if(formatter) {
-            return formatters.multiple(formatter);
-        } else {
-            return null; // use default
-        }
+        return column.formatter();
     }
 };
 

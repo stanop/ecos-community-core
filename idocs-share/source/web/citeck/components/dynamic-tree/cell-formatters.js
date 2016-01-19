@@ -498,9 +498,9 @@
             }
         },
         
-        doubleClickLink: function(urlTemplate, fieldId) {
+        doubleClickLink: function(urlTemplate, fieldId, formatter) {
             return function (elCell, oRecord, oColumn, sData) {
-                var label = sData || Alfresco.util.message("label.none");
+                var label = formatter && (formatter.apply(this, arguments), elCell.innerHTML) || sData || Alfresco.util.message("label.none");
                 var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, {
                     id: oRecord.getData(fieldId)
                 }));

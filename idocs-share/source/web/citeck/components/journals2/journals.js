@@ -28,8 +28,22 @@ var logger = Alfresco.logger,
 		$buttonSubscribe = HasButtons.subscribe,
 		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
 		koclass = koutils.koclass,
+		formatters = Citeck.format,
+		msg = Alfresco.util.message,
 		$isNodeRef = Citeck.utils.isNodeRef;
 
+var defaultFormatters = {
+    "qname": formatters.qname(false),
+    "date": formatters.date("dd.MM.yyyy"),
+    "datetime": formatters.date("dd.MM.yyyy HH:mm"),
+    "noderef": formatters.node(),
+    "category": formatters.node(),
+    "association": formatters.node(),
+    "boolean": formatters.bool(msg('label.yes'), msg('label.no')),
+    "filesize": formatters.fileSize("attributes['cm:content']"),
+    "mimetype": formatters.icon(16, "attributes['cm:name']"),
+    "typeName": formatters.typeName()
+};
 
 // class declarations:
 var criteriaCounter = 0,
@@ -550,36 +564,44 @@ JournalsWidget
 	.shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
 	.computed('columns', function() {
 		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []),
-			journalType = this.resolve('journal.type');
+			journalType = this.resolve('journal.type'),
+			linkFormatterName = 'doubleClickLink',
+			recordUrl = this.recordUrl(),
+			linkSupplied = recordUrl == null;
+		
 		// init columns
 		var columns = _.map(visibleAttributes, function(attr) {
-			var options = journalType ? journalType.attribute(attr.name()) : null;
+			var options = journalType ? journalType.attribute(attr.name()) : null,
+			    formatter = options ? options.settings().formatter : null,
+			    includeLink = false;
+			
+			if(formatter) {
+			    formatter = formatters.loadedFormatter(formatter);
+			} else if(attr.labels()) {
+			    var classPrefix = attr.name().replace(/\W/g, '_') + "-";
+			    formatter = formatters.code(attr.labels(), classPrefix, classPrefix);
+			    includeLink = !linkSupplied;
+			} else if(attr.datatype()) {
+			    formatter = defaultFormatters[attr.datatype().name()];
+			    if(!formatter) includeLink = !linkSupplied;
+			} else {
+			    formatter = formatters.loading();
+			}
+			
+			if(includeLink) {
+			    formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter);
+			    linkSupplied = true;
+			}
+			if(formatter) formatter = formatters.multiple(formatter);
+			
 			return {
 				id: attr.name(),
 				sortable: options ? options.sortable() : false,
-				formatter: options ? options.settings().formatter : null
+				formatter: formatter
 			};
 		}, this);
 		
-		// support link column
-		var linkFormatterName = 'doubleClickLink',
-		    recordUrl = this.recordUrl();
-		var linkColumn = _.find(columns, function(column) { 
-		    return (column.formatter || "").startsWith(linkFormatterName) 
-		});
-		if(linkColumn) {
-		    if(linkColumn.formatter != linkFormatterName) 
-		        linkColumn = null;
-		} else if (recordUrl) {
-		    linkColumn = _.find(columns, function(column) { return column.formatter == null });
-		}
-		if(linkColumn) {
-		    linkColumn.formatter = recordUrl ? 
-		            Citeck.format[linkFormatterName](recordUrl, this.recordIdField()) : 
-		            null;
-		}
-		
-		columns = _.map(columns, function(data) { return new Column(data) });
+		columns = _.map(columns, Column);
 		
 		// init action column
 		var actionGroupId = this.actionGroupId();
@@ -600,7 +622,7 @@ JournalsWidget
 		columns.unshift(new ActionsColumn({
 			id: 'selected',
 			label: '',
-			formatter: Citeck.format.checkbox('selected')
+			formatter: formatters.checkbox('selected')
 		}));
 		return columns;
 	})
