@@ -122,7 +122,7 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
             switch(lockStatus) {
             case NO_LOCK:
             case LOCK_EXPIRED:
-                nodeService.setProperty(node, propQName, nodeRefs);
+                setIndexProperty(node, propQName, nodeRefs);
                 break;
             case LOCK_OWNER:
                 LockType lockType = lockService.getLockType(node);
@@ -136,7 +136,7 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
                     } catch (Exception e) {
                         throw AlfrescoRuntimeException.create(e, "Unexpected exception during unlock");
                     }
-                    nodeService.setProperty(node, propQName, nodeRefs);
+                    setIndexProperty(node, propQName, nodeRefs);
                     lockService.lock(node, lockType);
                 } else {
                     logger.error("Node is locked, but lock type is null: " + node);
@@ -148,6 +148,14 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
 
         } finally {
             behaviourFilter.enableBehaviour(node);
+        }
+    }
+
+    private void setIndexProperty(NodeRef node, QName propQName, ArrayList<NodeRef> nodeRefs) {
+        if(nodeRefs.isEmpty()) {
+            nodeService.removeProperty(node, propQName);
+        } else {
+            nodeService.setProperty(node, propQName, nodeRefs);
         }
     }
 
