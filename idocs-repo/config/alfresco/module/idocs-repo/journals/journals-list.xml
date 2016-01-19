@@ -186,7 +186,7 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="cm:title" default="true"/>
+			<header key="cm:name" default="true"/>
 		</headers>
 	</journal>
 
@@ -195,10 +195,10 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="cm:title" default="true"/>
+			<header key="cm:name" default="true"/>
 			<header key="cm:description" default="true"/>
 			<header key="idocs:pricePerUnit" default="true"/>
-			<header key="idocs:unit" default="true"/>
+			<header key="idocs:elementUnit" default="true"/>
 			<header key="idocs:PaSType" default="true"/>
 		</headers>
 	</journal>
