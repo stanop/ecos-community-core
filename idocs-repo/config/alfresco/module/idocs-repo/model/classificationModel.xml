@@ -59,6 +59,20 @@
 				</property>
 			</properties>
 		</aspect>
+		
+		<aspect name="tk:documentSite">
+			<associations>
+				<association name="tk:siteDocumentTypes">
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:category</class>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
 
 		<!--aspect name="tk:documentTypeKindTemplate">
 			<associations>
