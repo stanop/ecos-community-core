@@ -565,7 +565,6 @@ JournalsWidget
 	.computed('columns', function() {
 		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []),
 			journalType = this.resolve('journal.type'),
-			linkFormatterName = 'doubleClickLink',
 			recordUrl = this.recordUrl(),
 			linkSupplied = recordUrl == null;
 		
@@ -609,13 +608,13 @@ JournalsWidget
 			columns.push(new ActionsColumn({
 				id: 'actions',
 				label: this.msg("column.actions"),
-				formatter: 'buttons'
+				formatter: formatters.buttons()
 			}));
 		} else if(actionGroupId != noneActionGroupId) {
 			columns.push(new ActionsColumn({
 				id: 'actions',
 				label: this.msg("column.actions"),
-				formatter: 'actions("' + actionGroupId + '")'
+				formatter: formatters.actions(actionGroupId)
 			}));
 		}
 		// init selected column
