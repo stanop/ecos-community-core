@@ -1,3 +1,13 @@
+function filter(array, predicate) {
+    var result = [];
+    for(var i in array) {
+        if(predicate(array[i])) {
+            result.push(array[i]);
+        }
+    }
+    return result;
+}
+
 (function() {
     var response = remote.call('/citeck/site/document-types?site=' + args.site);
     var data = eval('(' + response + ')');
@@ -6,6 +16,8 @@
         return;
     }
     
-    
-    
+    model.allTypes = data.types;
+    model.selectedTypes = filter(data.types, function(type) {
+        return type.onSite;
+    })
 })()

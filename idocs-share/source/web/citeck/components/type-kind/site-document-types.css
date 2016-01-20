@@ -1,0 +1,63 @@
+.site-document-types > .available-types {
+    float: left;
+}
+
+.site-document-types > .available-types > ul {
+    background: #EEE;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 20em;
+    width: 300px;
+}
+
+.site-document-types > .available-types > ul > li {
+    background: #EEE;
+    cursor: pointer;
+    padding: 0.5em;
+    margin: 0.5em;
+    border: 1px solid #EEE;
+}
+
+.site-document-types > .available-types > ul > li:hover {
+    border: 1px solid #CCC;
+}
+
+.site-document-types > .current-types {
+    overflow: hidden;
+}
+
+.site-document-types > .current-types > span,
+.site-document-types > .available-types > span {
+    font-weight: bold;
+}
+
+.site-document-types > .current-types > ul > li {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+    height: 5em;
+    border: 1px solid #CCC;
+    padding: 0.5em;
+    margin: 0.5em;
+}
+
+.site-document-types > .current-types > ul > li > .remove {
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+    width: 16px;
+    height: 16px;
+    background: no-repeat;
+    background-image: url(../../../themes/citeckTheme/images/remove.png);
+}
+
+.site-document-types > .current-types > ul > li > .remove:hover {
+    background-image: url(../../../themes/citeckTheme/images/remove-active.png);
+    cursor: pointer;
+}
+
+.site-document-types > .buttons {
+    clear: both;
+    text-align: center;
+    padding: 1em;
+}

@@ -35,7 +35,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     
     DocumentType
         .key('nodeRef', s)
-        .property('title', s)
+        .property('name', s)
         .property('folder', s)
         .property('journal', s)
         .property('createVariant', CreateVariant)
@@ -43,26 +43,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     
     Site
         .key('name', s)
-        .property('persistedTypes', [DocumentType])
-        .property('selectedTypes', [DocumentType])
         .property('allTypes', [DocumentType])
+        .property('selectedTypes', [DocumentType])
+        .property('currentTypes', [DocumentType])
         .computed('availableTypes', function() {
-            return _.difference(this.allTypes(), this.selectedTypes());
+            return _.difference(this.allTypes(), this.currentTypes());
         })
         .computed('typesToAdd', function() {
-            return _.difference(this.selectedTypes(), this.persistedTypes());
+            return _.difference(this.currentTypes(), this.selectedTypes());
         })
         .computed('typesToRemove', function() {
-            return _.difference(this.persistedTypes(), this.selectedTypes());
+            return _.difference(this.selectedTypes(), this.currentTypes());
         })
         
         .method('addType', function(type) {
-            if(this.selectedTypes().indexOf(type) == -1) {
-                this.selectedTypes.push(type);
+            if(this.currentTypes().indexOf(type) == -1) {
+                this.currentTypes.push(type);
             }
         })
         .method('removeType', function(type) {
-            this.selectedTypes.remove(type);
+            this.currentTypes.remove(type);
         })
         
         .save(function(site) {
