@@ -150,7 +150,28 @@ import ru.citeck.ecos.utils.DictionaryUtils;
 		if(logger.isDebugEnabled()) {
 			logger.debug("Found cardlets: " + cardlets.size());
 		}
-		return cardlets;
+//		return cardlets;
+		return filterCardletsByAllowedType(cardlets, types);
+	}
+
+	/**
+	 * This method fix wrong search results by property cardlet:allowedType in Lucene and Solr searches
+	 *
+	 * @param cardlets
+	 * @param types
+     * @return
+     */
+	private List<NodeRef> filterCardletsByAllowedType(List<NodeRef> cardlets, List<QName> types) {
+		List<NodeRef> filteredCardlets = new ArrayList<>(cardlets.size());
+		for (NodeRef cardletRef : cardlets) {
+			QName allowedType = (QName) nodeService.getProperty(cardletRef, CardletModel.PROP_ALLOWED_TYPE);
+			if (types.contains(allowedType)) {
+				filteredCardlets.add(cardletRef);
+			} else {
+				logger.warn("Search returns wrong cardlet with allowedType = " + allowedType.toString());
+			}
+		}
+		return filteredCardlets;
 	}
 
 	private List<NodeRef> queryCardModes(List<QName> types, Collection<String> authorities) {
