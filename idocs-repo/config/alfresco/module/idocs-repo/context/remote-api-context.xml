@@ -409,23 +409,6 @@
         <property name="namespaceService" ref="NamespaceService"/>
     </bean>
 
-    <bean id="webscript.ru.citeck.search.criteria-search.post" parent="dbp.webscript.view">
-        <property name="processors">
-            <list>
-                <bean parent="dbp.query.construct">
-                    <property name="builder" ref="luceneQueryBuilder"/>
-                </bean>
-                <bean parent="dbp.query.execute">
-                    <property name="language" value="lucene"/>
-                </bean>
-                <bean parent="dbp.model.default" />
-                <bean parent="dbp.template.json">
-                    <property name="template" value="alfresco/templates/webscripts/ru/citeck/search/criteria-search.post.json.ftl"/>
-                </bean>
-            </list>
-        </property>
-    </bean>
-    
     <bean id="webscript.ru.citeck.report.criteria-report.post" parent="dbp.webscript.view">
         <property name="processors">
             <list>

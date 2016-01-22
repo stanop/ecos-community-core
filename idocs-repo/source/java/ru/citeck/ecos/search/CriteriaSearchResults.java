@@ -28,18 +28,21 @@ public class CriteriaSearchResults {
     
     private final SearchCriteria criteria;
     private final List<NodeRef> results;
+    private final String query;
     private Long totalCount = 0L;
     private boolean more = false;
     
-    private CriteriaSearchResults(SearchCriteria criteria, List<NodeRef> results) {
+    private CriteriaSearchResults(SearchCriteria criteria, List<NodeRef> results, String query) {
         this.criteria = criteria;
         this.results = Collections.unmodifiableList(results);
+        this.query = query;
     }
     
     /*package*/ static class Builder {
         
         private SearchCriteria criteria;
         private List<NodeRef> results;
+        private String query;
         private Long totalCount;
         private Boolean more;
         
@@ -52,12 +55,17 @@ public class CriteriaSearchResults {
             this.results = new ArrayList<NodeRef>(results);
             return this;
         }
+
+        public Builder query(String query) {
+            this.query = query;
+            return this;
+        }
         
         public Builder totalCount(long totalCount) {
             this.totalCount = totalCount;
             return this;
         }
-        
+
         public Builder hasMore(boolean more) {
             this.more = more;
             return this;
@@ -70,8 +78,11 @@ public class CriteriaSearchResults {
             if(results == null) {
                 throw new IllegalStateException("results should be set");
             }
-            
-            CriteriaSearchResults result = new CriteriaSearchResults(criteria, results);
+            if(query == null) {
+                throw new IllegalStateException("query should be set");
+            }
+
+            CriteriaSearchResults result = new CriteriaSearchResults(criteria, results, query);
             if(totalCount != null) {
                 result.setTotalCount(totalCount);
             }
@@ -85,11 +96,15 @@ public class CriteriaSearchResults {
     public SearchCriteria getCriteria() {
         return criteria;
     }
-    
+
     public List<NodeRef> getResults() {
         return results;
     }
-    
+
+    public String getQuery() {
+        return query;
+    }
+
     public boolean hasMore() {
         return this.more;
     }

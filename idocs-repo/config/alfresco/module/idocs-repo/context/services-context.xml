@@ -1057,6 +1057,13 @@
         <property name="sortFieldChanger" ref="sortFieldChanger"/>
     </bean>
 
+	<bean id="criteriaSearchServiceJS" class="ru.citeck.ecos.search.CriteriaSearchServiceJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="criteriaSearch" />
+		<property name="searchService" ref="criteriaSearchService" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="parser" ref="criteriaParser" />
+	</bean>
+
     <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>

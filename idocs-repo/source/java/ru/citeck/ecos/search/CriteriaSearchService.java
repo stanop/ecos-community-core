@@ -64,9 +64,10 @@ public class CriteriaSearchService {
         if(queryBuilder == null) {
             throw new IllegalArgumentException("Unsupported query language");
         }
+        String query = queryBuilder.buildQuery(criteria);
         SearchParameters parameters = new SearchParameters();
         parameters.setLanguage(language);
-        parameters.setQuery(queryBuilder.buildQuery(criteria));
+        parameters.setQuery(query);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         if (criteria.isLimitSet()) {
             // as ResultSet.hasMore() throws UnsupportedOperationException
@@ -113,10 +114,11 @@ public class CriteriaSearchService {
         }
         
         return new CriteriaSearchResults.Builder()
-            .criteria(criteria)
-            .results(results)
-            .hasMore(hasMore)
-            .build();
+                .criteria(criteria)
+                .results(results)
+                .hasMore(hasMore)
+                .query(query)
+                .build();
     }
     
     private SearchQueryBuilder getMatchingQueryBuilder(String language) {
