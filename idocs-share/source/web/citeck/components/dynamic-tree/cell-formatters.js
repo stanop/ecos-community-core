@@ -1408,7 +1408,7 @@
 					elCell.innerHTML = "";
 					return;
 				}
-				else {
+				else if(sData.indexOf("workspace") > -1){
 					Alfresco.util.Ajax.request({
 						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + sData + (props ? '&props=' + props + '&replaceColon=_' : ''),
 						successCallback: {
@@ -1435,6 +1435,11 @@
 						execScripts: true
 					});
 				}
+				else {
+					elCell.innerHTML = sData;
+					return;
+				}
+
 			};
 		},
 
