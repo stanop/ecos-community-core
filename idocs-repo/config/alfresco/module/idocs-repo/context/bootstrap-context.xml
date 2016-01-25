@@ -51,6 +51,7 @@
 				<value>alfresco/module/idocs-repo/model/ecosModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/documentSupervisorsModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/businessCalendarModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/productsAndServicesModel.xml</value>
 			</list>
 		</property>
 		<property name="labels">
