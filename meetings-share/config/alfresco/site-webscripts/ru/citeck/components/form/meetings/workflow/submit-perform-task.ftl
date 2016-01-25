@@ -12,14 +12,14 @@
 <div class="set">
 	<div class="set-title">${msg("workflow.set.general")}</div>
 	<@forms.renderField field="prop_bpm_workflowDescription" extension=extensions.controls.textarea + {
-		"label": "Поручение"
+		"label": msg("workflow.submit-perform-task.assignment")
 	} />
 
 	<div class="yui-g">
 		<div class="yui-u first">
 		<#if workflowDueDate?? >
 			<@forms.renderField field="prop_bpm_workflowDueDate" extension = { 
-			"label": "Срок исполнения",
+			"label": msg("workflow.submit-perform-task.due"),
 			"control" : {
 				"template" : "/ru/citeck/components/form/controls/date.ftl",
 				"params" : {
@@ -29,7 +29,7 @@
 			} } />
 		<#else>
 			<@forms.renderField field="prop_bpm_workflowDueDate"  extension = {
-				"label": "Срок исполнения",
+				"label": msg("workflow.submit-perform-task.due"),
 				"control": {
 					"template": "/ru/citeck/components/form/controls/date.ftl",
 					"params": {
@@ -47,11 +47,13 @@
 	<div class="yui-g">
 		<div class="yui-u first">
 			<@forms.renderField field="assoc_wfperf_performers" extension=extensions.controls.orgstruct + {
-				"label": "Ответственный Исполнитель"
+				"label": msg("workflow.submit-perform-task.assignedPerformer")
 			} />
 		</div>
 		<div class="yui-u">
-			<@forms.renderField field="assoc_wfperf_coperformers" extension=extensions.controls.orgstruct />
+            <@forms.renderField field="assoc_wfperf_coperformers" extension=extensions.controls.orgstruct + {
+                "label": msg("workflow.submit-perform-task.assignedPerformer")
+            } />
 		</div>
 	</div>
 

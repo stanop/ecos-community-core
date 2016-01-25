@@ -13,6 +13,7 @@
 		<property name="labels">
 			<list>
 				<value>alfresco/module/meetings-repo/messages/meetings</value>
+                <value>alfresco/module/meetings-repo/messages/lifecycle</value>
 			</list>
 		</property>
 	</bean>
