@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>products-and-services</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <destination>{nodeRef}</destination>
+        <header>header.products-and-services</header>
+        <contentType>pas:productOrServiceCopied</contentType>
+        <assocType>pas:containsProductOrService</assocType>
+        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/node/child-assocs?nodeRef={nodeRef}&amp;assocType=pas:containsProductOrService"
+        </childrenUrl>
+        <columns>
+            [
+                {key: 'attributes["cm:title"]', label: Alfresco.util.message("stages.table.header.name")},
+                {key: 'attributes["pas:type"]', label: Alfresco.util.message("stages.table.header.state")},
+                {key: 'attributes["pas:pricePerUnit"]', label: Alfresco.util.message("stages.table.header.plannedStartDate")},
+                {key: 'attributes["pas:quantity"]', label: Alfresco.util.message("stages.table.header.plannedEndDate")},
+                {key: 'attributes["pas:total"]', label: Alfresco.util.message("stages.table.header.actualStartDate")},
+                {key: 'attributes["pas:elementUnit"]', label: Alfresco.util.message("stages.table.header.actualEndDate")},
+                {key: 'actions', label: 'Действия', formatter: Citeck.format.actions('stages', 'nodeRef')}
+            ]
+        </columns>
+        <responseSchema>
+            {resultsList: 'nodes', fields: [
+                {key: 'nodeRef'},
+                {key: 'attributes["cm:title"]'},
+                {key: 'attributes["pas:type"]'},
+                {key: 'attributes["pas:pricePerUnit"]'},
+                {key: 'attributes["pas:quantity"]'},
+                {key: 'attributes["pas:total"]'},
+                {key: 'attributes["pas:elementUnit"]'}
+            ]}
+        </responseSchema>
+        <buttonsInHeader>onPanelButtonAdd</buttonsInHeader>
+        <twisterKey>stages</twisterKey>
+    </properties>
+</component>

@@ -59,17 +59,8 @@
 
         <type name="pas:productOrServiceCopied">
             <title>Products and services copy for document</title>
-            <parent>dl:dataListItem</parent>
+            <parent>pas:productOrService</parent>
             <properties>
-                <property name="pas:pricePerUnitCopied">
-                    <type>d:double</type>
-                </property>
-                <property name="pas:typeCopied">
-                    <type>d:text</type>
-                    <constraints>
-                        <constraint ref="pas:constraint:allowedType"/>
-                    </constraints>
-                </property>
                 <property name="pas:quantity">
                     <type>d:double</type>
                 </property>
@@ -103,7 +94,7 @@
 
         <aspect name="pas:hasProductOrService">
             <associations>
-                <association name="pas:productOrService">
+                <association name="pas:containsProductOrService">
                     <title>Product/Service</title>
                     <source>
                         <mandatory>false</mandatory>
