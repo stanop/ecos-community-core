@@ -5,7 +5,7 @@
 		<actions>
 
 			<!-- Start familiarization workflow -->
-			<action id="document-start-familiarization-for-meeting" type="link" icon="document-assign-workflow" label="Рассылка на ознакомление">
+			<action id="document-start-familiarization-for-meeting" type="link" icon="document-assign-workflow" label="actions.document-start-familiarization-for-meeting.label">
 				<param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$familiarization</param>
 				<permissions>
 					<permission allow="true">Write</permission>
