@@ -197,7 +197,7 @@
 						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
-						classNames: <@views.renderQNames classNames />,
+						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
 						forcedAttributes: <@views.renderQNames attributes />,
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderModel defaultModel />,
