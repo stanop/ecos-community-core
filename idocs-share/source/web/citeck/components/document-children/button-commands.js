@@ -76,7 +76,7 @@
 			dialog.setOptions({
 				doBeforeDialogShow: {
 					scope: this,
-					fn: Citeck.utils.fnBeforeDialogShow({ header: options.header }) 
+					fn: Citeck.utils.fnBeforeDialogShow({ headerId: options.header })
 				}
 			});
 		}

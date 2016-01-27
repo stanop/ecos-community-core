@@ -497,7 +497,7 @@ Citeck.utils.fnBeforeDialogShow = function(params) {
         // Dialog title
         var headerElementPostfix = "-form-container_h";
         if(params.headerId) {
-            var titleSpan = '<span class="light">' + Alfresco.util.encodeHTML(this.msg(params.headerId)) + '</span>';
+            var titleSpan = '<span class="light">' + Alfresco.util.encodeHTML(Alfresco.util.message(params.headerId)) + '</span>';
             Alfresco.util.populateHTML([ p_dialog.id + headerElementPostfix, titleSpan ]);
         } else if(params.header) {
             var titleSpan = '<span class="light">' + Alfresco.util.encodeHTML(params.header) + '</span>';
@@ -508,7 +508,7 @@ Citeck.utils.fnBeforeDialogShow = function(params) {
             this.widgets.editMetadata = Alfresco.util.createYUIButton(p_dialog, "editMetadata", null,
             {
                type: "link",
-               label: this.msg("edit-details.label.edit-metadata"),
+               label: Alfresco.util.message("edit-details.label.edit-metadata"),
                href: Alfresco.util.siteURL("edit-metadata?nodeRef=" + params.nodeRef)
             });
         }
