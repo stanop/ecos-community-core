@@ -1,4 +1,4 @@
-<#include "../search/search-macros.ftl">
+<#include "../../../../../../../../journals-repo/config/alfresco/templates/webscripts/ru/citeck/search/search-macros.ftl">
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "query": {

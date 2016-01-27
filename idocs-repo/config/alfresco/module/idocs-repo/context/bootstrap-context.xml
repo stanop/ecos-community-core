@@ -361,12 +361,6 @@
 				<props>
 					<prop key="uuidBinding">UPDATE_EXISTING</prop>
 					<prop key="path">/</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/idocs-root.xml</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="uuidBinding">UPDATE_EXISTING</prop>
-					<prop key="path">/</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/counter-root.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
@@ -438,49 +432,6 @@
 			</list>
 		</property>
 	</bean>
-
-	<bean id="idocs.module-component.journals-meta-root" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
-		<property name="name" value="journals-meta-root" />
-		<property name="description" value="Journals folders and meta-journals" />
-		<property name="sinceVersion" value="2.3" />
-		<property name="appliesFromVersion" value="2.3" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="idocs.module-component.idocs-root" />
-			</list>
-		</property>
-		<property name="bootstrapView">
-			<props>
-				<prop key="uuidBinding">UPDATE_EXISTING</prop>
-				<prop key="path">/cm:IDocsRoot</prop>
-				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/journals-meta-root.xml</prop>
-				<prop key="messages">alfresco/module/idocs-repo/messages/journals-meta</prop>
-				<prop key="encoding">UTF-8</prop>
-			</props>
-		</property>
-	</bean>
-
-    <bean id="idocs.module-component.journals-meta-root-journals-settings" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
-        <property name="name" value="journals-meta-root-journals-settings" />
-        <property name="description" value="Extension for journals settings" />
-        <property name="sinceVersion" value="2.3" />
-        <property name="appliesFromVersion" value="2.3" />
-        <!--property name="executeOnceOnly" value="false"/-->
-        <property name="dependsOn">
-            <list>
-                <ref bean="idocs.module-component.idocs-root" />
-            </list>
-        </property>
-        <property name="bootstrapView">
-            <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
-                <prop key="path">/cm:IDocsRoot</prop>
-                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/journals-meta-root-journal-settings.xml</prop>
-                <prop key="messages">alfresco/module/idocs-repo/messages/journals-meta</prop>
-                <prop key="encoding">UTF-8</prop>
-            </props>
-        </property>
-    </bean>
 
 	<bean id="idocs.module-component.task-mirror-root" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
 		<property name="name" value="task-mirror-root" />

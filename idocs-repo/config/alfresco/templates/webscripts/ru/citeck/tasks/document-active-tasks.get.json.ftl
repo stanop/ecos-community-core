@@ -1,4 +1,4 @@
-<#import "../search/search-macros.ftl" as search />
+<#import "../../../../../../../../journals-repo/config/alfresco/templates/webscripts/ru/citeck/search/search-macros.ftl" as search />
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "documentTasks": [

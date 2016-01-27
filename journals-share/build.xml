@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="journals-share" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<import file="../share-macros.xml"/>
+	<!--<import file="../idocs-share-dependent.xml" />-->
+
+	<property name="override.project.name" value="1st-override-share" />
+	<property name="override.project.dir" value="${override.project.name}" />
+
+	<path id="project.classpath">
+		<pathelement path="${override.project.dir}/build/lib/*" />
+	</path>
+</project>

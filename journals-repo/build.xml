@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="journals-repo" default="hotcopy-tomcat">
+    <property file="module.properties"/>
+    <import file="../repo-macros.xml"/>
+    <!--<import file="../idocs-repo-dependent.xml"/>-->
+
+    <property name="override.project.name" value="1st-override-repo" />
+    <property name="override.project.dir" value="${override.project.name}" />
+
+    <path id="project.classpath">
+        <pathelement path="${override.project.dir}/build/lib/*" />
+    </path>
+</project>

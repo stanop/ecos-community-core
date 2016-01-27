@@ -51,8 +51,6 @@
         </property>
     </bean>
 
-    <bean id="resourceResolver" class="ru.citeck.ecos.utils.ResourceResolver"/>
-
     <bean id="relatedWorkflowService" class="ru.citeck.ecos.workflow.related.RelatedWorkflowService" parent="baseJavaScriptExtension">
         <property name="extensionName">
             <value>relatedWorkflowService</value>
@@ -1060,7 +1058,6 @@
     <bean id="criteriaSearchServiceJS" class="ru.citeck.ecos.search.CriteriaSearchServiceJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="criteriaSearch" />
         <property name="searchService" ref="criteriaSearchService" />
-        <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="parser" ref="criteriaParser" />
     </bean>
 
