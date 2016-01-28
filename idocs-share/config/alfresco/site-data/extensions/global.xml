@@ -26,6 +26,34 @@
             </components>
         </module>
         <module>
+            <id>global/citeck-dependencies</id>
+            <auto-deploy>true</auto-deploy>
+            <configurations>
+				<config evaluator="string-compare" condition="CiteckDependencies">
+					<dependencies>
+						<js src="/lib/underscore.js" />
+						<js src="/citeck/utils/citeck.js" />
+						<css src="/citeck/utils/citeck.css" />
+					</dependencies>
+				</config>
+            </configurations>
+            <components>
+                <component>
+                    <region-id>head-resources</region-id>
+                    <source-id>global</source-id>
+                    <scope>global</scope>
+                    <sub-components>
+                        <sub-component id="citeck-dependencies" index="60">
+                            <url>/citeck/dependencies-loader</url>
+                            <properties>
+                                <configName>CiteckDependencies</configName>
+                            </properties>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
             <id>global/doclib-custom-cache</id>
             <auto-deploy>true</auto-deploy>
             <evaluator type="config.module.evaluator">
