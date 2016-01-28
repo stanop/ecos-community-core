@@ -1019,22 +1019,6 @@
         <property name="associationIndexPropertyRegistry" ref="AssociationIndexPropertyRegistry" />
     </bean>
 
-    <bean id="JournalsChildAssociationsRegistrar" class="ru.citeck.ecos.form.ChildAssociationsRegistrar"
-            depends-on="idocs.dictionaryBootstrap" init-method="init">
-        <property name="childAssociationsFormFilters" >
-            <list>
-                <ref bean="ChildAssociationsFilesCreateFilter" />
-                <ref bean="ChildAssociationsFilesEditFilter" />
-            </list>
-        </property>
-        <property name="associations">
-            <list>
-                <value>journal:createVariants</value>
-                <value>journal:searchCriteria</value>
-            </list>
-        </property>
-    </bean>
-
     <bean id="sortFieldChanger" class="ru.citeck.ecos.search.SortFieldChanger">
         <property name="changeFieldMap">
             <map>
