@@ -568,6 +568,7 @@
 								text: Alfresco.util.message("button.cancel"),
 								handler: function dlA_onActionCancel()
 								{
+									YAHOO.Bubbling.fire("metadataRefresh");
 									this.destroy();
 								},
 								isDefault: true

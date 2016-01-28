@@ -10,18 +10,66 @@
 
 	<bean id="meetings.MeetingNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="meet:meeting"/>
-		<property name="nameTemplate" value="Совещание №#{'$'}{node.properties['meet:meetingNumber']!'б-н'}"/>
+		<property name="nameTemplate">
+            <value><![CDATA[Meeting №#{'$'}{node.properties['meet:meetingNumber']!'n/a'}]]></value>
+        </property>
 	</bean>
 
-	<bean id="meetings.AgendaNamingBehaviour" parent="AutoNameBehaviour">
+    <bean id="meetings.MeetingTitleBehaviour" parent="TitleGenerationBehaviour">
+        <property name="className" value="meet:meeting"/>
+        <property name="titleMLTemplate">
+            <map>
+                <entry key="ru_RU">
+                    <value><![CDATA[Совещание №#{'$'}{node.properties['meet:meetingNumber']!'б-н'}]]></value>
+                </entry>
+                <entry key="en_US">
+                    <value><![CDATA[Meeting №#{'$'}{node.properties['meet:meetingNumber']!'n/a'}]]></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="meetings.AgendaNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="meet:agenda"/>
-		<property name="nameTemplate" value="Повестка совещания №&lt;#if (node.parent??) &amp;&amp; (node.parent.properties??) &gt;#{'$'}{node.parent.properties['meet:meetingNumber']!'б-н'}&lt;#else&gt;б-н&lt;/#if&gt;"/>
+		<property name="nameTemplate">
+            <value><![CDATA[Agenda №<#if (node.parent??) && (node.parent.properties??) >#{'$'}{node.parent.properties['meet:meetingNumber']!'n/a'}<#else>n/a</#if>]]></value>
+        </property>
 	</bean>
+
+    <bean id="meetings.AgendaTitleBehaviour" parent="TitleGenerationBehaviour">
+        <property name="className" value="meet:agenda"/>
+        <property name="titleMLTemplate">
+            <map>
+                <entry key="ru_RU">
+                    <value><![CDATA[Повестка совещания №<#if (node.parent??) && (node.parent.properties??) >#{'$'}{node.parent.properties['meet:meetingNumber']!'б-н'}<#else>б-н</#if>]]></value>
+                </entry>
+                <entry key="en_US">
+                    <value><![CDATA[Agenda №<#if (node.parent??) && (node.parent.properties??) >#{'$'}{node.parent.properties['meet:meetingNumber']!'n/a'}<#else>n/a</#if>]]></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
 
 	<bean id="meetings.ProtocolNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="meet:protocol"/>
-		<property name="nameTemplate" value="Протокол совещания №&lt;#if (node.parent??) &amp;&amp; (node.parent.properties??) &gt;#{'$'}{node.parent.properties['meet:meetingNumber']!'б-н'}&lt;#else&gt;б-н&lt;/#if&gt;"/>
+		<property name="nameTemplate">
+            <value><![CDATA[Meeting minutes №<#if (node.parent??) && (node.parent.properties??) >#{'$'}{node.parent.properties['meet:meetingNumber']!'n/a'}<#else>n/a</#if>]]></value>
+        </property>
 	</bean>
+
+    <bean id="meetings.ProtocolTitleBehaviour" parent="TitleGenerationBehaviour">
+        <property name="className" value="meet:protocol"/>
+        <property name="titleMLTemplate">
+            <map>
+                <entry key="ru_RU">
+                    <value><![CDATA[Протокол совещания №<#if (node.parent??) && (node.parent.properties??) >#{'$'}{node.parent.properties['meet:meetingNumber']!'б-н'}<#else>б-н</#if>]]></value>
+                </entry>
+                <entry key="en_US">
+                    <value><![CDATA[Meeting minutes №<#if (node.parent??) && (node.parent.properties??) >#{'$'}{node.parent.properties['meet:meetingNumber']!'n/a'}<#else>n/a</#if>]]></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
 
 	<bean id="meetings.QuestionNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="meet:question"/>

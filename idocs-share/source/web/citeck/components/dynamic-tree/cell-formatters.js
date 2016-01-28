@@ -498,9 +498,9 @@
             }
         },
         
-        doubleClickLink: function(urlTemplate, fieldId) {
+        doubleClickLink: function(urlTemplate, fieldId, formatter) {
             return function (elCell, oRecord, oColumn, sData) {
-                var label = sData || Alfresco.util.message("label.none");
+                var label = formatter && (formatter.apply(this, arguments), elCell.innerHTML) || sData || Alfresco.util.message("label.none");
                 var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, {
                     id: oRecord.getData(fieldId)
                 }));
@@ -1408,7 +1408,7 @@
 					elCell.innerHTML = "";
 					return;
 				}
-				else {
+				else if(sData.indexOf("workspace") > -1){
 					Alfresco.util.Ajax.request({
 						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + sData + (props ? '&props=' + props + '&replaceColon=_' : ''),
 						successCallback: {
@@ -1435,6 +1435,11 @@
 						execScripts: true
 					});
 				}
+				else {
+					elCell.innerHTML = sData;
+					return;
+				}
+
 			};
 		},
 

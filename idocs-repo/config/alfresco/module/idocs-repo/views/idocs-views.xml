@@ -32,5 +32,23 @@
 		<view class="idocs:publicRegInfo" />
 		<view class="idocs:entityInfo" />
 	</view>
-	
+
+	<view class="idocs:unit">
+		<field prop="cm:name"/>
+	</view>
+
+	<view class="idocs:procductsAndServices">
+		<field prop="cm:name"/>
+		<field prop="cm:description"/>
+		<field prop="idocs:PaSType">
+			<region name="input" template="select"/>
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+		<field prop="idocs:pricePerUnit"/>
+		<field assoc="idocs:elementUnit">
+			<region name="input" template="select"/>
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+	</view>
+
 </views>

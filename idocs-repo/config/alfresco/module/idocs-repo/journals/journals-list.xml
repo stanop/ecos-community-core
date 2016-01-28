@@ -181,4 +181,26 @@
 		</headers>
 	</journal>
 
+	<journal id="units">
+		<option name="type">idocs:units</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="cm:name" default="true"/>
+		</headers>
+	</journal>
+
+	<journal id="products-and-services">
+		<option name="type">idocs:procductsAndServices</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="cm:name" default="true"/>
+			<header key="cm:description" default="true"/>
+			<header key="idocs:pricePerUnit" default="true"/>
+			<header key="idocs:elementUnit" default="true"/>
+			<header key="idocs:PaSType" default="true"/>
+		</headers>
+	</journal>
+
 </journals>
