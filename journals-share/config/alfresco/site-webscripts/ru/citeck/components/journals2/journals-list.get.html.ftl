@@ -14,8 +14,7 @@ require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui
 			<@journals.renderCurrentIds />
 			multiActions: <@journals.renderMultiActionsJSON />,
 		},
-		//cache: < @journals.renderCacheJSON />,
-		cache: {},
+		cache: <@journals.renderCacheJSON />,
 		pagingOptions: [${pagingOptions}]
 	}).setMessages(${messages});
 });
@@ -311,4 +310,5 @@ require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui
 	}
 } "/>
 
+<!-- ko dependencies: dependencies --><!-- /ko -->
 <!-- ko dependencies: dependencies --><!-- /ko -->

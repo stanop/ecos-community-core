@@ -84,3 +84,5 @@ class JournalServiceImpl implements JournalService {
     }
 
 }
+
+}

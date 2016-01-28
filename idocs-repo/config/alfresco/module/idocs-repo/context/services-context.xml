@@ -51,6 +51,8 @@
         </property>
     </bean>
 
+    <bean id="resourceResolver" class="ru.citeck.ecos.utils.ResourceResolver"/>
+
     <bean id="relatedWorkflowService" class="ru.citeck.ecos.workflow.related.RelatedWorkflowService" parent="baseJavaScriptExtension">
         <property name="extensionName">
             <value>relatedWorkflowService</value>

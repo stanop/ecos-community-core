@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/utils/citeck'], function(ko, koutils) {
+define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     
 var logger = Alfresco.logger,
 		noneActionGroupId = "none",

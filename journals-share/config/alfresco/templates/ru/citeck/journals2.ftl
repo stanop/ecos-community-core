@@ -5,10 +5,12 @@
 </@>
 
 <@templateBody>
-<#--<div id="alf-hd">
+<#--
+<div id="alf-hd">
 	<#include "/ru/citeck/include/header.ftl" />
-</div>-->
-   
+</div>
+-->
+
 <div id="bd">
 	<@region id="actions-common" scope="template" />
 	<@region id="data" scope="template" />

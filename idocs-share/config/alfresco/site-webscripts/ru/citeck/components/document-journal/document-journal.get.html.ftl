@@ -1,4 +1,4 @@
-<#import "../journals2/journals.lib.ftl" as journals />
+<#import "../../../../../../../../journals-share/config/alfresco/site-webscripts/ru/citeck/components/journals2/journals.lib.ftl" as journals />
 
 <#assign id = args.htmlid?html />
 <#assign toolbarId = id + "-toolbar" />
