@@ -5,19 +5,24 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean id="base-core.module-component.idocs-root" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
-		<property name="name" value="idocs-root" />
-		<property name="description" value="Root for idocs system objects" />
-		<property name="sinceVersion" value="2.3" />
-		<property name="appliesFromVersion" value="2.3" />
-		<property name="bootstrapView">
-			<props>
-				<prop key="uuidBinding">UPDATE_EXISTING</prop>
-				<prop key="path">/</prop>
-				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/idocs-root.xml</prop>
-				<prop key="encoding">UTF-8</prop>
-			</props>
-		</property>
-	</bean>
+    <bean id="base-core.import-spaces" abstract="true" class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+        <property name="moduleId" value="base-core-repo" />
+        <property name="importer" ref="spacesBootstrap"/>
+    </bean>
+
+    <bean id="base-core.module-component.idocs-root" parent="base-core.import-spaces">
+        <property name="name" value="idocs-root" />
+        <property name="description" value="Root for idocs system objects" />
+        <property name="sinceVersion" value="1.0" />
+        <property name="appliesFromVersion" value="1.0" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/</prop>
+                <prop key="location">alfresco/module/base-core-repo/bootstrap/explicit/idocs-root.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
     
 </beans>

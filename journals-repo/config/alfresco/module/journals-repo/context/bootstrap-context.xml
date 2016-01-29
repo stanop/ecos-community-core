@@ -25,7 +25,7 @@
         </property>
     </bean>
 
-	<bean id="idocs.module-component.journals-meta-root" parent="journals.import-spaces" depends-on="idocs.dictionaryBootstrap">
+	<bean id="idocs.module-component.journals-meta-root" parent="journals.import-spaces" depends-on="journals.dictionaryBootstrap">
 		<property name="name" value="journals-meta-root" />
 		<property name="description" value="Journals folders and meta-journals" />
 		<property name="sinceVersion" value="1.0" />
@@ -34,25 +34,30 @@
 			<props>
 				<prop key="uuidBinding">UPDATE_EXISTING</prop>
 				<prop key="path">/cm:IDocsRoot</prop>
-				<prop key="location">alfresco/module/jounals-repo/bootstrap/explicit/journals-meta-root.xml</prop>
-				<prop key="messages">alfresco/module/jounals-repo/messages/journals-meta</prop>
+				<prop key="location">alfresco/module/journals-repo/bootstrap/explicit/journals-meta-root.xml</prop>
+				<prop key="messages">alfresco/module/journals-repo/messages/journals-meta</prop>
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
 	</bean>
 
-    <bean id="idocs.module-component.journals-meta-root-journals-settings" parent="journals.import-spaces" depends-on="idocs.dictionaryBootstrap">
+    <bean id="idocs.module-component.journals-meta-root-journals-settings" parent="journals.import-spaces" depends-on="journals.dictionaryBootstrap">
         <property name="name" value="journals-meta-root-journals-settings" />
         <property name="description" value="Extension for journals settings" />
         <property name="sinceVersion" value="1.0" />
         <property name="appliesFromVersion" value="1.0" />
         <!--property name="executeOnceOnly" value="false"/-->
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+            </list>
+        </property>
         <property name="bootstrapView">
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
                 <prop key="path">/cm:IDocsRoot</prop>
-                <prop key="location">alfresco/module/jounals-repo/bootstrap/explicit/journals-meta-root-journal-settings.xml</prop>
-                <prop key="messages">alfresco/module/jounals-repo/messages/journals-meta</prop>
+                <prop key="location">alfresco/module/journals-repo/bootstrap/explicit/journals-meta-root-journal-settings.xml</prop>
+                <prop key="messages">alfresco/module/journals-repo/messages/journals-meta</prop>
                 <prop key="encoding">UTF-8</prop>
             </props>
         </property>

@@ -3,7 +3,6 @@
 <beans>
 
     <import resource="classpath:alfresco/module/idocs-repo/context/services-context.xml" />
-    <import resource="classpath:alfresco/module/idocs-repo/context/attribute-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/form-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/workflow-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/orgstruct-services-context.xml" />
