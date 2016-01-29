@@ -3,6 +3,7 @@
 <beans>
 
     <import resource="classpath:alfresco/module/journals-repo/context/bootstrap-context.xml" />
+    <import resource="classpath:alfresco/module/journals-repo/context/bootstrap-system-journals-context.xml" />
     <import resource="classpath:alfresco/module/journals-repo/context/journal-services-context.xml" />
     <import resource="classpath:alfresco/module/journals-repo/context/services-context.xml" />
 

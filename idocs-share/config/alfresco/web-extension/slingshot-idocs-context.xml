@@ -38,9 +38,6 @@
     <bean id="siteConfigResources" factory-bean="resourceResolver" factory-method="getResources">
         <constructor-arg>
             <list>
-                <value>classpath:alfresco/site-config/**/*.xml</value>
-                <value>classpath*:alfresco/web-extension/site-config/**/*.xml</value>
-				
                 <!-- allow final control over share environment -->
                 <value>classpath*:share-environment.xml</value>
             </list>
