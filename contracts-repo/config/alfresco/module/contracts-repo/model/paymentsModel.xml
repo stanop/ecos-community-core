@@ -14,6 +14,7 @@
 		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
 		<import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
 	</imports>
 
 	<namespaces>
@@ -265,6 +266,7 @@
 				<aspect>payments:hasDocumentStatus</aspect>
 				<aspect>payments:paymentNumber</aspect>
 				<aspect>payments:paymentFor</aspect>
+				<aspect>pas:hasProductsAndServices</aspect>
 			</mandatory-aspects>
 		</type>
 	</types>

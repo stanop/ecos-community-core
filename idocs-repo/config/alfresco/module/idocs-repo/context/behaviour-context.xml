@@ -655,5 +655,10 @@
             </map>
         </property>
     </bean>
+
+    <bean id="idocs.unitNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="pas:unit"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['pas:unitShortName']!}"/>
+    </bean>
 </beans>
 

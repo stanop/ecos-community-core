@@ -8,7 +8,7 @@
         var source = '';
         var target = '';
         var allCreate = 'true';
-        var root = search.xpathSearch("/app:company_home/st:sites/cm:common-documents/cm:dataLists/cm:products-and-services")[0];
+        var root = search.xpathSearch("/app:company_home/st:sites/cm:contracts/cm:dataLists/cm:products-and-services")[0];
         if(sourceRefs != null && targetRefs != null) {
             for each(source in sourceRefs.split(','))
                 if (source != '' && source.length != 0 ){
@@ -27,16 +27,16 @@
                                         }
                                     if(!exist) {
                                         var properties = new Array();
+                                        properties['cm:title'] = targetNode.properties['cm:title'];
+                                        properties['cm:description'] = targetNode.properties['cm:description'];
                                         properties['pas:pricePerUnit'] = targetNode.properties['pas:pricePerUnit'];
                                         properties['pas:type'] = targetNode.properties['pas:type'];
                                         properties['pas:quantity'] = 1;
-                                        properties['pas:total'] = 0;
-                                        var childNode = root.createNode(targetNode.properties["cm:name"], "pas:productOrServiceCopied", properties);
-                                        //childNode.properties["pas:pricePerUnit"] = targetNode.properties["pas:pricePerUnit"];
-                                        //childNode.properties["pas:type"] = targetNode.properties["pas:type"];
+                                        properties['pas:total'] = 1 * targetNode.properties['pas:pricePerUnit'];
+                                        var childNode = root.createNode(targetNode.properties["cm:name"], "pas:pasEntityCopied", properties);
                                         childNode.addAspect("pas:hasUnit");
-                                        var unitNode = targetNode.assocs["pas:elementUnit"];
-                                        childNode.createAssociation(unitNode[0], "pas:elementUnit");
+                                        var unitNode = targetNode.assocs["pas:entityUnit"];
+                                        childNode.createAssociation(unitNode[0], "pas:entityUnit");
                                         sourceNode.createAssociation(childNode, assocType);
                                         childNode.save();
                                     } else {

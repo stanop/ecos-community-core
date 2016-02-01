@@ -183,7 +183,7 @@
 	</journal>
 
 	<journal id="units">
-		<option name="type">pas:units</option>
+		<option name="type">pas:unit</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
@@ -193,14 +193,15 @@
 	</journal>
 
 	<journal id="products-and-services">
-		<option name="type">pas:procductOrService</option>
+		<option name="type">pas:pasEntityOriginal</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:title" default="true"/>
-			<header key="cm:description" default="true"/>
 			<header key="pas:pricePerUnit" default="true"/>
-			<header key="pas:elementUnit" default="true"/>
+			<header key="pas:entityUnit" default="true">
+				<!--<option name="formatter"></option>-->
+			</header>
 			<header key="pas:type" default="true"/>
 		</headers>
 	</journal>

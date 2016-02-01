@@ -8,11 +8,15 @@
     </imports>
 
     <view class="pas:unit">
-        <field prop="pas:unitShortName"/>
-        <field prop="pas:unitName"/>
+        <field prop="pas:unitShortName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="pas:unitName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
     </view>
 
-    <view class="pas:productOrService">
+    <view class="pas:pasEntityOriginal">
         <field prop="cm:title"/>
         <field prop="cm:description"/>
         <field prop="pas:type">
@@ -20,8 +24,30 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field prop="pas:pricePerUnit"/>
-        <field assoc="pas:elementUnit">
+        <field assoc="pas:entityUnit">
             <region name="input" template="select"/>
+            <invariant on="value-title" language="javascript">
+                value.properties['pas:unitShortName'];
+            </invariant>
+            <!--<region name="select" template="create-object" />-->
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+
+    <view class="pas:pasEntityCopied">
+        <field prop="cm:title"/>
+        <field prop="cm:description"/>
+        <field prop="pas:type">
+            <region name="input" template="select"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="pas:pricePerUnit"/>
+        <field assoc="pas:entityUnit">
+            <region name="input" template="select"/>
+            <invariant on="value-title" language="javascript">
+                value.properties['pas:unitShortName'];
+            </invariant>
+            <!--<region name="select" template="create-object" />-->
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
     </view>

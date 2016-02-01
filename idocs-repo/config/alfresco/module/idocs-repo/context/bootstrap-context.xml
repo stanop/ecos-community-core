@@ -82,6 +82,7 @@
 				<value>alfresco/module/idocs-repo/messages/cardlet</value>
 				<value>alfresco/module/idocs-repo/messages/ecosModel</value>
 				<value>alfresco/module/idocs-repo/messages/business-calendar</value>
+				<value>alfresco/module/idocs-repo/messages/productsAndServices</value>
 			</list>
 		</property>
 	</bean>
