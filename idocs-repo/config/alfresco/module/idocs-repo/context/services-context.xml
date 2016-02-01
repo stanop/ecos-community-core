@@ -80,12 +80,6 @@
         <property name="newCommentNotificationService" ref="newCommentNotificationService"/>
     </bean>
 
-    <!-- script service registry -->
-    <bean id="ServiceRegistryJS" class="ru.citeck.ecos.service.script.ServiceRegistryJS" parent="baseJavaScriptExtension">
-        <property name="extensionName" value="services" />
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
     <!--==============================================================-->
     <!--                   Document Processors                        -->
     <!--==============================================================-->
@@ -736,13 +730,6 @@
                 <entry key="child" value-ref="supplementaryFilesDAO.child" />
             </map>
         </property>
-    </bean>
-
-    <bean id="TemplateNodeService"
-            class="ru.citeck.ecos.template.TemplateNodeService"
-            parent="baseTemplateImplementation">
-        <property name="extensionName" value="nodeService" />
-        <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
     <bean id="docxFreeMarkerProcessor"

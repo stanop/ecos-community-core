@@ -10,7 +10,7 @@
 
 .yui-dt .actions-cell.loading
 {
-	background: url(../../../../../../idocs-share/source/web/citeck/components/dynamic-tree/icons/column-loading.gif) 50% 50% no-repeat;
+	background: url(icons/column-loading.gif) 50% 50% no-repeat;
 }
 
 .yui-dt .action-set a > span

@@ -191,4 +191,17 @@
         <property name="builderRegistry" ref="FormNodeBuilderRegistry" />
     </bean>
 
+    <!-- script service registry -->
+    <bean id="ServiceRegistryJS" class="ru.citeck.ecos.service.script.ServiceRegistryJS" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="services" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="TemplateNodeService"
+          class="ru.citeck.ecos.template.TemplateNodeService"
+          parent="baseTemplateImplementation">
+        <property name="extensionName" value="nodeService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
 </beans>

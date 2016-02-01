@@ -13,7 +13,6 @@
 		depends-on="dictionaryBootstrap">
 		<property name="models">
 			<list>
-				<value>alfresco/module/idocs-repo/model/attributeModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/constraintsModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/numericModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/dlModel.xml</value>

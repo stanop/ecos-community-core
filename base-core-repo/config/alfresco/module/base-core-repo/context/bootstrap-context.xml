@@ -10,6 +10,20 @@
         <property name="importer" ref="spacesBootstrap"/>
     </bean>
 
+    <!-- models -->
+    <bean id="idocs.dictionaryBootstrap" parent="dictionaryModelBootstrap"
+          depends-on="dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/base-core-repo/model/attributeModel.xml</value>
+            </list>
+        </property>
+        <property name="labels">
+            <list></list>
+        </property>
+    </bean>
+
+
     <bean id="base-core.module-component.idocs-root" parent="base-core.import-spaces">
         <property name="name" value="idocs-root" />
         <property name="description" value="Root for idocs system objects" />

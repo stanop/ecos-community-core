@@ -5,11 +5,11 @@
 </@>
 
 <@templateBody>
-<#--
+
 <div id="alf-hd">
 	<#include "/ru/citeck/include/header.ftl" />
 </div>
--->
+
 
 <div id="bd">
 	<@region id="actions-common" scope="template" />
