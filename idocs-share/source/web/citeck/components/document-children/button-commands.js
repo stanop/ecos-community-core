@@ -126,7 +126,8 @@
 			searchURLresults: _parseConfigParam(options.searchURLresults, "nodes"),
 			rootURL: _parseConfigParam(options.rootURL, ""),
 			rootURLresults: _parseConfigParam(options.rootURLresults, ""),
-			caseElementConfigName: _parseConfigParam(options.caseElementConfigName, "")
+			caseElementConfigName: _parseConfigParam(options.caseElementConfigName, ""),
+			addAssocScript: _parseConfigParam(options.addAssocScript, "")
 		};
 		if (options.onPanelButtonAdd && typeof options.onPanelButtonAdd === 'function')
 			opts.onPanelButtonAdd = options.onPanelButtonAdd;
@@ -228,8 +229,13 @@
 				if (i < items.length - 1)
 					nodeRefs += ',';
 			}
+			var addAssocSript = "citeck/add-assocs";
+			if (opts.addAssocScript) {
+				addAssocSript = opts.addAssocScript;
+			}
 			Alfresco.util.Ajax.request({
-				url: Alfresco.constants.PROXY_URI + "citeck/add-assocs",
+				//url: Alfresco.constants.PROXY_URI + "citeck/add-assocs",
+				url: Alfresco.constants.PROXY_URI + addAssocSript,
 				dataObj: {
 					sourceRef: opts.nodeRef,
 					targetRef: nodeRefs,
