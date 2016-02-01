@@ -227,7 +227,14 @@ ko.bindingHandlers.dateControl = {
                 calendarDialog, calendar;
 
             var input = Dom.get(elementId);
-            input.setAttribute("placeholder", localization.format);
+            if(navigator.userAgent.indexOf("Firefox") != -1 || (navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ))
+            {
+                input.setAttribute("placeholder", localization.formatIE);
+            }
+            else
+            {
+                input.setAttribute("placeholder", localization.format);
+            }
 
             var showCalendarButton = document.getElementById(calendarAccessorId);
             showCalendarButton.classList.remove("hidden");
@@ -274,8 +281,15 @@ ko.bindingHandlers.dateControl = {
                                 dStr = selectedDate.getDate(),
                                 mStr = selectedDate.getMonth(),
                                 yStr = selectedDate.getFullYear();
-
-                            input.value = dStr + "." + mStr + "." + yStr;
+								
+                                if(navigator.userAgent.indexOf("Firefox") != -1 || (navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ))
+                                {
+                                    input.value = selectedDate.toString("yyyy-MM-dd");
+                                }
+                                else
+                                {
+                                    input.value = dStr + "." + mStr + "." + yStr;
+                                }                            
                         }
                         calendarDialog.hide();
                     });
