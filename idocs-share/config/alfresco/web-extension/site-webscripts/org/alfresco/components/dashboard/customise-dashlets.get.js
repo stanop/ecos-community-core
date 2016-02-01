@@ -12,6 +12,15 @@ function getNoOfColumns(template)
    return noOfColumns;
 }
 
+function isDisableDashlet(dashletName){
+	var disabledDashlet=["my-tasks"];
+	for(var j = 0; j < disabledDashlet.length; j++){
+		if(disabledDashlet[j] == dashletName){
+			return true;
+		}
+	}
+	return false;
+}
 function main()
 {
    // Get available components of family/type dashlet
@@ -51,6 +60,7 @@ function main()
          scriptName = scriptId.substring(scriptId.lastIndexOf("/") + 1, scriptId.lastIndexOf("."));
          shortNameId = "dashlet." + scriptName + ".shortName";
          descriptionId = "dashlet." + scriptName + ".description";
+         if(!isDisableDashlet(scriptName))
          availableDashlets.push(
             {
                url: uris[0],
