@@ -19,7 +19,7 @@
                 {key: 'attributes["pas:pricePerUnit"]', label: Alfresco.util.message("products-and-services.table.header.pricePerUnit")},
                 {key: 'attributes["pas:quantity"]', label: Alfresco.util.message("products-and-services.table.header.quantity")},
                 {key: 'attributes["pas:total"]', label: Alfresco.util.message("products-and-services.table.header.total")},
-                {key: 'attributes["pas:entityUnit"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit"), formatter: Citeck.format.node()},
+                <!--{key: 'attributes["pas:entityUnit"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit"), formatter: Citeck.format.node()},-->
                 {key: 'attributes["pas:entityUnit"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit")},
                 {key: 'actions', label: Alfresco.util.message("products-and-services.table.header.actions"), formatter: Citeck.format.actions('products-and-services', 'nodeRef')}
             ]
