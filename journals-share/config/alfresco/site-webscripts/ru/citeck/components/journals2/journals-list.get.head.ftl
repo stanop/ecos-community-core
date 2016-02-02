@@ -10,11 +10,13 @@
 <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js"></@script>
 
 <@script type="text/javascript" src="${url.context}/res/lib/underscore.js"></@script>
-<@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js"></@script>
 <@script type="text/javascript" src="${url.context}/res/jquery/jquery-1.6.2-min.js"></@script>
 
-<@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/utils/citeck.css" />
+<@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js"></@script>
+<@script type="text/javascript" src="${url.context}/res/citeck/components/form/select.js"></@script>
 
+<@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/utils/citeck.css" />
+<@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/form/select.css" />
 <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" />
 
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/journals2/journals.css" />
