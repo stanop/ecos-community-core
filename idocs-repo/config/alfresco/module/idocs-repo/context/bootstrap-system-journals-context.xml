@@ -2,6 +2,29 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
+	<bean id="idocs.module-component.system-journals-list" parent="idocs.import-spaces">
+		<property name="name" value="system-journals-list" />
+		<property name="description" value="System Journals List" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/journal-list</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
     <bean id="idocs.module-component.journal-archive-service-configurations" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
         <property name="name" value="journal-archive-service-configurations" />
         <property name="description" value="Journal of archive service configurations" />
@@ -24,6 +47,102 @@
             </props>
         </property>
     </bean>
+
+	<bean id="idocs.module-component.system-journals.cardlets" parent="idocs.import-spaces">
+		<property name="name" value="cardlets-journal" />
+		<property name="description" value="Cardlets Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.system-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardlets</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardlets</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardlets</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardlets</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardlets</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.system-journals.cardmodes" parent="idocs.import-spaces">
+		<property name="name" value="cardmodes-journal" />
+		<property name="description" value="Card Modes Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.system-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardmodes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardmodes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:cardmodes</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardmodes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:cardmodes</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardmodes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/cardmodes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
 
 	<bean id="idocs.module-component.journal-case-element-configs" parent="idocs.import-spaces"
 		depends-on="idocs.dictionaryBootstrap">

@@ -24,7 +24,7 @@
                         <evaluation id="repo">
                             <url>/components/title/simple-title</url>
                             <properties>
-                                <title>journals.title</title>
+                                <title>page.journals.title</title>
                                 <!--<subtitle>iDocs</subtitle>-->
                             </properties>
                         </evaluation>
