@@ -5,10 +5,10 @@ http://developer.yahoo.net/yui/license.txt
 version: 2.6.0
 */
 
-/*.yui-skin-citeckTheme .yui-button > .first-child > button {
+.yui-skin-citeckTheme .actions .yui-button > .first-child > button {
 	color: #1c55da;
 	border: solid #1c55da 2px;
-}*/
+}
 
 .yui-skin-citeckTheme *:not(.surfbug_highlight),
 .yui-skin-citeckTheme *:not(.surfbug_highlight):hover,
