@@ -68,13 +68,15 @@
 		<sequential>
 			<property name="dist.dir" value="${project.dist.dir}/ecos-community" />
 			<antcall target="@{target}-dist" />
-			
-			<dispatch-module target="@{target}" scopes="all,core,1st-override" module="1st-override" />
-			<dispatch-module target="@{target}" scopes="all,core,idocs"        module="idocs" />
-			<dispatch-module target="@{target}" scopes="all,apps,contracts"    module="contracts" />
-			<dispatch-module target="@{target}" scopes="all,apps,letters"      module="letters" />
-			<dispatch-module target="@{target}" scopes="all,apps,orders"       module="orders" />
-			<dispatch-module target="@{target}" scopes="all,apps,meetings"     module="meetings" />
+
+			<dispatch-module target="@{target}" scopes="all,core,1st-override"     module="1st-override" />
+			<dispatch-module target="@{target}" scopes="all,core,ecos-base-core"   module="ecos-base-core" />
+			<dispatch-module target="@{target}" scopes="all,core,journals"         module="journals" />
+			<dispatch-module target="@{target}" scopes="all,core,idocs"            module="idocs" />
+			<dispatch-module target="@{target}" scopes="all,apps,contracts"        module="contracts" />
+			<dispatch-module target="@{target}" scopes="all,apps,letters"          module="letters" />
+			<dispatch-module target="@{target}" scopes="all,apps,orders"           module="orders" />
+			<dispatch-module target="@{target}" scopes="all,apps,meetings"         module="meetings" />
 		</sequential>
 	</macrodef>
 	

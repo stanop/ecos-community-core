@@ -2,8 +2,8 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
-    <import resource="classpath:alfresco/module/base-core-repo/context/attribute-services-context.xml" />
-    <import resource="classpath:alfresco/module/base-core-repo/context/bootstrap-context.xml" />
-    <import resource="classpath:alfresco/module/base-core-repo/context/services-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-base-core-repo/context/attribute-services-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-base-core-repo/context/bootstrap-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-base-core-repo/context/services-context.xml" />
 
 </beans>

@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="base-core-repo" default="hotcopy-tomcat">
-    <property file="module.properties"/>
-    <import file="../repo-macros.xml"/>
-    <!--<import file="../idocs-repo-dependent.xml"/>-->
+<project name="ecos-base-core-repo" default="hotcopy-tomcat">
+
+    <property file="module.properties" />
+    <import file="../repo-macros.xml" />
 
     <property name="override.project.name" value="1st-override-repo" />
-    <property name="override.project.dir" value="${override.project.name}" />
+    <property name="override.project.dir" value="../${override.project.name}" />
 
     <path id="project.classpath">
         <pathelement path="${override.project.dir}/build/lib/*" />
     </path>
+
+    <target name="package-dependencies">
+        <copy file="${dist.amps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp"
+              tofile="${dist.deps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
+    </target>
+
+    <target name="install-dependencies">
+        <install-amp war-file="${test.webapp.path}"
+                     amp-file="${dist.amps.dir}/${override.project.name}/${module.version}${module.release}/${override.project.name}-${module.version}${module.release}-${build.classifier}.amp" />
+    </target>
+
 </project>

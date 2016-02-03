@@ -1,4 +1,4 @@
-<#include "/ecos-community/base-core-repo/config/alfresco/templates/webscripts/ru/citeck/search/search-macros.ftl">
+<#include "/ru/citeck/search/search-macros.ftl">
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     <#if args["details"]?has_content && args["details"]?lower_case == "true">
