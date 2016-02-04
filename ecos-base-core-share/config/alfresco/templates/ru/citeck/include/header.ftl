@@ -1,4 +1,4 @@
-<#assign chromelessHeader = (config.scoped['ModuleConfig.global']['chromeless-header'].value)!'false'/>
+<#assign chromelessHeader = (config.scoped['ModuleConfig.global']['chromeless-header'].value)!'true'/>
 <#if chromelessHeader == 'true'>
     <@region scope="global" id="share-header" chromeless="true"/>
 <#else>
