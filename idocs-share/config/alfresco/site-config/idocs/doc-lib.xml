@@ -347,6 +347,11 @@
 				<action index="30" id="document-delete"/>
 			</actionGroup>
 
+			<actionGroup id="document-products-and-services">
+				<action index="10" id="document-edit-properties" />
+				<action index="20" id="document-view-details" />
+				<action index="30" id="document-delete" />
+			</actionGroup>
 		</actionGroups>
 
 	</config>

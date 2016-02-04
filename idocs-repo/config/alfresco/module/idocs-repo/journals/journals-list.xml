@@ -11,6 +11,7 @@
 		<import uri="http://www.citeck.ru/model/archive-service-configuration/1.0" prefix="arch" />
 		<import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
 		<import uri="http://www.citeck.ru/model/bcalendar/1.0" prefix="bcal" />
+		<import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
 	</imports>
 
 	<journal id="idocs-activity-direction">
@@ -182,24 +183,26 @@
 	</journal>
 
 	<journal id="units">
-		<option name="type">idocs:units</option>
+		<option name="type">pas:unit</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="cm:name" default="true"/>
+			<header key="pas:unitShortName" default="true"/>
+			<header key="pas:unitName" default="true"/>
 		</headers>
 	</journal>
 
 	<journal id="products-and-services">
-		<option name="type">idocs:procductsAndServices</option>
+		<option name="type">pas:pasEntityOriginal</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="cm:name" default="true"/>
-			<header key="cm:description" default="true"/>
-			<header key="idocs:pricePerUnit" default="true"/>
-			<header key="idocs:elementUnit" default="true"/>
-			<header key="idocs:PaSType" default="true"/>
+			<header key="cm:title" default="true"/>
+			<header key="pas:pricePerUnit" default="true"/>
+			<header key="pas:entityUnit" default="true">
+				<!--<option name="formatter"></option>-->
+			</header>
+			<header key="pas:type" default="true"/>
 		</headers>
 	</journal>
 

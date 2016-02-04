@@ -49,6 +49,7 @@
 				<value>alfresco/module/idocs-repo/model/ecosModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/documentSupervisorsModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/businessCalendarModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/productsAndServicesModel.xml</value>
 			</list>
 		</property>
 		<property name="labels">
@@ -78,6 +79,7 @@
 				<value>alfresco/module/idocs-repo/messages/cardlet</value>
 				<value>alfresco/module/idocs-repo/messages/ecosModel</value>
 				<value>alfresco/module/idocs-repo/messages/business-calendar</value>
+				<value>alfresco/module/idocs-repo/messages/productsAndServices</value>
 			</list>
 		</property>
 	</bean>

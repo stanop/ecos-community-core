@@ -15,6 +15,7 @@
 		<import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
 		<import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
+		<import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
 		<!--import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" /-->
 	</imports>
 
@@ -199,6 +200,7 @@
 			</associations>
 			<mandatory-aspects>
 				<aspect>contracts:hasDocumentStatus</aspect>
+				<aspect>pas:hasProductsAndServices</aspect>
 			</mandatory-aspects>
 		</type>
 

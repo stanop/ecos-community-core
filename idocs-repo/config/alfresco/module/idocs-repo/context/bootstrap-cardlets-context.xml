@@ -304,4 +304,25 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="idocs.module-component.cardlets-products-and-services" parent="idocs.import-spaces">
+		<property name="name" value="cardlets-products-and-services" />
+		<property name="description" value="Products and services cardlet" />
+		<property name="sinceVersion" value="2.12.0" />
+		<property name="appliesFromVersion" value="2.12.0" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.system-journals.cardlets" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/content/products-and-services</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
 </beans>

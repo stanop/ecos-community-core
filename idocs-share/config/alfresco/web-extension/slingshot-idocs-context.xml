@@ -29,6 +29,7 @@
                 <value>alfresco.site-messages.idocs.cardlets</value>
                 <value>alfresco.site-messages.idocs.case-roles</value>
                 <value>alfresco.site-messages.idocs.case-tasks</value>
+                <value>alfresco.site-messages.idocs.products-and-services</value>
             </list>
         </property>
     </bean>

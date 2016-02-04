@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+    </imports>
+
+    <view class="pas:unit">
+        <field prop="pas:unitShortName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="pas:unitName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+
+    <view class="pas:pasEntityOriginal">
+        <field prop="cm:title"/>
+        <field prop="cm:description"/>
+        <field prop="pas:type">
+            <region name="input" template="select"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="pas:pricePerUnit"/>
+        <field assoc="pas:entityUnit">
+            <region name="input" template="select"/>
+            <invariant on="value-title" language="javascript">
+                value.properties['pas:unitShortName'];
+            </invariant>
+            <!--<region name="select" template="create-object" />-->
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+
+    <view class="pas:pasEntityCopied">
+        <field prop="cm:title"/>
+        <field prop="cm:description"/>
+        <field prop="pas:type">
+            <region name="input" template="select"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="pas:pricePerUnit"/>
+        <field assoc="pas:entityUnit">
+            <region name="input" template="select"/>
+            <invariant on="value-title" language="javascript">
+                value.properties['pas:unitShortName'];
+            </invariant>
+            <!--<region name="select" template="create-object" />-->
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+
+</views>

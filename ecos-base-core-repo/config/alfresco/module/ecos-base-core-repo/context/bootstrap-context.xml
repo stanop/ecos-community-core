@@ -16,10 +16,12 @@
         <property name="models">
             <list>
                 <value>alfresco/module/ecos-base-core-repo/model/attributeModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/productsAndServicesModel.xml</value>
             </list>
         </property>
         <property name="labels">
             <list></list>
+				<value>alfresco/module/idocs-repo/messages/productsAndServices</value>
         </property>
     </bean>
 

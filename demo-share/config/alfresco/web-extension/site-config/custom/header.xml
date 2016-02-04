@@ -11,11 +11,15 @@
                 <item type="js" id="sites">Alfresco.module.AllSites</item>
                 <item type="js" id="create-variants">Citeck.module.CreateVariants</item>
                 <item type="link" id="journals2" icon="journals.png">/site/{lastsite}/journals2/list/main</item>
-				<item type="link" id="documentlibrary">/site/{lastsite}/documentlibrary</item>
+                <item type="link" id="documentlibrary">/site/{lastsite}/documentlibrary</item>
                 <item type="container" id="create-workflow" description="">
                     <container-group id="workflows" label="">
-                        <item id="create-workflow-adhoc" type="link">/start-specified-workflow?workflowId=activiti$perform</item>
-                        <item id="create-workflow-confirm" type="link">/start-specified-workflow?workflowId=activiti$confirm</item>
+                        <item id="create-workflow-adhoc" type="link">
+                            /start-specified-workflow?workflowId=activiti$perform
+                        </item>
+                        <item id="create-workflow-confirm" type="link">
+                            /start-specified-workflow?workflowId=activiti$confirm
+                        </item>
                     </container-group>
                 </item>
                 <item type="link" id="global_journals2" icon="journals.png">/journals2/list/main</item>
@@ -31,14 +35,18 @@
                         <item type="link" id="my-files" icon="my-content.png">/context/mine/myfiles</item>
                         <item type="link" id="global_journals2" icon="journals.png">/journals2/list/main</item>
                     </container-group>
-                    <container-group id="tools" permission="admin">
+                </item>
+                <item type="container" id="admin-tools" label="header.tools.label" permission="admin">
+                    <container-group id="tools" permission="admin" label="">
                         <item type="link" id="repository">/repository</item>
                         <item type="link" id="application">/console/admin-console/application</item>
                         <item type="link" id="groups">/console/admin-console/groups</item>
                         <item type="link" id="users">/console/admin-console/users</item>
                         <!--item type="link" id="trashcan">/console/admin-console/trashcan</item-->
                         <!--item type="link" id="overdue-tasks">/overdue-tasks</item-->
-                        <item type="link" id="categories" icon="category-manager.png">/console/admin-console/type-manager</item>
+                        <item type="link" id="categories" icon="category-manager.png">
+                            /console/admin-console/type-manager
+                        </item>
                         <item type="link" id="system" icon="journals.png">/journals2/list/system</item>
                         <item type="link" id="meta_journals" icon="journals.png">/journals2/list/meta</item>
                         <item type="link" id="templates">/journals2/list/templates</item>
@@ -52,25 +60,31 @@
                     <container-group id="usermenu" label="">
                         <item type="user" id="status">{userprofilepage}</item>
                         <item type="link" id="my-profile">{userprofilepage}</item>
-                        <item type="link" id="make-available" condition="user.properties.available === false">/components/delegate/make-available?available=true</item>
-                        <item type="link" id="make-notavailable" condition="user.properties.available === true || user.properties.available === null">/components/delegate/make-available?available=false</item>
-                        <item type="link" id="change-password" condition="user.capabilities.isMutable">/user/change-password
+                        <item type="link" id="make-available" condition="user.properties.available === false">
+                            /components/delegate/make-available?available=true
+                        </item>
+                        <item type="link" id="make-notavailable"
+                              condition="user.properties.available === true || user.properties.available === null">
+                            /components/delegate/make-available?available=false
+                        </item>
+                        <item type="link" id="change-password" condition="user.capabilities.isMutable">
+                            /user/change-password
                         </item>
                         <item type="link" id="logout" condition="!context.externalAuthentication">/dologout</item>
                     </container-group>
                 </item>
             </user-items>
             <dependencies>
-                <css src="/modules/create-site.css" />
-                <css src="/modules/header/all-sites.css" />
-                <css src="/modules/header/document-types.css" />
-                <js src="/modules/create-site.js" />
-                <js src="/modules/header/all-sites.js" />
-                <js src="/modules/header/site-page-link.js" />
-                <js src="/jquery/jquery-1.6.2-min.js" />
-                <js src="/modules/common/ie_fix.js" />
-                <js src="/modules/header/document-types.js" />
-                <js src="/modules/header/create-variants.js" />
+                <css src="/modules/create-site.css"/>
+                <css src="/modules/header/all-sites.css"/>
+                <!--<css src="/modules/header/document-types.css" />-->
+                <js src="/modules/create-site.js"/>
+                <js src="/modules/header/all-sites.js"/>
+                <js src="/modules/header/site-page-link.js"/>
+                <js src="/jquery/jquery-1.6.2-min.js"/>
+                <js src="/modules/common/ie_fix.js"/>
+                <!--<js src="/modules/header/document-types.js" />-->
+                <js src="/modules/header/create-variants.js"/>
             </dependencies>
         </header>
 

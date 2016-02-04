@@ -310,7 +310,7 @@
                         this.permissions.canCreate = result.canCreate;
 
                         // show saveAsTemplate if permission 'canCreate' is true
-                        if (result.canCreate) this.buttons.saveAsTemplateDialog.removeClass("hidden");
+                        if (result.canCreate && this.options.saveAndLoadTemplate == "true") this.buttons.saveAsTemplateDialog.removeClass("hidden");
                     }
                 },
                 failureCallback: {
@@ -322,7 +322,7 @@
             });
             
             // hide saveAsTemplate if permission 'canCreate' is FALSE
-            if (!this.permissions.canCreate) this.buttons.saveAsTemplateDialog.addClass("hidden");
+            if (!this.permissions.canCreate && this.options.saveAndLoadTemplate == "true") this.buttons.saveAsTemplateDialog.addClass("hidden");
 
             // 
             //  PUBLIC FUNCTIONS

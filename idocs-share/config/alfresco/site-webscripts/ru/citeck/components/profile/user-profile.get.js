@@ -13,22 +13,22 @@
     if (result.status != 200) {
         AlfrescoUtil.error(result.status, 'Could not load user: request url = ' + url);
     }
-    var user = eval('(' + result + ')');
+    var currentUser = eval('(' + result + ')');
 
     connector = remote.connect("alfresco");
-    url = '/citeck/has-permission?nodeRef=' + user.nodeRef + '&permission=Write';
+    url = '/citeck/has-permission?nodeRef=' + currentUser.nodeRef + '&permission=Write';
     result = connector.call(url);
     if (result.status != 200) {
         AlfrescoUtil.error(result.status, 'Could not check permissions for user: request url = ' + url);
     }
     var permissionResult = eval('(' + result + ')');
 
-    model.userRef = user.nodeRef;
+    model.userRef = currentUser.nodeRef;
     model.writeMode = (permissionResult == true || permissionResult == "true");
     model.mode = (args.mode && model.writeMode) ? args.mode : "view";
 
     var viewArgs = {
-        nodeRef: user.nodeRef,
+        nodeRef: currentUser.nodeRef,
         mode: model.mode
     };
 
@@ -54,4 +54,4 @@
     model.attributes = attributes;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.defaultModel = defaultModel;
-})()
+})();

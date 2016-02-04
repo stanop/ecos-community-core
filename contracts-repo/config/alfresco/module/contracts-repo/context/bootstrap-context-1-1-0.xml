@@ -605,4 +605,21 @@
             </list>
         </property>
     </bean>
+
+    <bean id="contracts.module-component.products-and-services-folder" parent="contracts.import-spaces.1-1-0">
+        <property name="name" value="products-and-services-folder" />
+        <property name="description" value="Products and Services Folder" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:contracts/cm:dataLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/folders/products-and-services</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 </beans>
