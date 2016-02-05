@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.alfresco.cmis.client.impl.AlfrescoUtils;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.exporter.NodeContentData;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.jscript.ScriptNode.ScriptContentData;
 import org.alfresco.repo.template.BaseContentNode.TemplateContentData;
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
@@ -53,6 +55,7 @@ import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 
 import ru.citeck.ecos.attr.NodeAttributeService;
+import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.DictionaryUtils;
 
@@ -71,6 +74,7 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
     private PermissionService permissionService;
     private NodeAttributeService nodeAttributeService;
     private WorkflowService workflowService;
+    private MessageService messageService;
 	
 	public Map<String, List<TemplateNode>> getParentAssocs(TemplateNode node) {
 		@SuppressWarnings("unchecked")
@@ -138,7 +142,7 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
             List<String> allowedValues = constraint.getAllowedValues();
             if(!allowedValues.contains(propertyValue))
                 continue;
-            return constraint.getDisplayLabel(propertyValue);
+            return constraint.getDisplayLabel(propertyValue, messageService);
         }
         return null;
     }
@@ -238,6 +242,7 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
 		this.permissionService = serviceRegistry.getPermissionService();
 		this.nodeAttributeService = (NodeAttributeService) serviceRegistry.getService(CiteckServices.NODE_ATTRIBUTE_SERVICE);
 		this.workflowService = serviceRegistry.getWorkflowService();
+        this.messageService = (MessageService) serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
 	}
 	
 }

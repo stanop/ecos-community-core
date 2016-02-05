@@ -8,7 +8,6 @@
             <list>
                 <value>alfresco.site-messages.idocs.dynamic-table</value>
                 <value>alfresco.site-messages.idocs.search-predicates</value>
-                <value>alfresco.site-messages.idocs.products-and-services</value>
             </list>
         </property>
     </bean>

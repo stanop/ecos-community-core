@@ -16,13 +16,11 @@
         <property name="models">
             <list>
                 <value>alfresco/module/journals-repo/model/journalsModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/productsAndServicesModel.xml</value>
             </list>
         </property>
         <property name="labels">
             <list>
                 <value>alfresco/module/journals-repo/messages/journal</value>
-				<value>alfresco/module/idocs-repo/messages/productsAndServices</value>
             </list>
         </property>
     </bean>

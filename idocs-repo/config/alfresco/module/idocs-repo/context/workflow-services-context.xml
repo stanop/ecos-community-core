@@ -101,6 +101,7 @@
         <property name="personService" ref="PersonService" />
         <property name="dictionaryService" ref="DictionaryService" />
         <property name="authorityService" ref="AuthorityService" />
+        <property name="messageService" ref="messageService" />
         <property name="workflowNames">
             <set>
                 <value>activiti$confirm</value>
