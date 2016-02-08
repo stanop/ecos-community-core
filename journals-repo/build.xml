@@ -6,7 +6,7 @@
 
     <property name="ecos-base-core.project.name" value="ecos-base-core-repo" />
     <property name="ecos-base-core.project.dir" value="../${ecos-base-core.project.name}" />
-    <property name="ecos-base-core.project.version" value="1.0.0" />
+    <property name="ecos-base-core.project.version" value="1.0.0.0" />
 
     <path id="project.classpath">
         <pathelement path="${ecos-base-core.project.dir}/build/lib/*" />
