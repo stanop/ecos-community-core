@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ecos-base-core-repo" default="hotcopy-tomcat">
+    <property file="module.properties" />
+    <import file="../repo-macros.xml" />
+    <path id="project.classpath" />
+</project>

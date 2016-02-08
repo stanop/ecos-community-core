@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ecos-base-core-share" default="hotcopy-tomcat">
+	<property file="module.properties" />
+	<import file="../share-macros.xml" />
+	<path id="project.classpath" />
+</project>

@@ -1,4 +1,4 @@
-<#import "../search/search-macros.ftl" as search />
+<#import "/ru/citeck/search/search-macros.ftl" as search />
 <#escape x as jsonUtils.encodeJSONString(x)>
 <#if data.addAssocs?? && data.addAssocs=="true">
 "assocs":

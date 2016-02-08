@@ -1,5 +1,0 @@
-<webscript>
-  <shortname>Form Component</shortname>
-  <description>Component that renders a form based on a repository form model</description>
-  <url>/citeck/components/form-control?itemKind={itemKind}&amp;itemId={itemId}&amp;formId={formId?}&amp;field={field}&amp;name={name}&amp;value={value}</url>
-</webscript>

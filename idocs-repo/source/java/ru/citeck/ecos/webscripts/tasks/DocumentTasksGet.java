@@ -20,6 +20,7 @@ package ru.citeck.ecos.webscripts.tasks;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
@@ -45,6 +46,7 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 
 import ru.citeck.ecos.model.CiteckWorkflowModel;
+import ru.citeck.ecos.service.AlfrescoServices;
 
 import java.io.Serializable;
 import java.util.*;
@@ -78,6 +80,8 @@ public class DocumentTasksGet extends DeclarativeWebScript {
     private DictionaryService dictionaryService;
     
     private WorkflowService workflowService;
+
+    private MessageService messageService;
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest request, Status status, Cache cache) {
@@ -200,7 +204,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
             if (constraint instanceof ListOfValuesConstraint) {
                 ListOfValuesConstraint listOfValues = (ListOfValuesConstraint) constraint;
                 for (String allowedValue : listOfValues.getAllowedValues()) {
-                    allowedValues.put(allowedValue, listOfValues.getDisplayLabel(allowedValue));
+                    allowedValues.put(allowedValue, listOfValues.getDisplayLabel(allowedValue, messageService));
                 }
             }
         }
@@ -213,5 +217,6 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         authenticationService = serviceRegistry.getAuthenticationService();
         dictionaryService = serviceRegistry.getDictionaryService();
         workflowService = serviceRegistry.getWorkflowService();
+        messageService = (MessageService) serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
     }
 }

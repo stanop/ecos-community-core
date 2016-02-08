@@ -3,7 +3,6 @@
 <beans>
 
     <import resource="classpath:alfresco/module/idocs-repo/context/services-context.xml" />
-    <import resource="classpath:alfresco/module/idocs-repo/context/attribute-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/form-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/workflow-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/orgstruct-services-context.xml" />
@@ -12,7 +11,6 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/case-activity-service-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/delegate-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/invariant-services-context.xml" />
-    <import resource="classpath:alfresco/module/idocs-repo/context/journal-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/lifecycle-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/scheduled-jobs-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/case-roles-service-context.xml" />

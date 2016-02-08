@@ -19,8 +19,6 @@
                 <value>alfresco.site-messages.idocs.orgstruct-console</value>
                 <value>alfresco.site-messages.idocs.supplementary-files</value>
                 <value>alfresco.site-messages.idocs.idocs</value>
-                <value>alfresco.site-messages.idocs.dynamic-table</value>
-                <value>alfresco.site-messages.idocs.search-predicates</value>
                 <value>alfresco.site-messages.idocs.associations</value>
                 <value>alfresco.site-messages.idocs.document-history</value>
                 <value>alfresco.site-messages.idocs.document-tasks</value>
@@ -36,20 +34,6 @@
         </property>
     </bean>
 
-    <bean id="resourceResolver" class="ru.citeck.ecos.surf.config.ResourceResolver"/>
-
-    <bean id="siteConfigResources" factory-bean="resourceResolver" factory-method="getResources">
-        <constructor-arg>
-            <list>
-                <value>classpath:alfresco/site-config/**/*.xml</value>
-                <value>classpath*:alfresco/web-extension/site-config/**/*.xml</value>
-				
-                <!-- allow final control over share environment -->
-                <value>classpath*:share-environment.xml</value>
-            </list>
-        </constructor-arg>
-    </bean>
-    
     <bean id="dependency.handler" parent="dependency.handler.abstract" class="org.springframework.extensions.surf.DependencyHandler">
       <property name="debugSuffices">
         <list>
@@ -70,13 +54,6 @@
           <value></value> <!-- fallback -->
         </list>
       </property>
-    </bean>
-    
-    <bean id="common-share-configs" class="org.springframework.extensions.config.ConfigBootstrap" init-method="register" depends-on="webframework.configsource">
-        <property name="configService" ref="web.config" />
-        <property name="configs">
-            <ref bean="siteConfigResources"></ref>
-        </property>
     </bean>
 
 	<!-- override page view resolver -->
@@ -126,25 +103,6 @@
             </list>
         </property>
     </bean>
-	
-	<!-- module evaluator that uses configuration -->
-	<bean id="config.module.evaluator"
-		class="ru.citeck.ecos.surf.extensibility.ConfigEvaluator">
-		<property name="configService" ref="web.config" />
-		<property name="requiredProperties">
-			<list>
-				<value>element</value>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- evaluator: user is authenticated -->
-	<bean id="user.authenticated.evaluator"
-		class="ru.citeck.ecos.surf.extensibility.UserAuthenticatedEvaluator">
-		<property name="requiredProperties">
-			<list></list>
-		</property>
-	</bean>
 
 	<!-- dependencies webscript -->
 	<bean id="webscript.ru.citeck.components.dependencies.dependencies.get" 
@@ -167,43 +125,9 @@
 		<property name="resourceResolver" ref="resourceResolver" />
 	</bean>
 
-	<bean id="webscript.ru.citeck.components.form.form-control.get"
-		class="org.alfresco.web.scripts.forms.FormUIGet" 
-		parent="webscript">
-		<property name="configService" ref="web.config" />
-	</bean>
-
-    <bean id="webscript.ru.citeck.components.form.inline-form.get"
-            class="org.alfresco.web.scripts.forms.FormUIGet"
-            parent="webscript">
-        <property name="configService" ref="web.config" />
-    </bean>
-
 	<!-- global 'messages' object -->
 	<bean id="slingshot.scriptprocessor.messages" parent="baseScriptExtension" class="ru.citeck.ecos.webscripts.MessagesProcessorExtension">
 		<property name="extensionName" value="messages" />
-	</bean>
-
-	<!-- evaluators definition -->
-
-	<bean id="node.isSubType.component.evaluator" class="ru.citeck.ecos.surf.extensibility.SlingshotWebScriptEvaluator">
-		<property name="urlTemplate" value="/citeck/node/isSubType?nodeRef={nodeRef}&amp;types={types}" />
-		<property name="accessor" value="data" />
-		<property name="requiredProperties">
-			<list>
-				<value>nodeRef</value>
-				<value>types</value>
-			</list>
-		</property>
-	</bean>
- 
-	<bean id="user.isSpecifiedUser.component.evaluator" class="ru.citeck.ecos.surf.extensibility.IsSpecifiedUserEvaluator">
-		<property name="requiredProperties">
-			<list>
-				<value>userNames</value>
-				<value>inverse</value>
-			</list>
-		</property>
 	</bean>
  
 </beans>

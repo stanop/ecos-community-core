@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="journals.import-spaces" abstract="true" class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+        <property name="moduleId" value="journals-repo" />
+        <property name="importer" ref="spacesBootstrap"/>
+    </bean>
+
+    <!-- models -->
+    <bean id="journals.dictionaryBootstrap" parent="dictionaryModelBootstrap"
+        depends-on="dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/journals-repo/model/journalsModel.xml</value>
+            </list>
+        </property>
+        <property name="labels">
+            <list>
+                <value>alfresco/module/journals-repo/messages/journal</value>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="idocs.module-component.journals-meta-root" parent="journals.import-spaces" depends-on="journals.dictionaryBootstrap">
+		<property name="name" value="journals-meta-root" />
+		<property name="description" value="Journals folders and meta-journals" />
+		<property name="sinceVersion" value="1.0" />
+		<property name="appliesFromVersion" value="1.0" />
+		<property name="bootstrapView">
+			<props>
+				<prop key="uuidBinding">UPDATE_EXISTING</prop>
+				<prop key="path">/cm:IDocsRoot</prop>
+				<prop key="location">alfresco/module/journals-repo/bootstrap/explicit/journals-meta-root.xml</prop>
+				<prop key="messages">alfresco/module/journals-repo/messages/journals-meta</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+
+    <bean id="idocs.module-component.journals-meta-root-journals-settings" parent="journals.import-spaces" depends-on="journals.dictionaryBootstrap">
+        <property name="name" value="journals-meta-root-journals-settings" />
+        <property name="description" value="Extension for journals settings" />
+        <property name="sinceVersion" value="1.0" />
+        <property name="appliesFromVersion" value="1.0" />
+        <!--property name="executeOnceOnly" value="false"/-->
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/cm:IDocsRoot</prop>
+                <prop key="location">alfresco/module/journals-repo/bootstrap/explicit/journals-meta-root-journal-settings.xml</prop>
+                <prop key="messages">alfresco/module/journals-repo/messages/journals-meta</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

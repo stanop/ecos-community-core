@@ -20,6 +20,7 @@ package ru.citeck.ecos.confirm;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.dictionary.Constraint;
@@ -58,6 +59,7 @@ public class ConfirmListService
     private PersonService personService;
     private DictionaryService dictionaryService;
     private AuthorityService authorityService;
+	private MessageService messageService;
 
     private Set<String> workflowNames;
 	private Set<String> taskNames;
@@ -185,7 +187,7 @@ public class ConfirmListService
 					Constraint constraint = constraintDef.getConstraint();
 					if(constraint instanceof ListOfValuesConstraint) {
 						ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constraint;
-						String outcomeLocalized = listConstraint.getDisplayLabel(outcome);
+						String outcomeLocalized = listConstraint.getDisplayLabel(outcome, messageService);
 						taskModel.put(FIELD_OUTCOME_LOCALIZED, outcomeLocalized);
 					}
 				}
@@ -234,6 +236,10 @@ public class ConfirmListService
 
 	public void setAuthorityService(AuthorityService authorityService) {
 		this.authorityService = authorityService;
+	}
+
+	public void setMessageService(MessageService messageService) {
+		this.messageService = messageService;
 	}
 
 	public void setWorkflowNames(Set<String> workflowNames) {

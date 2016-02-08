@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.ListIterator;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -61,6 +62,7 @@ import ru.citeck.ecos.security.NodeOwnerDAO;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.repository.AssociationExistsException;
 import org.alfresco.service.cmr.repository.InvalidNodeRefException;
+import ru.citeck.ecos.service.AlfrescoServices;
 
 public class DocumentChangeSendNotificationBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy, 
 		NodeServicePolicies.OnDeleteAssociationPolicy, NodeServicePolicies.OnCreateChildAssociationPolicy, NodeServicePolicies.OnDeleteChildAssociationPolicy, 
@@ -76,6 +78,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
     protected DictionaryService dictionaryService;
     protected DocumentNotificationSender sender;
 	protected ProcessorHelper helper;
+	protected MessageService messageService;
 
 	// distinct properties
 	protected QName className;
@@ -151,8 +154,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 									if(constr_def2 instanceof ListOfValuesConstraint) 
 									{
 										ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constr_def2;
-										propBefore = listConstraint.getDisplayLabel((String)propBefore);
-										propAfter = listConstraint.getDisplayLabel((String)propAfter);
+										propBefore = listConstraint.getDisplayLabel((String)propBefore, messageService);
+										propAfter = listConstraint.getDisplayLabel((String)propAfter, messageService);
 									}
 									
 								}
@@ -177,8 +180,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 											if(constr_def2 instanceof ListOfValuesConstraint) 
 											{
 												ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constr_def2;
-												propBefore = listConstraint.getDisplayLabel((String)propBefore);
-												propAfter = listConstraint.getDisplayLabel((String)propAfter);
+												propBefore = listConstraint.getDisplayLabel((String)propBefore, messageService);
+												propAfter = listConstraint.getDisplayLabel((String)propAfter, messageService);
 											}
 											
 										}
@@ -427,6 +430,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		this.dictionaryService = services.getDictionaryService();
 		this.qNameConverter = new WorkflowQNameConverter(namespaceService);
 		this.personService = services.getPersonService();
+		this.messageService = (MessageService) services.getService(AlfrescoServices.MESSAGE_SERVICE);
 	}
 
 	public void setPolicyComponent(PolicyComponent policyComponent) {

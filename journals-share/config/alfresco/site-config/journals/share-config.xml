@@ -1,0 +1,18 @@
+<alfresco-config>
+
+	<!-- Overdue tasks link menu -->
+	<config evaluator="string-compare" condition="SitePages">
+		<pages>
+			<page id="journals">journals2/list/main</page>
+		</pages>
+	</config>
+
+	<!-- Special pages -->
+	<config evaluator="string-compare" condition="UriTemplate">
+		<uri-templates>
+			<uri-template id="journals">/{pageid}/list/{listId}</uri-template>
+			<uri-template id="sitejournals" before="sitepage">/site/{site}/{pageid}/list/{listId}</uri-template>
+		</uri-templates>
+	</config>
+
+</alfresco-config>
