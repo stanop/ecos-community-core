@@ -6,14 +6,14 @@
 
     <property name="ecos-base-core.project.name" value="ecos-base-core-repo" />
     <property name="ecos-base-core.project.dir" value="../${ecos-base-core.project.name}" />
-    <property name="ecos-base-core.project.version" value="1.0.0.0" />
+    <property name="ecos-base-core.project.version" value="1.0.0.0${module.release}" />
 
     <path id="project.classpath">
         <pathelement path="${ecos-base-core.project.dir}/build/lib/*" />
     </path>
 
     <property name="ecos-base-core.project.amp"
-              value="${ecos-base-core.project.name}/${ecos-base-core.project.version}${module.release}/${ecos-base-core.project.name}-${ecos-base-core.project.version}${module.release}-${build.classifier}.amp" />
+              value="${ecos-base-core.project.name}/${ecos-base-core.project.version}/${ecos-base-core.project.name}-${ecos-base-core.project.version}-${build.classifier}.amp" />
 
     <target name="package-dependencies">
         <copy file="${dist.amps.dir}/${ecos-base-core.project.amp}" tofile="${dist.deps.dir}/${ecos-base-core.project.amp}" />
