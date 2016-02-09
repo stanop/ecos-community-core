@@ -1,11 +1,7 @@
-<#if (form.data.prop_wfcf_canConfirmWithComments)??>
+<#if (form.data.prop_wfcf_canConfirmWithComments!false)?string == 'true'>
 	<#assign outcomes = [ "Confirmed", "ConfirmedWithComment", "Reject" ] />
-<#else>
-	<#if form.data.prop_wfcf_canConfirmWithComments!false>
-		<#assign outcomes = [ "Confirmed", "ConfirmedWithComment", "Reject" ] />
-	<#else/>
-		<#assign outcomes = [ "Confirmed", "Reject" ] />
-	</#if>
+<#else/>
+	<#assign outcomes = [ "Confirmed", "Reject" ] />
 </#if>
 
 <#assign outcomePrefix = form.data.prop_wfcf_confirmOutcomeI18nPrefix!"" />
