@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
@@ -102,12 +103,15 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
              * does not change anything.
              */
             writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName("ISO-8859-1"));
+			
+			StringWriter content = new StringWriter();
 
             // process template
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(KEY_DOCUMENT, nodeRef);
             try {
-                templateService.processTemplate(template.toString(), model, writer);
+                templateService.processTemplate(template.toString(), model, content);
+				escapeNonLatin(content.toString(), writer);
             } catch (Exception e) {
                 logger.error("Content generation failure for " + nodeRef, e);
                 ExceptionTranslator translator = exceptionService.getExceptionTranslator(
@@ -134,6 +138,23 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
         RepoUtils.setUniqueOriginalName(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
         RepoUtils.createVersion(nodeRef, versionProperties, nodeService, versionService);
     }
+
+    public static void escapeNonLatin(CharSequence sequence, Writer out) throws java.io.IOException {
+    for (int i = 0; i < sequence.length(); i++) {
+      char ch = sequence.charAt(i);
+      if (Character.UnicodeBlock.of(ch) == Character.UnicodeBlock.BASIC_LATIN) {
+        out.append(ch);
+      } else {
+        int codepoint = Character.codePointAt(sequence, i);
+        // handle supplementary range chars
+        i += Character.charCount(codepoint) - 1;
+        // emit entity
+        out.append("&#x");
+        out.append(Integer.toHexString(codepoint));
+        out.append(";");
+      }
+    }
+  }
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;

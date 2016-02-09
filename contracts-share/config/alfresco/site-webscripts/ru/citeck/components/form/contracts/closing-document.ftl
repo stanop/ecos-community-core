@@ -12,6 +12,8 @@ fieldNames = [
 "prop_contracts_closingDocumentNumber"
 ]/>
 
+<@forms.setMandatoryFields fieldNames = [ "prop_cm_content" ] condition="prop_dms_updateContent == 'false'" />
+
 <@forms.fileUploadSupport />
 
 <#assign mode = "" />
@@ -173,6 +175,14 @@ YAHOO.Bubbling.on("renderCurrentValue", function (layer, args) {
     </div>
 </div>
 
+<script type="text/javascript">// <![CDATA[
+Citeck.forms.displayConditional("${args.htmlid}_content", "prop_dms_updateContent == 'false'", ["${args.htmlid}_updateContent"]);
+//]]></script>
+
+<div id="${args.htmlid}_updateContent">
+    <@forms.renderField field = "prop_dms_updateContent" />
+</div>
+<div id="${args.htmlid}_content">
 	<#if form.mode == "create">
 		<@forms.renderField field="prop_cm_content" extension = {
 		"label": msg("form.control.file-upload.title.attachment"),
@@ -180,6 +190,7 @@ YAHOO.Bubbling.on("renderCurrentValue", function (layer, args) {
 		"template": "/ru/citeck/components/form/controls/fileUpload.ftl"
 		} } />
 	</#if>
+</div>
 
 <#--
     <#if form.mode != "create">

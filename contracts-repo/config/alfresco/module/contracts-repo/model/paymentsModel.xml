@@ -267,6 +267,8 @@
 				<aspect>payments:paymentNumber</aspect>
 				<aspect>payments:paymentFor</aspect>
 				<aspect>pas:hasProductsAndServices</aspect>
+				<aspect>dms:templateable</aspect>
+				<aspect>payments:paymentType</aspect>
 			</mandatory-aspects>
 		</type>
 	</types>
@@ -362,6 +364,14 @@
 				</property>
 			</overrides>
 		</aspect>
+        <aspect name="payments:paymentType">
+            <parent>tk:documentTypeKind</parent>
+            <overrides>
+                <property name="tk:type">
+                    <default>workspace://SpacesStore/contracts-cat-doctype-payment</default>
+                </property>
+            </overrides>
+        </aspect>
 	</aspects>
 
 
