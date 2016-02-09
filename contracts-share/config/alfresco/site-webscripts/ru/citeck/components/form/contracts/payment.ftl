@@ -14,6 +14,8 @@ fieldNames = [
 "prop_payments_paymentNumber"
 ]/>
 
+<@forms.setMandatoryFields fieldNames = [ "prop_cm_content" ] condition="prop_dms_updateContent == 'false'" />
+
 <#if form.mode == "create" && (form.arguments.formId!) == "by-agreement"
 || (form.data.prop_tk_kind!) == kindRefs["by-agreement"]>
 	<#assign mode = "by-agreement" />
@@ -269,6 +271,15 @@ YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
 
 <@forms.renderField field="prop_payments_overexpenditure" />
 
+<script type="text/javascript">// <![CDATA[
+Citeck.forms.displayConditional("${args.htmlid}_content", "prop_dms_updateContent == 'false'", ["${args.htmlid}_updateContent"]);
+//]]></script>
+
+<div id="${args.htmlid}_updateContent">
+    <@forms.renderField field = "prop_dms_updateContent" />
+</div>
+
+<div id="${args.htmlid}_content">
     <#if form.mode == "create">
         <@forms.renderField field="prop_cm_content" extension = {
         "label": msg("form.control.file-upload.title.attachment"),
@@ -276,6 +287,7 @@ YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
         "template": "/ru/citeck/components/form/controls/fileUpload.ftl"
         } } />
     </#if>
+</div>
 
 <@forms.renderField field="prop_payments_paymentComment" extension = extensions.controls.textarea />
 

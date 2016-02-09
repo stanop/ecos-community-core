@@ -1136,6 +1136,7 @@
 					<show id="contracts:closingDocumentPayment" />
 					<show id="contracts:closingDocumentAgreement" />
 					<show id="contracts:closingDocumentOriginalLocation" />
+					<show id="dms:updateContent" />
 					<show id="cm:content" />
 					<show id="cm:created" />
 				</field-visibility>
