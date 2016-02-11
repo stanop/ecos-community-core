@@ -68,6 +68,7 @@
                     <value>credit-committee-preparation</value>
                     <value>credit-disbursement-preparation</value>
                     <value>credit-disbursement</value>
+                    <value>credit-checking-blacklist</value>
                     <value>credit-internal-report</value>
                     <value>credit-external-report</value>
                     <value>credit-documents-checking</value>
