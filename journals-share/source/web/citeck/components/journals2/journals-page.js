@@ -16,13 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['citeck/utils/knockout.utils', 'citeck/components/journals2/journals'], function(koutils, Journals) {
+define(['lib/jquery.simulate', 'citeck/utils/knockout.utils',
+		'citeck/components/journals2/journals'], function(jqsim, koutils, Journals) {
 
 var PopupManager = Alfresco.util.PopupManager,
 	koclass = koutils.koclass,
 	JournalsWidget = koclass('JournalsWidget'),
 	JournalsPage = koclass('JournalsPage', JournalsWidget),
-	Record = koclass('Record');
+	Record = koclass('Record'),
+	jqSimulate = $('').simulate;
 
 JournalsPage
 	// menu
@@ -178,7 +180,7 @@ YAHOO.extend(JournalsPageWidget, Journals, {
 	simulateChange: function() {
 		// simulate change on hidden fields, 
 		// to force view models update
-		$('#' + this.id + '-filter-criteria input[type="hidden"]').simulate('change');
+		jqSimulate.call($('#' + this.id + '-filter-criteria input[type="hidden"]'), 'change');
 	},
 
 	askTitle: function(config) {
