@@ -2,6 +2,7 @@
 
 <@markup id="css">
 	<@link rel="stylesheet" href="${url.context}/res/citeck/components/type-kind/site-document-types.css" group="type-kind" />
+	<@link rel="stylesheet" href="${url.context}/res/components/site/customise-pages.css" group="site"/>
 </@>
 
 <@inlineScript group="type-kind">
@@ -36,19 +37,17 @@ require(["lib/knockout", "citeck/utils/knockout.utils", "citeck/components/type-
 </@>
 
 <@markup id="html" group="type-kind">
-	<div id="${el}-body" class="site-document-types">
-		<h2>${msg("header")}</h2>
-		<p>${msg("description")}</p>
-		
+	<div id="${el}-body" class="site-document-types customise-pages">
+	
 		<div class="available-types">
-			<span>${msg("label.available-types")}</span>
+			<h2>${msg("label.available-types")}</h2>
 			<ul data-bind="foreach: availableTypes">
 				<li data-bind="text: name, click: $root.addType.bind($root, $data)"></li>
 			</ul>
 		</div>
 		
 		<div class="current-types">
-			<span>${msg("label.current-types")}</span>
+			<h2>${msg("label.current-types")}</h2>
 			<ul data-bind="foreach: currentTypes">
 				<li>
 					<div class="type-name" data-bind="text: name"></div>

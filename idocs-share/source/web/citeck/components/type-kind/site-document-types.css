@@ -23,6 +23,7 @@
 }
 
 .site-document-types > .current-types {
+    padding-left: 20px;
     overflow: hidden;
 }
 
