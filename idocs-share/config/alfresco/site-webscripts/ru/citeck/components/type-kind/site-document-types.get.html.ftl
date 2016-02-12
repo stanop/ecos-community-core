@@ -2,7 +2,6 @@
 
 <@markup id="css">
 	<@link rel="stylesheet" href="${url.context}/res/citeck/components/type-kind/site-document-types.css" group="type-kind" />
-	<@link rel="stylesheet" href="${url.context}/res/components/site/customise-pages.css" group="site"/>
 </@>
 
 <@inlineScript group="type-kind">
@@ -29,20 +28,35 @@ require(["lib/knockout", "citeck/utils/knockout.utils", "citeck/components/type-
 			</#list>
 		]
 	});
+	
+	var exit = function() {
+		window.location = Alfresco.util.siteURL('dashboard');
+	}
 
 	YAHOO.util.Event.onAvailable("${el}-body", function() {
-		ko.applyBindings(site, Dom.get("${el}-body"));
+		ko.applyBindings({
+			site: site,
+			save: function(callback) {
+				site.save();
+				exit();
+			},
+			apply: function() {
+				site.save();
+			},
+			cancel: exit
+		}, Dom.get("${el}-body"));
 	});
 });
 </@>
 
 <@markup id="html" group="type-kind">
-	<div id="${el}-body" class="site-document-types customise-pages">
+	<div id="${el}-body" class="site-document-types" data-bind="with: site">
+		<p class="help">${msg("help.description")}</p>
 	
 		<div class="available-types">
 			<h2>${msg("label.available-types")}</h2>
 			<ul data-bind="foreach: availableTypes">
-				<li data-bind="text: name, click: $root.addType.bind($root, $data)"></li>
+				<li data-bind="text: name, click: $parent.addType.bind($parent, $data)"></li>
 			</ul>
 		</div>
 		
@@ -51,15 +65,28 @@ require(["lib/knockout", "citeck/utils/knockout.utils", "citeck/components/type-
 			<ul data-bind="foreach: currentTypes">
 				<li>
 					<div class="type-name" data-bind="text: name"></div>
-					<div class="remove" title="${msg("button.remove")}" data-bind="click: $root.removeType.bind($root, $data)"></div>
+					<div class="remove" title="${msg("button.remove")}" data-bind="click: $parent.removeType.bind($parent, $data)"></div>
 				</li>
 			</ul>
+			<p class="help" data-bind="visible: currentTypes().length == 0">${msg("help.no-types-selected")}</p>
 		</div>
 		
 		<div class="buttons">
-			<button id="${el}-ok">${msg("button.ok")}</button>
-			<button id="${el}-apply">${msg("button.apply")}</button>
-			<button id="${el}-cancel">${msg("button.cancel")}</button>
+			<span class="yui-button">
+				<span class="first-child">
+					<button id="${el}-ok" data-bind="click: $root.save">${msg("button.ok")}</button>
+				</span>
+			</span>
+			<span class="yui-button">
+				<span class="first-child">
+					<button id="${el}-apply" data-bind="click: $root.apply">${msg("button.apply")}</button>
+				</span>
+			</span>
+			<span class="yui-button">
+				<span class="first-child">
+					<button id="${el}-cancel" data-bind="click: $root.cancel">${msg("button.cancel")}</button>
+				</span>
+			</span>
 		</div>
 	</div>
 </@>

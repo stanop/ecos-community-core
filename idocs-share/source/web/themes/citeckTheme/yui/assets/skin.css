@@ -5085,6 +5085,8 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .site-finder .search-button .yui-button .first-child button,
 .customise-layout .buttons .yui-button .first-child button,
 .customise-dashlets .buttons .yui-button .first-child button,
+.customise-pages .buttons .yui-button .first-child button,
+.site-document-types .buttons .yui-button .first-child button,
 #bd .yui-gc > .yui-u .document-details-panel .yui-dt .form-container .form-fields .form-field .yui-button button,
 .yui-skin-citeckTheme td.value-col .form-field .yui-button button {
    color: #1c55da;
@@ -5110,6 +5112,8 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .site-finder .search-button .yui-button.yui-button-hover .first-child button,
 .customise-layout .buttons .yui-button.yui-button-hover .first-child button,
 .customise-dashlets .buttons .yui-button.yui-button-hover .first-child button,
+.customise-pages .buttons .yui-button.yui-button-hover .first-child button,
+.site-document-types .buttons .yui-button .first-child button:hover,
 #bd .yui-gc > .yui-u .document-details-panel .yui-dt .form-container .form-fields .form-field .yui-button.yui-button-hover button,
 .yui-skin-citeckTheme td.value-col .form-field .yui-button.yui-button-hover button {
     background-color: #1c55da;
@@ -5122,6 +5126,8 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .yui-panel-container .yui-panel form.bd div.form-buttons .yui-button.yui-submit-button > span.first-child > button,
 .yui-skin-citeckTheme .profile .buttons .yui-button .first-child button,
 .yui-skin-citeckTheme .application .yui-button.yui-submit-button .first-child button,
+.customise-pages .buttons .yui-button .first-child button,
+.site-document-types .buttons .yui-button .first-child button,
 .customise-dashlets .actions .buttons .yui-button .first-child button {
    border-color: #008c03;
    color: #008c03;
@@ -5131,6 +5137,8 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .yui-panel-container .yui-panel form.bd div.form-buttons .yui-button.yui-submit-button-hover > span.first-child > button,
 .yui-skin-citeckTheme .profile .buttons .yui-button.yui-button-hover .first-child button,
 .yui-skin-citeckTheme .application .yui-button.yui-submit-button-hover .first-child button,
+.customise-pages .buttons .yui-button.yui-button-hover .first-child button,
+.site-document-types .buttons .yui-button .first-child button:hover,
 .customise-dashlets .actions .buttons .yui-button.yui-button-hover .first-child button {
    color: white;
    background-color: #008c03;

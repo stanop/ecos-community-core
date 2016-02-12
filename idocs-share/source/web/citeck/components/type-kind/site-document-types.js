@@ -65,8 +65,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             this.currentTypes.remove(type);
         })
         
-        .save(function(site) {
-            
+        .save(koutils.simpleSave({
+            url: function(site) { 
+                return Alfresco.constants.PROXY_URI + "citeck/site/document-types?site=" + site.name() 
+            },
+            toRequest: function(site) {
+                return {
+                    add: _.invoke(site.typesToAdd(), 'nodeRef'),
+                    remove: _.invoke(site.typesToRemove(), 'nodeRef')
+                } 
+            },
+            toResult: function(model) {
+                return this;
+            }
+        }))
+        
+        .method('save', function(callback) {
+            Site.save(this, function(site) {
+                site.selectedTypes(site.currentTypes());
+                if(_.isFunction(callback)) callback(site);
+                if(_.isObject(callback)) callback.fn.call(callback.scope, site);
+            })
         })
         
         ;

@@ -15,7 +15,7 @@
     var added = [];
     if(json.has("add")) {
         var typesToAdd = json.get("add");
-        for(var i = 0, ii = typesToAdd.length; i < ii; i++) {
+        for(var i = 0, ii = typesToAdd.length(); i < ii; i++) {
             var typeRef = typesToAdd.get(i);
             var type = search.findNode(typeRef);
             if(!type) throw "Can't find node " + typeRef;
@@ -29,7 +29,7 @@
     var removed = [];
     if(json.has("remove")) {
         var typesToRemove = json.get("remove");
-        for(var i = 0, ii = typesToRemove.length; i < ii; i++) {
+        for(var i = 0, ii = typesToRemove.length(); i < ii; i++) {
             var typeRef = typesToRemove.get(i);
             var type = search.findNode(typeRef);
             if(!type) throw "Can't find node " + typeRef;
