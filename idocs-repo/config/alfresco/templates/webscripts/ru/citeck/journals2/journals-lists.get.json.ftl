@@ -4,9 +4,8 @@
 	"journalsLists": [
 	<#list journalsLists as journalsList>
 		{
-			"nodeRef": "${journalsList.nodeRef}",
 			"id": "${journalsList.name}",
-			"title": "${journalsList.properties['cm:title']!}"
+			"title": "${journalsList.title!}"
 		}<#if journalsList_has_next>,</#if>
 	</#list>
 	]

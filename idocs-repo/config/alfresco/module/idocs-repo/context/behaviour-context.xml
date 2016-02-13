@@ -550,6 +550,13 @@
         <!--property name="className" value="ecos:document" /-->
         <property name="checkTypeSite" value="true" />
     </bean>
+    
+    <bean id="SiteDocumentTypesBehaviour" class="ru.citeck.ecos.behavior.tk.SiteDocumentTypesBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="NodeService"/>
+        <property name="siteService" ref="SiteService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+    </bean>
 
 
 	<bean id="idocs.EventTitleGenerationBehaviour" parent="TitleGenerationBehaviour">

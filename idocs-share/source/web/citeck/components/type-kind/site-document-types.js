@@ -74,18 +74,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                     add: _.invoke(site.typesToAdd(), 'nodeRef'),
                     remove: _.invoke(site.typesToRemove(), 'nodeRef')
                 } 
-            },
-            toResult: function(model) {
-                return this;
             }
         }))
         
         .method('save', function(callback) {
-            Site.save(this, function(site) {
-                site.selectedTypes(site.currentTypes());
+            Site.save(this, _.bind(function() {
+                // we need to construct a copy of this array
+                this.selectedTypes(this.currentTypes().concat([]));
                 if(_.isFunction(callback)) callback(site);
                 if(_.isObject(callback)) callback.fn.call(callback.scope, site);
-            })
+            }, this));
         })
         
         ;

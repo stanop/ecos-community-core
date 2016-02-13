@@ -23,6 +23,8 @@ import java.util.Collection;
 
 public interface JournalService {
     
+    public static final String JOURNALS_CONTAINER = "journals";
+
     void deployJournalTypes(InputStream inputStream);
     
     JournalType getJournalType(String id);

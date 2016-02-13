@@ -60,6 +60,14 @@
 			</properties>
 		</aspect>
 		
+		<aspect name="tk:typeWithJournal">
+			<properties>
+				<property name="tk:journalType">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+		
 		<aspect name="tk:documentSite">
 			<associations>
 				<association name="tk:siteDocumentTypes">
@@ -72,6 +80,14 @@
 					</target>
 				</association>
 			</associations>
+		</aspect>
+
+		<aspect name="tk:typeRelation">
+			<properties>
+				<property name="tk:relatesToType">
+					<type>d:category</type>
+				</property>
+			</properties>
 		</aspect>
 
 		<!--aspect name="tk:documentTypeKindTemplate">

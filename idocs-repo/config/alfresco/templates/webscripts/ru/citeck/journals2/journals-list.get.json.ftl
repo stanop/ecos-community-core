@@ -2,10 +2,10 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "id": "${args.journalsList}",
-    "title": <#if journalLists?? && journalLists[0]??>"${journalLists[0].properties["cm:title"]!}"<#else>""</#if>,
+    "title": "${journalListTitle!}",
 
-    <#if journalByDefault??>
-        "default": <@journals.renderJournal journal=journalByDefault full=false />,
+    <#if defaultJournal??>
+        "default": <@journals.renderJournal journal=defaultJournal full=false />,
     </#if>
 
     "journals": [
@@ -28,13 +28,9 @@
                 <#if jwn_has_next>,</#if>
             </#list>
         <#else>
-            <#list (journalLists![]) as journalList>
-                <#if journalList.assocs["journal:journals"]??>
-                    <#list journalList.assocs["journal:journals"] as journal>
-                        <@journals.renderJournal journal=journal full=false/>
-                        <#if journal_has_next || journalList_has_next>,</#if>
-                    </#list>
-                </#if>
+            <#list allJournals as journal>
+                <@journals.renderJournal journal=journal full=false/>
+                <#if journal_has_next>,</#if>
             </#list>
         </#if>
     ]
