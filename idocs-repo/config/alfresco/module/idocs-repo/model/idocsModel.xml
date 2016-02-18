@@ -103,6 +103,18 @@
                     <value>early-repayment-completed</value>
                     <value>credit-paid</value>
 
+                    <value>repayment-pledge-check-loan</value>
+                    <value>repayment-pledge-notify-hq</value>
+                    <value>repayment-pledge-charge-hq</value>
+                    <value>repayment-pledge-confirm</value>
+                    <value>repayment-pledge-transfer-filial</value>
+                    <value>repayment-pledge-charge-filial</value>
+                    <value>repayment-pledge-confirm-director</value>
+                    <value>repayment-pledge-open-envelope</value>
+                    <value>repayment-pledge-write-closed</value>
+                    <value>repayment-pledge-prepare-doc</value>
+                    <value>repayment-pledge-transfer-client</value>
+
                     <value>purchase-project</value>
                     <value>purchase-on-approval</value>
                     <value>purchase-on-signing</value>
