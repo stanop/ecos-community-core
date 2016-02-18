@@ -334,6 +334,17 @@
     </bean>
 
 
+	<bean id="evaluator.doclib.idocs.documentStatus.isNew" class="org.alfresco.web.evaluator.ValueEvaluator">
+		<property name="accessor">
+			<value>node.properties.idocs:documentStatus</value>
+		</property>
+		<property name="comparator">
+			<bean class="org.alfresco.web.evaluator.StringEqualsComparator">
+				<property name="value" value="new" />
+			</bean>
+		</property>
+	</bean>
+
 	<bean id="evaluator.doclib.idocs.documentStatus.isProject" class="org.alfresco.web.evaluator.ValueEvaluator">
 		<property name="accessor">
 			<value>node.properties.idocs:documentStatus</value>
