@@ -1,9 +1,5 @@
 (function() {
-    var allJournalTypes = services.get("journalService").getAllJournalTypes();
-    var journalTypes = [];
-    for(var i = 0, ii = allJournalTypes.size(); i < ii; i++) {
-        journalTypes.push(allJournalTypes.get(i));
-    }
+    var journalTypes = journals.getAllJournalTypes();
     
     if(args.filter) {
         var filteredJournalTypes = [];

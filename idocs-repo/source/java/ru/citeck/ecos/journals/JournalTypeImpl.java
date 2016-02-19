@@ -38,37 +38,37 @@ class JournalTypeImpl implements JournalType {
 
     private final String id;
     private final Map<String, String> options;
-    private final List<QName> headers;
-    private final BitSet defaultHeaders, visibleHeaders, searchableHeaders, sortableHeaders, groupableHeaders;
-    private final Map<QName, Map<String, String>> headerOptions;
+    private final List<QName> attributes;
+    private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
+    private final Map<QName, Map<String, String>> attributeOptions;
     
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver) {
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         List<Header> headers = journal.getHeaders().getHeader();
-        List<QName> allHeaders = new ArrayList<>(headers.size());
-        defaultHeaders = new BitSet(headers.size());
-        visibleHeaders = new BitSet(headers.size());
-        searchableHeaders = new BitSet(headers.size());
-        sortableHeaders = new BitSet(headers.size());
-        groupableHeaders = new BitSet(headers.size());
-        this.headerOptions = new TreeMap<>();
+        List<QName> allAttributes = new ArrayList<>(headers.size());
+        defaultAttributes = new BitSet(allAttributes.size());
+        visibleAttributes = new BitSet(allAttributes.size());
+        searchableAttributes = new BitSet(allAttributes.size());
+        sortableAttributes = new BitSet(allAttributes.size());
+        groupableAttributes = new BitSet(allAttributes.size());
+        this.attributeOptions = new TreeMap<>();
         int index = 0;
         for(Header header : headers) {
-            QName headerKey = QName.createQName(header.getKey(), prefixResolver);
-            allHeaders.add(headerKey);
-            if(header.isDefault()) defaultHeaders.set(index);
-            if(header.isVisible()) visibleHeaders.set(index);
-            if(header.isSearchable()) searchableHeaders.set(index);
-            if(header.isSortable()) sortableHeaders.set(index);
-            if(header.isGroupable()) groupableHeaders.set(index);
+            QName attributeKey = QName.createQName(header.getKey(), prefixResolver);
+            allAttributes.add(attributeKey);
+            if(header.isDefault()) defaultAttributes.set(index);
+            if(header.isVisible()) visibleAttributes.set(index);
+            if(header.isSearchable()) searchableAttributes.set(index);
+            if(header.isSortable()) sortableAttributes.set(index);
+            if(header.isGroupable()) groupableAttributes.set(index);
             if(header.getOption().size() > 0) {
-                this.headerOptions.put(headerKey, 
+                this.attributeOptions.put(attributeKey, 
                         Collections.unmodifiableMap(getOptions(header.getOption())));
             }
             index++;
         }
-        this.headers = Collections.unmodifiableList(allHeaders);
+        this.attributes = Collections.unmodifiableList(allAttributes);
     }
 
     @Override
@@ -82,77 +82,77 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
-    public List<QName> getHeaders() {
-        return headers;
+    public List<QName> getAttributes() {
+        return attributes;
     }
 
     @Override
-    public List<QName> getDefaultHeaders() {
-        return getFeaturedHeaders(defaultHeaders);
+    public List<QName> getDefaultAttributes() {
+        return getFeaturedAttributes(defaultAttributes);
     }
 
     @Override
-    public List<QName> getVisibleHeaders() {
-        return getFeaturedHeaders(visibleHeaders);
+    public List<QName> getVisibleAttributes() {
+        return getFeaturedAttributes(visibleAttributes);
     }
 
     @Override
-    public List<QName> getSearchableHeaders() {
-        return getFeaturedHeaders(searchableHeaders);
+    public List<QName> getSearchableAttributes() {
+        return getFeaturedAttributes(searchableAttributes);
     }
 
     @Override
-    public List<QName> getSortableHeaders() {
-        return getFeaturedHeaders(sortableHeaders);
+    public List<QName> getSortableAttributes() {
+        return getFeaturedAttributes(sortableAttributes);
     }
 
     @Override
-    public List<QName> getGroupableHeaders() {
-        return getFeaturedHeaders(groupableHeaders);
+    public List<QName> getGroupableAttributes() {
+        return getFeaturedAttributes(groupableAttributes);
     }
 
     @Override
-    public Map<String, String> getHeaderOptions(QName headerKey) {
-        Map<String, String> result = headerOptions.get(headerKey);
+    public Map<String, String> getAttributeOptions(QName attributeKey) {
+        Map<String, String> result = attributeOptions.get(attributeKey);
         return result != null ? result : Collections.<String, String>emptyMap();
     }
     
     @Override
-    public boolean isHeaderDefault(QName headerKey) {
-        return checkFeature(headerKey, defaultHeaders);
+    public boolean isAttributeDefault(QName attributeKey) {
+        return checkFeature(attributeKey, defaultAttributes);
     }
 
     @Override
-    public boolean isHeaderVisible(QName headerKey) {
-        return checkFeature(headerKey, visibleHeaders);
+    public boolean isAttributeVisible(QName attributeKey) {
+        return checkFeature(attributeKey, visibleAttributes);
     }
 
     @Override
-    public boolean isHeaderSearchable(QName headerKey) {
-        return checkFeature(headerKey, searchableHeaders);
+    public boolean isAttributeSearchable(QName attributeKey) {
+        return checkFeature(attributeKey, searchableAttributes);
     }
 
     @Override
-    public boolean isHeaderSortable(QName headerKey) {
-        return checkFeature(headerKey, sortableHeaders);
+    public boolean isAttributeSortable(QName attributeKey) {
+        return checkFeature(attributeKey, sortableAttributes);
     }
 
     @Override
-    public boolean isHeaderGroupable(QName headerKey) {
-        return checkFeature(headerKey, groupableHeaders);
+    public boolean isAttributeGroupable(QName attributeKey) {
+        return checkFeature(attributeKey, groupableAttributes);
     }
 
-    private List<QName> getFeaturedHeaders(BitSet featuredHeaders) {
+    private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
         List<QName> result = new LinkedList<>();
-        for (int i = featuredHeaders.nextSetBit(0); i >= 0; i = featuredHeaders.nextSetBit(i+1)) {
-            result.add(headers.get(i));
+        for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i+1)) {
+            result.add(attributes.get(i));
         }
         return Collections.unmodifiableList(result);
     }
     
-    private boolean checkFeature(QName headerKey, BitSet featuredHeaders) {
-        int index = headers.indexOf(headerKey);
-        return index >= 0 ? featuredHeaders.get(index) : false;
+    private boolean checkFeature(QName attributeKey, BitSet featuredAttributes) {
+        int index = attributes.indexOf(attributeKey);
+        return index >= 0 ? featuredAttributes.get(index) : false;
     }
 
     private static Map<String, String> getOptions(List<Option> options) {

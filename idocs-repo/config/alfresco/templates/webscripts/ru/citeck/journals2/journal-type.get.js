@@ -5,7 +5,7 @@
         return;
     }
     
-    var journalType = services.get("journalService").getJournalType(journalTypeId);
+    var journalType = journals.getJournalType(journalTypeId);
     if(!journalType) {
         status.setCode(status.STATUS_NOT_FOUND, "Journal type with id '" + journalTypeId + "' was not found");
         return;

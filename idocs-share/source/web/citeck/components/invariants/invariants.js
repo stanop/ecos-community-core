@@ -169,7 +169,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
             return _.invoke(new DDClasses('aspect').classes(), 'name');
         },
         
+        getTitle: function(name) {
+        	return new DDClass(name).title();
+        },
+        
     };
+    
+    var JournalService = koutils.koclass('journals.JournalsService')
+    	.property('journalTypes', [String])
+		.load('journalTypes', koutils.simpleLoad(Alfresco.constants.PROXY_URI + "api/journals/types"))
+		.method('getAllJournalTypes', function() {
+			return this.journalTypes();
+		})
+		;
+	
+	var JournalServiceImpl = new JournalService();
     
     var UtilsImpl = {
         
@@ -193,7 +207,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         koutils: koutils,
         utils: UtilsImpl,
         dictionary: DictionaryServiceImpl,
-        enumeration: EnumerationServiceImpl
+        enumeration: EnumerationServiceImpl,
+        journals: JournalServiceImpl,
     };
     
     function evalJavaScript(expression, model) {

@@ -29,28 +29,28 @@ public interface JournalType {
     
     public Map<String, String> getOptions();
     
-    public List<QName> getHeaders();
+    public List<QName> getAttributes();
     
-    public List<QName> getDefaultHeaders();
+    public List<QName> getDefaultAttributes();
     
-    public List<QName> getVisibleHeaders();
+    public List<QName> getVisibleAttributes();
     
-    public List<QName> getSearchableHeaders();
+    public List<QName> getSearchableAttributes();
     
-    public List<QName> getSortableHeaders();
+    public List<QName> getSortableAttributes();
     
-    public List<QName> getGroupableHeaders();
+    public List<QName> getGroupableAttributes();
     
-    public Map<String, String> getHeaderOptions(QName headerKey);
+    public Map<String, String> getAttributeOptions(QName attributeKey);
     
-    public boolean isHeaderDefault(QName headerKey);
+    public boolean isAttributeDefault(QName attributeKey);
     
-    public boolean isHeaderVisible(QName headerKey);
+    public boolean isAttributeVisible(QName attributeKey);
     
-    public boolean isHeaderSearchable(QName headerKey);
+    public boolean isAttributeSearchable(QName attributeKey);
     
-    public boolean isHeaderSortable(QName headerKey);
+    public boolean isAttributeSortable(QName attributeKey);
     
-    public boolean isHeaderGroupable(QName headerKey);
+    public boolean isAttributeGroupable(QName attributeKey);
     
 }

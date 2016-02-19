@@ -4,16 +4,16 @@
     "journalType": "${journalType.id}",
     "settings": <@renderJournalOptions journalType.options />,
     "attributes": [
-    <#list journalType.headers as header>
+    <#list journalType.attributes as attribute>
         {
-            "name": "${shortQName(header)}",
-            "isDefault":  ${journalType.isHeaderDefault(header)?string},
-            "visible":    ${journalType.isHeaderVisible(header)?string},
-            "searchable": ${journalType.isHeaderSearchable(header)?string},
-            "sortable":   ${journalType.isHeaderSortable(header)?string},
-            "groupable":  ${journalType.isHeaderGroupable(header)?string},
-            "settings": <@renderJournalOptions journalType.getHeaderOptions(header) />
-        }<#if header_has_next>,</#if>
+            "name": "${attribute}",
+            "isDefault":  ${journalType.isAttributeDefault(attribute)?string},
+            "visible":    ${journalType.isAttributeVisible(attribute)?string},
+            "searchable": ${journalType.isAttributeSearchable(attribute)?string},
+            "sortable":   ${journalType.isAttributeSortable(attribute)?string},
+            "groupable":  ${journalType.isAttributeGroupable(attribute)?string},
+            "settings": <@renderJournalOptions journalType.getAttributeOptions(attribute) />
+        }<#if attribute_has_next>,</#if>
     </#list>
     ]
 }
