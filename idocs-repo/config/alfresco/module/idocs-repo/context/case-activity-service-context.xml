@@ -75,6 +75,11 @@
                         <entry key="icaseTask:performer" value="wfarc:archiver"/>
                     </map>
                 </entry>
+                <entry key="activiti$contractor-approval">
+                    <map>
+                        <entry key="icaseTask:performer" value="wfca:approvalAgent"/>
+                    </map>
+                </entry>
                 <entry key="activiti$perform">
                     <map>
                         <entry key="icaseTask:performers" value="wfperf:performers"/>
