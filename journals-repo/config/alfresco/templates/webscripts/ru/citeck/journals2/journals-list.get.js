@@ -12,17 +12,18 @@ if (journalListName) {
   return;
 }
 
-var journalList = search.luceneSearch(query),
-    journals, journalByDefault;
+var journalLists = search.luceneSearch(query),
+    journalList, journals, journalByDefault;
 
-if (journalList && journalList.length > 0) {
-  if (journalList[0].assocs["journal:default"]) {
-    journalByDefault = journalList[0].assocs["journal:default"][0];
-  }
 
-  if (journalList[0].assocs["journal:journals"]) {
-    journals = journalList[0].assocs["journal:journals"];
-  }
+if (journalLists && journalLists.length > 0 && journalLists[0].hasPermission("Read")) {
+
+  journalList = journalLists[0];
+
+  journals = journalList.assocs["journal:journals"] || [];
+  journals = journals.filter(function(node) {
+    return node.hasPermission("Read");
+  });
 }
 
 if (nodeRef) {
@@ -84,16 +85,26 @@ if (nodeRef) {
   }
 }
 
-for (var j in journals) {
-  if (journals[j].equals(journalByDefault)) {
-    model.journalByDefault = journalByDefault;
-    break;
+if (journalList && journals) {
+
+  var journalByDefaultArr = journalList.assocs["journal:default"];
+  if (journalByDefaultArr && journalByDefaultArr.length > 0) {
+
+    journalByDefault = journalByDefaultArr[0];
+
+    for (var j in journals) {
+      if (journals[j].equals(journalByDefault)) {
+        model.journalByDefault = journalByDefault;
+        break;
+      }
+    }
   }
 }
 
 model.journalListId = journalListName;
 model.journalsWithNode = journalsWithNode;
-model.journalLists = journalList;
+model.journalList = journalList;
+model.journalsInList = journals;
 
 
 })();
