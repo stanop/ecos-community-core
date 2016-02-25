@@ -219,14 +219,15 @@ ko.bindingHandlers.dateControl = {
 
         var localization = params.localization;
 
+        var elementId = element.id.replace("-dateControl", ""),
+            input = Dom.get(elementId);
+
         if (!Citeck.HTML5.supportedInputTypes.date) {
-            var elementId = element.id.replace("-dateControl", ""),
-                calendarDialogId = elementId + "-calendarDialog",
+            var calendarDialogId = elementId + "-calendarDialog",
                 calendarContainerId = elementId + "-calendarContainer",
                 calendarAccessorId = elementId + "-calendarAccessor",
                 calendarDialog, calendar;
 
-            var input = Dom.get(elementId);
             if(navigator.userAgent.indexOf("Firefox") != -1 || (navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ))
             {
                 input.setAttribute("placeholder", localization.formatIE);
@@ -281,7 +282,7 @@ ko.bindingHandlers.dateControl = {
                                 dStr = selectedDate.getDate(),
                                 mStr = selectedDate.getMonth(),
                                 yStr = selectedDate.getFullYear();
-								
+                                
                                 if(navigator.userAgent.indexOf("Firefox") != -1 || (navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ))
                                 {
                                     input.value = selectedDate.toString("yyyy-MM-dd");
@@ -301,6 +302,13 @@ ko.bindingHandlers.dateControl = {
                     calendarDialog.show();
                 }
             });
+        } else {
+            // set max and min attributes
+            var date = new Date(), 
+                year = date.getFullYear()
+
+            input.setAttribute("max", (year + 50) + "-12-31");
+            input.setAttribute("min", (year - 25) + "-12-31");
         }
     }
 };
