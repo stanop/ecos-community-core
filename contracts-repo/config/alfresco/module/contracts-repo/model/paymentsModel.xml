@@ -72,6 +72,7 @@
                     <value>forPayment</value>
                     <value>paid</value>
                     <value>canceled</value>
+                    <value>onCorrection</value>
                 </list>
             </parameter>
         </constraint>
