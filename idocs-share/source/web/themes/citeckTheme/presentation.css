@@ -4069,6 +4069,7 @@ div#HEADER_USER_STATUS {
 [rel="diff_stylesheet"].yui-u > div:not(:first-child) {
   padding-left: 40px;
   padding-right: 15px;
+  color: black;
 }
 
 
