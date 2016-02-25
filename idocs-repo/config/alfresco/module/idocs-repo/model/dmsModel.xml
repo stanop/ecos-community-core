@@ -284,7 +284,7 @@
                     </index>
 				</property>
 				<property name="dms:juridicalTitle">
-					<title>Juridical name</title>
+					<!--<title>Juridical name</title>-->
 					<type>d:text</type>
                     <index enabled="true">
                         <atomic>true</atomic>
