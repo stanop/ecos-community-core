@@ -4307,3 +4307,41 @@ div#HEADER_USER_STATUS {
 .ecos-form .form-buttons input[type="button"]:focus {
   color: red;
 }
+
+
+
+/* WORKFLOW RESPONSIVE*/
+
+.document-workflows .workflow img + div {
+  float: left;
+}
+
+@media screen and (min-width: 1230px) {
+  .document-workflows .workflow img + div {
+    max-width: 75%;
+  }
+}
+
+@media screen and (max-width: 1229px) and (min-width: 1080px) {
+  .document-workflows .workflow img + div {
+    max-width: 70%;
+  }
+}
+
+@media screen and (max-width: 1079px) and (min-width: 970px) {
+  .document-workflows .workflow img + div {
+    max-width: 65%;
+  }
+}
+
+@media screen and (max-width: 969) and (min-width: 970px) {
+  .document-workflows .workflow img + div {
+    max-width: 60%;
+  }
+}
+
+@media screen and (max-width: 890px) {
+  .document-workflows .workflow img + div {
+    max-width: 100%;
+  }
+}
