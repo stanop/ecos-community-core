@@ -262,6 +262,7 @@ h4 .lighter
 .dashlet {
    background-color: #fff;
    box-shadow: 0 0 5px 2px lightgray;
+   min-height: 300px;
 }
 
 .dashlet > .title {
@@ -2352,6 +2353,10 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   min-height: 80vh;
 }
 
+#bd .yui-g.grid > .yui-g.dcolumn {
+  margin-top: 0;
+}
+
 #bd .members-bar {
     margin: 0;
     padding-left: 40px;
@@ -2444,116 +2449,116 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 
 /* card of document */
-#bd > .yui-gc {
+#bd > .yui-gc:not(.grid) {
     background-color: #fafafa;
     clear: both;
 }
 
-#bd > .yui-gc > .yui-u {
+#bd > .yui-gc:not(.grid) > .yui-u {
     width: 33.85%;
     margin: 0;
 }
 
-#bd > .yui-gc > .yui-u.first {
+#bd > .yui-gc:not(.grid) > .yui-u.first {
    width: 66%;
    background-color: white;
    border-right: 1px solid #ccc;
 }
 
 
-#bd .yui-gc > .yui-u .document-details-panel {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel {
    background-color: none;
    padding: 10px 0 0 10px;
 }
 
-#bd .yui-gc > .yui-u:last-child .document-details-panel {
+#bd .yui-gc:not(.grid) > .yui-u:last-child .document-details-panel {
   padding: 10px 25px 0 10px;
 }
 
-#bd .yui-gc > .yui-u.first .document-details-panel {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel {
    padding-left: 40px;
    border-bottom: 1px solid #ccc;
 }
 
 
 /* Card of document. Approved and requested */
-#bd .yui-gc > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title {
   border: none;
   margin-top: 30px;
   margin-bottom: 5px;
 }
 
-#bd .yui-gc > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title br {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title br {
    display: none;
 }
 
-#bd .yui-gc > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title label {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title label {
   float: none !important;
 }
 
 
-#bd .yui-gc > .yui-u .node-actions .action-set a:hover {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .action-set a:hover {
     background-color: #fafafa;
     color: red;
 }
-#bd .yui-gc > .yui-u .node-actions .action-set a {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .action-set a {
     border: medium none;
     color: #1c55da;
 }
 
-#bd .yui-gc > .yui-u .node-actions .doclist .action-set div {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .doclist .action-set div {
    padding: 3px 20px;
 }
 
-#bd .yui-gc > .yui-u .node-actions .doclist .action-set {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .doclist .action-set {
     padding-bottom: 10px;
 }
 
-#bd .yui-gc > .yui-u > div:last-child {
+#bd .yui-gc:not(.grid) > .yui-u > div:last-child {
    border-bottom: none;
 }
 
-#bd .yui-gc > .yui-u .yui-dt  .document-details-panel .panel-body {
+#bd .yui-gc:not(.grid) > .yui-u .yui-dt  .document-details-panel .panel-body {
    padding: 10px 0 10px 15px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .panel-body {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .panel-body {
    padding: 0 15px 10px 25px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .form-container .form-fields {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .form-container .form-fields {
    padding: 0 0 0 25px;
    overflow: hidden;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel > h2 {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2 {
    text-transform: uppercase;
    font-size: 14px;
    font-weight: bold;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel > h2 .alfresco-twister-actions {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2 .alfresco-twister-actions {
    text-transform: none;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel > h2,
-#bd .yui-gc > .yui-u .document-details-panel .panel-body h3.alfresco-twister.alfresco-twister-open {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2,
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .panel-body h3.alfresco-twister.alfresco-twister-open {
    margin-bottom: 10px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel.document-versions-comparison {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel.document-versions-comparison {
    padding: 10px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel.document-versions-comparison .panel-body {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel.document-versions-comparison .panel-body {
    padding: 0;
 }
 
-#bd .yui-gc .yui-dt table {
+#bd .yui-gc:not(.grid) .yui-dt table {
    margin: 0;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .yui-dt  .form-container .form-fields {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .yui-dt  .form-container .form-fields {
    padding: 0;
 }
 
@@ -2561,7 +2566,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
     margin-top: 5px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .dynamic-table,
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .dynamic-table,
 .form-field .table-children .dynamic-table {
    margin-bottom: 15px;
 }
@@ -4351,7 +4356,7 @@ div#HEADER_USER_STATUS {
   }
 }
 
-@media screen and (max-width: 969) and (min-width: 891px) {
+@media screen and (max-width: 969) and (min-width: 970px) {
   .document-workflows .workflow img + div {
     max-width: 60%;
   }
