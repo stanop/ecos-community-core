@@ -4045,6 +4045,21 @@ div#HEADER_USER_STATUS {
   margin-right: 5px;
 }
 
+#bd .orgstruct-console .dynamic-tree-list .item-buttons {
+  right: 0;
+  padding-left: 5px;
+}
+
+#bd .orgstruct-console .orgstruct-tree-resizer .ygtv-highlight0 .dynamic-tree-list .item-buttons {
+  background-color: #fdfaf3;
+}
+
+#bd .orgstruct-console .orgstruct-tree-resizer .ygtv-highlight1 .dynamic-tree-list .item-buttons {
+  background-color: #f0f0f0;
+}
+
+
+
 /* END ORGSTRUCT CONSOLE */
 
 /* CUSTOMISE PAGE */
