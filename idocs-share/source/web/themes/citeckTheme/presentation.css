@@ -3127,6 +3127,11 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   position: relative;
 }
 
+.share-form .form-container .form-fields .yui-g .yui-u .form-field input {
+  width: auto;
+  float: none;
+}
+
 .share-form .form-container .form-fields .set .form-field > .object-finder .dynamic-doclib-table {
   width: 97%;
   margin: auto;
@@ -4307,7 +4312,6 @@ div#HEADER_USER_STATUS {
 .ecos-form .form-buttons input[type="button"]:focus {
   color: red;
 }
-
 
 
 /* WORKFLOW RESPONSIVE*/
