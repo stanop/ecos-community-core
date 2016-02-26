@@ -1,6 +1,6 @@
 .document-metadata-header .alfresco-twister-actions
 {
-	display: none;
+  display: none;
 }
 
 .avatar
@@ -10,11 +10,12 @@
 
 .yui-u.first .document-details-panel
 {
-        background-color: transparent;
+  background-color: transparent;
 }
 
-.yui-g  .yui-gb > div.yui-u.first,
-.yui-gb .yui-gb > div.yui-u.first,
-.yui-gc .yui-gb > div.yui-u.first,
-.yui-gd .yui-gb > div.yui-u.first
-{ width: 32%; }
+.yui-g  .yui-gb:not(.plain) > div.yui-u.first,
+.yui-gb .yui-gb:not(.plain) > div.yui-u.first,
+.yui-gc .yui-gb:not(.plain) > div.yui-u.first,
+.yui-gd .yui-gb:not(.plain) > div.yui-u.first { 
+  width: 32%; 
+}

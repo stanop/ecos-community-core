@@ -20,6 +20,15 @@
 	background-position: left;
 }
 
+.plain .dynamic-tree-list .ygtvcontent {
+	padding-left: 0 !important;
+	height: auto;
+}
+
+.plain .dynamic-tree-list table {
+	width: 100%;
+}
+
 /* color on highlight */
 .dynamic-tree-list.color-highlight .ygtv-highlight1 .ygtvcell,
 .dynamic-tree-list.color-highlight .ygtv-highlight1 .ygtvcell.ygtvfocus,

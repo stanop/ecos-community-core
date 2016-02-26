@@ -2658,8 +2658,6 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 
-
-
 /* END CONTROLS */
 
 
@@ -4363,4 +4361,16 @@ div#HEADER_USER_STATUS {
   .document-workflows .workflow img + div {
     max-width: 100%;
   }
+}
+
+/* OBJECT FINDER for view */
+
+.form-container .form-fields .plain .object-finder {
+  margin-bottom: 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.form-container .form-fields .plain .object-finder .current-values {
+  margin-bottom: 0;
 }
