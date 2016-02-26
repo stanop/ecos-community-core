@@ -4351,7 +4351,7 @@ div#HEADER_USER_STATUS {
   }
 }
 
-@media screen and (max-width: 969) and (min-width: 970px) {
+@media screen and (max-width: 969) and (min-width: 891px) {
   .document-workflows .workflow img + div {
     max-width: 60%;
   }
