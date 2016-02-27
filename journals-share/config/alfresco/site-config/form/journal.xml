@@ -20,6 +20,8 @@
                             <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/types</control-param>
                             <control-param name="valueField">journalId</control-param>
                             <control-param name="titleField">journalId</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'journals', fields: [ {key:'journalId'}, {key:'journalId'} ] }</control-param>
                         </control>
                     </field>
                     <field id="journal:searchCriteria">
@@ -83,6 +85,8 @@
                             <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/types</control-param>
                             <control-param name="valueField">journalId</control-param>
                             <control-param name="titleField">journalId</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'journals', fields: [ {key:'journalId'}, {key:'journalId'} ] }</control-param>
                         </control>
                     </field>
                 </appearance>
@@ -110,6 +114,8 @@
                             <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/types</control-param>
                             <control-param name="valueField">journalId</control-param>
                             <control-param name="titleField">journalId</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'journals', fields: [ {key:'journalId'}, {key:'journalId'} ] }</control-param>
                         </control>
                     </field>
                     <field id="journal:searchCriteria">
