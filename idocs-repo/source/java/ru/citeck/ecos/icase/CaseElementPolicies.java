@@ -29,7 +29,13 @@ public interface CaseElementPolicies {
     public interface OnCaseElementAddPolicy extends ClassPolicy {
         public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementAdd");
-        
+
+        //without this fields TransactionBehaviourQueue takes invocations
+        //with a same first argument as totally equals and processes only one
+        static Arg ARG_0 = Arg.KEY;
+        static Arg ARG_1 = Arg.KEY;
+        static Arg ARG_2 = Arg.KEY;
+
         /**
          * Called after case element was added.
          * 
@@ -38,13 +44,18 @@ public interface CaseElementPolicies {
          * @param config element type configuration
          */
         public void onCaseElementAdd(NodeRef caseRef, NodeRef element, NodeRef config);
-        
     }
 
     public interface OnCaseElementUpdatePolicy extends ClassPolicy {
         public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementUpdate");
-        
+
+        //without this fields TransactionBehaviourQueue takes invocations
+        //with a same first argument as totally equals and processes only one
+        static Arg ARG_0 = Arg.KEY;
+        static Arg ARG_1 = Arg.KEY;
+        static Arg ARG_2 = Arg.KEY;
+
         /**
          * Called after case element was updated.
          * 
@@ -59,7 +70,13 @@ public interface CaseElementPolicies {
     public interface OnCaseElementRemovePolicy extends ClassPolicy {
         public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementRemove");
-        
+
+        //without this fields TransactionBehaviourQueue takes invocations
+        //with a same first argument as totally equals and processes only one
+        static Arg ARG_0 = Arg.KEY;
+        static Arg ARG_1 = Arg.KEY;
+        static Arg ARG_2 = Arg.KEY;
+
         /**
          * Called after case element was removed.
          * 
