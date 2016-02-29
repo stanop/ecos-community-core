@@ -3074,14 +3074,14 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 /* reset blocks and controls */
 .share-form .form-container .form-fields .yui-u .form-field > label,
 .share-form .form-container .form-fields .yui-u .form-field > select,
-.share-form .form-container .form-fields .yui-u .form-field > input[type="text"],
+.share-form .form-container .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
 .share-form .form-container .form-fields .yui-u .form-field > .format-info,
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder,
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder .show-picker,
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"],
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
@@ -3091,7 +3091,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    display: block;
    max-width: none;
    clear: both;
-   width: 100%;
+   width: 100% !important;
 }
 
 .share-form .form-container .form-fields .yui-u .form-field div.auto-manual-select {
@@ -4378,4 +4378,39 @@ div#HEADER_USER_STATUS {
 
 .form-container .form-fields .plain .object-finder .current-values {
   margin-bottom: 0;
+}
+
+
+/* ONLY FOR IE */
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* initiate to static */
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].date-entry,
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].time-entry,
+  .share-form .form-container .form-fields .yui-u .form-field div.help-text,
+  .share-form .form-container .form-fields .yui-u .form-field > label,
+  .share-form .form-container .form-fields .yui-u .form-field > select,
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"],
+  .share-form .form-container .form-fields .yui-u .form-field > .format-info,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .show-picker,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
+  .share-form .form-container .form-fields .yui-u .form-field > a,
+  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].date-entry,
+  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
+  .share-form .form-container .form-fields .form-field.alf-textarea div.help-text,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"],
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .dynamic-list,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > a,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field div.help-text
+  #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
+    position: static;
+  }
 }
