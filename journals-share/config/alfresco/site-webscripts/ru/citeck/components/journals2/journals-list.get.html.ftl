@@ -4,6 +4,8 @@
 <#assign pagingOptions = args.pagingOptions!"10,30,50,100" />
 
 <@markup id="css" >
+    <#include "/org/alfresco/components/form/form.css.ftl"/>
+
     <@link rel="stylesheet" href="${url.context}/res/citeck/utils/citeck.css" group="journals-list" />
     <@link rel="stylesheet" href="${url.context}/res/citeck/components/form/select.css" group="journals-list" />
     <@link rel="stylesheet" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" group="journals-list" />
@@ -13,6 +15,8 @@
 </@>
 
 <@markup id="js">
+    <#include "/org/alfresco/components/form/form.js.ftl"/>
+
     <@script type="text/javascript" src="${url.context}/res/lib/underscore.js" group="journals-list"/>
     <@script type="text/javascript" src="${url.context}/res/jquery/jquery-1.6.2.js" group="journals-list"/>
 
