@@ -605,13 +605,13 @@ JournalsWidget
 		// init action column
 		var actionGroupId = this.actionGroupId();
 		if(actionGroupId == buttonsActionGroupId) {
-			columns.push(new ActionsColumn({
+			columns.unshift(new ActionsColumn({
 				id: 'actions',
 				label: this.msg("column.actions"),
 				formatter: formatters.buttons()
 			}));
 		} else if(actionGroupId != noneActionGroupId) {
-			columns.push(new ActionsColumn({
+			columns.unshift(new ActionsColumn({
 				id: 'actions',
 				label: this.msg("column.actions"),
 				formatter: formatters.actions(actionGroupId)
