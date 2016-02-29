@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <page>
-    <id>journals2</id>
+    <id>journals</id>
     <page-type>journals</page-type>
     <title>Journals</title>
     <title-id>page.journals.title</title-id>
