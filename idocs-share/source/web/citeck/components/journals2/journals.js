@@ -565,7 +565,7 @@ JournalsWidget
 	.computed('columns', function() {
 		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []),
 			journalType = this.resolve('journal.type'),
-			recordUrl = this.recordUrl(),
+			recordUrl = this.recordUrl(), recordLinkAttribute = this.recordLinkAttribute(),
 			linkSupplied = recordUrl == null;
 		
 		// init columns
@@ -586,11 +586,16 @@ JournalsWidget
 			} else {
 			    formatter = formatters.loading();
 			}
-			
+
+			if (recordLinkAttribute) {
+				if (recordLinkAttribute.indexOf(attr.name()) != -1) includeLink = true;
+			}
+
 			if(includeLink) {
 			    formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter);
 			    linkSupplied = true;
 			}
+
 			if(formatter) formatter = formatters.multiple(formatter);
 			
 			return {
@@ -668,6 +673,7 @@ JournalsWidget
 	.property('selectedId', s)
 	.shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
 	.shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
+	.shortcut('recordLinkAttribute', 'journal.type.options.clickLinkAttribute', null)
 	.computed('gotoAddress', function() {
 		var id = this.selectedId(),
 			url = this.recordUrl();
