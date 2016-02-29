@@ -11,7 +11,7 @@ for(var i = 0; i < atrList.length; i++)
     var displayStr = [];
     var atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(atrList[i]));
     var propDef = dictionaryService.getProperty(atrQName);
-    var namespaceService = services.get('messageService');
+    var messageService = services.get('messageService');
     if(propDef!=null)
     {
         type = "property";
@@ -30,7 +30,7 @@ for(var i = 0; i < atrList.length; i++)
                 while (iter.hasNext())
                 {
                     var evaluator = iter.next();
-                    displayStr.push(evaluator+";"+listConstraint.getDisplayLabel(evaluator, namespaceService));
+                    displayStr.push(evaluator+";"+listConstraint.getDisplayLabel(evaluator, messageService));
              
                 }
             }
