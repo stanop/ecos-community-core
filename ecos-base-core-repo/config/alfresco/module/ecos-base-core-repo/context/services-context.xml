@@ -81,6 +81,7 @@
 
     <bean id="AssociationIndexPropertyRegistrar" class="ru.citeck.ecos.search.AssociationIndexPropertyRegistrar" abstract="true" init-method="init">
         <constructor-arg index="0" ref="AssociationIndexPropertyRegistry" />
+        <property name="namespaceService" ref="NamespaceService" />
     </bean>
 
     <bean id="sortFieldChanger" class="ru.citeck.ecos.search.SortFieldChanger">
