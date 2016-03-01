@@ -18,27 +18,60 @@
  */
 package ru.citeck.ecos.search;
 
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AssociationIndexPropertyRegistrar {
     
     private AssociationIndexPropertyRegistry registry;
-    private QName assocName, indexName;
-    
+    private NamespaceService namespaceService;
+    private Map<String, String> assocsMapping;
+    private String assocName, indexName;
+
     public AssociationIndexPropertyRegistrar(AssociationIndexPropertyRegistry registry) {
         this.registry = registry;
     }
     
     public void init() {
-        registry.registerAssociationIndexProperty(assocName, indexName);
+        if (assocsMapping == null) {
+            assocsMapping = new HashMap<>();
+        }
+        if (assocName != null && indexName != null) {
+            assocsMapping.put(assocName, indexName);
+        }
+        for (Map.Entry<String, String> entry : assocsMapping.entrySet()){
+            QName assoc = getQName(entry.getKey());
+            QName prop = getQName(entry.getValue());
+            registry.registerAssociationIndexProperty(assoc, prop);
+        }
     }
 
-    public void setAssocName(QName assocName) {
+    private QName getQName(String name) {
+        String trimName = name.trim();
+        if (trimName.startsWith("{") && trimName.contains("}")) {
+            return QName.createQName(trimName);
+        } else {
+            return QName.createQName(trimName, namespaceService);
+        }
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
+    public void setAssocName(String assocName) {
         this.assocName = assocName;
     }
 
-    public void setIndexName(QName indexName) {
+    public void setIndexName(String indexName) {
         this.indexName = indexName;
+    }
+
+    public void setAssocsMapping(Map<String, String> assocsMapping) {
+        this.assocsMapping = assocsMapping;
     }
 }
 
