@@ -23,6 +23,10 @@
 	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.TargetAssocAttributes" />
 	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.SourceAssocAttributes" />
 	<bean parent="ecos.attribute.provider" class="ru.citeck.ecos.attr.prov.ChildAssocAttributes" />
+	<bean id="virtualScriptAttributesProvider" parent="ecos.attribute.provider"
+		  									   class="ru.citeck.ecos.attr.prov.VirtualScriptAttributes">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
 	
 	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.TypesAttribute" />
 	<bean parent="ecos.attribute.single" class="ru.citeck.ecos.attr.prov.AspectsAttribute" />
@@ -70,5 +74,11 @@
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="impl" ref="NodeAttributeService" />
 	</bean>
-	
+
+	<bean id="ecos.attribute.scriptAttributeRegistrar"
+		  	class="ru.citeck.ecos.attr.ScriptAttributesRegistrar" init-method="init" abstract="true">
+		<property name="namespaceService" ref="NamespaceService" />
+		<property name="virtualScriptAttributes" ref="virtualScriptAttributesProvider" />
+	</bean>
+
 </beans>

@@ -12,6 +12,7 @@ for(var i = 0; i < atrList.length; i++)
     var atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(atrList[i]));
     var propDef = dictionaryService.getProperty(atrQName);
     var messageService = services.get('messageService');
+    var scriptAttributes = services.get('virtualScriptAttributesProvider');
     if(propDef!=null)
     {
         type = "property";
@@ -52,6 +53,11 @@ for(var i = 0; i < atrList.length; i++)
             {
                 type = "association";
             }
+        } else if (scriptAttributes.provides(atrQName)) {
+            var attrDef = scriptAttributes.getAttributeDefinition(atrQName);
+            type = "property";
+            name = attrDef.getTitle();
+            dataType = "text";
         }
     }
 
