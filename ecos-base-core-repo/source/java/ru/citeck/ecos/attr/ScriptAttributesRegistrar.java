@@ -30,16 +30,9 @@ public class ScriptAttributesRegistrar {
             mlTitle = new MLText();
             mlTitle.addValue(I18NUtil.getLocale(), title);
         }
-        scriptAttributes.registerAttribute(getQName(className), getQName(name), mlTitle, script);
-    }
-
-    private QName getQName(String name) {
-        String trimName = name.trim();
-        if (trimName.startsWith("{") && trimName.contains("}")) {
-            return QName.createQName(trimName);
-        } else {
-            return QName.createQName(trimName, namespaceService);
-        }
+        QName classQName = QName.resolveToQName(namespaceService, className);
+        QName attributeQName = QName.resolveToQName(namespaceService, name);
+        scriptAttributes.registerAttribute(classQName, attributeQName, mlTitle, script);
     }
 
     public void setName(String name) {
