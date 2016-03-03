@@ -137,7 +137,15 @@ public class DictionaryUtils {
     public static Collection<QName> getParentClassNames(QName className, DictionaryService dictionaryService) {
         return getClassNames(getParentClasses(dictionaryService.getClass(className), dictionaryService));
     }
-    
+
+    /**
+     * Expand class name to list of class names, which contains all parents and aspects.
+     * The most basic classes appear first in the list.
+     */
+    public static List<QName> expandClassName(QName className, DictionaryService dictionaryService) {
+        return expandClassNames(Collections.singletonList(className), dictionaryService);
+    }
+
     /**
      * Expand list of class names to another list of class names, which contains all parents and aspects.
      * The most basic classes appear first in the list.
