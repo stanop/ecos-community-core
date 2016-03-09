@@ -58,10 +58,11 @@ function sendEmail(params) {
 	if(params.document)
 		mail.parameters.document = params.document;
 		mail.parameters.text = params.text || params.subject;
-		if (params.now) {
-			mail.execute(document);
-		} else {
+
+		if (params.now == false) {
 			mail.executeAsynchronously(document);
+		} else {
+			mail.execute(document);
 		}
 	}
 	catch(e) {
