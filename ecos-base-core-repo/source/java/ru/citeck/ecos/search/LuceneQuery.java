@@ -18,9 +18,17 @@
  */
 package ru.citeck.ecos.search;
 
+import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
+import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +39,8 @@ import java.util.List;
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
 public class LuceneQuery implements SearchQueryBuilder {
+
+    private static final Logger logger = Logger.getLogger(LuceneQuery.class);
 
     private static final String WILD = "*";
 
@@ -49,6 +59,9 @@ public class LuceneQuery implements SearchQueryBuilder {
     private static final String NOT = "NOT ";
 
     private NamespaceService namespaceService;
+    private DictionaryService dictionaryService;
+    private SearchService searchService;
+    private NodeService nodeService;
 
     private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
@@ -59,7 +72,19 @@ public class LuceneQuery implements SearchQueryBuilder {
     public void setAssociationIndexPropertyRegistry(AssociationIndexPropertyRegistry registry) {
         this.associationIndexPropertyRegistry = registry;
     }
-    
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
     @Override
     public String buildQuery(SearchCriteria criteria) {
         return new QueryBuilder().buildQuery(criteria);
@@ -88,19 +113,27 @@ public class LuceneQuery implements SearchQueryBuilder {
         
         private void buildSearchTerm(CriteriaTriplet triplet) {
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
+
             String field = buildField(triplet.getField());
-            switch (criterion) {
-            case ASSOC_CONTAINS:
-            case ASSOC_NOT_CONTAINS:
-            case ASSOC_NOT_EMPTY:
-            case ASSOC_EMPTY:
-                field = buildField(getAssocIndexProp(triplet.getField()));
-                break;
-            default:
-                break;
-           }
-            
             String value = triplet.getValue();
+
+            switch (criterion) {
+                case ASSOC_CONTAINS:
+                case ASSOC_NOT_CONTAINS:
+                    try {
+                        value = buildAssocValue(triplet.getField(), triplet.getValue());
+                    } catch (Exception e) {
+                        logger.warn(String.format("Association value building failed! field is '%s' and value is '%s'",
+                                                                            triplet.getField(), triplet.getValue()), e);
+                    }
+                case ASSOC_NOT_EMPTY:
+                case ASSOC_EMPTY:
+                    field = buildField(getAssocIndexProp(triplet.getField()));
+                    break;
+                default:
+                    break;
+            }
+
             switch (criterion) {
                 case STRING_CONTAINS:
                     buildEqualsTerm(field, WILD + value + WILD);
@@ -190,6 +223,53 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
         }
 
+        /**
+         * Expand folder nodeRefs if it have class which doesn't match to association target class
+         */
+        private String buildAssocValue(String field, String fieldValue) {
+            if (fieldValue.isEmpty()) return fieldValue;
+
+            QName fieldQName = QName.resolveToQName(namespaceService, field);
+            AssociationDefinition assocDefinition = dictionaryService.getAssociation(fieldQName);
+            if (assocDefinition == null) return fieldValue;
+            QName targetClassName = assocDefinition.getTargetClass().getName();
+
+            List<NodeRef> result = new ArrayList<>();
+            String[] values = fieldValue.split("\\,");
+
+            for (String value : values) {
+
+                NodeRef valueRef = new NodeRef(value);
+                QName valueTypeName = nodeService.getType(valueRef);
+
+                if (!dictionaryService.isSubClass(valueTypeName, targetClassName)
+                        && dictionaryService.isSubClass(valueTypeName, ContentModel.TYPE_FOLDER)) {
+                    result.addAll(expandAssocValue(valueRef, targetClassName));
+                } else {
+                    result.add(new NodeRef(value));
+                }
+            }
+            return joinToString(result);
+        }
+
+        private String joinToString(List<NodeRef> nodeRefs) {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < nodeRefs.size(); i++) {
+                if (i > 0) result.append(",");
+                result.append(nodeRefs.get(i));
+            }
+            return result.toString();
+        }
+
+        private List<NodeRef> expandAssocValue(NodeRef valueRef, QName valueType) {
+            Path path = nodeService.getPath(valueRef);
+            String query = "PATH:\""+path.toPrefixString(namespaceService)+"//.\" " +
+                           "AND TYPE:\""+valueType.toPrefixString(namespaceService)+"\"";
+            ResultSet queryResults =
+                    searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "fts-alfresco", query);
+            return queryResults.getNodeRefs();
+        }
+
         private String buildField(String field) {
             try {
                 return FieldType.forName(field).toString();
@@ -266,6 +346,7 @@ public class LuceneQuery implements SearchQueryBuilder {
         private String getPropertyName(String field) {
             return field.replace("@", "").replace("\\", "");
         }
+
     }
 
 }

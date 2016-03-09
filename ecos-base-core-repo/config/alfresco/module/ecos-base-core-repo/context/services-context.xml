@@ -51,6 +51,9 @@
     <bean id="luceneQueryBuilder" class="ru.citeck.ecos.search.LuceneQuery">
         <property name="namespaceService" ref="NamespaceService" />
         <property name="associationIndexPropertyRegistry" ref="AssociationIndexPropertyRegistry" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="searchService" ref="searchService" />
+        <property name="nodeService" ref="nodeService" />
     </bean>
 
     <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
