@@ -28,15 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.alfresco.service.cmr.dictionary.AspectDefinition;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.ParameterCheck;
 
 public class DictionaryUtils {
 
@@ -409,4 +405,26 @@ public class DictionaryUtils {
         return getAllChildAssociationNames(classNames, dictionaryService);
     }
 
+    /**
+     * Return constraints defined for property in base class and in all subtypes
+     */
+    public static Set<ConstraintDefinition> getAllConstraintsForProperty(QName property, DictionaryService dictionaryService) {
+        ParameterCheck.mandatory("property", property);
+
+        PropertyDefinition basePropertyDefinition = dictionaryService.getProperty(property);
+        ClassDefinition containerDefinition = basePropertyDefinition.getContainerClass();
+        QName containerName = containerDefinition.getName();
+
+        Collection<QName> subTypes = dictionaryService.getSubTypes(containerName, true);
+        subTypes.addAll(dictionaryService.getSubAspects(containerName, true));
+
+        Set<ConstraintDefinition> result = new HashSet<>();
+        for (QName type : subTypes) {
+            PropertyDefinition propertyDefinition = dictionaryService.getProperty(type, property);
+            if (propertyDefinition != null && (propertyDefinition.isOverride() || type.equals(containerName))) {
+                result.addAll(propertyDefinition.getConstraints());
+            }
+        }
+        return result;
+    }
 }
