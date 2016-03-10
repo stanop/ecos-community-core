@@ -4,6 +4,8 @@
 
     <import resource="classpath:alfresco/module/ecos-base-core-repo/context/attribute-services-context.xml" />
     <import resource="classpath:alfresco/module/ecos-base-core-repo/context/bootstrap-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-base-core-repo/context/data-bundle-processors-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-base-core-repo/context/remote-api-context.xml" />
     <import resource="classpath:alfresco/module/ecos-base-core-repo/context/services-context.xml" />
 
 </beans>

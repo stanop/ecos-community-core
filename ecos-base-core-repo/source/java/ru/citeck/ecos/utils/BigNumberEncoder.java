@@ -21,7 +21,7 @@ package ru.citeck.ecos.utils;
 import java.math.BigDecimal;
 
 //NumericEncoder moved to org.alfresco.util package in alfresco 5
-import org.alfresco.repo.search.impl.lucene.analysis.NumericEncoder;
+import org.alfresco.util.NumericEncoder;
 import org.apache.commons.lang.StringUtils;
 
 /**
