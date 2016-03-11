@@ -3130,8 +3130,9 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   position: relative;
 }
 
-.share-form .form-container .form-fields .yui-g .yui-u .form-field input {
-  width: auto;
+.share-form .form-container .form-fields .yui-g .yui-u .form-field input[type="text"],
+.share-form .form-container .form-fields .yui-g .yui-u .form-field input[type="file"] {
+  width: 100%;
   float: none;
 }
 
