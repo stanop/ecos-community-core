@@ -201,6 +201,7 @@
 			<mandatory-aspects>
 				<aspect>contracts:hasDocumentStatus</aspect>
 				<aspect>pas:hasProductsAndServices</aspect>
+				<aspect>dms:templateable</aspect>
 			</mandatory-aspects>
 		</type>
 

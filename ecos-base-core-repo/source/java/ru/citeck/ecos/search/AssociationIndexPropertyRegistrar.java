@@ -43,18 +43,9 @@ public class AssociationIndexPropertyRegistrar {
             assocsMapping.put(assocName, indexName);
         }
         for (Map.Entry<String, String> entry : assocsMapping.entrySet()){
-            QName assoc = getQName(entry.getKey());
-            QName prop = getQName(entry.getValue());
+            QName assoc = QName.resolveToQName(namespaceService, entry.getKey());
+            QName prop = QName.resolveToQName(namespaceService, entry.getValue());
             registry.registerAssociationIndexProperty(assoc, prop);
-        }
-    }
-
-    private QName getQName(String name) {
-        String trimName = name.trim();
-        if (trimName.startsWith("{") && trimName.contains("}")) {
-            return QName.createQName(trimName);
-        } else {
-            return QName.createQName(trimName, namespaceService);
         }
     }
 

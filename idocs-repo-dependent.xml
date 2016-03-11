@@ -2,29 +2,50 @@
 <project xmlns:artifact="antlib:org.apache.maven.artifact.ant" name="idocs-repo-dependent" default="package-dependencies">
     <import file="repo-macros.xml"/>
 
-	<property name="override.project.name" value="1st-override-repo" />
-	<property name="override.project.dir" value="${override.project.name}" />
-	<property name="core.project.name" value="idocs-repo" />
-	<property name="core.project.version" value="3.0.0${module.release}" />
-	<property name="core.project.dir" value="${core.project.name}" />
-	
-	<path id="project.classpath">
-		<pathelement path="${override.project.dir}/build/lib/*" />
-		<pathelement path="${core.project.dir}/build/lib/*" />
-	</path>
-	
-	<target name="package-dependencies">
-		<copy file="${dist.amps.dir}/${override.project.name}/${core.project.version}/${override.project.name}-${core.project.version}-${build.classifier}.amp"
-		    tofile="${dist.deps.dir}/${override.project.name}/${core.project.version}/${override.project.name}-${core.project.version}-${build.classifier}.amp" />
-		<copy file="${dist.amps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp"
-		    tofile="${dist.deps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
-	</target>
+    <property name="ecos-base-core.project.name" value="ecos-base-core-repo" />
+    <property name="ecos-base-core.project.dir" value="../${ecos-base-core.project.name}" />
+    <property name="ecos-base-core.project.version" value="1.0.0.0${module.release}" />
 
-	<target name="install-dependencies">
-		<install-amp war-file="${test.webapp.path}"
-			amp-file="${dist.amps.dir}/${override.project.name}/${core.project.version}/${override.project.name}-${core.project.version}-${build.classifier}.amp" />
-		<install-amp war-file="${test.webapp.path}"
-			amp-file="${dist.amps.dir}/${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
-	</target>
-	
+    <property name="journals.project.name" value="journals-repo" />
+    <property name="journals.project.dir" value="../${journals.project.name}" />
+    <property name="journals.project.version" value="1.0.0.0${module.release}"/>
+
+    <property name="override.project.name" value="1st-override-repo" />
+    <property name="override.project.dir" value="${override.project.name}" />
+    <property name="override.project.version" value="3.0.0.0${module.release}" />
+
+    <property name="core.project.name" value="idocs-repo" />
+    <property name="core.project.version" value="3.0.0.0${module.release}" />
+    <property name="core.project.dir" value="${core.project.name}" />
+
+    <path id="project.classpath">
+        <pathelement path="${ecos-base-core.project.dir}/build/lib/*" />
+        <pathelement path="${journals.project.dir}/build/lib/*" />
+        <pathelement path="${override.project.dir}/build/lib/*" />
+        <pathelement path="${core.project.dir}/build/lib/*" />
+    </path>
+
+    <property name="ecos-base-core.project.amp"
+              value="${ecos-base-core.project.name}/${ecos-base-core.project.version}/${ecos-base-core.project.name}-${ecos-base-core.project.version}-${build.classifier}.amp" />
+    <property name="override.project.amp"
+              value="${override.project.name}/${override.project.version}/${override.project.name}-${override.project.version}-${build.classifier}.amp"/>
+    <property name="journals.project.amp"
+              value="${journals.project.name}/${journals.project.version}/${journals.project.name}-${journals.project.version}-${build.classifier}.amp" />
+    <property name="core.project.amp"
+              value="${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
+
+    <target name="package-dependencies">
+        <copy file="${dist.amps.dir}/${ecos-base-core.project.amp}" tofile="${dist.deps.dir}/${ecos-base-core.project.amp}" />
+        <copy file="${dist.amps.dir}/${journals.project.amp}" tofile="${dist.deps.dir}/${journals.project.amp}" />
+        <copy file="${dist.amps.dir}/${override.project.amp}" tofile="${dist.deps.dir}/${override.project.amp}" />
+        <copy file="${dist.amps.dir}/${core.project.amp}" tofile="${dist.deps.dir}/${core.project.amp}" />
+    </target>
+
+    <target name="install-dependencies">
+        <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${ecos-base-core.project.amp}" />
+        <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${journals.project.amp}" />
+        <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${override.project.amp}" />
+        <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${core.project.amp}" />
+    </target>
+
 </project>

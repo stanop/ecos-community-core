@@ -91,15 +91,14 @@
 		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
-				<ref bean="contracts.module-component.contracts-site" />
-				<ref bean="contracts.module-component.journals-list" />
+				<ref bean="contracts.module-component.contracts-journal" />
 			</list>
 		</property>
 		<property name="bootstrapViews">
 			<list>
 				<props>
-					<prop key="path">/app:company_home/st:sites/cm:contracts/cm:dataLists</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="path">/app:company_home/st:sites/cm:contracts/cm:documentLibrary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
 					<prop key="messages">alfresco/module/contracts-repo/bootstrap/journals/payments</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
