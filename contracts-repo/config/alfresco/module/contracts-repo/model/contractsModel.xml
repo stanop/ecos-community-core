@@ -110,7 +110,7 @@
 		</type>
 
 		<type name="contracts:closingDocument">
-		<parent>idocs:doc</parent>
+			<parent>idocs:doc</parent>
 			<properties>
 				<property name="contracts:closingDocumentNumber">
 					<title>Document Number</title>
@@ -202,6 +202,7 @@
 				<aspect>contracts:hasDocumentStatus</aspect>
 				<aspect>pas:hasProductsAndServices</aspect>
 				<aspect>dms:templateable</aspect>
+				<aspect>contracts:closingDocumentExtend</aspect>
 			</mandatory-aspects>
 		</type>
 
@@ -449,6 +450,15 @@
 				</property>
 			</overrides>
 		</aspect>
+
+        <aspect name="contracts:closingDocumentExtend">
+            <parent>tk:documentTypeKind</parent>
+            <overrides>
+                <property name="tk:type">
+                    <default>workspace://SpacesStore/contracts-cat-doctype-closing-doc</default>
+                </property>
+            </overrides>
+        </aspect>
 		
 	</aspects>
 

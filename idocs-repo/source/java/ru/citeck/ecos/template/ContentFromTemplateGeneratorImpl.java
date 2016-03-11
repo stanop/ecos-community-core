@@ -31,11 +31,7 @@ import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.exception.ExceptionService;
 import ru.citeck.ecos.exception.ExceptionTranslator;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Serializable;
-import java.io.Writer;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
@@ -103,15 +99,13 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
              * does not change anything.
              */
             writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName("ISO-8859-1"));
-			
-			StringWriter content = new StringWriter();
 
             // process template
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(KEY_DOCUMENT, nodeRef);
             try {
-                templateService.processTemplate(template.toString(), model, content);
-				escapeNonLatin(content.toString(), writer);
+                templateService.processTemplate(template.toString(), model, writer);
+				//escapeNonLatin(content.toString(), writer);
             } catch (Exception e) {
                 logger.error("Content generation failure for " + nodeRef, e);
                 ExceptionTranslator translator = exceptionService.getExceptionTranslator(
