@@ -1,6 +1,6 @@
 <extension>
     <modules>
-        <!--This module allready defined in Alfresco 5-->
+        <!--This module already defined in Alfresco 5-->
         <!--TODO: Alfresco 5 migration: Remove this module-->
         <module>
             <id>jQuery package</id>
