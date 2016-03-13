@@ -1,0 +1,21 @@
+<extension>
+    <modules>
+        <!--This module allready defined in Alfresco 5-->
+        <!--TODO: Alfresco 5 migration: Remove this module-->
+        <module>
+            <id>jQuery package</id>
+            <auto-deploy>true</auto-deploy>
+            <configurations>
+                <config evaluator="string-compare" condition="WebFramework" replace="false">
+                    <web-framework>
+                        <dojo-pages>
+                            <packages>
+                                <package name="jquery" location="jquery"/>
+                            </packages>
+                        </dojo-pages>
+                    </web-framework>
+                </config>
+            </configurations>
+        </module>
+    </modules>
+</extension>
