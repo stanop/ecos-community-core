@@ -16,5 +16,5 @@ th.yui-dt-col-taskType
 .loading-form {
     width: 100%;
     height: 100px;
-    background: url(../../../../../../idocs-share/source/web/citeck/components/dynamic-tree/icons/large-loading.gif) no-repeat center center;
+    background: url(icons/large-loading.gif) no-repeat center center;
 }

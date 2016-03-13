@@ -18,7 +18,6 @@
     <#include "/org/alfresco/components/form/form.js.ftl"/>
 
     <@script type="text/javascript" src="${url.context}/res/lib/underscore.js" group="journals-list"/>
-    <@script type="text/javascript" src="${url.context}/res/jquery/jquery-1.6.2.js" group="journals-list"/>
 
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="journals-list" />
 
