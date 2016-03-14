@@ -267,7 +267,7 @@
 				<aspect>payments:paymentNumber</aspect>
 				<aspect>payments:paymentFor</aspect>
 				<aspect>pas:hasProductsAndServices</aspect>
-				<aspect>dms:templateable</aspect>
+				<aspect>payments:paymentsTemplated</aspect>
 				<aspect>payments:paymentType</aspect>
 			</mandatory-aspects>
 		</type>
@@ -372,6 +372,14 @@
                 </property>
             </overrides>
         </aspect>
+		<aspect name="payments:paymentsTemplated">
+			<parent>dms:templateable</parent>
+			<overrides>
+				<property name="dms:templateEncoding">
+					<default>UTF-8</default>
+				</property>
+			</overrides>
+		</aspect>
 	</aspects>
 
 

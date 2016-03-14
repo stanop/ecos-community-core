@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<view:view xmlns="" xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:view="http://www.alfresco.org/view/repository/1.0" xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:dms="http://www.citeck.ru/model/content/dms/1.0" xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
+<view:view xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:dms="http://www.citeck.ru/model/content/dms/1.0"
+           xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
 	<view:reference view:pathref=".">
 		<view:associations>
 			<cm:contains>
 				<dms:template view:childName="cm:default-closing-document.html.ftl">
-				  <view:properties>
-					<cm:name>default-closing-document-act.html.ftl</cm:name>
-					<sys:node-uuid>default-closing-document-act</sys:node-uuid>
-					<cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/closing-document-act.html.ftl|mimetype=text/html|encoding=UTF-8</cm:content>
-					<tk:type>workspace://SpacesStore/contracts-cat-doctype-closing-doc</tk:type>
-					<tk:kind>workspace://SpacesStore/contracts-cat-closing-doc-act</tk:kind>
-					<tk:appliesToType>workspace://SpacesStore/contracts-cat-doctype-closing-doc</tk:appliesToType>
-					<tk:appliesToKind>workspace://SpacesStore/contracts-cat-closing-doc-act</tk:appliesToKind>
+                    <view:properties>
+                        <cm:name>default-closing-document-act.html.ftl</cm:name>
+                        <sys:node-uuid>default-closing-document-act</sys:node-uuid>
+                        <cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/closing-document-act.html.ftl|mimetype=text/html|encoding=UTF-8</cm:content>
+                        <tk:type>workspace://SpacesStore/contracts-cat-doctype-closing-doc</tk:type>
+                        <tk:appliesToType>workspace://SpacesStore/contracts-cat-doctype-closing-doc</tk:appliesToType>
+                        <!--<tk:appliesToKind>workspace://SpacesStore/contracts-cat-closing-doc-act</tk:appliesToKind>-->
+                        <!--<tk:kind>workspace://SpacesStore/contracts-cat-closing-doc-act</tk:kind>-->
 				  </view:properties>
 				</dms:template>
 			</cm:contains>
