@@ -223,19 +223,12 @@ ko.bindingHandlers.dateControl = {
             input = Dom.get(elementId);
 
         if (!Citeck.HTML5.supportedInputTypes.date) {
+            input.setAttribute("placeholder", localization.placeholder);
+
             var calendarDialogId = elementId + "-calendarDialog",
                 calendarContainerId = elementId + "-calendarContainer",
                 calendarAccessorId = elementId + "-calendarAccessor",
                 calendarDialog, calendar;
-
-            if(navigator.userAgent.indexOf("Firefox") != -1 || (navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ))
-            {
-                input.setAttribute("placeholder", localization.formatIE);
-            }
-            else
-            {
-                input.setAttribute("placeholder", localization.format);
-            }
 
             var showCalendarButton = document.getElementById(calendarAccessorId);
             showCalendarButton.classList.remove("hidden");
@@ -283,14 +276,7 @@ ko.bindingHandlers.dateControl = {
                                 mStr = selectedDate.getMonth(),
                                 yStr = selectedDate.getFullYear();
                                 
-                                if(navigator.userAgent.indexOf("Firefox") != -1 || (navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true ))
-                                {
-                                    input.value = selectedDate.toString("yyyy-MM-dd");
-                                }
-                                else
-                                {
-                                    input.value = dStr + "." + mStr + "." + yStr;
-                                }                            
+                            input.value = selectedDate.toString("yyyy-MM-dd");                           
                         }
                         calendarDialog.hide();
                     });
@@ -298,9 +284,7 @@ ko.bindingHandlers.dateControl = {
                     calendar.render();      
                 }
 
-                if (calendarDialog) {
-                    calendarDialog.show();
-                }
+                if (calendarDialog) calendarDialog.show();
             });
         } else {
             // set max and min attributes
