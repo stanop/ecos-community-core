@@ -4,7 +4,7 @@
 <#assign months     = msg("months.short")>
 <#assign days       = msg("days.short")>
 
-<div id="${fieldId}-dateControl" data-bind='dateControl: textValue, 
+<div id="${fieldId}-dateControl" data-bind='dateControl: value, 
     localization: {
         placeholder: "${formatIE}",
         labels: { month: "${labels.month}", year: "${labels.year}", header: "${labels.header}" },

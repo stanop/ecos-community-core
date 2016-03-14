@@ -276,7 +276,7 @@ ko.bindingHandlers.dateControl = {
                                 mStr = selectedDate.getMonth(),
                                 yStr = selectedDate.getFullYear();
                                 
-                            input.value = selectedDate.toString("yyyy-MM-dd");                           
+                            value(selectedDate.toString("yyyy-MM-dd"));                           
                         }
                         calendarDialog.hide();
                     });
