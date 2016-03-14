@@ -791,7 +791,12 @@ JournalsWidget
 	})
 	.computed('createReportLink', function() {
 		var isDownload = (this.createReportDownload() == true);
-		return Alfresco.constants.PROXY_URI + "report/criteria-report?download=" + isDownload;
+		var token = "";
+		if (Alfresco.util.CSRFPolicy && Alfresco.util.CSRFPolicy.isFilterEnabled()) {
+			token = "&" + Alfresco.util.CSRFPolicy.getParameter() + "="
+						+ encodeURIComponent(Alfresco.util.CSRFPolicy.getToken());
+		}
+		return Alfresco.constants.PROXY_URI + "report/criteria-report?download=" + isDownload + token;
 	})
 	.computed('createReportQuery', function() {
 		var journal = this.journal();
