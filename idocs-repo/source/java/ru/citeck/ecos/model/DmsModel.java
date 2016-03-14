@@ -85,6 +85,7 @@ public final class DmsModel {
 	public static final QName PROP_CONTRACTOR_POST_ADDRESS = QName.createQName(DMS_NAMESPACE, "postAddress");
 	public static final QName PROP_CONTRACTOR_EMAIL = QName.createQName(DMS_NAMESPACE, "email");
 	public static final QName PROP_CONTRACTOR_PHONEFAX = QName.createQName(DMS_NAMESPACE, "phonefax");
+	public static final QName PROP_TEMPLATE_ENCODING = QName.createQName(DMS_NAMESPACE, "templateEncoding");
 
 	// aspect hasSupplementaryFiles
 	public static final QName ASPECT_HAS_SUPPLEMENTARY_FILES = QName.createQName(DMS_NAMESPACE, "hasSupplementaryFiles");

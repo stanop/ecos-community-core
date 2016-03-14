@@ -80,6 +80,10 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
         }
         NodeRef template = assocs.get(0).getTargetRef();
 
+        // get template encoding
+        String encoding = (String)nodeService.getProperty(nodeRef, DmsModel.PROP_TEMPLATE_ENCODING);
+        if (encoding == null) encoding = "ISO-8859-1";
+
         ContentData templateContent = (ContentData) nodeService.getProperty(template, ContentModel.PROP_CONTENT);
         if(templateContent == null) {
             throw new IllegalStateException("Template " + template + " has no content");
@@ -92,20 +96,20 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
             // get content writer:
             contentWriter = contentService.getWriter(nodeRef, ContentModel.PROP_CONTENT, true);
             contentWriter.setMimetype(mimetype);
+
             /**
-             * Do not change specified character-set ISO-8859-1, because of
-             * output stream returns bytes, but writer returns characters.
-             * So we should not change that output stream. This character-set
-             * does not change anything.
-             */
-            writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName("ISO-8859-1"));
+             * Template encoding defined inside aspect dms:templateable
+             * property: DmsModel.PROP_TEMPLATE_ENCODING
+             * Default value (for binaries): ISO-8859-1
+             * For html and another text contents need to override this property inside templated model (like closingDocument)
+             * */
+            writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName(encoding));
 
             // process template
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(KEY_DOCUMENT, nodeRef);
             try {
                 templateService.processTemplate(template.toString(), model, writer);
-				//escapeNonLatin(content.toString(), writer);
             } catch (Exception e) {
                 logger.error("Content generation failure for " + nodeRef, e);
                 ExceptionTranslator translator = exceptionService.getExceptionTranslator(
@@ -132,23 +136,6 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
         RepoUtils.setUniqueOriginalName(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
         RepoUtils.createVersion(nodeRef, versionProperties, nodeService, versionService);
     }
-
-    public static void escapeNonLatin(CharSequence sequence, Writer out) throws java.io.IOException {
-    for (int i = 0; i < sequence.length(); i++) {
-      char ch = sequence.charAt(i);
-      if (Character.UnicodeBlock.of(ch) == Character.UnicodeBlock.BASIC_LATIN) {
-        out.append(ch);
-      } else {
-        int codepoint = Character.codePointAt(sequence, i);
-        // handle supplementary range chars
-        i += Character.charCount(codepoint) - 1;
-        // emit entity
-        out.append("&#x");
-        out.append(Integer.toHexString(codepoint));
-        out.append(";");
-      }
-    }
-  }
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;

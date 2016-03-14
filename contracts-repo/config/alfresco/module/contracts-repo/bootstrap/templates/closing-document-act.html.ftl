@@ -2,16 +2,15 @@
 <#escape x as x?html>
 <html>
 <head>
-<style>
-*
-{
-	font-size: 16px;
-}
-h1
-{
-	font-size: 32px;
-}
-</style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        * {
+            font-size: 16px;
+        }
+        h1 {
+            font-size: 32px;
+        }
+    </style>
 </head>
 <body>
 <#assign none = "(Нет)" />
