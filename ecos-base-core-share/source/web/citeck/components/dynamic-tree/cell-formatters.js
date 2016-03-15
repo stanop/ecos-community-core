@@ -476,6 +476,14 @@
 			};
 		},
 
+        documentDetailsLink: function () {
+            return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}')
+        },
+
+        folderDetailsLink: function () {
+            return Citeck.format.siteURL('folder-details?nodeRef={nodeRef}', '{displayName}')
+        },
+
         documentLink: function () {
             return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}')
         },
