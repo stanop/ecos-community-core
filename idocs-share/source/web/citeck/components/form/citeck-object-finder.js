@@ -673,7 +673,7 @@
                     Dom.get(this.id + "-cancel-button").name = "-";
 
                     this.widgets.dialog = Alfresco.util.createYUIPanel(this.pickerId, {
-                        width: "60em"
+                        width: "800px"
                     });
                     this.widgets.dialog.hideEvent.subscribe(this.onCancel, null, this);
                     Dom.addClass(this.pickerId, "object-finder");
@@ -2541,42 +2541,38 @@
              * @method _createResizer
              * @private
              */
-            _createResizer: function CiteckObjectFinder__createResizer()
-            {
-                if (!this.widgets.resizer)
-                {
-                    var size = parseInt(Dom.get(this.pickerId + "-body").offsetWidth, 10) - 2,
+            _createResizer: function CiteckObjectFinder__createResizer() {
+                if (!this.widgets.resizer) {
+                    var size = 798,
                         heightFix = 0;
+
                     this.columns[0] = Dom.get(this.pickerId + "-left");
                     this.columns[1] = Dom.get(this.pickerId + "-right");
-                    this.widgets.resizer = new YAHOO.util.Resize(this.pickerId + "-left",
-                        {
-                            handles: ["r"],
-                            minWidth: 200,
-                            maxWidth: (size - 200)
-                        });
+                    this.widgets.resizer = new YAHOO.util.Resize(this.pickerId + "-left", {
+                        handles: ["r"],
+                        minWidth: 200,
+                        maxWidth: (size - 200)
+                    });
+                    
                     // The resize handle doesn't quite get the element height correct, so it's saved here
                     heightFix = this.widgets.resizer.get("height");
 
-                    this.widgets.resizer.on("resize", function(e)
-                    {
+                    this.widgets.resizer.on("resize", function(e) {
                         var w = e.width;
                         Dom.setStyle(this.columns[0], "height", "");
                         Dom.setStyle(this.columns[1], "width", (size - w - 8) + "px");
                     }, this, true);
 
-                    this.widgets.resizer.on("endResize", function(e)
-                    {
+                    this.widgets.resizer.on("endResize", function(e) {
                         // Reset the resize handle height to it's original value
                         this.set("height", heightFix);
                     });
 
-                    this.widgets.resizer.fireEvent("resize",
-                        {
-                            ev: 'resize',
-                            target: this.widgets.resizer,
-                            width: size / 2
-                        });
+                    this.widgets.resizer.fireEvent("resize", {
+                        ev: 'resize',
+                        target: this.widgets.resizer,
+                        width: size / 2
+                    });
                 }
             },
 
