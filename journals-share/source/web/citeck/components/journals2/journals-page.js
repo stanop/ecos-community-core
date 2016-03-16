@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals'], function(jq, koutils, Journals) {
+define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals'],
+       function(jq, koutils, Journals) {
 
 var PopupManager = Alfresco.util.PopupManager,
 	koclass = koutils.koclass,
@@ -179,9 +180,7 @@ YAHOO.extend(JournalsPageWidget, Journals, {
 		// simulate change on hidden fields, 
 		// to force view models update
 
-		require(['lib/jquery.simulate'], function(){
-			$('#' + this.id + '-filter-criteria input[type="hidden"]').simulate('change');
-		});
+		$('#' + this.id + '-filter-criteria input[type="hidden"]').trigger('change');
 	},
 
 	askTitle: function(config) {
