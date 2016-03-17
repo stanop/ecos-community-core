@@ -262,6 +262,7 @@ h4 .lighter
 .dashlet {
    background-color: #fff;
    box-shadow: 0 0 5px 2px lightgray;
+   min-height: 300px;
 }
 
 .dashlet > .title {
@@ -2352,6 +2353,10 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   min-height: 80vh;
 }
 
+#bd .yui-g.grid > .yui-g.dcolumn {
+  margin-top: 0;
+}
+
 #bd .members-bar {
     margin: 0;
     padding-left: 40px;
@@ -2444,116 +2449,116 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 
 /* card of document */
-#bd > .yui-gc {
+#bd > .yui-gc:not(.grid) {
     background-color: #fafafa;
     clear: both;
 }
 
-#bd > .yui-gc > .yui-u {
+#bd > .yui-gc:not(.grid) > .yui-u {
     width: 33.85%;
     margin: 0;
 }
 
-#bd > .yui-gc > .yui-u.first {
+#bd > .yui-gc:not(.grid) > .yui-u.first {
    width: 66%;
    background-color: white;
    border-right: 1px solid #ccc;
 }
 
 
-#bd .yui-gc > .yui-u .document-details-panel {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel {
    background-color: none;
    padding: 10px 0 0 10px;
 }
 
-#bd .yui-gc > .yui-u:last-child .document-details-panel {
+#bd .yui-gc:not(.grid) > .yui-u:last-child .document-details-panel {
   padding: 10px 25px 0 10px;
 }
 
-#bd .yui-gc > .yui-u.first .document-details-panel {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel {
    padding-left: 40px;
    border-bottom: 1px solid #ccc;
 }
 
 
 /* Card of document. Approved and requested */
-#bd .yui-gc > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title {
   border: none;
   margin-top: 30px;
   margin-bottom: 5px;
 }
 
-#bd .yui-gc > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title br {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title br {
    display: none;
 }
 
-#bd .yui-gc > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title label {
+#bd .yui-gc:not(.grid) > .yui-u.first .document-details-panel .form-container .form-fields .yui-g .yui-u .set-title label {
   float: none !important;
 }
 
 
-#bd .yui-gc > .yui-u .node-actions .action-set a:hover {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .action-set a:hover {
     background-color: #fafafa;
     color: red;
 }
-#bd .yui-gc > .yui-u .node-actions .action-set a {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .action-set a {
     border: medium none;
     color: #1c55da;
 }
 
-#bd .yui-gc > .yui-u .node-actions .doclist .action-set div {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .doclist .action-set div {
    padding: 3px 20px;
 }
 
-#bd .yui-gc > .yui-u .node-actions .doclist .action-set {
+#bd .yui-gc:not(.grid) > .yui-u .node-actions .doclist .action-set {
     padding-bottom: 10px;
 }
 
-#bd .yui-gc > .yui-u > div:last-child {
+#bd .yui-gc:not(.grid) > .yui-u > div:last-child {
    border-bottom: none;
 }
 
-#bd .yui-gc > .yui-u .yui-dt  .document-details-panel .panel-body {
+#bd .yui-gc:not(.grid) > .yui-u .yui-dt  .document-details-panel .panel-body {
    padding: 10px 0 10px 15px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .panel-body {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .panel-body {
    padding: 0 15px 10px 25px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .form-container .form-fields {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .form-container .form-fields {
    padding: 0 0 0 25px;
    overflow: hidden;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel > h2 {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2 {
    text-transform: uppercase;
    font-size: 14px;
    font-weight: bold;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel > h2 .alfresco-twister-actions {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2 .alfresco-twister-actions {
    text-transform: none;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel > h2,
-#bd .yui-gc > .yui-u .document-details-panel .panel-body h3.alfresco-twister.alfresco-twister-open {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2,
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .panel-body h3.alfresco-twister.alfresco-twister-open {
    margin-bottom: 10px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel.document-versions-comparison {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel.document-versions-comparison {
    padding: 10px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel.document-versions-comparison .panel-body {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel.document-versions-comparison .panel-body {
    padding: 0;
 }
 
-#bd .yui-gc .yui-dt table {
+#bd .yui-gc:not(.grid) .yui-dt table {
    margin: 0;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .yui-dt  .form-container .form-fields {
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .yui-dt  .form-container .form-fields {
    padding: 0;
 }
 
@@ -2561,7 +2566,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
     margin-top: 5px;
 }
 
-#bd .yui-gc > .yui-u .document-details-panel .dynamic-table,
+#bd .yui-gc:not(.grid) > .yui-u .document-details-panel .dynamic-table,
 .form-field .table-children .dynamic-table {
    margin-bottom: 15px;
 }
@@ -2656,8 +2661,6 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding: 15px;
    margin: 0;
 }
-
-
 
 
 /* END CONTROLS */
@@ -3071,14 +3074,14 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 /* reset blocks and controls */
 .share-form .form-container .form-fields .yui-u .form-field > label,
 .share-form .form-container .form-fields .yui-u .form-field > select,
-.share-form .form-container .form-fields .yui-u .form-field > input[type="text"],
+.share-form .form-container .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
 .share-form .form-container .form-fields .yui-u .form-field > .format-info,
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder,
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder .show-picker,
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"],
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
@@ -3088,7 +3091,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    display: block;
    max-width: none;
    clear: both;
-   width: 100%;
+   width: 100% !important;
 }
 
 .share-form .form-container .form-fields .yui-u .form-field div.auto-manual-select {
@@ -3125,6 +3128,12 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   padding: 0;
   border: none;
   position: relative;
+}
+
+.share-form .form-container .form-fields .yui-g .yui-u .form-field input[type="text"],
+.share-form .form-container .form-fields .yui-g .yui-u .form-field input[type="file"] {
+  width: 100%;
+  float: none;
 }
 
 .share-form .form-container .form-fields .set .form-field > .object-finder .dynamic-doclib-table {
@@ -4040,6 +4049,21 @@ div#HEADER_USER_STATUS {
   margin-right: 5px;
 }
 
+#bd .orgstruct-console .dynamic-tree-list .item-buttons {
+  right: 0;
+  padding-left: 5px;
+}
+
+#bd .orgstruct-console .orgstruct-tree-resizer .ygtv-highlight0 .dynamic-tree-list .item-buttons {
+  background-color: #fdfaf3;
+}
+
+#bd .orgstruct-console .orgstruct-tree-resizer .ygtv-highlight1 .dynamic-tree-list .item-buttons {
+  background-color: #f0f0f0;
+}
+
+
+
 /* END ORGSTRUCT CONSOLE */
 
 /* CUSTOMISE PAGE */
@@ -4069,6 +4093,7 @@ div#HEADER_USER_STATUS {
 [rel="diff_stylesheet"].yui-u > div:not(:first-child) {
   padding-left: 40px;
   padding-right: 15px;
+  color: black;
 }
 
 
@@ -4305,4 +4330,88 @@ div#HEADER_USER_STATUS {
 .ecos-form .form-buttons input[type="button"]:hover,
 .ecos-form .form-buttons input[type="button"]:focus {
   color: red;
+}
+
+
+/* WORKFLOW RESPONSIVE*/
+
+.document-workflows .workflow img + div {
+  float: left;
+}
+
+@media screen and (min-width: 1230px) {
+  .document-workflows .workflow img + div {
+    max-width: 75%;
+  }
+}
+
+@media screen and (max-width: 1229px) and (min-width: 1080px) {
+  .document-workflows .workflow img + div {
+    max-width: 70%;
+  }
+}
+
+@media screen and (max-width: 1079px) and (min-width: 970px) {
+  .document-workflows .workflow img + div {
+    max-width: 65%;
+  }
+}
+
+@media screen and (max-width: 969) and (min-width: 970px) {
+  .document-workflows .workflow img + div {
+    max-width: 60%;
+  }
+}
+
+@media screen and (max-width: 890px) {
+  .document-workflows .workflow img + div {
+    max-width: 100%;
+  }
+}
+
+/* OBJECT FINDER for view */
+
+.form-container .form-fields .plain .object-finder {
+  margin-bottom: 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.form-container .form-fields .plain .object-finder .current-values {
+  margin-bottom: 0;
+}
+
+
+/* ONLY FOR IE */
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* initiate to static */
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].date-entry,
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].time-entry,
+  .share-form .form-container .form-fields .yui-u .form-field div.help-text,
+  .share-form .form-container .form-fields .yui-u .form-field > label,
+  .share-form .form-container .form-fields .yui-u .form-field > select,
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"],
+  .share-form .form-container .form-fields .yui-u .form-field > .format-info,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .show-picker,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
+  .share-form .form-container .form-fields .yui-u .form-field > a,
+  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].date-entry,
+  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
+  .share-form .form-container .form-fields .form-field.alf-textarea div.help-text,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"],
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .dynamic-list,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > a,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field div.help-text
+  #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
+    position: static;
+  }
 }

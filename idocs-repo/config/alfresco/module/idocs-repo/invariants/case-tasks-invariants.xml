@@ -43,6 +43,7 @@
                 <item>activiti$simple-affirm</item>
                 <item>activiti$simple-payment</item>
                 <item>activiti$move-to-archive</item>
+                <item>activiti$contractor-approval</item>
             </invariant>
             <invariant on="value-title" language="javascript">
                 message(value.replace("activiti$", "") + ".workflow.title")

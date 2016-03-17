@@ -35,7 +35,7 @@ function doclist_getAllNodes(parsedArgs, filterParams, query, totalItemCount)
 		formdata.cleanup();
 	}
 
-	var nodeRefsArr = nodeRefs.split(',');
+	var nodeRefsArr = (nodeRefs != "") ? nodeRefs.split(',') : [];
 	for (var i = 0; i < nodeRefsArr.length; i++) {
 		var nodeRef = nodeRefsArr[i];
 		var node = search.findNode(nodeRef);

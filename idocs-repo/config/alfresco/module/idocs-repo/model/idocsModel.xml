@@ -68,12 +68,14 @@
                     <value>credit-committee-preparation</value>
                     <value>credit-disbursement-preparation</value>
                     <value>credit-disbursement</value>
+                    <value>credit-checking-blacklist</value>
                     <value>credit-internal-report</value>
                     <value>credit-external-report</value>
                     <value>credit-documents-checking</value>
                     <value>credit-attach-documents</value>
                     <value>credit-issue</value>
                     <value>credit-checklist</value>
+                    <value>credit-check-in-international-lists</value>
 
                     <value>financial-monitoring</value>
                     <value>on-credit-committee</value>
@@ -100,6 +102,18 @@
                     <value>early-repayment-change-credit</value>
                     <value>early-repayment-completed</value>
                     <value>credit-paid</value>
+
+                    <value>repayment-pledge-check-loan</value>
+                    <value>repayment-pledge-notify-hq</value>
+                    <value>repayment-pledge-charge-hq</value>
+                    <value>repayment-pledge-confirm</value>
+                    <value>repayment-pledge-transfer-filial</value>
+                    <value>repayment-pledge-charge-filial</value>
+                    <value>repayment-pledge-confirm-director</value>
+                    <value>repayment-pledge-open-envelope</value>
+                    <value>repayment-pledge-write-closed</value>
+                    <value>repayment-pledge-prepare-doc</value>
+                    <value>repayment-pledge-transfer-client</value>
 
                     <value>purchase-project</value>
                     <value>purchase-on-approval</value>
