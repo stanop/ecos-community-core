@@ -245,7 +245,7 @@
                     <show id="idocs:corresponentAccountNumber"/>
                 </field-visibility>
                 <appearance>
-                    <field id="idocs:legalEntity">
+                    <field id="idocs:legalEntity" mandatory="true">
                         <control template="/ru/citeck/components/form/controls/association_search.ftl">
                             <control-param name="searchWholeRepo">true</control-param>
                         </control>
@@ -268,7 +268,7 @@
                     <show id="idocs:corresponentAccountNumber"/>
                 </field-visibility>
                 <appearance>
-                    <field id="idocs:legalEntity">
+                    <field id="idocs:legalEntity" mandatory="true">
                         <control template="/ru/citeck/components/form/controls/association_search.ftl">
                             <control-param name="searchWholeRepo">true</control-param>
                         </control>
