@@ -17,7 +17,10 @@
     </view>
 
     <view class="pas:pasEntityOriginal">
-        <field prop="cm:title"/>
+        <field prop="cm:title">
+            <region name="input" template="text"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
         <field prop="cm:description"/>
         <field prop="pas:type">
             <region name="input" template="select"/>
