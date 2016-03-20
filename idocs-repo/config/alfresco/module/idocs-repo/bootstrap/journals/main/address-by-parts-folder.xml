@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0">
+
+    <view:reference view:pathref=".">
+        <cm:contains>
+            <cm:folder view:childName="cm:addressByParts">
+                <view:properties>
+                    <sys:node-uuid>address-by-parts-folder</sys:node-uuid>
+                    <cm:name>addressByParts</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Address by parts</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">Адрес по частям</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:folder>
+        </cm:contains>
+    </view:reference>
+
+</view:view>
