@@ -660,5 +660,11 @@
         <property name="className" value="pas:unit"/>
         <property name="nameTemplate" value="#{'$'}{node.properties['pas:unitShortName']!}"/>
     </bean>
+
+    <bean id="idocs.addressByPartsNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:addressByParts"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:regionName']!''} #{'$'}{node.properties['idocs:cityName']!''} #{'$'}{node.properties['idocs:streetName']!''} #{'$'}{node.properties['idocs:house']!''}" />
+    </bean>
+
 </beans>
 
