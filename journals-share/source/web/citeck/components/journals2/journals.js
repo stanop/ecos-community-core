@@ -588,7 +588,7 @@ JournalsWidget
 			}
 			
 			if(includeLink) {
-			    formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter);
+			    formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
 			    linkSupplied = true;
 			}
 			if(formatter) formatter = formatters.multiple(formatter);
@@ -668,6 +668,7 @@ JournalsWidget
 	.property('selectedId', s)
 	.shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
 	.shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
+	.shortcut('linkTarget', 'journal.type.options.linkTarget', '_self')
 	.computed('gotoAddress', function() {
 		var id = this.selectedId(),
 			url = this.recordUrl();
