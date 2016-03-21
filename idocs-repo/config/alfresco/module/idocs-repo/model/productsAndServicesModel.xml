@@ -66,6 +66,9 @@
             <title>Instance of product or service copied from journal to document</title>
             <parent>pas:pasEntity</parent>
             <properties>
+                <property name="pas:order">
+                    <type>d:int</type>
+                </property>
                 <property name="pas:quantity">
                     <type>d:double</type>
                 </property>

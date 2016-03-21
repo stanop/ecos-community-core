@@ -14,6 +14,7 @@
         </childrenUrl>
         <columns>
             [
+                {key: 'attributes["pas:order"]', label: Alfresco.util.message("products-and-services.table.header.order")},
                 {key: 'attributes["cm:title"]', label: Alfresco.util.message("products-and-services.table.header.title")},
                 <!--{key: 'attributes["pas:type"]', label: Alfresco.util.message("products-and-services.table.header.type")},-->
                 {key: 'attributes["pas:pricePerUnit"]', label: Alfresco.util.message("products-and-services.table.header.pricePerUnit")},
@@ -26,6 +27,7 @@
         </columns>
         <responseSchema>
             {resultsList: 'targets', fields: [
+                {key: 'attributes["pas:order"]'},
                 {key: 'attributes["cm:title"]'},
                 {key: 'attributes["pas:type"]'},
                 {key: 'attributes["pas:pricePerUnit"]'},

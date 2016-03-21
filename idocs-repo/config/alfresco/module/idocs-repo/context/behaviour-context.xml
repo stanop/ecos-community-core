@@ -660,5 +660,12 @@
         <property name="className" value="pas:unit"/>
         <property name="nameTemplate" value="#{'$'}{node.properties['pas:unitShortName']!}"/>
     </bean>
+
+    <bean id="productsAndServicesBehaviour" class="ru.citeck.ecos.behavior.idocs.ProductsAndServicesBehavior" init-method="init">
+        <property name="nodeService" ref="nodeService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="namespace" value="http://www.citeck.ru/model/products-and-services/1.0"/>
+        <property name="type" value="pasEntityCopied"/>
+    </bean>
 </beans>
 
