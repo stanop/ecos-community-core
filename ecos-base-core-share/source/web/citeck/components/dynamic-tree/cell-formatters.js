@@ -476,43 +476,47 @@
 			};
 		},
 
-        documentDetailsLink: function () {
-            return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}')
+        documentDetailsLink: function (target) {
+            return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', target)
         },
 
-        folderDetailsLink: function () {
-            return Citeck.format.siteURL('folder-details?nodeRef={nodeRef}', '{displayName}')
+        folderDetailsLink: function (target) {
+            return Citeck.format.siteURL('folder-details?nodeRef={nodeRef}', '{displayName}', target)
         },
 
         documentLink: function () {
-            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}')
+            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}', null)
         },
 
         folderLink: function () {
-            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}')
+            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}', null)
         },
 
         caseLink: function () {
-            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}')
+            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}', null)
         },
 
-        siteURL: function (urlTemplate, labelTemplate) {
+        siteURL: function (urlTemplate, labelTemplate, target) {
+            if (!target) target = '_self';
             return function (elCell, oRecord, oColumn, sData) {
                 if (sData) {
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
                     var label = YAHOO.lang.substitute(labelTemplate, sData);
-                    elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" href="' + url + '">' + label + '</a>';
+                    elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" '
+                                     + 'href="' + url + '" target="' + target + '">' + label + '</a>';
                 }
             }
         },
         
-        doubleClickLink: function(urlTemplate, fieldId, formatter) {
+        doubleClickLink: function(urlTemplate, fieldId, formatter, target) {
+            if (!target) target = '_self';
             return function (elCell, oRecord, oColumn, sData) {
                 var label = formatter && (formatter.apply(this, arguments), elCell.innerHTML) || sData || Alfresco.util.message("label.none");
                 var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, {
                     id: oRecord.getData(fieldId)
                 }));
-                elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" href="' + url + '">' + label + '</a>';
+                elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" '
+                                 + 'href="' + url + '" target="' + target + '">' + label + '</a>';
             }
         },
 
