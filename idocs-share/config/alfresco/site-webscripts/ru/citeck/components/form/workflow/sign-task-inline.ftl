@@ -26,12 +26,12 @@
 		}
 	} />
 	
-	<#assign outcomes = "Signed|Подписано" + "#alf#" + "Declined|Отказано" />
+	<#assign outcomes = "Signed|" + msg("sign-task.outcome.Signed") + "#alf#" + "Declined|" + msg("sign-task.outcome.Declined") />
 	<#if canReturnToConfirm>
-		<#assign outcomes = outcomes + "#alf#" + "ToConfirm|На согласование" />
+		<#assign outcomes = outcomes + "#alf#" + "ToConfirm|" + msg("sign-task.outcome.ToConfirm") />
 	</#if>
 	<#if canReturnToCorrect>
-		<#assign outcomes = outcomes + "#alf#" + "ToCorrect|На доработку" />
+		<#assign outcomes = outcomes + "#alf#" + "ToCorrect|" + msg("sign-task.outcome.ToCorrect") />
 	</#if>
 	
 	<@forms.renderField field = "prop_wfsgn_signOutcome" extension = {

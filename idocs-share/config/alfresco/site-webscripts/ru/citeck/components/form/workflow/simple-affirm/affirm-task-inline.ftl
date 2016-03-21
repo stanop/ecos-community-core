@@ -13,10 +13,13 @@
 			"params": {}
 		}
 	} />
+
+	<#assign outcomes = "Affirmed|" + msg("affirm-task.outcome.Affirmed") + "#alf#Declined|" + msg("affirm-task.outcome.Declined") />
+
 	<@forms.renderField field = "prop_wfsa_affirmOutcome" extension = { "control": {
 		"template": "/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl",
 		"params": {
-			"options": "Affirmed|Подтвердить#alf#Declined|Отклонить"
+			"options": outcomes
 		}
 	} } />
 	
