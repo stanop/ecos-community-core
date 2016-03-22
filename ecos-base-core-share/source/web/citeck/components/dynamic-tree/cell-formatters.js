@@ -1418,9 +1418,7 @@
 			return function(elCell, oRecord, oColumn, sData) {
 				if(!sData) {
 					elCell.innerHTML = "";
-					return;
-				}
-				else if(sData.indexOf("workspace") > -1){
+				} else if(sData.indexOf("workspace") > -1){
 					Alfresco.util.Ajax.request({
 						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + sData + (props ? '&props=' + props + '&replaceColon=_' : ''),
 						successCallback: {
@@ -1446,12 +1444,11 @@
 						},
 						execScripts: true
 					});
-				}
-				else {
+				} else if (/^-?\d*(\.\d+)?$/.test(sData)) {
+					elCell.innerHTML = parseFloat(sData);
+				} else {
 					elCell.innerHTML = sData;
-					return;
 				}
-
 			};
 		},
 

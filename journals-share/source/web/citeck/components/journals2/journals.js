@@ -565,7 +565,7 @@ JournalsWidget
 	.computed('columns', function() {
 		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []),
 			journalType = this.resolve('journal.type'),
-			recordUrl = this.recordUrl(),
+			recordUrl = this.recordUrl(), recordLinkAttribute = this.recordLinkAttribute(),
 			linkSupplied = recordUrl == null;
 		
 		// init columns
@@ -586,11 +586,16 @@ JournalsWidget
 			} else {
 			    formatter = formatters.loading();
 			}
-			
-			if(includeLink) {
-			    formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
-			    linkSupplied = true;
+
+			if (recordLinkAttribute) {
+				if (recordLinkAttribute.indexOf(attr.name()) != -1) includeLink = true;
 			}
+
+			if(includeLink) {
+					formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
+					linkSupplied = true;
+			}
+
 			if(formatter) formatter = formatters.multiple(formatter);
 			
 			return {
@@ -605,13 +610,13 @@ JournalsWidget
 		// init action column
 		var actionGroupId = this.actionGroupId();
 		if(actionGroupId == buttonsActionGroupId) {
-			columns.push(new ActionsColumn({
+			columns.unshift(new ActionsColumn({
 				id: 'actions',
 				label: this.msg("column.actions"),
 				formatter: formatters.buttons()
 			}));
 		} else if(actionGroupId != noneActionGroupId) {
-			columns.push(new ActionsColumn({
+			columns.unshift(new ActionsColumn({
 				id: 'actions',
 				label: this.msg("column.actions"),
 				formatter: formatters.actions(actionGroupId)
@@ -669,6 +674,7 @@ JournalsWidget
 	.shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
 	.shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
 	.shortcut('linkTarget', 'journal.type.options.linkTarget', '_self')
+	.shortcut('recordLinkAttribute', 'journal.type.options.clickLinkAttribute', null)
 	.computed('gotoAddress', function() {
 		var id = this.selectedId(),
 			url = this.recordUrl();
@@ -793,10 +799,12 @@ JournalsWidget
 	.computed('createReportLink', function() {
 		var isDownload = (this.createReportDownload() == true);
 		var token = "";
+
 		if (Alfresco.util.CSRFPolicy && Alfresco.util.CSRFPolicy.isFilterEnabled()) {
 			token = "&" + Alfresco.util.CSRFPolicy.getParameter() + "="
 						+ encodeURIComponent(Alfresco.util.CSRFPolicy.getToken());
 		}
+		
 		return Alfresco.constants.PROXY_URI + "report/criteria-report?download=" + isDownload + token;
 	})
 	.computed('createReportQuery', function() {
