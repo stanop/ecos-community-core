@@ -28,7 +28,7 @@ import ru.citeck.ecos.utils.RepoUtils;
 /**
  * @author Maxim Strizhov
  */
-public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
+public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnDeleteNodePolicy {
     private static final Log log = LogFactory.getLog(ProductsAndServicesBehavior.class);
 
     private NodeService nodeService;
@@ -61,6 +61,10 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
                 QName.createQName(namespace, type), new JavaBehaviour(this,
                         "onUpdateProperties",
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
+        this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnDeleteNodePolicy.QNAME,
+                QName.createQName(namespace, type), new JavaBehaviour(this,
+                        "onDeleteNode",
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
     }
 
     @Override
@@ -88,14 +92,32 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        Double priceBefore = (Double) before.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
-        Double priceAfter = (Double) after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
-        Double quantityBefore = (Double) before.get(ProductsAndServicesModel.PROP_QUANTITY);
-        Double quantityAfter = (Double) after.get(ProductsAndServicesModel.PROP_QUANTITY);
-        if (!Objects.equals(priceBefore, priceAfter) || !Objects.equals(quantityBefore, quantityAfter)) {
-            BigDecimal price = new BigDecimal(priceAfter, MathContext.DECIMAL64);
-            BigDecimal quantity = new BigDecimal(quantityAfter, MathContext.DECIMAL64);
-            nodeService.setProperty(nodeRef, ProductsAndServicesModel.PROP_TOTAL, (price.multiply(quantity).doubleValue()));
+        if (after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT) != null && after.get(ProductsAndServicesModel.PROP_QUANTITY) != null) {
+            Double priceBefore = (Double) before.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
+            Double priceAfter = (Double) after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
+            Double quantityBefore = (Double) before.get(ProductsAndServicesModel.PROP_QUANTITY);
+            Double quantityAfter = (Double) after.get(ProductsAndServicesModel.PROP_QUANTITY);
+            if (!Objects.equals(priceBefore, priceAfter) || !Objects.equals(quantityBefore, quantityAfter)) {
+                BigDecimal price = new BigDecimal(priceAfter, MathContext.DECIMAL64);
+                BigDecimal quantity = new BigDecimal(quantityAfter, MathContext.DECIMAL64);
+                nodeService.setProperty(nodeRef, ProductsAndServicesModel.PROP_TOTAL, (price.multiply(quantity).doubleValue()));
+            }
+        }
+    }
+
+    @Override
+    public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
+        NodeRef pasEntityRef = childAssocRef.getChildRef();
+        int pasEntityOrder = (Integer) nodeService.getProperty(pasEntityRef, ProductsAndServicesModel.PROP_ORDER);
+        List<NodeRef> sources = RepoUtils.getSourceNodeRefs(pasEntityRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+        List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0), ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+        for (NodeRef entityRef : pasEntityRefs) {
+            if (!pasEntityRef.equals(entityRef)) {
+                Integer order = (Integer) nodeService.getProperty(entityRef, ProductsAndServicesModel.PROP_ORDER);
+                if (order > pasEntityOrder) {
+                    nodeService.setProperty(entityRef, ProductsAndServicesModel.PROP_ORDER, (order - 1));
+                }
+            }
         }
     }
 }
