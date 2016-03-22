@@ -1,17 +1,17 @@
 package ru.citeck.ecos.behavior.idocs;
 
-import org.alfresco.repo.content.ContentServicePolicies;
-import org.alfresco.repo.domain.node.Node;
 import org.alfresco.repo.node.NodeServicePolicies;
-import org.alfresco.repo.node.NodeUtils;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.ProductsAndServicesModel;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,11 +19,6 @@ import java.math.MathContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.model.ProductsAndServicesModel;
-import ru.citeck.ecos.utils.RepoUtils;
 
 /**
  * @author Maxim Strizhov
