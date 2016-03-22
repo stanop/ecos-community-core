@@ -563,11 +563,22 @@ JournalsWidget
 	// datatable interface: fields, columns, records
 	.shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
 	.computed('columns', function() {
-		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []),
-			journalType = this.resolve('journal.type'),
-			recordUrl = this.recordUrl(), recordLinkAttribute = this.recordLinkAttribute(),
-			linkSupplied = recordUrl == null;
-		
+		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
+				recordUrl = this.recordUrl(), linkSupplied = recordUrl == null, 
+				recordLinkAttribute = this.recordLinkAttribute() || "cm:name", 
+				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
+
+		// set priority attribute to the first
+		var priorityAttribute = recordPriorityAttribute.split(",").map(function(attr) { return attr.trim() }).reverse();
+		for(var pa in priorityAttribute) {
+			var attribute = _.find(visibleAttributes, function(attr) { return attr.name() == priorityAttribute[pa] });
+			if (attribute) {
+				var index = visibleAttributes.indexOf(attribute);
+				visibleAttributes.splice(index, 1);
+				visibleAttributes.unshift(attribute);
+			}
+		}
+	
 		// init columns
 		var columns = _.map(visibleAttributes, function(attr) {
 			var options = journalType ? journalType.attribute(attr.name()) : null,
@@ -575,16 +586,16 @@ JournalsWidget
 			    includeLink = false;
 			
 			if(formatter) {
-			    formatter = formatters.loadedFormatter(formatter);
+		    formatter = formatters.loadedFormatter(formatter);
 			} else if(attr.labels()) {
-			    var classPrefix = attr.name().replace(/\W/g, '_') + "-";
-			    formatter = formatters.code(attr.labels(), classPrefix, classPrefix);
-			    includeLink = !linkSupplied;
+		    var classPrefix = attr.name().replace(/\W/g, '_') + "-";
+		    formatter = formatters.code(attr.labels(), classPrefix, classPrefix);
+		    includeLink = !linkSupplied;
 			} else if(attr.datatype()) {
-			    formatter = defaultFormatters[attr.datatype().name()];
-			    if(!formatter) includeLink = !linkSupplied;
+		    formatter = defaultFormatters[attr.datatype().name()];
+		    if(!formatter) includeLink = !linkSupplied;
 			} else {
-			    formatter = formatters.loading();
+		    formatter = formatters.loading();
 			}
 
 			if (recordLinkAttribute) {
@@ -592,8 +603,8 @@ JournalsWidget
 			}
 
 			if(includeLink) {
-					formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
-					linkSupplied = true;
+				formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
+				linkSupplied = true;
 			}
 
 			if(formatter) formatter = formatters.multiple(formatter);
@@ -606,7 +617,7 @@ JournalsWidget
 		}, this);
 		
 		columns = _.map(columns, Column);
-		
+	
 		// init action column
 		var actionGroupId = this.actionGroupId();
 		if(actionGroupId == buttonsActionGroupId) {
@@ -675,6 +686,7 @@ JournalsWidget
 	.shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
 	.shortcut('linkTarget', 'journal.type.options.linkTarget', '_self')
 	.shortcut('recordLinkAttribute', 'journal.type.options.clickLinkAttribute', null)
+	.shortcut('recordPriorityAttribute', 'journal.type.options.priorityAttribute', null)
 	.computed('gotoAddress', function() {
 		var id = this.selectedId(),
 			url = this.recordUrl();
