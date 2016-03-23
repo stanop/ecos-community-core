@@ -456,7 +456,7 @@
 
         <type name="idocs:addressByParts">
             <title>Address by parts</title>
-            <parent>cm:cmobject</parent>
+            <parent>dl:dataListItem</parent>
             <properties>
                 <property name="idocs:countryName">
                     <title>Country</title>
