@@ -7,45 +7,42 @@
     border: none;
 }
 
-.assoclist table
-{
+.document-assocs .assoclist table {
     border: medium none;
     width: 100%;
 }
 
-.assoclist thead
-{
+.document-assocs .assoclist table caption {
+    text-align: left;
+}
+
+.document-assocs .assoclist thead {
     display: none;
 }
 
-.assoclist tbody
-{
+.document-assocs .assoclist tbody {
     outline: none;
 }
 
-.assoclist .yui-dt table
-{
+.document-assocs .assoclist .yui-dt table {
     border: none;
 }
 
-.assoclist .yui-dt .yui-dt-data td
-{
+.document-assocs .assoclist .yui-dt .yui-dt-data td {
     border-bottom: 1px dashed #d9d9d9;
     border-right: medium none;
     vertical-align: top;
 }
 
-.assoclist .yui-dt-liner
-{
-    padding: 4px;
+.document-assocs .assoclist .yui-dt-liner {
+    padding: 4px 4px 4px 0;
 }
 
 .open-link:hover {
     text-decoration: underline !important;
     background: none !important;
 }
-.document-assocs .alfresco-twister .alfresco-twister-actions a
-{
+.document-assocs .alfresco-twister .alfresco-twister-actions a {
     background-position: 0 center;
     background-repeat: no-repeat;
     padding: 1px;
