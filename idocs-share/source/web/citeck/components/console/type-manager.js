@@ -831,7 +831,7 @@
       Citeck.forms.dialog(params.nodeRef, "type-kind", function(node) {
         treeNode.label = node.name;
         params.component._sortNodeChildren(treeNode.parent);
-      }, { })
+      }, { title: e.target.title })
     }
   });
    
@@ -881,7 +881,7 @@
         } else {
           treeNode.refresh();
         }
-      }, { destination: params.nodeRef, destinationAssoc: "cm:subcategories" })
+      }, { destination: params.nodeRef, destinationAssoc: "cm:subcategories", title: e.target.title })
     }
    });
 

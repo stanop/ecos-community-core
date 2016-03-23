@@ -391,5 +391,4 @@
 		<property name="description" value="Add admin to all orgstruct groups" />
 		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-admin-to-orgstruct-groups.js"/>
 	</bean>
-
 </beans>

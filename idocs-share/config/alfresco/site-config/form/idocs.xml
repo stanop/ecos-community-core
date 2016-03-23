@@ -720,4 +720,69 @@
         </forms>
     </config>
 
+    <config evaluator="node-type" condition="idocs:addressByParts">
+   		<forms>
+   			<form>
+   				<field-visibility>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" />
+   					<show id="idocs:streetName" />
+   					<show id="idocs:house" />
+   					<show id="idocs:addressExtraInfo" />
+   				</field-visibility>
+                   <appearance>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" mandatory="true" />
+   					<show id="idocs:streetName" mandatory="true" />
+   					<show id="idocs:house" mandatory="true" />
+   					<show id="idocs:addressExtraInfo" />
+                   </appearance>
+   			</form>
+   		</forms>
+   	</config>
+
+   	<config  evaluator="model-type" condition="idocs:addressByParts">
+   		<forms>
+   			<form>
+   				<field-visibility>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" />
+   					<show id="idocs:streetName" />
+   					<show id="idocs:house" />
+   					<show id="idocs:addressExtraInfo" />
+   				</field-visibility>
+                   <appearance>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" mandatory="true" />
+   					<show id="idocs:streetName" mandatory="true" />
+   					<show id="idocs:house" mandatory="true" />
+   					<show id="idocs:addressExtraInfo" />
+                   </appearance>
+   			</form>
+   			<form id="filters">
+   				<field-visibility>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" />
+   					<show id="idocs:streetName" />
+   					<show id="idocs:house" />
+   				</field-visibility>
+   			</form>
+   		</forms>
+   	</config>
+
 </alfresco-config>

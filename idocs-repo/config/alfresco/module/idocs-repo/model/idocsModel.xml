@@ -454,6 +454,53 @@
             <parent>dl:dataListItem</parent>
         </type>
 
+        <type name="idocs:addressByParts">
+            <title>Address by parts</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:countryName">
+                    <title>Country</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:postCode">
+                    <title>PostCode</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:regionName">
+                    <title>Region</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:districtName">
+                    <title>District</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:cityName">
+                    <title>City</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:streetName">
+                    <title>Street</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:house">
+                    <title>House</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:addressExtraInfo">
+                    <title>Extra info</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </type>
+
     </types>
 
     <aspects>
