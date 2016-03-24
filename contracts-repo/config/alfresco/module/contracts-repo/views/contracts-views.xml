@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+    <imports>
+        <!-- <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" /> -->
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
+        <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+    </imports>
+
+    <views any="true">
+        <fields assoc="contracts:agreementLegalEntity">
+            <region name="input" template="view" />
+        </fields>
+        <fields assoc="contracts:contractor" >
+            <region name="input" template="view" />
+        </fields>
+        <fields prop="contracts:contractWith">
+            <region name="input" template="select" />
+        </fields>
+        <fields assoc="contracts:agreementSubject" >
+            <region name="input" template="view" />
+        </fields>
+        <fields prop="tk:kind">
+            <region name="input" template="view" />
+        </fields>
+
+    </views>
+
+
+
+    <views mode="view">
+        <fields kind="mode-view" template="none" />
+    </views>
+
+    <view class="contracts:agreement" mode="view">
+        <field assoc="idocs:signedVersion" />
+    </view>
+
+    <view class="contracts:agreement">
+        <views mode="create" kind="3-column" />
+        <views mode="edit" kind="3-column" />
+
+        <view>
+            <field assoc="contracts:agreementLegalEntity" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">legal-entities</param>
+                </region>
+            </field>
+            <field assoc="contracts:contractor" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">idocs-contractor</param>
+                </region>
+            </field>
+            <field prop="contracts:contractWith" />
+        </view>
+        <view>
+            <field assoc="contracts:agreementSubject" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">contract-subjects</param>
+                </region>
+            </field>
+            <field prop="tk:kind">
+                <region name="select" template="select-journal">
+                    <param name="journalType">original-location</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field prop="contracts:agreementNumber">
+                <region name="select" template="number-generate">
+                    <param name="template">supAgreement-number-template</param>
+                </region>
+            </field>
+            <field prop="contracts:agreementDate" />
+            <field prop="contracts:duration" />
+        </view>
+        <view>
+            <field assoc="contracts:agreementCurrency" />
+            <field prop="contracts:agreementAmount" />
+            <field prop="contracts:VAT" />
+        </view>
+        <view id="summary" kind="1-column">
+            <field prop="idocs:summary">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field prop="idocs:appendixPagesNumber" />
+            <field prop="idocs:pagesNumber" />
+        </view>
+        <view>
+            <field assoc="idocs:signatory" />
+            <field assoc="idocs:performer" />
+        </view>
+        <view id="note" kind="1-column">
+            <field prop="idocs:note">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+            </field>
+        </view>
+        <field prop="dms:updateContent" kind="mode-view" />
+        <field prop="cm:content" />
+        <field assoc="payments:payments" kind="mode-view" >
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="columns">payments:typePayment,payments:plannedPaymentDate,payments:currency,payments:paymentAmount,payments:paymentVAT</param>
+            </region>
+        </field>
+    </view>
+
+    <!-- <view class="contracts:agreement" mode="create">
+        <view class="contracts:agreement" id="create-edit" kind="3-column" />
+    </view>
+    <view class="contracts:agreement" mode="edit">
+        <view class="contracts:agreement" id="create-edit" kind="3-column" />
+    </view> -->
+
+
+    <view class="contracts:subject">
+        <field prop="contracts:subjectCode" />
+        <field prop="contracts:subjectName" />
+        <field prop="cm:taggable">
+            <region name="select" template="select-journal" >
+                <param name="journalType">contract-subjects</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="payments:period">
+        <field prop="payments:periodStart"></field>
+        <field prop="payments:periodEnd"></field>
+    </view>
+
+    <!-- в моделе есть только model-type -->
+    <view class="contracts:documentType" />
+
+    <view class="payments:payment">
+        <views mode="create" kind="3-column" />
+        <views mode="edit" kind="3-column" />
+
+        <view>
+            <field assoc="payments:basis">
+                <region name="select" template="select-journal">
+                    <param name="journalType">contract-subjects</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+            <field assoc="payments:budgetItem" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">budget-items</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+            <field prop="payments:paymentFor">
+                <region name="input" template="select" />
+            </field>
+        </view>
+        <view kind="1-column">
+            <field prop="payments:paymentPurpose">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field assoc="payments:payer">
+                <region name="select" template="select-journal" >
+                     <param name="journalType">original-location</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+            <field prop="payments:paymentArrangement">
+                <region name="input" template="select" />
+            </field>
+            <field prop="payments:paymentNumber">
+                <region name="select" template="number-generate">
+                    <param name="template">payment-number-template</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field assoc="payments:beneficiary">
+                <region name="select" template="select-journal" >
+                     <param name="journalType">original-location</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+            <field prop="payments:beneficiaryType">
+                <region name="input" template="select" />
+            </field>
+        </view>
+        <view>
+            <field prop="payments:plannedPaymentDate" />
+            <field assoc="payments:period">
+                <region name="input" template="select" />
+            </field>
+        </view>
+        <view>
+            <field assoc="payments:currency" >
+                <region name="input" template="autocomplete" />
+            </field>
+            <field prop="payments:paymentAmount" />
+            <field prop="payments:paymentVAT" />
+        </view>
+        <view>
+            <field prop="payments:billDate" />
+        </view>
+        <field prop="payments:overexpenditure" />
+        <field prop="dms:updateContent" />
+        <field prop="cm:content" />
+        <field prop="payments:paymentComment" >
+            <region name="input" template="textarea">
+                <param name="height">100%</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="payments:paymentDraft">
+        <views mode="create" kind="2-column" />
+        <views mode="edit" kind="2-column" />
+
+        <view>
+            <field prop="payments:plannedPaymentDate" />
+            <field assoc="payments:currency">
+                <region name="input" template="autocomplete" />
+            </field>
+        </view>
+        <view>
+            <field prop="payments:paymentAmount" />
+            <field prop="payments:paymentVAT" />
+        </view>
+        <view>
+            <field prop="payments:typePayment">
+                <region name="input" template="select" />
+            </field>
+            <field prop="payments:description" />
+        </view>
+    </view>
+
+    <view class="contracts:closingDocument">
+        <views mode="create" kind="3-column" />
+        <views mode="edit" kind="3-column" />
+        <view kind="1-column">
+            <field prop="cm:name">
+                <region name="input" template="textarea" />
+            </field>
+        </view>
+        <view>
+            <field assoc="contracts:closingDocumentAgreement" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">contract-agreements</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+            <field assoc="contracts:closingDocumentPayment" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">payments</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+            <field assoc="contracts:closingDocumentOriginalLocation" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">original-location</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+        </view>
+        <view>
+            <field assoc="contracts:closingDocumentSigner" >
+            </field>
+            <field assoc="idocs:legalEntity" >
+                <region name="select" template="select-journal">
+                    <param name="journalType">legal-entities</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+        </view>
+        <view>
+            <field prop="tk:kind">
+                <region name="select" template="select-journal">
+                    <param name="journalType">original-location</param>
+                </region>
+            </field>
+            <field prop="contracts:closingDocumentDate" />
+            <field prop="contracts:closingDocumentNumber">
+                <region name="select" template="number-generate">
+                    <param name="template">closing-doc-number-template</param>
+                </region>
+            </field>
+        </view>
+        <field prop="dms:updateContent" />
+        <field prop="cm:content" />
+    </view>
+
+    <view class="contracts:supplementaryAgreement" mode="view">
+        <field assoc="idocs:signedVersion" />
+    </view>
+
+    <view class="contracts:supplementaryAgreement">
+        <views mode="create" kind="3-column" />
+        <views mode="edit" kind="3-column" />
+        <view>
+            <field assoc="contracts:mainAgreement"> <!-- TODO -->
+                <region name="select" template="select-journal" >
+                     <param name="journalType">original-location</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
+        </view>
+        <view>
+            <field assoc="contracts:agreementLegalEntity" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">legal-entities</param>
+                </region>
+            </field>
+            <field assoc="contracts:contractor" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">idocs-contractor</param>
+                </region>
+            </field>
+            <field prop="contracts:contractWith" />
+        </view>
+        <view>
+            <field assoc="contracts:agreementSubject" >
+                <region name="select" template="select-journal" >
+                     <param name="journalType">contract-subjects</param>
+                </region>
+            </field>
+            <field prop="tk:kind" kind="mode-view">
+                <region name="select" template="select-journal" >
+                     <param name="journalType">idocs-contractor</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field prop="contracts:agreementNumber">
+                <region name="select" template="number-generate">
+                    <param name="template">supAgreement-number-template</param>
+                </region>
+            </field>
+            <field prop="contracts:agreementDate" />
+            <field prop="contracts:duration" />
+        </view>
+        <view>
+            <field assoc="contracts:agreementCurrency" />
+            <field prop="contracts:agreementAmount" />
+            <field prop="contracts:VAT" />
+        </view>
+        <view id="summary" kind="1-column">
+            <field prop="idocs:summary">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field prop="idocs:appendixPagesNumber" />
+            <field prop="idocs:pagesNumber" />
+        </view>
+        <view>
+            <field assoc="idocs:signatory" />
+            <field assoc="idocs:performer" />
+        </view>
+        <view id="note" kind="1-column">
+            <field prop="idocs:note">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+            </field>
+        </view>
+        <field prop="dms:updateContent" kind="mode-view" />
+        <field prop="cm:content" />
+        <field assoc="payments:payments" kind="mode-view">
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="columns">payments:typePayment,payments:plannedPaymentDate,payments:currency,payments:paymentAmount,payments:paymentVAT</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="contracts:originalLocation">
+        <field prop="cm:name" />
+    </view>
+
+</views>
