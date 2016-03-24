@@ -3514,6 +3514,7 @@ div#HEADER_USER_STATUS {
 
 .comments-list {
   padding: 0 15px 0 40px;
+  box-sizing: border-box;
 }
 
 .comments-list .comment-details {
