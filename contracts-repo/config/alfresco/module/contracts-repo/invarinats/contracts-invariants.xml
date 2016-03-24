@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
+        <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
+    </imports>
+
+    <type name="contracts:agreement">
+        <property name="parent">
+            <invariant on="default" language="criteria">
+                <criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts" />
+            </invariant>
+        </property>
+        <property name="contracts:contractWith">
+            <invariant on="default" language="javascript">false</invariant>
+        </property>
+        <association name="contracts:agreementLegalEntity">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <association name="contracts:contractor">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <property name="tk:kind">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="contracts:agreementNumber">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <association name="contracts:agreementCurrency">
+            <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+        </association>
+        <property name="contracts:agreementAmount">
+            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="contracts:VAT">
+            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="cm:content">
+            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+        </property>
+    </type>
+
+    <type name="payments:payment">
+        <!-- <property name="payments:paymentFor">
+            <invariant on="default" language="explicit">client</invariant>
+        </property> -->
+        <association name="payments:payer">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <property name="payments:paymentNumber">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <association name="payments:beneficiary">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <property name="payments:beneficiaryType">
+            <invariant on="default" language="explicit">resident</invariant>
+        </property>
+        <property name="payments:paymentAccount">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <association name="payments:currency">
+            <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+        </association>
+        <property name="payments:paymentAmount">
+            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="payments:paymentVAT">
+            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="cm:content">
+            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+        </property>
+    </type>
+
+    <type name="payments:paymentDraft">
+        <association name="payments:currency">
+            <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+        </association>
+        <property name="payments:typePayment">
+            <invariant on="default" language="explicit">advance</invariant>
+        </property>
+        <property name="payments:paymentAmount">
+            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="payments:paymentVAT">
+            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+    </type>
+
+    <type name="contracts:closingDocument">
+        <association name="contracts:closingDocumentAgreement">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <property name="tk:kind">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="contracts:closingDocumentNumber">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="cm:content">
+            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+        </property>
+    </type>
+
+    <type name="contracts:supplementaryAgreement">
+        <association name="contracts:mainAgreement">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <association name="contracts:agreementLegalEntity">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <property name="contracts:agreementNumber">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <association name="contracts:contractor">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <association name="contracts:agreementCurrency">
+            <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+        </association>
+        <property name="contracts:agreementAmount">
+            <!-- <invariant on="default" language="javascript">node.properties["contracts:mainAgreement"]</invariant> -->
+            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="contracts:VAT">
+            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+        </property>
+        <property name="cm:content">
+            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+        </property>
+    </type>
+
+</invariants>
