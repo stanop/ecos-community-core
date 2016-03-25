@@ -54,7 +54,7 @@
 				<td>${count}</td>
 				<td>${containsProductsAndService.properties["cm:title"]!""}</td>
 				<td>${containsProductsAndService.properties["pas:quantity"]!""}</td>
-				<td>${containsProductsAndService.associations["pas:entityUnit"].properties["pas:unitShortName"]!""}</td>
+				<td>${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</td>
 				<td>${containsProductsAndService.properties["pas:pricePerUnit"]!""}</td>
 				<td>${containsProductsAndService.properties["pas:total"]!""}</td>
 			</tr>
