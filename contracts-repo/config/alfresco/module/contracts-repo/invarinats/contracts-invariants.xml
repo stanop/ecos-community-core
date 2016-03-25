@@ -94,9 +94,9 @@
     </type>
 
     <type name="contracts:closingDocument">
-        <association name="contracts:closingDocumentAgreement">
+        <!-- <association name="contracts:closingDocumentAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
-        </association>
+        </association> -->
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
