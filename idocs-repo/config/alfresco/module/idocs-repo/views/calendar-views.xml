@@ -9,14 +9,16 @@
 	<view class="bcal:calendar">
 		<field prop="bcal:dateFrom">
 			<region name="input" template="date"/>
+			<invariant on="mandatory" language="explicit">true</invariant>
 		</field>
 		<field prop="bcal:dateTo">
 			<region name="input" template="date"/>
+			<invariant on="mandatory" language="explicit">true</invariant>
 		</field>
 		<field prop="bcal:remark">
 			<region name="input" template="select"/>
 			<invariant on="mandatory" language="explicit">true</invariant>
 		</field>
 	</view>
-	
+
 </views>
