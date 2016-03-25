@@ -21,7 +21,7 @@
                 {key: 'attributes["pas:quantity"]', label: Alfresco.util.message("products-and-services.table.header.quantity")},
                 {key: 'attributes["pas:total"]', label: Alfresco.util.message("products-and-services.table.header.total")},
                 <!--{key: 'attributes["pas:entityUnit"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit"), formatter: Citeck.format.node()},-->
-                {key: 'attributes["pas:entityUnit"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit")},
+                {key: 'attributes["pas:entityUnit"][0]["displayName"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit")},
                 {key: 'actions', label: Alfresco.util.message("products-and-services.table.header.actions"), formatter: Citeck.format.actions('products-and-services', 'nodeRef')}
             ]
         </columns>
@@ -33,7 +33,7 @@
                 {key: 'attributes["pas:pricePerUnit"]'},
                 {key: 'attributes["pas:quantity"]'},
                 {key: 'attributes["pas:total"]'},
-                {key: 'attributes["pas:entityUnit"]'},
+                {key: 'attributes["pas:entityUnit"][0]["displayName"]'},
                 {key: 'nodeRef'}
             ]}
         </responseSchema>
