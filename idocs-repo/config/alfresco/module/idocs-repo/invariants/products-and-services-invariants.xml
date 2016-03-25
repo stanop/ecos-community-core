@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+
+        <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+    </imports>
+
+    <type name="pas:pasEntityCopied">
+        <property name="pas:order">
+            <invariant on="valid" language="javascript" description="Число должно быть положительным">value >= 0</invariant>
+        </property>
+        <property name="pas:quantity">
+            <invariant on="valid" language="javascript" description="Число должно быть положительным и не равным нулю">value > 0</invariant>
+        </property>
+        <property name="pas:total">
+            <invariant on="valid" language="javascript" description="Число должно быть положительным и не равным нулю">value > 0</invariant>
+        </property>
+    </type>
+    <type name="pas:pasEntity">
+        <property name="pas:pricePerUnit">
+            <invariant on="valid" language="javascript" description="Число должно быть положительным">value >= 0</invariant>
+        </property>
+    </type>
+
+</invariants>
