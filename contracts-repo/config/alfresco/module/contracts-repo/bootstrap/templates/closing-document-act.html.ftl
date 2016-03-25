@@ -59,7 +59,7 @@
 				<td>${containsProductsAndService.properties["pas:total"]?string.computer!0}</td>
 			</tr>
 			<#assign total = '${containsProductsAndService.properties["pas:total"]?string.computer!0}'/>
-			<#assign totalAmount = totalAmount + total/>
+			<#assign totalAmount = totalAmount?number + total?number/>
 		</#list>
 	</#if>
 </table>
