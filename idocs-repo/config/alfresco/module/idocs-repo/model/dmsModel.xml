@@ -873,7 +873,7 @@
                     <constraints>
                         <constraint type="REGEX">
                             <parameter name="expression">
-                                <value>^([0-9]{1,2})$</value>
+                                <value>^(?!0)\d+</value>
                             </parameter>
                         </constraint>
                     </constraints>
