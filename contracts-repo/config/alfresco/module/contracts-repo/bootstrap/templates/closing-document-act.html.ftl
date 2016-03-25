@@ -56,9 +56,9 @@
 				<td>${containsProductsAndService.properties["pas:quantity"]!""}</td>
 				<td>${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</td>
 				<td>${containsProductsAndService.properties["pas:pricePerUnit"]!""}</td>
-				<td>${containsProductsAndService.properties["pas:total"]!""}</td>
+				<td>${containsProductsAndService.properties["pas:total"]?string.computer!0}</td>
 			</tr>
-			<#assign total = '${containsProductsAndService.properties["pas:total"]!0}'/>
+			<#assign total = '${containsProductsAndService.properties["pas:total"]?string.computer!0}'/>
 			<#assign totalAmount = totalAmount + total/>
 		</#list>
 	</#if>
