@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * @author Maxim Strizhov
  */
-public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnDeleteNodePolicy {
+public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy {
     private static final Log log = LogFactory.getLog(ProductsAndServicesBehavior.class);
 
     private NodeService nodeService;
@@ -56,15 +56,16 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
                 QName.createQName(namespace, type), new JavaBehaviour(this,
                         "onUpdateProperties",
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
-        this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnDeleteNodePolicy.QNAME,
+        this.policyComponent.bindClassBehaviour(NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
                 QName.createQName(namespace, type), new JavaBehaviour(this,
-                        "onDeleteNode",
-                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
+                        "beforeDeleteNode",
+                        Behaviour.NotificationFrequency.EVERY_EVENT));
     }
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssociationRef) {
         NodeRef pasEntityRef = childAssociationRef.getChildRef();
+        if (nodeService.exists(pasEntityRef)) return;
         List<NodeRef> sources = RepoUtils.getSourceNodeRefs(pasEntityRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0), ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         int maxOrder = -1;
@@ -87,6 +88,7 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        if (nodeService.exists(nodeRef)) return;
         if (after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT) != null && after.get(ProductsAndServicesModel.PROP_QUANTITY) != null) {
             Double priceBefore = (Double) before.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
             Double priceAfter = (Double) after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
@@ -101,13 +103,12 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
     }
 
     @Override
-    public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
-        NodeRef pasEntityRef = childAssocRef.getChildRef();
-        int pasEntityOrder = (Integer) nodeService.getProperty(pasEntityRef, ProductsAndServicesModel.PROP_ORDER);
-        List<NodeRef> sources = RepoUtils.getSourceNodeRefs(pasEntityRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+    public void beforeDeleteNode(NodeRef nodeRef) {
+        int pasEntityOrder = (Integer) nodeService.getProperty(nodeRef, ProductsAndServicesModel.PROP_ORDER);
+        List<NodeRef> sources = RepoUtils.getSourceNodeRefs(nodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0), ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         for (NodeRef entityRef : pasEntityRefs) {
-            if (!pasEntityRef.equals(entityRef)) {
+            if (!nodeRef.equals(entityRef)) {
                 Integer order = (Integer) nodeService.getProperty(entityRef, ProductsAndServicesModel.PROP_ORDER);
                 if (order > pasEntityOrder) {
                     nodeService.setProperty(entityRef, ProductsAndServicesModel.PROP_ORDER, (order - 1));
