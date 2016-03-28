@@ -10,18 +10,26 @@
 
     <type name="pas:pasEntityCopied">
         <property name="pas:order">
-            <invariant on="valid" language="javascript" description="Число должно быть положительным">value >= 0</invariant>
+            <invariant on="valid" language="javascript" description="Число должно быть целым и положительным"><![CDATA[(value % 1 === 0) && value > 0]]></invariant>
+            <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
+            <invariant on="default" language="javascript">1</invariant>
         </property>
         <property name="pas:quantity">
             <invariant on="valid" language="javascript" description="Число должно быть положительным и не равным нулю">value > 0</invariant>
+            <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
+            <invariant on="default" language="javascript">1</invariant>
         </property>
         <property name="pas:total">
-            <invariant on="valid" language="javascript" description="Число должно быть положительным и не равным нулю">value > 0</invariant>
+            <invariant on="valid" language="javascript" description="Число должно быть положительным">value >= 0</invariant>
+            <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
+            <invariant on="default" language="javascript">0</invariant>
         </property>
     </type>
     <type name="pas:pasEntity">
         <property name="pas:pricePerUnit">
             <invariant on="valid" language="javascript" description="Число должно быть положительным">value >= 0</invariant>
+            <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
+            <invariant on="default" language="javascript">0</invariant>
         </property>
     </type>
 
