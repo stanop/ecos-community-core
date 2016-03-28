@@ -695,7 +695,7 @@ ko.bindingHandlers.journalControl = {
                         ' + (searchBar ? '<div class="journal-filter"><input type="search" placeholder="' + localization.searchTab + '" class="journal-filter-input" id="' + filterId + '" /></div>' : '') + '\
                     </div>\
                     <div class="journal-picker-page-container with-collapsible-block">\
-                        <div class="collapsible-filter hidden">\
+                        <div class="collapsible-filter">\
                             <div class="search-page hidden" id="' + searchPageId + '">\
                                 <div class="selected-search-criteria-container">\
                                     <!-- ko component: { name: \'list-of-selected-criterion\',\

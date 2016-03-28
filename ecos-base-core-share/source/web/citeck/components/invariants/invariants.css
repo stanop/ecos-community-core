@@ -953,7 +953,7 @@
 }
 
 .with-collapsible-block .selected-search-criteria-container {
-  max-height: 215;
+  max-height: 135px;
 }
 
 .selected-search-criteria-container table.selected-criteria-list {
