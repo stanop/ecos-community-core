@@ -16,6 +16,7 @@
         </property>
         <property name="contracts:contractWith">
             <invariant on="default" language="javascript">false</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <association name="contracts:agreementLegalEntity">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -47,9 +48,10 @@
     </type>
 
     <type name="payments:payment">
-        <!-- <property name="payments:paymentFor">
+        <property name="payments:paymentFor">
             <invariant on="default" language="explicit">client</invariant>
-        </property> -->
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
         <association name="payments:payer">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
@@ -134,7 +136,6 @@
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <!-- <invariant on="default" language="javascript">node.properties["contracts:mainAgreement"]</invariant> -->
             <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
         </property>
         <property name="contracts:VAT">

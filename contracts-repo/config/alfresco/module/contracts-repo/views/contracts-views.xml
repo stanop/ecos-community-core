@@ -328,7 +328,7 @@
                      <param name="journalType">idocs-contractor</param>
                 </region>
             </field>
-            <field prop="contracts:contractWith" />
+            <!-- <field prop="contracts:contractWith" /> -->
         </view>
         <view>
             <field assoc="contracts:agreementSubject" >
