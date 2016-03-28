@@ -26,17 +26,20 @@
 				var selectedItems = args[1].selectedItems;
 
 				// 1 item
-			    if (selectedItems.length == 1) {
-			    	citeckWidgetRoute.setRoute(selectedItems[0], true);
-			    	citeckWidgetRoute.saveAndLoadTemplateVisibility("hidden");
-			    };
+		    if (selectedItems.length == 1) {
+		    	citeckWidgetRoute.setRoute(selectedItems[0], true);
+		    	
+		    	if (citeckWidgetRoute.hasRoute()) 
+	    			citeckWidgetRoute.saveAndLoadTemplateVisibility("hidden");
+		    };
 
 				// 0 items or more then 1
 				if (selectedItems.length == 0 || selectedItems.length > 1) {
 					citeckWidgetRoute.saveAndLoadTemplateVisibility("visible");
 				}
 			}
-            YAHOO.Bubbling.fire("mandatoryControlValueUpdated", this);
+      
+      YAHOO.Bubbling.fire("mandatoryControlValueUpdated", this);
 		});
 	 </script>
 </div>

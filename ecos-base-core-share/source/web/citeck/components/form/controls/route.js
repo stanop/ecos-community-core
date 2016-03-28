@@ -326,68 +326,66 @@
             
             // hide saveAsTemplate if permission 'canCreate' is FALSE
             if (!this.permissions.canCreate && this.options.saveAndLoadTemplate == "true") this.buttons.saveAsTemplateDialog.addClass("hidden");
+        },
 
-            // 
-            //  PUBLIC FUNCTIONS
-            // 
+        setRoute: function(nodeRef, mandatory) {
+            Alfresco.util.Ajax.jsonGet({
+                url: Alfresco.constants.PROXY_URI + "api/citeck/routes?nodeRef=" + nodeRef,
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        var result = response.json,
+                        route = result.data[0]
 
-            this.setRoute = function(nodeRef, mandatory) {
-                Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.PROXY_URI + "api/citeck/routes?nodeRef=" + nodeRef,
-                    successCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            var result = response.json,
-                            route = result.data[0],
-                            stages = [];
-
-                            if (route) {
-                                this.clearStages(this.elements.stages, this.stages);
-                                this.fn.editRender(route.stages, { mandatory: mandatory.toString() });
-                            }
-
-                            var scope = this;
-                            setTimeout(function() { 
-                                scope.onUpdate();
-                            }, 250);
+                        if (route) {
+                            this.clearStages(this.elements.stages, this.stages);
+                            this.fn.editRender(route.stages, { mandatory: mandatory.toString() });
+                            this.stages = route.stages;
                         }
-                    },
-                    failureCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            console.log("error")
-                        }
+
+                        var scope = this;
+                        setTimeout(function() { 
+                            scope.onUpdate();
+                        }, 250);
                     }
-                });
-            };
-
-            this.saveAndLoadTemplateVisibility = function(visibility) {
-                if (!visibility) {
-                    throw new Error("The argument can not be empty. 'visible' or 'hidden' only");
-                    return;
+                },
+                failureCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        console.log("error")
+                    }
                 }
+            });
+        },
 
-                if (this.options.saveAndLoadTemplate == "false") {
-                    throw new Error("The property 'saveAndLoadTemplate' is false. Can not show or hide dialogs");
-                    return;
-                }
+        hasRoute: function() {
+            return this.stages ? true : false;
+        },
 
-                if (this.dialogs && this.buttons) {
-                    if (this.buttons.saveAsTemplateDialog && this.buttons.loadTemplateDialog) {
-                        switch (visibility) {
-                            case "hidden":
-                                // hide saveAsTemplate button only if permission 'canCreate' is TRUE
-                                if (this.permissions.canCreate) { this.buttons.saveAsTemplateDialog.addClass("hidden"); }
-                                
-                                this.buttons.loadTemplateDialog.addClass("hidden");
-                                break
-                            case "visible":
-                                // visible saveAsTemplate button only if permission 'canCreate' is TRUE
-                                if (this.permissions.canCreate) { this.buttons.saveAsTemplateDialog.removeClass("hidden"); }
+        saveAndLoadTemplateVisibility: function(visibility) {
+            if (!visibility) {
+                throw new Error("The argument can not be empty. 'visible' or 'hidden' only");
+                return;
+            }
 
-                                this.buttons.loadTemplateDialog.removeClass("hidden");
-                                break
-                        }
+            if (this.options.saveAndLoadTemplate == "false") {
+                throw new Error("The property 'saveAndLoadTemplate' is false. Can not show or hide dialogs");
+                return;
+            }
+
+            if (this.dialogs && this.buttons) {
+                if (this.buttons.saveAsTemplateDialog && this.buttons.loadTemplateDialog) {
+                    switch (visibility) {
+                        case "hidden":
+                            // hide saveAsTemplate button only if permission 'canCreate' is TRUE
+                            if (this.permissions.canCreate) { this.buttons.saveAsTemplateDialog.addClass("hidden"); }
+                            this.buttons.loadTemplateDialog.addClass("hidden");
+                            break
+                        case "visible":
+                            // visible saveAsTemplate button only if permission 'canCreate' is TRUE
+                            if (this.permissions.canCreate) { this.buttons.saveAsTemplateDialog.removeClass("hidden"); }
+                            this.buttons.loadTemplateDialog.removeClass("hidden");
+                            break
                     }
                 }
             }
@@ -695,14 +693,16 @@
                 var stage = scope.stages[key],
                     participantsEls = stage.participants;
 
-                var timeType = $(stage.stageTime.timeType).val(),
-                    time = $(stage.stageTime.time).val()
-
                 var stageObj = {
-                    dueDateExpr: time + "/" + timeType,
                     position: stage.position, 
                     participants: [] 
                 };
+
+                if (stage.stageTime && stage.stageTime.timeType && stage.stageTime.time) {
+                    var timeType = $(stage.stageTime.timeType).val(),
+                        time = $(stage.stageTime.time).val();
+                    stageObj.dueDateExpr = time + "/" + timeType;
+                }
 
                 if (stage.nodeRef)
                     stageObj.nodeRef = stage.nodeRef;
