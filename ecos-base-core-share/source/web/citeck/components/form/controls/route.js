@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -16,7 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 (function() {
+
+
     if(typeof Citeck == "undefined") Citeck = {};
     if(typeof Citeck.widget == "undefined") Citeck.widget = {};
 
@@ -530,49 +533,53 @@
                 stage = $("tbody#" + stageId),
                 participantsSelectPicker = self.stages[stageId].participants;
 
-            // delete from dom
-            $("div#" + participantId + "-selectPickerBox + .yui-button", stage).remove();
-            $("div#" + participantId + "-selectPickerBox", stage).remove();
+            if (participantsSelectPicker.length > 1) {
+                // delete from dom
+                $("div#" + participantId + "-selectPickerBox + .yui-button", stage).remove();
+                $("div#" + participantId + "-selectPickerBox", stage).remove();
 
-            // delete from this.stages.participants
-            for (var i in participantsSelectPicker) {
-                if (participantsSelectPicker[i].id == participantId) {
-                    participantsSelectPicker.splice(i, 1);
+                // delete from this.stages.participants
+                for (var i in participantsSelectPicker) {
+                    if (participantsSelectPicker[i].id == participantId) {
+                        participantsSelectPicker.splice(i, 1);
+                    }
                 }
-            }
 
-            // right ids in elements after delete
-            $(".stage-participants div.select-picker-box", stage)
-                .each(function(index) {
-                    var newParticipantId = stageId + "-participant-" + (+index + 1),
-                        oldParticipantId = this.id.replace("-selectPickerBox", "");
+                // right ids in elements after delete
+                $(".stage-participants div.select-picker-box", stage)
+                    .each(function(index) {
+                        var newParticipantId = stageId + "-participant-" + (+index + 1),
+                            oldParticipantId = this.id.replace("-selectPickerBox", "");
 
-                    if (oldParticipantId != newParticipantId) {
-                        for (var i in participantsSelectPicker) {
-                            var selectPicker = participantsSelectPicker[i];
+                        if (oldParticipantId != newParticipantId) {
+                            for (var i in participantsSelectPicker) {
+                                var selectPicker = participantsSelectPicker[i];
 
-                            if (selectPicker.id == oldParticipantId) {
-                                var elements = selectPicker.elements;
+                                if (selectPicker.id == oldParticipantId) {
+                                    var elements = selectPicker.elements;
 
-                                selectPicker.id = newParticipantId;
-                                selectPicker.field.id = newParticipantId;
+                                    selectPicker.id = newParticipantId;
+                                    selectPicker.field.id = newParticipantId;
 
-                                for (var key in elements) {
-                                    var element = elements[key];
+                                    for (var key in elements) {
+                                        var element = elements[key];
 
-                                    if (element.id && element.id.indexOf(oldParticipantId) != -1) {
-                                        element.id = element.id.replace(oldParticipantId, newParticipantId);
+                                        if (element.id && element.id.indexOf(oldParticipantId) != -1) {
+                                            element.id = element.id.replace(oldParticipantId, newParticipantId);
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        // rename deleteButton
-                        var button = $(this).next();
-                        button.attr("id", newParticipantId + "-deleteButton");
-                        $("button", button).attr("id", newParticipantId + "-deleteButton-button");
-                    }
-                })
+                            // rename deleteButton
+                            var button = $(this).next();
+                            button.attr("id", newParticipantId + "-deleteButton");
+                            $("button", button).attr("id", newParticipantId + "-deleteButton-button");
+                        }
+                    });
+            } else if (participantsSelectPicker.length == 1) {
+                participantsSelectPicker[0].restoreByDefaults();
+            }
             
             this.onUpdate();
         },
@@ -960,6 +967,14 @@
             allowedGroupType: ""
         },
 
+        // clear link and hidden input
+        restoreByDefaults: function () {
+            $(this.elements.link)
+                .html(this.msg("select-picker.select-person") + "<span class=\"twister\"></span>")
+                .removeClass("selected");
+            $(this.field).val("");
+        },
+
         onReady: function() {
             var self = this;
 
@@ -1208,7 +1223,5 @@
         }
     });
 
-    // -----------------
-    // PRIVATE FUNCTIONS
-    // -----------------
+
 })()
