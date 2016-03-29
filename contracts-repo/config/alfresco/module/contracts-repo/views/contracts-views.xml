@@ -206,9 +206,7 @@
             </field>
         </view>
         <view>
-            <field assoc="payments:currency" >
-                <region name="input" template="autocomplete" />
-            </field>
+            <field assoc="payments:currency" />
             <field prop="payments:paymentAmount" />
             <field prop="payments:paymentVAT" />
         </view>
