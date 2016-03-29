@@ -814,15 +814,6 @@
   border-top: 1px solid #ccc;
 }
 
-.journal-picker-page-container {
-  height: 501px;
-}
-
-.journal-picker-page-container.with-collapsible-block {
-  min-height: 501px;
-  height: auto;
-}
-
 .journal-container {
   background-color: white;
   width: 100%;
@@ -911,12 +902,14 @@
 }
 
 .search-criteria-actions > ul {
-    float: right;
+  float: right;
+  padding: 0;
 }
 
 .search-criteria-actions li.search-criteria-option {
   display: inline-block;
-  margin-right: 10px;
+  margin-left: 10px;
+  padding: 4px;
 }
 
 .search-criteria-actions a.search-criteria-button {
@@ -948,12 +941,16 @@
 
 .selected-search-criteria-container {
   padding: 10px 15px;
-  max-height: 452px;
+  max-height: 443px;
   overflow-y: auto;
 }
 
-.with-collapsible-block .selected-search-criteria-container {
+.collapse .selected-search-criteria-container {
   max-height: 135px;
+}
+
+.full-page .search-page {
+  height: 501px;
 }
 
 .selected-search-criteria-container table.selected-criteria-list {

@@ -17,42 +17,41 @@
 <#assign submitButtonTitle = msg("button.ok")>
 <#assign cancelButtonTitle = msg("button.cancel")>
 
-<div id="${controlId}" class="journal-control" data-bind="journalControl: { 
-                                                            value: value, 
-                                                            multiple: multiple,
-                                                            options: options
-                                                          },
-                                                          params: function() {
-                                                            return {
-                                                              <#if params.journalType??>
-                                                                journalType: '${params.journalType}',
-                                                              </#if>
-                                                              <#if params.searchBar??>
-                                                                searchBar: '${params.searchBar}',
-                                                              </#if>
-                                                              <#if params.defaultVisibleAttributes??>
-                                                                defaultVisibleAttributes: '${params.defaultVisibleAttributes}',
-                                                              </#if>
-                                                              <#if params.defaultSearchableAttributes??>
-                                                                defaultSearchableAttributes: '${params.defaultSearchableAttributes}',
-                                                              </#if>
+<div id="${controlId}" class="journal-control" 
+    data-bind="journalControl: { value: value, multiple: multiple, options: options }, params: function() {
+      return {
+        <#if params.journalType??>
+          journalType: '${params.journalType}',
+        </#if>
+        <#if params.searchBar??>
+          searchBar: '${params.searchBar}',
+        </#if>
+        <#if params.defaultVisibleAttributes??>
+          defaultVisibleAttributes: '${params.defaultVisibleAttributes}',
+        </#if>
+        <#if params.defaultSearchableAttributes??>
+          defaultSearchableAttributes: '${params.defaultSearchableAttributes}',
+        </#if>
+        <#if params.filterMode??>
+          filterMode: '${params.filterMode}',
+        </#if>
 
-                                                              localization: {
-                                                                title: '${title}',
-                                                                elementsTab: '${elementsTab}',
-                                                                searchTab: '${searchTab}',
-                                                                selectedElements: '${selectedElements}',
-                                                                applyCriteria: '${applyCriteria}',
-                                                                addSearchCriterion: '${addSearchCriterion}',
-                                                                submitButton: '${submitButtonTitle}',
-                                                                cancelButton: '${cancelButtonTitle}',
-                                                                nextPageLabel: '${nextPageLabel}',
-                                                                nextPageTitle: '${nextPageTitle}',
-                                                                previousPageLabel: '${previousPageLabel}',
-                                                                previousPageTitle: '${previousPageTitle}'
-                                                              }
-                                                            }
-                                                          }">
+        localization: {
+          title: '${title}',
+          elementsTab: '${elementsTab}',
+          searchTab: '${searchTab}',
+          selectedElements: '${selectedElements}',
+          applyCriteria: '${applyCriteria}',
+          addSearchCriterion: '${addSearchCriterion}',
+          submitButton: '${submitButtonTitle}',
+          cancelButton: '${cancelButtonTitle}',
+          nextPageLabel: '${nextPageLabel}',
+          nextPageTitle: '${nextPageTitle}',
+          previousPageLabel: '${previousPageLabel}',
+          previousPageTitle: '${previousPageTitle}'
+        }
+      }
+    }">
 
     <button id="${controlId}-button" 
             class="journal-control-button" 

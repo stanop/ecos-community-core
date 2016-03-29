@@ -604,6 +604,7 @@ ko.bindingHandlers.journalControl = {
             loading = ko.observable(true), criteriaListShow = ko.observable(false), criteria = ko.observable([]), 
             journalType = params.journalType ? new JournalType(params.journalType) : null,
             searchBar = params.searchBar ? params.searchBar.toLowerCase() == "true" : true,
+            filterMode = params.filterMode ? params.filterMode.toLowerCase() : "collapse",
             maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
             options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }) });
 
@@ -676,26 +677,26 @@ ko.bindingHandlers.journalControl = {
                     close:          true
                 });
 
-                var submitButtonId              = panelId + "-submitInput",
-                    cancelButtonId              = panelId + "-cancelInput",
-                    elementsTabId               = panelId + "-elementsTab",
-                    elementsPageId              = panelId + "-elementsPage",
-                    searchTabId                 = panelId + "-searchTab",
-                    searchPageId                = panelId + "-searchPage",
-                    journalId                   = panelId + "-elementsTable",
-                    selectedJournalId           = panelId + "-selectedElementsTable",
-                    filterId                    = panelId + "-filter",
-                    searchCriteriaVariantsId    = panelId + "-searchCriteriaVariants";
+                var submitButtonId           = panelId + "-submitInput",
+                    cancelButtonId           = panelId + "-cancelInput",
+                    elementsTabId            = panelId + "-elementsTab",
+                    elementsPageId           = panelId + "-elementsPage",
+                    searchTabId              = panelId + "-searchTab",
+                    searchPageId             = panelId + "-searchPage",
+                    journalId                = panelId + "-elementsTable",
+                    selectedJournalId        = panelId + "-selectedElementsTable",
+                    filterId                 = panelId + "-filter",
+                    searchCriteriaVariantsId = panelId + "-searchCriteriaVariants";
 
                 panel.setHeader(localization.title || 'Journal Picker');
                 panel.setBody('\
                     <div class="journal-picker-header">\
-                        <a id="' + elementsTabId + '" class="journal-tab-button hidden selected">' + localization.elementsTab + '</a>\
+                        <a id="' + elementsTabId + '" class="journal-tab-button ' + (filterMode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
                         <a id="' + searchTabId + '" class="journal-tab-button">' + localization.searchTab + '</a>\
                         ' + (searchBar ? '<div class="journal-filter"><input type="search" placeholder="' + localization.searchTab + '" class="journal-filter-input" id="' + filterId + '" /></div>' : '') + '\
                     </div>\
-                    <div class="journal-picker-page-container with-collapsible-block">\
-                        <div class="collapsible-filter">\
+                    <div class="journal-picker-page-container">\
+                        <div class="filter ' + filterMode + '">\
                             <div class="search-page hidden" id="' + searchPageId + '">\
                                 <div class="selected-search-criteria-container">\
                                     <!-- ko component: { name: \'list-of-selected-criterion\',\
@@ -802,21 +803,19 @@ ko.bindingHandlers.journalControl = {
                 });
 
                 Event.on(searchTabId, "click", function(event) {
-                    // for two page mode
-                    // -----------------------------------------
-                    
-                    // $(elementsTab).removeClass("selected");
-                    // $(searchTab).addClass("selected");
+                  switch (filterMode) {
+                    case "collapse":
+                      $(searchTab).toggleClass("selected");
+                      $(searchPage).toggleClass("hidden");
+                      break;
 
-                    // $(elementsPage).addClass("hidden");
-                    // $(searchPage).removeClass("hidden");
-                    
-
-                    // for collapsible mode
-                    // -----------------------------------------
-                    
-                    $(searchTab).toggleClass("selected");
-                    $(searchPage).toggleClass("hidden");
+                    case "full-page":
+                      $(elementsTab).removeClass("selected");
+                      $(searchTab).addClass("selected");
+                      $(elementsPage).addClass("hidden");
+                      $(searchPage).removeClass("hidden");
+                      break;
+                  }
                 });
 
                 // search bar
