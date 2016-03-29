@@ -351,6 +351,11 @@
     clear: both;
 }
 
+.invariants-form .template-table .template-third-width .template-message,  
+.invariants-form .template-table .template-half-width .template-message {
+    padding-top: 10px;
+}
+
 .invariants-form .template-table .template-row .template-message,
 .invariants-form .template-table [class*="template-row-"] .template-message {
   margin-left: 45.5%;
