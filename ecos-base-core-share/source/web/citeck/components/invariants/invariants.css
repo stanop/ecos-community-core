@@ -184,13 +184,18 @@
 /* mandatory */
 .invariants-form .template-table .template-mandatory {
   color: green;
+}
+
+.static .invariants-form .template-table .template-mandatory {
   position: absolute;
   left: -15px;
   top: 3px;
 }
 
 .invariants-form .template-table .template-row .template-mandatory {
-  top: 8px;
+  top: 2px;
+  left: 2px;
+  position: relative;
 }
 
 

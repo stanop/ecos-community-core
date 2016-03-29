@@ -1,5 +1,5 @@
-<@views.renderRegion "mandatory" />
 <@views.renderRegion "label" />
+<@views.renderRegion "mandatory" />
 <@views.renderRegion "input" />
 <div class="region-group region-select-group">
     <@views.renderRegion "select" />    
