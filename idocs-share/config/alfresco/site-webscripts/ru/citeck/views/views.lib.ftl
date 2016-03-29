@@ -8,7 +8,7 @@
 	<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
 	</#if>
 	
-		<div class="form-${element.type} template-${template}" <#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant }"</#if>>
+		<div class="form-${element.type} template-${template}" <#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>>
 			<@renderContent element />
 		</div>
 	

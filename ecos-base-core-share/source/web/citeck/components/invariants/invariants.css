@@ -19,8 +19,8 @@
   box-sizing: border-box;
 }
 
-.invariants-form:not(.view-form) .template-table .template-row,
-.invariants-form:not(.view-form) .template-table [class*="template-row-"] {
+.invariants-form:not(.view-form) .template-table .template-row.with-help,
+.invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
   padding-right: 15px;
 }
 
@@ -103,13 +103,24 @@
 .invariants-form .template-table .template-row .template-date,
 .invariants-form .template-table .template-row .template-datetime,
 .invariants-form .template-table .template-row .template-text,
-.invariants-form .template-table .template-row .template-textarea,
 .invariants-form .template-table .template-row .template-auto-number,
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number {
   width: 54.5%;
   float: right;
+}
+
+/* row field with help */
+.invariants-form .template-table .template-row.with-help .template-select,
+.invariants-form .template-table .template-row.with-help .template-date,
+.invariants-form .template-table .template-row.with-help .template-datetime,
+.invariants-form .template-table .template-row.with-help .template-text,
+.invariants-form .template-table .template-row.with-help .template-auto-number,
+.invariants-form .template-table .template-row.with-help .template-autocomplete,
+.invariants-form .template-table .template-row.with-help .template-checkbox,
+.invariants-form .template-table .template-row.with-help .template-number {
+  width: 53.5%;
 }
 
 
@@ -236,7 +247,12 @@
 .invariants-form .template-table .template-row .template-textarea {
   min-width: 54.5%;
   max-width: 100%;
+  float: right;
   width: auto;
+}
+
+.invariants-form .template-table .template-row.with-help .template-textarea {
+  min-width: 53.5%;
 }
 
 /* select */
@@ -395,11 +411,15 @@
 
 
 /* number-generate */
+.invariants-form .template-table .template-number-generate {
+  margin-top: 10px;
+}
+
 .invariants-form .template-table .template-row .template-number-generate {
   float: right;
   clear: right;
-  margin-top: 10px;
 }
+
 
 /* orgstruct-picker */
 .orgstruct-header {
