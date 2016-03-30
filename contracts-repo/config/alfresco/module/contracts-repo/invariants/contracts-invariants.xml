@@ -26,8 +26,8 @@
         </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of contract:";} else if (navigator.languages[0].includes("ru")) {"Вид договора:";}
-</invariant>
+            <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of contract:";} else if (navigator.languages[0].includes("ru")) {"Вид договора:";}
+</invariant> -->
         </property>
         <property name="contracts:agreementNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -36,10 +36,10 @@
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+            <!-- <invariant on="valid" language="javascript" description="Это поле должно содержать положительное число.">value < 0 ? true : false</invariant> -->
         </property>
         <property name="contracts:VAT">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">new RegExp('\u005e[\u0030-\u0039]*\u0024', 'igm').test(value)</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
@@ -90,7 +90,7 @@
             <invariant on="default" language="explicit">advance</invariant>
         </property>
         <property name="payments:paymentAmount">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">false == new RegExp('\u005e[\u0030-\u0039]*\u0024', 'igm').test(value) ? false : true</invariant>
         </property>
         <property name="payments:paymentVAT">
             <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
@@ -103,8 +103,8 @@
         </association> -->
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
-</invariant>
+            <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
+</invariant> -->
         </property>
         <property name="contracts:closingDocumentNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -128,10 +128,10 @@
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
-        <property name="tk:kind">
+        <!-- <property name="tk:kind">
             <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of add'l agreement:";} else if (navigator.languages[0].includes("ru")) {"Вид доп. соглашения:";}
 </invariant>
-        </property>
+        </property> -->
         <association name="contracts:agreementCurrency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
         </association>
