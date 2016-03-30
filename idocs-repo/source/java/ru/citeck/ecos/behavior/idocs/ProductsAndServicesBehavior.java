@@ -65,7 +65,7 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
     @Override
     public void onCreateNode(ChildAssociationRef childAssociationRef) {
         NodeRef pasEntityRef = childAssociationRef.getChildRef();
-        if (nodeService.exists(pasEntityRef)) return;
+        if (!nodeService.exists(pasEntityRef)) return;
         List<NodeRef> sources = RepoUtils.getSourceNodeRefs(pasEntityRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0), ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         int maxOrder = -1;
@@ -88,7 +88,7 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        if (nodeService.exists(nodeRef)) return;
+        if (!nodeService.exists(nodeRef)) return;
         if (after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT) != null && after.get(ProductsAndServicesModel.PROP_QUANTITY) != null) {
             Double priceBefore = (Double) before.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);
             Double priceAfter = (Double) after.get(ProductsAndServicesModel.PROP_PRICE_PER_UNIT);

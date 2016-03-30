@@ -33,7 +33,7 @@
                                         properties['pas:type'] = targetNode.properties['pas:type'];
                                         properties['pas:quantity'] = 1;
                                         properties['pas:total'] = 1 * targetNode.properties['pas:pricePerUnit'];
-                                        var childNode = root.createNode(targetNode.properties["cm:name"], "pas:pasEntityCopied", properties);
+                                        var childNode = root.createNode(null, "pas:pasEntityCopied", properties);
                                         childNode.addAspect("pas:hasUnit");
                                         var unitNode = targetNode.assocs["pas:entityUnit"];
                                         childNode.createAssociation(unitNode[0], "pas:entityUnit");
@@ -49,7 +49,7 @@
             model.data = allCreate;
         }
     } catch (ex){
-        model.data = "error";
+        model.data = "Error: " + ex.name + ":" + ex.message;
     }
 
 })();
