@@ -186,18 +186,21 @@
   color: green;
 }
 
+.invariants-form .template-table .template-row .template-mandatory {
+  top: 2px;
+  left: 2px; 
+  position: relative;
+}
+
 .static .invariants-form .template-table .template-mandatory {
   position: absolute;
   left: -15px;
   top: 3px;
 }
 
-.invariants-form .template-table .template-row .template-mandatory {
-  top: 2px;
-  left: 2px;
-  position: relative;
+.static .invariants-form .template-table .template-row .template-mandatory {
+  top: 8px;
 }
-
 
 /* label */
 .invariants-form:not(.view-form) .template-table .template-row-checkbox .template-label {
@@ -216,7 +219,7 @@
 }
 
 .invariants-form .template-table .template-row .template-label {
-  width: 45%;
+  width: auto;
   float: left;
 }
 
