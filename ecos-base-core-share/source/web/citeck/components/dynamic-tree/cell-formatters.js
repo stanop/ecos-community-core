@@ -498,6 +498,7 @@
 
         siteURL: function (urlTemplate, labelTemplate, target) {
             if (!target) target = '_self';
+            if (!urlTemplate) urlTemplate = '';
             return function (elCell, oRecord, oColumn, sData) {
                 if (sData) {
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
@@ -510,6 +511,7 @@
         
         doubleClickLink: function(urlTemplate, fieldId, formatter, target) {
             if (!target) target = '_self';
+            if (!urlTemplate) urlTemplate = '';
             return function (elCell, oRecord, oColumn, sData) {
                 var label = formatter && (formatter.apply(this, arguments), elCell.innerHTML) || sData || Alfresco.util.message("label.none");
                 var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, {
