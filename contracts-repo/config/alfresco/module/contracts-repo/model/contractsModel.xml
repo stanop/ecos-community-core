@@ -433,7 +433,7 @@
 			<property name="contracts:contractWith">
 				<title>Contract with</title>
 				<type>d:text</type>
-				<default>client</default>
+				<!-- <default>client</default> -->
 				<constraints>
 					<constraint ref="contracts:constraint:contractWith" />
 				</constraints>
@@ -468,7 +468,7 @@
                 </property>
             </overrides>
         </aspect>
-		
+
 	</aspects>
 
 
