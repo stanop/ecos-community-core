@@ -238,7 +238,7 @@
         <view>
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
-                    <param name="journalType">contract-subjects</param>
+                    <param name="journalType">original-location</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
