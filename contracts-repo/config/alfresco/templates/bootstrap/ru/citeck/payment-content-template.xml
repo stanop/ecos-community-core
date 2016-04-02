@@ -14,6 +14,17 @@
                         <tk:appliesToType>workspace://SpacesStore/contracts-cat-doctype-payment</tk:appliesToType>
                     </view:properties>
                 </dms:template>
+                <dms:cardTemplate view:childName="cm:default-payment-document-for-download.html.ftl">
+                    <view:properties>
+                        <cm:name>default-payment-document-for-download.html.ftl</cm:name>
+                        <sys:node-uuid>default-payment-document-download</sys:node-uuid>
+                        <cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/payment-document.html.ftl|mimetype=text/html|encoding=UTF-8</cm:content>
+                        <dms:cardType>{http://www.citeck.ru/model/payments/1.0}payment</dms:cardType>
+                        <dms:templateType>payment-document</dms:templateType>
+                        <dms:filenameTemplate>Payment</dms:filenameTemplate>
+                        <dms:templateProcessor>freemarker</dms:templateProcessor>
+                    </view:properties>
+                </dms:cardTemplate>
             </cm:contains>
         </view:associations>
     </view:reference>

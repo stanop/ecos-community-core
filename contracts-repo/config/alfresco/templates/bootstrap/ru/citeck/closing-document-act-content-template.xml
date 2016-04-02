@@ -16,6 +16,17 @@
                         <!--<tk:kind>workspace://SpacesStore/contracts-cat-closing-doc-act</tk:kind>-->
 				  </view:properties>
 				</dms:template>
+				<dms:cardTemplate view:childName="cm:default-closing-document-for-download.html.ftl">
+					<view:properties>
+						<cm:name>default-closing-document-for-download.html.ftl</cm:name>
+						<sys:node-uuid>default-closing-document-download</sys:node-uuid>
+						<cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/closing-document-act.html.ftl|mimetype=text/html|encoding=UTF-8</cm:content>
+						<dms:cardType>{http://www.citeck.ru/model/contracts/1.0}closingDocument</dms:cardType>
+						<dms:templateType>closing-document</dms:templateType>
+						<dms:filenameTemplate>Closing document</dms:filenameTemplate>
+						<dms:templateProcessor>freemarker</dms:templateProcessor>
+					</view:properties>
+				</dms:cardTemplate>
 			</cm:contains>
 		</view:associations>
 	</view:reference>
