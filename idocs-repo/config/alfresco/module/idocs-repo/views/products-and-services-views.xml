@@ -38,7 +38,6 @@
     </view>
 
     <view class="pas:pasEntityCopied">
-        <field prop="pas:order"/>
         <field prop="cm:title"/>
         <field prop="cm:description"/>
         <field prop="pas:type">
