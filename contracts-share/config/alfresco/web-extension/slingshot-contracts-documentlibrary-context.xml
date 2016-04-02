@@ -100,5 +100,13 @@
         </property>
     </bean>
 
+    <bean id="evaluator.doclib.contracts.showCustomDownload" class="org.alfresco.web.evaluator.ChainedMatchOneEvaluator">
+        <property name="evaluators">
+            <list>
+                <ref bean="evaluator.doclib.contracts.payment" />
+                <ref bean="evaluator.doclib.contracts.closingDocument" />
+            </list>
+        </property>
+    </bean>
 
 </beans>
