@@ -17,6 +17,7 @@
 		<constraint name="wfcf:confirmOutcomeOptions" type="LIST">
 			<parameter name="allowedValues">
 				<list>
+					<value>Approve</value> <!-- Added for compatibility with old tasks -->
 					<value>Confirmed</value>
 					<value>ConfirmedWithComment</value>
 					<value>Reject</value>
