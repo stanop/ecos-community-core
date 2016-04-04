@@ -293,6 +293,12 @@ ko.bindingHandlers.dateControl = {
 
             input.setAttribute("max", (year + 50) + "-12-31");
             input.setAttribute("min", (year - 25) + "-12-31");
+
+            Dom.setStyle(input, "color", "lightgray");
+            Event.on(input, "change", function(event) {
+                if (input.value) { Dom.setStyle(input, "color", "") }
+                else { Dom.setStyle(input, "color", "lightgray") }
+            });
         }
     }
 };
