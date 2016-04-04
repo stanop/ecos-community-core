@@ -17,7 +17,7 @@
         <property name="pas:total">
             <invariant on="valid" language="javascript" description="Число должно быть положительным">value >= 0</invariant>
             <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
-            <invariant on="value" language="javascript">node.properties["pas:pricePerUnit"] * node.properties["pas:quantity"]</invariant>
+            <invariant on="value" language="javascript">Math.round(node.properties["pas:pricePerUnit"] * node.properties["pas:quantity"] * 10000) / 10000</invariant>
         </property>
     </type>
     <type name="pas:pasEntity">
