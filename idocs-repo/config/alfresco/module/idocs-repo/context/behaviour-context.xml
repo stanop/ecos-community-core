@@ -263,10 +263,10 @@
     <!--<property name="enabledState" value="-" />-->
     <!--<property name="templateName" value="doc-number-template" />-->
     <!--</bean>-->
-    
-    
+
+
     <!-- route elements naming behaviours -->
-    
+
     <bean id="idocs.RouteParticipantNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="route:participant" />
         <property name="nameTemplate">
@@ -280,7 +280,7 @@
             <value><![CDATA[<#assign participants = node.childAssocs['route:participants']![]/><#if participants?size != 0><#list participants as participant>#{'$'}{participant.name}<#if participant_has_next>, </#if></#list><#else>none</#if>]]></value>
         </property>
     </bean>
-    
+
     <bean id="idocs.route.ChildAssocsFormRegistrar" parent="ChildAssocsFormRegistrar">
         <property name="associations">
             <list>
@@ -289,7 +289,7 @@
             </list>
         </property>
     </bean>
-    
+
 
     <bean id="idocs.ActivityDirectionNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="idocs:activityDirection"/>
@@ -390,7 +390,7 @@
         <property name="nodeService" ref="nodeService"/>
         <property name="lifeCycleService" ref="lifeCycleService"/>
     </bean>
-    
+
     <bean id="UpdateLifecycleDefinitionBehaviour"
           class="ru.citeck.ecos.behavior.lifecycle.UpdateLifecycleDefinitionBehaviour"
           init-method="init">
@@ -412,8 +412,8 @@
         <property name="updateAlways" value="${full-name-behaviour.update-always}"/>
         <property name="separator" value=" "/>
     </bean>
-    
-    <bean id="idocs.clearAuthorityCachesBehaviour" 
+
+    <bean id="idocs.clearAuthorityCachesBehaviour"
         class="ru.citeck.ecos.behavior.authority.ClearAuthorityCachesBehaviour"
         init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
@@ -448,7 +448,7 @@
             </list>
         </property>
     </bean>
-    
+
     <bean id="idocs.AddCurrentUserToObjectBehaviour"
           class="ru.citeck.ecos.behavior.common.AddCurrentUserBehaviour" abstract="true" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
@@ -471,7 +471,7 @@
         <property name="className" value="dms:templateable"/>
         <property name="enabled" value="true"/>
     </bean>
-    
+
     <bean id="idocs.budgetItemNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="budget:item"/>
         <property name="nameTemplate" value="#{'$'}{node.properties['budget:itemName']!}"/>
@@ -673,5 +673,12 @@
         <property name="className" value="idocs:addressByParts"/>
         <property name="nameTemplate" value="#{'$'}{node.properties['idocs:regionName']!''} #{'$'}{node.properties['idocs:cityName']!''} #{'$'}{node.properties['idocs:streetName']!''} #{'$'}{node.properties['idocs:house']!''}" />
     </bean>
+
+    <bean id="idocs.systemJournals.businessCalendar" parent="AutoNameBehaviour">
+        <property name="className" value="bcal:calendar" />
+        <property name="nameTemplate"
+            value="Period #{'$'}{node.properties['bcal:dateFrom']?string('dd.MM.yyyy')}-#{'$'}{node.properties['bcal:dateTo']?string('dd.MM.yyyy')}" />
+    </bean>
+
 </beans>
 
