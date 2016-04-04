@@ -15,7 +15,6 @@
             </invariant>
         </property>
         <property name="contracts:contractWith">
-            <invariant on="default" language="javascript">false</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <association name="contracts:agreementLegalEntity">
