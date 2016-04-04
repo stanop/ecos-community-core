@@ -85,15 +85,16 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
         }
 
         String nameSite = (String)nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
+        String titleSite = (String)nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE);
 
-        NodeRef journalsListNodeRef = createJournalsList(nodeRef, nameSite);
-        NodeRef journalNodeRef = createJournal(nodeRef, nameSite);
+        NodeRef journalsListNodeRef = createJournalsList(nodeRef, nameSite, titleSite);
+        NodeRef journalNodeRef = createJournal(nodeRef, nameSite, titleSite);
 
         nodeService.createAssociation(journalsListNodeRef, journalNodeRef, JournalsModel.ASSOC_JOURNALS);
 
     }
 
-    private NodeRef createJournalsList(NodeRef nodeRef, String nameSite) {
+    private NodeRef createJournalsList(NodeRef nodeRef, String nameSite, String titleName) {
 
         String nameJournalList = "site-" + nameSite + "-main";
 
@@ -107,13 +108,13 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
         // set properties
             Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
                 properties.put(ContentModel.PROP_NAME, nameJournalList);                      //cm:name
-                properties.put(ContentModel.PROP_TITLE, "Журналы сайта " + nameSite);         //cm:title
+                properties.put(ContentModel.PROP_TITLE, "Журналы сайта " + titleName);         //cm:title
             nodeService.setProperties(journalsList.getChildRef(), properties);
 
        return journalsList.getChildRef();
     }
 
-    private NodeRef createJournal(NodeRef nodeRef, String nameSite){
+    private NodeRef createJournal(NodeRef nodeRef, String nameSite, String titleName){
 
         //create journal
             ChildAssociationRef journal = nodeService.createNode(
@@ -126,7 +127,7 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
         // set properties of journal
             Map<QName, Serializable> propertiesJournal = new HashMap<QName, Serializable>();
                 propertiesJournal.put(ContentModel.PROP_NAME, typeNamePlural + "-on-site-" + nameSite);                 //cm:name
-                propertiesJournal.put(ContentModel.PROP_TITLE, typeTitlePlural + " для " + nameSite);                   //cm:title
+                propertiesJournal.put(ContentModel.PROP_TITLE, typeTitlePlural + " для " + titleName);                   //cm:title
                 propertiesJournal.put(JournalsModel.PROP_JOURNAL_TYPE, typeNamePlural);                                 //journal:journalType
 
         nodeService.setProperties(journal.getChildRef(), propertiesJournal);
