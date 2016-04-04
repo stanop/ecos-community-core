@@ -69,7 +69,10 @@
 			currentRoot: "root",
 			
 			// show immediately after onReady method
-			autoShow: false
+			autoShow: false,
+
+			// request for first start
+			preloadQuery: null
 		},
 
 		/**
@@ -100,14 +103,10 @@
 	YAHOO.lang.augmentObject(Citeck.widget.DynamicTreePicker.prototype, {
 	
 		onReady: function() {
-
 			// create widgets:
 			this.widgets.tree = new Citeck.widget.DynamicTree(this.id + "-results", this.model, this.name);
 			this.widgets.list = new Citeck.widget.DynamicTree(this.id + "-selectedItems", this.model, this.name);
-			this.widgets.dialog = Alfresco.util.createYUIPanel(this.id,
-			{
-				width: "62em"
-			});
+			this.widgets.dialog = Alfresco.util.createYUIPanel(this.id, { width: "62em" });
 			
 			this.widgets.buttonOK = Alfresco.util.createYUIButton(this, "ok", this.onButtonOKClick, {}, this.id.replace(/picker$/,"ok"));
 			this.widgets.buttonCancel = Alfresco.util.createYUIButton(this, "cancel", this.onButtonCancelClick, {}, this.id.replace(/picker$/,"cancel"));
@@ -220,8 +219,8 @@
 			// if there is nothing in header, hide it:
 			this._hideHeaderIfEmpty();
 
-			if (this.options.autoShow)
-				this.show();
+			if (this.options.preloadQuery) this.onSearch({}, this.options.preloadQuery);
+			if (this.options.autoShow) this.show();
 		},
 		
 		onNewRootSelected: function(e) {
@@ -331,12 +330,14 @@
 		 * Event handler - button Search was clicked.
 		 * Initiates search.
 		 */
-		onSearch: function(e) {
+		onSearch: function(e, preloadQuery) {
 			var input = Dom.get(this.id + "-searchText");
-			var query = input.value, context = this.options.currentRoot;
+			var query = preloadQuery ? preloadQuery : input.value, 
+					context = this.options.currentRoot;
+
 			if(query) {
 				var search = this.model.getItem("search");
-				search.query = query+"*";
+				search.query = query + "*";
 				context = "search";
 			}
 			this.widgets.tree.setContext(context, "none");
@@ -481,7 +482,6 @@
 		},
 	
 		onReady: function() {
-		
 			this._initModel();
 		
 			this._initCurrentValuesList();

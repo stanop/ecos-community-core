@@ -53,6 +53,10 @@
 		},
 	};
 	picker.setOptions({
+		<#if args.preloadSearchQuery??>
+			preloadQuery: "${args.preloadSearchQuery}",
+		</#if>
+
 		model: model,
 		tree: {
 			buttons: {
@@ -65,7 +69,8 @@
 				"selected-yes": [ "itemUnselect" ],
 			},
 		},
-		autoShow: ${autoShow},
+		autoShow: ${autoShow}
+
 	});
 //]]></script>
 

@@ -195,7 +195,10 @@
 					searchURL: opts.searchURL,
 					searchURLresults: opts.searchURLresults,
 					rootURL: opts.rootURL,
-					rootURLresults: opts.rootURLresults
+					rootURLresults: opts.rootURLresults,
+
+					// additional options
+					preloadSearchQuery: options.preloadSearchQuery ? options.preloadSearchQuery : null
 				},
 				successCallback: {
 					fn: function (response) {
