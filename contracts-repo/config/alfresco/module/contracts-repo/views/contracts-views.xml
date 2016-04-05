@@ -429,7 +429,7 @@
         <view>
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
-                     <param name="journalType">contract-agreements</param>
+                     <param name="journalType">original-location</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -554,7 +554,7 @@
             </field>
             <field prop="tk:kind" kind="mode-view">
                 <region name="select" template="select-journal" >
-                     <param name="journalType">idocs-contractor</param>
+                     <param name="journalType">original-location</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">sup-agreement.form.tk_kind.title</param>
