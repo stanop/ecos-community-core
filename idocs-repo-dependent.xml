@@ -3,20 +3,20 @@
     <import file="repo-macros.xml"/>
 
     <property name="ecos-base-core.project.name" value="ecos-base-core-repo" />
-    <property name="ecos-base-core.project.dir" value="../${ecos-base-core.project.name}" />
     <property name="ecos-base-core.project.version" value="1.0.0.0${module.release}" />
+    <property name="ecos-base-core.project.dir" location="../${ecos-base-core.project.name}" />
 
     <property name="journals.project.name" value="journals-repo" />
-    <property name="journals.project.dir" value="../${journals.project.name}" />
     <property name="journals.project.version" value="1.0.0.0${module.release}"/>
+    <property name="journals.project.dir" location="../${journals.project.name}" />
 
     <property name="override.project.name" value="1st-override-repo" />
-    <property name="override.project.dir" value="${override.project.name}" />
     <property name="override.project.version" value="3.0.0.0${module.release}" />
+    <property name="override.project.dir" location="../${override.project.name}" />
 
     <property name="core.project.name" value="idocs-repo" />
     <property name="core.project.version" value="3.0.0.0${module.release}" />
-    <property name="core.project.dir" value="${core.project.name}" />
+    <property name="core.project.dir" location="../${core.project.name}" />
 
     <path id="project.classpath">
         <pathelement path="${ecos-base-core.project.dir}/build/lib/*" />
