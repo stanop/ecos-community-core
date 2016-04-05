@@ -2,12 +2,14 @@
 <#assign params = viewScope.region.params!{} />
 
 <#assign title = msg("form.select.label")>
+<#assign search = msg("journal.search")>
 
 <#assign elementsTab = msg("journal.elements")>
-<#assign searchTab = msg("journal.search")>
+<#assign filterTab = msg("journal.filter")>
+<#assign createTab = msg("journal.create")>
 <#assign selectedElements = msg("journal.selected-elements")>
 <#assign applyCriteria = msg("journal.apply-criteria")>
-<#assign addSearchCriterion = msg("journal.add-search-criterion")>
+<#assign addFilterCriterion = msg("journal.add-filter-criterion")>
 
 <#assign nextPageLabel = msg("journal.pagination.next-page-label")>
 <#assign nextPageTitle = msg("journal.pagination.next-page-title")>
@@ -32,17 +34,19 @@
         <#if params.defaultSearchableAttributes??>
           defaultSearchableAttributes: '${params.defaultSearchableAttributes}',
         </#if>
-        <#if params.filterMode??>
-          filterMode: '${params.filterMode}',
+        <#if params.mode??>
+          mode: '${params.mode}',
         </#if>
 
         localization: {
           title: '${title}',
+          search: '${search}',
           elementsTab: '${elementsTab}',
-          searchTab: '${searchTab}',
+          filterTab: '${filterTab}',
+          createTab: '${createTab}',
           selectedElements: '${selectedElements}',
           applyCriteria: '${applyCriteria}',
-          addSearchCriterion: '${addSearchCriterion}',
+          addFilterCriterion: '${addFilterCriterion}',
           submitButton: '${submitButtonTitle}',
           cancelButton: '${cancelButtonTitle}',
           nextPageLabel: '${nextPageLabel}',

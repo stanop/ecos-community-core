@@ -392,17 +392,17 @@ ko.components.register('list-of-selected-criterion', {
         self.htmlId                 = params.htmlId;
         self.itemId                 = params.itemId;
         self.journalType            = params.journalType;
-        self.selectedSearchCriteria = params.selectedSearchCriteria;
-        self.defaultSearchCriteria  = params.defaultSearchCriteria;
+        self.selectedFilterCriteria = params.selectedFilterCriteria;
+        self.defaultFilterCriteria  = params.defaultFilterCriteria;
 
         self.remove = function(data, event) {
-            self.selectedSearchCriteria.remove(data);
+            self.selectedFilterCriteria.remove(data);
         };
     },
     template: 
        '<table class="selected-criteria-list">\
             <tbody>\
-                <!-- ko foreach: selectedSearchCriteria -->\
+                <!-- ko foreach: selectedFilterCriteria -->\
                     <tr>\
                         <td class="action-col"><a class="remove-selected-criterion" data-bind="click: $component.remove">X</a></td>\
                         <td class="name-col"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
@@ -606,11 +606,11 @@ ko.bindingHandlers.journalControl = {
             defaultSearchableAttributes = _.map(defaultSearchableAttributes.split(","), function(item) { return trim(item) });
         }
 
-        var selectedElements = ko.observableArray(), selectedSearchCriteria = ko.observableArray(), 
+        var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
             loading = ko.observable(true), criteriaListShow = ko.observable(false), criteria = ko.observable([]), 
             journalType = params.journalType ? new JournalType(params.journalType) : null,
-            searchBar = params.searchBar ? params.searchBar.toLowerCase() == "true" : true,
-            filterMode = params.filterMode ? params.filterMode.toLowerCase() : "collapse",
+            searchBar = params.searchBar ? params.searchBar == "true" : true,
+            mode = params.mode ? params.mode : "collapse",
             maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
             options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }) });
 
@@ -646,9 +646,9 @@ ko.bindingHandlers.journalControl = {
             return journalType.defaultAttributes();
         });
 
-        // add default criteria to selectedSearchCriteria
+        // add default criteria to selectedFilterCriteria
         koutils.subscribeOnce(ko.computed(function() {
-            selectedSearchCriteria.removeAll();
+            selectedFilterCriteria.removeAll();
             var dc = defaultCriteria();
 
             if (defaultSearchableAttributes) {
@@ -664,7 +664,7 @@ ko.bindingHandlers.journalControl = {
                     var newCriterion = _.clone(dc[i]);
                     newCriterion.value = ko.observable();
                     newCriterion.predicateValue = ko.observable();
-                    selectedSearchCriteria.push(newCriterion);
+                    selectedFilterCriteria.push(newCriterion);
                 }
             }
         }), defaultCriteria.dispose);
@@ -687,51 +687,60 @@ ko.bindingHandlers.journalControl = {
                     cancelButtonId           = panelId + "-cancelInput",
                     elementsTabId            = panelId + "-elementsTab",
                     elementsPageId           = panelId + "-elementsPage",
-                    searchTabId              = panelId + "-searchTab",
-                    searchPageId             = panelId + "-searchPage",
+                    filterTabId              = panelId + "-filterTab",
+                    filterPageId             = panelId + "-filterPage",
+                    createTabId              = panelId + "-createTab",
+                    createPageId             = panelId + "-createPage", 
                     journalId                = panelId + "-elementsTable",
                     selectedJournalId        = panelId + "-selectedElementsTable",
-                    filterId                 = panelId + "-filter",
-                    searchCriteriaVariantsId = panelId + "-searchCriteriaVariants";
+                    searchId                 = panelId + "-search",
+                    filterCriteriaVariantsId = panelId + "-filterCriteriaVariants",
+                    journalPickerHeaderId    = panelId + "-journal-picker-header";
+
+                var createObjectComponent = "";
 
                 panel.setHeader(localization.title || 'Journal Picker');
                 panel.setBody('\
-                    <div class="journal-picker-header">\
-                        <a id="' + elementsTabId + '" class="journal-tab-button ' + (filterMode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
-                        <a id="' + searchTabId + '" class="journal-tab-button">' + localization.searchTab + '</a>\
-                        ' + (searchBar ? '<div class="journal-filter"><input type="search" placeholder="' + localization.searchTab + '" class="journal-filter-input" id="' + filterId + '" /></div>' : '') + '\
+                    <div class="journal-picker-header ' + mode + '" id="' + journalPickerHeaderId + '">\
+                        <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
+                        <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
+                        <!-- ko component: { name: "createObjectButton", params: {\
+                            scope: scope,\
+                            source: \"create-views\",\
+                            callback: callback,\
+                            buttonTitle: buttonTitle\
+                        }} --><!-- /ko -->\
+                        ' + (searchBar ? '<div class="journal-search"><input type="search" placeholder="' + localization.search + '" class="journal-search-input" id="' + searchId + '" /></div>' : '') + '\
                     </div>\
-                    <div class="journal-picker-page-container">\
-                        <div class="filter ' + filterMode + '">\
-                            <div class="search-page hidden" id="' + searchPageId + '">\
-                                <div class="selected-search-criteria-container">\
-                                    <!-- ko component: { name: \'list-of-selected-criterion\',\
-                                        params: {\
-                                            htmlId: htmlId,\
-                                            itemId: itemId,\
-                                            journalType: journalType,\
-                                            selectedSearchCriteria: selectedSearchCriteria,\
-                                            defaultSearchCriteria: defaultSearchCriteria\
-                                        }\
-                                    } --> <!-- /ko -->\
-                                </div>\
-                                <div class="search-criteria-actions">\
-                                    <ul>\
-                                        <li class="search-criteria-option">\
-                                            <a class="apply-criteria search-criteria-button" data-bind="click: applyCriteria">' + localization.applyCriteria + '</a>\
-                                        </li>\
-                                        <li class="search-criteria-option">\
-                                            <a class="search-criteria-button" data-bind="click: addSearchCriterion">' + localization.addSearchCriterion + '</a>\
-                                            <div class="search-criteria-variants" data-bind="visible: criteriaListShow">\
-                                                <ul class="search-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
-                                                    <li class="search-criteria-list-option">\
-                                                        <a class="search-criterion" data-bind="text: displayName, click: $root.selectSearchCriterion"></a>\
-                                                    </li>\
-                                                </ul>\
-                                            </div>\
-                                        </li>\
-                                    </ul>\
-                                </div>\
+                    <div class="journal-picker-page-container ' + mode + '">\
+                        <div class="filter-page hidden" id="' + filterPageId + '">\
+                            <div class="selected-filter-criteria-container">\
+                                <!-- ko component: { name: \'list-of-selected-criterion\',\
+                                    params: {\
+                                        htmlId: htmlId,\
+                                        itemId: itemId,\
+                                        journalType: journalType,\
+                                        selectedFilterCriteria: selectedFilterCriteria,\
+                                        defaultFilterCriteria: defaultFilterCriteria\
+                                    }\
+                                } --> <!-- /ko -->\
+                            </div>\
+                            <div class="filter-criteria-actions">\
+                                <ul>\
+                                    <li class="filter-criteria-option">\
+                                        <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria">' + localization.applyCriteria + '</a>\
+                                    </li>\
+                                    <li class="filter-criteria-option">\
+                                        <a class="filter-criteria-button" data-bind="click: addFilterCriterion">' + localization.addFilterCriterion + '</a>\
+                                        <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
+                                            <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
+                                                <li class="filter-criteria-list-option">\
+                                                    <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
+                                                </li>\
+                                            </ul>\
+                                        </div>\
+                                    </li>\
+                                </ul>\
                             </div>\
                         </div>\
                         <div class="elements-page" id="' + elementsPageId + '">\
@@ -769,6 +778,7 @@ ko.bindingHandlers.journalControl = {
                                 } --><!-- /ko -->\
                             </div>\
                         </div>\
+                        <div class="create-page hidden" id="' + createPageId + '"></div>\
                     </div>\
                 ');
                 panel.setFooter('\
@@ -792,48 +802,58 @@ ko.bindingHandlers.journalControl = {
                     this.hide();
                 }, panel, true);
 
+                // tabs listener
+                Event.on(journalPickerHeaderId, "click", function(event) {
+                    event.stopPropagation();
 
-                // tabs links
-                var elementsTab = Dom.get(elementsTabId), elementsPage = Dom.get(elementsPageId),
-                    searchTab = Dom.get(searchTabId), searchPage = Dom.get(searchPageId),
-                    filter = Dom.get(filterId),
-                    searchCriteriaVariants = Dom.get(searchCriteriaVariantsId);
+                    if (event.target.tagName == "A") {
+                        if ($(event.target).hasClass("journal-tab-button")) {
+                            switch (mode) {
+                                case "full":
+                                    $(event.target)
+                                        .addClass("selected")
+                                        .parent()
+                                        .children()
+                                        .filter(".selected:not(#" + event.target.id + ")")
+                                        .removeClass("selected");
 
-                // tabs listeners
-                Event.on(elementsTabId, "click", function(event) {
-                    $(searchTab).removeClass("selected");
-                    $(elementsTab).addClass("selected");
+                                    var pageId = event.target.id.replace(/Tab$/, "Page"),
+                                        page = Dom.get(pageId);
 
-                    $(searchPage).addClass("hidden");
-                    $(elementsPage).removeClass("hidden");
-                });
+                                    $(page)
+                                        .removeClass("hidden")
+                                        .parent()
+                                        .children()
+                                        .filter("div:not(#" + pageId +")")
+                                        .addClass("hidden");
 
-                Event.on(searchTabId, "click", function(event) {
-                  switch (filterMode) {
-                    case "collapse":
-                      $(searchTab).toggleClass("selected");
-                      $(searchPage).toggleClass("hidden");
-                      break;
+                                    $("button.selected", $(event.target).parent())
+                                        .removeClass("selected");
 
-                    case "full-page":
-                      $(elementsTab).removeClass("selected");
-                      $(searchTab).addClass("selected");
-                      $(elementsPage).addClass("hidden");
-                      $(searchPage).removeClass("hidden");
-                      break;
-                  }
-                });
+                                    break;
 
-                // search bar
+                                case "collapse":
+                                    var filterTab = Dom.get(filterTabId), 
+                                        filterPage = Dom.get(filterPageId);
+
+                                    $(filterTab).toggleClass("selected");
+                                    $(filterPage).toggleClass("hidden");
+                                    break;
+                            }
+                        }
+                    }
+                })
+
+                // search bar listener
                 if (searchBar) {
                     // filter listener
-                    Event.on(filterId, "keypress", function(event) {
+                    Event.on(searchId, "keypress", function(event) {
                         if (event.keyCode == 13) {
                             event.stopPropagation();
 
-                            var filter = Dom.get(filterId);
-                            if (filter.value) {
-                                criteria([{ attribute: "all", predicate: "string-contains", value: filter.value }]);
+                            var search = Dom.get(searchId);
+                            if (search.value) {
+                                criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]);
                             } else {
                                 criteria([]);
                             }
@@ -858,22 +878,22 @@ ko.bindingHandlers.journalControl = {
                     htmlId: element.id,
                     itemId: data.nodetype(),
                     journalType: journalType,
-                    defaultSearchCriteria: defaultSearchableAttributes,
-                    selectedSearchCriteria: selectedSearchCriteria,
+                    defaultFilterCriteria: defaultSearchableAttributes,
+                    selectedFilterCriteria: selectedFilterCriteria,
                     criteria: criteria,
                     criteriaListShow: criteriaListShow,
-                    selectSearchCriterion: function(data, event) {
+                    selectFilterCriterion: function(data, event) {
                         // clone criterion and add value observables
                         var newCriterion = _.clone(data);
                         newCriterion.value = ko.observable();
                         newCriterion.predicateValue = ko.observable();
-                        selectedSearchCriteria.push(newCriterion);
+                        selectedFilterCriteria.push(newCriterion);
 
                         // hide drop-down menu
                         criteriaListShow(!criteriaListShow());
                     },
                     applyCriteria: function(data, event) {
-                        var criteriaList = [], selectedCriteria = selectedSearchCriteria();
+                        var criteriaList = [], selectedCriteria = selectedFilterCriteria();
                         if (selectedCriteria.length == 0) {
                             criteria([])
                         } else {
@@ -889,10 +909,35 @@ ko.bindingHandlers.journalControl = {
                             criteria(criteriaList);
                         }
                     },
-                    addSearchCriterion: function(data, event) {
+                    addFilterCriterion: function(data, event) {
                         criteriaListShow(!criteriaListShow());
                     }
-                }, Dom.get(searchPageId));
+                }, Dom.get(filterPageId));
+
+                // say knockout that we have something on create tab for create page
+                ko.applyBindings({
+                    scope: data,
+                    buttonTitle: localization.createTab,
+                    callback: function(variant) {
+                        Citeck.forms.formContent(variant.type(), variant.formId(), function(response) {
+                            Dom.get(createPageId).innerHTML = response;
+
+                            // hide other pages and remove selection from other tabs
+                            Dom.removeClass(elementsTabId, "selected");
+                            Dom.removeClass(filterTabId, "selected");
+                            Dom.addClass(elementsPageId, "hidden");
+                            Dom.addClass(filterPageId, "hidden");
+
+                            // show create page and hightlight tab
+                            Dom.removeClass(createPageId, "hidden");
+                            var createButton = Dom.getElementsBy(function(el) {
+                                return el.tagName == "BUTTON";
+                            }, "button", journalPickerHeaderId);
+                            Dom.addClass(createButton, "selected");
+                        }, { destination: variant.destination() });
+
+                    }
+                }, Dom.get(journalPickerHeaderId));
             }
             
             panel.show();
@@ -900,6 +945,7 @@ ko.bindingHandlers.journalControl = {
 
         // reload filterOptions request if was created new object
         YAHOO.Bubbling.on("object-was-created", function(layer, args) {
+            console.log("was created new element")
             if (args[1].fieldId == data.name()) {
                 criteria(_.clone(criteria()));
             }
@@ -914,7 +960,8 @@ ko.bindingHandlers.journalControl = {
 var CreateVariant = koclass('CreateVariant'),
     CreateVariantsByType = koclass('controls.CreateVariantsByType'),
     CreateVariantsByView = koclass('controls.CreateVariantsByView'),
-    CreateObjectButton = koclass('controls.CreateObjectButton');
+    CreateObjectButton = koclass('controls.CreateObjectButton'),
+    CreateObjectLink = koclass('controls.CreateObjectLink');
 
 CreateVariantsByType
     .key('type', String)
@@ -933,7 +980,7 @@ CreateVariantsByView
         resultsMap: { createVariants: 'createVariants' }
     }))
     ;
-
+ 
 CreateObjectButton
     .key('id', String)
     .property('scope', Object)
@@ -943,6 +990,7 @@ CreateObjectButton
     .property('buttonTitle', String)
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
+    .property('callback', Function)
     .computed('createVariants', function() {
         if(!this.scope().nodetype()) return [];
         var list = this.source() == 'create-views' 
@@ -951,53 +999,60 @@ CreateObjectButton
         return list.createVariants();
     })
     .method('execute', function(createVariant) {
-        Citeck.forms.dialog(createVariant.type(), createVariant.formId(),
-            {
-                scope: this, 
-                fn: function(value) {
-                    if (this.constraint() && _.isFunction(this.constraint())) {                       
-                        var constraint = ko.computed(this.constraint(), { 
-                            oldValue: this.scope().multipleValues(), 
-                            newValue: value 
-                        });
+        if (this.callback() && _.isFunction(this.callback())) {
+            var callback = this.callback();
+            callback(createVariant);
+        } else {
+            Citeck.forms.dialog(createVariant.type(), createVariant.formId(),
+                {
+                    scope: this, 
+                    fn: function(value) {
+                        if (this.constraint() && _.isFunction(this.constraint())) {                       
+                            var constraint = ko.computed(this.constraint(), { 
+                                oldValue: this.scope().multipleValues(), 
+                                newValue: value 
+                            });
 
-                        koutils.subscribeOnce(ko.pureComputed(function() {
-                            var result = constraint();
-                            if (result != null || result != undefined) return result;
-                        }), function(result) {
-                            if (_.isBoolean(result)) {
-                                if (result) { this.scope().lastValue(value); }
-                                else { 
-                                    Alfresco.util.PopupManager.displayMessage({
-                                        text: this.constraintMessage() || Alfresco.util.message("create-object.message")
-                                    });
+                            koutils.subscribeOnce(ko.pureComputed(function() {
+                                var result = constraint();
+                                if (result != null || result != undefined) return result;
+                            }), function(result) {
+                                if (_.isBoolean(result)) {
+                                    if (result) { this.scope().lastValue(value); }
+                                    else { 
+                                        Alfresco.util.PopupManager.displayMessage({
+                                            text: this.constraintMessage() || Alfresco.util.message("create-object.message")
+                                        });
+                                    }
                                 }
-                            }
-                        }, this);
-                    } else {
-                        this.scope().lastValue(value);
-                    }
+                            }, this);
+                        } else {
+                            this.scope().lastValue(value);
+                        }
 
-                    YAHOO.Bubbling.fire("object-was-created", { 
-                        fieldId: this.scope().name(),
-                        value: value
-                    });
+                        YAHOO.Bubbling.fire("object-was-created", { 
+                            fieldId: this.scope().name(),
+                            value: value
+                        });
+                    }
+                }, 
+                { 
+                    title: this.buttonTitle() + ": " + createVariant.title(), 
+                    destination: createVariant.destination(),
+                    parentRuntime: this.parentRuntime(),
+                    virtualParent: this.virtualParent()
                 }
-            }, 
-            { 
-                title: this.buttonTitle() + ": " + createVariant.title(), 
-                destination: createVariant.destination(),
-                parentRuntime: this.parentRuntime(),
-                virtualParent: this.virtualParent()
-            }
-        ); 
+            ); 
+        }
     })
     ;
 
+
+
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
-    template:
-       '<!-- ko if: createVariants().length == 0 --> \
+    template: 
+        '<!-- ko if: createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
         <!-- ko if: createVariants().length == 1 --> \
@@ -1019,6 +1074,7 @@ ko.components.register('createObjectButton', {
                 </span> \
             </span> \
         <!-- /ko -->'
+
 });
 
 

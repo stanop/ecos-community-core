@@ -825,17 +825,29 @@
   line-height: 200%;
 }
 
+.journal-picker-header button {
+  background: none;
+  border: none;
+  margin-right: 10px;
+  cursor: pointer;
+  line-height: 200%;
+  color: #1c55da;
+  font-weight: 900;
+}
+
 .journal-picker-header a.journal-tab-button:hover,
-.journal-picker-header a.journal-tab-button.selected {
+.journal-picker-header a.journal-tab-button.selected,
+.journal-picker-header button:hover,
+.journal-picker-header button.selected {
   color: red;
 }
 
-.journal-picker-header .journal-filter {
+.journal-picker-header .journal-search {
   float: right;
   width: 30%;
 }
 
-.journal-picker-header .journal-filter input.journal-filter-input {
+.journal-picker-header .journal-search input.journal-search-input {
   padding: 3px 5px;
   border-radius: 7px;
   width: 100%;
@@ -928,29 +940,29 @@
 }
 
 
-.search-criteria-actions {
+.filter-criteria-actions {
   padding: 0 15px;
   overflow: hidden;
   border-top: 1px solid #ccc;
 }
 
-.search-criteria-actions > ul {
+.filter-criteria-actions > ul {
   float: right;
   padding: 0;
 }
 
-.search-criteria-actions li.search-criteria-option {
+.filter-criteria-actions li.filter-criteria-option {
   display: inline-block;
   margin-left: 10px;
   padding: 4px;
 }
 
-.search-criteria-actions a.search-criteria-button {
+.filter-criteria-actions a.filter-criteria-button {
   line-height: 200%;
   cursor: pointer;
 }
 
-.search-criteria-actions li.search-criteria-option .search-criteria-variants {
+.filter-criteria-actions li.filter-criteria-option .filter-criteria-variants {
   position: absolute;
   background-color: white;
   box-shadow: 0 0 5px 2px gray;
@@ -959,7 +971,7 @@
   z-index: 10;
 }
 
-.search-criteria-actions li.search-criteria-option .search-criteria-variants a.search-criterion {
+.filter-criteria-actions li.filter-criteria-option .filter-criteria-variants a.filter-criterion {
   width: 100%;
   display: block;
   line-height: normal;
@@ -968,55 +980,57 @@
   box-sizing: border-box;
 }
 
-.search-criteria-actions li.search-criteria-option .search-criteria-variants a.search-criterion:hover {
+.filter-criteria-actions li.filter-criteria-option .filter-criteria-variants a.filter-criterion:hover {
   background-color: #f0f0f0;
 }
 
-.selected-search-criteria-container {
+.selected-filter-criteria-container {
   padding: 10px 15px;
   max-height: 443px;
   overflow-y: auto;
 }
 
-.collapse .selected-search-criteria-container {
+.collapse .selected-filter-criteria-container {
   max-height: 135px;
 }
 
-.full-page .search-page {
+.full .filter-page,
+.full .create-page {
   height: 501px;
+  overflow: auto;
 }
 
-.selected-search-criteria-container table.selected-criteria-list {
+.selected-filter-criteria-container table.selected-criteria-list {
   width: 100%;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td:not(:last-child) {
+.selected-filter-criteria-container table.selected-criteria-list td:not(:last-child) {
   padding-right: 10px;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td.action-col {
+.selected-filter-criteria-container table.selected-criteria-list td.action-col {
   width: 5%;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td.name-col {
+.selected-filter-criteria-container table.selected-criteria-list td.name-col {
   width: 30%;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td.predicate-col {
+.selected-filter-criteria-container table.selected-criteria-list td.predicate-col {
   width: 30%;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td.predicate-col select.predicate {
+.selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate {
   width: 100%;
   background-color: white;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td.value-col {
+.selected-filter-criteria-container table.selected-criteria-list td.value-col {
   width: 35%;
 }
 
-.selected-search-criteria-container table.selected-criteria-list td.value-col input[type="text"],
-.selected-search-criteria-container table.selected-criteria-list td.value-col input[type="number"] {
+.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="text"],
+.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="number"] {
   width: 100%;
   box-sizing: border-box;
 }
