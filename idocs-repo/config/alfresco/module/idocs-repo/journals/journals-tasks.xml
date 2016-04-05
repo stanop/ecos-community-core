@@ -151,4 +151,39 @@
 		</headers>
 	</journal>
 
+	<journal id="controlled">
+        <option name="type">bpm:workflowTask</option>
+        <option name="formId">search</option>
+        <option name="actionGroupId">task</option>
+        <option name="css">modules/journals/tasks/tasks.css</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}</option>
+        <headers>
+            <!-- cm:name is used for double-click -->
+            <header key="cm:name" visible="false" searchable="false" />
+            <header key="bpm:priority" default="true">
+                <option name="formatter">workflowPriority</option>
+            </header>
+            <header key="wfm:taskType" default="true">
+                <option name="formatter">typeName('shortQName')</option>
+            </header>
+            <header key="bpm:description" default="true"/>
+            <header key="cwf:senderName" searchable="false"/>
+            <header key="cwf:sender" visible="false" />
+            <header key="wfm:assignee" default="true"/>
+            <header key="bpm:status" default="true" />
+            <header key="bpm:pooledActors"/>
+            <header key="wfm:document" default="true" searchable="false">
+                <option name="formatter">documentLink</option>
+            </header>
+            <header key="wfm:documentType" default="true">
+                <option name="formatter">typeName('shortQName')</option>
+            </header>
+            <header key="bpm:startDate"/>
+            <header key="bpm:dueDate" default="true"/>
+            <header key="bpm:comment"/>
+            <header key="wfm:workflowInitiator" />
+        </headers>
+    </journal>
+
 </journals>

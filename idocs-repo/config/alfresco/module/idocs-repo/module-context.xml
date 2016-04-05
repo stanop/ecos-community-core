@@ -34,5 +34,6 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-1.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-12-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-0-0.xml" />
 
 </beans>
