@@ -26,7 +26,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="idocs.module-component.default-closing-document-act-content-template" parent="contracts.import-spaces.1-3-0">
 		<property name="name" value="default-closing-document-act-content-template" />
 		<property name="description" value="default-closing-document-act-content-template" />
@@ -46,5 +46,19 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="idocs.module-component.contractor-cardlets.document-journal" parent="contracts.import-spaces.1-3-0">
+        <property name="name" value="contractor-cardlets document-journal" />
+        <property name="description" value="contractor-cardlets document-journal" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/contractor/document-journal</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
 </beans>
