@@ -256,23 +256,26 @@
 			});
 		}
 	};
+
 	Citeck.widget.ButtonPanel.Commands.onPanelButtonAssocsAdd = function(options) {
 		var opts = _parseAddCommandOptions(options),
 			picker = _addCommandPickers[opts.objectId];
 		opts.assocType = options.assocType;
+
 		if (!opts.nodeRef) {
 			alert("Mandatory option node reference - 'nodeRef' is not specified");
 			return;
 		}
+
 		if (!opts.assocType) {
 			alert("Mandatory option 'assocType' is not specified");
 			return;
 		}
+
 		if (picker) {
 			picker.setSelectedItems([]);
 			picker.show();
-		}
-		else {
+		} else {
 			var htmlid = Alfresco.util.generateDomId();
 			// load dialog from web-script
 			Alfresco.util.Ajax.request({
@@ -287,7 +290,10 @@
 					searchURL: opts.searchURL,
 					searchURLresults: opts.searchURLresults,
 					rootURL: opts.rootURL,
-					rootURLresults: opts.rootURLresults
+					rootURLresults: opts.rootURLresults,
+
+					// additional options
+					preloadSearchQuery: options.preloadSearchQuery ? options.preloadSearchQuery : null
 				},
 				successCallback: {
 					fn: function (response) {

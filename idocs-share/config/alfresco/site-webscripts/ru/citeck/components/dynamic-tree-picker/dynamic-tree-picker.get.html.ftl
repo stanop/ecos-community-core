@@ -54,7 +54,7 @@
 	};
 	picker.setOptions({
 		<#if args.preloadSearchQuery??>
-			preloadQuery: "${args.preloadSearchQuery}",
+			preloadSearchQuery: "${args.preloadSearchQuery}",
 		</#if>
 
 		model: model,

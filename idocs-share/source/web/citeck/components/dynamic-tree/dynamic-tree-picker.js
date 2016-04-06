@@ -72,7 +72,7 @@
 			autoShow: false,
 
 			// request for first start
-			preloadQuery: null
+			preloadSearchQuery: null
 		},
 
 		/**
@@ -219,10 +219,18 @@
 			// if there is nothing in header, hide it:
 			this._hideHeaderIfEmpty();
 
-			if (this.options.preloadQuery) this.onSearch({}, this.options.preloadQuery);
+			// support preloadSearchQuery function
+			if (this.options.preloadSearchQuery) {
+				var search = this.model.getItem("search");
+				search.query = this.options.preloadSearchQuery + "*";
+				this.widgets.tree.setContext("search", "none");
+				this.model.updateChildren("search");
+			}
+
+			// support autoShow function
 			if (this.options.autoShow) this.show();
 		},
-		
+	
 		onNewRootSelected: function(e) {
 			var newRoot = e.newValue;
 			this.options.currentRoot = newRoot;
@@ -330,9 +338,9 @@
 		 * Event handler - button Search was clicked.
 		 * Initiates search.
 		 */
-		onSearch: function(e, preloadQuery) {
+		onSearch: function(e) {
 			var input = Dom.get(this.id + "-searchText");
-			var query = preloadQuery ? preloadQuery : input.value, 
+			var query = input.value, 
 					context = this.options.currentRoot;
 
 			if(query) {
