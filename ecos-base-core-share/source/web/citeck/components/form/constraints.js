@@ -126,31 +126,31 @@
         }
     };
     
-	/**
-	 * It evaluates specified expression in the form context of the element
-	 * specified by id.
-	 * 
-	 * This function can throws an exception, if expression can not be
-	 * evaluated.
-	 * 
-	 * @param id - element id, it is used to find out form context
-	 * @param expression - input expression
-	 * @returns eval result or null, It returns null if form context is not found.
-	 * @throws exception - it throws an exception if expression can not
-	 * be evaluated.
-	 */
-	Citeck.forms.evaluate = function(id, expression) {
-		var result = null;
-		var form = Citeck.forms.getForm(id);
-		if(form) {
-			var formUI = Alfresco.util.ComponentManager.get(form.id);
-			var formData = formUI.formsRuntime.getFormData();
-			with(formData) {
-				result = eval(expression);
-			}
-		}
-		return result;
-	};
+    /**
+     * It evaluates specified expression in the form context of the element
+     * specified by id.
+     * 
+     * This function can throws an exception, if expression can not be
+     * evaluated.
+     * 
+     * @param id - element id, it is used to find out form context
+     * @param expression - input expression
+     * @returns eval result or null, It returns null if form context is not found.
+     * @throws exception - it throws an exception if expression can not
+     * be evaluated.
+     */
+    Citeck.forms.evaluate = function(id, expression) {
+        var result = null;
+        var form = Citeck.forms.getForm(id);
+        if(form) {
+            var formUI = Alfresco.util.ComponentManager.get(form.id);
+            var formData = formUI.formsRuntime.getFormData();
+            with(formData) {
+                result = eval(expression);
+            }
+        }
+        return result;
+    };
 
     Citeck.forms.simpleDeleteDialog = function(successCallback, failureCallback) {
         Alfresco.util.PopupManager.displayPrompt({
@@ -176,8 +176,97 @@
             ]
         });
     };
-	
-	Citeck.forms.dialog = function(itemId, formId, callback, params) {
+
+    Citeck.forms.formContent = function(itemId, formId, callback, params) {
+        var itemKind, mode, paramName;
+        formId = formId || "";
+
+        if(Citeck.utils.isNodeRef(itemId)) {
+            paramName = 'nodeRef';
+            itemKind = 'node';
+            mode = 'edit';
+        } else {
+            paramName = 'type';
+            itemKind = 'type';
+            mode = 'create';
+        }
+
+        params = params || {};
+        var msg = Alfresco.util.message,
+            id = Alfresco.util.generateDomId(),
+            viewId = id + "-body",
+            header = params.title || msg("actions.document.dialog-form"),
+            destination = params.destination || "",
+            destinationAssoc = params.destinationAssoc || "";
+
+        var newFormContent = function() {
+            var dataObj = {
+                htmlid: viewId,
+                mode: mode,
+                viewId: formId
+            };
+
+            dataObj[paramName] = itemId;
+            for(var name in params) {
+                if(params[name] != null) 
+                    dataObj['param_' + name] = params[name];
+            }
+
+            Alfresco.util.Ajax.request({
+                method: "GET",
+                url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view",
+                dataObj: dataObj,
+                execScripts: true,
+                successCallback: {
+                    fn: function(response) {
+                        YAHOO.Bubbling.on("node-view-submit", function(layer, args) {
+                            var runtime = args[1].runtime;
+                            if(runtime.key() != viewId) return;
+
+                            var node = args[1].node;
+                            node.thisclass.save(node, function(persistedNode) {
+                                YAHOO.Bubbling.fire("object-was-created", { 
+                                    fieldId: node.name,
+                                    value: persistedNode
+                                });
+
+                                runtime.node().impl().reset(true);
+                            });
+                        });
+
+                        YAHOO.Bubbling.on("node-view-cancel", function() {
+                           var runtime = args[1].runtime;
+                            if(runtime.key() != viewId) return;
+                            runtime.node().impl().reset();
+                        });
+
+                        callback(response.serverResponse.responseText)
+                    }
+                }
+            });
+        };
+
+        var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
+            paramName: paramName,
+            itemId: itemId,
+            mode: mode,
+            formId: formId
+        });
+
+        Alfresco.util.Ajax.jsonGet({
+            url: checkUrl,
+            successCallback: { fn: function(response) {
+                if(response.json.exists) {
+                    newFormContent();
+                } else if(response.json.defaultExists) {
+                    formId = "";
+                    newFormContent();
+                }
+            }}
+        });
+    };
+    
+    Citeck.forms.dialog = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
 
@@ -329,8 +418,8 @@
                 oldDialog();
             }}
         });
-	};
-	
+    };
+    
 
     /**
      * Authority name validation handler, tests that the given field is a valid
@@ -423,7 +512,7 @@
             var request = new XMLHttpRequest();
             var itemFieldId = field.id.replace(field.name, "prop_sys_node-uuid");
             var itemId= jQuery('#'+itemFieldId).val();
-            request.open("GET", Alfresco.constants.PROXY_URI + 'sample/validinnkpp/search?inn='	+ formData.prop_dms_INN + '&kpp=' + formData.prop_dms_KPP + '&itemId='+itemId, false);
+            request.open("GET", Alfresco.constants.PROXY_URI + 'sample/validinnkpp/search?inn=' + formData.prop_dms_INN + '&kpp=' + formData.prop_dms_KPP + '&itemId='+itemId, false);
             request.onload = function (response) {
                 var result = response.target.response;
                 if (result != "0") {
@@ -494,7 +583,7 @@
      */
     Alfresco.forms.validation.booleanValue = function booleanValueValidator(
         field, args, event, form, silent, message) {
-    	return field.value + "" == args.value + "";
+        return field.value + "" == args.value + "";
     };
 
     Alfresco.forms.validation.passportConsent = function passportConsentValidator(
@@ -502,83 +591,83 @@
         return field.value + "" == "true";
     };
 
-//	This function adds event handler on form submit process.
-//	It checks user confirmation before form submitting.
+//  This function adds event handler on form submit process.
+//  It checks user confirmation before form submitting.
 //
-//	@param formId - form identifier
-//	@param messages - object, which contains key/value of messages
-//		which depends on result of outcome of the property shown in form.
-//		key looks like: <prop_wfcf_someProp>|<value> ; if key is not mandatory, it is empty "".
-//		value is a shown message for specified key
-	Citeck.forms.promptBeforeSubmit = function(formId, messages) {
-		YAHOO.Bubbling.on("beforeFormRuntimeInit", function (layer, args) {
-			if (Alfresco.util.hasEventInterest(formId, args)) {
-				var form = Citeck.forms.getForm(formId);
-				if (!form)
-					return;
-				var formUI = Alfresco.util.ComponentManager.get(form.id);
-				if (!formUI)
-					return;
-				var formsRuntime = formUI.formsRuntime;
-				if (!formsRuntime)
-					return;
-				var submitInvoked = formsRuntime._submitInvoked;
-				if (!submitInvoked)
-					return;
+//  @param formId - form identifier
+//  @param messages - object, which contains key/value of messages
+//      which depends on result of outcome of the property shown in form.
+//      key looks like: <prop_wfcf_someProp>|<value> ; if key is not mandatory, it is empty "".
+//      value is a shown message for specified key
+    Citeck.forms.promptBeforeSubmit = function(formId, messages) {
+        YAHOO.Bubbling.on("beforeFormRuntimeInit", function (layer, args) {
+            if (Alfresco.util.hasEventInterest(formId, args)) {
+                var form = Citeck.forms.getForm(formId);
+                if (!form)
+                    return;
+                var formUI = Alfresco.util.ComponentManager.get(form.id);
+                if (!formUI)
+                    return;
+                var formsRuntime = formUI.formsRuntime;
+                if (!formsRuntime)
+                    return;
+                var submitInvoked = formsRuntime._submitInvoked;
+                if (!submitInvoked)
+                    return;
 
-				var customSubmit = function(event) {
-					var formData = formsRuntime.getFormData();
-					var message = null;
-					for (var key in messages) {
-						if (messages.hasOwnProperty(key) === true) {
-							if (key === "") {
-								message = messages[key];
-								break;
-							}
-							else {
-								var pos = key.indexOf('|'),
-									k = key,
-									v = "";
-								if (pos >= 0 && pos < key.length) {
-									var k = key.substr(0, pos),
-										v = key.substr(pos + 1);
-								}
-								if (formData[k] == v) {
-									message = messages[key];
-									break;
-								}
-							}
-						}
-					}
-					if (message) {
-						Alfresco.util.PopupManager.displayPrompt({
-							title: Alfresco.util.message("prompt.header.warning"),
-							text: message,
-							noEscape: true,
-							buttons: [
-							{
-								text: Alfresco.util.message("button.ok"),
-								handler: function dlA_onActionOk()
-								{
-									submitInvoked.call(formsRuntime, event);
-									this.destroy();
-								}
-							},
-							{
-								text: Alfresco.util.message("button.cancel"),
-								handler: function dlA_onActionCancel()
-								{
-									YAHOO.Bubbling.fire("metadataRefresh");
-									this.destroy();
-								},
-								isDefault: true
-							}]
-						});
-					}
-				};
-				formsRuntime._submitInvoked = customSubmit;
-			}
-		});
-	};
+                var customSubmit = function(event) {
+                    var formData = formsRuntime.getFormData();
+                    var message = null;
+                    for (var key in messages) {
+                        if (messages.hasOwnProperty(key) === true) {
+                            if (key === "") {
+                                message = messages[key];
+                                break;
+                            }
+                            else {
+                                var pos = key.indexOf('|'),
+                                    k = key,
+                                    v = "";
+                                if (pos >= 0 && pos < key.length) {
+                                    var k = key.substr(0, pos),
+                                        v = key.substr(pos + 1);
+                                }
+                                if (formData[k] == v) {
+                                    message = messages[key];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (message) {
+                        Alfresco.util.PopupManager.displayPrompt({
+                            title: Alfresco.util.message("prompt.header.warning"),
+                            text: message,
+                            noEscape: true,
+                            buttons: [
+                            {
+                                text: Alfresco.util.message("button.ok"),
+                                handler: function dlA_onActionOk()
+                                {
+                                    submitInvoked.call(formsRuntime, event);
+                                    this.destroy();
+                                }
+                            },
+                            {
+                                text: Alfresco.util.message("button.cancel"),
+                                handler: function dlA_onActionCancel()
+                                {
+                                    YAHOO.Bubbling.fire("metadataRefresh");
+                                    this.destroy();
+                                },
+                                isDefault: true
+                            }]
+                        });
+                    }
+                };
+                formsRuntime._submitInvoked = customSubmit;
+            }
+        });
+    };
 
 })();

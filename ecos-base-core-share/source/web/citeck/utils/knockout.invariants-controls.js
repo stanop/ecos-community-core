@@ -392,17 +392,17 @@ ko.components.register('list-of-selected-criterion', {
         self.htmlId                 = params.htmlId;
         self.itemId                 = params.itemId;
         self.journalType            = params.journalType;
-        self.selectedSearchCriteria = params.selectedSearchCriteria;
-        self.defaultSearchCriteria  = params.defaultSearchCriteria;
+        self.selectedFilterCriteria = params.selectedFilterCriteria;
+        self.defaultFilterCriteria  = params.defaultFilterCriteria;
 
         self.remove = function(data, event) {
-            self.selectedSearchCriteria.remove(data);
+            self.selectedFilterCriteria.remove(data);
         };
     },
     template: 
        '<table class="selected-criteria-list">\
             <tbody>\
-                <!-- ko foreach: selectedSearchCriteria -->\
+                <!-- ko foreach: selectedFilterCriteria -->\
                     <tr>\
                         <td class="action-col"><a class="remove-selected-criterion" data-bind="click: $component.remove">X</a></td>\
                         <td class="name-col"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
@@ -577,334 +577,402 @@ ko.components.register('journal', {
 });
 
 ko.bindingHandlers.journalControl = {
-    init: function(element, valueAccessor, allBindings, data, context) {
-        var self = this;
+  init: function(element, valueAccessor, allBindings, data, context) {
+    var self = this;
 
-        //  Citeck global objects
-        var JournalType = koclass('JournalType');
+    //  Citeck global objects
+    var JournalType = koclass('JournalType');
 
-        // html elements
-        var button = Dom.get(element.id + "-button"),
-            panelId = element.id + "-journalPanel", panel;
+    // html elements
+    var button = Dom.get(element.id + "-button"),
+        panelId = element.id + "-journalPanel", panel;
 
-        // binding variables
-        var settings = valueAccessor(),
-            value = settings.value,
-            multiple = settings.multiple,
-            params = allBindings().params();
+    // binding variables
+    var settings = valueAccessor(),
+        value = settings.value,
+        multiple = settings.multiple,
+        params = allBindings().params();
 
-        // params
-        var defaultVisibleAttributes = params.defaultVisibleAttributes,
-            defaultSearchableAttributes = params.defaultSearchableAttributes,
-            localization = params.localization;
+    // params
+    var defaultVisibleAttributes = params.defaultVisibleAttributes,
+        defaultSearchableAttributes = params.defaultSearchableAttributes,
+        localization = params.localization;
 
-        if (defaultVisibleAttributes) {
-            defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
-        }
+    if (defaultVisibleAttributes) {
+        defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
+    }
+
+    if (defaultSearchableAttributes) {
+        defaultSearchableAttributes = _.map(defaultSearchableAttributes.split(","), function(item) { return trim(item) });
+    }
+
+    var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
+        loading = ko.observable(true), criteriaListShow = ko.observable(false), criteria = ko.observable([]), 
+        journalType = params.journalType ? new JournalType(params.journalType) : null,
+        searchBar = params.searchBar ? params.searchBar == "true" : true,
+        mode = params.mode ? params.mode : "collapse",
+        maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
+        options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }) });
+
+    // reset page after new search
+    criteria.subscribe(function(newValue) {
+        pageNumber(1);
+    });
+
+    // show loading indicator if page was changed
+    pageNumber.subscribe(function(newValue) {
+        loading(true);
+    })
+
+    // hide loading indicator if options got elements
+    options.subscribe(function(newValue) {
+        loading(_.isUndefined(newValue.pagination));
+    })
+
+    // extend notify
+    criteria.extend({ notify: 'always' });
+    pageNumber.extend({ notify: 'always' });
+    options.extend({ notify: 'always' });
+
+    if (!journalType) {
+        // TODO: other way to get journalType
+    }
+    
+    // get default criteria
+    var defaultCriteria = ko.computed(function() {
+        if (defaultSearchableAttributes) return journalType.attributes();
+        return journalType.defaultAttributes();
+    });
+
+    // add default criteria to selectedFilterCriteria
+    koutils.subscribeOnce(ko.computed(function() {
+        selectedFilterCriteria.removeAll();
+        var dc = defaultCriteria();
 
         if (defaultSearchableAttributes) {
-            defaultSearchableAttributes = _.map(defaultSearchableAttributes.split(","), function(item) { return trim(item) });
+            var validAttributes = [];
+            for (var i = 0; i < dc.length; i++) {
+                if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
+            }
+            dc = validAttributes;
         }
 
-        var selectedElements = ko.observableArray(), selectedSearchCriteria = ko.observableArray(), 
-            loading = ko.observable(true), criteriaListShow = ko.observable(false), criteria = ko.observable([]), 
-            journalType = params.journalType ? new JournalType(params.journalType) : null,
-            searchBar = params.searchBar ? params.searchBar.toLowerCase() == "true" : true,
-            filterMode = params.filterMode ? params.filterMode.toLowerCase() : "collapse",
-            maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-            options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }) });
-
-        // reset page after new search
-        criteria.subscribe(function(newValue) {
-            pageNumber(1);
-        });
-
-        // show loading indicator if page was changed
-        pageNumber.subscribe(function(newValue) {
-            loading(true);
-        })
-
-        // hide loading indicator if options got elements
-        options.subscribe(function(newValue) {
-            loading(_.isUndefined(newValue.pagination));
-        })
-
-        // extend notify
-        criteria.extend({ notify: 'always' });
-        pageNumber.extend({ notify: 'always' });
-        options.extend({ notify: 'always' });
-
-    
-        if (!journalType) {
-            // TODO: other way to get journalType
+        if (dc) {
+            for (var i in dc) {
+                var newCriterion = _.clone(dc[i]);
+                newCriterion.value = ko.observable();
+                newCriterion.predicateValue = ko.observable();
+                selectedFilterCriteria.push(newCriterion);
+            }
         }
-       
+    }), defaultCriteria.dispose);
 
-        // get default criteria
-        var defaultCriteria = ko.computed(function() {
-            if (defaultSearchableAttributes) return journalType.attributes();
-            return journalType.defaultAttributes();
-        });
+    var submitButtonId           = panelId + "-submitInput",
+        cancelButtonId           = panelId + "-cancelInput",
+        elementsTabId            = panelId + "-elementsTab",
+        elementsPageId           = panelId + "-elementsPage",
+        filterTabId              = panelId + "-filterTab",
+        filterPageId             = panelId + "-filterPage",
+        createTabId              = panelId + "-createTab",
+        createPageId             = panelId + "-createPage", 
+        journalId                = panelId + "-elementsTable",
+        selectedJournalId        = panelId + "-selectedElementsTable",
+        searchId                 = panelId + "-search",
+        filterCriteriaVariantsId = panelId + "-filterCriteriaVariants",
+        journalPickerHeaderId    = panelId + "-journal-picker-header";
 
-        // add default criteria to selectedSearchCriteria
-        koutils.subscribeOnce(ko.computed(function() {
-            selectedSearchCriteria.removeAll();
-            var dc = defaultCriteria();
+    // open dialog
+    Event.on(button, "click", function(event) {
+        if (!panel) {
+            panel = new YAHOO.widget.Panel(panelId, {
+                width:          "800px", 
+                visible:        false, 
+                fixedcenter:    true,  
+                draggable:      true,
+                modal:          true,
+                zindex:         5,
+                close:          true
+            });
 
-            if (defaultSearchableAttributes) {
-                var validAttributes = [];
-                for (var i = 0; i < dc.length; i++) {
-                    if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
+            panel.setHeader(localization.title || 'Journal Picker');
+            panel.setBody('\
+                <div class="journal-picker-header ' + mode + '" id="' + journalPickerHeaderId + '">\
+                    <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
+                    <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
+                    <!-- ko component: { name: "createObjectButton", params: {\
+                        scope: scope,\
+                        source: \"create-views\",\
+                        callback: callback,\
+                        buttonTitle: buttonTitle\
+                    }} --><!-- /ko -->\
+                    ' + (searchBar ? '<div class="journal-search"><input type="search" placeholder="' + localization.search + '" class="journal-search-input" id="' + searchId + '" /></div>' : '') + '\
+                </div>\
+                <div class="journal-picker-page-container ' + mode + '">\
+                    <div class="filter-page hidden" id="' + filterPageId + '">\
+                        <div class="selected-filter-criteria-container">\
+                            <!-- ko component: { name: \'list-of-selected-criterion\',\
+                                params: {\
+                                    htmlId: htmlId,\
+                                    itemId: itemId,\
+                                    journalType: journalType,\
+                                    selectedFilterCriteria: selectedFilterCriteria,\
+                                    defaultFilterCriteria: defaultFilterCriteria\
+                                }\
+                            } --> <!-- /ko -->\
+                        </div>\
+                        <div class="filter-criteria-actions">\
+                            <ul>\
+                                <li class="filter-criteria-option">\
+                                    <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria">' + localization.applyCriteria + '</a>\
+                                </li>\
+                                <li class="filter-criteria-option">\
+                                    <a class="filter-criteria-button" data-bind="click: addFilterCriterion">' + localization.addFilterCriterion + '</a>\
+                                    <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
+                                        <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
+                                            <li class="filter-criteria-list-option">\
+                                                <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
+                                            </li>\
+                                        </ul>\
+                                    </div>\
+                                </li>\
+                            </ul>\
+                        </div>\
+                    </div>\
+                    <div class="elements-page" id="' + elementsPageId + '">\
+                        <div class="journal-container" id="' + journalId + '">\
+                            <!-- ko component: { name: \'journal\',\
+                                params: {\
+                                    sourceElements: elements,\
+                                    targetElements: selectedElements,\
+                                    journalType: journalType,\
+                                    columns: columns,\
+                                    page: page,\
+                                    loading: loading,\
+                                    options: {\
+                                        multiple: multiple,\
+                                        pagination: true,\
+                                        localization: {\
+                                            nextPageLabel: "' + localization.nextPageLabel + '",\
+                                            nextPageTitle: "' + localization.nextPageTitle + '",\
+                                            previousPageLabel: "' + localization.previousPageLabel + '",\
+                                            previousPageTitle: "' + localization.previousPageTitle + '"\
+                                        }\
+                                    },\
+                                }\
+                            } --><!-- /ko -->\
+                        </div>\
+                        <div class="journal-capture">' + localization.selectedElements + '</div>\
+                        <div class="journal-container selected-elements" id="' + selectedJournalId + '">\
+                            <!-- ko component: { name: \'journal\',\
+                                params: {\
+                                    sourceElements: selectedElements,\
+                                    journalType: journalType,\
+                                    columns: columns,\
+                                    callback: function(data) { selectedElements.remove(data) }\
+                                }\
+                            } --><!-- /ko -->\
+                        </div>\
+                    </div>\
+                    <div class="create-page hidden" id="' + createPageId + '"></div>\
+                </div>\
+            ');
+            panel.setFooter('\
+                <div class="buttons">\
+                    <input type="submit" value="' + localization.submitButton + '" id="' + submitButtonId + '">\
+                    <input type="button" value="' + localization.cancelButton + '" id="' + cancelButtonId + '">\
+                </div>\
+            ');
+
+            panel.render(document.body);
+
+
+            // panel submit and cancel buttons
+            Event.on(submitButtonId, "click", function(event) {
+                value(ko.utils.unwrapObservable(this.selectedElements));
+                this.panel.hide();
+            }, { selectedElements: selectedElements, panel: panel }, true);
+
+            Event.on(cancelButtonId, "click", function(event) {
+                selectedElements(value());
+                this.hide();
+            }, panel, true);
+
+            // tabs listener
+            Event.on(journalPickerHeaderId, "click", function(event) {
+                event.stopPropagation();
+
+                if (event.target.tagName == "A") {
+                    if ($(event.target).hasClass("journal-tab-button")) {
+                        switch (mode) {
+                            case "full":
+                                $(event.target)
+                                    .addClass("selected")
+                                    .parent()
+                                    .children()
+                                    .filter(".selected:not(#" + event.target.id + ")")
+                                    .removeClass("selected");
+
+                                var pageId = event.target.id.replace(/Tab$/, "Page"),
+                                    page = Dom.get(pageId);
+
+                                $(page)
+                                    .removeClass("hidden")
+                                    .parent()
+                                    .children()
+                                    .filter("div:not(#" + pageId +")")
+                                    .addClass("hidden");
+
+                                $("button.selected", $(event.target).parent())
+                                    .removeClass("selected");
+
+                                break;
+
+                            case "collapse":
+                                var filterTab = Dom.get(filterTabId), 
+                                    filterPage = Dom.get(filterPageId);
+
+                                $(filterTab).toggleClass("selected");
+                                $(filterPage).toggleClass("hidden");
+                                break;
+                        }
+                    }
                 }
-                dc = validAttributes;
+            })
+
+            // search bar listener
+            if (searchBar) {
+                // filter listener
+                Event.on(searchId, "keypress", function(event) {
+                    if (event.keyCode == 13) {
+                        event.stopPropagation();
+
+                        var search = Dom.get(searchId);
+                        if (search.value) {
+                            criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]);
+                        } else {
+                            criteria([]);
+                        }
+                    }
+                }); 
             }
 
-            if (dc) {
-                for (var i in dc) {
-                    var newCriterion = _.clone(dc[i]);
+
+            // say knockout that we have something on elements page
+            ko.applyBindings({
+                elements: options,
+                selectedElements: selectedElements,
+                multiple: multiple,
+                journalType: journalType,
+                page: pageNumber,
+                loading: loading,
+                columns: defaultVisibleAttributes
+            }, Dom.get(elementsPageId));
+
+            // say knockout that we have something on search page
+            ko.applyBindings({
+                htmlId: element.id,
+                itemId: data.nodetype(),
+                journalType: journalType,
+                defaultFilterCriteria: defaultSearchableAttributes,
+                selectedFilterCriteria: selectedFilterCriteria,
+                criteria: criteria,
+                criteriaListShow: criteriaListShow,
+                selectFilterCriterion: function(data, event) {
+                    // clone criterion and add value observables
+                    var newCriterion = _.clone(data);
                     newCriterion.value = ko.observable();
                     newCriterion.predicateValue = ko.observable();
-                    selectedSearchCriteria.push(newCriterion);
-                }
-            }
-        }), defaultCriteria.dispose);
+                    selectedFilterCriteria.push(newCriterion);
 
-
-        // open dialog
-        Event.on(button, "click", function(event) {
-            if (!panel) {
-                panel = new YAHOO.widget.Panel(panelId, {
-                    width:          "800px", 
-                    visible:        false, 
-                    fixedcenter:    true,  
-                    draggable:      true,
-                    modal:          true,
-                    zindex:         5,
-                    close:          true
-                });
-
-                var submitButtonId           = panelId + "-submitInput",
-                    cancelButtonId           = panelId + "-cancelInput",
-                    elementsTabId            = panelId + "-elementsTab",
-                    elementsPageId           = panelId + "-elementsPage",
-                    searchTabId              = panelId + "-searchTab",
-                    searchPageId             = panelId + "-searchPage",
-                    journalId                = panelId + "-elementsTable",
-                    selectedJournalId        = panelId + "-selectedElementsTable",
-                    filterId                 = panelId + "-filter",
-                    searchCriteriaVariantsId = panelId + "-searchCriteriaVariants";
-
-                panel.setHeader(localization.title || 'Journal Picker');
-                panel.setBody('\
-                    <div class="journal-picker-header">\
-                        <a id="' + elementsTabId + '" class="journal-tab-button ' + (filterMode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
-                        <a id="' + searchTabId + '" class="journal-tab-button">' + localization.searchTab + '</a>\
-                        ' + (searchBar ? '<div class="journal-filter"><input type="search" placeholder="' + localization.searchTab + '" class="journal-filter-input" id="' + filterId + '" /></div>' : '') + '\
-                    </div>\
-                    <div class="journal-picker-page-container">\
-                        <div class="filter ' + filterMode + '">\
-                            <div class="search-page hidden" id="' + searchPageId + '">\
-                                <div class="selected-search-criteria-container">\
-                                    <!-- ko component: { name: \'list-of-selected-criterion\',\
-                                        params: {\
-                                            htmlId: htmlId,\
-                                            itemId: itemId,\
-                                            journalType: journalType,\
-                                            selectedSearchCriteria: selectedSearchCriteria,\
-                                            defaultSearchCriteria: defaultSearchCriteria\
-                                        }\
-                                    } --> <!-- /ko -->\
-                                </div>\
-                                <div class="search-criteria-actions">\
-                                    <ul>\
-                                        <li class="search-criteria-option">\
-                                            <a class="apply-criteria search-criteria-button" data-bind="click: applyCriteria">' + localization.applyCriteria + '</a>\
-                                        </li>\
-                                        <li class="search-criteria-option">\
-                                            <a class="search-criteria-button" data-bind="click: addSearchCriterion">' + localization.addSearchCriterion + '</a>\
-                                            <div class="search-criteria-variants" data-bind="visible: criteriaListShow">\
-                                                <ul class="search-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
-                                                    <li class="search-criteria-list-option">\
-                                                        <a class="search-criterion" data-bind="text: displayName, click: $root.selectSearchCriterion"></a>\
-                                                    </li>\
-                                                </ul>\
-                                            </div>\
-                                        </li>\
-                                    </ul>\
-                                </div>\
-                            </div>\
-                        </div>\
-                        <div class="elements-page" id="' + elementsPageId + '">\
-                            <div class="journal-container" id="' + journalId + '">\
-                                <!-- ko component: { name: \'journal\',\
-                                    params: {\
-                                        sourceElements: elements,\
-                                        targetElements: selectedElements,\
-                                        journalType: journalType,\
-                                        columns: columns,\
-                                        page: page,\
-                                        loading: loading,\
-                                        options: {\
-                                            multiple: multiple,\
-                                            pagination: true,\
-                                            localization: {\
-                                                nextPageLabel: "' + localization.nextPageLabel + '",\
-                                                nextPageTitle: "' + localization.nextPageTitle + '",\
-                                                previousPageLabel: "' + localization.previousPageLabel + '",\
-                                                previousPageTitle: "' + localization.previousPageTitle + '"\
-                                            }\
-                                        },\
-                                    }\
-                                } --><!-- /ko -->\
-                            </div>\
-                            <div class="journal-capture">' + localization.selectedElements + '</div>\
-                            <div class="journal-container selected-elements" id="' + selectedJournalId + '">\
-                                <!-- ko component: { name: \'journal\',\
-                                    params: {\
-                                        sourceElements: selectedElements,\
-                                        journalType: journalType,\
-                                        columns: columns,\
-                                        callback: function(data) { selectedElements.remove(data) }\
-                                    }\
-                                } --><!-- /ko -->\
-                            </div>\
-                        </div>\
-                    </div>\
-                ');
-                panel.setFooter('\
-                    <div class="buttons">\
-                        <input type="submit" value="' + localization.submitButton + '" id="' + submitButtonId + '">\
-                        <input type="button" value="' + localization.cancelButton + '" id="' + cancelButtonId + '">\
-                    </div>\
-                ');
-
-                panel.render(document.body);
-
-
-                // panel submit and cancel buttons
-                Event.on(submitButtonId, "click", function(event) {
-                    value(ko.utils.unwrapObservable(this.selectedElements));
-                    this.panel.hide();
-                }, { selectedElements: selectedElements, panel: panel }, true);
-
-                Event.on(cancelButtonId, "click", function(event) {
-                    selectedElements(value());
-                    this.hide();
-                }, panel, true);
-
-
-                // tabs links
-                var elementsTab = Dom.get(elementsTabId), elementsPage = Dom.get(elementsPageId),
-                    searchTab = Dom.get(searchTabId), searchPage = Dom.get(searchPageId),
-                    filter = Dom.get(filterId),
-                    searchCriteriaVariants = Dom.get(searchCriteriaVariantsId);
-
-                // tabs listeners
-                Event.on(elementsTabId, "click", function(event) {
-                    $(searchTab).removeClass("selected");
-                    $(elementsTab).addClass("selected");
-
-                    $(searchPage).addClass("hidden");
-                    $(elementsPage).removeClass("hidden");
-                });
-
-                Event.on(searchTabId, "click", function(event) {
-                  switch (filterMode) {
-                    case "collapse":
-                      $(searchTab).toggleClass("selected");
-                      $(searchPage).toggleClass("hidden");
-                      break;
-
-                    case "full-page":
-                      $(elementsTab).removeClass("selected");
-                      $(searchTab).addClass("selected");
-                      $(elementsPage).addClass("hidden");
-                      $(searchPage).removeClass("hidden");
-                      break;
-                  }
-                });
-
-                // search bar
-                if (searchBar) {
-                    // filter listener
-                    Event.on(filterId, "keypress", function(event) {
-                        if (event.keyCode == 13) {
-                            event.stopPropagation();
-
-                            var filter = Dom.get(filterId);
-                            if (filter.value) {
-                                criteria([{ attribute: "all", predicate: "string-contains", value: filter.value }]);
-                            } else {
-                                criteria([]);
+                    // hide drop-down menu
+                    criteriaListShow(!criteriaListShow());
+                },
+                applyCriteria: function(data, event) {
+                    var criteriaList = [], selectedCriteria = selectedFilterCriteria();
+                    if (selectedCriteria.length == 0) {
+                        criteria([])
+                    } else {
+                        for (var i in selectedCriteria) {
+                            if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
+                                criteriaList.push({
+                                    attribute: selectedCriteria[i].name(),
+                                    predicate: selectedCriteria[i].predicateValue(),
+                                    value: selectedCriteria[i].value()
+                                })
                             }
                         }
-                    }); 
-                }
-
-
-                // say knockout that we have something on elements page
-                ko.applyBindings({
-                    elements: options,
-                    selectedElements: selectedElements,
-                    multiple: multiple,
-                    journalType: journalType,
-                    page: pageNumber,
-                    loading: loading,
-                    columns: defaultVisibleAttributes
-                }, Dom.get(elementsPageId));
-
-                // say knockout that we have something on search page
-                ko.applyBindings({
-                    htmlId: element.id,
-                    itemId: data.nodetype(),
-                    journalType: journalType,
-                    defaultSearchCriteria: defaultSearchableAttributes,
-                    selectedSearchCriteria: selectedSearchCriteria,
-                    criteria: criteria,
-                    criteriaListShow: criteriaListShow,
-                    selectSearchCriterion: function(data, event) {
-                        // clone criterion and add value observables
-                        var newCriterion = _.clone(data);
-                        newCriterion.value = ko.observable();
-                        newCriterion.predicateValue = ko.observable();
-                        selectedSearchCriteria.push(newCriterion);
-
-                        // hide drop-down menu
-                        criteriaListShow(!criteriaListShow());
-                    },
-                    applyCriteria: function(data, event) {
-                        var criteriaList = [], selectedCriteria = selectedSearchCriteria();
-                        if (selectedCriteria.length == 0) {
-                            criteria([])
-                        } else {
-                            for (var i in selectedCriteria) {
-                                if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
-                                    criteriaList.push({
-                                        attribute: selectedCriteria[i].name(),
-                                        predicate: selectedCriteria[i].predicateValue(),
-                                        value: selectedCriteria[i].value()
-                                    })
-                                }
-                            }
-                            criteria(criteriaList);
-                        }
-                    },
-                    addSearchCriterion: function(data, event) {
-                        criteriaListShow(!criteriaListShow());
+                        criteria(criteriaList);
                     }
-                }, Dom.get(searchPageId));
-            }
-            
-            panel.show();
-        })
+                },
+                addFilterCriterion: function(data, event) {
+                    criteriaListShow(!criteriaListShow());
+                }
+            }, Dom.get(filterPageId));
 
-        // reload filterOptions request if was created new object
-        YAHOO.Bubbling.on("object-was-created", function(layer, args) {
-            if (args[1].fieldId == data.name()) {
-                criteria(_.clone(criteria()));
+            // say knockout that we have something on create tab for create page
+            ko.applyBindings({
+                scope: data,
+                buttonTitle: localization.createTab,
+                callback: function(variant) {
+                    Citeck.forms.formContent(variant.type(), variant.formId(), function(response) {
+                        Dom.get(createPageId).innerHTML = response;
+
+                        // hide other pages and remove selection from other tabs
+                        Dom.removeClass(elementsTabId, "selected");
+                        Dom.removeClass(filterTabId, "selected");
+                        Dom.addClass(elementsPageId, "hidden");
+                        Dom.addClass(filterPageId, "hidden");
+
+                        // show create page and hightlight tab
+                        Dom.removeClass(createPageId, "hidden");
+                        var createButton = Dom.getElementsBy(function(el) {
+                            return el.tagName == "BUTTON";
+                        }, "button", journalPickerHeaderId);
+                        Dom.addClass(createButton, "selected");
+                    }, 
+                    { 
+                        destination: variant.destination(),
+                        fieldId: data.name()
+                    });
+
+                }
+            }, Dom.get(journalPickerHeaderId));
+        }
+        
+        panel.show();
+    })
+
+    // reload filterOptions request if was created new object
+    YAHOO.Bubbling.on("object-was-created", function(layer, args) {
+        if (args[1].fieldId == data.name()) {           
+            // dirty hack, but it's work
+            loading(true);
+            setTimeout(function() {
+              criteria(_.clone(criteria()));
+            }, 5000);
+           
+            if (mode == "collapse") {                           
+              // clear create page
+              var createPage = Dom.get(createPageId);
+              Dom.addClass(createPage, "hidden");
+              createPage.innerHTML = "";
+
+              // show elements page
+              var elementsPage = Dom.get(elementsPageId);
+              Dom.removeClass(elementsPage, "hidden");
+
+              // change tab selection
+              var buttons = Dom.getElementsBy(function(element) {
+                    return element.className.indexOf("selected") != -1
+                  }, "button", journalPickerHeaderId);
+
+              _.each(buttons, function(element) {
+                element.classList.remove("selected");
+              });
             }
-        })
-    }
+        }
+    })
+  }
 }
 
 // -------------
@@ -914,7 +982,8 @@ ko.bindingHandlers.journalControl = {
 var CreateVariant = koclass('CreateVariant'),
     CreateVariantsByType = koclass('controls.CreateVariantsByType'),
     CreateVariantsByView = koclass('controls.CreateVariantsByView'),
-    CreateObjectButton = koclass('controls.CreateObjectButton');
+    CreateObjectButton = koclass('controls.CreateObjectButton'),
+    CreateObjectLink = koclass('controls.CreateObjectLink');
 
 CreateVariantsByType
     .key('type', String)
@@ -933,7 +1002,7 @@ CreateVariantsByView
         resultsMap: { createVariants: 'createVariants' }
     }))
     ;
-
+ 
 CreateObjectButton
     .key('id', String)
     .property('scope', Object)
@@ -943,6 +1012,7 @@ CreateObjectButton
     .property('buttonTitle', String)
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
+    .property('callback', Function)
     .computed('createVariants', function() {
         if(!this.scope().nodetype()) return [];
         var list = this.source() == 'create-views' 
@@ -951,53 +1021,60 @@ CreateObjectButton
         return list.createVariants();
     })
     .method('execute', function(createVariant) {
-        Citeck.forms.dialog(createVariant.type(), createVariant.formId(),
-            {
-                scope: this, 
-                fn: function(value) {
-                    if (this.constraint() && _.isFunction(this.constraint())) {                       
-                        var constraint = ko.computed(this.constraint(), { 
-                            oldValue: this.scope().multipleValues(), 
-                            newValue: value 
-                        });
+        if (this.callback() && _.isFunction(this.callback())) {
+            var callback = this.callback();
+            callback(createVariant);
+        } else {
+            Citeck.forms.dialog(createVariant.type(), createVariant.formId(),
+                {
+                    scope: this, 
+                    fn: function(value) {
+                        if (this.constraint() && _.isFunction(this.constraint())) {                       
+                            var constraint = ko.computed(this.constraint(), { 
+                                oldValue: this.scope().multipleValues(), 
+                                newValue: value 
+                            });
 
-                        koutils.subscribeOnce(ko.pureComputed(function() {
-                            var result = constraint();
-                            if (result != null || result != undefined) return result;
-                        }), function(result) {
-                            if (_.isBoolean(result)) {
-                                if (result) { this.scope().lastValue(value); }
-                                else { 
-                                    Alfresco.util.PopupManager.displayMessage({
-                                        text: this.constraintMessage() || Alfresco.util.message("create-object.message")
-                                    });
+                            koutils.subscribeOnce(ko.pureComputed(function() {
+                                var result = constraint();
+                                if (result != null || result != undefined) return result;
+                            }), function(result) {
+                                if (_.isBoolean(result)) {
+                                    if (result) { this.scope().lastValue(value); }
+                                    else { 
+                                        Alfresco.util.PopupManager.displayMessage({
+                                            text: this.constraintMessage() || Alfresco.util.message("create-object.message")
+                                        });
+                                    }
                                 }
-                            }
-                        }, this);
-                    } else {
-                        this.scope().lastValue(value);
-                    }
+                            }, this);
+                        } else {
+                            this.scope().lastValue(value);
+                        }
 
-                    YAHOO.Bubbling.fire("object-was-created", { 
-                        fieldId: this.scope().name(),
-                        value: value
-                    });
+                        YAHOO.Bubbling.fire("object-was-created", { 
+                            fieldId: this.scope().name(),
+                            value: value
+                        });
+                    }
+                }, 
+                { 
+                    title: this.buttonTitle() + ": " + createVariant.title(), 
+                    destination: createVariant.destination(),
+                    parentRuntime: this.parentRuntime(),
+                    virtualParent: this.virtualParent()
                 }
-            }, 
-            { 
-                title: this.buttonTitle() + ": " + createVariant.title(), 
-                destination: createVariant.destination(),
-                parentRuntime: this.parentRuntime(),
-                virtualParent: this.virtualParent()
-            }
-        ); 
+            ); 
+        }
     })
     ;
 
+
+
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
-    template:
-       '<!-- ko if: createVariants().length == 0 --> \
+    template: 
+        '<!-- ko if: createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
         <!-- ko if: createVariants().length == 1 --> \
@@ -1019,6 +1096,7 @@ ko.components.register('createObjectButton', {
                 </span> \
             </span> \
         <!-- /ko -->'
+
 });
 
 
