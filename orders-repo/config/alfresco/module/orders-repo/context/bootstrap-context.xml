@@ -145,4 +145,10 @@
         </property>
     </bean>
 
+    <!-- life cycles -->
+    <bean id="orders.orders-lifecycle" parent="idocs.import-lifecycle.csv">
+        <property name="location" value="alfresco/module/orders-repo/lifecycle/orders-lifecycle.csv" />
+        <property name="entityType" value="orders:internal" />
+    </bean>
+
 </beans>
