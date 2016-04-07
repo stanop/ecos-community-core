@@ -42,7 +42,11 @@ function loadObject(url, urlArgs) {
 
 function loadJournalsList(journalsListId) {
   var nodeRef = args.nodeRef || page.url.templateArgs.nodeRef || url.templateArgs.nodeRef || page.url.args.nodeRef;
-  return loadObject("/api/journals/list", { journalsList: journalsListId, nodeRef: nodeRef });
+  if (args.sendNodeRef == 'false') {
+    return loadObject("/api/journals/list", { journalsList: journalsListId });
+  } else {
+    return loadObject("/api/journals/list", { journalsList: journalsListId, nodeRef: nodeRef });
+  }
 }
 
 function loadJournal(journalId) {
@@ -86,7 +90,7 @@ function fillModel() {
   model.settingsJSON = settingsId ? loadSettings(settingsId) : 'null';
 
   var journal = eval('(' + model.journalJSON + ')');
-  
+
   if(journal) {
     var journalType = model.journalType = journal.type;
     model.filtersListJSON = loadFiltersList(journalType);
@@ -96,7 +100,7 @@ function fillModel() {
 
 
 (function() {
- 
+
   fillModel();
   model.outputPredicates = true;
 

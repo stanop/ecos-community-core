@@ -6,5 +6,6 @@
     <url>/citeck/components/document-journal</url>
     <properties>
         <journalsListId>site-contracts-main</journalsListId>
+        <sendNodeRef>false</sendNodeRef>
     </properties>
 </component>
