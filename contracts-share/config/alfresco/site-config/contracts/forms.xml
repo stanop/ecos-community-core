@@ -544,7 +544,7 @@
 				</appearance>
 			</form>
 		</forms>
-	</config>	
+	</config>
 
 	<config evaluator="node-type" condition="payments:period">
 		<forms>
@@ -556,7 +556,7 @@
 			</form>
 		</forms>
 	</config>
-	
+
 	<config evaluator="model-type" condition="contracts:documentType">
 		<forms>
 			<form>
@@ -581,7 +581,7 @@
 			</form>
 		</forms>
 	</config>
-	
+
 	<config evaluator="node-type" condition="payments:payment">
 		<forms>
 			<form>
@@ -646,7 +646,7 @@
 
 		</forms>
 	</config>
-	
+
 	<config evaluator="model-type" condition="payments:payment">
 		<forms>
 
@@ -910,7 +910,7 @@
 			</form>
 		</forms>
 	</config>
-	
+
 	<config evaluator="node-type" condition="payments:paymentDraft">
 		<forms>
 			<form>
@@ -938,7 +938,7 @@
 			</form>
 		</forms>
 	</config>
-	
+
 	<config evaluator="model-type" condition="payments:paymentDraft">
 		<forms>
 			<form>
@@ -1018,6 +1018,7 @@
 		<forms>
 			<form>
 				<field-visibility>
+					<show id="cm:name" />
 					<show id="idocs:fullOrganizationName"/>
 					<show id="idocs:shortOrganizationName"/>
 					<show id="idocs:juridicalAddress"/>
@@ -1670,6 +1671,7 @@
 		<forms>
 			<form>
 				<field-visibility>
+					<show id="cm:name" />
 					<show id="idocs:code"/>
 					<show id="idocs:fullOrganizationName"/>
 					<show id="idocs:shortOrganizationName"/>
