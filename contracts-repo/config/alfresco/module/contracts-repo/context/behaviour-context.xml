@@ -131,4 +131,9 @@
 		<property name="type" value="pasEntityCopied"/>
 	</bean>
 
+	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour" init-method="init">
+		<property name="nodeService" ref="nodeService" />
+		<property name="policyComponent" ref="policyComponent" />
+	</bean>
+
 </beans>

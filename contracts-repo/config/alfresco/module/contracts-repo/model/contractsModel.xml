@@ -204,6 +204,7 @@
 				<!--<aspect>dms:templateable</aspect>-->
 				<aspect>contracts:closingDocumentExtend</aspect>
 				<aspect>contracts:closingDocumentTemplated</aspect>
+				<aspect>contracts:hasContractor</aspect>
 			</mandatory-aspects>
 		</type>
 
@@ -353,7 +354,7 @@
 				</property-->
 			</properties>
 			<associations>
-				<association name="contracts:contractor">
+				<!-- <association name="contracts:contractor">
 					<source>
 						<mandatory>false</mandatory>
 						<many>true</many>
@@ -363,7 +364,7 @@
 						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
-				</association>
+				</association> -->
 				<association name="contracts:agreementSubject">
 					<source>
 						<mandatory>false</mandatory>
@@ -424,6 +425,7 @@
 				<aspect>idocs:confirmers</aspect>
 				<aspect>idocs:hasContractorApproval</aspect-->
 				<aspect>idocs:hasSignedVersion</aspect>
+				<aspect>contracts:hasContractor</aspect>
 
 			</mandatory-aspects>
 		</aspect>
@@ -468,6 +470,22 @@
                 </property>
             </overrides>
         </aspect>
+
+        <aspect name="contracts:hasContractor">
+        	<associations>
+				<association name="contracts:contractor">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:contractor</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
 
 	</aspects>
 

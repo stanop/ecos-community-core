@@ -42,11 +42,7 @@ function loadObject(url, urlArgs) {
 
 function loadJournalsList(journalsListId) {
   var nodeRef = args.nodeRef || page.url.templateArgs.nodeRef || url.templateArgs.nodeRef || page.url.args.nodeRef;
-  if (args.sendNodeRef == 'false') {
-    return loadObject("/api/journals/list", { journalsList: journalsListId });
-  } else {
-    return loadObject("/api/journals/list", { journalsList: journalsListId, nodeRef: nodeRef });
-  }
+  return loadObject("/api/journals/list", { journalsList: journalsListId, nodeRef: nodeRef });
 }
 
 function loadJournal(journalId) {
