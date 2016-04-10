@@ -50,7 +50,7 @@
 			<header key="cm:taggable" />
 		</headers>
 	</journal>
-	
+
 	<journal id="payment-periods">
 		<option name="type">payments:period</option>
 		<option name="doubleClickId">nodeRef</option>
@@ -125,6 +125,7 @@
 			<header key="contracts:closingDocumentSentToAccountDep"/>
 			<header key="contracts:closingDocumentReceiveAccountDepDate"/>
 			<header key="contracts:closingDocumentAgreement"/>
+			<header key="idocs:contractor" default="true"/>
 		</headers>
 	</journal>
 
@@ -166,7 +167,7 @@
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<option name="type">contracts:originalLocation</option>
 		<headers>
-			<header key="cm:name" default="true" /> 
+			<header key="cm:name" default="true" />
 		</headers>
 	</journal>
 
