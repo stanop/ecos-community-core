@@ -127,6 +127,12 @@
                     <value>additional-bids-on-signing</value>
                     <value>additional-bids-on-correction</value>
                     <value>purchase-signed</value>
+
+                    <!-- linkserver-norfos invoice statuses -->
+                    <value>invoice-draft</value>
+                    <value>invoice-on-approval</value>
+                    <value>invoice-on-correction</value>
+                    <value>invoice-paid-completed</value>
                 </list>
             </parameter>
         </constraint>
