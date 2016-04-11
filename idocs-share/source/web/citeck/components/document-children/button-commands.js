@@ -49,7 +49,7 @@
 						}
 					}
 				}
-			}
+			};
 			if (options.singleSelectMode)
 				cfg.mode = fui.MODE_SINGLE_UPDATE;
 			fui.show(cfg);
@@ -255,54 +255,84 @@
 		}
 	};
 
-	Citeck.widget.ButtonPanel.Commands.onPanelButtonRemoveAllAssoc = function(options) {
+	Citeck.widget.ButtonPanel.Commands.onPanelButtonDeleteAllAssoc = function (options) {
+
+		var headerMsg = Alfresco.util.message(options.header);
 		
-		var sourceRef = options.nodeRef;
+		Alfresco.util.PopupManager.displayPrompt({
+			title: Alfresco.util.message("association.assoc_deleteAll.title", this, headerMsg),
+			text: Alfresco.util.message("association.assoc_deleteAll.message", this, headerMsg),
+			noEscape: true,
+			buttons: [
+				{
+					text: Alfresco.util.message("button.delete"),
+					handler: function dlA_onActionDelete_delete() {
+						Alfresco.util.PopupManager.displayMessage({
+							text: Alfresco.util.message("association.assoc.deleteAll.inProgress"),
+							displayTime: 5
+						});
+						deleteProducts();
+						this.destroy();
+					}
+				},
+				{
+					text: Alfresco.util.message("button.cancel"),
+					handler: function dlA_onActionDelete_cancel() {
+						this.destroy();
+					},
+					isDefault: true
+				}]
+		});
+
+
+		var opts = _parseAddCommandOptions(options);
+
+		var sourceRef = opts.nodeRef;
 		var assocTypes = options.assocType;
 		var targetRefs = "";
 		var url = Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef=" + sourceRef + "&assocTypes=" + assocTypes;
-		console.log("----------");
-		console.log("sourceRef:" + sourceRef);
-		console.log("assocTypes:" + assocTypes);
-		console.log("targetRefs:" + targetRefs);
-
-		
 		var deleteAssocScript = "/citeck/node?nodeRef=";
-		var nodeReff = "workspace://SpacesStore/7a85b050-6ad7-45f3-8b6d-1553361c4cdc";
-		
 
-		
-		YAHOO.util.Connect.asyncRequest(
-			'GET',
-			url, {
-			success: function(response) {
-				if (response.responseText) {
-					var data = eval('({' + response.responseText + '})');
-					for (var i = 0; i < data.assocs[0].targets.length; i++) {
-						targetRefs += data.assocs[0].targets[i]['nodeRef'];
-						if (i < data.assocs[0].targets.length - 1)
-							targetRefs += ',';
-					}
-					if (targetRefs != "") {
-						deleteProduct(sourceRef, targetRefs, assocTypes);
-					}
-					
-				}
-			}
-		});
 
-		function deleteProduct(sourceRef, targetRefs, assocTypes) {
+		function deleteProducts() {
+			YAHOO.util.Connect.asyncRequest(
+				'GET',
+				url, {
+					success: function (response) {
+						if (response.responseText) {
+							var data = eval('({' + response.responseText + '})');
+							if (data.assocs[0].targets.length > 0) {
+								var timeDelay = data.assocs[0].targets.length * 800;
+								for (var i = 0; i < data.assocs[0].targets.length; i++) {
+									targetRefs = data.assocs[0].targets[i]['nodeRef'];
+									deleteRequest(targetRefs);
+									sleep(600);
+								}
+								_.delay(function () {
+									YAHOO.Bubbling.fire("metadataRefresh");
+								}, timeDelay);
+							} else {
+								Alfresco.util.PopupManager.displayMessage({
+									text: Alfresco.util.message("association.assoc.deleteAll.nothingToDelete", "", headerMsg)
+								});
+							}
+						}
+					}
+				});
+		}
+		
+		function sleep(ms) {
+			ms += new Date().getTime();
+			while (new Date() < ms) {}
+		}
+
+		function deleteRequest(nodeRef) {
 			Alfresco.util.Ajax.request({
-				url: Alfresco.constants.PROXY_URI + deleteAssocScript,
-				dataObj: {
-					sourceRef: sourceRef,
-					targetRef: targetRefs,
-					assocTypes: assocTypes
-				},
+				url: Alfresco.constants.PROXY_URI + deleteAssocScript + nodeRef,
 				method: Alfresco.util.Ajax.DELETE,
 				successCallback: {
-					fn: function (response) {
-						YAHOO.Bubbling.fire("metadataRefresh");
+					fn: function () {
+						
 					},
 					scope: this
 				},
@@ -310,9 +340,6 @@
 				scope: this
 			});
 		}
-		
-		
-		
 	};
 
 	Citeck.widget.ButtonPanel.Commands.onPanelButtonAssocsAdd = function(options) {
