@@ -23,10 +23,7 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
@@ -40,6 +37,7 @@ import java.util.Objects;
 
 /**
  * This behaviour react to change in "products and services" and calculate total amount in Payment
+ *
  * @author Roman.Makarskiy on 04.04.2016.
  */
 public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy {
@@ -111,7 +109,7 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         if (nodeService.exists(nodeRef)) {
             products = nodeService.getTargetAssocs(nodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
             for (AssociationRef associationRef : products) {
-                BigDecimal amount = new BigDecimal ((double) nodeService.getProperty(associationRef.getTargetRef(), ProductsAndServicesModel.PROP_TOTAL), MathContext.DECIMAL64);
+                BigDecimal amount = new BigDecimal((double) nodeService.getProperty(associationRef.getTargetRef(), ProductsAndServicesModel.PROP_TOTAL), MathContext.DECIMAL64);
                 totalAmount = totalAmount.add(amount);
             }
         }
@@ -120,9 +118,10 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
 
     private void updateTotalAmountInPayment(NodeRef nodeRef) {
         List<AssociationRef> payments = nodeService.getSourceAssocs(nodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
-        if (!payments.isEmpty()) {
+        QName qName = nodeService.getType(payments.get(0).getSourceRef());
+        if (!payments.isEmpty() && qName.equals(PaymentsModel.TYPE)) {
             for (AssociationRef paymentRef : payments) {
-                BigDecimal totalAmount  = getTotalAmount(paymentRef.getSourceRef());
+                BigDecimal totalAmount = getTotalAmount(paymentRef.getSourceRef());
                 BigDecimal currentlyAmount = new BigDecimal((double) nodeService.getProperty(paymentRef.getSourceRef(), PaymentsModel.PROP_PAYMENT_AMOUNT), MathContext.DECIMAL64);
                 if (!Objects.equals(totalAmount, currentlyAmount)) {
                     nodeService.setProperty(paymentRef.getSourceRef(), PaymentsModel.PROP_PAYMENT_AMOUNT, totalAmount);
