@@ -37,7 +37,8 @@
                 {key: 'nodeRef'}
             ]}
         </responseSchema>
-        <buttonsInHeader>onPanelButtonAssocsAdd</buttonsInHeader>
+        <buttonsInHeader>onPanelButtonAssocsAdd, onPanelButtonDeleteAllAssoc</buttonsInHeader>
+        <twisterKey></twisterKey>
         <destination>{nodeRef}</destination>
         <assocType>pas:containsProductsAndServices</assocType>
         <preloadSearchQuery>*</preloadSearchQuery>
