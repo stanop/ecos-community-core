@@ -128,7 +128,6 @@
 			rootURLresults: _parseConfigParam(options.rootURLresults, ""),
 			caseElementConfigName: _parseConfigParam(options.caseElementConfigName, ""),
 			addAssocScript: _parseConfigParam(options.addAssocScript, ""),
-			deleteAssocScript: _parseConfigParam(options.deleteAssocScript, "")
 		};
 		if (options.onPanelButtonAdd && typeof options.onPanelButtonAdd === 'function')
 			opts.onPanelButtonAdd = options.onPanelButtonAdd;
