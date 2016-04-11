@@ -25,7 +25,8 @@
 }
 
 .static .invariants-form .template-table .template-row,
-.static .invariants-form .template-table [class*="template-row-"] {
+.static .invariants-form .template-table [class*="template-row-"],
+.static .invariants-form .template-table .template-single { {
   margin-left: 40px;
   width: 95%;
 }
@@ -107,7 +108,8 @@
 .invariants-form .template-table .template-row .template-auto-number,
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
-.invariants-form .template-table .template-row .template-number {
+.invariants-form .template-table .template-row .template-number,
+.invariants-form .template-table .template-row .template-free-content {
   width: 54.5%;
   float: right;
 }
@@ -1039,7 +1041,8 @@
 
 /* view in view-mode */
 .invariants-form.view-form .template-table .template-view,
-.invariants-form.view-form .template-table .template-select {
+.invariants-form.view-form .template-table .template-select,
+.invariants-form.view-form .template-table .template-free-content {
   font-family: Open Sans Bold, Arial, sans-serif;
   float: right;
   width: 55%;
