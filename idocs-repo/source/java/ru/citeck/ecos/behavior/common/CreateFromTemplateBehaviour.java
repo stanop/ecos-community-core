@@ -24,6 +24,8 @@ import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
@@ -34,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.template.GenerateContentActionExecuter;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -118,6 +121,14 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 		{
 			if (!containsAssoc(node, template)) {
 				nodeService.createAssociation(node, template, DmsModel.ASSOC_TEMPLATE);
+                /*added generate template*/
+                boolean updateContent = (boolean) nodeService.getProperty(node, DmsModel.PROP_UPDATE_CONTENT);
+                if (updateContent) {
+                    ActionService actionService = serviceRegistry.getActionService();
+                    Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
+                    actionService.executeAction(actionGenerateContent, node);
+                }
+                /*end*/
 			}
 		}
         else {
