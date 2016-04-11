@@ -46,7 +46,7 @@
                             }
                     }
                 }
-            model.data = allCreate;
+            model.data = "sourceRef: " + sourceRefs + " targetRef: " + targetRefs + " assocTypes: " + assocType;;
         }
     } catch (ex){
         model.data = "Error: " + ex.name + ":" + ex.message;

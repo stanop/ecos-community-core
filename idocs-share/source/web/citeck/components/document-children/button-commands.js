@@ -127,7 +127,8 @@
 			rootURL: _parseConfigParam(options.rootURL, ""),
 			rootURLresults: _parseConfigParam(options.rootURLresults, ""),
 			caseElementConfigName: _parseConfigParam(options.caseElementConfigName, ""),
-			addAssocScript: _parseConfigParam(options.addAssocScript, "")
+			addAssocScript: _parseConfigParam(options.addAssocScript, ""),
+			deleteAssocScript: _parseConfigParam(options.deleteAssocScript, "")
 		};
 		if (options.onPanelButtonAdd && typeof options.onPanelButtonAdd === 'function')
 			opts.onPanelButtonAdd = options.onPanelButtonAdd;
@@ -253,6 +254,67 @@
 			});
 		}
 	};
+
+	Citeck.widget.ButtonPanel.Commands.onPanelButtonRemoveAllAssoc = function(options) {
+		
+		var sourceRef = options.nodeRef;
+		var assocTypes = options.assocType;
+		var targetRefs = "";
+		var url = Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef=" + sourceRef + "&assocTypes=" + assocTypes;
+		console.log("----------");
+		console.log("sourceRef:" + sourceRef);
+		console.log("assocTypes:" + assocTypes);
+		console.log("targetRefs:" + targetRefs);
+
+		
+		var deleteAssocScript = "/citeck/node?nodeRef=";
+		var nodeReff = "workspace://SpacesStore/7a85b050-6ad7-45f3-8b6d-1553361c4cdc";
+		
+
+		
+		YAHOO.util.Connect.asyncRequest(
+			'GET',
+			url, {
+			success: function(response) {
+				if (response.responseText) {
+					var data = eval('({' + response.responseText + '})');
+					for (var i = 0; i < data.assocs[0].targets.length; i++) {
+						targetRefs += data.assocs[0].targets[i]['nodeRef'];
+						if (i < data.assocs[0].targets.length - 1)
+							targetRefs += ',';
+					}
+					if (targetRefs != "") {
+						deleteProduct(sourceRef, targetRefs, assocTypes);
+					}
+					
+				}
+			}
+		});
+
+		function deleteProduct(sourceRef, targetRefs, assocTypes) {
+			Alfresco.util.Ajax.request({
+				url: Alfresco.constants.PROXY_URI + deleteAssocScript,
+				dataObj: {
+					sourceRef: sourceRef,
+					targetRef: targetRefs,
+					assocTypes: assocTypes
+				},
+				method: Alfresco.util.Ajax.DELETE,
+				successCallback: {
+					fn: function (response) {
+						YAHOO.Bubbling.fire("metadataRefresh");
+					},
+					scope: this
+				},
+				failureMessage: Alfresco.util.message("message.delete.failure", targetRefs),
+				scope: this
+			});
+		}
+		
+		
+		
+	};
+
 	Citeck.widget.ButtonPanel.Commands.onPanelButtonAssocsAdd = function(options) {
 		var opts = _parseAddCommandOptions(options),
 			picker = _addCommandPickers[opts.objectId];
