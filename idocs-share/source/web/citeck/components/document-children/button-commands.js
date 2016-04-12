@@ -380,7 +380,8 @@
 					rootURLresults: opts.rootURLresults,
 
 					// additional options
-					preloadSearchQuery: options.preloadSearchQuery ? options.preloadSearchQuery : null
+					preloadSearchQuery: options.preloadSearchQuery ? options.preloadSearchQuery : null,
+					preloadSearchQueryEveryTime: options.preloadSearchQueryEveryTime ? options.preloadSearchQueryEveryTime : null
 				},
 				successCallback: {
 					fn: function (response) {

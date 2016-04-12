@@ -56,6 +56,9 @@
 		<#if args.preloadSearchQuery??>
 			preloadSearchQuery: "${args.preloadSearchQuery}",
 		</#if>
+		<#if args.preloadSearchQueryEveryTime??>
+			preloadSearchQueryEveryTime: ${args.preloadSearchQueryEveryTime},
+		</#if>
 
 		model: model,
 		tree: {

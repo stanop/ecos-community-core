@@ -73,6 +73,9 @@
 
 			// request for first start
 			preloadSearchQuery: null
+
+			// request preloadSearchQuery every times when search box is empty
+			preloadSearchQueryEveryTime: false
 		},
 
 		/**
@@ -342,6 +345,10 @@
 			var input = Dom.get(this.id + "-searchText");
 			var query = input.value, 
 					context = this.options.currentRoot;
+
+			if (this.options.preloadSearchQueryEveryTime) {
+				if (!query) query = this.options.preloadSearchQuery;
+			}
 
 			if(query) {
 				var search = this.model.getItem("search");
