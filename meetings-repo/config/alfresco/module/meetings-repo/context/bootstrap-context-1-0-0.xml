@@ -176,7 +176,7 @@
 		<property name="name" value="meeting-cardlets" />
 		<property name="description" value="meeting-cardlets" />
 		
-		<property name="executeOnceOnly" value="false" />
+		<!-- <property name="executeOnceOnly" value="false" /> -->
 		
 		<property name="bootstrapViews">
 			<list>
