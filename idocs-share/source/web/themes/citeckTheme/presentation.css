@@ -2544,6 +2544,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel > h2,
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel .panel-body h3.alfresco-twister.alfresco-twister-open {
    margin-bottom: 10px;
+   margin-top: 0;
 }
 
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel.document-versions-comparison {

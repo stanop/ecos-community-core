@@ -4,7 +4,7 @@
   background-color: #f0f0f0;
 }
 
-.ecos-form {
+.ecos-form:not(.view-form) {
   padding: 15px 30px 15px 15px;
 }
 
@@ -173,9 +173,9 @@
   padding-right: 15px;
 }
 
-.invariants-form .template-table .template-row,
-.invariants-form .template-table [class*="template-row-"],
-.invariants-form .template-table .template-single {
+.invariants-form:not(.view-form) .template-table .template-row,
+.invariants-form:not(.view-form) .template-table [class*="template-row-"],
+.invariants-form:not(.view-form) .template-table .template-single {
   margin-left: 5%;
   width: 95%;
 }
