@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Customise site types component</shortname>
+  <description>Customise site types component</description>
+  <url>/citeck/components/type-kind/site-document-types?site={site}</url>
+</webscript>

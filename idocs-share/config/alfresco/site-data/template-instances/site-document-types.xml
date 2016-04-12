@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<template-instance>
+	<template-type>ru/citeck/site-document-types</template-type>
+	<components>
+
+		<component>
+			<region-id>data</region-id>
+			<url>/citeck/components/type-kind/site-document-types</url>
+			<properties>
+				<site>{site}</site>
+			</properties>
+		</component>
+
+	</components>
+</template-instance>

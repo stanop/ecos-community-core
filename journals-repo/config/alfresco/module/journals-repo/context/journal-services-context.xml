@@ -9,6 +9,12 @@
 	<bean id="journalService" class="ru.citeck.ecos.journals.JournalServiceImpl">
 	</bean>
 	
+	<bean id="journalServiceJS" class="ru.citeck.ecos.journals.JournalServiceJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="journals" />
+		<property name="journalService" ref="journalService" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+	
 	<bean id="journalTypesDeployer" class="ru.citeck.ecos.journals.JournalTypesDeployer" abstract="true">
 		<property name="journalService" ref="journalService" />
 		<!-- should be set in descendant beans -->

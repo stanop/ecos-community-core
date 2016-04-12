@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+<views xmlns="http://www.citeck.ru/ecos/views/1.0" xmlns:i="http://www.citeck.ru/ecos/invariants/1.0">
 	<imports>
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
@@ -9,7 +9,22 @@
 	<view class="cm:category" id="type-kind">
 		<field prop="cm:name" />
 		<field prop="tk:appliedType" />
-		<field prop="tk:appliedAspects" />
+		<field prop="tk:appliedAspects">
+			<region name="input" template="checkbox" />
+			<invariant on="options" language="explicit">
+				<i:item>cm:taggable</i:item>
+				<i:item>cm:classifiable</i:item>
+				<i:item>cm:versionable</i:item>
+				<i:item>icase:case</i:item>
+			</invariant>
+			<!-- <invariant on="value-title" language="javascript">dictionary.getTitle(value)</invariant> -->
+		</field>
+		<field prop="tk:journalType">
+			<region name="input" template="select" />
+			<invariant on="options" language="javascript">
+				journals.getAllJournalTypes()
+			</invariant>
+		</field>
 	</view>
 	
 	<view class="cm:content" id="type-kind">

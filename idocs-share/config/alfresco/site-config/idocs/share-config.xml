@@ -102,6 +102,22 @@
         </page-titles>
     </config>
 
+	<!-- Site pages -->
+	<config evaluator="string-compare" condition="SitePages">
+		<pages>
+			<page id="journals">journals2/list/main</page>
+			<page id="site-document-types">site-document-types</page>
+		</pages>
+	</config>
+
+	<!-- Special pages -->
+	<config evaluator="string-compare" condition="UriTemplate">
+		<uri-templates>
+			<uri-template id="journals">/{pageid}/list/{listId}</uri-template>
+			<uri-template id="sitejournals" before="sitepage">/site/{site}/{pageid}/list/{listId}</uri-template>
+		</uri-templates>
+	</config>
+
 	<!-- Configurable site-presets -->
 	<config evaluator="string-compare" condition="SurfPresets">
 		<site-presets>

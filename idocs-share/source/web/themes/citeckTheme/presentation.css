@@ -4101,6 +4101,8 @@ div#HEADER_USER_STATUS {
 /*  customize layout  */
 
 .customise-layout, 
+.customise-pages,
+.site-document-types,
 .customise-dashlets {
   padding: 15px 40px;
 }

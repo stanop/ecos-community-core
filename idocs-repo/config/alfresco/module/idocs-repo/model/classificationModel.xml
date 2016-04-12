@@ -59,6 +59,36 @@
 				</property>
 			</properties>
 		</aspect>
+		
+		<aspect name="tk:typeWithJournal">
+			<properties>
+				<property name="tk:journalType">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="tk:documentSite">
+			<associations>
+				<association name="tk:siteDocumentTypes">
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:category</class>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="tk:typeRelation">
+			<properties>
+				<property name="tk:relatesToType">
+					<type>d:category</type>
+				</property>
+			</properties>
+		</aspect>
 
 		<!--aspect name="tk:documentTypeKindTemplate">
 			<associations>

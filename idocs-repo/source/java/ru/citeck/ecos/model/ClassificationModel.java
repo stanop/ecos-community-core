@@ -44,4 +44,12 @@ public final class ClassificationModel {
     public static final QName PROP_APPLIED_TYPE = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "appliedType");
     public static final QName PROP_APPLIED_ASPECTS = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "appliedAspects");
 
+    public static final QName ASPECT_TYPE_WITH_JOURNAL = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "typeWithJournal");
+    public static final QName PROP_JOURNAL_TYPE = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "journalType");
+
+    public static final QName ASPECT_DOCUMENT_SITE = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "documentSite");
+    public static final QName ASSOC_SITE_DOCUMENT_TYPES = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "siteDocumentTypes");
+
+    public static final QName ASPECT_TYPE_RELATION = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "typeRelation");
+    public static final QName PROP_RELATES_TO_TYPE = QName.createQName(CLASSIFICATION_TYPE_KIND_NAMESPACE, "relatesToType");
 }

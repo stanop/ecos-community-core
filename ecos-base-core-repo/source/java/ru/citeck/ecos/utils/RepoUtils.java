@@ -44,6 +44,7 @@ import org.alfresco.service.cmr.repository.MimetypeService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.version.VersionType;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
@@ -890,4 +891,12 @@ public class RepoUtils {
 		}
 		return name;
 	}
+
+    public static NodeRef getOrCreateSiteContainer(String siteName, String containerName, SiteService siteService) {
+        NodeRef doclib = siteService.getContainer(siteName, containerName);
+        if(doclib == null) {
+            doclib = siteService.createContainer(siteName, containerName, null, null);
+        }
+        return doclib;
+    }
 }
