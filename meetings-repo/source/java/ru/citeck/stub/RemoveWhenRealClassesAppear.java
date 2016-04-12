@@ -1,2 +1,4 @@
 package ru.citeck.stub;
-class RemoveWhenRealClassesAppear {}
+public class RemoveWhenRealClassesAppear {
+    public void stubMethod() {}
+}
