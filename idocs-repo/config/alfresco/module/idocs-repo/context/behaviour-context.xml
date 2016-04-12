@@ -550,7 +550,7 @@
         <!--property name="className" value="ecos:document" /-->
         <property name="checkTypeSite" value="true" />
     </bean>
-    
+
     <bean id="SiteDocumentTypesBehaviour" class="ru.citeck.ecos.behavior.tk.SiteDocumentTypesBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="NodeService"/>
@@ -685,6 +685,12 @@
         <property name="className" value="bcal:calendar" />
         <property name="nameTemplate"
             value="Period #{'$'}{node.properties['bcal:dateFrom']?string('dd.MM.yyyy')}-#{'$'}{node.properties['bcal:dateTo']?string('dd.MM.yyyy')}" />
+    </bean>
+
+    <bean id="idocs.updateToUploadedFilesBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.UpdateToUploadedFilesBehaviour" init-method="init">
+        <property name="nodeService" ref="nodeService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="siteService" ref="siteService" />
     </bean>
 
 </beans>
