@@ -1,3 +1,152 @@
+/* ECOS INVARIANT FORM */
+
+.static {
+  background-color: #f0f0f0;
+}
+
+.ecos-form {
+  padding: 15px 30px 15px 15px;
+}
+
+.static .ecos-form {
+  padding: 15px;
+}
+
+.static .ecos-form {
+    padding: 15px 40px;
+}
+
+.ecos-form .form-fields .form-field {
+    background-color: transparent;
+    margin: 0 0 10px 0;
+}
+
+/* select */
+.ecos-form .form-fields .form-field select {
+    background-color: white;
+}
+
+.ecos-form .form-fields .form-field select,
+.ecos-form .form-fields .form-field input[type="date"],
+.ecos-form .form-fields .form-field input[type="datetime-local"] {
+    padding: 4px 5px;
+}
+
+/* textarea, input text, number */
+.ecos-form .form-fields .form-field textarea,
+.ecos-form .form-fields .form-field input[type="text"],
+.ecos-form .form-fields .form-field input[type="number"] {
+  padding: 5px;
+}
+
+.ecos-form .form-fields .form-field textarea {
+  max-width: 100%;
+  height: 30px;
+}
+
+
+/* BUTTONS */
+.ecos-form .form-buttons input {
+  font-weight: 900;
+  padding: 3px 10px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.ecos-form .form-field button {
+  padding: 3px 10px;
+  font-weight: 900;
+  background-color: white;
+  border: 2px solid #1c55da;
+  color: #1c55da;
+  cursor: pointer;
+}
+
+.ecos-form .form-field button:hover,
+.ecos-form .form-field button:focus {
+  color: white;
+  background-color: #1c55da;
+}
+
+.ecos-form .form-field button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  background-color: white;
+  cursor: default;
+}
+
+/* yui-button */
+.ecos-form .form-field .yui-button {
+  padding: 3px 3px;
+  background-color: white;
+  border: 2px solid #1c55da;
+  cursor: pointer;
+}
+
+.ecos-form .form-field .yui-button > .first-child > button {
+  padding: 0 7px;
+  font-weight: 900;
+  background: transparent;
+  border: none;
+  color: #1c55da;
+}
+
+.ecos-form .form-field .yui-button.yui-menu-button > .first-child {
+   background-image: url(yui/assets/arrow-down-blue.png);
+   background-repeat: no-repeat;
+   background-position: right center;
+}
+
+.ecos-form .form-field .yui-button.yui-menu-button.yui-button-hover > .first-child {
+   background-image: url(yui/assets/arrow-down-white.png);
+}
+
+.ecos-form .form-field .yui-button.yui-menu-button.yui-button-focus > .first-child {
+   background-image: url(yui/assets/arrow-up-white.png);
+}
+
+.ecos-form .form-field .yui-button-hover,
+.ecos-form .form-field .yui-button-focus,
+.ecos-form .form-field .yui-button.yui-button-hover .first-child button,
+.ecos-form .form-field .yui-button.yui-button-focus .first-child button {
+  color: white;
+  background-color: #1c55da;
+}
+
+/* submit */
+.ecos-form .form-buttons input[type="submit"] {
+  border: 2px solid #008c03;
+  color: #008c03;
+}
+
+.ecos-form .form-buttons input[type="submit"]:hover,
+.ecos-form .form-buttons input[type="submit"]:focus {
+  background-color: #008c03;
+  border-color: #008c03 !important;
+  color: white;
+}
+
+.ecos-form .form-buttons input[type="submit"]:disabled {
+  border-color: #ccc !important;
+  color: #aaa;
+  cursor: default;
+}
+
+
+/* cancel */
+.ecos-form .form-buttons input[type="button"] {
+  border: none;
+  color: #1c55da;
+}
+
+.ecos-form .form-buttons input[type="button"]:hover,
+.ecos-form .form-buttons input[type="button"]:focus {
+  color: red;
+}
+
+
+/* TEMPLATES and CONTROLS */
+
 .static .invariants-form .template-table {
   margin-left: -40px;
   width: 800px;
@@ -24,10 +173,10 @@
   padding-right: 15px;
 }
 
-.static .invariants-form .template-table .template-row,
-.static .invariants-form .template-table [class*="template-row-"],
-.static .invariants-form .template-table .template-single {
-  margin-left: 40px;
+.invariants-form .template-table .template-row,
+.invariants-form .template-table [class*="template-row-"],
+.invariants-form .template-table .template-single {
+  margin-left: 5%;
   width: 95%;
 }
 
@@ -47,6 +196,9 @@
   position: relative;
   margin-left: 5%;
   width: 45%;
+
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
 }
 
 /* three column */
@@ -56,6 +208,9 @@
   position: relative;
   margin-left: 5%;
   width: 28.333%;
+
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
 }
 
 
@@ -168,9 +323,13 @@
 /* region select group */
 .invariants-form .template-table .template-row .region-select-group {
   overflow: hidden;
+}
+
+.static .invariants-form .template-table .template-row .region-select-group {
   float: right;
   max-width: 25%;
   clear: right;
+  margin-top: 0;
 }
 
 .invariants-form .template-table .template-row .template-view + .region-select-group {
@@ -189,16 +348,16 @@
   color: green;
 }
 
+.invariants-form .template-table .template-mandatory {
+  position: absolute;
+  left: -15px;
+  top: 3px;
+}
+
 .invariants-form .template-table .template-row .template-mandatory {
   top: 2px;
   left: 2px; 
   position: relative;
-}
-
-.static .invariants-form .template-table .template-mandatory {
-  position: absolute;
-  left: -15px;
-  top: 3px;
 }
 
 .static .invariants-form .template-table .template-row .template-mandatory {
@@ -224,6 +383,7 @@
 .invariants-form .template-table .template-row .template-label {
   width: auto;
   float: left;
+  max-width: 45%;
 }
 
 .invariants-form .template-table .template-half-width .template-label,
@@ -256,14 +416,9 @@
 
 /* textarea */
 .invariants-form .template-table .template-row .template-textarea {
-  min-width: 54.5%;
-  max-width: 100%;
-  float: right;
-  width: auto;
-}
-
-.invariants-form .template-table .template-row.with-help .template-textarea {
-  min-width: 53.5%;
+  width: 100%;
+  clear: left;
+  margin-top: 5px;
 }
 
 /* select */
@@ -274,9 +429,13 @@
 
 /* select- */
 .invariants-form .template-table .template-row .region-select-group > .form-region {
+  float: left;
+  margin: 10px 10px 0 0;
+}
+
+.static .invariants-form .template-table .template-row .region-select-group > .form-region {
   float: right;
-  margin-left: 10px;
-  margin-top: 10px;
+  margin: 10px 0 0 10px;
 }
 
 .invariants-form .template-table .template-half-width [class*="template-select-"],
@@ -322,7 +481,7 @@
 }
 
 .invariants-form .template-table .template-row .template-number + .template-help {
-  position: initial;
+  position: static;
   margin-left: 5px;
 }
 
@@ -362,9 +521,10 @@
     clear: both;
 }
 
-.invariants-form .template-table .template-third-width .template-message,  
-.invariants-form .template-table .template-half-width .template-message {
-    padding-top: 10px;
+.invariants-form .template-table .template-third-width .template-message span.validation-message ,  
+.invariants-form .template-table .template-half-width .template-message span.validation-message {
+  margin-top: 10px;
+  display: inline-block;
 }
 
 .invariants-form .template-table .template-row .template-message,
@@ -382,7 +542,7 @@
 }
 
 .invariants-form .template-table .template-row > .template-textarea + .template-help + .template-message {
-  position: initial;
+  position: static;
 }
 
 
@@ -1067,11 +1227,16 @@
 
 
 /* view */
+.static .invariants-form .template-table .template-row .template-view {
+  position: absolute;
+  left: 45.5%;
+}
+
 .invariants-form:not(.view-form) .template-table .template-row .template-view {
-    padding-top: 5px; 
-    width: 30%;
-    box-sizing: border-box;
-    float: left;
+  padding-top: 5px; 
+  width: 30%;
+  box-sizing: border-box;
+  float: left;
 }
 
 .invariants-form .template-table .template-view span.value-item {
