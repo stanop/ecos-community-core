@@ -30,6 +30,8 @@ public final class SiteModel {
 
     // types
     public static final QName TYPE_SITE = QName.createQName(SITE_NAMESPACE, "site");
+    public static final String DOCUMENT_SITE_PRESET = "document-site-dashboard";
+    public static final String FILE_SITE_PRESET = "file-site-dashboard";
 
     //properties
     public static final QName PROP_SITE_PRESET = QName.createQName(SITE_NAMESPACE, "sitePreset");
