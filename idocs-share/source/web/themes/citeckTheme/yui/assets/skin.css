@@ -1213,6 +1213,10 @@ p#clear {
    padding: 3px 10px;
 }
 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .buttons {
+	font-size: 13px;
+}
+
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .bdft .yui-button.yui-button-hover > span.first-child > button,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .yui-button.yui-button-hover > span.first-child > button,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .buttons input[type="submit"]:hover,
