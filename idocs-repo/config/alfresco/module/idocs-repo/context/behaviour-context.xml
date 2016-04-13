@@ -541,6 +541,7 @@
     <bean id="idocs.AddJournalBehaviour" class="ru.citeck.ecos.behavior.common.AddJournalBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
         <!--property name="serviceRegistry" ref="ServiceRegistry"/-->
         <property name="typeQname" value="{http://www.citeck.ru/model/content/ecos/1.0}document" />
         <property name="typeQnameShort" value="ecos:document" />
