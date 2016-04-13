@@ -72,7 +72,7 @@
 			autoShow: false,
 
 			// request for first start
-			preloadSearchQuery: null
+			preloadSearchQuery: null,
 
 			// request preloadSearchQuery every times when search box is empty
 			preloadSearchQueryEveryTime: false
