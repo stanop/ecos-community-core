@@ -45,7 +45,8 @@
             <value>${workflow.notification.overdue.cronExpression}</value>
         </property>
     </bean>
-	<bean id="RemoveDetachedJob" class="org.alfresco.util.CronTriggerBean">
+    <!-- not tested -->
+	<!--bean id="RemoveDetachedJob" class="org.alfresco.util.CronTriggerBean">
         <property name="jobDetail">
             <bean class="org.springframework.scheduling.quartz.JobDetailBean">
                 <property name="jobClass">
@@ -65,5 +66,5 @@
         <property name="cronExpression">
             <value>${workflow.remove.orphaned.cronExpression}</value>
         </property>
-    </bean>
+    </bean-->
 </beans>
