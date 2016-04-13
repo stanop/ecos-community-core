@@ -17,6 +17,10 @@
   text-align: right;
 }
 
+.form-field.route table.stages tbody.stage tr td.stage-participants {
+  padding: 0;
+}
+
 .form-field.route table.stages .stage select {
   width: 100%;
 }

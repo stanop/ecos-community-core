@@ -2848,6 +2848,11 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    box-shadow: none;
 }
 
+
+.share-form .form-container .form-fields .form-field select {
+  padding: 4px 5px;
+}
+
 .share-form .form-container .form-fields .form-field input[type="text"].number,
 .share-form .form-container .form-fields .form-field input[type="text"].auto-manual-input,
 .share-form .form-container .form-fields .form-field input[type="text"].date-entry {
