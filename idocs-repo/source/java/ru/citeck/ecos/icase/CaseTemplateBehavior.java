@@ -57,7 +57,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 	//protected SearchService searchService;
 	protected NamespaceService namespaceService;
 	protected CaseElementServiceImpl caseElementService;
-	protected int order = 45;
+	protected int order = 40;
 	
 	protected Map<QName, NodeRef> caseTemplates;
     private ScriptService scriptService;
