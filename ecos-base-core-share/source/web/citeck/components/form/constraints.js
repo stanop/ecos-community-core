@@ -225,8 +225,11 @@
 
                             var node = args[1].node;
                             node.thisclass.save(node, function(persistedNode) {
+                                if (submitCallback instanceof Function)
+                                    submitCallback(persistedNode);
+
                                 YAHOO.Bubbling.fire("object-was-created", { 
-                                    fieldId: node.name,
+                                    fieldId: node.name || params.fieldId,
                                     value: persistedNode
                                 });
 
@@ -234,13 +237,18 @@
                             });
                         });
 
-                        YAHOO.Bubbling.on("node-view-cancel", function() {
+                        YAHOO.Bubbling.on("node-view-cancel", function(layer, args) {
                            var runtime = args[1].runtime;
                             if(runtime.key() != viewId) return;
+
+                            if (cancelCallback instanceof Function)
+                                cancelCallback();
+
                             runtime.node().impl().reset();
                         });
 
-                        callback(response.serverResponse.responseText)
+                        if (responseCallback instanceof Function)
+                            responseCallback(response.serverResponse.responseText);
                     }
                 }
             });

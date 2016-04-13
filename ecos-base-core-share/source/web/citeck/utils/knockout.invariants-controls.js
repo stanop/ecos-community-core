@@ -939,21 +939,48 @@ ko.bindingHandlers.journalControl = {
                 scope: data,
                 buttonTitle: localization.createTab,
                 callback: function(variant) {
-                    Citeck.forms.formContent(variant.type(), variant.formId(), function(response) {
-                        Dom.get(createPageId).innerHTML = response;
+                    var scCallback = function(node) {
+                        if (mode == "collapse") {
+                            // clear create page
+                            var createPage = Dom.get(createPageId);
+                            Dom.addClass(createPage, "hidden");
+                            createPage.innerHTML = "";
 
-                        // hide other pages and remove selection from other tabs
-                        Dom.removeClass(elementsTabId, "selected");
-                        Dom.removeClass(filterTabId, "selected");
-                        Dom.addClass(elementsPageId, "hidden");
-                        Dom.addClass(filterPageId, "hidden");
+                            // show elements page
+                            var elementsPage = Dom.get(elementsPageId);
+                            Dom.removeClass(elementsPage, "hidden");
 
-                        // show create page and hightlight tab
-                        Dom.removeClass(createPageId, "hidden");
-                        var createButton = Dom.getElementsBy(function(el) {
-                            return el.tagName == "BUTTON";
-                        }, "button", journalPickerHeaderId);
-                        Dom.addClass(createButton, "selected");
+                            // change tab selection
+                            var buttons = Dom.getElementsBy(function(element) {
+                                return element.className.indexOf("selected") != -1
+                              }, "button", journalPickerHeaderId);
+
+                            _.each(buttons, function(element) {
+                            element.classList.remove("selected");
+                            });
+                        }
+                    };
+
+                    Citeck.forms.formContent(variant.type(), variant.formId(), {
+                        response: function(response) {
+                            Dom.get(createPageId).innerHTML = response;
+
+                            // hide other pages and remove selection from other tabs
+                            Dom.removeClass(elementsTabId, "selected");
+                            Dom.removeClass(filterTabId, "selected");
+                            Dom.addClass(elementsPageId, "hidden");
+                            Dom.addClass(filterPageId, "hidden");
+
+                            // show create page and hightlight tab
+                            Dom.removeClass(createPageId, "hidden");
+                            var createButton = Dom.getElementsBy(function(el) {
+                                return el.tagName == "BUTTON";
+                            }, "button", journalPickerHeaderId);
+                            Dom.addClass(createButton, "selected");
+                        },
+
+                        submit: scCallback,
+                        cancel: scCallback
                     }, 
                     { 
                         destination: variant.destination(),
@@ -969,32 +996,16 @@ ko.bindingHandlers.journalControl = {
 
     // reload filterOptions request if was created new object
     YAHOO.Bubbling.on("object-was-created", function(layer, args) {
-        if (args[1].fieldId == data.name()) {           
+        if (args[1].fieldId == data.name()) {
+
+            // TODO:
+            // - update table after added new node to runtime
+
             // dirty hack, but it's work
             loading(true);
             setTimeout(function() {
               criteria(_.clone(criteria()));
             }, 5000);
-           
-            if (mode == "collapse") {                           
-              // clear create page
-              var createPage = Dom.get(createPageId);
-              Dom.addClass(createPage, "hidden");
-              createPage.innerHTML = "";
-
-              // show elements page
-              var elementsPage = Dom.get(elementsPageId);
-              Dom.removeClass(elementsPage, "hidden");
-
-              // change tab selection
-              var buttons = Dom.getElementsBy(function(element) {
-                    return element.className.indexOf("selected") != -1
-                  }, "button", journalPickerHeaderId);
-
-              _.each(buttons, function(element) {
-                element.classList.remove("selected");
-              });
-            }
         }
     })
   }

@@ -1158,7 +1158,7 @@
 }
 
 .full .filter-page,
-.full .create-page {
+.create-page {
   height: 501px;
   overflow: auto;
 }
