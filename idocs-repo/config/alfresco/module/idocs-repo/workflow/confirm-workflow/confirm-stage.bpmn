@@ -37,11 +37,7 @@ if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOu
           <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
             <activiti:field name="script">
               <activiti:expression>
-               var owner = wfcf_confirmer; var lastTaskOwner = task.getVariable("cwf_lastTaskOwner");
-                if(lastTaskOwner &amp;&amp; lastTaskOwner != wfcf_confirmer){
-                    owner = lastTaskOwner;
-                }
-                confirmDecisions.save(execution, owner, "activiti$" + task.id);
+                 confirmDecisions.save(execution, wfcf_confirmer, "activiti$" + task.id);
               </activiti:expression>
             </activiti:field>
           </activiti:taskListener>
