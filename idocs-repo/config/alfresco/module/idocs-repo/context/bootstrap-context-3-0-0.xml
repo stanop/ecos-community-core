@@ -16,6 +16,11 @@
     <bean id="idocs.module-component.journals-controlled" parent="idocs.import-spaces.3-0-0">
         <property name="name" value="journals-controlled" />
         <property name="description" value="Controlled Journals" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-tasks" />
+            </list>
+        </property>
         <property name="bootstrapViews">
             <list>
                 <props>
