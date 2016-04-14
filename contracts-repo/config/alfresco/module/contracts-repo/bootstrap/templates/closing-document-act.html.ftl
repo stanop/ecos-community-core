@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+		"http://www.w3.org/TR/html4/loose.dtd">
 <#escape x as x?html>
 <html>
 <head>
@@ -10,9 +11,13 @@
         h1 {
             font-size: 32px;
         }
+		table {
+			border-collapse: collapse;
+		}
     </style>
 </head>
 <body>
+<#setting number_format=",##0.00"/>
 <#assign none = "(Нет)" />
 <#assign dateFormat = "dd.MM.yyyy" />
 <#assign dateTimeFormat = "dd.MM.yyyy HH:mm" />
@@ -31,9 +36,9 @@
 <p><b>Акт № ${document.properties["contracts:closingDocumentNumber"]!""} от <#if document.properties["contracts:closingDocumentDate"]??>${document.properties["contracts:closingDocumentDate"]?string('${dateFormat}')!}</#if></b><br/>
 <hr />
 
-Исполнитель: <#if document.associations?? && document.associations["idocs:legalEntity"]?? && document.associations["idocs:legalEntity"]?size != 0>${document.associations["idocs:legalEntity"][0].properties["cm:name"]!""}
+Исполнитель: <#if document.associations?? && document.associations["idocs:legalEntity"]?? && document.associations["idocs:legalEntity"]?size != 0>${document.associations["idocs:legalEntity"][0].properties["idocs:fullOrganizationName"]!""}
 <#elseif document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementLegalEntity"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementLegalEntity"]?size != 0>${document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementLegalEntity"][0].properties["cm:name"]!""}</#if><br/>
-Заказчик: <#if document.associations?? && document.associations["contracts:contractor"]?? && document.associations["contracts:contractor"]?size != 0>${document.associations["contracts:contractor"][0].properties["cm:name"]!""}</#if><br/>
+Заказчик: <#if document.associations?? && document.associations["contracts:contractor"]?? && document.associations["contracts:contractor"]?size != 0>${document.associations["contracts:contractor"][0].properties["idocs:fullOrganizationName"]!""}</#if><br/>
 </p>
 
 <table width="700px" border="1">
@@ -51,12 +56,12 @@
 		<#list document.associations["pas:containsProductsAndServices"] as containsProductsAndService>
 			<#assign count = count + 1/>
 			<tr>
-				<td>${count}</td>
+				<td>${count?string["0"]}</td>
 				<td>${containsProductsAndService.properties["cm:title"]!""}</td>
 				<td>${containsProductsAndService.properties["pas:quantity"]!""}</td>
 				<td>${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</td>
 				<td>${containsProductsAndService.properties["pas:pricePerUnit"]!""}</td>
-				<td>${containsProductsAndService.properties["pas:total"]?string.computer!0}</td>
+				<td>${containsProductsAndService.properties["pas:total"]!""}</td>
 			</tr>
 			<#assign total = '${containsProductsAndService.properties["pas:total"]?string.computer!0}'/>
 			<#assign totalAmount = totalAmount + total?number/>
@@ -81,7 +86,9 @@
 				<td>-</td>
 			</tr>
 </table>
-<p>Всего оказано услуг ${count}, на сумму ${totalAmount} <#if document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD</#if><br/>
+<p></p>
+<p></p>
+<p>Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if><br/>
 Выше перечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.</p>
 <hr />
 <table width="700px" border="0" cellspacing="0">
