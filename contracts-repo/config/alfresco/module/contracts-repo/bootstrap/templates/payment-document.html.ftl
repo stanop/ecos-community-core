@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
 <#escape x as x?html>
 <html>
 <head>
@@ -10,9 +11,13 @@
         h1 {
             font-size: 32px;
         }
+        table {
+            border-collapse: collapse;
+        }
     </style>
 </head>
 <body>
+<#setting number_format=",##0.00"/>
 <#assign none = "(Нет)" />
 <#assign dateFormat = "dd.MM.yyyy" />
 <#assign dateTimeFormat = "dd.MM.yyyy HH:mm" />
@@ -31,40 +36,32 @@
 
 <p><b><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:fullOrganizationName"]!""}</#if><br/>
 Адрес: <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:juridicalAddress"]!document.associations["payments:beneficiary"][0].properties["idocs:postAddress"]!}</#if></b></p>
-<p align="center"><b>Образец заполнения платежного поручения</b><br/></p>
+
 <table width="700px" border="1">
+
     <tr>
-        <td width="120px">ИНН <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:inn"]!""}</#if></td>
-        <td align="center" width="120px">&nbsp;</td>
-        <td width="120px">КПП <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:kpp"]!""}</#if></td>
-        <td align="center" width="55px">&nbsp;</td>
-        <td rowspan="2" width="45px"><#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>Кор. Сч. №</#if></td>
-        <td width="240px">&nbsp;</td>
+        <td nowrap colspan="2" width="245px">ИНН <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:inn"]!""}&nbsp;</#if></td>
+        <td nowrap colspan="2" width="230px">КПП <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:kpp"]!""}&nbsp;</#if></td>
+        <td rowspan="2" width="50px"><#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>Кор. Сч. №</#if></td>
+        <td rowspan="2" width="175px">&nbsp;</td>
     </tr>
     <tr>
         <td colspan="4">Получатель</td>
-        <td>&nbsp;</td>
     </tr>
     <tr>
-        <td><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:shortOrganizationName"]!""}</#if></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>Сч.</td>
-        <td><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:bill"]!""}</#if></td>
+        <td colspan="4"><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:shortOrganizationName"]!""}</#if></td>
+        <td align="center"><p>Сч. №</p></td>
+        <td><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:accountNumber"]!""}</#if></td>
     </tr>
     <tr>
         <td colspan="4">Банк получателя</td>
-        <td>БИК</td>
-        <td><#if document.associations?? && document.associations["payments:beneficiaryAccount"]?? && document.associations["payments:beneficiaryAccount"]?size != 0>${document.associations["payments:beneficiaryAccount"][0].properties["idocs:bankId"]!""}</#if></td>
+        <td align="center"><p>БИК</p></td>
+        <td><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:bankId"]!""}</#if></td>
     </tr>
     <tr>
-        <td><#if document.associations?? && document.associations["payments:beneficiaryAccount"]?? && document.associations["payments:beneficiaryAccount"]?size != 0>${document.associations["payments:beneficiaryAccount"][0].properties["idocs:bankTitle"]!""}</#if></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td rowspan="2">&nbsp;</td>
-        <td><#if document.associations?? && document.associations["payments:beneficiaryAccount"]?? && document.associations["payments:beneficiaryAccount"]?size != 0>${document.associations["payments:beneficiaryAccount"][0].properties["idocs:accountNumber"]!""}</#if></td>
+        <td colspan="4"><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:bankTitle"]!""}</#if></td>
+        <td rowspan="2" align="center"><p>Сч. №</p></td>
+        <td><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:corresponentAccountNumber"]!""}</#if></td>
     </tr>
 </table>
 <br/>
@@ -79,7 +76,7 @@
         <td align="center" width="30px">Единица измерения</td>
         <td align="center" width="40px">Количество </td>
         <td align="center" width="150px">Цена</td>
-        <td width="150px">Сумма</td>
+        <td align="center" width="150px">Сумма</td>
     </tr>
     <#assign count = 0/>
     <#assign totalAmount = 0/>
@@ -87,29 +84,31 @@
         <#list document.associations["pas:containsProductsAndServices"] as containsProductsAndService>
             <#assign count = count + 1/>
             <tr>
-                <td>${count}</td>
-                <td>${containsProductsAndService.properties["cm:title"]!""}</td>
-                <td>${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</td>
-                <td>${containsProductsAndService.properties["pas:quantity"]!""}</td>
-                <td>${containsProductsAndService.properties["pas:pricePerUnit"]!""}</td>
-                <td>${containsProductsAndService.properties["pas:total"]?string.computer!0}</td>
+                <td><p align="center">${count?string["0"]}</p></td>
+                <td><p align="left">${containsProductsAndService.properties["cm:title"]!""}</p></td>
+                <td><p align="center">${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</p></td>
+                <td><p align="center">${containsProductsAndService.properties["pas:quantity"]!""}</p></td>
+                <td><p align="right">${containsProductsAndService.properties["pas:pricePerUnit"]!""}</p></td>
+                <td><p align="right">${containsProductsAndService.properties["pas:total"]!""}</p></td>
             </tr>
             <#assign total = '${containsProductsAndService.properties["pas:total"]?string.computer!0}'/>
             <#assign totalAmount = totalAmount + total?number/>
         </#list>
     </#if>
-            <tr>
-                <td colspan="5" rowspan="3"></td>
-                <td>${totalAmount}</td>
-            </tr>
-            <tr>
-                <td>-</td>
-            </tr>
-            <tr>
-                <td>${totalAmount}</td>
-            </tr>
+                <tr>
+                        <td style="border-style: hidden" colspan="5"><p align="right"><b>Итого:</b></p></td>
+                        <td><p align="right">${totalAmount}</p></td>
+                </tr>
+                <tr>
+                        <td style="border-style: hidden" colspan="5"><p align="right"><b>Сумма НДС:</b></p></td>
+                        <td><p align="right">-</p></td>
+                </tr>
+                <tr>
+                        <td colspan="5" style="border-style: hidden"><p align="right"><b>Всего к оплате:</b></p></td>
+                        <td><p align="right">${totalAmount}</p></td>
+                </tr>
         </table>
-<p>Всего оказано услуг ${count}, на сумму ${totalAmount} <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if></p><br/>
+<p>Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if></p><br/>
 <table width="700px" border="0" cellspacing="0">
     <tr border="0">
         <td border="0">Руководитель предприятия <@signaturePlace/> <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0 && document.associations["payments:beneficiary"][0].associations["idocs:generalDirector"]?? && document.associations["payments:beneficiary"][0].associations["idocs:generalDirector"][0]?size != 0>(<@FIO document.associations["payments:beneficiary"][0].associations["idocs:generalDirector"][0]/>)<#elseif document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>(${document.associations["payments:beneficiary"][0].properties["idocs:CEOname"]!})</#if></td>
