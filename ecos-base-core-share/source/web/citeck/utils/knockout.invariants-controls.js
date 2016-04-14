@@ -30,10 +30,41 @@ var Event = YAHOO.util.Event,
     Dom = YAHOO.util.Dom;
 
 
-
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
 
+
+// ---------------
+// NUMBER
+// ---------------
+
+ko.components.register("number", {
+    viewModel: function(params) {
+        var self = this;
+
+        this.disable = params.disable;
+        this.id = params.id;
+        this.step = params.step && _.isNumber(params.step) ? params.step : "any";
+        this.value = params.value;
+        this.onlyNumbers = params.onlyNumbers && _.isBoolean(params.onlyNumbers) ? params.onlyNumbers : false;
+
+        this.koValidation = function(data, event) {
+            if (Citeck.HTML5.supportInput("number")) {
+                return _.contains([43, 44, 45, 46, 101, 69, 188, 190, 110], event.keyCode) ? false : true;
+            } else {
+                return event.keyCode >= 48 && event.keyCode <= 57;
+            }; 
+        }
+    },
+    template: 
+       '<!-- ko if: onlyNumbers -->\
+            <input type="number"\
+                data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: koValidation }" />\
+        <!-- /ko -->\
+        <!-- ko ifnot: onlyNumbers -->\
+            <input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }" />\
+        <!-- /ko -->'
+});
 
 // ---------------
 // FREE-CONTENT
