@@ -196,7 +196,7 @@
 						<many>true</many>
 					</source>
 					<target>
-						<class>idocs:legalEntity</class>
+						<class>idocs:contractor</class>
 						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
@@ -208,7 +208,7 @@
 						<many>true</many>
 					</source>
 					<target>
-						<class>idocs:contractor</class>
+						<class>idocs:legalEntity</class>
 						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
