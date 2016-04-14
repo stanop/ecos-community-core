@@ -199,6 +199,13 @@
             destination = params.destination || "",
             destinationAssoc = params.destinationAssoc || "";
 
+        var responseCallback, submitCallback, cancelCallback;
+        if (callback) {
+            if (callback.response) responseCallback = callback.response;
+            if (callback.submit) submitCallback = callback.submit;
+            if (callback.cancel) cancelCallback = callback.cancel;
+        }
+
         var newFormContent = function() {
             var dataObj = {
                 htmlid: viewId,
