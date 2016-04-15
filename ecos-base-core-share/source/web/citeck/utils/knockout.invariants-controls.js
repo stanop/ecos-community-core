@@ -51,9 +51,6 @@ ko.components.register("number-generate", {
         this.flag.subscribe(function(flag) {
             if (flag) {
                 self.generator();
-                self.disable(true);
-            } else {
-                self.disable(false);
             }
         });
 
