@@ -28,9 +28,6 @@
 				// 1 item
 		    if (selectedItems.length == 1) {
 		    	citeckWidgetRoute.setRoute(selectedItems[0], true);
-		    	
-		    	if (citeckWidgetRoute.hasRoute()) 
-	    			citeckWidgetRoute.saveAndLoadTemplateVisibility("hidden");
 		    };
 
 				// 0 items or more then 1
