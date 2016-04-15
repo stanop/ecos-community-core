@@ -3467,7 +3467,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 .alfresco-twister.alfresco-twister-open .alfresco-twister-actions > a {
   padding: 0;
   background-position: right center;
-  display: block;
+  display: inline-block;
   width: 17px;
   height: 17px;
 }
