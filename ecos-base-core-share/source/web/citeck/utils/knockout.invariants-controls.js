@@ -35,6 +35,45 @@ var Event = YAHOO.util.Event,
 
 
 // ---------------
+// NUMBER-GENERATE
+// ---------------
+
+ko.components.register("number-generate", {
+    viewModel: function(params) {
+        var self = this;
+        this.label = params.label || "Generate";
+        this.generator = params.generator;
+        this.mode = params.mode;
+        this.disable = params.disable;
+
+        // flag for 'checkbox' mode
+        this.flag = ko.observable(false);
+        this.flag.subscribe(function(flag) {
+            if (flag) {
+                self.generator();
+                self.disable(true);
+            } else {
+                self.disable(false);
+            }
+        });
+
+        // define mode
+        this.isButtonMode = this.mode == "button";
+        this.isCheckboxMode = this.mode == "checkbox";
+    },
+    template: 
+       '<!-- ko if: isButtonMode -->\
+            <button data-bind="text: label, disable: disable, click: function() { generator() }"></button>\
+        <!-- /ko -->\
+        <!-- ko if: isCheckboxMode -->\
+            <input style="position: relative; top: 2px;" type="checkbox" name="number-generate"\
+                data-bind="checked: flag" />\
+            <label style="margin-left: 10px;" data-bind="text: label"></label>\
+        <!-- /ko -->\
+        '
+});
+
+// ---------------
 // NUMBER
 // ---------------
 

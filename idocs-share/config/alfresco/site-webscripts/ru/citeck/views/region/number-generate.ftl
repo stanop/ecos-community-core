@@ -1,20 +1,24 @@
 <#assign params = viewScope.region.params!{} />
+<#assign mode = params.mode!"button" />
 
-<#-- TODO show validation messages in control -->
+<!-- ko component: { name: "number-generate", params: {
+    label: "${msg('button.generate')}",       
+    generator: function() { 
+        var generator = ko.computed(function() { 
+            return enumeration.getNumber('${params.template}', node()); 
+        }, this, { deferEvaluation: true });
 
-<button data-bind="click: function() {
-    var generator = ko.computed(function() { 
-        return enumeration.getNumber('${params.template}', node()); 
-    }, this, { deferEvaluation: true });
-
-    var number = generator();
-    if (number) {
-        value(number);
-        generator.dispose();
-    } else {
-        koutils.subscribeOnce(generator, function(number) { 
+        var number = generator();
+        if (number) {
             value(number);
             generator.dispose();
-        });
-    }
-}, disable: protected">${msg('button.generate')}</button>
+        } else {
+            koutils.subscribeOnce(generator, function(number) { 
+                value(number);
+                generator.dispose();
+            });
+        } 
+    },
+    disable: protected,
+    mode: "${mode}"
+}} --><!-- /ko -->
