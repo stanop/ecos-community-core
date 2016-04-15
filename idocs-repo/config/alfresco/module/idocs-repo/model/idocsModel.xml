@@ -85,6 +85,12 @@
                     <value>pledge-insurance</value>
                     <value>credit-case-reworking</value>
 
+                    <value>pledge-formation-cc</value>
+                    <value>pledge-conduct-cc</value>
+                    <value>pledge-conduct-gen-office-cc</value>
+                    <value>pledge-figuration-contract-docs</value>
+                    <value>pledge-returning</value>
+
                     <!-- contracts statuses-->
                     <value>draft</value> <!-- Черновик -->
                     <value>forPayment</value> <!-- На оплате -->
