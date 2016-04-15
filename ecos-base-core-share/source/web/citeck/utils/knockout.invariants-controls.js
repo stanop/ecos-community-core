@@ -81,7 +81,7 @@ ko.components.register("number-generate", {
     },
     template: 
        '<!-- ko if: isButtonMode -->\
-            <button data-bind="text: label, disable: disable, click: generate }"></button>\
+            <button data-bind="text: label, disable: disable, click: generate"></button>\
         <!-- /ko -->\
         <!-- ko if: isCheckboxMode -->\
             <input style="position: relative; top: 2px;" type="checkbox" name="number-generate" data-bind="checked: flag" />\
