@@ -3470,6 +3470,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   display: inline-block;
   width: 17px;
   height: 17px;
+  margin-left: 10px;
 }
 
 .alfresco-twister.alfresco-twister-open .alfresco-twister-actions a[id$="onPanelButtonCreate"] {
