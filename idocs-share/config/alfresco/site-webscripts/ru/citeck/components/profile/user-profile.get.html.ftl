@@ -23,10 +23,6 @@
                     <a href="${page.url.getUrl() + "?mode=edit"}">${msg("profile.edit")}</a>
                 </#if>
             </div>
-
-            <style type="text/css">
-                .user-profile .view-form
-            </style>
         </@>
     </@>
 </#if>
