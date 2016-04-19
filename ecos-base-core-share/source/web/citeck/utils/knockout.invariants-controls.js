@@ -879,8 +879,7 @@ ko.bindingHandlers.journalControl = {
                                 params: {\
                                     sourceElements: selectedElements,\
                                     journalType: journalType,\
-                                    columns: columns,\
-                                    callback: function(data) { selectedElements.remove(data) }\
+                                    columns: columns\
                                 }\
                             } --><!-- /ko -->\
                         </div>\
@@ -913,16 +912,23 @@ ko.bindingHandlers.journalControl = {
             Event.on(journalPickerHeaderId, "click", function(event) {
                 event.stopPropagation();
 
+                var filterTab = Dom.get(filterTabId),
+                    elementsTab = Dom.get(elementsTabId);
+
+                var filterPage = Dom.get(filterPageId), 
+                    elementsPage = Dom.get(elementsPageId),
+                    createPage = Dom.get(createPageId);
+
                 if (event.target.tagName == "A") {
                     if ($(event.target).hasClass("journal-tab-button")) {
                         switch (mode) {
                             case "full":
-                                $(event.target)
-                                    .addClass("selected")
-                                    .parent()
-                                    .children()
-                                    .filter(".selected:not(#" + event.target.id + ")")
-                                    .removeClass("selected");
+                              $(event.target)
+                                  .addClass("selected")
+                                  .parent()
+                                  .children()
+                                  .filter(".selected:not(#" + event.target.id + ")")
+                                  .removeClass("selected");
 
                                 var pageId = event.target.id.replace(/Tab$/, "Page"),
                                     page = Dom.get(pageId);
@@ -1078,7 +1084,12 @@ ko.bindingHandlers.journalControl = {
                             Dom.addClass(createButton, "selected");
                         },
 
-                        submit: scCallback,
+                        submit: function(node) {
+                            console.log(node);
+
+                            selectedElements(node);
+                            scCallback(node);
+                        },
                         cancel: scCallback
                     }, 
                     { 
@@ -1100,7 +1111,7 @@ ko.bindingHandlers.journalControl = {
             // TODO:
             // - update table after added new node to runtime
 
-            // dirty hack, but it's work
+            // dirty hack, but it's sometimes work
             loading(true);
             setTimeout(function() {
               criteria(_.clone(criteria()));
