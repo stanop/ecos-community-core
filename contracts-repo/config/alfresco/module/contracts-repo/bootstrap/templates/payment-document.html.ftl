@@ -17,21 +17,37 @@
     </style>
 </head>
 <body>
-<#setting number_format=",##0.00"/>
-<#assign none = "(Нет)" />
-<#assign dateFormat = "dd.MM.yyyy" />
-<#assign dateTimeFormat = "dd.MM.yyyy HH:mm" />
-<#macro signaturePlace>_____________________</#macro>
-<#assign tableWidth = "700px" />
-<#assign columnWidth = "300px" />
-<#assign creator = people.getPerson(document.properties["cm:creator"]) />
 
-<#macro FIO user>
-<#assign lastName = user.properties["org:lastName"]!user.properties["cm:lastName"]/>
-<#assign firstName = user.properties["org:firstName"]!user.properties["cm:firstName"] />
-<#assign middleName = user.properties["org:middleName"]! />
-<#if firstName!="">${firstName?substring(0, 1)}. <#if middleName!="">${middleName?substring(0, 1)}. </#if></#if>${lastName}
-</#macro>
+    <#setting number_format=",##0.00"/>
+    <#assign none = "(Нет)" />
+    <#assign dateFormat = "dd.MM.yyyy" />
+    <#assign dateTimeFormat = "dd.MM.yyyy HH:mm" />
+    <#macro signaturePlace>_____________________</#macro>
+    <#assign tableWidth = "700px" />
+    <#assign columnWidth = "300px" />
+    <#assign creator = people.getPerson(document.properties["cm:creator"]) />
+
+    <#macro FIO user>
+        <#assign lastName = user.properties["org:lastName"]!user.properties["cm:lastName"]/>
+        <#assign firstName = user.properties["org:firstName"]!user.properties["cm:firstName"] />
+        <#assign middleName = user.properties["org:middleName"]! />
+        <#if firstName!="">${firstName?substring(0, 1)}. <#if middleName!="">${middleName?substring(0, 1)}
+        . </#if></#if>${lastName}
+    </#macro>
+
+    <#macro findBankAccount>
+        <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>
+            <#assign assocs = document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"] />
+            <#list assocs as assoc>
+                <#if assoc.typeShort=="idocs:bankAccount">
+                    <#assign bankAccount = assoc />
+                    <#break>
+                </#if>
+            </#list>
+        </#if>
+    </#macro>
+
+    <@findBankAccount />
 
 
 <p><b><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:fullOrganizationName"]!""}</#if><br/>
@@ -40,10 +56,10 @@
 <table width="700px" border="1">
 
     <tr>
-        <td nowrap colspan="2" width="245px">ИНН <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:inn"]!""}&nbsp;</#if></td>
-        <td nowrap colspan="2" width="230px">КПП <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:kpp"]!""}&nbsp;</#if></td>
-        <td rowspan="2" width="50px"><#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>Кор. Сч. №</#if></td>
-        <td rowspan="2" width="175px">&nbsp;</td>
+        <td nowrap colspan="2" width="230px">ИНН <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:inn"]!""}&nbsp;</#if></td>
+        <td nowrap colspan="2" width="200px">КПП <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:kpp"]!""}&nbsp;</#if></td>
+        <td rowspan="2" width="60px"><#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>Кор. Сч. №</#if></td>
+        <td rowspan="2" width="210px">&nbsp;</td>
     </tr>
     <tr>
         <td colspan="4">Получатель</td>
@@ -51,17 +67,17 @@
     <tr>
         <td colspan="4"><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:shortOrganizationName"]!""}</#if></td>
         <td align="center"><p>Сч. №</p></td>
-        <td><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:accountNumber"]!""}</#if></td>
+        <td><#if bankAccount.properties["idocs:accountNumber"] != "">${bankAccount.properties["idocs:accountNumber"]!""}</#if></td>
     </tr>
     <tr>
         <td colspan="4">Банк получателя</td>
         <td align="center"><p>БИК</p></td>
-        <td><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:bankId"]!""}</#if></td>
+        <td><#if bankAccount.properties["idocs:bankId"] != "">${bankAccount.properties["idocs:bankId"]!""}</#if></td>
     </tr>
     <tr>
-        <td colspan="4"><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:bankTitle"]!""}</#if></td>
+        <td colspan="4"><#if bankAccount.properties["idocs:bankTitle"] != "">${bankAccount.properties["idocs:bankTitle"]!""}</#if></td>
         <td rowspan="2" align="center"><p>Сч. №</p></td>
-        <td><#if document.associations?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?? && document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"]?size != 0>${document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"][0].properties["idocs:corresponentAccountNumber"]!""}</#if></td>
+        <td><#if bankAccount.properties["idocs:corresponentAccountNumber"] != "">${bankAccount.properties["idocs:corresponentAccountNumber"]!""}</#if></td>
     </tr>
 </table>
 <br/>
