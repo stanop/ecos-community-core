@@ -975,6 +975,14 @@
   border-bottom: 1px solid #ccc;
 }
 
+.journal-picker-header .yui-menu-button {
+  margin-bottom: 3px;
+}
+
+.journal-picker-header .yui-menu-button button {
+  margin-right: 0;
+}
+
 .journal-picker-header:after {
   content: "";
   clear: both;
@@ -1107,7 +1115,6 @@
   padding: 0 15px;
   overflow: hidden;
   border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
 }
 
 .filter-criteria-actions > ul {

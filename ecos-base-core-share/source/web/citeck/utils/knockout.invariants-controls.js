@@ -940,8 +940,20 @@ ko.bindingHandlers.journalControl = {
                                 break;
 
                             case "collapse":
-                                var filterTab = Dom.get(filterTabId), 
-                                    filterPage = Dom.get(filterPageId);
+                                // switch page if elements hidden
+                                if ($(elementsPage).hasClass("hidden")) {
+                                  $(createPage).addClass("hidden");
+                                  $(elementsPage).removeClass("hidden");
+                                }
+
+                                // clear tab selection
+                                var buttons = Dom.getElementsBy(function(element) {
+                                    return element.className.indexOf("selected") != -1
+                                  }, "button", journalPickerHeaderId);
+
+                                _.each(buttons, function(element) {
+                                  element.classList.remove("selected");
+                                });
 
                                 $(filterTab).toggleClass("selected");
                                 $(filterPage).toggleClass("hidden");
