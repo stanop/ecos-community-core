@@ -421,6 +421,10 @@
                     <type>d:text</type>
                     <mandatory>true</mandatory>
                 </property>
+                <property name="idocs:bankTitleEng">
+                    <title>Название банка на английском языке</title>
+                    <type>d:text</type>
+                </property>
                 <property name="idocs:bankId">
                     <title>БИК</title>
                     <type>d:text</type>
@@ -442,6 +446,15 @@
                 <property name="idocs:corresponentAccountNumber">
                     <title>Счет в банке-корреспонденте</title>
                     <type>d:text</type>
+                </property>
+                <property name="idocs:swift">
+                    <title>SWIFT</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:currencyEnabled">
+                    <title>Использовать счет как валютный</title>
+                    <type>d:boolean</type>
+                    <default>false</default>
                 </property>
             </properties>
             <mandatory-aspects>
@@ -694,6 +707,10 @@
                     <title>Alternative name of organization</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:engOrganizationName">
+                    <title>Organization name in English</title>
+                    <type>d:text</type>
                 </property>
             </properties>
         </aspect>

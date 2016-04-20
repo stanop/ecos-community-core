@@ -231,53 +231,7 @@
             </form>
         </forms>
     </config>
-    
-    <config evaluator="node-type" condition="idocs:bankAccount">
-        <forms>
-            <form>
-                <field-visibility>
-                    <show id="idocs:legalEntity"/>
-                    <show id="idocs:bankTitle"/>
-                    <show id="idocs:bankId"/>
-                    <show id="idocs:accountNumber"/>
-                    <show id="idocs:corresponentBankTitle"/>
-                    <show id="idocs:correspondentBankId"/>
-                    <show id="idocs:corresponentAccountNumber"/>
-                </field-visibility>
-                <appearance>
-                    <field id="idocs:legalEntity" mandatory="true">
-                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
-                            <control-param name="searchWholeRepo">true</control-param>
-                        </control>
-                    </field>
-                </appearance>
-            </form>
-        </forms>
-    </config>
-    
-    <config evaluator="model-type" condition="idocs:bankAccount">
-        <forms>
-            <form>
-                <field-visibility>
-                    <show id="idocs:legalEntity"/>
-                    <show id="idocs:bankTitle"/>
-                    <show id="idocs:bankId"/>
-                    <show id="idocs:accountNumber"/>
-                    <show id="idocs:corresponentBankTitle"/>
-                    <show id="idocs:correspondentBankId"/>
-                    <show id="idocs:corresponentAccountNumber"/>
-                </field-visibility>
-                <appearance>
-                    <field id="idocs:legalEntity" mandatory="true">
-                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
-                            <control-param name="searchWholeRepo">true</control-param>
-                        </control>
-                    </field>
-                </appearance>
-            </form>
-        </forms>
-    </config>
-    
+
     <config evaluator="node-type" condition="budget:item">
         <forms>
             <form>

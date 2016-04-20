@@ -37,9 +37,12 @@
 
     <#macro findBankAccount>
         <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>
-            <#assign assocs = document.associations["payments:beneficiary"][0].sourceAssociations["idocs:legalEntity"] />
+            <#assign assocs = document.associations["payments:beneficiary"][0].sourceAssociations["idocs:contractor"] />
             <#list assocs as assoc>
-                <#if assoc.typeShort=="idocs:bankAccount">
+                <#if assoc.typeShort == "idocs:bankAccount" && assoc.properties["idocs:currencyEnabled"] == true && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>
+                    <#assign bankAccount = assoc />
+                    <#break>
+                <#elseif assoc.typeShort == "idocs:bankAccount" && assoc.properties["idocs:currencyEnabled"] == false && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>
                     <#assign bankAccount = assoc />
                     <#break>
                 </#if>
@@ -52,32 +55,50 @@
 
 <p><b><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:fullOrganizationName"]!""}</#if><br/>
 Адрес: <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:juridicalAddress"]!document.associations["payments:beneficiary"][0].properties["idocs:postAddress"]!}</#if></b></p>
-
+<p align="center"><b>Образец заполнения платежного поручения</b><br/></p>
 <table width="700px" border="1">
-
     <tr>
         <td nowrap colspan="2" width="230px">ИНН <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:inn"]!""}&nbsp;</#if></td>
         <td nowrap colspan="2" width="200px">КПП <#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:kpp"]!""}&nbsp;</#if></td>
-        <td rowspan="2" width="60px"><#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>Кор. Сч. №</#if></td>
-        <td rowspan="2" width="210px">&nbsp;</td>
+        <td rowspan="2" width="60px" align="center"><#if bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == true >Кор. сч. №</#if></td>
+        <td rowspan="2" width="210px">
+            <#if bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == true>${bankAccount.properties["idocs:corresponentAccountNumber"]!""}</#if>
+        </td>
     </tr>
     <tr>
         <td colspan="4">Получатель</td>
     </tr>
     <tr>
-        <td colspan="4"><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:shortOrganizationName"]!""}</#if></td>
-        <td align="center"><p>Сч. №</p></td>
-        <td><#if bankAccount.properties["idocs:accountNumber"] != "">${bankAccount.properties["idocs:accountNumber"]!""}</#if></td>
+        <td colspan="2"><#if document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>${document.associations["payments:beneficiary"][0].properties["idocs:shortOrganizationName"]!""}</#if></td>
+        <td colspan="2">
+            <#if bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == true && document.associations?? && document.associations["payments:beneficiary"]?? && document.associations["payments:beneficiary"]?size != 0>
+                ${document.associations["payments:beneficiary"][0].properties["idocs:engOrganizationName"]!""}
+            </#if>
+        </td>
+        <td align="center">Сч. №</td>
+        <td><#if bankAccount?? && bankAccount.properties["idocs:accountNumber"] != "">${bankAccount.properties["idocs:accountNumber"]!""}</#if></td>
     </tr>
     <tr>
         <td colspan="4">Банк получателя</td>
-        <td align="center"><p>БИК</p></td>
-        <td><#if bankAccount.properties["idocs:bankId"] != "">${bankAccount.properties["idocs:bankId"]!""}</#if></td>
+        <td align="center">БИК</td>
+        <td><#if bankAccount?? && bankAccount.properties["idocs:bankId"] != "">${bankAccount.properties["idocs:bankId"]!""}</#if></td>
     </tr>
     <tr>
-        <td colspan="4"><#if bankAccount.properties["idocs:bankTitle"] != "">${bankAccount.properties["idocs:bankTitle"]!""}</#if></td>
-        <td rowspan="2" align="center"><p>Сч. №</p></td>
-        <td><#if bankAccount.properties["idocs:corresponentAccountNumber"] != "">${bankAccount.properties["idocs:corresponentAccountNumber"]!""}</#if></td>
+        <td colspan="2"><#if bankAccount?? && bankAccount.properties["idocs:bankTitle"] != "">${bankAccount.properties["idocs:bankTitle"]!""}</#if></td>
+        <td colspan="2">
+            <#if bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == true>
+                ${bankAccount.properties["idocs:bankTitleEng"]}
+            </#if>
+        </td>
+        <td rowspan="2" align="center">
+            <#if bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == true>
+                SWIFT<#elseif bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == false>Сч. №</#if>
+
+        </td>
+        <td>
+            <#if bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == true>
+                ${bankAccount.properties["idocs:swift"]!""}<#elseif bankAccount?? && bankAccount.properties["idocs:currencyEnabled"] == false>${bankAccount.properties["idocs:corresponentAccountNumber"]!""}</#if>
+        </td>
     </tr>
 </table>
 <br/>
