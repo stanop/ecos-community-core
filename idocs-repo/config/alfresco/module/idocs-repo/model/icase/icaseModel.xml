@@ -88,7 +88,7 @@
 				<aspect>cm:titled</aspect>
 			</mandatory-aspects>
 		</type>
-		
+
 		<type name="icase:classConfig">
 			<parent>icase:elementConfig</parent>
 		</type>
@@ -177,7 +177,7 @@
             	</child-association>
             </associations>
         </type>
-        
+
         <type name="icasetpl:elementType">
         	<parent>cm:cmobject</parent>
         	<associations>
@@ -216,7 +216,7 @@
         		</child-association>
         	</associations>
         </type>
-        
+
 	</types>
 
 	<aspects>
@@ -317,9 +317,18 @@
 		<aspect name="icase:copiedFromTemplate" />
 
 		<aspect name="icase:element" />
-		
+
 		<aspect name="icase:hasCalendarEvents" />
-		
+
+		<aspect name="icase:isCaseable">
+			<properties>
+				<property name="icase:isCase">
+					<title>Is case?</title>
+					<type>d:boolean</type>
+				</property>
+			</properties>
+		</aspect>
+
 	</aspects>
 
 </model>

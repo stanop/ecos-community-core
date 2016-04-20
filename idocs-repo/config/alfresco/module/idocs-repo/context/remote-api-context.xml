@@ -16,7 +16,7 @@
 		<property name="workflowService" ref="WorkflowService" />
 
 	</bean>
-	
+
 	<bean id="webscript.ru.citeck.modules.modules-info.get"
 		class="ru.citeck.ecos.webscripts.modules.ModulesInfoGet"
 		parent="webscript">
@@ -45,7 +45,7 @@
 		parent="webscript">
         <property name="dao" ref="supplementaryFilesDAO" />
 	</bean>
-	
+
 	<bean id="webscript.ru.citeck.document.addAssociations.get"
 		class="ru.citeck.ecos.webscripts.document.AddAssociations"
 		parent="webscript">
@@ -63,7 +63,7 @@
 	      parent="webscript">
 		<property name="nodeService" ref="NodeService" />
 	</bean>
-	
+
     <bean id="webscript.ru.citeck.document-registration.register.post"
           class="ru.citeck.ecos.webscripts.documentregistration.RegisterPost"
           parent="webscript">
@@ -96,7 +96,7 @@
         <property name="personService" ref="PersonService" />
         <property name="versionService" ref="versionService" />
 	</bean>
-	
+
 	<bean id="webscript.ru.citeck.security.digitalSignature.get"
 		class="ru.citeck.ecos.webscripts.security.DigitalSignatureGet"
 		parent="webscript">
@@ -151,7 +151,7 @@
             </list>
         </property>
     </bean>
-	
+
 	<bean id="webscript.ru.citeck.workflow.inactive-instances-for-node.get"
 		class="ru.citeck.ecos.webscripts.workflow.InactiveWorkflowInstancesForNodeGet"
 		parent="abstractWorkflowWebScript"></bean>
@@ -227,6 +227,13 @@
         <property name="namespaceService" ref="namespaceService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.repository.dictionary.childrenClassesWithFullQname.get"
+          class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
     <bean id="webscript.ru.citeck.print.stampdoc.get" parent="dbp.webscript.view">
         <property name="processors">
             <list>
@@ -275,7 +282,7 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
-	<bean id="webscript.ru.citeck.passports.passports.get" class="ru.citeck.ecos.webscripts.passports.PassportsGet" 
+	<bean id="webscript.ru.citeck.passports.passports.get" class="ru.citeck.ecos.webscripts.passports.PassportsGet"
 			parent="webscript">
 		<!-- note that private services are used -->
 		<!-- to return basic information about private data -->
@@ -283,7 +290,7 @@
         <property name="personService" ref="personService"/>
 	</bean>
 
-	<bean id="webscript.ru.citeck.calendar.business-calendar.get" class="ru.citeck.ecos.webscripts.calendar.BusinessCalendarGet" 
+	<bean id="webscript.ru.citeck.calendar.business-calendar.get" class="ru.citeck.ecos.webscripts.calendar.BusinessCalendarGet"
 			parent="webscript">
 		<property name="searchService" ref="searchService"/>
 	</bean>

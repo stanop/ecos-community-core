@@ -4,6 +4,7 @@
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
 	</imports>
 
 	<view class="cm:category" id="type-kind">
@@ -19,18 +20,16 @@
 			</invariant>
 			<!-- <invariant on="value-title" language="javascript">dictionary.getTitle(value)</invariant> -->
 		</field>
+		<field prop="icase:isCase" />
 		<field prop="tk:journalType">
 			<region name="input" template="select" />
-			<invariant on="options" language="javascript">
-				journals.getAllJournalTypes()
-			</invariant>
 		</field>
 	</view>
-	
+
 	<view class="cm:content" id="type-kind">
 		<field prop="cm:name" />
 		<field prop="tk:type" />
 		<field prop="tk:kind" />
 	</view>
-	
+
 </views>
