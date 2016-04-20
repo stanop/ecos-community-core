@@ -303,6 +303,7 @@
             <field prop="payments:paymentNumber">
                 <region name="select" template="number-generate">
                     <param name="template">payment-number-template</param>
+                    <param name="mode">checkbox</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.property.payments_paymentNumber.title</param>
@@ -501,6 +502,7 @@
             <field prop="contracts:closingDocumentNumber">
                 <region name="select" template="number-generate">
                     <param name="template">closing-doc-number-template</param>
+                    <param name="mode">checkbox</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.property.contracts_closingDocumentNumber.title</param>
@@ -578,6 +580,7 @@
             <field prop="contracts:agreementNumber">
                 <region name="select" template="number-generate">
                     <param name="template">supAgreement-number-template</param>
+                    <param name="mode">checkbox</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">sup-agreement.form.contracts_agreementNumber.title</param>
