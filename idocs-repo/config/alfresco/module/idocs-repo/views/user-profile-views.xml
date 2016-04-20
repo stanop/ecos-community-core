@@ -19,7 +19,9 @@
             </invariant>
         </field>
         <view class="delegate:availability">
-            <field prop="delegate:available"/>
+            <field prop="delegate:available">
+                <invariant on="mandatory" language="explicit">false</invariant>
+            </field>
         </view>
         <!--<view class="org:preset">
             <field prop="org:preset">
