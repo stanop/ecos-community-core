@@ -138,7 +138,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .key('filter', s)
         .property('classes', [DDClass])
         .load('classes', koutils.simpleLoad({
-            url: Alfresco.constants.PROXY_URI + "api/classesWithFullQname?cf={filter}",
+            url: Alfresco.constants.PROXY_URI + "api/childrenClassesWithFullQname?cf={filter}&ctbp=idocs:doc",
             resultsMap: function(response) {
                 return {
                     // note: for the purposes of UI we sort this array
@@ -178,12 +178,38 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     var JournalService = koutils.koclass('journals.JournalsService')
     	.property('journalTypes', [o])
 		.load('journalTypes', koutils.simpleLoad({
-            url: Alfresco.constants.PROXY_URI + "api/journals/types"
+            url: Alfresco.constants.PROXY_URI + "api/journals/maptypes",
+            resultsMap: function(response) {
+                return {
+                    journalTypes: _.map(response, function(item) {
+                        return {
+                            journalType: item.journalType,
+                            type: item.type
+                        }
+                    })
+                }
+            }
         }))
 		.method('getAllJournalTypes', function() {
-			return this.journalTypes();
+            var allJournalTypes = [];
+            _.each(this.journalTypes(), function(value) {
+                allJournalTypes.push(value.journalType)
+            });
+			return allJournalTypes;
     		})
-		;
+        .method('getJournalType', function(journalTypeId) {
+            var journalType;
+            _.each(this.journalTypes(), function(value) {
+                if (value.type == QName(journalTypeId).key()) {
+                    journalType = value.journalType;
+                }
+            })
+            if(_.isUndefined(journalType)) {
+                return this.getAllJournalTypes();
+            } else {
+                return journalType;
+            }
+        });
 
 	var JournalServiceImpl = new JournalService();
 
