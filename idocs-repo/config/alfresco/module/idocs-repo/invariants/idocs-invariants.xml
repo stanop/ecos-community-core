@@ -20,4 +20,18 @@
         </property>
     </aspect>
 
+    <type name="idocs:bankAccount">
+        <association name="idocs:legalEntity">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <property name="idocs:bankTitleEng">
+            <invariant on="relevant" language="javascript">node.properties["idocs:currencyEnabled"]</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="idocs:swift">
+            <invariant on="relevant" language="javascript">node.properties["idocs:currencyEnabled"]</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
 </invariants>

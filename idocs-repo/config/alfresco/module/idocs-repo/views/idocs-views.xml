@@ -60,13 +60,15 @@
     <view class="idocs:legalEntity">
         <views mode="create" kind="2-column" />
         <views mode="edit" kind="2-column" />
-
         <view>
             <field prop="idocs:code" />
-            <field prop="idocs:fullOrganizationName" />
         </view>
         <view>
             <field prop="idocs:shortOrganizationName" />
+            <field prop="idocs:fullOrganizationName" />
+        </view>
+        <view>
+            <field prop="idocs:engOrganizationName"/>
             <field prop="idocs:juridicalAddress" />
         </view>
         <view>
@@ -88,5 +90,23 @@
     </view>
 
     <view class="idocs:doc" />
+
+    <view class="idocs:bankAccount">
+        <field prop="idocs:currencyEnabled"/>
+        <field assoc="idocs:legalEntity">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">original-location</param>
+            </region>
+        </field>
+        <field prop="idocs:bankTitle"/>
+        <field prop="idocs:bankTitleEng"/>
+        <field prop="idocs:bankId"/>
+        <field prop="idocs:accountNumber"/>
+        <field prop="idocs:swift"/>
+        <field prop="idocs:corresponentBankTitle"/>
+        <field prop="idocs:correspondentBankId"/>
+        <field prop="idocs:corresponentAccountNumber"/>
+    </view>
 
 </views>
