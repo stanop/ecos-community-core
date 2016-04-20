@@ -23,6 +23,7 @@ if (typeof Citeck == "undefined" || !Citeck)
 
 Citeck.utils = Citeck.utils || {};
 Citeck.HTML5 = Citeck.HTML5 || {};
+Citeck.Browser = Citeck.Browser || {};
 
 Citeck.namespace = function(namespace) {
 	var names = namespace.split('.'),
@@ -636,3 +637,28 @@ Alfresco.thirdparty.toISO8601 = function() {
 
   return toISOString.apply(arguments.callee, arguments);
 };
+
+
+// BROWSER
+
+Citeck.Browser.isIE = function(version) {
+    var ua = window.navigator.userAgent, 
+        msie = ua.indexOf("MSIE "), trident = ua.indexOf('Trident/'), edge = ua.indexOf('Edge/'),
+        ieVersion = false;
+
+    // IE 10 or older 
+    if (msie > 0) {
+        ieVersion = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+
+    // IE 11
+    } else if (trident > 0) {
+        var rv = ua.indexOf('rv:');
+        ieVersion = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+
+    // Edge (IE 12+)
+    } else if (edge > 0) {
+        ieVersion = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    return ieVersion ? (version ? +ieVersion == +version : true) : false;
+}
