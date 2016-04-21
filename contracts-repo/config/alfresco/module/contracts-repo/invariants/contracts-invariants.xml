@@ -22,11 +22,12 @@
         </association>
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["idocs:fullOrganizationName"]</invariant>
         </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
             <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of contract:";} else if (navigator.languages[0].includes("ru")) {"Вид договора:";}
-</invariant> -->
+            </invariant> -->
         </property>
         <property name="contracts:agreementNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -134,6 +135,7 @@
         </property>
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["idocs:fullOrganizationName"]</invariant>
         </association>
         <!-- <property name="tk:kind">
             <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of add'l agreement:";} else if (navigator.languages[0].includes("ru")) {"Вид доп. соглашения:";}
