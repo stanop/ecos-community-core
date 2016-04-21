@@ -484,6 +484,11 @@
                     <param name="key">idocs_idocsModel.association.idocs_legalEntity.title</param>
                 </region>
             </field>
+            <field assoc="contracts:contractor">
+                <region name="select" template="select-journal">
+                    <param name="journalType">original-location</param>
+                </region>
+            </field>
         </view>
         <view>
             <field prop="tk:kind">
