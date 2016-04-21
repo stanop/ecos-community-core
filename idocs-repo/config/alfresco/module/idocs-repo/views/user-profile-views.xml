@@ -20,13 +20,19 @@
         </field>
         <view class="delegate:availability">
             <field prop="delegate:available">
-                <invariant on="mandatory" language="explicit">false</invariant>
+                <invariant on="mandatory" language="explicit">true</invariant>
+                <invariant on="default" language="explicit">true</invariant>
             </field>
         </view>
-        <!--<view class="org:preset">
-            <field prop="org:preset">
-                <region name="input" template="select"/>
-            </field>
-        </view>-->
     </view>
+
+    <views class="cm:person" mode="view">
+        <views class="delegate:availability">
+            <fields prop="delegate:available">
+                <regions name="input" template="view">
+                    <param name="emptyLabel">label.yes</param>
+                </regions>
+            </fields>
+        </views>
+    </views>
 </views>

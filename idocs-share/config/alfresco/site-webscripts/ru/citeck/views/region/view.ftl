@@ -27,5 +27,5 @@
 <!-- /ko -->
 
 <!-- ko if: empty -->
-<span>${msg("label.none")}</span>
+    <span>${msg(params.emptyLabel!"label.none")}</span>
 <!-- /ko -->
