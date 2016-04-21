@@ -190,6 +190,7 @@
 					</target>
 				</association>
 				<association name="payments:payer">
+					<!--In fact it is the Recipient of payment - legalEntity -->
 					<title>Плательщик</title>
 					<source>
 						<mandatory>false</mandatory>
@@ -202,6 +203,7 @@
 					</target>
 				</association>
 				<association name="payments:beneficiary">
+					<!--In fact it is the Payer - contractor-->
 					<title>Получатель платежа</title>
 					<source>
 						<mandatory>false</mandatory>
