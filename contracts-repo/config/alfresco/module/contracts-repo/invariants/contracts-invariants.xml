@@ -6,6 +6,7 @@
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
     </imports>
 
     <type name="contracts:agreement">
@@ -121,6 +122,12 @@
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
         </property>
+        <association name="contracts:contractor">
+            <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
+        </association>
+        <association name="idocs:legalEntity">
+            <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
+        </association>
     </type>
 
     <type name="contracts:supplementaryAgreement">
