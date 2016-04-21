@@ -1,0 +1,93 @@
+.dynamic-table tr > td > div.yui-dt-liner 
+{
+	min-height: 20px;
+}
+
+/* item button */
+.dynamic-table .item-buttons button
+{
+	width: 16px;
+	height: 100%;
+	margin: 0px 2px;
+	border: none;
+	background-color: transparent;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+/* hide-buttons class */
+.dynamic-table.hide-buttons tr.yui-dt-rec .item-buttons button,
+.dynamic-table.hide-buttons tr.yui-dt-rec div.yui-dt-liner div div
+{
+	display: none;
+}
+.dynamic-table.hide-buttons tr.yui-dt-rec:hover .item-buttons button,
+.dynamic-table.hide-buttons tr.yui-dt-rec:hover div.yui-dt-liner div div
+{
+	display: inline-block;
+}
+
+/* buttons */
+.form-field .table-children .show-picker .yui-button button > .btn-add,
+.form-field .table-children .table-children-view .btn-edit,
+.form-field .table-children .table-children-view .btn-remove {
+    background-repeat: no-repeat;
+    background-position: center;
+    display: inline-block;
+    height: 17px;
+    vertical-align: middle;
+    width: 17px;
+    cursor: pointer;
+    padding-right: 6px
+}
+
+/* Tool-button ADD */
+.form-field .table-children .show-picker .yui-button button > .btn-add {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/add.png);
+}
+
+.form-field .table-children .show-picker .yui-button-hover button > .btn-add {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/add-active.png);
+}
+
+/* Tool-button SEARCH */
+.form-field .table-children .show-picker .btn-search {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/search-16.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    vertical-align: middle;
+    width: 16px;
+}
+
+/* Action button EDIT */
+.form-field .table-children .table-children-view .btn-edit {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/edit.png);
+}
+
+.form-field .table-children .table-children-view .btn-edit:hover {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/edit-active.png);
+}
+
+/* Action button EDIT */
+.form-field .table-children .table-children-view .btn-remove {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/remove.png);
+;
+}
+
+.form-field .table-children .table-children-view .btn-remove:hover {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/remove-active.png);
+}
+
+/* Action button EDIT */
+.form-field .table-children .table-children-view .btn-start-workflow {
+    background-repeat: no-repeat;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    padding-right: 6px;
+}
+
+.form-field .table-children .table-children-view table {
+    width: 100%
+}
