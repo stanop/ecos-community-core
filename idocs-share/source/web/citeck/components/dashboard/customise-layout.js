@@ -109,25 +109,25 @@
       },
 
       onSelectLayoutClick: function CL_onSelectLayoutClick(selectedLayoutId) {
-
         var selectedLayoutLi = Dom.get(this.id +"-layout-li-" + selectedLayoutId),
             selectedLayoutLiImg = Dom.getElementsByClassName("layoutIcon", "img", selectedLayoutLi)[0],
             currentLayoutLi = Dom.get(this.id +"-currentLayout-div"),
             currentLayoutLiImg = Dom.getElementsByClassName("layoutIcon", "img", currentLayoutLi)[0];
 
-        currentLayoutLi.classList.remove("layout-current");
-        currentLayoutLi.id = this.id + "-layout-li-" + this.options.currentLayout.templateId;
-        currentLayoutLiImg.id = this.id + "-select-img-" + selectedLayoutId;
+        if (selectedLayoutLi && currentLayoutLi) {
+          currentLayoutLi.classList.remove("layout-current");
+          currentLayoutLi.id = this.id + "-layout-li-" + this.options.currentLayout.templateId;
+          currentLayoutLiImg.id = this.id + "-select-img-" + selectedLayoutId;
 
-        this.options.currentLayout = this.options.layouts[selectedLayoutId];
-        selectedLayoutLi.className += " layout-current";
-        selectedLayoutLi.id = this.id + "-currentLayout-div";
-        selectedLayoutLiImg.id = this.id + "-currentLayoutIcon-img";
+          this.options.currentLayout = this.options.layouts[selectedLayoutId];
+          selectedLayoutLi.className += " layout-current";
+          selectedLayoutLi.id = this.id + "-currentLayout-div";
+          selectedLayoutLiImg.id = this.id + "-currentLayoutIcon-img";
 
-         YAHOO.Bubbling.fire("onDashboardLayoutChanged", {
+          YAHOO.Bubbling.fire("onDashboardLayoutChanged", {
             dashboardLayout: this.options.layouts[selectedLayoutId]
-         });
-
+          });
+        }
       }
     });
 })();
