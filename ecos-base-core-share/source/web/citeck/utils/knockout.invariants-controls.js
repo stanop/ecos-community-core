@@ -164,7 +164,7 @@ ko.components.register("checkbox-radio", {
     },
     template: 
         '<!-- ko foreach: options -->\
-            <span class="checkbox-option" style="margin-right: 15px; white-space: nowrap;">\
+            <span class="checkbox-option">\
                 <label>\
                     <!-- ko if: $parent.multiple -->\
                       <input type="checkbox" data-bind="checked: ko.computed({\
@@ -174,7 +174,7 @@ ko.components.register("checkbox-radio", {
                           newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
                           $parent.value(selectedOptions);\
                         }\
-                      })" style="position: relative; top: 3px;" />\
+                      })" />\
                     <!-- /ko -->\
                     <!-- ko ifnot: $parent.multiple -->\
                       <input type="radio" data-bind="checked: ko.computed({\

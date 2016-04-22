@@ -498,9 +498,20 @@
   margin-right: 10px;
 }
 
+.invariants-form .template-table .template-checkbox .checkbox-option {
+  margin-right: 15px;
+  white-space: nowrap;
+  display: inline-block;  
+}
+
+.invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
+  display: block;
+}
+
 .invariants-form .template-table .template-checkbox input[type="checkbox"],
 .invariants-form .template-table .template-checkbox input[type="radio"] {
-  vertical-align: bottom;
+  position: relative;
+  top: 3px;
 }
 
 .invariants-form .template-table .template-checkbox .checkbox-option * {
