@@ -151,8 +151,8 @@
                         <td><p align="right">${totalAmount}</p></td>
                 </tr>
                 <tr>
-                        <td style="border-style: hidden" colspan="5"><p align="right"><b>Сумма НДС:</b></p></td>
-                        <td><p align="right">-</p></td>
+                        <td style="border-style: hidden" colspan="5"><p align="right"><b>Без НДС:</b></p></td>
+                        <td><p align="right">${totalAmount}</p></td>
                 </tr>
                 <tr>
                         <td colspan="5" style="border-style: hidden"><p align="right"><b>Всего к оплате:</b></p></td>
