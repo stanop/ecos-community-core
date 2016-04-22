@@ -290,6 +290,7 @@ h4 .lighter
    padding: 15px;
    overflow: auto;
    box-sizing: border-box;
+   min-height: 212px;
 }
 
 .dashlet.yui-resize .yui-resize-handle {
