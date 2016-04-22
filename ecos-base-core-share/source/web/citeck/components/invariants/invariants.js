@@ -170,7 +170,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         },
 
         getTitle: function(name) {
-        	return new DDClass(name).title();
+            new DDClasses('all').classes();
+            return new DDClass(name.key()).title();
         },
 
     };
