@@ -1013,6 +1013,11 @@
   color: red;
 }
 
+.journal-picker-header button:disabled {
+  color: #ccc !important;
+  cursor: default;
+}
+
 .journal-picker-header .journal-search {
   float: right;
   width: 30%;
