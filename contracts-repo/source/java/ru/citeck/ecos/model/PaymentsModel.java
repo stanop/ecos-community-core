@@ -28,5 +28,6 @@ public final class PaymentsModel {
     public static final String PAYMENTS_NAMESPACE = "http://www.citeck.ru/model/payments/1.0";
 
     public static final QName PROP_PAYMENT_AMOUNT = QName.createQName(PAYMENTS_NAMESPACE, "paymentAmount");
+    public static final QName PROP_PAYMENT_AMOUNT_IN_WORDS = QName.createQName(PAYMENTS_NAMESPACE, "paymentAmountInWords");
     public static final QName TYPE = QName.createQName(PAYMENTS_NAMESPACE, "payment");
 }
