@@ -137,8 +137,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     DDClasses
         .key('filter', s)
         .property('classes', [DDClass])
+        .property('ctbp', s)
+        .init(function() {
+            if (this.ctbp.loaded() == false) {
+                this.ctbp("idocs:doc");
+            }
+        })
         .load('classes', koutils.simpleLoad({
-            url: Alfresco.constants.PROXY_URI + "api/childrenClassesWithFullQname?cf={filter}&ctbp=idocs:doc",
+            url: Alfresco.constants.PROXY_URI + "api/childrenClassesWithFullQname?cf={filter}&ctbp={ctbp}",
             resultsMap: function(response) {
                 return {
                     // note: for the purposes of UI we sort this array
@@ -170,7 +176,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         },
 
         getTitle: function(name) {
-            new DDClasses('all').classes();
+            new DDClasses('all').ctbp("").classes();
             return new DDClass(name.key()).title();
         },
 

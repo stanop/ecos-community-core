@@ -16,7 +16,6 @@
 				<i:item>cm:taggable</i:item>
 				<i:item>cm:classifiable</i:item>
 				<i:item>cm:versionable</i:item>
-				<i:item>icase:case</i:item>
 			</invariant>
 			<invariant on="value-title" language="javascript">dictionary.getTitle(value)</invariant>
 		</field>
