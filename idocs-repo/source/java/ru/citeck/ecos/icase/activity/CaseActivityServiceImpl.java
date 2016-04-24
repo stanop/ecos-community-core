@@ -7,9 +7,13 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.QNamePattern;
+import org.alfresco.service.namespace.RegexQNamePattern;
+import org.alfresco.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.model.*;
+import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.LifeCycleModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -89,8 +93,38 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
-    public List<NodeRef> getActivities(NodeRef nodeRef, QName type) {
-        return RepoUtils.getChildrenByType(nodeRef, type, nodeService);
+    public List<NodeRef> getActivities(NodeRef nodeRef) {
+        return getActivities(nodeRef, RegexQNamePattern.MATCH_ALL);
+    }
+
+    @Override
+    public List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type) {
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, ActivityModel.ASSOC_ACTIVITIES, type);
+
+        if (children == null || children.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Pair<NodeRef, Integer>> indexedChildren = new ArrayList<>(children.size());
+        for (ChildAssociationRef child : children) {
+            NodeRef childRef = child.getChildRef();
+            Integer index = (Integer)nodeService.getProperty(childRef, ActivityModel.PROP_INDEX);
+            indexedChildren.add(new Pair<>(childRef, index != null ? index : 0));
+        }
+
+        Collections.sort(indexedChildren, new Comparator<Pair<NodeRef, Integer>>() {
+            @Override
+            public int compare(Pair<NodeRef, Integer> child0,
+                               Pair<NodeRef, Integer> child1) {
+                return Integer.compare(child0.getSecond(), child1.getSecond());
+            }
+        });
+
+        List<NodeRef> result = new ArrayList<>(indexedChildren.size());
+        for (Pair<NodeRef, Integer> child : indexedChildren) {
+            result.add(child.getFirst());
+        }
+        return result;
     }
 
     @Override
@@ -120,6 +154,61 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
         for(NodeRef activityRef : children) {
             resetActivity(activityRef);
+        }
+    }
+
+    @Override
+    public void setParent(NodeRef activityRef, NodeRef newParent) {
+        mandatoryNodeRef("Activity nodeRef", activityRef);
+        mandatoryNodeRef("Parent nodeRef", newParent);
+
+        ChildAssociationRef assocRef = nodeService.getPrimaryParent(activityRef);
+        NodeRef parent = assocRef.getParentRef();
+
+        if (!parent.equals(newParent)) {
+            if (!nodeService.hasAspect(newParent, ActivityModel.ASPECT_HAS_ACTIVITIES)) {
+                throw new IllegalArgumentException("New parent doesn't have aspect 'hasActivities'");
+            }
+            nodeService.moveNode(activityRef, newParent, ActivityModel.ASSOC_ACTIVITIES,
+                                                         ActivityModel.ASSOC_ACTIVITIES);
+        }
+    }
+
+    @Override
+    public void setIndex(NodeRef activityRef, int newIndex) {
+        mandatoryNodeRef("Activity nodeRef", activityRef);
+
+        ChildAssociationRef assocRef = nodeService.getPrimaryParent(activityRef);
+        NodeRef parent = assocRef.getParentRef();
+
+        List<NodeRef> activities = getActivities(parent);
+
+        if (newIndex >= activities.size()) {
+            newIndex = activities.size() - 1;
+        }
+        if (newIndex < 0) {
+            newIndex = 0;
+        }
+        if (newIndex == activities.indexOf(activityRef)) return;
+
+        activities.remove(activityRef);
+        activities.add(newIndex, activityRef);
+
+        int index = 0;
+        if (newIndex > 0) {
+            NodeRef prevActivity = activities.get(newIndex - 1);
+            Integer prevIndex = (Integer) nodeService.getProperty(prevActivity, ActivityModel.PROP_INDEX);
+            index = prevIndex != null ? prevIndex : 0;
+        }
+
+        for (int i = newIndex; i < activities.size(); i++) {
+            nodeService.setProperty(activities.get(i), ActivityModel.PROP_INDEX, ++index);
+        }
+    }
+
+    private void mandatoryNodeRef(String paramName, NodeRef nodeRef) {
+        if (nodeRef == null || !nodeService.exists(nodeRef)) {
+            throw new IllegalArgumentException(paramName + " is a mandatory parameter");
         }
     }
 

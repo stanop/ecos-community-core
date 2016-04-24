@@ -51,6 +51,10 @@
                     <mandatory>true</mandatory>
                     <default>false</default>
                 </property>
+                <property name="activ:index">
+                    <type>d:int</type>
+                    <default>0</default>
+                </property>
             </properties>
             <mandatory-aspects>
                 <aspect>cm:titled</aspect>

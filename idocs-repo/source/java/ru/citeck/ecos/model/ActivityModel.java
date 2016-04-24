@@ -31,6 +31,7 @@ public class ActivityModel {
     public static final QName PROP_ACTUAL_END_DATE = QName.createQName(NAMESPACE, "actualEndDate");
     public static final QName PROP_MANUAL_STARTED = QName.createQName(NAMESPACE, "manualStarted");
     public static final QName PROP_MANUAL_STOPPED = QName.createQName(NAMESPACE, "manualStopped");
+    public static final QName PROP_INDEX = QName.createQName(NAMESPACE, "index");
     
     public static final QName ASPECT_HAS_ACTIVITIES = QName.createQName(NAMESPACE, "hasActivities");
     public static final QName ASSOC_ACTIVITIES = QName.createQName(NAMESPACE, "activities");
