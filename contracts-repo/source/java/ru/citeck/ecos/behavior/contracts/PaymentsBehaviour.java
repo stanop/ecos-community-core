@@ -9,10 +9,12 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.PaymentsModel;
-import ru.citeck.ecos.utils.ConvertNumberInWords;
+import ru.citeck.ecos.utils.ConvertAmountInWords;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Dolmatoff on 22.04.2016.
@@ -55,16 +57,40 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
     }
 
     @Override
-    public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> map, Map<QName, Serializable> map1) {
+    public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
         if (!nodeService.exists(nodeRef)) {
             return;
         }
-        setTotalAmountInWords(nodeRef);
+        Double amountAfter = (Double) after.get(PaymentsModel.PROP_PAYMENT_AMOUNT);
+        Double amountBefore = (Double) before.get(PaymentsModel.PROP_PAYMENT_AMOUNT);
+        if (!Objects.equals(amountAfter, amountBefore)) {
+            setTotalAmountInWords(nodeRef);
+        }
     }
 
-    private void setTotalAmountInWords(NodeRef nodeRef){
-        double amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
-        String amountInWords = ConvertNumberInWords.convert(amount);
+    private void setTotalAmountInWords(NodeRef nodeRef) {
+        Double amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
+
+        //default
+        String currency = "RUB";
+        String paymentCurrency = "";
+
+        if (nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_CURRENCY_ADDED) != null) {
+            paymentCurrency = (String) ((ArrayList) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_CURRENCY_ADDED)).get(0);
+        }
+
+        switch (paymentCurrency) {
+            case "workspace://SpacesStore/currency-usd": {
+                currency = "USD";
+                break;
+            }
+            case "workspace://SpacesStore/currency-eur": {
+                currency = "EUR";
+                break;
+            }
+        }
+
+        String amountInWords = ConvertAmountInWords.convert(amount, currency);
         nodeService.setProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT_IN_WORDS, amountInWords);
     }
 }

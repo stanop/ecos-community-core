@@ -145,7 +145,7 @@ CreateVariant
 	.property('canCreate', b)
 	.property('isDefault', b)
 	.computed('link', function() {
-		var urlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}';
+		var urlTemplate = 'node-create?type={type}&destination={destination}&viewId={formId}';
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") {
 				return value();

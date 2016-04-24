@@ -7,7 +7,7 @@ import java.util.Collections;
 /**
  * Created by Dolmatoff on 22.04.2016.
  */
-public class ConvertNumberInWords {
+public class ConvertAmountInWords {
     private static final String[][] ONE = {
             {"", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"},
             {"", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"},
@@ -15,20 +15,29 @@ public class ConvertNumberInWords {
     private static final String[] THOUSAND = {"", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"};
     private static final String[] TEN = {"", "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать", "двадцать"};
     private static final String[] DECADE = {"", "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"};
-    private static String[][] DECLINATION = {
-            {"копейка", "копейки", "копеек", "1"},
-            {"рубль", "рубля", "рублей", "0"},
-            {"тысяча", "тысячи", "тысяч", "1"},
-            {"миллион", "миллиона", "миллионов", "0"},
-            {"миллиард", "миллиарда", "миллиардов", "0"},
-            {"триллион", "триллиона", "триллионов", "0"},
-    };
+
+    private static String intact1, intact2, intact3;
+    private static String fractional1, fractional2, fractional3;
 
 
-    public static String convert(double i) {
+    public static String convert(double i, String currency) {
+
+        initializationCurrency(currency);
+
+        String[][] DECLINATION = new String[][]{
+                {fractional1, fractional2, fractional3, "1"},
+                {intact1, intact2, intact3, "0"},
+                {"тысяча", "тысячи", "тысяч", "1"},
+                {"миллион", "миллиона", "миллионов", "0"},
+                {"миллиард", "миллиарда", "миллиардов", "0"},
+                {"триллион", "триллиона", "триллионов", "0"},
+                //you can add more...
+        };
+
         String s = String.valueOf(i);
-        if (!s.contains("."))
+        if (!s.contains(".")) {
             s += ".0";
+        }
 
         BigDecimal amount = new BigDecimal(s);
         ArrayList<Long> segments = new ArrayList<>();
@@ -97,6 +106,51 @@ public class ConvertNumberInWords {
 
         return result;
     }
+
+    private static void initializationCurrency(String currency){
+
+        switch (currency) {
+            case "USD": {
+                fractional1 = "центр";
+                fractional2 = "цента";
+                fractional3 = "центов";
+
+                intact1 = "доллар США";
+                intact2 = "доллара США";
+                intact3 = "долларов США";
+                break;
+            }
+            case "RUB": {
+                initializationRub();
+                break;
+            }
+            case "EUR": {
+                fractional1 = "цент";
+                fractional2 = "цента";
+                fractional3 = "центов";
+
+                intact1 = "евро";
+                intact2 = "евро";
+                intact3 = "евро";
+                break;
+            }
+            default: {
+                initializationRub();
+                break;
+            }
+        }
+    }
+
+    private static void initializationRub() {
+        fractional1 = "копейка";
+        fractional2 = "копейки";
+        fractional3 = "копеек";
+
+        intact1 = "рубль";
+        intact2 = "рубля";
+        intact3 = "рублей";
+    }
+
 
     private static String getDeclination(long n, String form1, String from2, String form5) {
         n = Math.abs(n) % 100;
