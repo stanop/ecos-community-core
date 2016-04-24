@@ -30,5 +30,6 @@ public final class PaymentsModel {
     public static final QName PROP_PAYMENT_AMOUNT = QName.createQName(PAYMENTS_NAMESPACE, "paymentAmount");
     public static final QName PROP_PAYMENT_AMOUNT_IN_WORDS = QName.createQName(PAYMENTS_NAMESPACE, "paymentAmountInWords");
     public static final QName PROP_PAYMENT_CURRENCY_ADDED = QName.createQName(PAYMENTS_NAMESPACE, "currency_added");
+    public static final QName PROP_PAYMENT_CURRENCY = QName.createQName(PAYMENTS_NAMESPACE, "currency");
     public static final QName TYPE = QName.createQName(PAYMENTS_NAMESPACE, "payment");
 }

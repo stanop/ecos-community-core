@@ -10,9 +10,9 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.utils.ConvertAmountInWords;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,11 +58,14 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+
         if (!nodeService.exists(nodeRef)) {
             return;
         }
+
         Double amountAfter = (Double) after.get(PaymentsModel.PROP_PAYMENT_AMOUNT);
         Double amountBefore = (Double) before.get(PaymentsModel.PROP_PAYMENT_AMOUNT);
+
         if (!Objects.equals(amountAfter, amountBefore)) {
             setTotalAmountInWords(nodeRef);
         }
@@ -70,14 +73,13 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
     private void setTotalAmountInWords(NodeRef nodeRef) {
         Double amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
+        String paymentCurrency;
 
         //default
         String currency = "RUB";
-        String paymentCurrency = "";
 
-        if (nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_CURRENCY_ADDED) != null) {
-            paymentCurrency = (String) ((ArrayList) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_CURRENCY_ADDED)).get(0);
-        }
+        NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.PROP_PAYMENT_CURRENCY, nodeService);
+        paymentCurrency = currencyRef != null ? currencyRef.toString() : "";
 
         switch (paymentCurrency) {
             case "workspace://SpacesStore/currency-usd": {

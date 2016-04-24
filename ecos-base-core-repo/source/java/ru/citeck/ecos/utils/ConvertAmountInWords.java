@@ -31,7 +31,6 @@ public class ConvertAmountInWords {
                 {"миллион", "миллиона", "миллионов", "0"},
                 {"миллиард", "миллиарда", "миллиардов", "0"},
                 {"триллион", "триллиона", "триллионов", "0"},
-                //you can add more...
         };
 
         String s = String.valueOf(i);
@@ -42,11 +41,10 @@ public class ConvertAmountInWords {
         BigDecimal amount = new BigDecimal(s);
         ArrayList<Long> segments = new ArrayList<>();
 
-        // получаем отдельно рубли и копейки
         long total = amount.longValue();
         String[] divided = amount.toString().split("\\.");
         long fraction = Long.valueOf(divided[1]);
-        if (!divided[1].substring(0, 1).equals("0")) {// начинается не с нуля
+        if (!divided[1].substring(0, 1).equals("0")) {
             if (fraction < 10)
                 fraction *= 10;
         }
@@ -54,7 +52,7 @@ public class ConvertAmountInWords {
         if (fractions.length() == 1)
             fractions = "0" + fractions;
         long totalSegment = total;
-        // Разбиватель суммы на сегменты по 3 цифры с конца
+
         while (totalSegment > 999) {
             long seg = totalSegment / 1000;
             segments.add(totalSegment - (seg * 1000));
@@ -62,45 +60,43 @@ public class ConvertAmountInWords {
         }
         segments.add(totalSegment);
         Collections.reverse(segments);
-        // Анализируем сегменты
+
         String result = "";
-        if (total == 0) {// если Ноль
+        if (total == 0) {
             result = "ноль " + getDeclination(0, DECLINATION[1][0], DECLINATION[1][1], DECLINATION[1][2]);
             return result + " " + fraction + " " + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
         }
-        // Больше нуля
+
         int amt = segments.size();
-        for (Long segment : segments) {// перебираем сегменты
-            int kind = Integer.valueOf(DECLINATION[amt][3]);// определяем род
-            int currentSegment = Integer.valueOf(segment.toString());// текущий сегмент
-            if (currentSegment == 0 && amt > 1) {// если сегмент ==0 И не последний уровень(там Units)
+        for (Long segment : segments) {
+            int kind = Integer.valueOf(DECLINATION[amt][3]);
+            int currentSegment = Integer.valueOf(segment.toString());
+            if (currentSegment == 0 && amt > 1) {
                 amt--;
                 continue;
             }
-            String stringNumber = String.valueOf(currentSegment); // число в строку
-            // нормализация
-            if (stringNumber.length() == 1) stringNumber = "00" + stringNumber;// два нулика в префикс?
-            if (stringNumber.length() == 2) stringNumber = "0" + stringNumber; // или лучше один?
-            // получаем циферки для анализа
-            int number1 = Integer.valueOf(stringNumber.substring(0, 1)); //первая цифра
-            int number2 = Integer.valueOf(stringNumber.substring(1, 2)); //вторая
-            int number3 = Integer.valueOf(stringNumber.substring(2, 3)); //третья
-            int number23 = Integer.valueOf(stringNumber.substring(1, 3)); //вторая и третья
-            // Супер-нано-анализатор циферок
-            if (currentSegment > 99) result += THOUSAND[number1] + " "; // Сотни
-            if (number23 > 20) {// >20
+            String stringNumber = String.valueOf(currentSegment);
+
+            if (stringNumber.length() == 1) stringNumber = "00" + stringNumber;
+            if (stringNumber.length() == 2) stringNumber = "0" + stringNumber;
+
+            int number1 = Integer.valueOf(stringNumber.substring(0, 1));
+            int number2 = Integer.valueOf(stringNumber.substring(1, 2));
+            int number3 = Integer.valueOf(stringNumber.substring(2, 3));
+            int number23 = Integer.valueOf(stringNumber.substring(1, 3));
+
+            if (currentSegment > 99) result += THOUSAND[number1] + " ";
+            if (number23 > 20) {
                 result += DECADE[number2] + " ";
                 result += ONE[kind][number3] + " ";
-            } else { // <=20
-                if (number23 > 9) result += TEN[number23 - 9] + " "; // 10-20
-                else result += ONE[kind][number3] + " "; // 0-9
+            } else {
+                if (number23 > 9) result += TEN[number23 - 9] + " ";
+                else result += ONE[kind][number3] + " ";
             }
-            // Единицы измерения (рубли...)
+
             result += getDeclination(currentSegment, DECLINATION[amt][0], DECLINATION[amt][1], DECLINATION[amt][2]) + " ";
             amt--;
         }
-        // Копейки в цифровом виде
-
         result = result + "" + fractions + " " + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
         result = result.replaceAll(" {2,}", " ");
 

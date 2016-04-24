@@ -67,7 +67,7 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateAss
                 nodeService.removeAssociation(closDoc,contractors.get(0).getTargetRef(), ContractsModel.ASSOC_CONTRACTOR);
             }
         } else {
-            logger.error("Contraсtor is not exists");
+            logger.error("Contractor is not exists");
         }
     }
 
