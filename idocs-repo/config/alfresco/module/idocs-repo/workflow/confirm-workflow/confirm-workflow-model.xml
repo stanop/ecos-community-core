@@ -247,6 +247,13 @@
 				<property name="wfcf:confirmOutcomeI18nPrefix">
 					<type>d:text</type>
 				</property>
+				<property name="wfcf:terminateOnPartialConfirms">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+				<property name="wfcf:partialConfirmsCount">
+					<type>d:int</type>
+				</property>
 			</properties>
 		</aspect>
 

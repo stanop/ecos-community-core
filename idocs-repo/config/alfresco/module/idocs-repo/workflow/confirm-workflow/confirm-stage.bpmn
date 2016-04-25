@@ -16,7 +16,7 @@
         </activiti:executionListener>
       </extensionElements>
       <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${wfcf_confirmers}" activiti:elementVariable="wfcf_confirmer">
-        <completionCondition>${wfcf_terminateOnReject &amp;&amp; wfcf_notAllConfirmed}</completionCondition>
+        <completionCondition>${(wfcf_terminateOnReject &amp;&amp; wfcf_notAllConfirmed) || (wfcf_terminateOnPartialConfirms &amp;&amp; (wfcf_confirmCounts == wfcf_partialConfirmsCount))}</completionCondition>
       </multiInstanceLoopCharacteristics>
       <userTask id="confirm" name="Confirm Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:confirmTask">
         <extensionElements>
@@ -34,6 +34,15 @@ if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOu
 }</activiti:expression>
             </activiti:field>
           </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+                      <activiti:field name="script">
+                        <activiti:expression>
+                        if (task.getVariable("wfcf_confirmOutcome") == "Confirmed") {
+                            task.setVariable("wfcf_confirmCounts", +task.getVariable("wfcf_confirmCounts") + 1);
+                        }
+                        </activiti:expression>
+                      </activiti:field>
+                    </activiti:taskListener>
           <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
             <activiti:field name="script">
               <activiti:expression>
@@ -151,6 +160,13 @@ if(execution.getVariable("wfcf_terminateOnReject") == null) {
 }
 execution.setVariable("wfcf_workflowCancelled", false);
 execution.setVariable("wfcf_notAllConfirmed", false);
+if(execution.getVariable("wfcf_terminateOnPartialConfirms") == null) {
+  execution.setVariable("wfcf_terminateOnPartialConfirms", false);
+}
+execution.setVariable("wfcf_confirmCounts", 0);
+if(execution.getVariable("wfcf_terminateOnPartialConfirms") == null) {
+    execution.setVariable("wfcf_partialConfirmsCount", 0);
+}
 versions.saveConfirmable(execution);</activiti:expression>
           </activiti:field>
         </activiti:executionListener>
