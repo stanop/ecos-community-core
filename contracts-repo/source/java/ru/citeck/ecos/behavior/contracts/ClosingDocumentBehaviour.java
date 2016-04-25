@@ -105,15 +105,24 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateAss
 
     private void setTotalAmountInWords(NodeRef nodeRef) {
         Double amount;
-        String paymentCurrency;
-
-        //default
-        String currency = "RUB";
+        String closingDocumentCurrency = "";
+        String currency;
+        NodeRef currencyRefFromAgreement = null;
 
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_CURRENCY, nodeService);
-        paymentCurrency = currencyRef != null ? currencyRef.toString() : "";
+        NodeRef agreementRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_AGREEMENT, nodeService);
 
-        switch (paymentCurrency) {
+        if (agreementRef != null) {
+            currencyRefFromAgreement = RepoUtils.getFirstTargetAssoc(agreementRef, ContractsModel.ASSOC_AGREEMENT_CURRENCY, nodeService);
+        }
+
+        if (currencyRef != null) {
+            closingDocumentCurrency = currencyRef.toString();
+        } else if (currencyRefFromAgreement != null) {
+            closingDocumentCurrency = currencyRefFromAgreement.toString();
+        }
+
+        switch (closingDocumentCurrency) {
             case "workspace://SpacesStore/currency-usd": {
                 currency = "USD";
                 break;
@@ -121,6 +130,9 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateAss
             case "workspace://SpacesStore/currency-eur": {
                 currency = "EUR";
                 break;
+            }
+            default: {
+                currency = "RUB";
             }
         }
 

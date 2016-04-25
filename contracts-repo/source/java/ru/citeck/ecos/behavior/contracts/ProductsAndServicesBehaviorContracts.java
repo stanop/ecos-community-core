@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * This behaviour react to change in "products and services" and calculate total amount in Documents
+ * This behaviour react to change sum in "products and services" and calculate total amount in Documents
  *
  * @author Roman.Makarskiy on 04.04.2016.
  */
@@ -128,6 +128,12 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         return totalAmount;
     }
 
+    /**
+     * Update total amount in document
+     * @param nodeRef - nodeRef document
+     * @param type - type of document
+     * @param property - property amount in document, that you want to update
+     */
     private void updateTotalAmountInDocument(NodeRef nodeRef, QName type, QName property) {
         List<AssociationRef> documents = nodeService.getSourceAssocs(nodeRef,
                 ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);

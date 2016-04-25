@@ -82,9 +82,7 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
     private void setTotalAmountInWords(NodeRef nodeRef) {
         Double amount;
         String paymentCurrency;
-
-        //default
-        String currency = "RUB";
+        String currency;
 
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.ASSOC_PAYMENT_CURRENCY, nodeService);
         paymentCurrency = currencyRef != null ? currencyRef.toString() : "";
@@ -97,6 +95,9 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
             case "workspace://SpacesStore/currency-eur": {
                 currency = "EUR";
                 break;
+            }
+            default: {
+                currency = "RUB";
             }
         }
 

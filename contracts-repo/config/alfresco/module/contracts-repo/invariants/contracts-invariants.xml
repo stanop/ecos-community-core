@@ -131,6 +131,7 @@
         <association name="contracts:closingDocumentCurrency">
             <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
         </association>
     </type>
 

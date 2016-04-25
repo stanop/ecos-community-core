@@ -25,6 +25,7 @@
 <#assign tableWidth = "700px" />
 <#assign columnWidth = "300px" />
 <#assign creator = people.getPerson(document.properties["cm:creator"]) />
+<#assign currency = "руб." />
 
 <#macro FIO user>
 <#assign lastName = user.properties["org:lastName"]!user.properties["cm:lastName"]/>
@@ -32,6 +33,25 @@
 <#assign middleName = user.properties["org:middleName"]! />
 <#if firstName!="">${firstName?substring(0, 1)}. <#if middleName!="">${middleName?substring(0, 1)}. </#if></#if>${lastName}
 </#macro>
+
+	<#macro findCurrency>
+		<#if document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0>
+		    <#if document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>
+		        <#assign currency = "EUR" />
+			<#elseif document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>
+				<#assign currency = "USD" />
+			</#if>
+		</#if>
+		<#if document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0>
+			<#if document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>
+				<#assign currency = "EUR" />
+			<#elseif document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>
+				<#assign currency = "USD" />
+			</#if>
+		</#if>
+	</#macro>
+
+	<@findCurrency />
 
 <p><b>Акт № ${document.properties["contracts:closingDocumentNumber"]!""} от <#if document.properties["contracts:closingDocumentDate"]??>${document.properties["contracts:closingDocumentDate"]?string('${dateFormat}')!}</#if></b><br/>
 <hr />
@@ -92,17 +112,15 @@
 <table width="700px" border="0" cellspacing="0">
 	<tr>
 		<td>
-            Всего наименований ${count?string["0"]}, на сумму ${totalAmount}
-			<#if document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.
-			<#elseif document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD
-			<#elseif document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>EUR
-			</#if>
+            Всего наименований ${count?string["0"]}, на сумму ${totalAmount} ${currency}
 		</td>
 	</tr>
     <tr>
         <td>
 			<#if document.properties["contracts:closingDocumentAmountInWords"]??>${document.properties["contracts:closingDocumentAmountInWords"]}</#if>
-			<#if document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd' || document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if>
+			<#if currency!="руб.">
+                (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+			</#if>
         </td>
     </tr>
 	<tr>

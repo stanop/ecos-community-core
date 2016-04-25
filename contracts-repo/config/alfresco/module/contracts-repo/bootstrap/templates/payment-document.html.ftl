@@ -173,7 +173,9 @@
     <tr>
         <td>
             <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
-            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd' || document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if>
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            </#if>
         </td>
     </tr>
 </table>

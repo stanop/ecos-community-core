@@ -515,11 +515,7 @@
             </field>
         </view>
         <view>
-            <field assoc="contracts:closingDocumentCurrency">
-                <region name="select" template="select-journal">
-                    <param name="journalType">original-location</param>
-                </region>
-            </field>
+            <field assoc="contracts:closingDocumentCurrency"/>
         </view>
         <field prop="dms:updateContent">
             <region name="label" template="label">
