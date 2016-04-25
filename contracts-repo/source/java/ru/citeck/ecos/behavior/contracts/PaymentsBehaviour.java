@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Created by Dolmatoff on 22.04.2016.
+ * @author Roman.Makarskiy on 22.04.2016.
  */
 public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
 

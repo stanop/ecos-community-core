@@ -159,7 +159,21 @@
                         <td><p align="right">${totalAmount}</p></td>
                 </tr>
         </table>
-<p>Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if></p><br/>
+
+<table width="700px" border="0" cellspacing="0">
+    <tr border="0">
+        <td border="0">
+            Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD</#if>
+        </td>
+    </tr>
+    <tr border="0">
+        <td border="0">
+            <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if>
+        </td>
+    </tr>
+</table>
+</br>
 <table width="700px" border="0" cellspacing="0">
     <tr border="0">
         <td border="0">Руководитель предприятия <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:generalDirector"]?? && beneficiary.associations["idocs:generalDirector"][0]?size != 0>(<@FIO beneficiary.associations["idocs:generalDirector"][0]/>)<#elseif beneficiary??>(${beneficiary.properties["idocs:CEOname"]!})</#if></td>

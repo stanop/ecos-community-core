@@ -4,10 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
- * Created by Dolmatoff on 22.04.2016.
- */
 public class ConvertAmountInWords {
+
     private static final String[][] ONE = {
             {"", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"},
             {"", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"},
@@ -20,7 +18,13 @@ public class ConvertAmountInWords {
     private static String fractional1, fractional2, fractional3;
 
 
-    public static String convert(double i, String currency) {
+    /**
+     *  It return a amount in words
+     * @param amount - amount to convert
+     * @param currency - code of currency in ISO 4217 alpha 3 standard. Default - RUB
+     * @return amount in words
+     */
+    public static String convert(double amount, String currency) {
 
         initializationCurrency(currency);
 
@@ -33,16 +37,16 @@ public class ConvertAmountInWords {
                 {"триллион", "триллиона", "триллионов", "0"},
         };
 
-        String s = String.valueOf(i);
+        String s = String.valueOf(amount);
         if (!s.contains(".")) {
             s += ".0";
         }
 
-        BigDecimal amount = new BigDecimal(s);
+        BigDecimal amountBig = new BigDecimal(s);
         ArrayList<Long> segments = new ArrayList<>();
 
-        long total = amount.longValue();
-        String[] divided = amount.toString().split("\\.");
+        long total = amountBig.longValue();
+        String[] divided = amountBig.toString().split("\\.");
         long fraction = Long.valueOf(divided[1]);
         if (!divided[1].substring(0, 1).equals("0")) {
             if (fraction < 10)
@@ -99,11 +103,12 @@ public class ConvertAmountInWords {
         }
         result = result + "" + fractions + " " + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
         result = result.replaceAll(" {2,}", " ");
+        result = result.substring(0, 1).toUpperCase() + result.substring(1);
 
         return result;
     }
 
-    private static void initializationCurrency(String currency){
+    private static void initializationCurrency(String currency) {
 
         switch (currency) {
             case "USD": {
