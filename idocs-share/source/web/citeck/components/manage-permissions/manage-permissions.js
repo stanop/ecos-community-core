@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -388,7 +388,7 @@ if (!MP) {
             elCell.innerHTML = '<img class="icon32" src="' + iconUrl + '" alt="icon" />';
         },
 
-        renderCellPermissions: function MP_renderCellPermissions(elCell, oRecord, oColumn, oData) {
+       renderCellPermissions: function MP_renderCellPermissions(elCell, oRecord, oColumn, oData) {
             var thisId = this.id;
             var rowClass = 'row-class-' + oData['rowIndex'];
             function generateCheckboxHtml(id, authority, permissionAlias, accessType) {
@@ -413,40 +413,55 @@ if (!MP) {
                     me.onChangePermission.apply(me, [deniedId, allowedId]);
                 });
             }
-            var permissionsTableHtml = '<a class="show-hide-details showHideAllPermissions ' + this.id + '" href="#" rel="' + rowClass + '" name=".showHideAllPermissions"><a/>';
-            permissionsTableHtml += '<table class="permissionsTable" style="border-width:0px;padding:5px;">' +
-                '<thead>' +
-                '<tr>' +
-                    '<td style="border-width:0px;"></td>' +
-                    '<td style="border-width:0px;"> '+this.msg("allow")+' &nbsp; </td>' +
-                    '<td style="border-width:0px;"> '+this.msg("deny")+' &nbsp; </td>' +
-                '</tr>' +
-                '</thead>';
+
+            // all show-hide button
+            var permissionsTableHtml = 
+                '<a class="show-hide-details showHideAllPermissions ' + this.id + '" href="#" rel="' + rowClass + '" name=".showHideAllPermissions"><a/>';
+
+            // makeup table
+            permissionsTableHtml += 
+                '<table class="permissionsTable" style="border-width:0px;padding:5px;">' +
+                    '<thead>' +
+                        '<tr>' +
+                            '<td style="border-width:0px;"></td>' +
+                            '<td style="border-width:0px;"> '+this.msg("allow")+' &nbsp; </td>' +
+                            '<td style="border-width:0px;"> '+this.msg("deny")+' &nbsp; </td>' +
+                        '</tr>' +
+                    '</thead>';
+
+            // permissions group
             var gpList = this.options['supportedPermissions'];
             for (var i = 0; i < gpList.length; i++) {
                 var rowGroupClass = 'permissions-' + oData['rowIndex'] + '-' + i;
-                permissionsTableHtml += '<tr>' +
-                        '<td style="border-width:0px; vertical-align:top; text-align:center; font-weight:bold;">' +
+
+                // group title
+                permissionsTableHtml += 
+                    '<tr class="permission-group">' +
+                        '<td class="permission-name" style="border-width:0px; vertical-align:top; text-align:left; font-weight:bold;">' +
                             '<a href="#" class="' + this.id + ' showHidePermissions" rel="' + rowGroupClass + '" name=".showHidePermissions">' +
                                 gpList[i]['groupBrief'] + ' &nbsp;' +
                             '</a>' +
                         '</td>' +
-                        '<td style="border-width:0px;"></td>' +
-                        '<td style="border-width:0px;"></td>' +
+                        '<td class="permission-allow" style="border-width:0px;"></td>' +
+                        '<td class="permission-deny" style="border-width:0px;"></td>' +
                     '</tr>';
+
+                // permissions in group
                 var pList = gpList[i]['permissions'];
                 for (var j = 0; j < pList.length; j++) {
                     var allowedId = Alfresco.util.generateDomId();
                     var deniedId = Alfresco.util.generateDomId();
-                    permissionsTableHtml += '<tr class="' + rowGroupClass + ' ' + rowClass + '" style="display:none;">' +
-                            '<td style="border-width:0px;vertical-align:top;">' + pList[j]['brief'] + ' &nbsp;</td>' +
-                            '<td style="border-width:0px;"> ' + generateCheckboxHtml(allowedId, oData['authority'], pList[j]['alias'], 'ALLOWED') + ' </td>' +
-                            '<td style="border-width:0px;vertical-align:top;"> ' + generateCheckboxHtml(deniedId, oData['authority'], pList[j]['alias'], 'DENIED') + ' </td>' +
+                    permissionsTableHtml += 
+                        '<tr class="permission-item ' + rowGroupClass + ' ' + rowClass + '" style="display:none;">' +
+                            '<td class="permission-name" style="border-width:0px;vertical-align:top; padding-left: 15px;">' + pList[j]['brief'] + ' &nbsp;</td>' +
+                            '<td class="permission-allow" style="border-width:0px;"> ' + generateCheckboxHtml(allowedId, oData['authority'], pList[j]['alias'], 'ALLOWED') + ' </td>' +
+                            '<td class="permission-deny" style="border-width:0px;vertical-align:top;"> ' + generateCheckboxHtml(deniedId, oData['authority'], pList[j]['alias'], 'DENIED') + ' </td>' +
                         '</tr>';
                     linkEventListeners(allowedId, deniedId);
                 }
             }
-            permissionsTableHtml += '</table>';
+            permissionsTableHtml += 
+                '</table>';
 
             elCell.innerHTML = permissionsTableHtml;
         },

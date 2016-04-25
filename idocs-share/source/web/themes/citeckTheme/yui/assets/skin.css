@@ -5092,7 +5092,9 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .customise-pages .buttons .yui-button .first-child button,
 .site-document-types .buttons .yui-button .first-child button,
 #bd .yui-gc > .yui-u .document-details-panel .yui-dt .form-container .form-fields .form-field .yui-button button,
-.yui-skin-citeckTheme td.value-col .form-field .yui-button button {
+.yui-skin-citeckTheme td.value-col .form-field .yui-button button,
+.yui-skin-citeckTheme .permissions .title .owner .yui-button button,
+.yui-skin-citeckTheme .permissions .cancel-button .yui-button button {
    color: #1c55da;
    font-weight: 900;
    padding: 4px 10px;
@@ -5119,7 +5121,9 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .customise-pages .buttons .yui-button.yui-button-hover .first-child button,
 .site-document-types .buttons .yui-button .first-child button:hover,
 #bd .yui-gc > .yui-u .document-details-panel .yui-dt .form-container .form-fields .form-field .yui-button.yui-button-hover button,
-.yui-skin-citeckTheme td.value-col .form-field .yui-button.yui-button-hover button {
+.yui-skin-citeckTheme td.value-col .form-field .yui-button.yui-button-hover button,
+.yui-skin-citeckTheme .permissions .title .owner .yui-button button:hover,
+.yui-skin-citeckTheme .permissions .cancel-button .yui-button button:hover {
     background-color: #1c55da;
     color: white;
 }

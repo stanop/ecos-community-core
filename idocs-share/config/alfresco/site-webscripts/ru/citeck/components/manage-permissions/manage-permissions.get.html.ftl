@@ -87,28 +87,27 @@
 
         <div id="${id}-authorityTableContainer" class="container">
             <div class="title">
-                <div style="display: inline-block;">${msg("title")}</div>
+                <div>${msg("title")}</div>
                 <div class="owner">
-                       <span>
-                         <span class="first-child">
-                             <#if owner == ''>
-                                 <#assign owner= msg('no-owners')>
-                             </#if>
-                         ${msg("owner")}: ${owner}
-                         </span>
-                       </span>
-                     <span class="yui-button yui-push-button">
+                    <span>
                         <span class="first-child">
-                             <button id="${id}-change-owner">${msg('owner.change')}</button>
+                            <#if owner == ''>
+                                <#assign owner= msg('no-owners')>
+                            </#if>
+                            ${msg("owner")}: ${owner}
                         </span>
-            </span>
-
+                    </span>
+                    <span class="yui-button yui-push-button">
+                        <span class="first-child">
+                            <button id="${id}-change-owner">${msg('owner.change')}</button>
+                        </span>
+                    </span>
                 </div>
             </div>
             <div id="${id}-authorityTable" class="permissions-list"></div>
         </div>
 
-        <div class="center">
+        <div class="center cancel-button">
             <span id="${id}-cancelButton" class="yui-button yui-push-button">
                 <span class="first-child">
                      <button>${msg("button.back")}</button>
@@ -116,7 +115,7 @@
             </span>
         </div>
 
-	    <@renderDynamicTreePickerHTML id />
+        <@renderDynamicTreePickerHTML id />
 
     </div>
     <div id="peoplepicker" class="people-picker " style="visibility: hidden;">

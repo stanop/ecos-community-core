@@ -10,13 +10,10 @@
 /* standart */
 
 
-.permissions .header-bar
-{
+.permissions .header-bar {
     border-bottom: 1px solid #ccc;
-    margin-right: -10px;
-    margin-left: -10px;
-    min-height: 3em;
-    padding: 0.5em 1em;
+    padding: 5px 40px;
+    overflow: hidden;
 }
 
 .permissions .header-bar .left
@@ -36,16 +33,39 @@
     float: left;
 }
 
-.permissions .title
-{
-    color: #008000;
-    font-size: 108%;
-    padding: 1em 0 0.5em;
+
+/* title */
+.permissions .title {
+    padding: 10px 0 15px 0;
+    overflow: hidden;
 }
 
-.permissions .container
-{
-    padding: 0 1em 1em;
+.permissions .title > div:first-child {
+    color: #008000;
+    text-transform: uppercase;
+    float: left;
+    margin-top: 11px;
+}
+
+.permissions .title .owner{
+    float: right;
+    font-size: 12px;
+}
+
+.permissions .title .owner button{
+    font-size: 12px !important;
+    text-transform: capitalize;
+}
+
+.permissions .title .owner > span {
+    margin: 5px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+.permissions .container {
+    padding: 0 40px;
 }
 
 .permissions .table-mask
@@ -59,19 +79,22 @@
 {
     padding-left: 22px;
 }
-.permissions .inherited-on span.first-child
-{
-    background: transparent url(images/inherited-on-16.png) no-repeat 12px 4px;
-}
-.permissions .inherited-off span.first-child
-{
-    background: transparent url(images/inherited-off-16.png) no-repeat 12px 4px;
+
+.permissions .inherited-on span.first-child {
+    background: transparent url(images/inherited-on-16.png) no-repeat 12px 0px;
 }
 
-.permissions .center
-{
-    padding-top: 1em;
+.permissions .inherited-off span.first-child {
+    background: transparent url(images/inherited-off-16.png) no-repeat 12px 0px;
+}
+
+
+/* cancel button */
+.permissions .cancel-button {
+    padding-top: 15px;
     text-align: center;
+    border-top: 1px solid #ccc;
+    margin-top: 15px;
     width: 100%;
 }
 
@@ -121,9 +144,9 @@
     background: none;;
 }
 
-.permissions .permissions-list tbody
-{
+.permissions .permissions-list tbody {
     outline: none;
+    line-height: 150%;
 }
 
 .permissions .permissions-list .yui-dt-empty .yui-dt-liner
@@ -167,20 +190,20 @@
     background-image: url(images/delete-16.png);
 }
 
-.owner{
-    float: right;
-    color: #000000;
-    font-size: 12px;
-    margin-right: 50px;
-    margin-bottom: 5px;
+.permissions .permissions-list a.showHideAllPermissions + a {
+    color: #333 !important;
+    cursor: default;
 }
-.owner button{
-    font-size: 12px!important;
-    min-height: 5px!important;
+
+.permissions .permissions-list a.showHideAllPermissions + a > .permissionsTable {
+    text-align: left;
 }
-.owner > span
-{
-    margin: 5px;
-    display: inline-block;
-    vertical-align: middle;
+
+
+.permissions .permission-group {
+
+}
+
+.permissions .permission-group .permission-item {
+
 }
