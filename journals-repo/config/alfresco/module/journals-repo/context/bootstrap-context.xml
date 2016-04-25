@@ -12,7 +12,7 @@
 
     <!-- models -->
     <bean id="journals.dictionaryBootstrap" parent="dictionaryModelBootstrap"
-        depends-on="dictionaryBootstrap">
+        depends-on="ecos-base-core.dictionaryBootstrap">
         <property name="models">
             <list>
                 <value>alfresco/module/journals-repo/model/journalsModel.xml</value>
