@@ -48,7 +48,7 @@
 		<td align="center" width="40px">Кол-во</td>
 		<td align="center" width="30px">Ед.</td>
 		<td align="center" width="150px">Цена</td>
-		<td width="150px">Сумма</td>
+		<td width="150px" align="center">Сумма</td>
 	</tr>
 	<#assign count = 0/>
 	<#assign totalAmount = 0/>
@@ -56,12 +56,12 @@
 		<#list document.associations["pas:containsProductsAndServices"] as containsProductsAndService>
 			<#assign count = count + 1/>
 			<tr>
-				<td>${count?string["0"]}</td>
-				<td>${containsProductsAndService.properties["cm:title"]!""}</td>
-				<td>${containsProductsAndService.properties["pas:quantity"]!""}</td>
-				<td>${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</td>
-				<td>${containsProductsAndService.properties["pas:pricePerUnit"]!""}</td>
-				<td>${containsProductsAndService.properties["pas:total"]!""}</td>
+				<td align="center">${count?string["0"]}</td>
+				<td align="left">${containsProductsAndService.properties["cm:title"]!""}</td>
+				<td align="right">${containsProductsAndService.properties["pas:quantity"]!""}</td>
+				<td align="center">${containsProductsAndService.associations["pas:entityUnit"][0].properties["pas:unitShortName"]!""}</td>
+				<td align="right">${containsProductsAndService.properties["pas:pricePerUnit"]!""}</td>
+				<td align="right">${containsProductsAndService.properties["pas:total"]!""}</td>
 			</tr>
 			<#assign total = '${containsProductsAndService.properties["pas:total"]?string.computer!0}'/>
 			<#assign totalAmount = totalAmount + total?number/>
@@ -74,27 +74,50 @@
 				<td width="300px"></td>
 				<td width="40px"></td>
 				<td width="30px"></td>
-				<td width="150px">Итого:</td>
-				<td width="150px">${totalAmount}</td>
+				<td width="150px" align="right">Итого:</td>
+				<td width="150px" align="right">${totalAmount}</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
-				<td>Без налога (НДС)</td>
-				<td>-</td>
+				<td align="right">Без налога (НДС)</td>
+				<td align="right">-</td>
 			</tr>
 </table>
 <p></p>
 <p></p>
-<p>Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["contracts:closingDocumentAgreement"]?? && document.associations["contracts:closingDocumentAgreement"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?? && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"]?size != 0 && document.associations["contracts:closingDocumentAgreement"][0].associations["contracts:agreementCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if><br/>
-Выше перечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.</p>
+
+<table width="700px" border="0" cellspacing="0">
+	<tr>
+		<td>
+            Всего наименований ${count?string["0"]}, на сумму ${totalAmount}
+			<#if document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.
+			<#elseif document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD
+			<#elseif document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>EUR
+			</#if>
+		</td>
+	</tr>
+    <tr>
+        <td>
+			<#if document.properties["contracts:closingDocumentAmountInWords"]??>${document.properties["contracts:closingDocumentAmountInWords"]}</#if>
+			<#if document.associations?? && document.associations["contracts:closingDocumentCurrency"]?? && document.associations["contracts:closingDocumentCurrency"]?size != 0 && document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-usd' || document.associations["contracts:closingDocumentCurrency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if>
+        </td>
+    </tr>
+	<tr>
+		<td>
+            Выше перечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.
+		</td>
+	</tr>
+</table>
+
+
 <hr />
 <table width="700px" border="0" cellspacing="0">
-	<tr border="0">
-		<td width="350px" border="0">Исполнитель <@signaturePlace/></td>
-		<td width="350px" border="0">Заказчик <@signaturePlace/></td>
+	<tr>
+		<td width="350px">Исполнитель <@signaturePlace/></td>
+		<td width="350px">Заказчик <@signaturePlace/></td>
 	</tr>
 </table>
 

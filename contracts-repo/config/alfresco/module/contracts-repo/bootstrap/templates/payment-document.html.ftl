@@ -161,25 +161,29 @@
         </table>
 
 <table width="700px" border="0" cellspacing="0">
-    <tr border="0">
-        <td border="0">
-            Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD</#if>
+    <tr>
+        <td>
+            Всего наименований ${count?string["0"]}, на сумму ${totalAmount}
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.
+            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD
+            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>EUR
+            </#if>
         </td>
     </tr>
-    <tr border="0">
-        <td border="0">
+    <tr>
+        <td>
             <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
-            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if>
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd' || document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if>
         </td>
     </tr>
 </table>
 </br>
 <table width="700px" border="0" cellspacing="0">
-    <tr border="0">
-        <td border="0">Руководитель предприятия <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:generalDirector"]?? && beneficiary.associations["idocs:generalDirector"][0]?size != 0>(<@FIO beneficiary.associations["idocs:generalDirector"][0]/>)<#elseif beneficiary??>(${beneficiary.properties["idocs:CEOname"]!})</#if></td>
+    <tr>
+        <td>Руководитель предприятия <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:generalDirector"]?? && beneficiary.associations["idocs:generalDirector"][0]?size != 0>(<@FIO beneficiary.associations["idocs:generalDirector"][0]/>)<#elseif beneficiary??>(${beneficiary.properties["idocs:CEOname"]!})</#if></td>
     </tr>
-    <tr border="0">
-        <td border="0">Главный бухгалтер <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:accountantGeneral"]?? && beneficiary.associations["idocs:accountantGeneral"]?size != 0>(<@FIO beneficiary.associations["idocs:accountantGeneral"][0]/>)</#if></td>
+    <tr>
+        <td>Главный бухгалтер <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:accountantGeneral"]?? && beneficiary.associations["idocs:accountantGeneral"]?size != 0>(<@FIO beneficiary.associations["idocs:accountantGeneral"][0]/>)</#if></td>
     </tr>
 </table>
 

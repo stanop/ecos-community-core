@@ -10,5 +10,9 @@ public interface ContractsModel {
 
     QName ASSOC_CONTRACTOR = QName.createQName(NAMESPACE, "contractor");
     QName ASSOC_CLOSING_DOCUMENT_AGREEMENT = QName.createQName(NAMESPACE, "closingDocumentAgreement");
+    QName ASSOC_CLOSING_DOCUMENT_CURRENCY = QName.createQName(NAMESPACE, "closingDocumentCurrency");
+
+    QName PROP_CLOSING_DOCUMENT_AMOUNT = QName.createQName(NAMESPACE, "closingDocumentAmount");
+    QName PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS = QName.createQName(NAMESPACE, "closingDocumentAmountInWords");
     
 }

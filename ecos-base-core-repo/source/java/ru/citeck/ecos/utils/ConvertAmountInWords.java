@@ -4,6 +4,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Convert Amount In Words class, essential for convert amount to amount in words.
+ * <p>
+ * The need to add this class occurred during the creation of templates for payments and closing documents
+ *
+ * @author Roman.Makarskiy on 23.04.2016.
+ */
+//TODO Refactoring, add support English language
 public class ConvertAmountInWords {
 
     private static final String[][] ONE = {

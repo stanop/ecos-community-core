@@ -43,8 +43,16 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
     }
 
     public void init() {
-        this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, QName.createQName(namespace, type), new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
-        this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, QName.createQName(namespace, type), new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnCreateNodePolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
     }
 
     @Override
@@ -72,13 +80,13 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
     }
 
     private void setTotalAmountInWords(NodeRef nodeRef) {
-        Double amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
+        Double amount;
         String paymentCurrency;
 
         //default
         String currency = "RUB";
 
-        NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.PROP_PAYMENT_CURRENCY, nodeService);
+        NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.ASSOC_PAYMENT_CURRENCY, nodeService);
         paymentCurrency = currencyRef != null ? currencyRef.toString() : "";
 
         switch (paymentCurrency) {
@@ -92,7 +100,10 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
             }
         }
 
-        String amountInWords = ConvertAmountInWords.convert(amount, currency);
-        nodeService.setProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT_IN_WORDS, amountInWords);
+        if (nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT) != null) {
+            amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
+            String amountInWords = ConvertAmountInWords.convert(amount, currency);
+            nodeService.setProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT_IN_WORDS, amountInWords);
+        }
     }
 }

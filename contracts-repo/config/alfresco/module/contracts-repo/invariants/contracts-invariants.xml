@@ -128,6 +128,10 @@
         <association name="idocs:legalEntity">
             <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
         </association>
+        <association name="contracts:closingDocumentCurrency">
+            <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
     </type>
 
     <type name="contracts:supplementaryAgreement">
