@@ -102,7 +102,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, ActivityModel.ASSOC_ACTIVITIES, type);
 
         if (children == null || children.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>(0);
         }
 
         List<Pair<NodeRef, Integer>> indexedChildren = new ArrayList<>(children.size());
