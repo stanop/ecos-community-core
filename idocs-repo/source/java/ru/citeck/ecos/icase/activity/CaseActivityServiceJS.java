@@ -30,6 +30,12 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         caseActivityService.stopActivity(ref);
     }
 
+    public ScriptNode[] getActivities(Object nodeRef) {
+        NodeRef nRef = getNodeRef(nodeRef);
+        List<NodeRef> activities = caseActivityService.getActivities(nRef);
+        return JavaScriptImplUtils.wrapNodes(activities, this);
+    }
+
     public ScriptNode[] getActivities(Object nodeRef, String type) {
         NodeRef nRef = getNodeRef(nodeRef);
         QName typeQName = QName.createQName(type, namespaceService);
@@ -46,6 +52,24 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     public void reset(Object nodeRef) {
         NodeRef ref = getNodeRef(nodeRef);
         caseActivityService.reset(ref);
+    }
+
+    public void setParent(Object activityRef, Object newParent) {
+        caseActivityService.setParent(getNodeRef(activityRef), getNodeRef(newParent));
+    }
+
+    public void setIndex(Object activityRef, Object newIndex) {
+        int index;
+        if (newIndex instanceof Integer) {
+            index = (Integer) newIndex;
+        } else if (newIndex instanceof String) {
+            index = Integer.parseInt((String) newIndex);
+        } else if (newIndex instanceof Double) {
+            index = ((Double) newIndex).intValue();
+        } else {
+            throw new IllegalArgumentException("Can not convert from " + newIndex.getClass() + " to Integer");
+        }
+        caseActivityService.setIndex(getNodeRef(activityRef), index);
     }
 
     private NodeRef getNodeRef(Object object) {
