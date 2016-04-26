@@ -1,5 +1,39 @@
 <alfresco-config>
 
+	<config>
+		<forms>
+			<dependencies>
+				<js src="/lib/underscore.js" />
+
+				<js src="/modules/simple-dialog.js" />
+
+				<js src="/lib/grouped-datatable.js" />
+				<js src="/citeck/components/dynamic-tree/cell-formatters.js" />
+				<js src="/citeck/components/dynamic-tree/error-manager.js" />
+
+				<js src="/citeck/components/dynamic-tree/hierarchy-model.js" />
+				<js src="/citeck/components/dynamic-tree/has-buttons.js" />
+				<js src="/citeck/components/dynamic-tree/dynamic-tree.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-tree.css" />
+				<js src="/citeck/components/dynamic-tree/dynamic-tree-picker.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-tree-picker.css" />
+				<js src="/citeck/components/dynamic-tree/upload-picker.js" />
+				<js src="/citeck/components/dynamic-tree/doclib-picker.js" />
+				<css src="/citeck/components/orgstruct/orgstruct-icons.css" />
+				<js src="/citeck/components/dynamic-tree/dynamic-doclib-table.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-doclib-table.css" />
+				<js src="/citeck/components/dynamic-tree/dynamic-table.js" />
+				<css src="/citeck/components/dynamic-tree/dynamic-table.css" />
+
+				<js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
+	            <js src="/yui/resize/resize.js" />
+
+				<css src="/citeck/components/journals2/journals.css" />
+				<js src="/citeck/components/dynamic-tree/criteria-model.js" />
+			</dependencies>
+		</forms>
+	</config>
+
 	<!-- Overdue tasks link menu -->
 	<config evaluator="string-compare" condition="SitePages">
 		<pages>
