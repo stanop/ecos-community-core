@@ -11,14 +11,23 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ContractsModel;
+import ru.citeck.ecos.utils.ConvertAmountInWords;
+import ru.citeck.ecos.utils.RepoUtils;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateAssociationPolicy,
-        NodeServicePolicies.OnDeleteAssociationPolicy {
+        NodeServicePolicies.OnDeleteAssociationPolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
 
     private NodeService nodeService;
     private PolicyComponent policyComponent;
+    private String namespace;
+    private String type;
+
+
 
     private static Log logger = LogFactory.getLog(ClosingDocumentBehaviour.class);
 
@@ -30,9 +39,18 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateAss
         this.nodeService = nodeService;
     }
 
+    public void setNamespace(String namespace) { this.namespace = namespace; }
+
+    public void setType(String type) { this.type = type; }
+
     public void init() {
         bind(NodeServicePolicies.OnCreateAssociationPolicy.QNAME, "onCreateAssociation");
         bind(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, "onDeleteAssociation");
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
     }
 
     private void bind(QName policy, String method) {
@@ -67,8 +85,61 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateAss
                 nodeService.removeAssociation(closDoc,contractors.get(0).getTargetRef(), ContractsModel.ASSOC_CONTRACTOR);
             }
         } else {
-            logger.error("Contrator is not exists");
+            logger.error("Contractor is not exists");
         }
     }
 
+    @Override
+    public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        if (!nodeService.exists(nodeRef)) {
+            return;
+        }
+
+        Double amountAfter = (Double) after.get(ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
+        Double amountBefore = (Double) before.get(ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
+
+        if (!Objects.equals(amountAfter, amountBefore)) {
+            setTotalAmountInWords(nodeRef);
+        }
+    }
+
+    private void setTotalAmountInWords(NodeRef nodeRef) {
+        Double amount;
+        String closingDocumentCurrency = "";
+        String currency;
+        NodeRef currencyRefFromAgreement = null;
+
+        NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_CURRENCY, nodeService);
+        NodeRef agreementRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_AGREEMENT, nodeService);
+
+        if (agreementRef != null) {
+            currencyRefFromAgreement = RepoUtils.getFirstTargetAssoc(agreementRef, ContractsModel.ASSOC_AGREEMENT_CURRENCY, nodeService);
+        }
+
+        if (currencyRef != null) {
+            closingDocumentCurrency = currencyRef.toString();
+        } else if (currencyRefFromAgreement != null) {
+            closingDocumentCurrency = currencyRefFromAgreement.toString();
+        }
+
+        switch (closingDocumentCurrency) {
+            case "workspace://SpacesStore/currency-usd": {
+                currency = "USD";
+                break;
+            }
+            case "workspace://SpacesStore/currency-eur": {
+                currency = "EUR";
+                break;
+            }
+            default: {
+                currency = "RUB";
+            }
+        }
+
+        if (nodeService.getProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT) != null) {
+            amount = (Double) nodeService.getProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
+            String amountInWords = ConvertAmountInWords.convert(amount, currency);
+            nodeService.setProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS, amountInWords);
+        }
+    }
 }

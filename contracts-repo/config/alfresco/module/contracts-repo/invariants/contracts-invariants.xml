@@ -84,6 +84,8 @@
         </property>
         <property name="payments:paymentVAT">
             <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="default" language="javascript">0</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
@@ -127,6 +129,11 @@
         </association>
         <association name="idocs:legalEntity">
             <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
+        </association>
+        <association name="contracts:closingDocumentCurrency">
+            <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
         </association>
     </type>
 

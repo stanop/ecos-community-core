@@ -131,9 +131,18 @@
 		<property name="type" value="pasEntityCopied"/>
 	</bean>
 
+	<bean id="paymentsBehaviour" class="ru.citeck.ecos.behavior.contracts.PaymentsBehaviour" init-method="init">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="namespace" value="http://www.citeck.ru/model/payments/1.0"/>
+		<property name="type" value="payment"/>
+	</bean>
+
 	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour" init-method="init">
 		<property name="nodeService" ref="nodeService" />
 		<property name="policyComponent" ref="policyComponent" />
+		<property name="namespace" value="http://www.citeck.ru/model/contracts/1.0"/>
+		<property name="type" value="closingDocument"/>
 	</bean>
 
 </beans>

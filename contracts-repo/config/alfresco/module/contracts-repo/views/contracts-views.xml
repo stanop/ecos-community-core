@@ -514,6 +514,9 @@
                 </region>
             </field>
         </view>
+        <view>
+            <field assoc="contracts:closingDocumentCurrency"/>
+        </view>
         <field prop="dms:updateContent">
             <region name="label" template="label">
                 <param name="key">dms_dms.property.dms_updateContent.title</param>

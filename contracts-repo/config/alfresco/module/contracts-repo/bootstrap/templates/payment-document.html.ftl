@@ -62,6 +62,11 @@
         </#if>
     </#macro>
 
+    <#assign VAT = 0>
+    <#if document.properties["payments:paymentVAT"]??>
+        <#assign VAT = '${document.properties["payments:paymentVAT"]?string.computer!0}'>
+    </#if>
+
     <@findPayer />
     <@findBeneficiary />
     <@findBankAccount />
@@ -151,21 +156,46 @@
                         <td><p align="right">${totalAmount}</p></td>
                 </tr>
                 <tr>
-                        <td style="border-style: hidden" colspan="5"><p align="right"><b>Без НДС:</b></p></td>
-                        <td><p align="right">${totalAmount}</p></td>
+                        <td style="border-style: hidden" colspan="5"><p align="right"><b>НДС:</b></p></td>
+                        <td><p align="right">
+                            <#if VAT?? && VAT?number gt 0>
+                                ${VAT?number}
+                            <#else>-
+                            </#if>
+                        </p></td>
                 </tr>
                 <tr>
                         <td colspan="5" style="border-style: hidden"><p align="right"><b>Всего к оплате:</b></p></td>
-                        <td><p align="right">${totalAmount}</p></td>
+                        <td><p align="right">${totalAmount + VAT?number}</p></td>
                 </tr>
         </table>
-<p>Всего наименований ${count?string["0"]}, на сумму ${totalAmount} <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.<#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)</#if></p><br/>
+
 <table width="700px" border="0" cellspacing="0">
-    <tr border="0">
-        <td border="0">Руководитель предприятия <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:generalDirector"]?? && beneficiary.associations["idocs:generalDirector"][0]?size != 0>(<@FIO beneficiary.associations["idocs:generalDirector"][0]/>)<#elseif beneficiary??>(${beneficiary.properties["idocs:CEOname"]!})</#if></td>
+    <tr>
+        <td>
+            Всего наименований ${count?string["0"]}, на сумму ${totalAmount}
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.
+            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD
+            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>EUR
+            </#if>
+        </td>
     </tr>
-    <tr border="0">
-        <td border="0">Главный бухгалтер <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:accountantGeneral"]?? && beneficiary.associations["idocs:accountantGeneral"]?size != 0>(<@FIO beneficiary.associations["idocs:accountantGeneral"][0]/>)</#if></td>
+    <tr>
+        <td>
+            <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd' && VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'&& VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            </#if>
+        </td>
+    </tr>
+</table>
+</br>
+<table width="700px" border="0" cellspacing="0">
+    <tr>
+        <td>Руководитель предприятия <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:generalDirector"]?? && beneficiary.associations["idocs:generalDirector"][0]?size != 0>(<@FIO beneficiary.associations["idocs:generalDirector"][0]/>)<#elseif beneficiary??>(${beneficiary.properties["idocs:CEOname"]!})</#if></td>
+    </tr>
+    <tr>
+        <td>Главный бухгалтер <@signaturePlace/> <#if beneficiary?? && beneficiary.associations["idocs:accountantGeneral"]?? && beneficiary.associations["idocs:accountantGeneral"]?size != 0>(<@FIO beneficiary.associations["idocs:accountantGeneral"][0]/>)</#if></td>
     </tr>
 </table>
 
