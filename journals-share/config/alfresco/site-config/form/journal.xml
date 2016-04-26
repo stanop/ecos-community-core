@@ -17,11 +17,11 @@
                     </field>
                     <field id="journal:journalType">
                         <control template="/ru/citeck/components/form/controls/select.ftl">
-                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/types</control-param>
-                            <control-param name="valueField">journalId</control-param>
-                            <control-param name="titleField">journalId</control-param>
-                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
-                            <control-param name="responseSchema">{ resultsList: 'journals', fields: [ {key:'journalId'}, {key:'journalId'} ] }</control-param>
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <control-param name="valueField">journalType</control-param>
+                            <control-param name="titleField">journalType</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="responseSchema">[ {key:'journalType'}, {key:'journalType'} ]</control-param>
                         </control>
                     </field>
                     <field id="journal:searchCriteria">
@@ -82,11 +82,11 @@
                     </field>
                     <field id="journal:journalType">
                         <control template="/ru/citeck/components/form/controls/select.ftl">
-                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/types</control-param>
-                            <control-param name="valueField">journalId</control-param>
-                            <control-param name="titleField">journalId</control-param>
-                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
-                            <control-param name="responseSchema">{ resultsList: 'journals', fields: [ {key:'journalId'}, {key:'journalId'} ] }</control-param>
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <control-param name="valueField">journalType</control-param>
+                            <control-param name="titleField">journalType</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="responseSchema">[ {key:'journalType'}, {key:'journalType'} ]</control-param>
                         </control>
                     </field>
                 </appearance>
@@ -111,11 +111,11 @@
                     </field>
                     <field id="journal:journalType">
                         <control template="/ru/citeck/components/form/controls/select.ftl">
-                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/types</control-param>
-                            <control-param name="valueField">journalId</control-param>
-                            <control-param name="titleField">journalId</control-param>
-                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
-                            <control-param name="responseSchema">{ resultsList: 'journals', fields: [ {key:'journalId'}, {key:'journalId'} ] }</control-param>
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <control-param name="valueField">journalType</control-param>
+                            <control-param name="titleField">journalType</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="responseSchema">[ {key:'journalType'}, {key:'journalType'} ]</control-param>
                         </control>
                     </field>
                     <field id="journal:searchCriteria">
@@ -222,11 +222,11 @@
                     <field id="journal:journalTypes">
                         <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
                             <control-param name="itemType">d:text</control-param>
-                            <control-param name="itemKey">journalId</control-param>
-                            <control-param name="itemTitle">{journalId}</control-param>
-                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/types</control-param>
+                            <control-param name="itemKey">journalType</control-param>
+                            <control-param name="itemTitle">{journalType}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/maptypes</control-param>
                             <control-param name="rootURLresults">journals</control-param>
-                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalId}</control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalType}</control-param>
                             <control-param name="itemURLresults">journals.0</control-param>
                             <control-param name="searchURL">/share/proxy/alfresco/api/journals/types?filter={query}</control-param>
                             <control-param name="searchURLresults">journals</control-param>
@@ -272,11 +272,11 @@
                     <field id="journal:journalTypes">
                         <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
                             <control-param name="itemType">d:text</control-param>
-                            <control-param name="itemKey">journalId</control-param>
-                            <control-param name="itemTitle">{journalId}</control-param>
-                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/types</control-param>
+                            <control-param name="itemKey">journalType</control-param>
+                            <control-param name="itemTitle">{journalType}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/maptypes</control-param>
                             <control-param name="rootURLresults">journals</control-param>
-                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalId}</control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalType}</control-param>
                             <control-param name="itemURLresults">journals.0</control-param>
                             <control-param name="searchURL">/share/proxy/alfresco/api/journals/types?filter={query}</control-param>
                             <control-param name="searchURLresults">journals</control-param>

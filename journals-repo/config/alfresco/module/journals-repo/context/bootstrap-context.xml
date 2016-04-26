@@ -104,5 +104,19 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.journals-attachments-root" parent="journals.import-spaces" depends-on="journals.dictionaryBootstrap">
+        <property name="name" value="journals-attachments-root" />
+        <property name="description" value="attachments-root" />
+        <property name="sinceVersion" value="1.0" />
+        <property name="appliesFromVersion" value="1.0" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/</prop>
+                <prop key="location">alfresco/module/journals-repo/bootstrap/explicit/attachments-root.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
 
 </beans>
