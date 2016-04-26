@@ -159,8 +159,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void setParent(NodeRef activityRef, NodeRef newParent) {
-        mandatoryNodeRef("Activity nodeRef", activityRef);
-        mandatoryNodeRef("Parent nodeRef", newParent);
+        mandatoryActivity("activityRef", activityRef);
+        mandatoryNodeRef("newParent", newParent);
 
         ChildAssociationRef assocRef = nodeService.getPrimaryParent(activityRef);
         NodeRef parent = assocRef.getParentRef();
@@ -176,7 +176,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void setIndex(NodeRef activityRef, int newIndex) {
-        mandatoryNodeRef("Activity nodeRef", activityRef);
+        mandatoryActivity("activityRef", activityRef);
 
         ChildAssociationRef assocRef = nodeService.getPrimaryParent(activityRef);
         NodeRef parent = assocRef.getParentRef();
@@ -206,9 +206,20 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         }
     }
 
+    private void mandatoryActivity(String paramName, NodeRef activityRef) {
+        mandatoryNodeRef(paramName, activityRef);
+        QName type = nodeService.getType(activityRef);
+        if (!dictionaryService.isSubClass(type, ActivityModel.TYPE_ACTIVITY)) {
+            throw new IllegalArgumentException(paramName + " must inherit activ:activity");
+        }
+    }
+
     private void mandatoryNodeRef(String paramName, NodeRef nodeRef) {
-        if (nodeRef == null || !nodeService.exists(nodeRef)) {
+        if (nodeRef == null) {
             throw new IllegalArgumentException(paramName + " is a mandatory parameter");
+        } else if (!nodeService.exists(nodeRef)) {
+            throw new IllegalArgumentException("Parameter " + paramName + " have incorrect " +
+                                               "NodeRef: " + nodeRef + ". The node doesn't exists.");
         }
     }
 
