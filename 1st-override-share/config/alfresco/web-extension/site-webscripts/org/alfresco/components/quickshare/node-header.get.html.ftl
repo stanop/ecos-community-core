@@ -27,7 +27,7 @@
                ${msg("label.modified-by-user-on-date", (modifierFirstName!"")?html, (modifierLastName!"")?html, "<span id='${el}-modifyDate'>${modifyDate}</span>")}
                </div>
                <div class="document-download" style="padding-top: 5px;" >
-                   <a title="${msg("button.download")}" class="simple-link" href="${url.context}/proxy/alfresco-noauth/api/internal/shared/node/content/${args.shareId}?a=true" style="padding:2px 2px 2px 24px; background-repeat: no-repeat; background-image:url(${url.context}/res/components/documentlibrary/actions/document-download-16.png)">${msg("button.download")}</a>
+                   <a title="${msg("button.download")}" class="simple-link" href="${url.context}/proxy/alfresco-noauth/api/internal/shared/node/content/${args.shareId}?a=true" download="${displayName}" style="padding:2px 2px 2px 24px; background-repeat: no-repeat; background-image:url(${url.context}/res/components/documentlibrary/actions/document-download-16.png)">${msg("button.download")}</a>
   
 				</div>
                <script type="text/javascript">
