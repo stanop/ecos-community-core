@@ -194,15 +194,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         activities.remove(activityRef);
         activities.add(newIndex, activityRef);
 
-        int index = 0;
-        if (newIndex > 0) {
-            NodeRef prevActivity = activities.get(newIndex - 1);
-            Integer prevIndex = (Integer) nodeService.getProperty(prevActivity, ActivityModel.PROP_INDEX);
-            index = prevIndex != null ? prevIndex : 0;
-        }
-
-        for (int i = newIndex; i < activities.size(); i++) {
-            nodeService.setProperty(activities.get(i), ActivityModel.PROP_INDEX, ++index);
+        for (int i = 0; i < activities.size(); i++) {
+            nodeService.setProperty(activities.get(i), ActivityModel.PROP_INDEX, i);
         }
     }
 
