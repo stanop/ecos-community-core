@@ -6,7 +6,7 @@
 				<css src="/citeck/components/form/form-custom.css" />
 				<css src="/yui/fonts/fonts.css" />
 				<css src="/yui/datatable/assets/skins/sam/datatable.css" />
-				<js src="/modules/simple-dialog.js" />
+				<!-- <js src="/modules/simple-dialog.js" /> -->
 				<js src="/yui/yahoo-dom-event/yahoo-dom-event.js" />
 				<js src="/yui/element/element.js" />
 				<js src="/yui/cookie/cookie.js" />
@@ -16,12 +16,12 @@
 				<js src="/jquery/jquery-1.6.2-min.js" />
 				<js src="/lib/jquery.simulate.js" />
 
-				<js src="/lib/grouped-datatable.js" />
+				<!-- <js src="/lib/grouped-datatable.js" /> -->
 
-				<js src="/citeck/components/dynamic-tree/cell-formatters.js" />
+				<!-- <js src="/citeck/components/dynamic-tree/cell-formatters.js" /> -->
 
 				<!-- utilities -->
-				<js src="/citeck/components/dynamic-tree/error-manager.js" />
+				<!-- <js src="/citeck/components/dynamic-tree/error-manager.js" /> -->
 
 				<css src="/citeck/components/form/citeck-object-finder.css" />
 				<js src="/citeck/components/form/citeck-object-finder.js" />
@@ -54,7 +54,7 @@
 				<css src="/citeck/components/form/controls/route.css" />
 
 				<!-- dynamic tree picker -->
-				<js src="/citeck/components/dynamic-tree/hierarchy-model.js" />
+				<!-- <js src="/citeck/components/dynamic-tree/hierarchy-model.js" />
 				<js src="/citeck/components/dynamic-tree/has-buttons.js" />
 				<js src="/citeck/components/dynamic-tree/dynamic-tree.js" />
 				<css src="/citeck/components/dynamic-tree/dynamic-tree.css" />
@@ -66,13 +66,13 @@
 				<js src="/citeck/components/dynamic-tree/dynamic-doclib-table.js" />
 				<css src="/citeck/components/dynamic-tree/dynamic-doclib-table.css" />
 				<js src="/citeck/components/dynamic-tree/dynamic-table.js" />
-				<css src="/citeck/components/dynamic-tree/dynamic-table.css" />
+				<css src="/citeck/components/dynamic-tree/dynamic-table.css" /> -->
 
-				<js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
-	            <js src="/yui/resize/resize.js" />
-				
-				<css src="/citeck/components/journals2/journals.css" />
-				<js src="/citeck/components/dynamic-tree/criteria-model.js" />
+				<!-- <js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
+	            <js src="/yui/resize/resize.js" /> -->
+
+				<!-- <css src="/citeck/components/journals2/journals.css" />
+				<js src="/citeck/components/dynamic-tree/criteria-model.js" /> -->
 			</dependencies>
 			<constraint-handlers>
 				<constraint
@@ -84,7 +84,7 @@
 			</constraint-handlers>
 		</forms>
 	</config>
-    
+
     <config evaluator="string-compare" condition="ShareHeader">
         <page-titles>
             <page id="create-content">
