@@ -16,13 +16,6 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
-    <bean id="caseActivityIndexBehaviour" name="CaseActivityIndexBehaviour"
-          class="ru.citeck.ecos.behavior.activity.CaseActivityIndexBehaviour" init-method="init">
-        <property name="caseActivityService" ref="caseActivityService"/>
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="nodeService" ref="nodeService"/>
-    </bean>
-
     <bean id="caseTaskBehavior" name="CaseTaskBehavior" class="ru.citeck.ecos.behavior.activity.CaseTaskBehavior" init-method="init">
         <property name="caseActivityService" ref="caseActivityService"/>
         <property name="dictionaryService" ref="DictionaryService"/>
