@@ -528,7 +528,11 @@
 
     <bean id="idocs.contractorNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="idocs:contractor"/>
-        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fullOrganizationName']}"/>
+        <property name="nameTemplate">
+            <value>
+                <![CDATA[<#if node.properties['idocs:fullOrganizationName']??>#{'$'}{node.properties['idocs:fullOrganizationName']!'n/a'}<#else>#{'$'}{node.properties['cm:name']}</#if>]]>
+            </value>
+        </property>
     </bean>
 
     <bean id="ecos.documentNumberBehaviour" parent="EnumerationBehaviour">
