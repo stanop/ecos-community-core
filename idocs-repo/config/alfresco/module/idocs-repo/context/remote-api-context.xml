@@ -220,13 +220,6 @@
         <property name="nodeService" ref="NodeService"/>
     </bean>
 
-    <bean id="webscript.ru.citeck.repository.dictionary.classesWithFullQname.get"
-          class=" org.alfresco.repo.web.scripts.dictionary.ClassesGet"
-          parent="webscript">
-        <property name="dictionaryService" ref="dictionaryService"/>
-        <property name="namespaceService" ref="namespaceService"/>
-    </bean>
-
     <bean id="webscript.ru.citeck.repository.dictionary.childrenClassesWithFullQname.get"
           class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
           parent="webscript">
