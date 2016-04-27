@@ -438,6 +438,10 @@
   margin: 10px 0 0 10px;
 }
 
+.invariants-form .template-table .template-row [class*="template-select-"] {
+  float: right;
+}
+
 .invariants-form .template-table .template-half-width [class*="template-select-"],
 .invariants-form .template-table .template-third-width [class*="template-select-"] {
   margin-top: 10px;
@@ -1258,7 +1262,7 @@
 .invariants-form.view-form .template-table .template-free-content {
   font-family: Open Sans Bold, Arial, sans-serif;
   float: right;
-  width: 55%;
+  width: 54.5%;
 }
 
 .invariants-form .template-table .template-view span.value-item .value-item-actions {
