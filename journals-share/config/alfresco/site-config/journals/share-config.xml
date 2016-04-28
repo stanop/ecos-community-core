@@ -73,4 +73,8 @@
 		</uri-templates>
 	</config>
 
+	<config evaluator="string-compare" condition="UrlTemplate">
+    	<link>create-content?itemId={type}&amp;destination={destination}&amp;viewId={formId}</link>
+    </config>
+
 </alfresco-config>

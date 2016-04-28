@@ -123,6 +123,10 @@
 		</dependencies>
 	</config>
 
+    <config evaluator="string-compare" condition="UrlTemplate" replace="true">
+    	<link>node-create?type={type}&amp;destination={destination}&amp;viewId={formId}</link>
+    </config>
+
 	<!-- <config>
 		<forms>
 			<constraint-handlers>

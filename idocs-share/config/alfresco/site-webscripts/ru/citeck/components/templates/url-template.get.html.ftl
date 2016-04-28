@@ -1,0 +1,3 @@
+<#if urltemplate??>
+  ${urltemplate}
+</#if>
