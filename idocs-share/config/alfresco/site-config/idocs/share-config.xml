@@ -6,7 +6,7 @@
 				<css src="/citeck/components/form/form-custom.css" />
 				<css src="/yui/fonts/fonts.css" />
 				<css src="/yui/datatable/assets/skins/sam/datatable.css" />
-				<!-- <js src="/modules/simple-dialog.js" /> -->
+
 				<js src="/yui/yahoo-dom-event/yahoo-dom-event.js" />
 				<js src="/yui/element/element.js" />
 				<js src="/yui/cookie/cookie.js" />
@@ -16,63 +16,11 @@
 				<js src="/jquery/jquery-1.6.2-min.js" />
 				<js src="/lib/jquery.simulate.js" />
 
-				<!-- <js src="/lib/grouped-datatable.js" /> -->
-
-				<!-- <js src="/citeck/components/dynamic-tree/cell-formatters.js" /> -->
-
-				<!-- utilities -->
-				<!-- <js src="/citeck/components/dynamic-tree/error-manager.js" /> -->
-
-				<css src="/citeck/components/form/citeck-object-finder.css" />
-				<js src="/citeck/components/form/citeck-object-finder.js" />
-				<js src="/citeck/components/form/controls/number-richsearch.js" />
-				<js src="/citeck/components/form/controls/text-richsearch.js" />
-				<js src="/citeck/components/form/controls/boolean-richsearch.js" />
-				<js src="/citeck/components/form/controls/select-richsearch.js" />
-				<js src="/citeck/components/form/controls/number-field.js" />
-				<js src="/citeck/components/form/controls/js-variable-value.js" />
-				<js src="/citeck/components/form/controls/groupable.js" />
-				<css src="/citeck/components/form/controls/groupable.css" />
-				<js src="/citeck/components/form/controls/auto-number.js" />
-				<css src="/citeck/components/form/controls/auto-number.css" />
-				<js src="/citeck/components/form/controls/auto-manual.js" />
-				<css src="/citeck/components/form/controls/auto-manual.css" />
-				<js src="/citeck/components/form/multipart-form-support.js" />
-				<js src="/citeck/components/form/selectWithEdit.js" />
-				<js src="/citeck/components/form/constraints.js" />
-				<js src="/components/form/date-range.js" />
-				<js src="/citeck/components/form/select.js" />
-				<css src="/citeck/components/form/select.css" />
-				<css src="/citeck/components/form/setselect.css" />
-				<css src="/citeck/components/form/controls/passports.css" />
-				<css src="/citeck/components/form/controls/img-preview.css" />
-
 				<js src="/citeck/components/form/controls/types-and-kinds.js" />
 				<css src="/citeck/components/form/controls/types-and-kinds.css" />
 
 				<js src="/citeck/components/form/controls/route.js" />
 				<css src="/citeck/components/form/controls/route.css" />
-
-				<!-- dynamic tree picker -->
-				<!-- <js src="/citeck/components/dynamic-tree/hierarchy-model.js" />
-				<js src="/citeck/components/dynamic-tree/has-buttons.js" />
-				<js src="/citeck/components/dynamic-tree/dynamic-tree.js" />
-				<css src="/citeck/components/dynamic-tree/dynamic-tree.css" />
-				<js src="/citeck/components/dynamic-tree/dynamic-tree-picker.js" />
-				<css src="/citeck/components/dynamic-tree/dynamic-tree-picker.css" />
-				<js src="/citeck/components/dynamic-tree/upload-picker.js" />
-				<js src="/citeck/components/dynamic-tree/doclib-picker.js" />
-				<css src="/citeck/components/orgstruct/orgstruct-icons.css" />
-				<js src="/citeck/components/dynamic-tree/dynamic-doclib-table.js" />
-				<css src="/citeck/components/dynamic-tree/dynamic-doclib-table.css" />
-				<js src="/citeck/components/dynamic-tree/dynamic-table.js" />
-				<css src="/citeck/components/dynamic-tree/dynamic-table.css" /> -->
-
-				<!-- <js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
-	            <js src="/yui/resize/resize.js" /> -->
-
-				<!-- <css src="/citeck/components/journals2/journals.css" />
-				<js src="/citeck/components/dynamic-tree/criteria-model.js" /> -->
 			</dependencies>
 			<constraint-handlers>
 				<constraint
