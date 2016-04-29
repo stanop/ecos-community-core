@@ -270,9 +270,9 @@
                 <li class="yuimenuitem">
                     <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'html', true)">${msg("report.html.download")}</a>
                 </li>
-                <li class="yuimenuitem">
+                <#-- <li class="yuimenuitem">
                     <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'pdf', true)">PDF</a>
-                </li>
+                </li> -->
                 <li class="yuimenuitem">
                     <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'xlsx', true)">Excel</a>
                 </li>    
