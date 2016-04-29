@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alfresco-config>
+
+	<config evaluator="model-type" condition="cm:content">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="cm:created" />
+					<show id="cm:creator" />
+					<show id="cm:modified" />
+					<show id="cm:modifier" />
+					<show id="cm:accessed" />
+				</field-visibility>
+				<create-form template="/ru/citeck/components/form/calendar/calendar.ftl" />
+			</form>
+			<form id="search">
+				<field-visibility>
+					<show id="cm:created" />
+					<show id="cm:creator" />
+					<show id="cm:modified" />
+					<show id="cm:modifier" />
+					<show id="cm:accessed" />
+				</field-visibility>
+			</form>
+		</forms>
+	</config>
+
+	<config evaluator="node-type" condition="ia:calendarEvent">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="cm:created" />
+					<show id="cm:creator" />
+					<show id="cm:modified" />
+					<show id="cm:modifier" />
+					<show id="cm:accessed" />
+				</field-visibility>
+			</form>
+		</forms>
+	</config>
+
+</alfresco-config>
