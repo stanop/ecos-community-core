@@ -1017,4 +1017,41 @@ YAHOO.Bubbling.fire("registerAction", {
 		}
 	});
 
+
+	/**
+	 * for Node Actions Service
+	 * */
+	YAHOO.Bubbling.fire("registerAction", {
+        actionName: "onServerAction",
+        fn: function (asset, element) {
+            var actionId = element.className;
+            var props = asset.actionParams[actionId].actionProperties;
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + props.webServiceURL,
+                successCallback: {
+                    scope: this,
+                    fn: function () {
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: this.msg("message.transitionSuccess")
+                        });
+                        _.delay(function () {
+                            window.location.reload();
+                        }, 3000);
+                    }
+                },
+                failureCallback: {
+                    scope: this,
+                    fn: function (response) {
+                        var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: json.message
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+
+
 })();
