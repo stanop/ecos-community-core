@@ -10,25 +10,23 @@ public class NodeActionDefinition {
 
     private String title;
 
-    private String id;
-
     private String url;
 
+    private Map<String, String> properties = new HashMap<>();
 
     public NodeActionDefinition() {
     }
 
-    public NodeActionDefinition(String title, String id, String url) {
+    public NodeActionDefinition(String title, String url) {
         this.title = title;
-        this.id = id;
         this.url = url;
     }
 
     public Map<String, String> getFieldsMap() {
         Map<String, String> fieldsMap = new HashMap<>();
-        fieldsMap.put("id", id);
         fieldsMap.put("title", title);
         fieldsMap.put("url", url);
+        fieldsMap.putAll(properties);
         return fieldsMap;
     }
 
@@ -40,20 +38,28 @@ public class NodeActionDefinition {
         this.title = title;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getUrl() {
         return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getProperty(String key) {
+        return properties.get(key);
+    }
+
+    public void setProperty(String key, String value) {
+        properties.put(key, value);
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
 }

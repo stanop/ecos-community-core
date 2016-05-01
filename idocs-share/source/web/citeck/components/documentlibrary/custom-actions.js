@@ -1023,9 +1023,11 @@ YAHOO.Bubbling.fire("registerAction", {
 	 * */
 	YAHOO.Bubbling.fire("registerAction", {
         actionName: "onServerAction",
-        fn: function (record) {
+        fn: function (asset, element) {
+            var actionId = element.className;
+            var props = asset.actionParams[actionId].actionProperties;
             Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + record.webServiceURL,
+                url: Alfresco.constants.PROXY_URI + props.webServiceURL,
                 successCallback: {
                     scope: this,
                     fn: function () {

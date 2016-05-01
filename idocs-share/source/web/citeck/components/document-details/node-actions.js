@@ -202,6 +202,7 @@
                 var componentId = this.id;
 
                 this.addServerActions();
+                this.addServerNodeActions();
 
                 // Asset data
                 this.recordData = this.options.documentDetails.item;
@@ -425,6 +426,29 @@
                             type: "javascript",
                             index: 500 + i,
                             params: {"function": "onActionDoTransition", actionProperties: data[i]}
+                        });
+                    }
+                }
+            },
+
+            addServerNodeActions: function ServerNodeActions_addNodeActions() {
+                var url = Alfresco.constants.PROXY_URI + 'api/node-action-service/get-actions?nodeRef=' + this.options.nodeRef;
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url, false);
+                xhr.send(null);
+                if(xhr.status === 200) {
+                    var data = eval('(' + xhr.responseText + ')');
+                    for (var i = 0; i < data.length; i++) {
+                        var params = {
+                            "webServiceURL": data[i].url
+                        };
+                        this.options.documentDetails.item.actions.push({
+                            id: "server-node-action-" + i,
+                            label: data[i].title,
+                            icon: "task",
+                            type: "javascript",
+                            index: 65535 + i,
+                            params: {"function": "onServerAction", actionProperties: params}
                         });
                     }
                 }
