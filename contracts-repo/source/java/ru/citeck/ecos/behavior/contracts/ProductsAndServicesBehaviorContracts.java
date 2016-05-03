@@ -66,18 +66,21 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
     }
 
     public void init() {
-        this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
-                QName.createQName(namespace, type), new JavaBehaviour(this,
-                        "onCreateNode",
-                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
-        this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
-                QName.createQName(namespace, type), new JavaBehaviour(this,
-                        "onUpdateProperties",
-                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
-        this.policyComponent.bindClassBehaviour(NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
-                QName.createQName(namespace, type), new JavaBehaviour(this,
-                        "beforeDeleteNode",
-                        Behaviour.NotificationFrequency.EVERY_EVENT));
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnCreateNodePolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "beforeDeleteNode", Behaviour.NotificationFrequency.EVERY_EVENT)
+        );
     }
 
     @Override
