@@ -137,9 +137,11 @@
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
         </property>
         <association name="contracts:contractor">
+            <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
         </association>
         <association name="idocs:legalEntity">
+            <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="relevant" language="javascript">!(node.associations["contracts:closingDocumentAgreement"] || [])[0]</invariant>
         </association>
         <association name="contracts:closingDocumentCurrency">
