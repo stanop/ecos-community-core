@@ -91,6 +91,18 @@
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
         </property>
+        <association name="payments:beneficiary">
+            <invariant on="value" language="javascript">node.assocs["payments:basis"][0].assocs["contracts:contractor"][0]</invariant>
+        </association>
+        <association name="payments:payer">
+            <invariant on="value" language="javascript">
+                if (node.assocs["payments:basis"][0].type == "{http://www.citeck.ru/model/contracts/1.0}agreement") {
+                    node.assocs["payments:basis"][0].assocs["contracts:agreementLegalEntity"][0];
+                } else if (node.assocs["payments:basis"][0].type == "{http://www.citeck.ru/model/contracts/1.0}closingDocument") {
+                    node.assocs["payments:basis"][0].assocs["idocs:legalEntity"][0];
+                }
+                </invariant>
+        </association>
     </type>
 
     <type name="payments:paymentDraft">
