@@ -37,4 +37,13 @@
         </property>
     </type>
 
+    <type name="idocs:legalEntity">
+        <property name="idocs:kpp">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="idocs:inn">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
 </invariants>
