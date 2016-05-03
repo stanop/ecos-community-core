@@ -4,6 +4,7 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -19,7 +20,7 @@ import java.util.Objects;
 /**
  * @author Roman.Makarskiy on 22.04.2016.
  */
-public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
+public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy {
 
     private NodeService nodeService;
     private PolicyComponent policyComponent;
@@ -53,6 +54,21 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
                 QName.createQName(namespace, type),
                 new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                PaymentsModel.TYPE,
+                PaymentsModel.ASSOC_PAYMENT_CURRENCY,
+                new JavaBehaviour(this, "onCreateAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+    }
+
+    @Override
+    public void onCreateAssociation(AssociationRef associationRef) {
+        NodeRef sourceRef = associationRef.getSourceRef();
+        if (!nodeService.exists(sourceRef)) {
+            return;
+        }
+        setTotalAmountInWords(sourceRef);
     }
 
     @Override
