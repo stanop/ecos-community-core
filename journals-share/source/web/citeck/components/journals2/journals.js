@@ -165,7 +165,6 @@ CreateVariant
 		} else {
 			urlTemplate = defaultUrlTemplate;
 		}
-		console.log("url:" + urlTemplate);
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") {
 				return value();
