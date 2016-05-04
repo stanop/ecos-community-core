@@ -48,7 +48,9 @@
 		<views mode="edit" kind="2-column" />
 		
 		<view>
-			<field prop="tk:kind" />
+			<field prop="tk:kind">
+				<region name="input" template="select" />
+			</field>
 			<field prop="letters:deliveryMethod" />
 		</view>
 		<view>
@@ -123,7 +125,9 @@
 		<views mode="edit" kind="2-column" />
 		
 		<view>
-			<field prop="tk:kind" />
+			<field prop="tk:kind">
+				<region name="input" template="select" />
+			</field>
 			<field prop="letters:deliveryMethod" />
 		</view>
 		
