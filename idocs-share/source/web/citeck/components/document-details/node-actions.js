@@ -201,7 +201,7 @@
             {
                 var componentId = this.id;
 
-                this.addServerActions();
+                // Dynamic actions - from NodeActionsService
                 this.addServerNodeActions();
 
                 // Asset data
@@ -410,27 +410,6 @@
                 return YAHOO.lang.substitute(actionTypeMarkup[p_action.type], markupParams);
             },
 
-            // WARNING: see also document-actions.js
-            addServerActions: function NodeActions_addServerActions() {
-                var url = Alfresco.constants.PROXY_URI + 'api/lifecycle/user-actions?nodeRef=' + this.options.nodeRef;
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", url, false);
-                xhr.send(null);
-                if(xhr.status === 200) {
-                    var data = eval('(' + xhr.responseText + ')');
-                    for (var i = 0; i < data.length; i++) {
-                        this.options.documentDetails.item.actions.push({
-                            id: "server-action-" + i,
-                            label: data[i].action,
-                            icon: "task",
-                            type: "javascript",
-                            index: 500 + i,
-                            params: {"function": "onActionDoTransition", actionProperties: data[i]}
-                        });
-                    }
-                }
-            },
-
             addServerNodeActions: function ServerNodeActions_addNodeActions() {
                 var url = Alfresco.constants.PROXY_URI + 'api/node-action-service/get-actions?nodeRef=' + this.options.nodeRef;
                 var xhr = new XMLHttpRequest();
@@ -439,8 +418,10 @@
                 if(xhr.status === 200) {
                     var data = eval('(' + xhr.responseText + ')');
                     for (var i = 0; i < data.length; i++) {
+                        var type = (data[i].actionType) ? data[i].actionType : "serverAction";
                         var params = {
-                            "webServiceURL": data[i].url
+                            "actionURL": data[i].url,
+                            "actionType": type
                         };
                         this.options.documentDetails.item.actions.push({
                             id: "server-node-action-" + i,

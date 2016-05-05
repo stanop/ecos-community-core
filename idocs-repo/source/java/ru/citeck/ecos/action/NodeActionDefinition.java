@@ -8,11 +8,14 @@ import java.util.Map;
  */
 public class NodeActionDefinition {
 
+    public static final String NODE_ACTION_TYPE_SERVER_ACTION = "serverAction";
+    public static final String NODE_ACTION_TYPE_REDIRECT = "redirect";
+
     private String title;
 
     private String url;
 
-    private Map<String, String> properties = new HashMap<>();
+    private String actionType = NODE_ACTION_TYPE_SERVER_ACTION;
 
     public NodeActionDefinition() {
     }
@@ -26,7 +29,7 @@ public class NodeActionDefinition {
         Map<String, String> fieldsMap = new HashMap<>();
         fieldsMap.put("title", title);
         fieldsMap.put("url", url);
-        fieldsMap.putAll(properties);
+        fieldsMap.put("actionType", actionType);
         return fieldsMap;
     }
 
@@ -46,20 +49,11 @@ public class NodeActionDefinition {
         this.url = url;
     }
 
-    public String getProperty(String key) {
-        return properties.get(key);
+    public String getActionType() {
+        return actionType;
     }
 
-    public void setProperty(String key, String value) {
-        properties.put(key, value);
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
     }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
 }
