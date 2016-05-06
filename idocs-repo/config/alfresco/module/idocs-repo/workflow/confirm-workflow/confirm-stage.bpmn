@@ -46,7 +46,28 @@ if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOu
           <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
             <activiti:field name="script">
               <activiti:expression>
-                 confirmDecisions.save(execution, wfcf_confirmer, "activiti$" + task.id);
+              var owner = wfcf_confirmer;
+              var originalOwner = task.getVariable('taskOriginalOwner');
+              var lastTaskOwner = task.getVariable('cwf_lastTaskOwner');
+              if (originalOwner) var assignee = people.getGroup(originalOwner);
+              if(originalOwner &amp;&amp; assignee &amp;&amp; assignee.typeShort == 'cm:person' &amp;&amp; lastTaskOwner &amp;&amp; lastTaskOwner != originalOwner) {
+                 owner = lastTaskOwner;
+                 //task.setVariable('taskOriginalOwner', lastTaskOwner);
+                 var mirror_tasks = document.associations['wfm:mirrorTask'];
+                 for each(mirror_task in mirror_tasks) {
+                    if (mirror_task.properties['cm:owner'] == originalOwner){
+                         var package_workflow = mirror_task.associations['bpm:package'][0];
+                         var decisions = package_workflow.childAssocs['wfcf:confirmDecisions'];
+                         for each(decision in decisions) {
+                            if (decision.properties['wfcf:confirmerRole'] == originalOwner) {
+                                decision.properties['wfcf:confirmerRole'] = lastTaskOwner;
+                                decision.save();
+                            }
+                         }
+                    }
+                 }
+              }
+                confirmDecisions.save(execution, owner, "activiti$" + task.id);
               </activiti:expression>
             </activiti:field>
           </activiti:taskListener>
