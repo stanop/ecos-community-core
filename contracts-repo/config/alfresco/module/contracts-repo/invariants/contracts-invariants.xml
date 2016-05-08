@@ -79,6 +79,16 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <association name="payments:currency">
+            <invariant on="value" language="javascript">
+                if (node.assocs["payments:basis"][0].type
+                        == "{http://www.citeck.ru/model/contracts/1.0}agreement"
+                        || "{http://www.citeck.ru/model/contracts/1.0}supplementaryAgreement"
+                        ) {
+                    node.assocs["payments:basis"][0].assocs["contracts:agreementCurrency"][0];
+                } else if (node.assocs["payments:basis"][0].type == "{http://www.citeck.ru/model/contracts/1.0}closingDocument") {
+                    node.assocs["payments:basis"][0].assocs["payments:currency"][0];
+                }
+            </invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
         </association>
         <property name="payments:paymentAmount">
@@ -98,7 +108,10 @@
         </association>
         <association name="payments:payer">
             <invariant on="value" language="javascript">
-                if (node.assocs["payments:basis"][0].type == "{http://www.citeck.ru/model/contracts/1.0}agreement") {
+                if (node.assocs["payments:basis"][0].type
+                        == "{http://www.citeck.ru/model/contracts/1.0}agreement"
+                        || "{http://www.citeck.ru/model/contracts/1.0}supplementaryAgreement"
+                        ) {
                     node.assocs["payments:basis"][0].assocs["contracts:agreementLegalEntity"][0];
                 } else if (node.assocs["payments:basis"][0].type == "{http://www.citeck.ru/model/contracts/1.0}closingDocument") {
                     node.assocs["payments:basis"][0].assocs["idocs:legalEntity"][0];
