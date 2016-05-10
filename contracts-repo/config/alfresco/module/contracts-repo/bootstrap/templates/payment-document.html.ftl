@@ -129,8 +129,8 @@
     <tr>
         <td align="center" width="30px">№</td>
         <td align="center" width="300px">Наименование товара</td>
-        <td align="center" width="30px">Единица измерения</td>
-        <td align="center" width="40px">Количество </td>
+        <td align="center" width="30px">Ед.</td>
+        <td align="center" width="40px">Кол-во </td>
         <td align="center" width="150px">Цена</td>
         <td align="center" width="150px">Сумма</td>
     </tr>
