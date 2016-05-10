@@ -60,7 +60,7 @@
 
     <type name="payments:payment">
         <property name="payments:paymentFor">
-            <invariant on="default" language="explicit">client</invariant>
+            <invariant on="default" language="javascript">if (node.assocs["payments:basis"] != null) {node.assocs["payments:basis"][0].properties["contracts:contractWith"]}</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <association name="payments:payer">
