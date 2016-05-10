@@ -9,6 +9,7 @@
         <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
     </imports>
 
     <views any="true">
@@ -337,6 +338,17 @@
                 <region name="input" template="select" />
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.association.payments_period.title</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field assoc="payments:productsAndServices">
+                <region name="input" template="view" />
+                <region name="select" template="select-journal">
+                    <param name="journalType">products-and-services</param>
+                </region>
+                <region name="label" template="label">
+                    <param name="key">payments_paymentsModel.association.products_and_services.title</param>
                 </region>
             </field>
         </view>

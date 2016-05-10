@@ -78,6 +78,10 @@
         <property name="payments:paymentAccount">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
+        <association name="payments:productsAndServices">
+            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"]</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"]</invariant>
+        </association>
         <association name="payments:currency">
             <invariant on="value" language="javascript">
                 if (node.assocs["payments:basis"][0].type
@@ -93,6 +97,8 @@
         </association>
         <property name="payments:paymentAmount">
             <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="default" language="javascript">node.assocs["payments:productsAndServices"][0].properties["pas:pricePerUnit"]</invariant>
         </property>
         <property name="payments:paymentVAT">
             <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
