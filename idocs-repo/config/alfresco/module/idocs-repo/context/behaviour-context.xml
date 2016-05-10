@@ -688,7 +688,7 @@
             value="Period #{'$'}{node.properties['bcal:dateFrom']?string('dd.MM.yyyy')}-#{'$'}{node.properties['bcal:dateTo']?string('dd.MM.yyyy')}" />
     </bean>
 
-    <bean id="idocs.updateToUploadedFilesBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.UpdateToUploadedFilesBehaviour" init-method="init">
+    <bean id="idocs.updateToUploadedFilesBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.ChangeNodeTypeFileSiteDocumentLibraryBehaviour" init-method="init">
         <property name="nodeService" ref="nodeService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="siteService" ref="siteService" />
