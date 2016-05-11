@@ -118,9 +118,9 @@
     <tr>
         <td>
 			<#if document.properties["contracts:closingDocumentAmountInWords"]??>${document.properties["contracts:closingDocumentAmountInWords"]}</#if>
-			<#if currency!="руб.">
+			<#-- <#if currency!="руб."> -->
                 (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
-			</#if>
+			<#-- </#if> -->
         </td>
     </tr>
 	<tr>
