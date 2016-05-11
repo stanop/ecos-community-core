@@ -51,6 +51,8 @@
         <field prop="wfcf:skipCorrectTask" />
         <field prop="wfcf:canConfirmWithComments" />
         <field prop="wfcf:terminateOnReject" />
+        <field prop="wfcf:terminateOnPartialConfirms"/>
+        <field prop="wfcf:partialConfirmsCount"/>
         <field prop="wfcf:confirmersPermission">
             <region name="input" template="select"/>
         </field>

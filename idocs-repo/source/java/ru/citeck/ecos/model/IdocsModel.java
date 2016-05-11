@@ -55,6 +55,14 @@ public final class IdocsModel {
     public static final QName PROP_INN = QName.createQName(IDOCS_NAMESPACE, "inn");
     public static final QName PROP_KPP = QName.createQName(IDOCS_NAMESPACE, "kpp");
     public static final QName PROP_SHORT_ORGANIZATION_NAME = QName.createQName(IDOCS_NAMESPACE, "shortOrganizationName");
+    public static final QName PROP_COUNTRY_NAME = QName.createQName(IDOCS_NAMESPACE, "countryName");
+    public static final QName PROP_POST_CODE = QName.createQName(IDOCS_NAMESPACE, "postCode");
+    public static final QName PROP_REGION_NAME = QName.createQName(IDOCS_NAMESPACE, "regionName");
+    public static final QName PROP_DISTRICT_NAME = QName.createQName(IDOCS_NAMESPACE, "districtName");
+    public static final QName PROP_CITY_NAME = QName.createQName(IDOCS_NAMESPACE, "cityName");
+    public static final QName PROP_STREET_NAME = QName.createQName(IDOCS_NAMESPACE, "streetName");
+    public static final QName PROP_HOUSE = QName.createQName(IDOCS_NAMESPACE, "house");
+    public static final QName PROP_ADDRESS_EXTRA_INFO = QName.createQName(IDOCS_NAMESPACE, "addressExtraInfo");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");

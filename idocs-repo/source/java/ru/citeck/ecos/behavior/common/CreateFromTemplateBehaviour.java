@@ -117,6 +117,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 		{
             template = getTemplateBasedOnTag(node, tags);
 		}
+<<<<<<< local
 		if(template!=null)
 		{
 			if (!containsAssoc(node, template)) {
@@ -131,6 +132,22 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
                 /*end*/
 			}
 		}
+=======
+        if(template!=null)
+        {
+            if (!containsAssoc(node, template)) {
+                nodeService.createAssociation(node, template, DmsModel.ASSOC_TEMPLATE);
+                /*added generate template*/
+                boolean updateContent = (boolean) nodeService.getProperty(node, DmsModel.PROP_UPDATE_CONTENT);
+                if (updateContent) {
+                    ActionService actionService = serviceRegistry.getActionService();
+                    Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
+                    actionService.executeAction(actionGenerateContent, node);
+                }
+                /*end*/
+            }
+        }
+>>>>>>> other
         else {
             logger.info("Can't find template for document");
         }

@@ -33,6 +33,31 @@ var Event = YAHOO.util.Event,
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
 
+// ---------------
+// FREE-CONTENT
+// ---------------
+
+ko.components.register("free-content", {
+    viewModel: function(params) {
+        var self = this;
+        this.func = params.func;
+
+        if (!this.func) {
+            throw Error('Parameter "func" should by specified')
+        }
+
+        this.content = ko.computed(function() {
+            var result = self.func();
+            if (result instanceof HTMLElement) return result.outerHTML;
+            if (result instanceof String) return result;
+
+            throw Error('Parameter "func" should return a String or an HTMLElement');
+            return null;
+        });
+    },
+    template: 
+       '<div data-bind="html: content">'
+})
 
 // ---------------
 // NUMBER-GENERATE
