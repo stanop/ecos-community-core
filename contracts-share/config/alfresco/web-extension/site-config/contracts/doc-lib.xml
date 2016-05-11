@@ -59,15 +59,25 @@
 			<evaluator>evaluator.doclib.contracts.documentHasSignedVersion</evaluator>
 		</action>
 
-        <!--Payment-->
-        <action id="document-download-payments" type="link" label="actions.download-payment" icon="document-download">
-            <param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=payment-document&amp;format=docx&amp;download=true</param>
+        <!--Downloads Payment-->
+        <action id="document-download-payment-pdf" type="link" label="actions.download-document-pdf" icon="document-download">
+            <param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=payment-document&amp;format=pdf&amp;download=true</param>
             <evaluator>evaluator.doclib.contracts.payment</evaluator>
         </action>
 
-		<!--Closing document-->
-		<action id="document-download-closing-document" type="link" label="actions.download-closing-document" icon="document-download">
+		<action id="document-download-payment-docx" type="link" label="actions.download-document-docx" icon="document-download">
+			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=payment-document&amp;format=docx&amp;download=true</param>
+			<evaluator>evaluator.doclib.contracts.payment</evaluator>
+		</action>
+
+		<!--Downloads Closing Document-->
+		<action id="document-download-closing-document-docx" type="link" label="actions.download-document-docx" icon="document-download">
 			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=closing-document&amp;format=docx&amp;download=true</param>
+			<evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
+		</action>
+
+		<action id="document-download-closing-document-pdf" type="link" label="actions.download-document-pdf" icon="document-download">
+			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=closing-document&amp;format=pdf&amp;download=true</param>
 			<evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
 		</action>
 
@@ -109,8 +119,10 @@
 		<actionGroups>
 			<actionGroup id="document-details">
 
-				<action index="10" id="document-download-payments"/>
-				<action index="11" id="document-download-closing-document" />
+				<action index="111" id="document-download-payment-pdf"/>
+				<action index="112" id="document-download-payment-docx" />
+				<action index="113" id="document-download-closing-document-docx"/>
+				<action index="114" id="document-download-closing-document-pdf" />
 				<action index="200" id="upload-signed-version" />
 				<action index="480" id="document-add-payment-for-approved" />
 				<action index="490" id="document-add-closing-doc-for-payment" />
@@ -120,15 +132,6 @@
 			<actionGroup id="folder-details">
 			</actionGroup>
         </actionGroups>
-	</config>
-
-	<config evaluator="string-compare" condition="DocLibActions">
-		<actions>
-			<action id="document-download">
-				<param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}</param>
-				<evaluator negate="true">evaluator.doclib.contracts.showCustomDownload</evaluator>
-			</action>
-		</actions>
 	</config>
 
 </alfresco-config>
