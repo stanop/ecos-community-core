@@ -38,6 +38,13 @@
           mode: '${params.mode}',
         </#if>
 
+        <#if params.sortBy??>
+          sortBy: '${params.sortBy}',
+        </#if>
+        <#if params.orderBy??>
+          orderBy: '${params.orderBy}',
+        </#if>
+
         localization: {
           title: '${title}',
           search: '${search}',

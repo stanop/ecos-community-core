@@ -253,6 +253,8 @@
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
                     <param name="journalType">original-location</param>
+                    <param name="sortBy">cm:created</param>
+                    <param name="orderBy">DESC</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -455,7 +457,9 @@
         <view>
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                    <param name="journalType">original-location</param>
+                    <param name="sortBy">cm:created</param>
+                    <param name="orderBy">DESC</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -464,7 +468,9 @@
             </field>
             <field assoc="contracts:closingDocumentPayment" >
                 <region name="select" template="select-journal" >
-                     <param name="journalType">payments</param>
+                    <param name="journalType">payments</param>
+                    <param name="sortBy">cm:created</param>
+                    <param name="orderBy">DESC</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -551,7 +557,9 @@
         <view>
             <field assoc="contracts:mainAgreement"> <!-- TODO -->
                 <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                    <param name="journalType">original-location</param>
+                    <param name="sortBy">cm:created</param>
+                    <param name="orderBy">DESC</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

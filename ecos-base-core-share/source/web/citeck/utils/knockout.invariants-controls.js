@@ -590,12 +590,45 @@ ko.components.register('journal', {
         self.columns        = params.columns;
 
         // options
-        self.options = { 
+        self.options = {
             multiple: false,  
             pagination: false,
-            localization: { nextPageLabel: "-->", nextPageTitle: "-->", previousPageLabel: "<--", previousPageTitle: "<--" } 
+            localization: { 
+                nextPageLabel: "-->", 
+                nextPageTitle: "-->", 
+                previousPageLabel: "<--", 
+                previousPageTitle: "<--" 
+            } 
         };
         concatOptions(self.options, params.options);
+
+        // computed
+        self.sortedElements = ko.computed(function() {
+            if (self.options.sortBy && self.options.sortBy()) {
+                if (self.sourceElements().length > 0) {
+                    var assocArray = _.map(self.sourceElements(), function(item) { 
+                        return { data: item, key: item.properties[self.options.sortBy()] }; 
+                    });
+
+                    var order = "ASC";
+                    if (self.options.orderBy && self.options.orderBy()) order = self.options.orderBy();
+
+                    switch (order) {
+                        case "ASC": 
+                            assocArray.sort(function(a, b) { return a.key > b.key; });
+                            break;
+
+                        case "DESC":
+                            assocArray.sort(function(a, b) { return a.key < b.key; });
+                            break;
+                    };
+
+                    return _.map(assocArray, function(item) { return item.data; });
+                }
+            } else {
+               return self.sourceElements(); 
+            }  
+        });
 
         // methods
         self.selectElement = function(data, event) {
@@ -657,7 +690,7 @@ ko.components.register('journal', {
                     </tr>\
                 <!-- /ko -->\
             </thead>\
-            <tbody data-bind="foreach: sourceElements">\
+            <tbody data-bind="foreach: sortedElements">\
                 <!-- ko if: $component.columns ? true : false -->\
                     <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                            foreach: $component.columns,\
@@ -678,8 +711,8 @@ ko.components.register('journal', {
                 <!-- /ko -->\
             </tbody>\
         </table>\
-        <!-- ko if: options.pagination && sourceElements -->\
-            <!-- ko with: sourceElements().pagination -->\
+        <!-- ko if: options.pagination && sortedElements -->\
+            <!-- ko with: sortedElements().pagination -->\
                 <!-- ko if: ($component.page() - 1 > 0) || hasMore -->\
                     <div class="journal-pagination">\
                         <span class="previous-page">\
@@ -730,6 +763,10 @@ ko.bindingHandlers.journalControl = {
         multiple = settings.multiple,
         params = allBindings().params();
 
+    // sorting
+    var sortBy = ko.observable(params.sortBy),
+        orderBy = ko.observable(params.orderBy || "ASC");
+
     // params
     var defaultVisibleAttributes = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
@@ -749,7 +786,7 @@ ko.bindingHandlers.journalControl = {
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
         maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-        options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }) });
+        options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }); });
 
     // reset page after new search
     criteria.subscribe(function(newValue) {
@@ -886,6 +923,8 @@ ko.bindingHandlers.journalControl = {
                                     page: page,\
                                     loading: loading,\
                                     options: {\
+                                        sortBy: sortBy,\
+                                        orderBy: orderBy,\
                                         multiple: multiple,\
                                         pagination: true,\
                                         localization: {\
@@ -1020,7 +1059,9 @@ ko.bindingHandlers.journalControl = {
                 journalType: journalType,
                 page: pageNumber,
                 loading: loading,
-                columns: defaultVisibleAttributes
+                columns: defaultVisibleAttributes,
+                sortBy: sortBy,
+                orderBy: orderBy
             }, Dom.get(elementsPageId));
 
             // say knockout that we have something on search page
