@@ -1,6 +1,7 @@
 package ru.citeck.ecos.utils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,8 +28,9 @@ public class ConvertAmountInWords {
 
 
     /**
-     *  It return a amount in words
-     * @param amount - amount to convert
+     * It return a amount in words
+     *
+     * @param amount   - amount to convert
      * @param currency - code of currency in ISO 4217 alpha 3 standard. Default - RUB
      * @return amount in words
      */
@@ -52,9 +54,13 @@ public class ConvertAmountInWords {
 
         BigDecimal amountBig = new BigDecimal(s);
         ArrayList<Long> segments = new ArrayList<>();
-
         long total = amountBig.longValue();
-        String[] divided = amountBig.toString().split("\\.");
+
+        int integerPart = (int) total;
+        int fractionPart = amountBig.subtract(amountBig.setScale(0, RoundingMode.HALF_DOWN)).unscaledValue().intValue();
+
+        String[] divided = {Integer.toString(integerPart), Integer.toString(fractionPart)};
+
         long fraction = Long.valueOf(divided[1]);
         if (!divided[1].substring(0, 1).equals("0")) {
             if (fraction < 10)
