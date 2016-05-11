@@ -438,6 +438,10 @@
   margin: 10px 0 0 10px;
 }
 
+.invariants-form .template-table .template-row [class*="template-select-"] {
+  float: right;
+}
+
 .invariants-form .template-table .template-half-width [class*="template-select-"],
 .invariants-form .template-table .template-third-width [class*="template-select-"] {
   margin-top: 10px;
@@ -1205,6 +1209,11 @@
 
 .selected-filter-criteria-container table.selected-criteria-list td.predicate-col {
   width: 30%;
+}
+
+.selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate {
+  width: 100%;
+  background-color: white;
 }
 
 .selected-filter-criteria-container table.selected-criteria-list td.value-col {
