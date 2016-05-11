@@ -52,7 +52,7 @@ if (task.getVariable("bpm_comment") == "" &amp; task.getVariable("wfcf_confirmOu
               if (originalOwner) var assignee = people.getGroup(originalOwner);
               if(originalOwner &amp;&amp; assignee &amp;&amp; assignee.typeShort == 'cm:person' &amp;&amp; lastTaskOwner &amp;&amp; lastTaskOwner != originalOwner) {
                  owner = lastTaskOwner;
-                 //task.setVariable('taskOriginalOwner', lastTaskOwner);
+                 task.setVariable('taskOriginalOwner', lastTaskOwner);
                  var mirror_tasks = document.associations['wfm:mirrorTask'];
                  for each(mirror_task in mirror_tasks) {
                     if (mirror_task.properties['cm:owner'] == originalOwner){
