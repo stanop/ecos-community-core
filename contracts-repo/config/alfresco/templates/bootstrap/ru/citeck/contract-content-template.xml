@@ -7,7 +7,7 @@
 				  <view:properties>
 					<cm:name>default-contract-content-template.docx</cm:name>
 					<sys:node-uuid>default-contract-content-template</sys:node-uuid>
-					<cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/contract-template.docx|mimetype=application/vnd.openxmlformats-officedocument.wordprocessingml.document|encoding=UTF-8</cm:content>
+					<cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/templates/contract-template.docx|mimetype=application/vnd.openxmlformats-officedocument.wordprocessingml.document|encoding=ISO-8859-1</cm:content>
 					<tk:type>workspace://SpacesStore/contracts-cat-doctype-contract</tk:type>
 					<tk:appliesToType>workspace://SpacesStore/contracts-cat-doctype-contract</tk:appliesToType>
 				  </view:properties>
