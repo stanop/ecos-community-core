@@ -127,12 +127,12 @@
 
 <table width="700px" border="1">
     <tr>
-        <td align="center" width="30px">№</td>
-        <td align="center" width="300px">Наименование товара</td>
-        <td align="center" width="30px">Ед.</td>
-        <td align="center" width="40px">Кол-во </td>
-        <td align="center" width="150px">Цена</td>
-        <td align="center" width="150px">Сумма</td>
+        <td align="center" width="10px">№</td>
+        <td align="center" width="400px">Наименование товара</td>
+        <td align="center" width="10px">Ед.</td>
+        <td align="center" width="20px">Кол-во </td>
+        <td align="center" width="125px">Цена</td>
+        <td align="center" width="125px">Сумма</td>
     </tr>
     <#assign count = 0/>
     <#assign totalAmount = 0/>
