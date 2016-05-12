@@ -93,4 +93,10 @@
         'addAssocs': addAssocs
     }
 
+    var cacheMaxAge = args['cacheMaxAge'];
+
+    if (cacheMaxAge) {
+        cache.maxAge = cacheMaxAge;
+    }
+
 })()

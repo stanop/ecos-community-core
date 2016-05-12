@@ -6,4 +6,9 @@
     <authentication>user</authentication>
     <transaction>required</transaction>
     <lifecycle>public_api</lifecycle>
+    <cache>
+        <never>false</never>
+        <public>false</public>
+        <mustrevalidate/>
+    </cache>
 </webscript>
