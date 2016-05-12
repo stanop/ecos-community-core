@@ -5,6 +5,7 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -43,23 +44,42 @@ public class ChangeNodeTypeFileSiteDocumentLibraryBehaviour implements NodeServi
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
-        NodeRef nodeRef = childAssocRef.getChildRef();
+        final NodeRef nodeRef = childAssocRef.getChildRef();
         if (!nodeService.exists(nodeRef)) {
             return;
         }
-        SiteInfo siteInfo = siteService.getSite(nodeRef);
-        NodeRef folderRef = nodeService.getPrimaryParent(nodeRef).getParentRef();
-        NodeRef parentFolder = nodeService.getPrimaryParent(folderRef).getParentRef();
-        if (siteInfo == null || !nodeService.exists(folderRef)) {
-            return;
-        }
-        if (SiteModel.FILE_SITE_PRESET.equals(siteInfo.getSitePreset())
-                && (
-                    DOCUMENT_LIBRARY.equals(nodeService.getProperty(folderRef, ContentModel.PROP_NAME))
-                    || DOCUMENT_LIBRARY.equals(nodeService.getProperty(parentFolder, ContentModel.PROP_NAME))
-                )
-        ) {
+        Boolean changeType = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
+            @Override
+            public Boolean doWork() throws Exception {
+                SiteInfo siteInfo = siteService.getSite(nodeRef);
+                return isNodeInDocumentLibraryOnFileSite(siteInfo, nodeRef);
+            }
+        });
+
+        if (changeType) {
             nodeService.setType(nodeRef, EcosModel.TYPE_DOCUMENT);
+        }
+    }
+
+    private boolean isNodeInDocumentLibraryOnFileSite(SiteInfo siteInfo, NodeRef nodeRef) {
+        if (siteInfo == null) {
+            return false;
+        }
+        if (SiteModel.FILE_SITE_PRESET.equals(siteInfo.getSitePreset())) {
+            return false;
+        }
+        return checkParentDocumentLibraryOnSite(siteInfo, nodeRef);
+    }
+
+    private boolean checkParentDocumentLibraryOnSite(SiteInfo siteInfo, NodeRef nodeRef) {
+        NodeRef folderRef = nodeService.getPrimaryParent(nodeRef).getParentRef();
+        if (folderRef == null || siteInfo.getNodeRef().equals(folderRef)) {
+            return false;
+        }
+        if (DOCUMENT_LIBRARY.equals(nodeService.getProperty(folderRef, ContentModel.PROP_NAME))) {
+            return true;
+        } else {
+            return checkParentDocumentLibraryOnSite(siteInfo, folderRef);
         }
     }
 }
