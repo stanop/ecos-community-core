@@ -562,6 +562,7 @@ ko.components.register('journal', {
         self.callback       = params.callback;
         self.loading        = params.loading;
         self.columns        = params.columns;
+        self.hidden         = params.hidden;
 
         // options
         self.options = {
@@ -578,9 +579,11 @@ ko.components.register('journal', {
 
         // computed
         self.sortedElements = ko.computed(function() {
+            var elements = self.sourceElements();
+
             if (self.options.sortBy && self.options.sortBy()) {
-                if (self.sourceElements().length > 0) {
-                    var assocArray = _.map(self.sourceElements(), function(item) { 
+                if (elements.length > 0) {
+                    var assocArray = _.map(elements, function(item) { 
                         return { data: item, key: item.properties[self.options.sortBy()] }; 
                     });
 
@@ -597,11 +600,17 @@ ko.components.register('journal', {
                             break;
                     };
 
-                    return _.map(assocArray, function(item) { return item.data; });
+                    elements = _.map(assocArray, function(item) { return item.data; });
                 }
-            } else {
-               return self.sourceElements(); 
-            }  
+            }
+
+            if (self.hidden && self.hidden.length > 0) {
+                return _.filter(elements, function(item) {
+                   return !_.contains(self.hidden, item.type) && !_.contains(self.hidden, item.typeShort);
+                });
+            }
+
+            return elements;
         });
 
         // methods
@@ -745,6 +754,7 @@ ko.bindingHandlers.journalControl = {
     // params
     var defaultVisibleAttributes = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
+        defaultHiddenByType = params.defaultHiddenByType,
         localization = params.localization;
 
     if (defaultVisibleAttributes) {
@@ -753,6 +763,10 @@ ko.bindingHandlers.journalControl = {
 
     if (defaultSearchableAttributes) {
         defaultSearchableAttributes = _.map(defaultSearchableAttributes.split(","), function(item) { return trim(item) });
+    }
+
+    if (defaultHiddenByType) {
+        defaultHiddenByType = _.map(defaultHiddenByType.split(","), function(item) { return trim(item) });
     }
 
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
@@ -895,6 +909,7 @@ ko.bindingHandlers.journalControl = {
                                     targetElements: selectedElements,\
                                     journalType: journalType,\
                                     columns: columns,\
+                                    hidden: hidden,\
                                     page: page,\
                                     loading: loading,\
                                     options: {\
@@ -1035,6 +1050,7 @@ ko.bindingHandlers.journalControl = {
                 page: pageNumber,
                 loading: loading,
                 columns: defaultVisibleAttributes,
+                hidden: defaultHiddenByType,
                 sortBy: sortBy,
                 orderBy: orderBy
             }, Dom.get(elementsPageId));

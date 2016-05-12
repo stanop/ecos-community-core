@@ -45,6 +45,10 @@
           orderBy: '${params.orderBy}',
         </#if>
 
+        <#if params.defaultHiddenByType??>
+          defaultHiddenByType: '${params.defaultHiddenByType}',
+        </#if>
+
         localization: {
           title: '${title}',
           search: '${search}',
