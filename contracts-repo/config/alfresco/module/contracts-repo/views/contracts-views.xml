@@ -255,6 +255,7 @@
                     <param name="journalType">original-location</param>
                     <param name="sortBy">cm:created</param>
                     <param name="orderBy">DESC</param>
+                    <param name="defaultVisibleAttributes">cm:name, tk:type</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

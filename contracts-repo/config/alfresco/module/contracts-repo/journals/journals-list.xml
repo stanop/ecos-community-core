@@ -168,6 +168,7 @@
 		<option name="type">contracts:originalLocation</option>
 		<headers>
 			<header key="cm:name" default="true" />
+			<header key="tk:type" default="false" />
 		</headers>
 	</journal>
 

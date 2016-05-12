@@ -629,7 +629,8 @@ ko.components.register('journal', {
             if (value) {
                 // if string
                 if (typeof value == "string") {
-                    if (attr.labels()) return attr.labels()[value];
+                    if (attr.labels() && attr.labels()[value]) 
+                        return attr.labels()[value];
                 }
 
                 // if object
