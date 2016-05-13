@@ -7,7 +7,8 @@
         model.actions.push({
             "node" : nodeRef,
             "url": actions.get(i)["url"],
-            "title": actions.get(i)["title"]
+            "title": actions.get(i)["title"],
+            "actionType": actions.get(i)["actionType"]
         });
     }
 })();
