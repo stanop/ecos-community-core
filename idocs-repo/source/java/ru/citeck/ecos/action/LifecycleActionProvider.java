@@ -45,7 +45,7 @@ public class LifecycleActionProvider extends NodeActionsProvider {
             } else {
                 throw new RuntimeException("Unsupported lifecycle event type: " + eventType);
             }
-            action.setTitle(actionParams.get("actionName"));
+            action.setTitle("lifecycle.action." + actionParams.get("actionName"));
             action.setUrl(url);
             actionDefinitionList.add(action);
         }
