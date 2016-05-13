@@ -455,7 +455,9 @@ ko.components.register('value-of-selected-criterion', {
                             'name="' + self.name + '_added"', 
                             "name='" + self.name + "_added'"
                         ], 
-                        function(html, pattern) { return html.replace(new RegExp('(' + pattern + ')', 'gi'), '$1 data-bind="value: value"') }, 
+                        function(html, pattern) { 
+                            return html.replace(new RegExp('(' + pattern + ')', 'gi'), '$1 data-bind="value: value"') 
+                        }, 
                         result
                     );
                 }
@@ -465,7 +467,7 @@ ko.components.register('value-of-selected-criterion', {
                 var fieldContainer = Dom.get(self.htmlId);
                 if (fieldContainer) {
                     ko.cleanNode(fieldContainer);
-                    ko.applyBindings({ value: self.value }, fieldContainer);  
+                    ko.applyBindings({ value: self.value }, fieldContainer);
                 }
             },
 
@@ -579,7 +581,8 @@ ko.components.register('journal', {
 
         // computed
         self.sortedElements = ko.computed(function() {
-            var elements = self.sourceElements();
+            var elements = self.sourceElements(),
+                pagination = elements ? elements.pagination : undefined;
 
             if (self.options.sortBy && self.options.sortBy()) {
                 if (elements.length > 0) {
@@ -601,6 +604,7 @@ ko.components.register('journal', {
                     };
 
                     elements = _.map(assocArray, function(item) { return item.data; });
+                    elements.pagination = pagination;
                 }
             }
 
@@ -643,7 +647,7 @@ ko.components.register('journal', {
                 }
 
                 // if object
-                if (typeof value == "object") { 
+                if (typeof value == "object") {
                     if (isInvariantsObject(value)) return value.name 
                 }
 
@@ -738,24 +742,29 @@ ko.bindingHandlers.journalControl = {
     var JournalType = koclass('JournalType');
 
     // html elements
-    var button = Dom.get(element.id + "-button"),
+    var button  = Dom.get(element.id + "-button"),
         panelId = element.id + "-journalPanel", panel;
 
     // binding variables
     var settings = valueAccessor(),
-        value = settings.value,
+        value    = settings.value,
         multiple = settings.multiple,
-        params = allBindings().params();
+        params   = allBindings().params();
 
     // sorting
-    var sortBy = ko.observable(params.sortBy),
+    var sortBy  = ko.observable(params.sortBy),
         orderBy = ko.observable(params.orderBy || "ASC");
 
     // params
-    var defaultVisibleAttributes = params.defaultVisibleAttributes,
+    var defaultVisibleAttributes    = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
-        defaultHiddenByType = params.defaultHiddenByType,
-        localization = params.localization;
+        defaultHiddenByType         = params.defaultHiddenByType,
+        
+        searchMinQueryLength        = params.searchMinQueryLength,
+        searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
+        searchCriteria              = params.searchCriteria,
+        
+        localization                = params.localization;
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -1023,16 +1032,25 @@ ko.bindingHandlers.journalControl = {
                 }
             })
 
-            // search bar listener
+            // search listener
             if (searchBar) {
-                // filter listener
                 Event.on(searchId, "keypress", function(event) {
                     if (event.keyCode == 13) {
                         event.stopPropagation();
 
                         var search = Dom.get(searchId);
                         if (search.value) {
-                            criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]);
+                            if (searchMinQueryLength && search.value.length < searchMinQueryLength) {
+                                return false;
+                            }
+
+                            if (searchCriteria && searchCriteria.length > 0) {
+                                criteria(_.map(searchCriteria, function(item) {
+                                    return _.defaults({ value: search.value }, item);
+                                }));
+                            } else {
+                               criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]); 
+                            }
                         } else {
                             criteria([]);
                         }
@@ -1075,7 +1093,9 @@ ko.bindingHandlers.journalControl = {
                     criteriaListShow(!criteriaListShow());
                 },
                 applyCriteria: function(data, event) {
-                    var criteriaList = [], selectedCriteria = selectedFilterCriteria();
+                    var criteriaList = [], 
+                        selectedCriteria = selectedFilterCriteria();
+                    
                     if (selectedCriteria.length == 0) {
                         criteria([])
                     } else {
@@ -1142,8 +1162,6 @@ ko.bindingHandlers.journalControl = {
                         },
 
                         submit: function(node) {
-                            console.log(node);
-
                             selectedElements(node);
                             scCallback(node);
                         },

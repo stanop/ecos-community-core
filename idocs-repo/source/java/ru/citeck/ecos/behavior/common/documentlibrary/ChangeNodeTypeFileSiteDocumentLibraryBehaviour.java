@@ -65,7 +65,7 @@ public class ChangeNodeTypeFileSiteDocumentLibraryBehaviour implements NodeServi
         if (siteInfo == null) {
             return false;
         }
-        if (SiteModel.FILE_SITE_PRESET.equals(siteInfo.getSitePreset())) {
+        if (!SiteModel.FILE_SITE_PRESET.equals(siteInfo.getSitePreset())) {
             return false;
         }
         return checkParentDocumentLibraryOnSite(siteInfo, nodeRef);
