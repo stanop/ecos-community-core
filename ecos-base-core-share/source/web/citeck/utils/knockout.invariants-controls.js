@@ -579,7 +579,8 @@ ko.components.register('journal', {
 
         // computed
         self.sortedElements = ko.computed(function() {
-            var elements = self.sourceElements();
+            var elements = self.sourceElements(),
+                pagination = elements.pagination;
 
             if (self.options.sortBy && self.options.sortBy()) {
                 if (elements.length > 0) {
@@ -601,6 +602,7 @@ ko.components.register('journal', {
                     };
 
                     elements = _.map(assocArray, function(item) { return item.data; });
+                    elements.pagination = pagination;
                 }
             }
 
