@@ -455,7 +455,9 @@ ko.components.register('value-of-selected-criterion', {
                             'name="' + self.name + '_added"', 
                             "name='" + self.name + "_added'"
                         ], 
-                        function(html, pattern) { return html.replace(new RegExp('(' + pattern + ')', 'gi'), '$1 data-bind="value: value"') }, 
+                        function(html, pattern) { 
+                            return html.replace(new RegExp('(' + pattern + ')', 'gi'), '$1 data-bind="value: value"') 
+                        }, 
                         result
                     );
                 }
@@ -465,7 +467,7 @@ ko.components.register('value-of-selected-criterion', {
                 var fieldContainer = Dom.get(self.htmlId);
                 if (fieldContainer) {
                     ko.cleanNode(fieldContainer);
-                    ko.applyBindings({ value: self.value }, fieldContainer);  
+                    ko.applyBindings({ value: self.value }, fieldContainer);
                 }
             },
 
@@ -580,7 +582,7 @@ ko.components.register('journal', {
         // computed
         self.sortedElements = ko.computed(function() {
             var elements = self.sourceElements(),
-                pagination = elements.pagination;
+                pagination = elements ? elements.pagination : undefined;
 
             if (self.options.sortBy && self.options.sortBy()) {
                 if (elements.length > 0) {
@@ -645,7 +647,7 @@ ko.components.register('journal', {
                 }
 
                 // if object
-                if (typeof value == "object") { 
+                if (typeof value == "object") {
                     if (isInvariantsObject(value)) return value.name 
                 }
 
@@ -1091,7 +1093,9 @@ ko.bindingHandlers.journalControl = {
                     criteriaListShow(!criteriaListShow());
                 },
                 applyCriteria: function(data, event) {
-                    var criteriaList = [], selectedCriteria = selectedFilterCriteria();
+                    var criteriaList = [], 
+                        selectedCriteria = selectedFilterCriteria();
+                    
                     if (selectedCriteria.length == 0) {
                         criteria([])
                     } else {
@@ -1158,8 +1162,6 @@ ko.bindingHandlers.journalControl = {
                         },
 
                         submit: function(node) {
-                            console.log(node);
-
                             selectedElements(node);
                             scCallback(node);
                         },
