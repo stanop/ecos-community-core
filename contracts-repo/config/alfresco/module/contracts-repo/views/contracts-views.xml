@@ -257,6 +257,8 @@
                     <param name="orderBy">DESC</param>
                     <param name="defaultHiddenByType">payments:payment</param>
                     <param name="defaultVisibleAttributes">cm:name, tk:type</param>
+                    <param name="searchScript">light-search</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:name', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -459,7 +461,7 @@
         <view>
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
-                    <param name="journalType">original-location</param>
+                    <param name="journalType">contract-agreements</param>
                     <param name="sortBy">cm:created</param>
                     <param name="orderBy">DESC</param>
                 </region>
@@ -557,9 +559,9 @@
         <views mode="create" kind="3-column" />
         <views mode="edit" kind="3-column" />
         <view>
-            <field assoc="contracts:mainAgreement"> <!-- TODO -->
+            <field assoc="contracts:mainAgreement">
                 <region name="select" template="select-journal" >
-                    <param name="journalType">original-location</param>
+                    <param name="journalType">contract-agreements</param>
                     <param name="sortBy">cm:created</param>
                     <param name="orderBy">DESC</param>
                 </region>

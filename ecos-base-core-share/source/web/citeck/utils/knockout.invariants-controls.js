@@ -738,24 +738,29 @@ ko.bindingHandlers.journalControl = {
     var JournalType = koclass('JournalType');
 
     // html elements
-    var button = Dom.get(element.id + "-button"),
+    var button  = Dom.get(element.id + "-button"),
         panelId = element.id + "-journalPanel", panel;
 
     // binding variables
     var settings = valueAccessor(),
-        value = settings.value,
+        value    = settings.value,
         multiple = settings.multiple,
-        params = allBindings().params();
+        params   = allBindings().params();
 
     // sorting
-    var sortBy = ko.observable(params.sortBy),
+    var sortBy  = ko.observable(params.sortBy),
         orderBy = ko.observable(params.orderBy || "ASC");
 
     // params
-    var defaultVisibleAttributes = params.defaultVisibleAttributes,
+    var defaultVisibleAttributes    = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
-        defaultHiddenByType = params.defaultHiddenByType,
-        localization = params.localization;
+        defaultHiddenByType         = params.defaultHiddenByType,
+        
+        searchMinQueryLength        = params.searchMinQueryLength,
+        searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
+        searchCriteria              = params.searchCriteria,
+        
+        localization                = params.localization;
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -1023,16 +1028,25 @@ ko.bindingHandlers.journalControl = {
                 }
             })
 
-            // search bar listener
+            // search listener
             if (searchBar) {
-                // filter listener
                 Event.on(searchId, "keypress", function(event) {
                     if (event.keyCode == 13) {
                         event.stopPropagation();
 
                         var search = Dom.get(searchId);
                         if (search.value) {
-                            criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]);
+                            if (searchMinQueryLength && search.value.length < searchMinQueryLength) {
+                                return false;
+                            }
+
+                            if (searchCriteria && searchCriteria.length > 0) {
+                                criteria(_.map(searchCriteria, function(item) {
+                                    return _.defaults({ value: search.value }, item);
+                                }));
+                            } else {
+                               criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]); 
+                            }
                         } else {
                             criteria([]);
                         }

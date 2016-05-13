@@ -49,6 +49,16 @@
           defaultHiddenByType: '${params.defaultHiddenByType}',
         </#if>
 
+        <#if params.searchMinQueryLength??>
+          searchMinQueryLength: '${params.searchMinQueryLength}',
+        </#if>
+        <#if params.searchScript??>
+          searchScript: '${params.searchScript}',
+        </#if>
+        <#if params.searchCriteria??>
+          searchCriteria: ${params.searchCriteria},
+        </#if>
+
         localization: {
           title: '${title}',
           search: '${search}',
