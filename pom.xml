@@ -24,6 +24,13 @@
         <version>2.2.0</version>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>ext-depend</id>
+            <url>http://artifactory.citeck.ru/artifactory/libs-release</url>
+        </repository>
+    </repositories>
+
     <!--
        SDK properties have sensible defaults in the SDK parent,
        but you can override the properties below to use another version.
