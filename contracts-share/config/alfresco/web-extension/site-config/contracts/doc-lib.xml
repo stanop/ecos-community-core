@@ -43,6 +43,15 @@
             <evaluator negate="true">evaluator.doclib.contracts.agreement.isCancelled</evaluator>
         </action>
 
+        <action id="document-add-closing-doc-for-invoice" type="javascript" icon="plus"
+                label="actions.document-add-closing-doc-for-invoice">
+        	<param name="href">node-create?type=contracts:closingDocument&amp;destination={node.nodeRef}&amp;param_invoice={node.nodeRef}</param>
+			<permissions>
+				<permission allow="true">Write</permission>
+			</permissions>
+			<evaluator>evaluator.doclib.contracts.payment</evaluator>
+		</action>
+
 		<!-- Upload Signed Version -->
 		<action id="upload-signed-version" type="javascript" icon="document-upload-new-version" label="actions.upload-signed-version">
 			<param name="function">onActionUploadSignedVersion</param>
@@ -127,6 +136,7 @@
 				<action index="480" id="document-add-payment-for-approved" />
 				<action index="490" id="document-add-closing-doc-for-payment" />
 				<action index="491" id="document-add-sup-agreement" />
+				<action index="492" id="document-add-closing-doc-for-invoice" />
 
 			</actionGroup>
 			<actionGroup id="folder-details">
