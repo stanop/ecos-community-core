@@ -186,6 +186,14 @@
                 node.assocs["contracts:closingDocumentAgreement"][0].assocs["contracts:agreementCurrency"][0]
             </invariant>
         </association>
+        <association name="contracts:closingDocumentPayment">
+           <invariant on="mandatory" language="explicit">true</invariant>
+           <invariant on="value" language="javascript">view.params.invoice</invariant>
+           <invariant on="protected" language="javascript"><![CDATA[view.params.invoice != null]]></invariant>
+        </association>
+        <association name="pas:containsProductsAndServices">
+            <invariant on="value" language="javascript">node.assocs['contracts:closingDocumentPayment'][0].assocs['pas:containsProductsAndServices']</invariant>
+        </association>
     </type>
 
     <type name="contracts:supplementaryAgreement">
