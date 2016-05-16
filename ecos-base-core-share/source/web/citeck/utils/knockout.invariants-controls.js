@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -421,7 +421,6 @@ ko.bindingHandlers.dateControl = {
 
 
 // TODO:
-// - by default searchable columns  in parameters
 // - hide drop down menu out block
 // - progress bar for download fields of criteria
 
@@ -442,8 +441,6 @@ ko.components.register('value-of-selected-criterion', {
         YAHOO.util.Connect.asyncRequest('GET', URL, {
             success: function(response) {
                 var result = response.responseText;
-
-                // prepared result
                 result = prepareResultString(result, self.htmlId)
 
                 // support value bindings
@@ -541,11 +538,6 @@ ko.components.register('list-of-selected-criterion', {
             </tbody>\
         </table>'
 });
-
-
-// TODO: 
-// - right name for field if it node
-
 
 ko.components.register('journal', {
     viewModel: function(params) {
@@ -783,8 +775,16 @@ ko.bindingHandlers.journalControl = {
         journalType = params.journalType ? new JournalType(params.journalType) : null,
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
-        maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-        options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }); });
+        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
+        additionalOptions = ko.observable([]), options = ko.computed(function(page) {
+            var nudeOptions = data.filterOptions(criteria(), { maxItems: 10, skipCount: skipCount(), searchScript: searchScript }),
+                config = nudeOptions.pagination;
+
+            var result = _.union(nudeOptions, additionalOptions());
+            result.pagination = config;
+            
+            return result; 
+        });
 
     // reset page after new search
     criteria.subscribe(function(newValue) {
@@ -799,7 +799,7 @@ ko.bindingHandlers.journalControl = {
     // hide loading indicator if options got elements
     options.subscribe(function(newValue) {
         loading(_.isUndefined(newValue.pagination));
-    })
+    });
 
     // extend notify
     criteria.extend({ notify: 'always' });
@@ -1162,7 +1162,8 @@ ko.bindingHandlers.journalControl = {
                         },
 
                         submit: function(node) {
-                            selectedElements(node);
+                            additionalOptions(_.union(additionalOptions(), node));
+                            selectedElements(multiple() ? _.union(selectedElements(), node) : node);  
                             scCallback(node);
                         },
                         cancel: scCallback
@@ -1182,17 +1183,12 @@ ko.bindingHandlers.journalControl = {
     // reload filterOptions request if was created new object
     YAHOO.Bubbling.on("object-was-created", function(layer, args) {
         if (args[1].fieldId == data.name()) {
-
-            // TODO:
-            // - update table after added new node to runtime
-
-            // dirty hack, but it's sometimes work
-            loading(true);
-            setTimeout(function() {
-              criteria(_.clone(criteria()));
-            }, 5000);
+            if (args[1].value) {
+                additionalOptions(_.union(additionalOptions(), args[1].value));
+                selectedElements(multiple() ? _.union(selectedElements(), args[1].value) : args[1].value); 
+            }
         }
-    })
+    });
   }
 }
 
