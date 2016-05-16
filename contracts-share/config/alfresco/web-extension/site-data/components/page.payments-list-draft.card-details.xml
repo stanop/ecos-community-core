@@ -14,7 +14,7 @@
 
         <columns>[
 
-            {key: 'attributes["payments:typePayment"]', label: '${msg("payment-schedule.payment-type")}',formatter: Citeck.format.code({advance:"Аванс", rest:"Остаток"})},
+            {key: 'attributes["payments:typePayment"]', label: '${msg("payment-schedule.payment-type")}',formatter: Citeck.format.code({advance:"${msg('payment-schedule.payment-type.advance')}", rest:"${msg('payment-schedule.payment-type.rest')}"})},
             {key: 'attributes["payments:plannedPaymentDate"]', label: '${msg("payment-schedule.date")}', formatter: Citeck.format.datetime('dd.MM.yyyy')},
             {key: 'attributes["payments:currency_added"]', label: '${msg("payment-schedule.currency")}', formatter: Citeck.format.nodeRef("")},
             {key: 'attributes["payments:paymentAmount"]', label: '${msg("payment-schedule.sum")}'},
