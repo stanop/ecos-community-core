@@ -11,7 +11,7 @@
     <parent>
         <groupId>ru.citeck.ecos</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>2.0</version>
+        <version>2.0-SNAPSHOT</version>
     </parent>
     
     <properties>
@@ -57,20 +57,6 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-a-jar</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <executions>
                     <execution>
@@ -81,7 +67,7 @@
                         <configuration>
                             <packaging>jar</packaging>
                             <classifier>${ecos.build.classifier}</classifier>
-                            <file>${ecos.lib.file}</file>
+                            <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
                         </configuration>
                     </execution>
                 </executions>
@@ -89,24 +75,55 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>${maven-deploy-plugin.version}</version>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
                 <executions>
                     <execution>
+                        <id>copy-file</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/amp/lib</directory>
+                                    <includes>
+                                        <include>${ecos.build.finalName}-${ecos.build.classifier}.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+<!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jar-file</id>
                         <phase>deploy</phase>
                         <goals>
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
                             <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                            <url>${project.distributionManagement.repository.url}</url>
+                            <url>${project.distributionManagement.snapshotRepository.url}</url>
+                            <repositoryId>citeck-snapshots</repositoryId>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${project.version}</version>
                             <classifier>${ecos.build.classifier}</classifier>
-                            <file>${ecos.lib.file}</file>
+                            <file>${project.build.directory}/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
+                            <updateReleaseInfo>false</updateReleaseInfo>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+-->
         </plugins>
     </build>
 

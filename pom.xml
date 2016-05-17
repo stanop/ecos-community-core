@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.citeck.ecos</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>2.0</version>
+    <version>2.0-SNAPSHOT</version>
     <!--<version>1.0-SNAPSHOT</version>-->
     <!--todo compare version
     Skipping component that doesn't apply to the module installation version:
@@ -72,6 +72,21 @@
         <!-- The Alfresco Share web application is accessible via this URL -->
         <share.client.url>http://localhost:8080/share</share.client.url>
     </properties>
+
+    <distributionManagement>
+<!--
+        <repository>
+            <id>citeck-release</id>
+            <url>http://artifactory.citeck.ru/artifactory/libs-release</url>
+        </repository>
+-->
+
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>citeck-snapshots</id>
+            <url>http://artifactory.citeck.ru/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <!-- If we are running tests then make the H2 Scripts available.
