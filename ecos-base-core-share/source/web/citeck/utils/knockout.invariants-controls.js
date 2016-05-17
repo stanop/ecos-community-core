@@ -716,6 +716,8 @@ ko.bindingHandlers.journalControl = {
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
         searchCriteria              = params.searchCriteria,
+
+        defaultCriteria             = params.defaultCriteria,
         
         localization                = params.localization;
 
@@ -731,8 +733,12 @@ ko.bindingHandlers.journalControl = {
         defaultHiddenByType = _.map(defaultHiddenByType.split(","), function(item) { return trim(item) });
     }
 
+    //  initialize criteria
+    var criteria = ko.observable([]);
+    if (defaultCriteria) criteria(defaultCriteria);
+
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
-        loading = ko.observable(true), criteriaListShow = ko.observable(false), criteria = ko.observable([]), 
+        loading = ko.observable(true), criteriaListShow = ko.observable(false), 
         journalType = params.journalType ? new JournalType(params.journalType) : null,
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
@@ -1169,7 +1175,7 @@ ko.bindingHandlers.journalControl = {
                 additionalOptions(_.union(additionalOptions(), args[1].value));
                 selectedElements(multiple() ? _.union(selectedElements(), args[1].value) : args[1].value); 
             }
-
+            
             criteria(_.clone(criteria()));
         }
     });

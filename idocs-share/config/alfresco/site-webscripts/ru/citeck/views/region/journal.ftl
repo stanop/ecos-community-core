@@ -56,6 +56,10 @@
           searchCriteria: ${params.searchCriteria},
         </#if>
 
+        <#if params.defaultCriteria??>
+          defaultCriteria: ${params.defaultCriteria},
+        </#if>
+
         localization: {
           title: '${title}',
           search: '${search}',
