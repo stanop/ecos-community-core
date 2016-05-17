@@ -639,7 +639,14 @@ ko.components.register('journal', {
                                                            click: $component.selectElement, clickBubble: false">\
                        <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
                             <!-- ko with: $component.journalType.attribute($data) -->\
-                                <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                <!-- ko if: $parents[1].properties[$data.name()] -->\
+                                    <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                <!-- /ko -->\
+                                <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
+                                    <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
+                                        <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
+                                    <!-- /ko -->\
+                                <!-- /ko -->\
                             <!-- /ko -->\
                         <!-- /ko -->\
                     </tr>\
@@ -648,7 +655,14 @@ ko.components.register('journal', {
                     <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                            foreach: $component.journalType.defaultAttributes,\
                                                            click: $component.selectElement, clickBubble: false">\
-                        <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
+                        <!-- ko if: $parent.properties[$data.name()] -->\
+                            <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
+                        <!-- /ko -->\
+                        <!-- ko ifnot: $parent.properties[$data.name()] -->\
+                            <!-- ko with: $parent.impl().attribute($data.name()) -->\
+                                <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
+                            <!-- /ko -->\
+                        <!-- /ko -->\
                     </tr>\
                 <!-- /ko -->\
             </tbody>\
