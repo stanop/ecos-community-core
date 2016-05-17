@@ -571,44 +571,6 @@ ko.components.register('journal', {
         };
         concatOptions(self.options, params.options);
 
-        // computed
-        self.sortedElements = ko.computed(function() {
-            var elements = self.sourceElements(),
-                pagination = elements ? elements.pagination : undefined;
-
-            if (self.options.sortBy && self.options.sortBy()) {
-                if (elements.length > 0) {
-                    var assocArray = _.map(elements, function(item) { 
-                        return { data: item, key: item.properties[self.options.sortBy()] }; 
-                    });
-
-                    var order = "ASC";
-                    if (self.options.orderBy && self.options.orderBy()) order = self.options.orderBy();
-
-                    switch (order) {
-                        case "ASC": 
-                            assocArray.sort(function(a, b) { return a.key > b.key; });
-                            break;
-
-                        case "DESC":
-                            assocArray.sort(function(a, b) { return a.key < b.key; });
-                            break;
-                    };
-
-                    elements = _.map(assocArray, function(item) { return item.data; });
-                    elements.pagination = pagination;
-                }
-            }
-
-            if (self.hidden && self.hidden.length > 0) {
-                return _.filter(elements, function(item) {
-                   return !_.contains(self.hidden, item.type) && !_.contains(self.hidden, item.typeShort);
-                });
-            }
-
-            return elements;
-        });
-
         // methods
         self.selectElement = function(data, event) {
             if (self.targetElements) {
@@ -670,7 +632,7 @@ ko.components.register('journal', {
                     </tr>\
                 <!-- /ko -->\
             </thead>\
-            <tbody data-bind="foreach: sortedElements">\
+            <tbody data-bind="foreach: sourceElements">\
                 <!-- ko if: $component.columns ? true : false -->\
                     <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                            foreach: $component.columns,\
@@ -691,8 +653,8 @@ ko.components.register('journal', {
                 <!-- /ko -->\
             </tbody>\
         </table>\
-        <!-- ko if: options.pagination && sortedElements -->\
-            <!-- ko with: sortedElements().pagination -->\
+        <!-- ko if: options.pagination && sourceElements -->\
+            <!-- ko with: sourceElements().pagination -->\
                 <!-- ko if: ($component.page() - 1 > 0) || hasMore -->\
                     <div class="journal-pagination">\
                         <span class="previous-page">\
@@ -744,8 +706,7 @@ ko.bindingHandlers.journalControl = {
         params   = allBindings().params();
 
     // sorting
-    var sortBy  = ko.observable(params.sortBy),
-        orderBy = ko.observable(params.orderBy || "ASC");
+    var sortBy  = params.sortBy;
 
     // params
     var defaultVisibleAttributes    = params.defaultVisibleAttributes,
@@ -777,13 +738,40 @@ ko.bindingHandlers.journalControl = {
         mode = params.mode ? params.mode : "collapse",
         pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
         additionalOptions = ko.observable([]), options = ko.computed(function(page) {
-            var nudeOptions = data.filterOptions(criteria(), { maxItems: 10, skipCount: skipCount(), searchScript: searchScript }),
-                config = nudeOptions.pagination;
+            var nudeOptions = data.filterOptions(criteria(), { 
+                    maxItems: 10, 
+                    skipCount: skipCount(), 
+                    searchScript: searchScript,
+                    sortBy: sortBy
+                }),
+                config = nudeOptions.pagination,
+                result;
+          
+            var tempAdditionalOptions = additionalOptions();
+            _.each(additionalOptions(), function(o) {
+                if (_.contains(nudeOptions, o)) {
+                    var index = tempAdditionalOptions.indexOf(o);
+                    tempAdditionalOptions.splice(index, 1);
+                }
+            });
+            additionalOptions(tempAdditionalOptions);
 
-            var result = _.union(nudeOptions, additionalOptions());
-            result.pagination = config;
-            
-            return result; 
+            if (additionalOptions().length > 0) {
+                if (nudeOptions.length < 10) {
+                    result = _.union(nudeOptions, additionalOptions());
+
+                    if (result.length > 10) result = result.slice(0, 10);
+                    if (10 - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                    
+                    result.pagination = config;
+                    return result;
+                } else {
+                    if (!nudeOptions.pagination.hasMore)
+                        nudeOptions.pagination.hasMore = true;
+                }
+            }
+
+            return nudeOptions ;
         });
 
     // reset page after new search
@@ -922,8 +910,6 @@ ko.bindingHandlers.journalControl = {
                                     page: page,\
                                     loading: loading,\
                                     options: {\
-                                        sortBy: sortBy,\
-                                        orderBy: orderBy,\
                                         multiple: multiple,\
                                         pagination: true,\
                                         localization: {\
@@ -1068,9 +1054,7 @@ ko.bindingHandlers.journalControl = {
                 page: pageNumber,
                 loading: loading,
                 columns: defaultVisibleAttributes,
-                hidden: defaultHiddenByType,
-                sortBy: sortBy,
-                orderBy: orderBy
+                hidden: defaultHiddenByType
             }, Dom.get(elementsPageId));
 
             // say knockout that we have something on search page
@@ -1162,8 +1146,6 @@ ko.bindingHandlers.journalControl = {
                         },
 
                         submit: function(node) {
-                            additionalOptions(_.union(additionalOptions(), node));
-                            selectedElements(multiple() ? _.union(selectedElements(), node) : node);  
                             scCallback(node);
                         },
                         cancel: scCallback
@@ -1187,6 +1169,8 @@ ko.bindingHandlers.journalControl = {
                 additionalOptions(_.union(additionalOptions(), args[1].value));
                 selectedElements(multiple() ? _.union(selectedElements(), args[1].value) : args[1].value); 
             }
+
+            criteria(_.clone(criteria()));
         }
     });
   }
