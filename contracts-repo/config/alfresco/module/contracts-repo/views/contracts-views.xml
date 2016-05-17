@@ -257,7 +257,6 @@
                     <param name="orderBy">DESC</param>
                     <param name="defaultHiddenByType">payments:payment</param>
                     <param name="defaultVisibleAttributes">cm:name, tk:type</param>
-                    <param name="searchScript">light-search</param>
                     <param name="searchCriteria">[{ attribute: 'cm:name', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
