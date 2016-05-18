@@ -117,17 +117,13 @@
                 <region name="label" template="label">
                     <param name="key">agreement.form.contracts_agreementAmount.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
             <field prop="contracts:VAT">
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.property.contracts_VAT.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
         </view>
         <view id="summary" kind="1-column">
@@ -145,17 +141,13 @@
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_appendixPagesNumber.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region> 
+                <region name="input" template="number" /> 
             </field>
             <field prop="idocs:pagesNumber">
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_pagesNumber.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
         </view>
         <view>

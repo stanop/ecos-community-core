@@ -4,9 +4,6 @@
   <#if params.step??>
     step: ${params.step},
   </#if>
-  <#if params.onlyNumbers??>
-    onlyNumbers: ${params.onlyNumbers},
-  </#if>
 
   id: "${fieldId}",
   value: textValue,
