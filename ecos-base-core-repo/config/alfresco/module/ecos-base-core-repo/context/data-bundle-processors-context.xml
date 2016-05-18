@@ -170,6 +170,28 @@
         </property>
     </bean>
 
+    <bean id="PDFSignature" class="ru.citeck.ecos.processor.pdf.PDFSignature" parent="AbstractDataBundleLine" abstract="true">
+        <property name="transformCalculator" ref="dbp.transform.none" />
+        <property name="stampProcessor">
+            <bean parent="dbp.sequential" />
+        </property>
+    </bean>
+
+    <bean id="dbp.pdf.signature.under" parent="PDFSignature">
+        <property name="foreground" value="true" />
+    </bean>
+
+    <bean id="dbp.pdf.watermark.signature" parent="dbp.pdf.signature.under">
+        <property name="transformCalculator" ref="dbp.transform.diagonal" />
+        <property name="stampProcessors">
+            <list>
+                <bean parent="dbp.content">
+                    <property name="nodeRef" value="workspace://SpacesStore/idocs-watermark-signature" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <!-- shortcut to place stamp under the page -->
     <bean id="dbp.pdf.stamp.under" parent="PDFStamp">
         <property name="foreground" value="false" />
