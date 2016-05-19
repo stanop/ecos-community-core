@@ -260,7 +260,7 @@
                     <property name="nodeRef" value="${args.nodeRef}" />
                 </bean>
                 <bean parent="dbp.transform.pdf" />
-                <bean parent="dbp.pdf.stamp.under">
+                <bean parent="dbp.pdf.signature.under">
                     <property name="transformCalculator" ref="dbp.transform.upper.right" />
                     <property name="stampProcessors">
                         <list>
