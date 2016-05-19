@@ -421,6 +421,10 @@
   margin-top: 5px;
 }
 
+.invariants-form .template-table .template-row.with-help .template-textarea {
+  width: calc(100% + 15px);
+}
+
 /* select */
 .invariants-form .template-table .template-row .template-select select {
   width: 100%;
