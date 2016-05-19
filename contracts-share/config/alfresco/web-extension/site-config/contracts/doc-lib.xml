@@ -78,6 +78,11 @@
 			<evaluator>evaluator.doclib.contracts.payment</evaluator>
 		</action>
 
+        <action id="document-print-payment-signature-pdf" type="link" label="actions.document.print-signature" icon="document-print">
+            <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=230</param>
+            <evaluator>evaluator.doclib.contracts.payment</evaluator>
+        </action>
+
 		<!--Downloads Closing Document-->
 		<action id="document-download-closing-document-docx" type="link" label="actions.download-document-docx" icon="document-download">
 			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=closing-document&amp;format=docx&amp;download=true</param>
@@ -88,6 +93,11 @@
 			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=closing-document&amp;format=pdf&amp;download=true</param>
 			<evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
 		</action>
+
+        <action id="document-print-closing-document-signature-pdf" type="link" label="actions.document.print-signature" icon="document-print">
+            <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=175</param>
+            <evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
+        </action>
 
 	</actions>
 
@@ -136,6 +146,8 @@
 				<action index="490" id="document-add-closing-doc-for-payment" />
 				<action index="491" id="document-add-sup-agreement" />
 				<action index="492" id="document-add-closing-doc-for-invoice" />
+				<action index="493" id="document-print-payment-signature-pdf" />
+				<action index="494" id="document-print-closing-document-signature-pdf" />
 
 			</actionGroup>
 			<actionGroup id="folder-details">

@@ -133,7 +133,7 @@ public class PDFSignature extends AbstractDataBundleLine {
                 AffineTransform transform = transformCalculator.calculate(stampSize.getWidth(), stampSize.getHeight(), strategy.getX() + addShiftRight, strategy.getY() + addShiftUp);
                 transform.getMatrix(m);
 
-                PdfContentByte page = foreground ? stamper.getOverContent(numOfPages) : stamper.getUnderContent(numOfPages);
+                PdfContentByte page = foreground ? stamper.getUnderContent(numOfPages) : stamper.getOverContent(numOfPages);
                 page.addTemplate(stamp, (float) m[0], (float) m[1], (float) m[2], (float) m[3], (float) m[4], (float) m[5]);
             }
 
