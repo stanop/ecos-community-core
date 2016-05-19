@@ -78,7 +78,7 @@
 			<evaluator>evaluator.doclib.contracts.payment</evaluator>
 		</action>
 
-        <action id="document-print-payment-signature-pdf" type="link" label="actions.document.print-signature" icon="document-print">
+        <action id="document-print-payment-signature-pdf" type="link" label="actions.print-signature.invoice" icon="document-print">
             <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=230</param>
             <evaluator>evaluator.doclib.contracts.payment</evaluator>
         </action>
@@ -94,7 +94,7 @@
 			<evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
 		</action>
 
-        <action id="document-print-closing-document-signature-pdf" type="link" label="actions.document.print-signature" icon="document-print">
+        <action id="document-print-closing-document-signature-pdf" type="link" label="actions.print-signature.closing-document" icon="document-print">
             <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=175</param>
             <evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
         </action>
