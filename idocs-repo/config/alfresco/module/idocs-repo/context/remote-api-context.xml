@@ -265,7 +265,7 @@
                     <property name="stampProcessors">
                         <list>
                             <bean parent="dbp.content">
-                                <property name="nodeRef" value="workspace://SpacesStore/idocs-watermark-final" />
+                                <property name="nodeRef" value="workspace://SpacesStore/idocs-watermark-signature" />
                             </bean>
                         </list>
                     </property>
