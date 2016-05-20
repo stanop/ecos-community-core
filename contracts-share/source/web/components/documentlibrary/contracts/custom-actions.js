@@ -5,8 +5,11 @@
         fn: function(record) {
             var jsNode = record.jsNode,
                 nodeRef = jsNode.nodeRef;
+            var alfrescoSite = Alfresco.constants.SITE;
+            var currentSite = alfrescoSite ? alfrescoSite : record.location.path.split('/')[2];
+
             Alfresco.util.Ajax.jsonGet({
-                url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/contracts",
+                url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/" + currentSite,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
@@ -41,9 +44,11 @@
         fn: function(record) {
             var jsNode = record.jsNode,
                 nodeRef = jsNode.nodeRef;
+            var alfrescoSite = Alfresco.constants.SITE;
+            var currentSite = alfrescoSite ? alfrescoSite : record.location.path.split('/')[2];
 
             Alfresco.util.Ajax.jsonGet({
-                url: Alfresco.constants.PROXY_URI + "/api/journals/create-variants/site/contracts",
+                url: Alfresco.constants.PROXY_URI + "/api/journals/create-variants/site/" + currentSite,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
@@ -78,8 +83,14 @@
         fn: function(record) {
             var jsNode = record.jsNode,
                 nodeRef = jsNode.nodeRef;
+            var alfrescoSite = Alfresco.constants.SITE;
+            var currentSite = alfrescoSite ? alfrescoSite : record.location.path.split('/')[2];
+            console.log('currentSite: ' + currentSite);
+            // console.log(record);
+            // console.log('alfrescoSite: ' + alfrescoSite);
+
             Alfresco.util.Ajax.jsonGet({
-                url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/contracts",
+                url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/" + currentSite,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
