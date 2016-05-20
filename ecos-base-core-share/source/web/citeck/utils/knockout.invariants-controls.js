@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -97,28 +97,42 @@ ko.components.register("number", {
     viewModel: function(params) {
         var self = this;
 
-        this.disable = params.disable;
         this.id = params.id;
         this.step = params.step && _.isNumber(params.step) ? params.step : "any";
+        this.disable = params.disable;
         this.value = params.value;
-        this.onlyNumbers = params.onlyNumbers && _.isBoolean(params.onlyNumbers) ? params.onlyNumbers : false;
 
-        this.koValidation = function(data, event) {
-            if (Citeck.HTML5.supportInput("number")) {
-                return _.contains([43, 44, 45, 46, 101, 69, 188, 190, 110], event.keyCode) ? false : true;
-            } else {
-                return event.keyCode >= 48 && event.keyCode <= 57;
-            }; 
-        }
+        this.lastSymbolIsPeriod = this.value() && this.value().indexOf(".") == this.value().length - 1;
+        this.hasPeriodSymbol = this.value() && this.value().indexOf(".") >= 0;
+        this.noValue = _.isEmpty(this.value());
+
+        this.validation = function(data, event) {
+            var whiteNumbers = [], whiteKeys = ["Period"], whiteSystem = ["Backspace", "Delete"],
+                code = event.originalEvent.code;
+
+            for (var n = 0; n <= 9; n++) {
+                whiteNumbers.push("Digit" + n);
+                whiteNumbers.push("Numpad" + n);
+            }
+
+            // return if code of key out of white list
+            if (!_.contains(_.union(whiteNumbers, whiteKeys), code)) return false;
+
+
+            if (_.contains(whiteKeys, code)) {
+                if (self.lastSymbolIsPeriod || self.hasPeriodSymbol || self.noValue) return false;
+            };
+
+            return true;
+        };
+
+        this.value.subscribe(function(newValue) {
+            self.hasPeriodSymbol = (newValue && newValue.indexOf(".") >= 0) ? true : false;
+            self.noValue = self.lastSymbolIsPeriod = _.isEmpty(newValue);
+        });
     },
     template: 
-       '<!-- ko if: onlyNumbers -->\
-            <input type="number"\
-                data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: koValidation }" />\
-        <!-- /ko -->\
-        <!-- ko ifnot: onlyNumbers -->\
-            <input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }" />\
-        <!-- /ko -->'
+       '<input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
 // ---------------
@@ -421,7 +435,6 @@ ko.bindingHandlers.dateControl = {
 
 
 // TODO:
-// - by default searchable columns  in parameters
 // - hide drop down menu out block
 // - progress bar for download fields of criteria
 
@@ -442,8 +455,6 @@ ko.components.register('value-of-selected-criterion', {
         YAHOO.util.Connect.asyncRequest('GET', URL, {
             success: function(response) {
                 var result = response.responseText;
-
-                // prepared result
                 result = prepareResultString(result, self.htmlId)
 
                 // support value bindings
@@ -542,11 +553,6 @@ ko.components.register('list-of-selected-criterion', {
         </table>'
 });
 
-
-// TODO: 
-// - right name for field if it node
-
-
 ko.components.register('journal', {
     viewModel: function(params) {
         if (!params.sourceElements && !params.journalType) {
@@ -578,44 +584,6 @@ ko.components.register('journal', {
             } 
         };
         concatOptions(self.options, params.options);
-
-        // computed
-        self.sortedElements = ko.computed(function() {
-            var elements = self.sourceElements(),
-                pagination = elements ? elements.pagination : undefined;
-
-            if (self.options.sortBy && self.options.sortBy()) {
-                if (elements.length > 0) {
-                    var assocArray = _.map(elements, function(item) { 
-                        return { data: item, key: item.properties[self.options.sortBy()] }; 
-                    });
-
-                    var order = "ASC";
-                    if (self.options.orderBy && self.options.orderBy()) order = self.options.orderBy();
-
-                    switch (order) {
-                        case "ASC": 
-                            assocArray.sort(function(a, b) { return a.key > b.key; });
-                            break;
-
-                        case "DESC":
-                            assocArray.sort(function(a, b) { return a.key < b.key; });
-                            break;
-                    };
-
-                    elements = _.map(assocArray, function(item) { return item.data; });
-                    elements.pagination = pagination;
-                }
-            }
-
-            if (self.hidden && self.hidden.length > 0) {
-                return _.filter(elements, function(item) {
-                   return !_.contains(self.hidden, item.type) && !_.contains(self.hidden, item.typeShort);
-                });
-            }
-
-            return elements;
-        });
 
         // methods
         self.selectElement = function(data, event) {
@@ -678,14 +646,21 @@ ko.components.register('journal', {
                     </tr>\
                 <!-- /ko -->\
             </thead>\
-            <tbody data-bind="foreach: sortedElements">\
+            <tbody data-bind="foreach: sourceElements">\
                 <!-- ko if: $component.columns ? true : false -->\
                     <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                            foreach: $component.columns,\
                                                            click: $component.selectElement, clickBubble: false">\
                        <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
                             <!-- ko with: $component.journalType.attribute($data) -->\
-                                <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                <!-- ko if: $parents[1].properties[$data.name()] -->\
+                                    <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                <!-- /ko -->\
+                                <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
+                                    <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
+                                        <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
+                                    <!-- /ko -->\
+                                <!-- /ko -->\
                             <!-- /ko -->\
                         <!-- /ko -->\
                     </tr>\
@@ -694,13 +669,20 @@ ko.components.register('journal', {
                     <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                            foreach: $component.journalType.defaultAttributes,\
                                                            click: $component.selectElement, clickBubble: false">\
-                        <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
+                        <!-- ko if: $parent.properties[$data.name()] -->\
+                            <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
+                        <!-- /ko -->\
+                        <!-- ko ifnot: $parent.properties[$data.name()] -->\
+                            <!-- ko with: $parent.impl().attribute($data.name()) -->\
+                                <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
+                            <!-- /ko -->\
+                        <!-- /ko -->\
                     </tr>\
                 <!-- /ko -->\
             </tbody>\
         </table>\
-        <!-- ko if: options.pagination && sortedElements -->\
-            <!-- ko with: sortedElements().pagination -->\
+        <!-- ko if: options.pagination && sourceElements -->\
+            <!-- ko with: sourceElements().pagination -->\
                 <!-- ko if: ($component.page() - 1 > 0) || hasMore -->\
                     <div class="journal-pagination">\
                         <span class="previous-page">\
@@ -752,8 +734,7 @@ ko.bindingHandlers.journalControl = {
         params   = allBindings().params();
 
     // sorting
-    var sortBy  = ko.observable(params.sortBy),
-        orderBy = ko.observable(params.orderBy || "ASC");
+    var sortBy  = params.sortBy;
 
     // params
     var defaultVisibleAttributes    = params.defaultVisibleAttributes,
@@ -763,6 +744,8 @@ ko.bindingHandlers.journalControl = {
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
         searchCriteria              = params.searchCriteria,
+
+        defaultCriteria             = params.defaultCriteria,
         
         localization                = params.localization;
 
@@ -778,13 +761,52 @@ ko.bindingHandlers.journalControl = {
         defaultHiddenByType = _.map(defaultHiddenByType.split(","), function(item) { return trim(item) });
     }
 
+    //  initialize criteria
+    var criteria = ko.observable([]);
+    if (defaultCriteria) criteria(defaultCriteria);
+
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
-        loading = ko.observable(true), criteriaListShow = ko.observable(false), criteria = ko.observable([]), 
+        loading = ko.observable(true), criteriaListShow = ko.observable(false), 
         journalType = params.journalType ? new JournalType(params.journalType) : null,
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
-        maxItems = ko.observable(10), pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-        options = ko.computed(function(page) { return data.filterOptions(criteria(), { maxItems: maxItems(), skipCount: skipCount() }); });
+        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
+        additionalOptions = ko.observable([]), options = ko.computed(function(page) {
+            var nudeOptions = data.filterOptions(criteria(), { 
+                    maxItems: 10, 
+                    skipCount: skipCount(), 
+                    searchScript: searchScript,
+                    sortBy: sortBy
+                }),
+                config = nudeOptions.pagination,
+                result;
+          
+            var tempAdditionalOptions = additionalOptions();
+            _.each(additionalOptions(), function(o) {
+                if (_.contains(nudeOptions, o)) {
+                    var index = tempAdditionalOptions.indexOf(o);
+                    tempAdditionalOptions.splice(index, 1);
+                }
+            });
+            additionalOptions(tempAdditionalOptions);
+
+            if (additionalOptions().length > 0) {
+                if (nudeOptions.length < 10) {
+                    result = _.union(nudeOptions, additionalOptions());
+
+                    if (result.length > 10) result = result.slice(0, 10);
+                    if (10 - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                    
+                    result.pagination = config;
+                    return result;
+                } else {
+                    if (!nudeOptions.pagination.hasMore)
+                        nudeOptions.pagination.hasMore = true;
+                }
+            }
+
+            return nudeOptions ;
+        });
 
     // reset page after new search
     criteria.subscribe(function(newValue) {
@@ -799,7 +821,7 @@ ko.bindingHandlers.journalControl = {
     // hide loading indicator if options got elements
     options.subscribe(function(newValue) {
         loading(_.isUndefined(newValue.pagination));
-    })
+    });
 
     // extend notify
     criteria.extend({ notify: 'always' });
@@ -922,8 +944,6 @@ ko.bindingHandlers.journalControl = {
                                     page: page,\
                                     loading: loading,\
                                     options: {\
-                                        sortBy: sortBy,\
-                                        orderBy: orderBy,\
                                         multiple: multiple,\
                                         pagination: true,\
                                         localization: {\
@@ -1068,9 +1088,7 @@ ko.bindingHandlers.journalControl = {
                 page: pageNumber,
                 loading: loading,
                 columns: defaultVisibleAttributes,
-                hidden: defaultHiddenByType,
-                sortBy: sortBy,
-                orderBy: orderBy
+                hidden: defaultHiddenByType
             }, Dom.get(elementsPageId));
 
             // say knockout that we have something on search page
@@ -1162,7 +1180,6 @@ ko.bindingHandlers.journalControl = {
                         },
 
                         submit: function(node) {
-                            selectedElements(node);
                             scCallback(node);
                         },
                         cancel: scCallback
@@ -1182,17 +1199,14 @@ ko.bindingHandlers.journalControl = {
     // reload filterOptions request if was created new object
     YAHOO.Bubbling.on("object-was-created", function(layer, args) {
         if (args[1].fieldId == data.name()) {
-
-            // TODO:
-            // - update table after added new node to runtime
-
-            // dirty hack, but it's sometimes work
-            loading(true);
-            setTimeout(function() {
-              criteria(_.clone(criteria()));
-            }, 5000);
+            if (args[1].value) {
+                additionalOptions(_.union(additionalOptions(), args[1].value));
+                selectedElements(multiple() ? _.union(selectedElements(), args[1].value) : args[1].value); 
+            }
+            
+            criteria(_.clone(criteria()));
         }
-    })
+    });
   }
 }
 

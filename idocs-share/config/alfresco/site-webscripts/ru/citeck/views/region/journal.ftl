@@ -39,10 +39,7 @@
         </#if>
 
         <#if params.sortBy??>
-          sortBy: '${params.sortBy}',
-        </#if>
-        <#if params.orderBy??>
-          orderBy: '${params.orderBy}',
+          sortBy: ${params.sortBy},
         </#if>
 
         <#if params.defaultHiddenByType??>
@@ -57,6 +54,10 @@
         </#if>
         <#if params.searchCriteria??>
           searchCriteria: ${params.searchCriteria},
+        </#if>
+
+        <#if params.defaultCriteria??>
+          defaultCriteria: ${params.defaultCriteria},
         </#if>
 
         localization: {

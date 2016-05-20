@@ -43,13 +43,16 @@
             <evaluator negate="true">evaluator.doclib.contracts.agreement.isCancelled</evaluator>
         </action>
 
-        <action id="document-add-closing-doc-for-invoice" type="link" icon="plus" label="actions.document-add-closing-doc-for-invoice">
-        	<param name="href">node-create?type=contracts:closingDocument&amp;destination={node.nodeRef}&amp;param_invoice={node.nodeRef}</param>
+        <action id="document-add-closing-doc-for-invoice" type="javascript" icon="plus"
+                label="actions.document-add-closing-doc-for-invoice">
+            <param name="function">onRedirectToCreateClosingDocForInvoice</param>
 			<permissions>
 				<permission allow="true">Write</permission>
 			</permissions>
 			<evaluator>evaluator.doclib.contracts.payment</evaluator>
 		</action>
+
+
 
 		<!-- Upload Signed Version -->
 		<action id="upload-signed-version" type="javascript" icon="document-upload-new-version" label="actions.upload-signed-version">
@@ -78,6 +81,11 @@
 			<evaluator>evaluator.doclib.contracts.payment</evaluator>
 		</action>
 
+        <action id="document-print-payment-signature-pdf" type="link" label="actions.document.print-signature" icon="document-print">
+            <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=230</param>
+            <evaluator>evaluator.doclib.contracts.payment</evaluator>
+        </action>
+
 		<!--Downloads Closing Document-->
 		<action id="document-download-closing-document-docx" type="link" label="actions.download-document-docx" icon="document-download">
 			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=closing-document&amp;format=docx&amp;download=true</param>
@@ -88,6 +96,11 @@
 			<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=closing-document&amp;format=pdf&amp;download=true</param>
 			<evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
 		</action>
+
+        <action id="document-print-closing-document-signature-pdf" type="link" label="actions.document.print-signature" icon="document-print">
+            <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=175</param>
+            <evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
+        </action>
 
 	</actions>
 
@@ -131,11 +144,14 @@
 				<action index="112" id="document-download-payment-docx" />
 				<action index="113" id="document-download-closing-document-docx"/>
 				<action index="114" id="document-download-closing-document-pdf" />
+				<action index="200" id="document-print-closing-document-signature-pdf" />
 				<action index="200" id="upload-signed-version" />
+				<action index="201" id="document-print-payment-signature-pdf" />
 				<action index="480" id="document-add-payment-for-approved" />
 				<action index="490" id="document-add-closing-doc-for-payment" />
 				<action index="491" id="document-add-sup-agreement" />
 				<action index="492" id="document-add-closing-doc-for-invoice" />
+
 
 			</actionGroup>
 			<actionGroup id="folder-details">

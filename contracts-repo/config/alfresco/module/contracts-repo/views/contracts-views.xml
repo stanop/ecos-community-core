@@ -117,17 +117,13 @@
                 <region name="label" template="label">
                     <param name="key">agreement.form.contracts_agreementAmount.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
             <field prop="contracts:VAT">
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.property.contracts_VAT.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
         </view>
         <view id="summary" kind="1-column">
@@ -145,17 +141,13 @@
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_appendixPagesNumber.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region> 
+                <region name="input" template="number" /> 
             </field>
             <field prop="idocs:pagesNumber">
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_pagesNumber.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
         </view>
         <view>
@@ -253,11 +245,9 @@
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
                     <param name="journalType">original-location</param>
-                    <param name="sortBy">cm:created</param>
-                    <param name="orderBy">DESC</param>
-                    <param name="defaultHiddenByType">payments:payment</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
+                    <param name="defaultCriteria">[{ attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment' }]</param>
                     <param name="defaultVisibleAttributes">cm:name, tk:type</param>
-                    <param name="searchScript">light-search</param>
                     <param name="searchCriteria">[{ attribute: 'cm:name', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
@@ -462,8 +452,7 @@
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
-                    <param name="sortBy">cm:created</param>
-                    <param name="orderBy">DESC</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -473,8 +462,7 @@
             <field assoc="contracts:closingDocumentPayment" >
                 <region name="select" template="select-journal" >
                     <param name="journalType">payments</param>
-                    <param name="sortBy">cm:created</param>
-                    <param name="orderBy">DESC</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -562,8 +550,7 @@
             <field assoc="contracts:mainAgreement">
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
-                    <param name="sortBy">cm:created</param>
-                    <param name="orderBy">DESC</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

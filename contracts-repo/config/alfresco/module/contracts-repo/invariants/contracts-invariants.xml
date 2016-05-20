@@ -43,6 +43,7 @@
         </property>
         <association name="contracts:agreementCurrency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="contracts:agreementAmount">
             <!-- <invariant on="valid" language="javascript" description="Это поле должно содержать положительное число.">value < 0 ? true : false</invariant> -->
@@ -57,6 +58,9 @@
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
         </property>
+        <!--association name="contracts:agreementSubject">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association-->
     </type>
 
     <type name="payments:payment">
@@ -95,6 +99,7 @@
                 }
             </invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="payments:paymentAmount">
             <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
@@ -139,6 +144,7 @@
     <type name="payments:paymentDraft">
         <association name="payments:currency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="payments:typePayment">
             <invariant on="default" language="explicit">advance</invariant>
@@ -185,12 +191,16 @@
             <invariant on="value" language="javascript">
                 node.assocs["contracts:closingDocumentAgreement"][0].assocs["contracts:agreementCurrency"][0]
             </invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <association name="contracts:closingDocumentPayment">
            <invariant on="mandatory" language="explicit">true</invariant>
            <invariant on="value" language="javascript">view.params.invoice</invariant>
            <invariant on="protected" language="javascript"><![CDATA[view.params.invoice != null]]></invariant>
         </association>
+        <!-- <association name="contracts:closingDocumentSigner">
+           <invariant on="mandatory" language="javascript">node.assocs["contracts:closingDocumentPayment"] == false</invariant>
+        </association> -->
         <association name="pas:containsProductsAndServices">
             <invariant on="value" language="javascript">node.assocs['contracts:closingDocumentPayment'][0].assocs['pas:containsProductsAndServices']</invariant>
         </association>
@@ -226,6 +236,7 @@
             <invariant on="value" language="javascript">
                 node.assocs["contracts:mainAgreement"][0].assocs["contracts:agreementCurrency"][0]
             </invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="contracts:agreementAmount">
             <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
