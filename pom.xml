@@ -51,6 +51,8 @@
         <!--<ecos.build.finalName>${project.artifactId}-${project.version}-${ecos.build.classifier}</ecos.build.finalName>-->
         <ecos.build.finalName>${project.artifactId}-${project.version}</ecos.build.finalName>
         <ecos.lib.file>${project.build.directory}/${ecos.build.finalName}.jar</ecos.lib.file>
+        <copy.overwrite>false</copy.overwrite>
+        <default.locale>en</default.locale>
 
         <!-- The following are default values for data location, Alfresco Community version, and Records Management Module version.
              Uncomment if you need to change (Note. current default version for Enterprise edition is 5.1)
@@ -158,6 +160,34 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>create-default-locale-properties</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Create default *.properties, using locale: ${default.locale}"/>
+
+                                <copy todir="${project.build.directory}/amp/config" overwrite="${copy.overwrite}" force="true">
+                                    <fileset dir="${basedir}/src/main/amp/config" erroronmissingdir="false">
+                                        <include name="**/*_${default.locale}.properties"/>
+                                    </fileset>
+                                    <globmapper from="*_${default.locale}.properties" to="*.properties"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
