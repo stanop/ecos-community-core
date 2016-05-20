@@ -27,7 +27,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/site/contracts/create-content?itemId=payments:payment&contractId='+ nodeRef + '&destination=' + destNodeRef + '&formId=' + formId;
+                            var redirection = '/share/page/node-create?type=payments:payment&contractId='+ nodeRef + '&destination=' + destNodeRef + '&formId=' + formId;
                             window.location = redirection;
                         }
                     }
@@ -64,7 +64,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/site/contracts/create-content?itemId=contracts:closingDocument&contractId='+ nodeRef + '&destination=' + destNodeRef+'&formId='+formId;
+                            var redirection = '/share/page/node-create?type=contracts:closingDocument&contractId='+ nodeRef + '&destination=' + destNodeRef+'&formId='+formId;
                             window.location = redirection;
 
                         }
@@ -100,7 +100,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/site/contracts/create-content?itemId=contracts:supplementaryAgreement&contractId='+ nodeRef + '&destination=' + destNodeRef + '&formId='+formId;
+                            var redirection = '/share/page/node-create?type=contracts:supplementaryAgreement&contractId='+ nodeRef + '&destination=' + destNodeRef + '&formId='+formId;
                             window.location = redirection;
                         }
                     }
