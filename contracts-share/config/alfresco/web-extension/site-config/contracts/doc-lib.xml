@@ -141,13 +141,13 @@
 				<action index="112" id="document-download-payment-docx" />
 				<action index="113" id="document-download-closing-document-docx"/>
 				<action index="114" id="document-download-closing-document-pdf" />
+				<action index="199" id="document-print-closing-document-signature-pdf" />
 				<action index="200" id="upload-signed-version" />
+				<action index="201" id="document-print-payment-signature-pdf" />
 				<action index="480" id="document-add-payment-for-approved" />
 				<action index="490" id="document-add-closing-doc-for-payment" />
 				<action index="491" id="document-add-sup-agreement" />
 				<action index="492" id="document-add-closing-doc-for-invoice" />
-				<action index="493" id="document-print-payment-signature-pdf" />
-				<action index="494" id="document-print-closing-document-signature-pdf" />
 
 			</actionGroup>
 			<actionGroup id="folder-details">
