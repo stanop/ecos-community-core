@@ -120,5 +120,38 @@
         }
     });
 
+    YAHOO.Bubbling.fire("registerAction", {
+        actionName: "onRedirectToCreateClosingDocForInvoice",
+        fn: function(record) {
+            var jsNode = record.jsNode,
+                nodeRef = jsNode.nodeRef;
+            var alfrescoSite = Alfresco.constants.SITE;
+            var currentSite = alfrescoSite ? alfrescoSite : record.location.path.split('/')[2];
+
+            Alfresco.util.Ajax.jsonGet({
+                url: Alfresco.constants.PROXY_URI + "/api/journals/create-variants/site/" + currentSite,
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        var destNodeRef = "";
+                        for(i=0; i<response.json.createVariants.length; i++)
+                        {
+                            if(response.json.createVariants[i].type == "contracts:closingDocument")
+                            {
+                                destNodeRef = response.json.createVariants[i].destination;
+                                break;
+                            }
+                        }
+                        if(destNodeRef!="")
+                        {
+                            var redirection = '/share/page/node-create?type=contracts:closingDocument&destination=' + destNodeRef+'&param_invoice='+ nodeRef;
+                            window.location = redirection;
+                        }
+                    }
+                }
+            });
+        }
+    });
+
 
 })();

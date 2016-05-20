@@ -43,8 +43,9 @@
             <evaluator negate="true">evaluator.doclib.contracts.agreement.isCancelled</evaluator>
         </action>
 
-        <action id="document-add-closing-doc-for-invoice" type="link" icon="plus" label="actions.document-add-closing-doc-for-invoice">
-        	<param name="href">node-create?type=contracts:closingDocument&amp;destination={node.nodeRef}&amp;param_invoice={node.nodeRef}</param>
+        <action id="document-add-closing-doc-for-invoice" type="javascript" icon="plus"
+                label="actions.document-add-closing-doc-for-invoice">
+            <param name="function">onRedirectToCreateClosingDocForInvoice</param>
 			<permissions>
 				<permission allow="true">Write</permission>
 			</permissions>
