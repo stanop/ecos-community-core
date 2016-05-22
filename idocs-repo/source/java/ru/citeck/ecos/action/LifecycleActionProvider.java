@@ -41,7 +41,13 @@ public class LifecycleActionProvider extends NodeActionsProvider {
                 url = String.format(URL_REDIRECT_TEMPLATE, nodeRef.toString(), actionParams.get("workflowId"), form);
                 action.setActionType(NodeActionDefinition.NODE_ACTION_TYPE_REDIRECT);
             } else if ("userTransition".equals(eventType)) {
-                url = String.format(URL_SERVER_ACTION_TEMPLATE, nodeRef.toString());
+                if (actionParams.get("urlId") != null) {
+                    url = actionParams.get("urlId").replace("{nodeRef}", nodeRef.toString());
+                    action.setContext("service-context");
+                    action.setActionType(NodeActionDefinition.NODE_ACTION_TYPE_REDIRECT);
+                } else {
+                    url = String.format(URL_SERVER_ACTION_TEMPLATE, nodeRef.toString());
+                }
             } else {
                 throw new RuntimeException("Unsupported lifecycle event type: " + eventType);
             }

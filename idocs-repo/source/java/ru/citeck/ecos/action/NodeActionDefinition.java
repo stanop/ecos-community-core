@@ -12,10 +12,9 @@ public class NodeActionDefinition {
     public static final String NODE_ACTION_TYPE_REDIRECT = "redirect";
 
     private String title;
-
     private String url;
-
     private String actionType = NODE_ACTION_TYPE_SERVER_ACTION;
+    private String context;
 
     public NodeActionDefinition() {
     }
@@ -30,6 +29,7 @@ public class NodeActionDefinition {
         fieldsMap.put("title", title);
         fieldsMap.put("url", url);
         fieldsMap.put("actionType", actionType);
+        fieldsMap.put("context", context);
         return fieldsMap;
     }
 
@@ -55,5 +55,13 @@ public class NodeActionDefinition {
 
     public void setActionType(String actionType) {
         this.actionType = actionType;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
     }
 }
