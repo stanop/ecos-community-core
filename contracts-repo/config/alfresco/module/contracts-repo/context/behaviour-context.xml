@@ -7,6 +7,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Договор<#else>Contract</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="order" value="40"/>
 	</bean>
 
 	<bean id="contracts.agreementTitleBehaviour" parent="TitleGenerationBehaviour">
@@ -28,6 +29,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Доп.соглашение<#else>Add'l agreement</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="order" value="40"/>
 	</bean>
 
 	<bean id="contracts.supAgreementTitleBehaviour" parent="TitleGenerationBehaviour">
@@ -55,6 +57,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Счет<#else>Invoice</#if> №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 		</property>
+		<property name="order" value="40"/>
 	</bean>
 
 	<bean id="contracts.paymentTitleBehaviour" parent="TitleGenerationBehaviour">
