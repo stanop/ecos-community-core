@@ -224,4 +224,20 @@
 		</property>
 	</bean>
 
+    <bean id="meetings.module-component.doctype-categories" parent="meetings.import-spaces">
+        <property name="name" value="doctype-categories" />
+        <property name="description" value="Doctype categories" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                    <prop key="location">alfresco/module/meetings-repo/bootstrap/doctype-categories.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/doctype-categories</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
