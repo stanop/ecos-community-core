@@ -261,10 +261,26 @@
        * @param event The event that occurred
        * @private
        */
-      _showPicker: function DatePicker__showPicker(event)
-      {
-         // show the popup calendar widget
-         this.widgets.calendar.show();
+      _showPicker: function DatePicker__showPicker(event) {
+        // sync position
+        this._syncPicker();
+
+        // show the popup calendar widget
+        this.widgets.calendar.show();
+      },
+
+      /**
+       * synchronizes the position of the calendar when you click on the icon
+       * 
+       * @method _syncPicker
+       * @private
+       */
+      _syncPicker: function DatePicker__syncPicker() {
+        $("#" + this.id)
+          .css("position", "absolute")
+          .css("margin", "0")
+          .css("top", $("#" + this.id + "-date").position().top + "px")
+          .css("left", $("#" + this.id + "-date").position().left + "px");
       },
       
       /**
