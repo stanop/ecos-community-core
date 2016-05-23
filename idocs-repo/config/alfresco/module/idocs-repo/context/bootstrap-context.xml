@@ -483,7 +483,7 @@
 		</property>
 	</bean>
 
-	<bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
+	<!-- <bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
 		<property name="name" value="doctype-passport" />
 		<property name="description" value="Passport Type Categories" />
 		<property name="sinceVersion" value="2.4" />
@@ -501,7 +501,7 @@
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
-	</bean>
+	</bean> -->
 
     <bean id="idocs.documentFolders" parent="idocs.import-spaces">
         <property name="name" value="idocs-document-folders" />
