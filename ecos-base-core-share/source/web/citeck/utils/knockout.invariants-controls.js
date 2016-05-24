@@ -97,28 +97,42 @@ ko.components.register("number", {
     viewModel: function(params) {
         var self = this;
 
-        this.disable = params.disable;
         this.id = params.id;
         this.step = params.step && _.isNumber(params.step) ? params.step : "any";
+        this.disable = params.disable;
         this.value = params.value;
-        this.onlyNumbers = params.onlyNumbers && _.isBoolean(params.onlyNumbers) ? params.onlyNumbers : false;
 
-        this.koValidation = function(data, event) {
-            if (Citeck.HTML5.supportInput("number")) {
-                return _.contains([43, 44, 45, 46, 101, 69, 188, 190, 110], event.keyCode) ? false : true;
-            } else {
-                return event.keyCode >= 48 && event.keyCode <= 57;
-            }; 
-        }
+        this.lastSymbolIsPeriod = this.value() && this.value().indexOf(".") == this.value().length - 1;
+        this.hasPeriodSymbol = this.value() && this.value().indexOf(".") >= 0;
+        this.noValue = _.isEmpty(this.value());
+
+        this.validation = function(data, event) {
+            var whiteNumbers = [], whiteKeys = ["Period"], whiteSystem = ["Backspace", "Delete"],
+                code = event.originalEvent.code;
+
+            for (var n = 0; n <= 9; n++) {
+                whiteNumbers.push("Digit" + n);
+                whiteNumbers.push("Numpad" + n);
+            }
+
+            // return if code of key out of white list
+            if (!_.contains(_.union(whiteNumbers, whiteKeys), code)) return false;
+
+
+            if (_.contains(whiteKeys, code)) {
+                if (self.lastSymbolIsPeriod || self.hasPeriodSymbol || self.noValue) return false;
+            };
+
+            return true;
+        };
+
+        this.value.subscribe(function(newValue) {
+            self.hasPeriodSymbol = (newValue && newValue.indexOf(".") >= 0) ? true : false;
+            self.noValue = self.lastSymbolIsPeriod = _.isEmpty(newValue);
+        });
     },
     template: 
-       '<!-- ko if: onlyNumbers -->\
-            <input type="number"\
-                data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: koValidation }" />\
-        <!-- /ko -->\
-        <!-- ko ifnot: onlyNumbers -->\
-            <input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }" />\
-        <!-- /ko -->'
+       '<input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
 // ---------------

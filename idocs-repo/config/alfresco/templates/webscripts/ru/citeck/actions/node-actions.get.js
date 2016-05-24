@@ -11,11 +11,15 @@
             title = title.substring("lifecycle.action.".length)
         }
 
+        var context = actions.get(i)["context"];
+        if (!context) context = "";
+
         model.actions.push({
             "node" : nodeRef,
             "url": actions.get(i)["url"],
             "title": title,
-            "actionType": actions.get(i)["actionType"]
+            "actionType": actions.get(i)["actionType"],
+            "context": context
         });
     }
 })();
