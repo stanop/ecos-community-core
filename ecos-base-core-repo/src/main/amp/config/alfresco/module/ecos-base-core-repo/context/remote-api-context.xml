@@ -182,7 +182,7 @@
     </bean>
 
     <bean id="webscript.ru.citeck.repository.dictionary.classesWithFullQname.get"
-          class=" org.alfresco.repo.web.scripts.dictionary.ClassesGet"
+          class="org.alfresco.repo.web.scripts.dictionary.ClassesGet"
           parent="webscript">
         <property name="dictionaryService" ref="dictionaryService"/>
         <property name="namespaceService" ref="namespaceService"/>
