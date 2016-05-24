@@ -107,17 +107,11 @@ ko.components.register("number", {
         this.noValue = _.isEmpty(this.value());
 
         this.validation = function(data, event) {
-            var whiteNumbers = [], whiteKeys = ["Period"], whiteSystem = ["Backspace", "Delete"],
-                code = event.originalEvent.code;
-
-            for (var n = 0; n <= 9; n++) {
-                whiteNumbers.push("Digit" + n);
-                whiteNumbers.push("Numpad" + n);
-            }
+            var whiteNumbers = _.range(48, 58), whiteKeys = [46]
+                code = event.keyCode;
 
             // return if code of key out of white list
             if (!_.contains(_.union(whiteNumbers, whiteKeys), code)) return false;
-
 
             if (_.contains(whiteKeys, code)) {
                 if (self.lastSymbolIsPeriod || self.hasPeriodSymbol || self.noValue) return false;
@@ -617,7 +611,7 @@ ko.components.register('journal', {
                 // if object
                 if (typeof value == "object") {
                     if (value instanceof Date) return value.toLocaleString();
-                    if (isInvariantsObject(value)) return value.name 
+                    if (isInvariantsObject(value)) return value.name;
                 }
 
                 return value;

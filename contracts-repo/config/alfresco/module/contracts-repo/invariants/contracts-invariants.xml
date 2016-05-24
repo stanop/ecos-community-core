@@ -46,13 +46,10 @@
             <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <!-- <invariant on="valid" language="javascript" description="Это поле должно содержать положительное число.">value < 0 ? true : false</invariant> -->
-            <!-- <invariant on="valid" language="javascript" description="Не верный формат">/^\d+([,\.]\d{1,3}|)$/.test(value)</invariant> -->
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="contracts:VAT">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">
-                new RegExp('\u005e[\u0030-\u0039]*\u0024', 'igm').test(value)
-            </invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
@@ -102,7 +99,7 @@
             <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="payments:paymentAmount">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
@@ -116,7 +113,7 @@
             ]]></invariant>
         </property>
         <property name="payments:paymentVAT">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="javascript">0</invariant>
         </property>
@@ -150,10 +147,10 @@
             <invariant on="default" language="explicit">advance</invariant>
         </property>
         <property name="payments:paymentAmount">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">false == new RegExp('\u005e[\u0030-\u0039]*\u0024', 'igm').test(value) ? false : true</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="payments:paymentVAT">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
     </type>
 
@@ -239,10 +236,10 @@
             <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="contracts:VAT">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
