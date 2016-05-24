@@ -762,6 +762,12 @@ span.navigation-separator-alt
    width: 100% !important;
 }
 
+.formsCheckBox {
+  margin-left: 10px;
+  top: 3px;
+  position: relative;
+}
+
 .mceEditor.defaultSkin
 {
    box-shadow: 0.33px 2px 8px rgba(0, 0, 0, 0.15);
