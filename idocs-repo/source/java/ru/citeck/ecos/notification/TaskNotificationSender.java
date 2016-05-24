@@ -267,7 +267,9 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 	protected void sendToAssignee(WorkflowTask task, Set<String> authorities)
 	{
 		String username = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-		authorities.add(username);
+		if (username != null && !"".equals(username)) {
+			authorities.add(username);
+		}
 	}
 
 	protected void sendToInitiator(WorkflowTask task, Set<String> authorities)
@@ -313,7 +315,9 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 	protected void sendToOwner(Set<String> authorities, NodeRef node)
 	{
 		String owner = nodeOwnerDAO.getOwner(node);
-		authorities.add(owner);
+		if (owner != null && !"".equals(owner)) {
+			authorities.add(owner);
+		}
 	}
 	
 	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
