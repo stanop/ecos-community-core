@@ -616,6 +616,7 @@ ko.components.register('journal', {
 
                 // if object
                 if (typeof value == "object") {
+                    if (value instanceof Date) return value.toLocaleString();
                     if (isInvariantsObject(value)) return value.name 
                 }
 
