@@ -4,8 +4,10 @@
 
 	<bean id="contracts.AgreementNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="contracts:agreement" />
-		<property name="nameTemplate"
-			value="Contract №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}" />
+		<property name="nameTemplate">
+			<value><![CDATA[<#if .locale == "ru_RU">Договор<#else>Contract</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
+		</property>
+		<property name="order" value="40"/>
 	</bean>
 
 	<bean id="contracts.agreementTitleBehaviour" parent="TitleGenerationBehaviour">
@@ -24,8 +26,10 @@
 
 	<bean id="contracts.supAgreementNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="contracts:supplementaryAgreement" />
-		<property name="nameTemplate"
-				  value="Add'l agreement №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}" />
+		<property name="nameTemplate">
+			<value><![CDATA[<#if .locale == "ru_RU">Доп.соглашение<#else>Add'l agreement</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
+		</property>
+		<property name="order" value="40"/>
 	</bean>
 
 	<bean id="contracts.supAgreementTitleBehaviour" parent="TitleGenerationBehaviour">
@@ -51,8 +55,9 @@
 	<bean id="contracts.paymentNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="payments:payment" />
 		<property name="nameTemplate">
-			<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} for<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+			<value><![CDATA[<#if .locale == "ru_RU">Счет<#else>Invoice</#if> №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 		</property>
+		<property name="order" value="40"/>
 	</bean>
 
 	<bean id="contracts.paymentTitleBehaviour" parent="TitleGenerationBehaviour">
@@ -63,7 +68,7 @@
 					<value><![CDATA[Счет №#{'$'}{node.properties['payments:paymentNumber']!'б-н'} для<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 				</entry>
 				<entry key="en_US">
-					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} for<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 				</entry>
 			</map>
 		</property>
@@ -72,7 +77,7 @@
 	<bean id="contracts.paymentDraftNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="payments:paymentDraft" />
 		<property name="nameTemplate">
-			<value><![CDATA[Payment<#if node.parent.nodeRef??> for contract №#{'$'}{node.parent.properties['contracts:agreementNumber']!'n/a'}</#if>]]></value>
+			<value><![CDATA[<#if .locale == "ru_RU">Счет<#else>Payment</#if><#if node.parent.nodeRef??> <#if .locale == "ru_RU">для контракта<#else>for contract</#if> №#{'$'}{node.parent.properties['contracts:agreementNumber']!'n/a'}</#if>]]></value>
 		</property>
 	</bean>
 
@@ -92,12 +97,13 @@
 
 	<bean id="contracts.paymentPeriodNamingBehaviour" parent="AutoNameBehaviour">
 		<property name="className" value="payments:period" />
-		<property name="nameTemplate"
-			value="Period #{'$'}{node.properties['payments:periodStart']?string('dd.MM.yyyy')}-#{'$'}{node.properties['payments:periodEnd']?string('dd.MM.yyyy')}" />
+		<property name="nameTemplate">
+			<value><![CDATA[<#if .locale == "ru_RU">Период<#else>Period</#if> #{'$'}{node.properties['payments:periodStart']?string('dd.MM.yyyy')}-#{'$'}{node.properties['payments:periodEnd']?string('dd.MM.yyyy')}]]></value>
+		</property>
 	</bean>
 
 	<bean id="contracts.agreementNumberBehaviour" parent="EnumerationBehaviour">
-        <property name="className" value="contracts:agreement" /> 
+        <property name="className" value="contracts:agreement" />
         <property name="numberField" value="contracts:agreementNumber" />
 		<property name="enabledState" value="-" />
         <property name="templateName" value="agreement-number-template" />
@@ -131,9 +137,19 @@
 		<property name="type" value="pasEntityCopied"/>
 	</bean>
 
+	<bean id="paymentsBehaviour" class="ru.citeck.ecos.behavior.contracts.PaymentsBehaviour" init-method="init">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="searchService" ref="searchService"/>
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="namespace" value="http://www.citeck.ru/model/payments/1.0"/>
+		<property name="type" value="payment"/>
+	</bean>
+
 	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour" init-method="init">
 		<property name="nodeService" ref="nodeService" />
 		<property name="policyComponent" ref="policyComponent" />
+		<property name="namespace" value="http://www.citeck.ru/model/contracts/1.0"/>
+		<property name="type" value="closingDocument"/>
 	</bean>
 
 </beans>

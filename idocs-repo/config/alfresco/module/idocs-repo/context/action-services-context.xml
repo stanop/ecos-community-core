@@ -66,5 +66,23 @@
     <bean id="boolean-property-value-comparator" class="ru.citeck.ecos.action.evaluator.BooleanPropertyValueComparator" init-method="register">
         <property name="evaluator" ref="compare-property-value" />
     </bean>
-    
+
+    <!-- Node Actions Services -->
+    <bean id="nodeActionsService" class="ru.citeck.ecos.action.NodeActionsService" />
+
+    <bean id="abstractNodeActionProvider" class="ru.citeck.ecos.action.NodeActionsProvider" abstract="true">
+        <property name="nodeActionsService" ref="nodeActionsService" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean id="nodeActionsServiceJS" class="ru.citeck.ecos.action.NodeActionsServiceJS" parent="baseJavaScriptExtension">
+        <property name="nodeActionsService" ref="nodeActionsService"/>
+        <property name="extensionName" value="nodeActionsService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="lifecycleActionProvider" class="ru.citeck.ecos.action.LifecycleActionProvider" parent="abstractNodeActionProvider">
+        <property name="lifecycleService" ref="lifeCycleService" />
+    </bean>
+
 </beans>

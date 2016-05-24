@@ -19,10 +19,7 @@
 						<view:properties>
 							<sys:node-uuid>journal-meta-l-meta</sys:node-uuid>
 							<cm:name>global-meta</cm:name>
-							<cm:title>
-								<view:mlvalue view:locale="en_US">${journal.title.list-meta_en}</view:mlvalue>
-								<view:mlvalue view:locale="ru_RU">${journal.title.list-meta_ru}</view:mlvalue>
-							</cm:title>
+							<cm:title>${journal.title.list-meta}</cm:title>
 						</view:properties>
 					</journal:journalsList>
 				</cm:contains>
@@ -36,10 +33,7 @@
 						<view:properties>
 							<sys:node-uuid>journal-meta-j-journals</sys:node-uuid>
 							<cm:name>journals</cm:name>
-							<cm:title>
-								<view:mlvalue view:locale="en_US">${journal.title.journals_en}</view:mlvalue>
-								<view:mlvalue view:locale="ru_RU">${journal.title.journals_ru}</view:mlvalue>
-							</cm:title>
+							<cm:title>${journal.title.journals}</cm:title>
 							<journal:journalType>journals</journal:journalType>
 						</view:properties>
 						<view:associations>
@@ -57,10 +51,7 @@
 								<journal:createVariant view:childName="journal:createVariant">
 									<view:properties>
 										<sys:node-uuid>journal-meta-cv-journals</sys:node-uuid>
-										<cm:title>
-											<view:mlvalue view:locale="en_US">${journal.create.journal_en}</view:mlvalue>
-											<view:mlvalue view:locale="ru_RU">${journal.create.journal_ru}</view:mlvalue>
-										</cm:title>
+										<cm:title>${journal.create.journal}</cm:title>
 										<journal:type>journal:journal</journal:type>
 										<journal:formId></journal:formId>
 									</view:properties>
@@ -72,10 +63,7 @@
 						<view:properties>
 							<sys:node-uuid>journal-meta-j-lists</sys:node-uuid>
 							<cm:name>journal-lists</cm:name>
-							<cm:title>
-								<view:mlvalue view:locale="en_US">${journal.title.journal-lists_en}</view:mlvalue>
-								<view:mlvalue view:locale="ru_RU">${journal.title.journal-lists_ru}</view:mlvalue>
-							</cm:title>
+							<cm:title>${journal.title.journal-lists}</cm:title>
 							<journal:journalType>journal-lists</journal:journalType>
 						</view:properties>
 						<view:associations>
@@ -93,10 +81,7 @@
 								<journal:createVariant view:childName="journal:createVariant">
 									<view:properties>
 										<sys:node-uuid>journal-meta-cv-lists</sys:node-uuid>
-										<cm:title>
-											<view:mlvalue view:locale="en_US">${journal.create.journal-list_en}</view:mlvalue>
-											<view:mlvalue view:locale="ru_RU">${journal.create.journal-list_ru}</view:mlvalue>
-										</cm:title>
+										<cm:title>${journal.create.journal-list}</cm:title>
 										<journal:type>journal:journalsList</journal:type>
 										<journal:formId></journal:formId>
 									</view:properties>
@@ -108,10 +93,7 @@
 						<view:properties>
 							<sys:node-uuid>journal-meta-j-filters</sys:node-uuid>
 							<cm:name>journal-filters</cm:name>
-							<cm:title>
-								<view:mlvalue view:locale="en_US">${journal.title.filters_en}</view:mlvalue>
-								<view:mlvalue view:locale="ru_RU">${journal.title.filters_ru}</view:mlvalue>
-							</cm:title>
+							<cm:title>${journal.title.filters}</cm:title>
 							<journal:journalType>journal-filters</journal:journalType>
 						</view:properties>
 						<view:associations>
@@ -129,10 +111,7 @@
 								<journal:createVariant view:childName="journal:createVariant">
 									<view:properties>
 										<sys:node-uuid>journal-meta-cv-filters</sys:node-uuid>
-										<cm:title>
-											<view:mlvalue view:locale="en_US">${journal.create.filter_en}</view:mlvalue>
-											<view:mlvalue view:locale="ru_RU">${journal.create.filter_ru}</view:mlvalue>
-										</cm:title>
+										<cm:title>${journal.create.filter}</cm:title>
 										<journal:type>journal:filter</journal:type>
 										<journal:formId></journal:formId>
 									</view:properties>
@@ -167,10 +146,7 @@
 				<view:properties>
 					<sys:node-uuid>journal-global-main</sys:node-uuid>
 					<cm:name>global-main</cm:name>
-					<cm:title>
-						<view:mlvalue view:locale="en_US">${journal.global.journals_en}</view:mlvalue>
-						<view:mlvalue view:locale="ru_RU">${journal.global.journals_ru}</view:mlvalue>
-					</cm:title>
+					<cm:title>${journal.global.journals}</cm:title>
 				</view:properties>
 			</journal:journalsList>
 		</cm:contains>

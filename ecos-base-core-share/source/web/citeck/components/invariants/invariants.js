@@ -278,6 +278,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         if (pagination) {
             if (pagination.maxItems) query.maxItems = pagination.maxItems;
             if (pagination.skipCount) query.skipCount = pagination.skipCount;
+            if (pagination.sortBy) {
+                if (_.isArray(pagination.sortBy)) query.sortBy = pagination.sortBy;
+                if (_.isObject(pagination.sortBy)) query.sortBy = [pagination.sortBy];
+            }
         }
 
         try {

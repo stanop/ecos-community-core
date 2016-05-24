@@ -21,10 +21,7 @@
                 <view:properties>
                     <sys:node-uuid>journal-meta-j-settings</sys:node-uuid>
                     <cm:name>journals-settings</cm:name>
-                    <cm:title>
-                        <view:mlvalue view:locale="en_US">${journal.title.settings_en}</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">${journal.title.settings_ru}</view:mlvalue>
-                    </cm:title>
+                    <cm:title>${journal.title.settings}</cm:title>
                     <journal:journalType>journals-settings</journal:journalType>
                 </view:properties>
                 <view:associations>
@@ -42,10 +39,7 @@
                         <journal:createVariant view:childName="journal:createVariant">
                             <view:properties>
                                 <sys:node-uuid>journal-meta-cv-settings</sys:node-uuid>
-                                <cm:title>
-                                    <view:mlvalue view:locale="en_US">${journal.create.settings_en}</view:mlvalue>
-                                    <view:mlvalue view:locale="ru_RU">${journal.create.settings_ru}</view:mlvalue>
-                                </cm:title>
+                                <cm:title>${journal.create.settings}</cm:title>
                                 <journal:type>journal:settings</journal:type>
                                 <journal:formId></journal:formId>
                             </view:properties>

@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>url template</shortname>
+    <description>get url template</description>
+    <url>/citeck/components/templates/url-template</url>
+</webscript>

@@ -451,6 +451,10 @@
   margin-top: 5px;
 }
 
+.invariants-form .template-table .template-row.with-help .template-textarea {
+  width: calc(100% + 15px);
+}
+
 /* select */
 .invariants-form .template-table .template-row .template-select select {
   width: 100%;
@@ -466,6 +470,10 @@
 .static .invariants-form .template-table .template-row .region-select-group > .form-region {
   float: right;
   margin: 10px 0 0 10px;
+}
+
+.invariants-form .template-table .template-row [class*="template-select-"] {
+  float: right;
 }
 
 .invariants-form .template-table .template-half-width [class*="template-select-"],
@@ -1235,6 +1243,11 @@
 
 .selected-filter-criteria-container table.selected-criteria-list td.predicate-col {
   width: 30%;
+}
+
+.selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate {
+  width: 100%;
+  background-color: white;
 }
 
 .selected-filter-criteria-container table.selected-criteria-list td.value-col {

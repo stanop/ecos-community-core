@@ -9,6 +9,7 @@
         <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
     </imports>
 
     <views any="true">
@@ -116,17 +117,13 @@
                 <region name="label" template="label">
                     <param name="key">agreement.form.contracts_agreementAmount.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
             <field prop="contracts:VAT">
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.property.contracts_VAT.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
         </view>
         <view id="summary" kind="1-column">
@@ -144,17 +141,13 @@
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_appendixPagesNumber.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region> 
+                <region name="input" template="number" /> 
             </field>
             <field prop="idocs:pagesNumber">
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_pagesNumber.title</param>
                 </region>
-                <region name="input" template="number">
-                    <param name="onlyNumbers">true</param>
-                </region>
+                <region name="input" template="number" />
             </field>
         </view>
         <view>
@@ -252,6 +245,10 @@
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
                     <param name="journalType">original-location</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
+                    <param name="defaultCriteria">[{ attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment' }]</param>
+                    <param name="defaultVisibleAttributes">cm:name, tk:type</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:name', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -340,6 +337,17 @@
                 </region>
             </field>
         </view>
+        <field assoc="pas:containsOriginalProductsAndServices" kind="mode-view">
+            <region name="select" template="select-journal">
+                <param name="journalType">products-and-services</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="journalType">products-and-services</param>
+            </region>
+            <region name="label" template="label">
+                <param name="key">payments_paymentsModel.association.products_and_services.title</param>
+            </region>
+        </field>
         <view>
             <field assoc="payments:currency">
                 <region name="label" template="label">
@@ -443,7 +451,8 @@
         <view>
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                    <param name="journalType">contract-agreements</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -452,7 +461,8 @@
             </field>
             <field assoc="contracts:closingDocumentPayment" >
                 <region name="select" template="select-journal" >
-                     <param name="journalType">payments</param>
+                    <param name="journalType">payments</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -514,6 +524,9 @@
                 </region>
             </field>
         </view>
+        <view>
+            <field assoc="contracts:closingDocumentCurrency"/>
+        </view>
         <field prop="dms:updateContent">
             <region name="label" template="label">
                 <param name="key">dms_dms.property.dms_updateContent.title</param>
@@ -534,9 +547,10 @@
         <views mode="create" kind="3-column" />
         <views mode="edit" kind="3-column" />
         <view>
-            <field assoc="contracts:mainAgreement"> <!-- TODO -->
+            <field assoc="contracts:mainAgreement">
                 <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                    <param name="journalType">contract-agreements</param>
+                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

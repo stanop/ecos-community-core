@@ -1210,18 +1210,18 @@
              */
             _adjustCurrentValues: function CiteckObjectFinder__adjustCurrentValues()
             {
-                if (!this.options.disabled)
-                {
+                if (!this.options.disabled) {
                     var addedItems = this.getAddedItems(),
                         removedItems = this.getRemovedItems(),
                         selectedItems = this.getSelectedItems();
 
-                    if (this.options.maintainAddedRemovedItems)
-                    {
-                        Dom.get(this.id + "-added").value = addedItems.toString();
-                        Dom.get(this.id + "-removed").value = removedItems.toString();
+                    if (this.options.maintainAddedRemovedItems) {
+                        $("#" + this.id + "-added").val(addedItems.toString()).trigger("change");
+                        $("#" + this.id + "-removed").val(removedItems.toString()).trigger("change");
                     }
-                    Dom.get(this.currentValueHtmlId).value = selectedItems.toString();
+
+                    $("#" + this.currentValueHtmlId).val(selectedItems.toString()).trigger("change");
+
                     if (Alfresco.logger.isDebugEnabled())
                     {
                         Alfresco.logger.debug("Hidden field '" + this.currentValueHtmlId + "' updated to '" + selectedItems.toString() + "'");

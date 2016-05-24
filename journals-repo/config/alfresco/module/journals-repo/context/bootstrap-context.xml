@@ -78,13 +78,13 @@
             <list>
                 <props>
                     <prop key="path">/cm:IDocsRoot</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/single-lang/folder.xml</prop>
                     <prop key="messages">alfresco/module/journals-repo/bootstrap/journals/cm-content</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/single-lang/journal.xml</prop>
                     <prop key="messages">alfresco/module/journals-repo/bootstrap/journals/cm-content</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
@@ -96,7 +96,7 @@
                 </props>
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:cm-content</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/single-lang/create-variant1.xml</prop>
                     <prop key="messages">alfresco/module/journals-repo/bootstrap/journals/cm-content</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
@@ -104,5 +104,19 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.journals-attachments-root" parent="journals.import-spaces" depends-on="journals.dictionaryBootstrap">
+        <property name="name" value="journals-attachments-root" />
+        <property name="description" value="attachments-root" />
+        <property name="sinceVersion" value="1.0" />
+        <property name="appliesFromVersion" value="1.0" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/</prop>
+                <prop key="location">alfresco/module/journals-repo/bootstrap/explicit/attachments-root.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
 
 </beans>

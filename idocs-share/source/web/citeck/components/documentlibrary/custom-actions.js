@@ -660,65 +660,6 @@ Citeck.format.openCalendar = function() {
 	}
 };
 
-YAHOO.Bubbling.fire("registerAction", {
-    actionName: "onActionDoTransition",
-    fn: function (asset, element) {
-        var actionId = element.className;
-        var actionTitle = asset.actionParams[actionId].actionProperties.action;
-        var transitionType = asset.actionParams[actionId].actionProperties.actionType;
-        var workflowId = asset.actionParams[actionId].actionProperties.workflowId;
-        var formId = asset.actionParams[actionId].actionProperties.formId;
-        var urlId = asset.actionParams[actionId].actionProperties.urlId;
-        if(transitionType == "onStartProcess") {
-            var form ="";
-            if (formId) {
-                form = "&formId=" + formId;
-            }
-            window.open(Alfresco.constants.URL_PAGECONTEXT + "start-specified-workflow?packageItems=" + asset.nodeRef + "&workflowId=" + workflowId + form, "_self");
-        } else if (transitionType == "userTransition") {
-			var doTransition = function() {
-				Alfresco.util.Ajax.jsonPost({
-					url: Alfresco.constants.PROXY_URI + "api/lifecycle/do-transition?nodeRef=" + asset.nodeRef,
-					successCallback: {
-						scope: this,
-						fn: function() {
-							PopupManager.displayMessage({
-								text: this.msg("message.transitionSuccess")
-							});
-							_.delay(function() {
-								window.location.reload();
-							}, 3000);
-						}
-					},
-					failureCallback: {
-						scope: this,
-						fn: function() {
-							PopupManager.displayMessage({
-								text: this.msg("message.transitionError")
-							});
-						}
-					}
-				});
-			};
-            if (typeof formId == "string") {
-                Citeck.forms.dialog(asset.node.nodeRef, formId, {
-                    scope: this,
-                    fn: doTransition
-                }, { title : actionTitle });
-            } else if (typeof urlId == "string") {
-                var templateUrl = YAHOO.lang.substitute(Alfresco.constants.URL_SERVICECONTEXT + urlId,
-                {
-                    nodeRef: asset.nodeRef
-                });
-
-                window.open(templateUrl);
-            } else {
-                doTransition.call(this);
-            }
-        }
-    }
-});
-
 	YAHOO.Bubbling.fire("registerAction", {
 		actionName: "onActionUploadSignedVersion",
 		fn: function(record) {
@@ -1016,5 +957,55 @@ YAHOO.Bubbling.fire("registerAction", {
 			);
 		}
 	});
+
+
+	/**
+	 * for Node Actions Service
+	 * */
+	YAHOO.Bubbling.fire("registerAction", {
+        actionName: "onServerAction",
+        fn: function (asset, element) {
+            var actionId = element.className;
+            var props = asset.actionParams[actionId].actionProperties;
+			var actionType = props.actionType;
+
+			// hardcode for lifecycle-actions
+            var sourceContext = props.context;
+            if (sourceContext === "service-context") {
+                sourceContext = Alfresco.constants.URL_SERVICECONTEXT;
+            } else if (sourceContext != "") sourceContext = "";
+
+            if (actionType === "serverAction") {
+                Alfresco.util.Ajax.jsonPost({
+                    url: (sourceContext === "" ? Alfresco.constants.PROXY_URI : sourceContext) + props.actionURL,
+                    successCallback: {
+                        scope: this,
+                        fn: function () {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: this.msg("message.transitionSuccess")
+                            });
+                            _.delay(function () {
+                                window.location.reload();
+                            }, 3000);
+                        }
+                    },
+                    failureCallback: {
+                        scope: this,
+                        fn: function (response) {
+                            var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: json.message
+                            });
+                        }
+                    }
+                });
+            } else if (actionType === "redirect") {
+                var context = (sourceContext === "" ? Alfresco.constants.URL_PAGECONTEXT : sourceContext);
+                window.open(context + props.actionURL, "_self");
+            }
+        }
+    });
+
+
 
 })();

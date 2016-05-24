@@ -38,6 +38,28 @@
           mode: '${params.mode}',
         </#if>
 
+        <#if params.sortBy??>
+          sortBy: ${params.sortBy},
+        </#if>
+
+        <#if params.defaultHiddenByType??>
+          defaultHiddenByType: '${params.defaultHiddenByType}',
+        </#if>
+
+        <#if params.searchMinQueryLength??>
+          searchMinQueryLength: '${params.searchMinQueryLength}',
+        </#if>
+        <#if params.searchScript??>
+          searchScript: '${params.searchScript}',
+        </#if>
+        <#if params.searchCriteria??>
+          searchCriteria: ${params.searchCriteria},
+        </#if>
+
+        <#if params.defaultCriteria??>
+          defaultCriteria: ${params.defaultCriteria},
+        </#if>
+
         localization: {
           title: '${title}',
           search: '${search}',

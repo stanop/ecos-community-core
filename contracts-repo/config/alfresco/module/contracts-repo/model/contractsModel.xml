@@ -136,6 +136,12 @@
 					<title>Receive accounting department date</title>
 					<type>d:date</type>
 				</property>
+				<property name="contracts:closingDocumentAmount">
+					<type>d:double</type>
+				</property>
+				<property name="contracts:closingDocumentAmountInWords">
+					<type>d:text</type>
+				</property>
 			</properties>
 			<associations>
 				<association name="contracts:closingDocumentType">
@@ -157,7 +163,7 @@
 					</source>
 					<target>
 						<class>cm:person</class>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
 				</association>
@@ -197,13 +203,24 @@
 						<many>false</many>
 					</target>
 				</association>
+				<association name="contracts:closingDocumentCurrency">
+					<title>Currency</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:currency</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
 			</associations>
 			<mandatory-aspects>
 				<aspect>contracts:hasDocumentStatus</aspect>
 				<aspect>pas:hasProductsAndServices</aspect>
-				<!--<aspect>dms:templateable</aspect>-->
+				<aspect>dms:templateable</aspect>
 				<aspect>contracts:closingDocumentExtend</aspect>
-				<aspect>contracts:closingDocumentTemplated</aspect>
 				<aspect>contracts:hasContractor</aspect>
 			</mandatory-aspects>
 		</type>
@@ -459,14 +476,6 @@
             <overrides>
                 <property name="tk:type">
                     <default>workspace://SpacesStore/contracts-cat-doctype-closing-doc</default>
-                </property>
-            </overrides>
-        </aspect>
-        <aspect name="contracts:closingDocumentTemplated">
-            <parent>dms:templateable</parent>
-            <overrides>
-                <property name="dms:templateEncoding">
-                    <default>UTF-8</default>
                 </property>
             </overrides>
         </aspect>

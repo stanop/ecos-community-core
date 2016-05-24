@@ -9,6 +9,8 @@
                 <value>alfresco.site-messages.idocs.dynamic-table</value>
                 <value>alfresco.site-messages.idocs.search-predicates</value>
                 <value>alfresco.site-messages.idocs.general</value>
+                <value>alfresco.site-messages.idocs.forms</value>
+                <value>alfresco.site-messages.idocs.slingshot</value>
             </list>
         </property>
     </bean>

@@ -36,6 +36,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Alexander Nemerov <alexander.nemerov@citeck.ru>
@@ -46,7 +47,7 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
     private static final String MESSAGE_AUTO_GENERATED = "version.auto.generated";
     private static final String EMPTY_EXTENSION = "";
 
-    private static Log logger = LogFactory.getLog(ContentFromTemplateGeneratorImpl.class);
+    private static final Log logger = LogFactory.getLog(ContentFromTemplateGeneratorImpl.class);
 
     private static final String KEY_DOCUMENT = "document";
 
@@ -80,16 +81,21 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
         }
         NodeRef template = assocs.get(0).getTargetRef();
 
-        // get template encoding
-        String encoding = (String)nodeService.getProperty(nodeRef, DmsModel.PROP_TEMPLATE_ENCODING);
-        if (encoding == null) encoding = "ISO-8859-1";
-
         ContentData templateContent = (ContentData) nodeService.getProperty(template, ContentModel.PROP_CONTENT);
         if(templateContent == null) {
             throw new IllegalStateException("Template " + template + " has no content");
         }
+
+        // get template encoding
+        String encoding = "ISO-8859-1";
+        if (nodeService.hasAspect(nodeRef, DmsModel.ASPECT_TEMPLATEABLE)
+                && !Objects.equals(templateContent.getEncoding(), "")
+                && templateContent.getEncoding() != null) {
+            encoding = templateContent.getEncoding();
+        }
+
         String mimetype = templateContent.getMimetype();
-        
+
         ContentWriter contentWriter;
         Writer writer = null;
         try {
@@ -98,15 +104,16 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
             contentWriter.setMimetype(mimetype);
 
             /**
-             * Template encoding defined inside aspect dms:templateable
-             * property: DmsModel.PROP_TEMPLATE_ENCODING
-             * Default value (for binaries): ISO-8859-1
-             * For html and another text contents need to override this property inside templated model (like closingDocument)
+             * Do not change specified character-set ISO-8859-1, because of
+             * output stream returns bytes, but writer returns characters.
+             * So we should not change that output stream. This character-set
+             * does not change anything.
+             * If the document has a template - encoding is taken from a template.
              * */
             writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName(encoding));
 
             // process template
-            Map<String, Object> model = new HashMap<String, Object>();
+            Map<String, Object> model = new HashMap<>();
             model.put(KEY_DOCUMENT, nodeRef);
             try {
                 templateService.processTemplate(template.toString(), model, writer);
@@ -130,9 +137,12 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
                 }
             }
         }
-        
-        Map<String, Serializable> versionProperties = new HashMap<String, Serializable>(3);
-        versionProperties.put(VersionModel.PROP_DESCRIPTION, historyDescriptionText != null ? historyDescriptionText : I18NUtil.getMessage(MESSAGE_AUTO_GENERATED));
+
+        Map<String, Serializable> versionProperties = new HashMap<>(3);
+        versionProperties.put(
+                VersionModel.PROP_DESCRIPTION,
+                historyDescriptionText != null ? historyDescriptionText : I18NUtil.getMessage(MESSAGE_AUTO_GENERATED)
+        );
         RepoUtils.setUniqueOriginalName(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
         RepoUtils.createVersion(nodeRef, versionProperties, nodeService, versionService);
     }

@@ -676,11 +676,6 @@
 					<type>d:boolean</type>
 					<default>true</default>
 				</property>
-				<property name="dms:templateEncoding">
-                    <title>Template encoding</title>
-                    <type>d:text</type>
-                    <default>ISO-8859-1</default>
-                </property>
 			</properties>
 			<associations>
 				<association name="dms:templateAssociation">

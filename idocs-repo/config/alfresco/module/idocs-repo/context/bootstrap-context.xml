@@ -83,11 +83,11 @@
 			</list>
 		</property>
 	</bean>
-	
+
 
 	<!-- permission definitions -->
 	<bean id="idocs.permissionModelBootstrap" parent="permissionModelBootstrap">
-		<property name="model" value="alfresco/module/idocs-repo/model/permissionDefinitions.xml" /> 
+		<property name="model" value="alfresco/module/idocs-repo/model/permissionDefinitions.xml" />
 	</bean>
 
 	<!-- workflows -->
@@ -133,12 +133,12 @@
 		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow</value>
 	</util:list>
 
-	<bean id="idocs.workflowModelsBootstrap" parent="dictionaryModelBootstrap" 
+	<bean id="idocs.workflowModelsBootstrap" parent="dictionaryModelBootstrap"
 		depends-on="idocs.dictionaryBootstrap">
 		<property name="models" ref="idocs.workflowModelsList" />
 		<property name="labels" ref="idocs.workflowLabelsList" />
 	</bean>
-	
+
 	<bean id="idocs.workflowBootstrap" parent="workflowDeployer">
 		<property name="workflowDefinitions">
 			<list>
@@ -266,7 +266,7 @@
 		<property name="lifeCycleService" ref="lifeCycleService"/>
 		<property name="enabled" value="true" />
 		<!-- to be set in child beans -->
-		<!-- 
+		<!--
 		<property name="location" value="alfresco/module/idocs-repo/lifecycle/test-lifecycle.csv"/>
 		<property name="format" value="csv"/>
 		<property name="entityType" value="contracts:agreement"/>
@@ -276,7 +276,7 @@
 	<bean id="idocs.import-lifecycle.csv" parent="idocs.import-lifecycle" abstract="true">
 		<property name="format" value="csv"/>
 		<!-- to be set in child beans -->
-		<!-- 
+		<!--
 		<property name="location" value="alfresco/module/idocs-repo/lifecycle/test-lifecycle.csv"/>
 		<property name="entityType" value="contracts:agreement"/>
 		 -->
@@ -285,12 +285,12 @@
     <bean id="idocs.import-lifecycle.xml" parent="idocs.import-lifecycle" abstract="true">
 		<property name="format" value="xml"/>
 		<!-- to be set in child beans -->
-		<!-- 
+		<!--
 		<property name="location" value="alfresco/module/idocs-repo/lifecycle/test-lifecycle.csv"/>
 		<property name="entityType" value="contracts:agreement"/>
 		 -->
 	</bean>
-	
+
 	<bean id="idocs.import-lifecycle-repository" class="ru.citeck.ecos.lifecycle.LifeCycleRepositoryDeployer">
         <property name="lifeCycleService" ref="lifeCycleService"/>
         <property name="enabled" value="true" />
@@ -378,12 +378,6 @@
 				<props>
 					<prop key="uuidBinding">UPDATE_EXISTING</prop>
 					<prop key="path">/</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/attachments-root.xml</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="uuidBinding">UPDATE_EXISTING</prop>
-					<prop key="path">/</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/history.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
@@ -421,7 +415,7 @@
 					<prop key="location">alfresco/templates/bootstrap/ru/citeck/templates/card-template-type.xml</prop>
 					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/card-template-types/confirm-list</prop>
 				</props>
-				
+
                 <props>
                     <prop key="uuidBinding">UPDATE_EXISTING</prop>
                     <prop key="path">/</prop>
@@ -489,7 +483,7 @@
 		</property>
 	</bean>
 
-	<bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
+	<!-- <bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
 		<property name="name" value="doctype-passport" />
 		<property name="description" value="Passport Type Categories" />
 		<property name="sinceVersion" value="2.4" />
@@ -507,7 +501,7 @@
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
-	</bean>
+	</bean> -->
 
     <bean id="idocs.documentFolders" parent="idocs.import-spaces">
         <property name="name" value="idocs-document-folders" />
@@ -641,5 +635,5 @@
 			</props>
 		</property>
 	</bean>
-    
+
 </beans>
