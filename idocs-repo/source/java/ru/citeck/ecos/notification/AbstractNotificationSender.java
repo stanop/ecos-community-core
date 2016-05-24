@@ -97,7 +97,9 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
 	// notification type
 	private String notificationType;
-	
+
+	private boolean asyncNotification = true;
+
 	// dependencies:
 	protected ServiceRegistry services;
 	protected NodeService nodeService;
@@ -158,6 +160,10 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 		this.defaultRecipients = defaultRecipients;
 	}
 
+	public void setAsyncNotification(boolean asyncNotification) {
+		this.asyncNotification = asyncNotification;
+	}
+
 	@Override
 	public void sendNotification(ItemType item) {
 		sendNotification(
@@ -165,12 +171,16 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 			getNotificationFrom(item),
 			getNotificationSubject(item),
 			getNotificationTemplate(item),
-			getNotificationArgs(item), 
+			getNotificationArgs(item),
 			getNotificationRecipients(item)
         );
 	}
 
-	/**
+	protected boolean getAsyncNotification() {
+        return asyncNotification;
+    }
+
+    /**
 	 * Get notification subject line for specified item.
 	 * @param item
 	 * @return subject line
@@ -367,7 +377,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 			for(String to : recipients) {
 				notificationContext.addTo(to);
 			}
-			notificationContext.setAsyncNotification(true);
+			notificationContext.setAsyncNotification(asyncNotification);
 			if (null != from) {
 				notificationContext.setFrom(from);
 			}

@@ -42,6 +42,7 @@ public class NewCommentNotificationService {
     private NodeService nodeService;
     private AuthorityService authorityService;
 	private NodeOwnerDAO nodeOwnerDAO;
+    private boolean asyncNotification = true;
 
     public static final NodeRef NEW_COMMENT_NOTIFICATION_EMAIL_TEMPLATE = new NodeRef(
             StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
@@ -107,7 +108,7 @@ public class NewCommentNotificationService {
         for (String authority : assignedAuthorities) {
             notificationContext.addTo(authority);
         }
-        notificationContext.setAsyncNotification(true);
+        notificationContext.setAsyncNotification(asyncNotification);
         return notificationContext;
     }
 
@@ -174,5 +175,9 @@ public class NewCommentNotificationService {
 	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
 		this.nodeOwnerDAO = nodeOwnerDAO;
 	}
+
+    public void setAsyncNotification(boolean asyncNotification) {
+        this.asyncNotification = asyncNotification;
+    }
 
 }

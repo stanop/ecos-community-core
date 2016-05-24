@@ -72,7 +72,8 @@
         <property name="authorityService" ref="AuthorityService"/>
         <property name="notificationService" ref="NotificationService"/>
         <property name="nodeService" ref="NodeService"/>
-	<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+		<property name="asyncNotification" value="${notification.send.asyncronical}"/>
     </bean>
 
     <bean id="scriptCommentService" class="ru.citeck.ecos.notification.ScriptCommentService" parent="baseJavaScriptExtension">
@@ -509,7 +510,7 @@
 
 	<!-- overdue notification sender -->
 	<bean id="OverdueNotificationSender"
-		class="ru.citeck.ecos.notification.TaskNotificationSender">
+		class="ru.citeck.ecos.notification.TaskNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="defaultTemplate" value="cm:default-expired-notification.html.ftl" />
@@ -519,7 +520,7 @@
 	
 	<!-- overdue notification sender -->
 	<bean id="OverdueWorkflowNotificationSender"
-		class="ru.citeck.ecos.notification.TaskNotificationSender">
+		class="ru.citeck.ecos.notification.TaskNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
@@ -1104,11 +1105,13 @@
 		</property>
 	</bean>
 	
-	<bean id="NotificationForLoggingItemSender" class="ru.citeck.ecos.notification.NotificationForLoggingItemSender">
+	<bean id="NotificationForLoggingItemSender" class="ru.citeck.ecos.notification.NotificationForLoggingItemSender"
+		  parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 	
-	<bean id="ReportWithAttachmentSender" class="ru.citeck.ecos.notification.ReportWithAttachmentSender">
+	<bean id="ReportWithAttachmentSender" class="ru.citeck.ecos.notification.ReportWithAttachmentSender"
+		  parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 
