@@ -551,6 +551,11 @@
   margin-left: 45.5%;
 }
 
+.invariants-form .template-table .template-row.with-help .template-message,
+.invariants-form .template-table [class*="template-row-"].with-help .template-message {
+  margin-left: 46.5%;
+}
+
 .static .invariants-form .template-table .template-row .template-message,
 .static .invariants-form .template-table [class*="template-row-"] .template-message {
   position: absolute;
