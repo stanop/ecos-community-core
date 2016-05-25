@@ -303,6 +303,11 @@
 	<!-- notification listeners -->
 	<!-- ====================== -->
 
+	<bean id="AbstractNotificationSender" class="ru.citeck.ecos.notification.AbstractNotificationSender"
+		  abstract="true">
+		<property name="asyncNotification" value="${notification.send.asyncronical}"/>
+	</bean>
+
 	<bean id="onAssignPoolTaskListener" class="ru.citeck.ecos.workflow.listeners.OnAssignPoolTaskListener">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="sender" ref="PoolTaskNotificationSender" />
@@ -310,7 +315,7 @@
 	</bean>
 
 	<bean id="PoolTaskNotificationSender"
-		class="ru.citeck.ecos.notification.TaskNotificationSender">
+		class="ru.citeck.ecos.notification.TaskNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="notificationType" value="assign_task" />
@@ -324,7 +329,7 @@
 
 	<!-- Delegate Task Notification Sender-->
 	<bean id="DelegateTaskNotificationSender"
-		class="ru.citeck.ecos.notification.DelegateTaskNotificationSender">
+		class="ru.citeck.ecos.notification.DelegateTaskNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="defaultTemplate" value="cm:default-email-notification.html.ftl"/>
@@ -339,7 +344,7 @@
 	</bean>
 
 	<bean id="CompleteDelegateTaskNotificationSender"
-		class="ru.citeck.ecos.notification.StartDelegateTaskNotificationSender">
+		class="ru.citeck.ecos.notification.StartDelegateTaskNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
@@ -363,7 +368,7 @@
 
 	<!--Start Delegate Task Notification Sender-->
 	<bean id="StartWorkflowNotificationSender"
-		class="ru.citeck.ecos.notification.ExecutionEntityNotificationSender">
+		class="ru.citeck.ecos.notification.ExecutionEntityNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="notificationType" value="start_workflow"/>
@@ -372,7 +377,7 @@
 
 	<!--Cancel Workflow Notification Sender-->
 	<bean id="CancelWorkflowNotificationSender"
-		class="ru.citeck.ecos.notification.ExecutionEntityNotificationSender">
+		class="ru.citeck.ecos.notification.ExecutionEntityNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="notificationType" value="cancel_workflow"/>
@@ -381,7 +386,7 @@
 
 	<!--Complete Workflow Notification Sender-->
 	<bean id="CompleteWorkflowNotificationSender"
-		  class="ru.citeck.ecos.notification.ExecutionEntityNotificationSender">
+		  class="ru.citeck.ecos.notification.ExecutionEntityNotificationSender" parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
 		<property name="notificationType" value="complete_workflow"/>

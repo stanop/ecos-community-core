@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Set;
@@ -34,7 +33,6 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
-import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -42,7 +40,6 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -308,7 +305,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 							notificationContext.addTo(to);
 						}
 						notificationContext.setTemplateArgs(getNotificationArgs(task));
-						notificationContext.setAsyncNotification(true);
+						notificationContext.setAsyncNotification(super.getAsyncNotification());
 						if (null != from) {
 							notificationContext.setFrom(from);
 						}

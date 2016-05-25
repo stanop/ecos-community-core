@@ -97,7 +97,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	NodeRef docsInfo;
 	protected boolean sendToOwner;
 	private NodeOwnerDAO nodeOwnerDAO;
-private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationSender.class);
+	private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationSender.class);
 	public static final String ARG_MODIFIER = "modifier";
 	List<String> allowDocList;
 	Map<String, Map<String,String>> subjectTemplates;
@@ -252,7 +252,7 @@ private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationS
 					notificationContext.setSubject(subject);
 					setBodyTemplate(notificationContext, template);
 					notificationContext.setTemplateArgs(getNotificationArgs(task));
-					notificationContext.setAsyncNotification(true);
+					notificationContext.setAsyncNotification(super.getAsyncNotification());
 					if (null != from) {
 						notificationContext.setFrom(from);
 					}
