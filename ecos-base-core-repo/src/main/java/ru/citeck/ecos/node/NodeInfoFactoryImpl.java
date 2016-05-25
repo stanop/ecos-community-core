@@ -150,9 +150,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
         nodeInfo.setProperty(WorkflowModel.PROP_START_DATE, workflow.getStartDate());
         nodeInfo.setProperty(QName.createQName(NamespaceService.BPM_MODEL_1_0_URI, "endDate"), workflow.getEndDate());
         nodeInfo.setProperty(WorkflowModel.PROP_WORKFLOW_DUE_DATE, workflow.getDueDate());
-        nodeInfo.setProperty(QName.createQName(NamespaceService.BPM_MODEL_1_0_URI, "initiator"), workflow.getInitiator().toString());
+        nodeInfo.setProperty(QName.createQName(NamespaceService.BPM_MODEL_1_0_URI, "initiator"), String.valueOf(workflow.getInitiator()));
         nodeInfo.setProperty(WorkflowModel.PROP_WORKFLOW_PRIORITY, workflow.getPriority());
-        nodeInfo.setProperty(WorkflowModel.ASPECT_WORKFLOW_PACKAGE, workflow.getWorkflowPackage().toString());
+        nodeInfo.setProperty(WorkflowModel.ASPECT_WORKFLOW_PACKAGE, String.valueOf(workflow.getWorkflowPackage()));
         return nodeInfo;
     }
 
@@ -284,7 +284,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	public NodeRef persist(NodeInfo nodeInfo, boolean full) {
 	    NodeRef nodeRef = nodeInfo.getNodeRef();
 		if(nodeRef != null) {
-			persist(nodeInfo.getNodeRef(), nodeInfo, full);
+			persist(nodeRef, nodeInfo, full);
 			return nodeInfo.getNodeRef();
 		}
 

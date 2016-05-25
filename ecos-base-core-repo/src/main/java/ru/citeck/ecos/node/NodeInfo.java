@@ -224,6 +224,14 @@ public class NodeInfo implements Serializable
 		if(targetAssocs != null) {
 		    sb.append(targetAssocs);
 		}
+		if(sourceAssocs != null) {
+			sb.append(", sourceAssocs: ");
+		    sb.append(sourceAssocs);
+		}
+		if(childAssocs != null) {
+			sb.append(", childAssocs: ");
+		    sb.append(childAssocs);
+		}
 		return sb.toString();
 	}
 	
