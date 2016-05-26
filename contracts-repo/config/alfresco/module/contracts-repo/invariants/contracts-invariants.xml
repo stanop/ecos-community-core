@@ -190,6 +190,10 @@
             </invariant>
             <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
+        <association name="contracts:closingDocumentAgreement">
+            <invariant on="value" language="javascript">view.params.contract</invariant>
+            <invariant on="protected" language="javascript"><![CDATA[view.params.contract != null]]></invariant>
+        </association>
         <association name="contracts:closingDocumentPayment">
            <invariant on="mandatory" language="explicit">true</invariant>
            <invariant on="value" language="javascript">view.params.invoice</invariant>

@@ -123,10 +123,7 @@
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onRedirectToCreateClosingDocForInvoice",
         fn: function(record) {
-            var jsNode = record.jsNode,
-                nodeRef = jsNode.nodeRef;
-            var alfrescoSite = Alfresco.constants.SITE;
-            var currentSite = alfrescoSite ? alfrescoSite : record.location.path.split('/')[2];
+            var currentSite = Alfresco.constants.SITE || record.location.path.split('/')[2];
 
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "/api/journals/create-variants/site/" + currentSite,
@@ -134,17 +131,25 @@
                     scope: this,
                     fn: function(response) {
                         var destNodeRef = "";
-                        for(i=0; i<response.json.createVariants.length; i++)
-                        {
-                            if(response.json.createVariants[i].type == "contracts:closingDocument")
-                            {
+                        for(i = 0; i < response.json.createVariants.length; i++) {
+                            if(response.json.createVariants[i].type == "contracts:closingDocument") {
                                 destNodeRef = response.json.createVariants[i].destination;
                                 break;
                             }
                         }
-                        if(destNodeRef!="")
-                        {
-                            var redirection = '/share/page/node-create?type=contracts:closingDocument&destination=' + destNodeRef+'&param_invoice='+ nodeRef;
+
+                        if(destNodeRef) {
+                            var redirection = '/share/page/node-create?type=contracts:closingDocument&destination=' + destNodeRef;
+
+                            if (record.jsNode.nodeRef) {
+                                redirection += '&param_invoice=' + record.jsNode.nodeRef;
+                            }
+
+                            var contracts = record.jsNode.properties["payments:basis_added"];
+                            if (contracts.length > 0) {
+                                redirection += '&param_contract=' + contracts[0];
+                            }
+
                             window.location = redirection;
                         }
                     }
