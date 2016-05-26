@@ -23,12 +23,12 @@
 
 
 /* loading-indicator */
-.invariants-form .loading-indicator {
-  display: none;
-}
-
 .invariants-form.loading {
   position: relative;
+}
+
+.invariants-form.loading .form-fields {
+  height: 300px;
 }
 
 .invariants-form.loading .form-fields,
@@ -36,18 +36,63 @@
   visibility: hidden;
 }
 
-.invariants-form.loading .loading-indicator {
-  display: block;
+.invariants-form .loading-container {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  top: 40px;
+  left: 25%;
+  width: 270px;
+  height: 270px;
+  text-align: center;
+}
 
-  background-position: center; 
-  background-size: 15%;
-  background-image: url(images/form-loading.gif);
-  background-repeat: no-repeat;
+.static .loading-container {
+  left: 45%;
+}
+
+/*.invariants-form.loading .loading-container {
+  display: block;
+}*/
+
+.loading-container .loading-indicator {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  border: 10px solid #333;
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: cssload-spin 1100ms infinite linear;
+    -o-animation: cssload-spin 1100ms infinite linear;
+    -ms-animation: cssload-spin 1100ms infinite linear;
+    -webkit-animation: cssload-spin 1100ms infinite linear;
+    -moz-animation: cssload-spin 1100ms infinite linear;
+}
+
+.loading-container .loading-message {
+  width: 175px;
+  position: absolute;
+  left: 18%;
+  top: 43%;
+}
+
+@keyframes cssload-spin {
+  100%{ transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-o-keyframes cssload-spin {
+  100%{ -o-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-ms-keyframes cssload-spin {
+  100%{ -ms-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-webkit-keyframes cssload-spin {
+  100%{ -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-moz-keyframes cssload-spin {
+  100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
 }
 
 
