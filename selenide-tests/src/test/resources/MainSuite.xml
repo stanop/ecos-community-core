@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Main Suite" verbose="6" preserve-order="true" parallel="tests" thread-count="1">
+    <!-- <test name="Login Page">
+        <classes>
+            <class name="ru.citeck.ecos.main.MainTest"/>
+        </classes>
+    </test>
+    <test name="Second Test Name">
+        <classes>
+            <class name="ru.citeck.ecos.main.SecondTest"/>
+        </classes>
+    </test> -->
+</suite>
