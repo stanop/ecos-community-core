@@ -83,7 +83,6 @@ public class NodeAttributeServiceImplTest {
     @Test
     public void testWiring() {
         assertNotNull(nodeAttributeService);
-
     }
 
     @Test
