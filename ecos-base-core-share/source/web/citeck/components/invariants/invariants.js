@@ -1588,6 +1588,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .property('invariantSet', ExplicitInvariantSet)
         .constant('rootObjects', rootObjects)
 
+        .computed('loading', function() {
+            if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
+                var attributes = this.resolve("node.impl").attributes();
+
+                for (var a = 0; a < attributes.length; a++) {
+                    _.each(["title", "info", "value", "options"], function(attr) {
+                        if (!attributes[a][attr].loaded()) return true;
+                    });
+
+                    var v = attributes[a].value();
+                    if (v instanceof Node && !v.impl.loaded()) return true;
+                }
+
+                return false;
+            }
+
+            return true;
+        })
+
         .method('submit', function() {
             if(this.node().impl().valid()) {
                 this.broadcast('node-view-submit');
