@@ -3,7 +3,7 @@
 
   <!-- 
   Generate classes with: 
-    xjc -no-header -p ru.citeck.ecos.invariants.xml alfresco/module/idocs-repo/schema/invariants.xsd alfresco/module/idocs-repo/schema/views.xsd
+    xjc -no-header -p ru.citeck.ecos.invariants.xml alfresco/module/ecos-forms-repo/schema/invariants.xsd alfresco/module/ecos-forms-repo/schema/views.xsd
    -->
 
   <xs:import

@@ -81,7 +81,7 @@
 			<bean factory-bean="resourceResolver" factory-method="getResources">
 				<constructor-arg>
 					<list>
-						<value>classpath*:alfresco/module/idocs-repo/invariants-common.xml</value>
+						<value>classpath*:alfresco/module/ecos-forms-repo/invariants-common.xml</value>
 						<value>classpath*:alfresco/invariants/**/*.xml</value>
 					</list>
 				</constructor-arg>
@@ -163,7 +163,7 @@
 			<bean factory-bean="resourceResolver" factory-method="getResources">
 				<constructor-arg>
 					<list>
-						<value>classpath*:alfresco/module/idocs-repo/views-common.xml</value>
+						<value>classpath*:alfresco/module/ecos-forms-repo/views-common.xml</value>
 						<value>classpath*:alfresco/views/**/*.xml</value>
 						<value>classpath*:alfresco/module/*/views/**/*.xml</value>
 						<value>classpath*:alfresco/extension/views/**/*.xml</value>

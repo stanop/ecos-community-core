@@ -25,8 +25,8 @@ import ru.citeck.ecos.invariants.attr.TargetAssocsAttributeType;
 import ru.citeck.ecos.invariants.attr.VirtualAttributeType;
 import ru.citeck.ecos.invariants.attr.PropertiesAttributeType;
 import ru.citeck.ecos.model.AttributeModel;
-import ru.citeck.ecos.model.ClassificationModel;
-import ru.citeck.ecos.model.PassportModel;
+//import ru.citeck.ecos.model.ClassificationModel;
+//import ru.citeck.ecos.model.PassportModel;
 import ru.citeck.ecos.test.ApplicationContextHelper;
 
 public class InvariantsFilterTest {
@@ -91,7 +91,7 @@ public class InvariantsFilterTest {
         assertTrue(registeredInvariants == null);
     }
     
-    @Test
+   /* @Test
     public void testSearch() {
         
         // pass:passport - test search
@@ -119,6 +119,6 @@ public class InvariantsFilterTest {
         assertNull(foundInvariants.get(1).getClassScope());
         assertNull(foundInvariants.get(2).getClassScope());
         
-    }
+    }*/
     
 }

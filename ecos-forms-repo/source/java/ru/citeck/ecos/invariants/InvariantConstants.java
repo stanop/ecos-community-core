@@ -25,8 +25,8 @@ public interface InvariantConstants {
     public static final String LANGUAGE_CRITERIA = "criteria";
     public static final String LANGUAGE_EXPLICIT = "explicit";
     
-    public static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/idocs-repo/schema/invariants.xsd";
-    public static final String VIEWS_SCHEMA_LOCATION = "alfresco/module/idocs-repo/schema/views.xsd";
+    public static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/invariants.xsd";
+    public static final String VIEWS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/views.xsd";
     public static final String MODEL_NODE = "node";
     public static final String MODEL_VALUE = "value";
     public static final String MODEL_VIEW = "view";
