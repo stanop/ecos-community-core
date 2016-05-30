@@ -27,7 +27,6 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -140,7 +139,7 @@ public class NodeInfoFactoryImplTest {
 
     @Test
     public void testCreateNodeInfoByNodeRef() {
-        NodeRef contentRef = addTempScript(NodeInfoFactoryImplTest.class.getSimpleName() + ".js",
+        NodeRef contentRef = addTempScript(NodeInfoFactoryImplTest.class.getSimpleName() + "_" + System.currentTimeMillis() + ".js",
                 "document.properties.name = \"Changed\" + \"_\" + document.properties.name;\ndocument.save();");
 
         NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(contentRef);
