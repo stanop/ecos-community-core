@@ -41,15 +41,17 @@
 </#macro>
 
 <#macro renderViewContainer view id>
-	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form">
+	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form loading"
+			 data-bind="css: { loading: loading }">
+		<div class="loading-container">
+			<div class="loading-indicator"></div>
+			<div class="loading-message">${msg('message.loading.form')}</div>
+		</div>
 		
 		<!-- ko API: rootObjects -->
 		<div class="form-fields" data-bind="with: node().impl">
 			<!-- ko if: attributes().length != 0 -->
 			<@views.renderElement view />
-			<!-- /ko -->
-			<!-- ko ifnot: attributes.loaded -->
-			${msg('message.loading.form')}
 			<!-- /ko -->
 		</div>
 		<!-- /ko -->

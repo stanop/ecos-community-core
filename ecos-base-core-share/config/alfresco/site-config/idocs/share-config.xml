@@ -1,0 +1,23 @@
+<alfresco-config>
+
+	<config>
+		<forms>
+			<dependencies>
+				<css src="/citeck/components/form/form-custom.css" />
+				<css src="/yui/fonts/fonts.css" />
+				<css src="/yui/datatable/assets/skins/sam/datatable.css" />
+
+				<js src="/yui/yahoo-dom-event/yahoo-dom-event.js" />
+				<js src="/yui/element/element.js" />
+				<js src="/yui/cookie/cookie.js" />
+				<js src="/yui/datasource/datasource.js" />
+				<js src="/yui/datatable/datatable.js" />
+				<js src="/citeck/components/related-workflows/related-workflows-form-validation.js" />
+				<js src="/jquery/jquery-1.6.2-min.js" />
+				<js src="/lib/jquery.simulate.js" />
+
+			</dependencies>
+		</forms>
+	</config>
+
+</alfresco-config>
