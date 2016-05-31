@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://www.citeck.ru/ecos/views/1.0" xmlns:v="http://www.citeck.ru/ecos/views/1.0" xmlns:inv="http://www.citeck.ru/ecos/invariants/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- 
+  Generate classes with: 
+    xjc -no-header -p ru.citeck.ecos.invariants.xml alfresco/module/ecos-forms-repo/schema/invariants.xsd alfresco/module/ecos-forms-repo/schema/views.xsd
+   -->
+
+  <xs:import
+    namespace="http://www.citeck.ru/ecos/invariants/1.0"
+    schemaLocation="invariants.xsd" />
+
+  <xs:element name="views" type="v:viewRoot" />
+  
+  <xs:complexType name="viewRoot">
+    <xs:sequence>
+      <xs:element name="imports" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="import" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence/>
+                <xs:attribute name="uri" type="xs:string" use="required"/>
+                <xs:attribute name="prefix" type="xs:string" use="required"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:group ref="v:elements" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:group name="elements">
+    <xs:choice>
+      <xs:element name="view" type="v:view"/>
+      <xs:element name="views" type="v:views"/>
+      <xs:element name="field" type="v:field"/>
+      <xs:element name="fields" type="v:fields"/>
+      <xs:element name="region" type="v:region"/>
+      <xs:element name="regions" type="v:regions"/>
+    </xs:choice>
+  </xs:group>
+  
+  <xs:complexType name="param">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  
+  <xs:complexType name="element">
+    <xs:sequence>
+      <xs:element name="param" type="v:param" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="kind" type="xs:string" use="optional"/>
+    <xs:attribute name="template" type="xs:string" use="optional"/>
+  </xs:complexType>
+  
+  <xs:complexType name="view">
+    <xs:complexContent>
+      <xs:extension base="v:element">
+        <xs:sequence>
+          <xs:group ref="v:elements" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="class" type="xs:string" use="optional"/>
+        <xs:attribute name="mode" type="v:mode" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="field">
+    <xs:complexContent>
+      <xs:extension base="v:element">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="region" type="v:region"/>
+            <xs:element name="regions" type="v:regions"/>
+          </xs:choice>
+          <xs:element name="invariant" type="inv:invariant" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="prop" type="xs:string" use="optional"/>
+        <xs:attribute name="assoc" type="xs:string" use="optional"/>
+        <xs:attribute name="property" type="xs:string" use="optional"/>
+        <xs:attribute name="association" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="region">
+    <xs:complexContent>
+      <xs:extension base="v:element">
+        <xs:attribute name="name" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="views">
+    <xs:complexContent>
+      <xs:extension base="v:view">
+        <xs:attribute name="any" type="xs:boolean" use="optional" default="false"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="fields">
+    <xs:complexContent>
+      <xs:extension base="v:field">
+        <xs:attribute name="any" type="xs:boolean" use="optional" default="false"/>
+        <xs:attribute name="datatype" type="xs:string" use="optional"/>
+        <xs:attribute name="nodetype" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="regions">
+    <xs:complexContent>
+      <xs:extension base="v:region">
+        <xs:attribute name="any" type="xs:boolean" use="optional" default="false"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="mode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="create"/>
+      <xs:enumeration value="edit"/>
+      <xs:enumeration value="view"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
+
