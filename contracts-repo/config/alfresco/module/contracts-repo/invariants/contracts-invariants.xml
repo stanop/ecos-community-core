@@ -99,7 +99,7 @@
             <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="payments:paymentAmount">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value >= 0</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
@@ -113,7 +113,7 @@
             ]]></invariant>
         </property>
         <property name="payments:paymentVAT">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value >= 0</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="javascript">0</invariant>
         </property>
