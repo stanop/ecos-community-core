@@ -60,12 +60,9 @@ if (args['nodeRef']) {
 			var onlyChildren = extractNames(args["children"]),
 					onlyChildrenResult = [];
 
-			for (var i = 0; i < onlyChildren.length; i++) {
-				for (var c = 0; c < node.children.length; c++) {
-					if (node.children[c].typeShort == onlyChildren[i]); 
-						onlyChildrenResult.push(node.children[c]);
-						break;
-				}
+			for (var c = 0; c < node.children.length; c++) {
+				if (onlyChildren.toString().indexOf(node.children[c].typeShort) >= 0)
+					onlyChildrenResult.push(node.children[c]);
 			}
 
 			model.children = onlyChildrenResult;
