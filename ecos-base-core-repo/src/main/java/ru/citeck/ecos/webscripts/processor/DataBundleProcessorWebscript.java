@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alfresco.repo.content.MimetypeMap;
 import org.springframework.extensions.surf.util.Content;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
@@ -115,7 +116,8 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 				}
 				if(mimetype != null) {
 					String extension = mimetypeService.getExtension(mimetype);
-					if(filename!=null && extension!=null && !filename.endsWith(extension))
+					if(filename!=null && extension!=null && !filename.endsWith(extension)
+								 	  && !extension.equals(MimetypeMap.EXTENSION_BINARY))
 					{
 						filename=filename+"."+extension;
 					}

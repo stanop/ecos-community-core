@@ -10,6 +10,10 @@
     <property name="journals.project.version" value="1.0.0.0${module.release}"/>
     <property name="journals.project.dir" location="../${journals.project.name}" />
 
+    <property name="ecos-forms.project.name" value="ecos-forms-repo" />
+    <property name="ecos-forms.project.version" value="1.0.0.0${module.release}"/>
+    <property name="ecos-forms.project.dir" location="../${ecos-forms.project.name}" />
+
     <property name="override.project.name" value="1st-override-repo" />
     <property name="override.project.version" value="3.0.0.0${module.release}" />
     <property name="override.project.dir" location="../${override.project.name}" />
@@ -21,6 +25,7 @@
     <path id="project.classpath">
         <pathelement path="${ecos-base-core.project.dir}/build/lib/*" />
         <pathelement path="${journals.project.dir}/build/lib/*" />
+        <pathelement path="${ecos-forms.project.dir}/build/lib/*" />
         <pathelement path="${override.project.dir}/build/lib/*" />
         <pathelement path="${core.project.dir}/build/lib/*" />
     </path>
@@ -31,12 +36,15 @@
               value="${override.project.name}/${override.project.version}/${override.project.name}-${override.project.version}-${build.classifier}.amp"/>
     <property name="journals.project.amp"
               value="${journals.project.name}/${journals.project.version}/${journals.project.name}-${journals.project.version}-${build.classifier}.amp" />
+    <property name="ecos-forms.project.amp"
+              value="${ecos-forms.project.name}/${ecos-forms.project.version}/${ecos-forms.project.name}-${ecos-forms.project.version}-${build.classifier}.amp" />
     <property name="core.project.amp"
               value="${core.project.name}/${core.project.version}/${core.project.name}-${core.project.version}-${build.classifier}.amp" />
 
     <target name="package-dependencies">
         <copy file="${dist.amps.dir}/${ecos-base-core.project.amp}" tofile="${dist.deps.dir}/${ecos-base-core.project.amp}" />
         <copy file="${dist.amps.dir}/${journals.project.amp}" tofile="${dist.deps.dir}/${journals.project.amp}" />
+        <copy file="${dist.amps.dir}/${ecos-forms.project.amp}" tofile="${dist.deps.dir}/${ecos-forms.project.amp}" />
         <copy file="${dist.amps.dir}/${override.project.amp}" tofile="${dist.deps.dir}/${override.project.amp}" />
         <copy file="${dist.amps.dir}/${core.project.amp}" tofile="${dist.deps.dir}/${core.project.amp}" />
     </target>
@@ -44,6 +52,7 @@
     <target name="install-dependencies">
         <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${ecos-base-core.project.amp}" />
         <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${journals.project.amp}" />
+        <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${ecos-forms.project.amp}" />
         <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${override.project.amp}" />
         <install-amp war-file="${test.webapp.path}" amp-file="${dist.amps.dir}/${core.project.amp}" />
     </target>

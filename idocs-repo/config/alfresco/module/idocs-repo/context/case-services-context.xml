@@ -95,7 +95,7 @@
 	<bean id="subcaseNamingBehavior" parent="AutoNameBehaviour">
 		<property name="className" value="icase:subcase" />
 		<property name="order" value="101" />
-		<property name="nameTemplate" value="Кейс для ${node.assocs['icase:subcaseElement'][0].name}" />
+		<property name="nameTemplate" value="Кейс для #{'$'}{node.assocs['icase:subcaseElement'][0].name}" />
 	</bean>
 
 	<!-- ............ -->

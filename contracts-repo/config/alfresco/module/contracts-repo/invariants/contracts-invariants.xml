@@ -7,6 +7,7 @@
         <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
     </imports>
 
     <type name="contracts:agreement">
@@ -42,20 +43,21 @@
         </property>
         <association name="contracts:agreementCurrency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <!-- <invariant on="valid" language="javascript" description="Это поле должно содержать положительное число.">value < 0 ? true : false</invariant> -->
-            <!-- <invariant on="valid" language="javascript" description="Не верный формат">/^\d+([,\.]\d{1,3}|)$/.test(value)</invariant> -->
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="contracts:VAT">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">
-                new RegExp('\u005e[\u0030-\u0039]*\u0024', 'igm').test(value)
-            </invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
         </property>
+        <!--association name="contracts:agreementSubject">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association-->
     </type>
 
     <type name="payments:payment">
@@ -78,7 +80,7 @@
         <property name="payments:paymentAccount">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
-        <association name="payments:productsAndServices">
+        <association name="pas:containsOriginalProductsAndServices">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"]</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"]</invariant>
         </association>
@@ -94,14 +96,24 @@
                 }
             </invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="payments:paymentAmount">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value >= 0</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-            <invariant on="default" language="javascript">node.assocs["payments:productsAndServices"][0].properties["pas:pricePerUnit"]</invariant>
+            <invariant on="default" language="javascript"><![CDATA[
+                (function() {
+                    var sum = 0;
+                    var arr = node.assocs["pas:containsOriginalProductsAndServices"];
+                    arr.forEach(function(item) {
+                      sum += item.properties["pas:pricePerUnit"];
+                    });
+                    return sum;
+                })()
+            ]]></invariant>
         </property>
         <property name="payments:paymentVAT">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value >= 0</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="javascript">0</invariant>
         </property>
@@ -129,15 +141,16 @@
     <type name="payments:paymentDraft">
         <association name="payments:currency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="payments:typePayment">
             <invariant on="default" language="explicit">advance</invariant>
         </property>
         <property name="payments:paymentAmount">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">false == new RegExp('\u005e[\u0030-\u0039]*\u0024', 'igm').test(value) ? false : true</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="payments:paymentVAT">
-            <invariant on="valid" language="javascript" description="Это поле не должно содержать отрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
     </type>
 
@@ -175,6 +188,22 @@
             <invariant on="value" language="javascript">
                 node.assocs["contracts:closingDocumentAgreement"][0].assocs["contracts:agreementCurrency"][0]
             </invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
+        </association>
+        <association name="contracts:closingDocumentAgreement">
+            <invariant on="value" language="javascript">view.params.contract</invariant>
+            <invariant on="protected" language="javascript"><![CDATA[view.params.contract != null]]></invariant>
+        </association>
+        <association name="contracts:closingDocumentPayment">
+           <invariant on="mandatory" language="explicit">true</invariant>
+           <invariant on="value" language="javascript">view.params.invoice</invariant>
+           <invariant on="protected" language="javascript"><![CDATA[view.params.invoice != null]]></invariant>
+        </association>
+        <!-- <association name="contracts:closingDocumentSigner">
+           <invariant on="mandatory" language="javascript">node.assocs["contracts:closingDocumentPayment"] == false</invariant>
+        </association> -->
+        <association name="pas:containsProductsAndServices">
+            <invariant on="value" language="javascript">node.assocs['contracts:closingDocumentPayment'][0].assocs['pas:containsProductsAndServices']</invariant>
         </association>
     </type>
 
@@ -208,12 +237,13 @@
             <invariant on="value" language="javascript">
                 node.assocs["contracts:mainAgreement"][0].assocs["contracts:agreementCurrency"][0]
             </invariant>
+            <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="contracts:VAT">
-            <invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>

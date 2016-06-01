@@ -967,12 +967,16 @@
             allowedGroupType: ""
         },
 
-        // clear link and hidden input
         restoreByDefaults: function () {
             $(this.elements.link)
                 .html(this.msg("select-picker.select-person") + "<span class=\"twister\"></span>")
                 .removeClass("selected");
             $(this.field).val("");
+
+            this.elements.search.value = "";
+            this.loadRootNodes(this.widgets.tree, this);
+
+            this.closeDropDown();
         },
 
         onReady: function() {
@@ -1131,7 +1135,7 @@
                     .html(object.displayName + "<span class=\"twister\"></span>");
 
                 $(this.field).val(object.nodeRef);
-                this.toggleDropDown(this);
+                this.toggleDropDown();
 
                 // nodeSelectCallback
                 if (this.options.nodeSelectCallback) {
@@ -1145,13 +1149,18 @@
             }
         },
 
-        toggleDropDown: function(scope) {
-            scope.elements.link.classList.toggle("open");
-            scope.elements.dropdownList.classList.toggle("hidden"); 
+        toggleDropDown: function() {
+            this.elements.link.classList.toggle("open");
+            this.elements.dropdownList.classList.toggle("hidden"); 
+        },
+
+        closeDropDown: function() {
+            this.elements.link.classList.remove("open");
+            this.elements.dropdownList.classList.add("hidden"); 
         },
 
         onClickLink: function() {
-            this.toggleDropDown(this);
+            this.toggleDropDown();
         },
 
         buildTreeNode: function(p_oItem, p_oParent, p_expanded) {

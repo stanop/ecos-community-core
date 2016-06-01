@@ -244,28 +244,47 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	protected NodeRef getNotificationTemplate(String wfkey, String tkey)
 	{
 		String str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND @{5}:\"{6}\"";
-		String query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, wfkey, DmsModel.PROP_TASK_NAME, tkey });
+		String query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+												 DmsModel.PROP_NOTIFICATION_TYPE,
+												 this.notificationType,
+												 DmsModel.PROP_WORKFLOW_NAME,
+												 wfkey,
+												 DmsModel.PROP_TASK_NAME,
+												 tkey);
 
 		logger.debug("query " + query);
 		NodeRef templateNode = findNode(query);
 		if (templateNode != null)
 			return templateNode;
 		str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND @{4}:\"{5}\"";
-		query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, DmsModel.PROP_TASK_NAME, tkey });
+		query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+										  DmsModel.PROP_NOTIFICATION_TYPE,
+										  this.notificationType,
+										  DmsModel.PROP_WORKFLOW_NAME,
+										  DmsModel.PROP_TASK_NAME, tkey);
 
 		logger.debug("query " + query);
 		templateNode = findNode(query);
 		if (templateNode != null)
 			return templateNode;
 		str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ISNULL:\"{5}\"";
-		query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, wfkey, DmsModel.PROP_TASK_NAME });
+		query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+										  DmsModel.PROP_NOTIFICATION_TYPE,
+										  this.notificationType,
+										  DmsModel.PROP_WORKFLOW_NAME,
+										  wfkey,
+										  DmsModel.PROP_TASK_NAME);
 
 		logger.debug("query " + query);
 		templateNode = findNode(query);
 		if (templateNode != null)
 			return templateNode;
 		str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND ISNULL:\"{4}\"";
-		query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, DmsModel.PROP_TASK_NAME });
+		query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+										  DmsModel.PROP_NOTIFICATION_TYPE,
+										  this.notificationType,
+										  DmsModel.PROP_WORKFLOW_NAME,
+										  DmsModel.PROP_TASK_NAME);
 
 		logger.debug("query " + query);
 		templateNode = findNode(query);
@@ -284,28 +303,53 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	protected NodeRef getNotificationTemplate(String wfkey, String tkey, QName docType)
 	{
 		String str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND @{5}:\"{6}\" AND @{7}:\"{8}\"";
-		String query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, wfkey, DmsModel.PROP_TASK_NAME, tkey, DmsModel.PROP_DOC_TYPE, docType });
+		String query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+												 DmsModel.PROP_NOTIFICATION_TYPE,
+												 this.notificationType,
+												 DmsModel.PROP_WORKFLOW_NAME,
+												 wfkey,
+												 DmsModel.PROP_TASK_NAME,
+												 tkey,
+												 DmsModel.PROP_DOC_TYPE, docType);
 
 		logger.debug("query " + query);
 		NodeRef templateNode = findNode(query);
 		if (templateNode != null)
 			return templateNode;
 		str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND @{4}:\"{5}\" AND @{6}:\"{7}\"";
-		query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, DmsModel.PROP_TASK_NAME, tkey, DmsModel.PROP_DOC_TYPE, docType });
+		query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+										  DmsModel.PROP_NOTIFICATION_TYPE,
+										  this.notificationType,
+										  DmsModel.PROP_WORKFLOW_NAME,
+										  DmsModel.PROP_TASK_NAME,
+										  tkey,
+										  DmsModel.PROP_DOC_TYPE,
+										  docType);
 
 		logger.debug("query " + query);
 		templateNode = findNode(query);
 		if (templateNode != null)
 			return templateNode;
 		str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ISNULL:\"{5}\" AND @{6}:\"{7}\"";
-		query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, wfkey, DmsModel.PROP_TASK_NAME, DmsModel.PROP_DOC_TYPE, docType });
+		query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+										  DmsModel.PROP_NOTIFICATION_TYPE,
+										  this.notificationType,
+										  DmsModel.PROP_WORKFLOW_NAME,
+										  wfkey,
+										  DmsModel.PROP_TASK_NAME,
+										  DmsModel.PROP_DOC_TYPE, docType);
 
 		logger.debug("query " + query);
 		templateNode = findNode(query);
 		if (templateNode != null)
 			return templateNode;
 		str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND ISNULL:\"{4}\" AND @{5}:\"{6}\"";
-		query = MessageFormat.format(str, new Object[] { DmsModel.TYPE_NOTIFICATION_TEMPLATE, DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType, DmsModel.PROP_WORKFLOW_NAME, DmsModel.PROP_TASK_NAME, DmsModel.PROP_DOC_TYPE, docType });
+		query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
+										  DmsModel.PROP_NOTIFICATION_TYPE,
+										  this.notificationType,
+										  DmsModel.PROP_WORKFLOW_NAME,
+										  DmsModel.PROP_TASK_NAME,
+										  DmsModel.PROP_DOC_TYPE, docType);
 
 		logger.debug("query " + query);
 		templateNode = findNode(query);

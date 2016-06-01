@@ -278,6 +278,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         if (pagination) {
             if (pagination.maxItems) query.maxItems = pagination.maxItems;
             if (pagination.skipCount) query.skipCount = pagination.skipCount;
+            if (pagination.sortBy) {
+                if (_.isArray(pagination.sortBy)) query.sortBy = pagination.sortBy;
+                if (_.isObject(pagination.sortBy)) query.sortBy = [pagination.sortBy];
+            }
         }
 
         try {
@@ -1583,6 +1587,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .property('parent', Runtime)
         .property('invariantSet', ExplicitInvariantSet)
         .constant('rootObjects', rootObjects)
+
+        .computed('loading', function() {
+            if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
+                var attributes = this.resolve("node.impl").attributes();
+
+                for (var a = 0; a < attributes.length; a++) {
+                    _.each(["title", "info", "value", "options"], function(attr) {
+                        if (!attributes[a][attr].loaded()) return true;
+                    });
+
+                    var v = attributes[a].value();
+                    if (v instanceof Node && !v.impl.loaded()) return true;
+                }
+
+                return false;
+            }
+
+            return true;
+        })
 
         .method('submit', function() {
             if(this.node().impl().valid()) {

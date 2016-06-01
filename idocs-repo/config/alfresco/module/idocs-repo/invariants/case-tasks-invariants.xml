@@ -61,6 +61,10 @@
                 <item>Collaborator</item>
             </invariant>
         </property>
+        <property name="wfcf:partialConfirmsCount">
+            <invariant on="relevant" language="javascript">node.properties["wfcf:terminateOnPartialConfirms"]</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["wfcf:terminateOnPartialConfirms"]</invariant>
+        </property>
     </type>
 
     <type name="icaseTask:performTask">
