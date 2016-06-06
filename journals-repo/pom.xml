@@ -33,6 +33,7 @@
              for embedded run, defaults to the 'local' environment. See SDK Parent POM for more info.
         <env>local</env>
         -->
+        <war.directory.4tests>${project.build.directory}/alfresco-${alfresco.version}-war</war.directory.4tests>
     </properties>
 
     <dependencies>
@@ -116,7 +117,7 @@
                                     <type>war</type>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${project.build.directory}/alfresco-${alfresco.version}-war</outputDirectory>
+                            <outputDirectory>${war.directory.4tests}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -139,7 +140,7 @@
                 <configuration>
                     <!--<ampLocation>${project.build.directory}/depend.amp</ampLocation>-->
                     <ampLocation>${project.basedir}/../ecos-base-core-repo/target/ecos-base-core-repo-${ecos-base-core.version}-${ecos.build.classifier}.amp</ampLocation>
-                    <warLocation>${project.build.directory}/alfresco-${alfresco.version}-war</warLocation>
+                    <warLocation>${war.directory.4tests}</warLocation>
                 </configuration>
             </plugin>
 
@@ -210,7 +211,7 @@
                 <version>2.19.1</version>
                 <configuration>
                     <additionalClasspathElements>
-                        <additionalClasspathElement>${project.build.directory}/alfresco-${alfresco.version}-war/WEB-INF/classes</additionalClasspathElement>
+                        <additionalClasspathElement>${war.directory.4tests}/WEB-INF/classes</additionalClasspathElement>
                     </additionalClasspathElements>
                 </configuration>
             </plugin>
