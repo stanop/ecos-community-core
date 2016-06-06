@@ -6,7 +6,7 @@
     <name>ecos-forms-share</name>
     <description>ecos-forms-share</description>
     <packaging>amp</packaging>
-    <version>${ecos-journals.version}</version>
+    <version>${ecos-forms.version}</version>
 
     <parent>
         <groupId>ru.citeck.ecos</groupId>

@@ -6,7 +6,7 @@
     <name>ecos-forms-repo</name>
     <description>ecos-forms-repo</description>
     <packaging>amp</packaging>
-    <version>${ecos-journals.version}</version>
+    <version>${ecos-forms.version}</version>
 
     <parent>
         <groupId>ru.citeck.ecos</groupId>
