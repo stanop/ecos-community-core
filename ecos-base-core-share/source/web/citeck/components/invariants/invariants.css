@@ -37,12 +37,17 @@
 }
 
 .invariants-form .loading-container {
+  display: none;
   position: absolute;
   top: 40px;
   left: 25%;
   width: 270px;
   height: 270px;
   text-align: center;
+}
+
+.invariants-form.loading .loading-container {
+  display: block;
 }
 
 .static .loading-container {
