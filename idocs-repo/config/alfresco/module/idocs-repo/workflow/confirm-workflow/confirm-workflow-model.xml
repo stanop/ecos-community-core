@@ -17,6 +17,7 @@
 		<constraint name="wfcf:confirmOutcomeOptions" type="LIST">
 			<parameter name="allowedValues">
 				<list>
+					<value>Approve</value> <!-- Added for compatibility with old tasks -->
 					<value>Confirmed</value>
 					<value>ConfirmedWithComment</value>
 					<value>Reject</value>
@@ -245,6 +246,13 @@
 				</property>
 				<property name="wfcf:confirmOutcomeI18nPrefix">
 					<type>d:text</type>
+				</property>
+				<property name="wfcf:terminateOnPartialConfirms">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+				<property name="wfcf:partialConfirmsCount">
+					<type>d:int</type>
 				</property>
 			</properties>
 		</aspect>

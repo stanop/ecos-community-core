@@ -97,6 +97,8 @@
                         <entry key="wfcf:confirmersPermission" value="wfcf:confirmersPermission"/>
                         <entry key="wfcf:terminateOnReject" value="wfcf:terminateOnReject"/>
                         <entry key="wfcf:confirmOutcomeI18nPrefix" value="wfcf:confirmOutcomeI18nPrefix"/>
+                        <entry key="wfcf:terminateOnPartialConfirms" value="wfcf:terminateOnPartialConfirms"/>
+                        <entry key="wfcf:partialConfirmsCount" value="wfcf:partialConfirmsCount"/>
                     </map>
                 </entry>
             </map>

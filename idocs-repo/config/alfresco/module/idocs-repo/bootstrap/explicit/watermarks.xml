@@ -24,6 +24,13 @@
 						<cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit/watermarks/draft.pdf|mimetype=application/pdf|encoding=UTF-8</cm:content>
 					</view:properties>
 				</cm:content>
+				<cm:content view:childName="cm:signature.pdf">
+					<view:properties>
+						<sys:node-uuid>idocs-watermark-signature</sys:node-uuid>
+						<cm:name>signature.pdf</cm:name>
+						<cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit/watermarks/signature.pdf|mimetype=application/pdf|encoding=UTF-8</cm:content>
+					</view:properties>
+				</cm:content>
 			</cm:contains>
 		</view:associations>
 	</cm:folder>

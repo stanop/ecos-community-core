@@ -63,12 +63,12 @@
 
 <table width="700px" border="1">
 	<tr border="1">
-		<td align="center" width="30px">№</td>
-		<td align="center" width="300px">Наименование работ, услуг</td>
-		<td align="center" width="40px">Кол-во</td>
-		<td align="center" width="30px">Ед.</td>
-		<td align="center" width="150px">Цена</td>
-		<td width="150px" align="center">Сумма</td>
+		<td align="center" width="10px">№</td>
+		<td align="center" width="400px">Наименование работ, услуг</td>
+		<td align="center" width="20px">Кол-во</td>
+		<td align="center" width="10px">Ед.</td>
+		<td align="center" width="125px">Цена</td>
+		<td width="125px" align="center">Сумма</td>
 	</tr>
 	<#assign count = 0/>
 	<#assign totalAmount = 0/>
@@ -90,12 +90,12 @@
 </table>
 <table width="700px" border="0">
 			<tr>
-				<td width="30px"></td>
-				<td width="300px"></td>
-				<td width="40px"></td>
-				<td width="30px"></td>
-				<td width="150px" align="right">Итого:</td>
-				<td width="150px" align="right">${totalAmount}</td>
+				<td width="10px"></td>
+				<td width="400px"></td>
+				<td width="20px"></td>
+				<td width="10px"></td>
+				<td width="125px" align="right">Итого:</td>
+				<td width="125px" align="right">${totalAmount}</td>
 			</tr>
 			<tr>
 				<td></td>
@@ -118,9 +118,9 @@
     <tr>
         <td>
 			<#if document.properties["contracts:closingDocumentAmountInWords"]??>${document.properties["contracts:closingDocumentAmountInWords"]}</#if>
-			<#if currency!="руб.">
+			<#-- <#if currency!="руб."> -->
                 (НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
-			</#if>
+			<#-- </#if> -->
         </td>
     </tr>
 	<tr>

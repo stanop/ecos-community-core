@@ -239,7 +239,7 @@
                     <property name="stampProcessors">
                         <list>
                             <bean parent="dbp.pdf.barcode">
-                                <property name="barcodeName" value="Barcode.39" />
+                                <property name="barcodeName" value="Barcode.code39" />
                                 <property name="barcodeInput" value="${args.type}" />
                                 <property name="margins" value="40,40,40,40" />
                             </bean>
@@ -248,6 +248,31 @@
                     <property name="appendStringFrom" value="${args.idfrom}" />
                     <property name="appendStringTo" value="${args.idto}" />
                     <property name="leftMargin" value="40" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.print.signature.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <bean parent="dbp.content">
+                    <property name="nodeRef" value="${args.nodeRef}" />
+                </bean>
+                <bean parent="dbp.transform.pdf" />
+                <bean parent="dbp.pdf.signature.under">
+                    <property name="transformCalculator" ref="dbp.transform.upper.right" />
+                    <property name="stampProcessors">
+                        <list>
+                            <bean parent="dbp.content">
+                                <property name="nodeRef" value="workspace://SpacesStore/idocs-watermark-signature" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="findString" value="_________" />
+                    <property name="positionFindString" value="end" />
+                    <property name="shiftRight" value="${args.shiftRight}" />
+                    <property name="shiftUp" value="${args.shiftUp}" />
                 </bean>
             </list>
         </property>

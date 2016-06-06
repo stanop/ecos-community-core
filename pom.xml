@@ -44,6 +44,7 @@
 
         <ecos-base-core.version>2.0.0.0-SNAPSHOT</ecos-base-core.version>
         <ecos-journals.version>2.0.0.0-SNAPSHOT</ecos-journals.version>
+        <ecos-forms.version>2.0.0.0-SNAPSHOT</ecos-forms.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yy.MM.dd.HH.mm</maven.build.timestamp.format>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
@@ -245,6 +246,8 @@
     <module>ecos-base-core-share</module>
     <module>journals-repo</module>
     <module>journals-share</module>
+    <module>ecos-forms-repo</module>
+    <module>ecos-forms-share</module>
     <module>repo</module>
     <module>solr-config</module>
     <module>share</module>

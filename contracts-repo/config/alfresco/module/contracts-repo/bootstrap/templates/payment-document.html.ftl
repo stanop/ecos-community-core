@@ -127,12 +127,12 @@
 
 <table width="700px" border="1">
     <tr>
-        <td align="center" width="30px">№</td>
-        <td align="center" width="300px">Наименование товара</td>
-        <td align="center" width="30px">Ед.</td>
-        <td align="center" width="40px">Кол-во </td>
-        <td align="center" width="150px">Цена</td>
-        <td align="center" width="150px">Сумма</td>
+        <td align="center" width="10px">№</td>
+        <td align="center" width="400px">Наименование товара</td>
+        <td align="center" width="10px">Ед.</td>
+        <td align="center" width="20px">Кол-во </td>
+        <td align="center" width="125px">Цена</td>
+        <td align="center" width="125px">Сумма</td>
     </tr>
     <#assign count = 0/>
     <#assign totalAmount = 0/>
@@ -183,8 +183,7 @@
     <tr>
         <td>
             <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
-            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd' && VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
-            <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'&& VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
             </#if>
         </td>
     </tr>

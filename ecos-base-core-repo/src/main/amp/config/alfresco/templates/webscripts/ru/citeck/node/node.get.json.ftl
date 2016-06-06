@@ -13,6 +13,7 @@
 		</#list>
 	}
 	</#if>
+
 	<#if (assocs?size > 0) >
 		<#if (props?size > 0) >,</#if>
 	"assocs": {
@@ -28,6 +29,7 @@
 		</#list>
 	}
 	</#if>
+
 	<#if (childAssocs?size > 0) >
 		<#if (props?size > 0) || (assocs?size > 0) >,</#if>
 	"childAssocs": {
@@ -44,14 +46,27 @@
 	}
 	</#if>
 
+	<#if (children?size > 0) >
+		<#if (props?size > 0) || (assocs?size > 0) || (childAssocs?size > 0) >,</#if>
+
+		"children": {
+			<#list children as child>
+				"${child.typeShort}": {
+					"name": "${child.name}",
+					"nodeRef": "${child.nodeRef}"
+				}<#if child_has_next>,</#if>
+			</#list>
+		}
+	</#if>
+
 	<#if siteShortName?? >
-	<#if (props?size > 0) || (assocs?size > 0) || (childAssocs?size > 0) >,</#if>
-	"siteShortName": "${siteShortName}"
+		<#if (props?size > 0) || (assocs?size > 0) || (childAssocs?size > 0) || (children?size > 0)>,</#if>
+		"siteShortName": "${siteShortName}"
 	</#if>
 
 	<#if (args.getParent??) && (node??) && (node.parent??) >
-	<#if (props?size > 0) || (assocs?size > 0) || (childAssocs?size > 0) || siteShortName?? >,</#if>
-	"parent": "${node.parent.nodeRef}"
+		<#if (props?size > 0) || (assocs?size > 0) || (childAssocs?size > 0) || (children?size > 0) || siteShortName?? >,</#if>
+		"parent": "${node.parent.nodeRef}"
 	</#if>
 }
 </#escape>

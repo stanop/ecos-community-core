@@ -968,9 +968,16 @@ YAHOO.Bubbling.fire("registerAction", {
             var actionId = element.className;
             var props = asset.actionParams[actionId].actionProperties;
 			var actionType = props.actionType;
+
+			// hardcode for lifecycle-actions
+            var sourceContext = props.context;
+            if (sourceContext === "service-context") {
+                sourceContext = Alfresco.constants.URL_SERVICECONTEXT;
+            } else if (sourceContext != "") sourceContext = "";
+
             if (actionType === "serverAction") {
                 Alfresco.util.Ajax.jsonPost({
-                    url: Alfresco.constants.PROXY_URI + props.actionURL,
+                    url: (sourceContext === "" ? Alfresco.constants.PROXY_URI : sourceContext) + props.actionURL,
                     successCallback: {
                         scope: this,
                         fn: function () {
@@ -993,7 +1000,8 @@ YAHOO.Bubbling.fire("registerAction", {
                     }
                 });
             } else if (actionType === "redirect") {
-                window.open(Alfresco.constants.URL_PAGECONTEXT + props.actionURL, "_self");
+                var context = (sourceContext === "" ? Alfresco.constants.URL_PAGECONTEXT : sourceContext);
+                window.open(context + props.actionURL, "_self");
             }
         }
     });
