@@ -1307,7 +1307,6 @@
 
 .selected-filter-criteria-container table.selected-criteria-list td.value-col {
   width: 35%;
-  position: relative;
 }
 
 .selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate,
