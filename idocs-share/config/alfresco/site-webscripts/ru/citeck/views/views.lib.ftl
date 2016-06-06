@@ -41,31 +41,32 @@
 </#macro>
 
 <#macro renderViewContainer view id>
-	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form">
-		
-		<!-- ko API: rootObjects -->
-		<div class="form-fields" data-bind="with: node().impl">
-			<!-- ko if: attributes().length != 0 -->
-			<@views.renderElement view />
-			<!-- /ko -->
-			<!-- ko ifnot: attributes.loaded -->
-			${msg('message.loading.form')}
-			<!-- /ko -->
+	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form loading" 
+			 data-bind="css: { loading: loading }">
+		<div class="loading-container">
+			<div class="loading-indicator"></div>
+			<div class="loading-message">${msg('message.loading.form')}</div>
 		</div>
-		<!-- /ko -->
-		
-		<#if view.mode != 'view'>
-		<div class="form-buttons" data-bind="with: node().impl">
-			<input id="${id}-form-submit" type="submit" 
-					value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>" 
-					data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 
-			<#-- TODO support create and continue -->
-			<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
-			<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
-		</div>
-		</#if>
+		<!-- ko API: rootObjects -->
+			<div class="form-fields" data-bind="with: node().impl">
+				<!-- ko if: attributes().length != 0 -->
+					<@views.renderElement view />
+				<!-- /ko -->
+			</div>
+		<!-- /ko -->
 	
+		<#if view.mode != 'view'>
+			<div class="form-buttons" data-bind="with: node().impl">
+				<input id="${id}-form-submit" type="submit" 
+						value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>" 
+						data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+
+				<#-- TODO support create and continue -->
+				<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
+				<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
+			</div>
+		</#if>
 	</div>
 </#macro>
 
