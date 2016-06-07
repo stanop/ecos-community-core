@@ -21,7 +21,7 @@
     <parent>
         <groupId>ru.citeck.ecos</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.1.a</version>
+        <version>3.1.a-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -51,21 +51,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <version>${ecos-base-core.version}</version>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-repo</artifactId>
-            <version>${ecos-journals.version}</version>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <version>${ecos-forms.version}</version>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>

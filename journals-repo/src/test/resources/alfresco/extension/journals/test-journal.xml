@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+    </imports>
+
+    <journal id="dl-dataListItem-test">
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="type">dl:dataListItem</option>
+        <headers>
+            <header key="cm:name" default="true" />
+            <header key="cm:created" default="true" />
+            <header key="cm:creator" default="true" />
+            <header key="cm:modified" default="true" />
+            <header key="cm:modifier" default="true" />
+            <header key="cm:accessed" default="true" />
+        </headers>
+    </journal>
+
+</journals>

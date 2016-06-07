@@ -132,6 +132,36 @@ public class Journal {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Journal journal = (Journal) o;
+
+        if (option != null ? !option.equals(journal.option) : journal.option != null) return false;
+        if (headers != null ? !headers.equals(journal.headers) : journal.headers != null) return false;
+        return id != null ? id.equals(journal.id) : journal.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = option != null ? option.hashCode() : 0;
+        result = 31 * result + (headers != null ? headers.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Journal{" +
+                "option=" + option +
+                ", headers=" + headers +
+                ", id='" + id + '\'' +
+                '}';
+    }
+
     /**
      * <p>Java class for anonymous complex type.
      * 
@@ -189,6 +219,28 @@ public class Journal {
             return this.header;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Headers headers = (Headers) o;
+
+            return header != null ? header.equals(headers.header) : headers.header == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return header != null ? header.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Headers{" +
+                    "header=" + header +
+                    '}';
+        }
     }
 
 }

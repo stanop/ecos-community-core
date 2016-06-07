@@ -38,7 +38,7 @@ import ru.citeck.ecos.utils.XMLUtils;
 
 class JournalServiceImpl implements JournalService {
 
-    private static final String SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
+    protected static final String SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
     
     private Map<String, JournalType> journalTypes = new TreeMap<>();
     
@@ -55,7 +55,7 @@ class JournalServiceImpl implements JournalService {
         }
     }
 
-    private Journals parseXML(InputStream inputStream) {
+    protected Journals parseXML(InputStream inputStream) {
         try {
             Unmarshaller jaxbUnmarshaller = XMLUtils.createUnmarshaller(Journals.class, 
                     SCHEMA_LOCATION);
