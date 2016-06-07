@@ -247,4 +247,45 @@ public class Header {
         this.groupable = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Header header = (Header) o;
+
+        if (option != null ? !option.equals(header.option) : header.option != null) return false;
+        if (key != null ? !key.equals(header.key) : header.key != null) return false;
+        if (_default != null ? !_default.equals(header._default) : header._default != null) return false;
+        if (visible != null ? !visible.equals(header.visible) : header.visible != null) return false;
+        if (searchable != null ? !searchable.equals(header.searchable) : header.searchable != null) return false;
+        if (sortable != null ? !sortable.equals(header.sortable) : header.sortable != null) return false;
+        return groupable != null ? groupable.equals(header.groupable) : header.groupable == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = option != null ? option.hashCode() : 0;
+        result = 31 * result + (key != null ? key.hashCode() : 0);
+        result = 31 * result + (_default != null ? _default.hashCode() : 0);
+        result = 31 * result + (visible != null ? visible.hashCode() : 0);
+        result = 31 * result + (searchable != null ? searchable.hashCode() : 0);
+        result = 31 * result + (sortable != null ? sortable.hashCode() : 0);
+        result = 31 * result + (groupable != null ? groupable.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Header{" +
+                "option=" + option +
+                ", key='" + key + '\'' +
+                ", _default=" + _default +
+                ", visible=" + visible +
+                ", searchable=" + searchable +
+                ", sortable=" + sortable +
+                ", groupable=" + groupable +
+                '}';
+    }
 }

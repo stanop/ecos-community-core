@@ -69,7 +69,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <version>${ecos-base-core.version}</version>
             <classifier>${ecos.build.classifier}</classifier>
         </dependency>
     </dependencies>

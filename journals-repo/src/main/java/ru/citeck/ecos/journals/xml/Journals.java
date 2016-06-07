@@ -115,6 +115,32 @@ public class Journals {
         return this.journal;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Journals journals = (Journals) o;
+
+        if (imports != null ? !imports.equals(journals.imports) : journals.imports != null) return false;
+        return journal != null ? journal.equals(journals.journal) : journals.journal == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = imports != null ? imports.hashCode() : 0;
+        result = 31 * result + (journal != null ? journal.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Journals{" +
+                "imports=" + imports +
+                ", journal=" + journal +
+                '}';
+    }
 
     /**
      * <p>Java class for anonymous complex type.
@@ -182,6 +208,28 @@ public class Journals {
             return this._import;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Imports imports = (Imports) o;
+
+            return _import != null ? _import.equals(imports._import) : imports._import == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return _import != null ? _import.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Imports{" +
+                    "_import=" + _import +
+                    '}';
+        }
 
         /**
          * <p>Java class for anonymous complex type.
@@ -258,6 +306,32 @@ public class Journals {
                 this.prefix = value;
             }
 
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                Import anImport = (Import) o;
+
+                if (uri != null ? !uri.equals(anImport.uri) : anImport.uri != null) return false;
+                return prefix != null ? prefix.equals(anImport.prefix) : anImport.prefix == null;
+
+            }
+
+            @Override
+            public int hashCode() {
+                int result = uri != null ? uri.hashCode() : 0;
+                result = 31 * result + (prefix != null ? prefix.hashCode() : 0);
+                return result;
+            }
+
+            @Override
+            public String toString() {
+                return "Import{" +
+                        "uri='" + uri + '\'' +
+                        ", prefix='" + prefix + '\'' +
+                        '}';
+            }
         }
 
     }
