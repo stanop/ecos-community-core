@@ -150,6 +150,7 @@
         <property name="templateService" ref="templateService"/>
         <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>
+        <property name="order" value="${behavior.order.title}"/>
     </bean>
 
     <bean id="FieldAutoFillBehaviour" class="ru.citeck.ecos.behavior.common.FieldAutoFillBehaviour"

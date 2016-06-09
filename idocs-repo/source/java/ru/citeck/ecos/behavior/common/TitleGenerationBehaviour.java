@@ -188,4 +188,7 @@ public class TitleGenerationBehaviour implements
     public void setDescriptionMLTemplate(Map<Locale, String> descriptionTemplate) {
         this.descriptionMLTemplate = descriptionTemplate;
     }
+    public void setOrder(int order) {
+        this.order = order;
+    }
 }
