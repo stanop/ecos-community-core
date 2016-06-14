@@ -12,11 +12,11 @@
 -->
 <Context>
     <Resources className="org.apache.naming.resources.VirtualDirContext"
-               extraResourcePaths="/=${project.parent.basedir}/ecos-base-core-mvn-repo-amp/target/amp/web,/=${project.parent.basedir}/journals-mvn-repo-amp/target/amp/web"/>
+               extraResourcePaths="/=${project.parent.basedir}/ecos-base-core-repo/target/amp/web,/=${project.parent.basedir}/journals-repo/target/amp/web,/=${project.parent.basedir}/ecos-forms-repo/target/amp/web"/>
     <!-- IMPORTANT! The extraResourcePaths string need to be on one continues line, so if we add another Repo AMP,
                     it would look something like this:
     <Resources className="org.apache.naming.resources.VirtualDirContext"
-               extraResourcePaths="/=${project.parent.basedir}/ecos-base-core-mvn-repo-amp/target/amp/web,/=${project.parent.basedir}/component-a-repo/target/amp/web" />
+               extraResourcePaths="/=${project.parent.basedir}/ecos-base-core-repo/target/amp/web,/=${project.parent.basedir}/component-a-repo/target/amp/web" />
     -->
 
     <!-- Configure where the Alfresco (alfresco.war) web application can load classes, test classes, and config files -->
@@ -29,12 +29,16 @@
     -->
     <Loader className="org.apache.catalina.loader.VirtualWebappLoader"
             searchVirtualFirst="true"
-            virtualClasspath="${project.parent.basedir}/ecos-base-core-mvn-repo-amp/target/classes;
-            ${project.parent.basedir}/ecos-base-core-mvn-repo-amp/target/amp/config;
-            ${project.parent.basedir}/ecos-base-core-mvn-repo-amp/target/test-classes;
-            ${project.parent.basedir}/journals-mvn-repo-amp/target/classes;
-            ${project.parent.basedir}/journals-mvn-repo-amp/target/amp/config;
-            ${project.parent.basedir}/journals-mvn-repo-amp/target/test-classes"/>
+            virtualClasspath="${project.parent.basedir}/ecos-base-core-repo/target/classes;
+            ${project.parent.basedir}/ecos-base-core-repo/target/amp/config;
+            ${project.parent.basedir}/ecos-base-core-repo/target/test-classes;
+            ${project.parent.basedir}/journals-repo/target/classes;
+            ${project.parent.basedir}/journals-repo/target/amp/config;
+            ${project.parent.basedir}/journals-repo/target/test-classes;
+            ${project.parent.basedir}/ecos-forms-repo/target/classes;
+            ${project.parent.basedir}/ecos-forms-repo/target/amp/config;
+            ${project.parent.basedir}/ecos-forms-repo/target/test-classes"
+    />
 
     <!-- Load from all directories, not just when the META-INF directory is found in exploded JAR -->
     <JarScanner scanAllDirectories="true"/>

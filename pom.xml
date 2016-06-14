@@ -72,6 +72,7 @@
 
         <!-- The Alfresco Share web application is accessible via this URL -->
         <share.client.url>http://localhost:8080/share</share.client.url>
+        <dependency.surf.version>6.3</dependency.surf.version>
     </properties>
 
     <distributionManagement>
