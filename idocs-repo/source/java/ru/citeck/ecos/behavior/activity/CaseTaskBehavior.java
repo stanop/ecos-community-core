@@ -61,10 +61,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
                 new ChainingJavaBehaviour(this, "onCaseActivityReset", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
 
-        if(attributesMappingByWorkflow == null) {
+        if (attributesMappingByWorkflow == null) {
             attributesMappingByWorkflow = new HashMap<String, Map<String, String>>();
         }
-        if(workflowTransmittedVariables == null) {
+        if (workflowTransmittedVariables == null) {
             workflowTransmittedVariables = new HashMap<String, List<String>>();
         }
     }
@@ -74,7 +74,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
 
-        if(!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
+        if (!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
             throw new AlfrescoRuntimeException(String.format("Task start failed. Attributes mapping is " +
                                                              "not registered for workflow %s.", workflowDefinitionName));
         }
@@ -100,17 +100,11 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
         Map<QName, Serializable> workflowProperties = new HashMap<QName, Serializable>();
 
-        String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
-        Date workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
-        Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
-
-        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
-        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DUE_DATE, workflowDueDate);
-        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_PRIORITY, workflowPriority);
+        setWorkflowPropertiesFromITask(workflowProperties, taskRef);
 
         Map<String, String> attributesMapping = attributesMappingByWorkflow.get(workflowDefinitionName);
 
-        for(Map.Entry<String, String> entry : attributesMapping.entrySet()) {
+        for (Map.Entry<String, String> entry : attributesMapping.entrySet()) {
             QName key = QName.createQName(entry.getKey(), namespaceService);
             QName value = QName.createQName(entry.getValue(), namespaceService);
             workflowProperties.put(value, getAttribute(taskRef, key, value));
@@ -118,13 +112,13 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
         //transmit variables from previous process
         List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
-        if(transmittedParameters != null && transmittedParameters.size() > 0) {
+        if (transmittedParameters != null && transmittedParameters.size() > 0) {
             Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-            if(variables != null) {
+            if (variables != null) {
                 Object processVariablesObj = variables.get("process");
-                if(processVariablesObj != null && processVariablesObj instanceof Map) {
-                    Map<String, Serializable> processVariables = (Map)processVariablesObj;
-                    for(String parameter : transmittedParameters) {
+                if (processVariablesObj != null && processVariablesObj instanceof Map) {
+                    Map<String, Serializable> processVariables = (Map) processVariablesObj;
+                    for (String parameter : transmittedParameters) {
                         workflowProperties.put(QName.createQName(parameter), processVariables.get(parameter));
                     }
                 }
@@ -134,39 +128,73 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         return workflowProperties;
     }
 
+    private void  setWorkflowPropertiesFromITask(Map<QName, Serializable> workflowProperties, NodeRef taskRef) {
+        // get task properties
+        String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
+        Date workflowDueDate = getWorkflowDueDate(taskRef);
+        Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
+
+        // set properties from task
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DUE_DATE, workflowDueDate);
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_PRIORITY, workflowPriority);
+    }
+
+    private Date getWorkflowDueDate(NodeRef taskRef) {
+
+        Date workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
+
+        if (workflowDueDate == null && nodeService.hasAspect(taskRef, ActivityModel.ASPECT_SET_PLANNED_END_DATE)) {
+            Date startDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_ACTUAL_START_DATE);
+            if (startDate != null) {
+                Integer numberDaysToDueDate = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_DAYS_NUMBER_TO_PLANNED_END_DATE);
+                if (numberDaysToDueDate != null && numberDaysToDueDate > 0) {
+                    // numberDaysToDueDate * 24 h * 60 min * 60 s * 1000 millis
+                    long newTime = numberDaysToDueDate * 24 * 60 * 60 * 1000;
+                    workflowDueDate = new Date(startDate.getTime() + newTime);
+                    // set planned end date for icaseTask:task
+                    nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
+                }
+            }
+        }
+        return workflowDueDate;
+    }
+
+
+
     /**
      * @param taskRef reference to task node
-     * @param source task attribute QName to get value
-     * @param target target attribute QName which will be set from source
+     * @param source  task attribute QName to get value
+     * @param target  target attribute QName which will be set from source
      * @return Serializable value of source attribute or null if value is not defined
      * @throws AlfrescoRuntimeException when source or target QName is not association or property
      */
     private Serializable getAttribute(NodeRef taskRef, QName source, QName target) {
         PropertyDefinition propertyDef = dictionaryService.getProperty(source);
-        if(propertyDef != null) {
+        if (propertyDef != null) {
             return nodeService.getProperty(taskRef, source);
         }
         AssociationDefinition associationDef = dictionaryService.getAssociation(source);
-        if(associationDef != null) {
+        if (associationDef != null) {
             AssociationDefinition targetAssoc = dictionaryService.getAssociation(target);
-            if(targetAssoc == null) {
+            if (targetAssoc == null) {
                 throw new AlfrescoRuntimeException(
-                        "Error occurred during workflow attribute getting. Make sure that QName \""+target+"\" exists.");
+                        "Error occurred during workflow attribute getting. Make sure that QName \"" + target + "\" exists.");
             }
             ArrayList<NodeRef> assocs = getAssociations(taskRef, source);
             return targetAssoc.isTargetMany() ? assocs : (assocs.size() > 0 ? assocs.get(0) : null);
         }
-        throw new AlfrescoRuntimeException(source+" is not a property or association (child associations is not allowed)");
+        throw new AlfrescoRuntimeException(source + " is not a property or association (child associations is not allowed)");
     }
 
     private ArrayList<NodeRef> getAssociations(NodeRef nodeRef, QName assocType) {
         ArrayList<NodeRef> result = new ArrayList<>();
         List<AssociationRef> assocsRefs = nodeService.getTargetAssocs(nodeRef, assocType);
-        for(AssociationRef assocRef : assocsRefs) {
+        for (AssociationRef assocRef : assocsRefs) {
             NodeRef targetRef = assocRef.getTargetRef();
             QName targetType = nodeService.getType(targetRef);
 
-            if(targetType.equals(ICaseRoleModel.TYPE_ROLE)) {
+            if (targetType.equals(ICaseRoleModel.TYPE_ROLE)) {
                 result.addAll(getAssociations(targetRef, ICaseRoleModel.ASSOC_ASSIGNEES));
             } else {
                 result.add(targetRef);
@@ -177,15 +205,15 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
     @Override
     public void onCaseActivityReset(NodeRef taskRef) {
-        String workflowInstanceId = (String)nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
+        String workflowInstanceId = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
 
-        if(workflowInstanceId != null && workflowService.getWorkflowById(workflowInstanceId).isActive()) {
+        if (workflowInstanceId != null && workflowService.getWorkflowById(workflowInstanceId).isActive()) {
             workflowService.cancelWorkflow(workflowInstanceId);
         }
 
         nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, null);
         NodeRef wfPackage = RepoUtils.getFirstTargetAssoc(taskRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE, nodeService);
-        if(wfPackage != null) {
+        if (wfPackage != null) {
             nodeService.removeAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
         }
     }
