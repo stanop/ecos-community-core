@@ -27,6 +27,7 @@ public class ActivityModel {
     public static final QName TYPE_ACTIVITY = QName.createQName(NAMESPACE, "activity");
     public static final QName PROP_PLANNED_START_DATE = QName.createQName(NAMESPACE, "plannedStartDate");
     public static final QName PROP_PLANNED_END_DATE = QName.createQName(NAMESPACE, "plannedEndDate");
+    public static final QName PROP_DAYS_NUMBER_TO_PLANNED_END_DATE = QName.createQName(NAMESPACE, "daysNumberToPlannedEndDate");
     public static final QName PROP_ACTUAL_START_DATE = QName.createQName(NAMESPACE, "actualStartDate");
     public static final QName PROP_ACTUAL_END_DATE = QName.createQName(NAMESPACE, "actualEndDate");
     public static final QName PROP_MANUAL_STARTED = QName.createQName(NAMESPACE, "manualStarted");
@@ -34,5 +35,6 @@ public class ActivityModel {
     public static final QName PROP_INDEX = QName.createQName(NAMESPACE, "index");
     
     public static final QName ASPECT_HAS_ACTIVITIES = QName.createQName(NAMESPACE, "hasActivities");
+    public static final QName ASPECT_SET_PLANNED_END_DATE = QName.createQName(NAMESPACE, "setPlannedEndDate");
     public static final QName ASSOC_ACTIVITIES = QName.createQName(NAMESPACE, "activities");
 }
