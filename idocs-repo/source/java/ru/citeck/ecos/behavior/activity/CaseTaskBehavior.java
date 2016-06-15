@@ -149,15 +149,20 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
             if (startDate != null) {
                 Integer numberDaysToDueDate = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_DAYS_NUMBER_TO_PLANNED_END_DATE);
                 if (numberDaysToDueDate != null && numberDaysToDueDate > 0) {
-                    // numberDaysToDueDate * 24 h * 60 min * 60 s * 1000 millis
-                    long newTime = numberDaysToDueDate * 24 * 60 * 60 * 1000;
-                    workflowDueDate = new Date(startDate.getTime() + newTime);
+                    workflowDueDate = addDays(startDate, numberDaysToDueDate);
                     // set planned end date for icaseTask:task
                     nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
                 }
             }
         }
         return workflowDueDate;
+    }
+
+    private static Date addDays(Date baseDate, int daysToAdd) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(baseDate);
+        calendar.add(Calendar.DAY_OF_YEAR, daysToAdd);
+        return calendar.getTime();
     }
 
 
