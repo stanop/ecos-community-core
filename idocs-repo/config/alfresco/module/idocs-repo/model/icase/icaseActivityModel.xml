@@ -65,6 +65,7 @@
     </types>
 
     <aspects>
+
         <aspect name="activ:hasActivities">
             <associations>
                 <child-association name="activ:activities">
@@ -90,5 +91,15 @@
                 </property>
             </overrides>
         </aspect>
+
+        <aspect name="activ:setPlannedEndDate">
+            <properties>
+                <property name="activ:daysNumberToPlannedEndDate">
+                    <type>d:double</type>
+                    <default>0</default>
+                </property>
+            </properties>
+        </aspect>
+
     </aspects>
 </model>
