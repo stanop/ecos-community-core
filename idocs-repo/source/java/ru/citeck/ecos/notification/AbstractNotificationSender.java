@@ -162,6 +162,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
 	public void setAsyncNotification(boolean asyncNotification) {
 		this.asyncNotification = asyncNotification;
+		logger.debug("setAsyncNotification_asyncNotification: " + asyncNotification);
 	}
 
 	@Override
@@ -177,6 +178,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	}
 
 	protected boolean getAsyncNotification() {
+		logger.debug("getAsyncNotification_asyncNotification: " + asyncNotification);
         return asyncNotification;
     }
 
@@ -378,6 +380,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 				notificationContext.addTo(to);
 			}
 			notificationContext.setAsyncNotification(asyncNotification);
+			logger.debug("sendNotification_asyncNotification: " + asyncNotification);
 			if (null != from) {
 				notificationContext.setFrom(from);
 			}
