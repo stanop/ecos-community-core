@@ -1,7 +1,6 @@
 package ru.citeck.ecos.utils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -47,25 +46,20 @@ public class ConvertAmountInWords {
                 {"триллион", "триллиона", "триллионов", "0"},
         };
 
-        String s = String.valueOf(amount);
-        if (!s.contains(".")) {
-            s += ".0";
-        }
+        BigDecimal BigDecimalAmount = new BigDecimal(amount);
+        BigDecimalAmount = BigDecimalAmount.setScale(2, BigDecimal.ROUND_HALF_DOWN);
 
-        BigDecimal amountBig = new BigDecimal(s);
         ArrayList<Long> segments = new ArrayList<>();
-        long total = amountBig.longValue();
 
-        int integerPart = (int) total;
-        int fractionPart = amountBig.subtract(amountBig.setScale(0, RoundingMode.HALF_DOWN)).unscaledValue().intValue();
-
-        String[] divided = {Integer.toString(integerPart), Integer.toString(fractionPart)};
-
+        long total = BigDecimalAmount.longValue();
+        String[] divided = BigDecimalAmount.toString().split("\\.");
+        divided[1] = divided[1].substring(0, 2);
         long fraction = Long.valueOf(divided[1]);
         if (!divided[1].substring(0, 1).equals("0")) {
             if (fraction < 10)
                 fraction *= 10;
         }
+
         String fractions = String.valueOf(fraction);
         if (fractions.length() == 1)
             fractions = "0" + fractions;
