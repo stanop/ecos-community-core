@@ -52,11 +52,12 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 				for (String confirmer : confirmLines) {
 					if (confirmer.length() != 0) {
 						JSONObject conf = new JSONObject();
-						conf.put("nodeRef", confirmer);
+						conf.put("nodeRef", confirmer.split("_")[0]);
 						// full name is not supported in old format
-						conf.put("fullName", confirmer);
+						conf.put("fullName", confirmer.split("_")[0]);
 						// 'can cancel' is not supported in old format
 						conf.put("canCancel", false);
+						conf.put("amountHours", getNumberOfHoursForStage(confirmer.split("_")[1]));
 						confirmers.add(conf);
 					}
 				}
@@ -64,6 +65,18 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 			}
 		}
 		execution.setVariable(variableName, result);
+	}
+
+	private int getNumberOfHoursForStage(String timeStage) {
+		String time = timeStage.split("/")[0];
+		String timeType = timeStage.split("/")[1];
+		if ("m".equals(timeType)) {
+			return Integer.parseInt(time) * 30 * 24;
+		} else if ("d".equals(timeType)) {
+			return Integer.parseInt(time) * 24;
+		} else {
+			return Integer.parseInt(time);
+		}
 	}
 
 }

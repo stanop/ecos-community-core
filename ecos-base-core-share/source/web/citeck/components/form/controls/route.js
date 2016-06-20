@@ -399,6 +399,19 @@
             $("tbody.stage", this.elements.stages)
                 .each(function() {
                     var stageParticipants = [];
+                    var dueDateExpr;
+                    $("input[type=\"text\"].time", this)
+                        .each(function() {
+                            if (this.value) {
+                                dueDateExpr = this.value + "/";
+                            }
+                        });
+                    $("select.time-type", this)
+                        .each(function() {
+                            if (this.value) {
+                                dueDateExpr = dueDateExpr + this.value;
+                            }
+                        });
                     $("input[type=\"hidden\"].participant", this)
                         .each(function() {
                             if (this.value) {
@@ -406,6 +419,9 @@
                                 stageParticipants.push(this.value);
                             }
                         });
+                if (stageParticipants.length > 0) {
+                    stageParticipants[0] = stageParticipants[0] + "_" + dueDateExpr;
+                }
                 stages.push(stageParticipants.join("|"));
             });
 
