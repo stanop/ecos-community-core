@@ -44,7 +44,7 @@
 	<!-- spaces -->
 	<bean id="contracts.import-spaces" abstract="true"
 		class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
-		<property name="moduleId" value="ecos-forms-tmp-test-repo" />
+		<property name="moduleId" value="journals-repo" />
 		<property name="importer" ref="spacesBootstrap" />
 	</bean>
 
