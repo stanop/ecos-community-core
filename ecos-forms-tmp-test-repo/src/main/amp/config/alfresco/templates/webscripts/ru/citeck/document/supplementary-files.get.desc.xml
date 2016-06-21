@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Supplementary Files List</shortname>
+  <description>Returns a list of supplementary files linked to the current node</description>
+  <url>/acm/supplementary-files</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

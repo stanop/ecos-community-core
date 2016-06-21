@@ -1,0 +1,1071 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="idocs:idocsModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>iDocs DMS</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <namespace uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
+    </namespaces>
+
+    <constraints>
+        <constraint name="idocs:constraint:documentStatus" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>new</value>
+                    <value>project</value>
+                    <value>onApproval</value>
+                    <value>onCorrection</value>
+                    <value>approved</value> <!--Это "согласован", хотя больше подходит для "утвержден", а для согласован подходит "agreed"-->
+                    <value>confirmed</value> <!--Это "утвержден"-->
+                    <value>onNormcontrol</value>
+                    <value>onConfirm</value>
+                    <value>canceled</value>
+                    <value>normcontroled</value>
+                    <value>onSign</value>
+                    <value>signed</value>
+                    <value>registered</value>
+                    <value>onPerformance</value>
+                    <value>performed</value>
+                    <value>onConsideration</value>
+                    <value>onResolution</value>
+                    <value>archive</value>
+                    <value>paid</value>
+                    <value>transferredToAccountant</value>
+
+                    <!--<value>creation</value>-->
+                    <value>onRegistration</value>
+                    <value>approvedWithComment</value>
+                    <!--<value>onControl</value>-->
+                    <!--<value>overdue</value>-->
+                    <!--<value>sent</value>-->
+                    <value>completed</value>
+                    <value>active</value>
+                    <value>rescinded</value>
+                    <value>notActive</value>
+                    
+                    <!-- spitamen temporary statuses -->
+                    <!-- TODO refactor, remove -->
+                    <value>credit-project</value>
+                    <value>credit-evaluation</value>
+                    <value>credit-committee</value>
+                    <value>credit-agreement</value>
+                    <value>credit-accounts</value>
+                    <value>credit-active</value>
+                    <value>credit-cancelled</value>
+                    <value>credit-committee-preparation</value>
+                    <value>credit-disbursement-preparation</value>
+                    <value>credit-disbursement</value>
+                    <value>credit-checking-blacklist</value>
+                    <value>credit-internal-report</value>
+                    <value>credit-external-report</value>
+                    <value>credit-documents-checking</value>
+                    <value>credit-attach-documents</value>
+                    <value>credit-issue</value>
+                    <value>credit-checklist</value>
+                    <value>credit-check-in-international-lists</value>
+                    <value>at-checkout</value>
+
+                    <value>financial-monitoring</value>
+                    <value>on-credit-committee</value>
+                    <value>on-credit-committee-co</value>
+                    <value>credit-decision-transfer-cc</value>
+                    <value>contractual-documents-creation</value>
+                    <value>pledge-insurance</value>
+                    <value>credit-case-reworking</value>
+
+                    <value>pledge-formation-cc</value>
+                    <value>pledge-conduct-cc</value>
+                    <value>pledge-conduct-gen-office-cc</value>
+                    <value>pledge-figuration-contract-docs</value>
+                    <value>pledge-returning</value>
+
+                    <value>issuance-of-document</value>
+                    <value>document-returned</value>
+
+                    <!-- contracts statuses-->
+                    <value>draft</value> <!-- Черновик -->
+                    <value>forPayment</value> <!-- На оплате -->
+                    
+                    <value>onFamiliarization</value>
+                    <value>familiarized</value>
+                    <value>conducted</value>
+                    <value>closed</value>
+                    
+                    <value>early-repayment-new</value>
+                    <value>early-repayment-check-account</value>
+                    <value>early-repayment-transfer-money</value>
+                    <value>early-repayment-check-repayment</value>
+                    <value>early-repayment-new-payment-schedule</value>
+                    <value>early-repayment-change-credit</value>
+                    <value>early-repayment-completed</value>
+                    <value>credit-paid</value>
+
+                    <value>repayment-pledge-check-loan</value>
+                    <value>repayment-pledge-notify-hq</value>
+                    <value>repayment-pledge-charge-hq</value>
+                    <value>repayment-pledge-confirm</value>
+                    <value>repayment-pledge-transfer-filial</value>
+                    <value>repayment-pledge-charge-filial</value>
+                    <value>repayment-pledge-confirm-director</value>
+                    <value>repayment-pledge-open-envelope</value>
+                    <value>repayment-pledge-write-closed</value>
+                    <value>repayment-pledge-prepare-doc</value>
+                    <value>repayment-pledge-transfer-client</value>
+
+                    <value>purchase-project</value>
+                    <value>purchase-on-approval</value>
+                    <value>purchase-on-signing</value>
+                    <value>purchase-on-correction</value>
+                    <value>bids-project</value>
+                    <value>bids-on-approval</value>
+                    <value>bids-on-signing</value>
+                    <value>bids-on-correction</value>
+                    <value>additional-bids-on-approval</value>
+                    <value>additional-bids-on-signing</value>
+                    <value>additional-bids-on-correction</value>
+                    <value>purchase-signed</value>
+
+                    <!-- linkserver-norfos invoice statuses -->
+                    <value>invoice-draft</value>
+                    <value>invoice-on-approval</value>
+                    <value>invoice-on-correction</value>
+                    <value>invoice-paid-completed</value>
+                </list>
+            </parameter>
+        </constraint>
+
+        <constraint name="idocs:constraint:allowedPriority" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>1</value>
+                    <value>2</value>
+                </list>
+            </parameter>
+        </constraint>
+
+    </constraints>
+
+    <types>
+
+        <!-- Demo -->
+        <type name="idocs:activityDirection">
+            <parent>idocs:doc</parent>
+            <properties>
+                <property name="idocs:activityDirectionCode">
+                    <title>Код</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:activityDirectionName">
+                    <title>Направление Деятельности</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+
+        <!-- Abstract -->
+        <type name="idocs:doc">
+            <parent>dms:doc</parent>
+            <mandatory-aspects>
+                <aspect>idocs:hasLegalEntity</aspect>
+                <aspect>idocs:registrationInfo</aspect>
+                <!--<aspect>idocs:hasDocumentType</aspect>-->
+                <aspect>idocs:pagesInfo</aspect>
+                <aspect>idocs:hasSummary</aspect>
+                <aspect>idocs:hasController</aspect>
+                <aspect>idocs:hasNote</aspect>
+                <aspect>idocs:lifeCycle</aspect>
+                <aspect>tk:documentTypeKind</aspect>
+                <aspect>history:historical</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="idocs:powerOfAttorney">
+            <parent>idocs:doc</parent>
+            <properties>
+                <property name="idocs:subjectAttorney">
+                    <title>Subject Attorney</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:dateAttorney">
+                    <title>Date Attorney</title>
+                    <type>d:date</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:issued">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="idocs:whoIssued">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="idocs:issueInitiator">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>idocs:hasDuration</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <!-- Catalogs -->
+
+        <type name="idocs:legalEntity">
+            <title>Юридическое лицо</title>
+            <parent>idocs:entity</parent>
+            <properties>
+                <!--property name="idocs:juridicalAddress">
+                    <title>Juridical address</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:postAddress">
+                    <title>Post address</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+
+                <property name="idocs:code">
+                    <title>Код юридического лица</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:phoneNumber">
+                    <title>Телефон</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property-->
+            </properties>
+            <!--<overrides>-->
+                <!--<property name="dms:INN">-->
+                    <!--<mandatory>true</mandatory>-->
+                <!--</property>-->
+                <!--<property name="dms:KPP">-->
+                    <!--<mandatory>true</mandatory>-->
+                <!--</property>-->
+            <!--</overrides>-->
+            <associations>
+                <!--association name="idocs:generalDirector">
+                    <title>Генеральный директор</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="idocs:accountantGeneral">
+                    <title>Главный бухгалтер</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association-->
+            </associations>
+            <mandatory-aspects>
+                <!--<aspect>dms:INN_KPP_withConstraint</aspect>-->
+                <aspect>idocs:organizationInfo</aspect>
+                <aspect>idocs:publicRegInfo</aspect>
+                <aspect>idocs:entityInfo</aspect>
+            </mandatory-aspects>
+        </type>
+        
+        <type name="idocs:contractor">
+            <parent>idocs:entity</parent>
+            <properties>
+                <property name="idocs:CEOname">
+                    <title>CEO name</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:contractorID">
+                    <title>ID</title>
+                    <type>d:int</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:contacts">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>idocs:contact</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>idocs:organizationInfo</aspect>
+                <aspect>idocs:publicRegInfo</aspect>
+                <aspect>idocs:entityInfo</aspect>
+                <aspect>idocs:communicationInfo</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="idocs:contact">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:firstName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:lastName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:patronymicName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:position">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>idocs:communicationInfo</aspect>
+                <aspect>idocs:organizationInfo</aspect>
+            </mandatory-aspects>
+        </type>
+        
+        <type name="idocs:filesNomenclature">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:fileIndex">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:fileName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:fileYear">
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:clauseNumber">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+
+        <type name="budget:item">
+        	<title>Статья бюджета</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="budget:itemCode">
+                    <title>Код статьи бюджета</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="budget:itemName">
+                    <title>Наименование статьи бюджета</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+            </properties>
+        </type>
+        
+        <type name="idocs:currency">
+        	<title>Валюта</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:currencyCode">
+                    <title>Код валюты</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:currencyName">
+                    <title>Название</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+            </properties>
+        </type>
+        
+        <type name="idocs:bankAccount">
+        	<title>Банковский счет</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:bankTitle">
+                    <title>Название банка</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:bankTitleEng">
+                    <title>Название банка на английском языке</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:bankId">
+                    <title>БИК</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:accountNumber">
+                    <title>Счет</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:corresponentBankTitle">
+                    <title>Название банка-корреспондента</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:correspondentBankId">
+                    <title>БИК банка-корреспондента</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:corresponentAccountNumber">
+                    <title>Счет в банке-корреспонденте</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:swift">
+                    <title>SWIFT</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:currencyEnabled">
+                    <title>Использовать счет как валютный</title>
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
+            <mandatory-aspects>
+            	<aspect>idocs:hasLegalEntity</aspect>
+            </mandatory-aspects>
+        </type>
+		
+        <type name="idocs:entity">
+            <title>Entity</title>
+            <parent>dl:dataListItem</parent>
+        </type>
+
+        <type name="idocs:addressByParts">
+            <title>Address by parts</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:countryName">
+                    <title>Country</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:postCode">
+                    <title>PostCode</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:regionName">
+                    <title>Region</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:districtName">
+                    <title>District</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:cityName">
+                    <title>City</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:streetName">
+                    <title>Street</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:house">
+                    <title>House</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:addressExtraInfo">
+                    <title>Extra info</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </type>
+
+    </types>
+
+    <aspects>
+
+        <aspect name="idocs:hasLegalEntity">
+            <associations>
+                <association name="idocs:legalEntity">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:legalEntity</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:registrationInfo">
+            <properties>
+                <property name="idocs:registrationNumber">
+                    <title>Registration number</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:registrationDate">
+                    <title>Date of registration</title>
+                    <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="idocs:publicRegInfo">
+            <title>Регистрационная информация юридического лица</title>
+            <properties>
+                <property name="idocs:okpo">
+                    <title>ОКПО</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:ogrn">
+                    <title>ОГРН</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:inn">
+                    <title>ИНН</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:kpp">
+                    <title>КПП</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:bill">
+                    <title>Bill</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+        
+        <!-- DEPRECATED -->
+        <aspect name="idocs:hasDocumentType">
+            <associations>
+                <association name="idocs:documentType">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>tk:documentTypeKind</class>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:hasSignatory">
+            <associations>
+                <association name="idocs:signatory">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        
+        <aspect name="idocs:pagesInfo">
+            <properties>
+                <property name="idocs:pagesNumber">
+                    <title>Number of pages</title>
+                    <type>d:int</type>
+                </property>
+                <property name="idocs:appendixPagesNumber">
+                    <title>Number of appendix pages</title>
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasSummary">
+            <properties>
+                <property name="idocs:summary">
+                    <title>Summary</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasController">
+            <associations>
+                <association name="idocs:controller">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:hasNote">
+            <properties>
+                <property name="idocs:note">
+                    <title>Note</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasPerformer">
+            <associations>
+                <association name="idocs:performer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:hasDocumentStatus">
+            <properties>
+                <property name="idocs:documentStatus">
+                    <title>Document status</title>
+                    <type>d:text</type>
+                    <default>new</default>
+                    <constraints>
+                        <constraint ref="idocs:constraint:documentStatus"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="idocs:hasDuration">
+            <properties>
+                <property name="idocs:duration">
+                    <title>Duration</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:organizationInfo">
+            <properties>
+                <property name="idocs:fullOrganizationName">
+                    <title>Full name of organization</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:shortOrganizationName">
+                    <title>Alternative name of organization</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:engOrganizationName">
+                    <title>Organization name in English</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="idocs:communicationInfo">
+            <properties>
+                <property name="idocs:phone">
+                    <title>Phone</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:fax">
+                    <title>Fax</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:email">
+                    <title>Email address</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <constraints>
+                        <constraint ref="dms:constraint:mail" />
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasRegistrator">
+            <!--<properties>-->
+                <!--<property name="idocs:registrator">-->
+                    <!--<title>Registrator</title>-->
+                    <!--<type>d:text</type>-->
+                <!--</property>-->
+            <!--</properties>-->
+            <associations>
+                <association name="idocs:registrator">
+                    <title>Регистратор</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:lifeCycle" />
+
+        <aspect name="idocs:hasInitiator">
+            <title>Инициатор</title>
+            <associations>
+                <association name="idocs:initiator">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:hasFailureCause">
+            <properties>
+                <property name="idocs:failureCause">
+                    <title>Причина отказа</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="idocs:shortName">
+            <title>Краткое название</title>
+            <properties>
+                <property name="idocs:shortName">
+                    <title>Краткое название</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:deFactoAddress">
+            <title>Фактический адрес</title>
+            <properties>
+                <property name="idocs:deFactoAddress">
+                    <title>Фактический адрес</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:webSiteURL">
+            <title>Адрес сайта</title>
+            <properties>
+                <property name="idocs:webSiteURL">
+                    <title>Адрес сайта</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:facsimile">
+            <title>Факсимиле</title>
+            <associations>
+                <association name="idocs:signFacsimile">
+                    <title>Факсимиле подписи</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>cm:content</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:applicability">
+            <title>Applicability</title>
+            <properties>
+                <property name="idocs:applicability">
+                    <title>Applicability</title>
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:entityInfo">
+            <title>Entity info</title>
+            <properties>
+                <property name="idocs:juridicalAddress">
+                    <title>Juridical address</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:postAddress">
+                    <title>Post address</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+
+                <property name="idocs:code">
+                    <title>Код юридического лица</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:phoneNumber">
+                    <title>Телефон</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:generalDirector">
+                    <title>Генеральный директор</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="idocs:accountantGeneral">
+                    <title>Главный бухгалтер</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        
+        <aspect name="idocs:hasManager">
+            <properties>
+                <property name="idocs:managerGroup">
+                    <title>Duration</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:managerPermission">
+                    <title>Duration</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:declension">
+            <title>Declension</title>
+            <properties>
+                <property name="idocs:nameInGenitiveCase">
+                    <title>Name in genetive case</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:nameInAccusativeCase">
+                    <title>Name in accusative case</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:nameInDativeCase">
+                    <title>Name in dative case</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+        <!-- Срок выполнения бизнес-процесса-->
+        <aspect name="idocs:dateConfirmDueDate">
+            <properties>
+                <property name="idocs:dateConfirmDueDate">
+                    <title>Срок согласования</title>
+                    <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <!-- Приоритет -->
+        <aspect name="idocs:priorityConfirm">
+            <properties>
+                <property name="idocs:priorityConfirm">
+                    <title>Приоритет</title>
+                    <type>d:int</type>
+                    <constraints>
+                        <constraint ref="idocs:constraint:allowedPriority" />
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+
+        <aspect name="idocs:confirmers">
+            <properties>
+                <!-- precedence of confirmers -->
+                <property name="idocs:precedence">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <!-- confirmers -->
+                <association name="idocs:confirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+		
+		<aspect name="idocs:hasSignedVersion">
+			<associations>
+				<child-association name="idocs:signedVersion">
+					<title>Подписанная версия</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</source>
+					<target>
+						<class>cm:content</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</child-association>
+			</associations>
+		</aspect>
+
+        <aspect name="idocs:hasContractor">
+            <associations>
+                <association name="idocs:contractor">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:contractor</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:hasCurrency">
+            <associations>
+                <association name="idocs:currencyDocument">
+                    <title>Currency</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:currency</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <!-- Требуется утверждение у контрагента -->
+        <aspect name="idocs:hasContractorApproval">
+            <properties>
+                <property name="idocs:hasContractorApproval">
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:currencyShortName">
+            <properties>
+                <property name="idocs:currencyShortName">
+                    <title>Сокращенное название валюты(символ)</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
+
+</model>

@@ -1,0 +1,20 @@
+<webscript>
+    <shortname>Get roles for case</shortname>
+    <description>Get roles for case</description>
+    <url>/citeck/case-roles/get?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <args>
+        <arg>
+            <shortname>nodeRef</shortname>
+            <description>nodeRef of node</description>
+        </arg>
+    </args>
+    <responses>
+        <response>
+            <format>json</format>
+            <type><![CDATA[{}]]></type>
+        </response>
+    </responses>
+</webscript>

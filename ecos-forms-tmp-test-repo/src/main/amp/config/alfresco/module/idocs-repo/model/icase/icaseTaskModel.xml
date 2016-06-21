@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="icaseTask:icaseTaskModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Case management in iDocs. Task description</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
+    </namespaces>
+
+    <types>
+        <type name="icaseTask:task">
+            <parent>activ:activity</parent>
+            <properties>
+                <property name="icaseTask:workflowDefinitionName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="icaseTask:workflowInstanceId">
+                    <type>d:text</type>
+                </property>
+                <property name="icaseTask:dueDate">
+                    <type>d:datetime</type>
+                </property>
+                <property name="icaseTask:priority">
+                    <type>d:int</type>
+                    <default>2</default>
+                    <constraints>
+                        <constraint ref="bpm:allowedPriority"/>
+                    </constraints>
+                </property>
+            </properties>
+            <associations>
+                <association name="icaseTask:workflowPackage">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>bpm:package</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+            <overrides>
+                <property name="activ:manualStarted">
+                    <default>true</default>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="icaseTask:simpleTask">
+            <parent>icaseTask:task</parent>
+            <associations>
+                <association name="icaseTask:performer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+        
+        <type name="icaseTask:confirmTask">
+            <parent>icaseTask:task</parent>
+            <associations>
+                <association name="icaseTask:confirmers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>true</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+            <overrides>
+                <property name="icaseTask:workflowDefinitionName">
+                    <default>activiti$confirm-stage</default>
+                </property>
+            </overrides>
+        </type>
+        
+        <type name="icaseTask:performTask">
+            <parent>icaseTask:task</parent>
+            <associations>
+                <association name="icaseTask:performers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>true</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="icaseTask:controller">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+            <overrides>
+                <property name="icaseTask:workflowDefinitionName">
+                    <default>activiti$perform</default>
+                </property>
+            </overrides>
+        </type>
+        
+    </types>
+
+    <aspects>
+        <!--Deprecated. Use activ:hasActivities instead-->
+        <aspect name="icaseTask:hasTasks">
+            <associations>
+                <child-association name="icaseTask:tasks">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseTask:task</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                    <propagateTimestamps>true</propagateTimestamps>
+                </child-association>
+            </associations>
+        </aspect>
+    </aspects>
+</model>

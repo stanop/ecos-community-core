@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="help:configuration" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Organizational Structure Model</description>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/configuration/1.0" prefix="help" />
+	</namespaces>
+	
+	<types>
+		<type name="help:configuration">
+			<title>Help configuration</title>
+			<parent>dl:dataListItem</parent>
+			<properties>
+				<property name="help:page">
+					<title>Page</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="help:selector">
+					<title>Selector</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+                <property name="help:infoText">
+					<title>Info Text</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="help:text">
+					<title>Link to text file</title>
+					<type>d:noderef</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="help:video">
+					<title>Link to video file</title>
+					<type>d:noderef</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+		</type>
+	</types>
+	
+	<aspects>
+		<aspect name="help:helpAspect"></aspect>
+	</aspects>
+	
+</model>

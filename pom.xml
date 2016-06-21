@@ -181,6 +181,33 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-forms-tmp-test-repo</artifactId>
+                <version>${project.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-forms-tmp-test-repo</artifactId>
+                <version>${project.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-forms-tmp-test-share</artifactId>
+                <version>${project.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-forms-tmp-test-share</artifactId>
+                <version>${project.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-forms-repo</artifactId>
                 <version>${ecos-forms.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
@@ -324,16 +351,18 @@
         	</build>
         </profile>
     </profiles>
-  <modules>
-    <module>ecos-base-core-repo</module>
-    <module>ecos-base-core-share</module>
-    <module>journals-repo</module>
-    <module>journals-share</module>
-    <module>ecos-forms-repo</module>
-    <module>ecos-forms-share</module>
-    <module>repo</module>
-    <module>solr-config</module>
-    <module>share</module>
-    <module>runner</module>
-  </modules>
+    <modules>
+        <module>ecos-base-core-repo</module>
+        <module>ecos-base-core-share</module>
+        <module>journals-repo</module>
+        <module>journals-share</module>
+        <module>ecos-forms-tmp-test-repo</module>
+        <module>ecos-forms-tmp-test-share</module>
+        <module>ecos-forms-repo</module>
+        <module>ecos-forms-share</module>
+        <module>repo</module>
+        <module>solr-config</module>
+        <module>share</module>
+        <module>runner</module>
+    </modules>
 </project>

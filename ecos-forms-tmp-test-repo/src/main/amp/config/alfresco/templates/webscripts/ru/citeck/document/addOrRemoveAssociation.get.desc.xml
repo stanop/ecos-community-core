@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>AddOrRemoveAssociation</shortname>
+  <description>Remove and add associations to agreement</description>
+  <url>/acm/addOrRemoveAssociation</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

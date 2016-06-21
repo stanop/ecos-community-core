@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0" 
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:journal="http://www.citeck.ru/model/journals/1.0"
+	xmlns:dl="http://www.alfresco.org/model/datalist/1.0"
+	xmlns:arch="http://www.citeck.ru/model/archive-service-configuration/1.0" >
+
+	<view:reference view:pathref="/${spaces.company_home.childname}">
+		<cm:contains>
+			<cm:folder view:childName="cm:defaultArchiveServiceFolder">
+				<view:acl view:inherit="true">
+					<view:ace view:access="ALLOWED">
+						<view:authority>GROUP_EVERYONE</view:authority>
+						<view:permission>Contributor</view:permission>
+					</view:ace>
+				</view:acl>
+				<view:properties>
+					<sys:node-uuid>archive-service-def-folder</sys:node-uuid>
+					<cm:name>${arch.journal.archive-service-configs.default-folder.name}</cm:name>
+					<cm:title>
+						<view:mlvalue view:locale="en_US">${arch.journal.archive-service-configs.default-folder.title_en}</view:mlvalue>
+						<view:mlvalue view:locale="ru_RU">${arch.journal.archive-service-configs.default-folder.title_ru}</view:mlvalue>
+					</cm:title>
+				</view:properties>
+			</cm:folder>
+		</cm:contains>
+	</view:reference>
+
+	<view:reference view:pathref="/${spaces.company_home.childname}/cm:idocsDataLists">
+		<cm:contains>
+			<dl:dataList view:childName="cm:archive-service-configs">
+				<view:acl view:inherit="true">
+					<view:ace view:access="ALLOWED">
+						<view:authority>GROUP_EVERYONE</view:authority>
+						<view:permission>Contributor</view:permission>
+					</view:ace>
+				</view:acl>
+				<view:properties>
+					<sys:node-uuid>archive-service-configs</sys:node-uuid>
+					<cm:name>${arch.journal.archive-service-configs.folder.name}</cm:name>
+					<cm:title>
+						<view:mlvalue view:locale="en_US">${arch.journal.archive-service-configs.folder.title_en}</view:mlvalue>
+						<view:mlvalue view:locale="ru_RU">${arch.journal.archive-service-configs.folder.title_ru}</view:mlvalue>
+					</cm:title>
+				</view:properties>
+				<view:associations>
+					<cm:contains>
+						<arch:archConfig view:childName="cm:content">
+							<view:acl />
+							<view:properties>
+								<cm:name>content</cm:name>
+								<sys:node-uuid>archive-service-configs-content</sys:node-uuid>
+								<arch:nodeType>{http://www.alfresco.org/model/content/1.0}content</arch:nodeType>
+								<arch:assocType>{http://www.alfresco.org/model/content/1.0}contains</arch:assocType>
+								<arch:destination>workspace://SpacesStore/archive-service-def-folder</arch:destination>
+							</view:properties>
+						</arch:archConfig>
+					</cm:contains>
+				</view:associations>
+			</dl:dataList>
+		</cm:contains>
+	</view:reference>
+
+	<view:reference view:pathref="cm:journals">
+	<cm:contains>
+		<journal:journal view:childName="journal:archive-service-configs">
+			<view:properties>
+				<sys:node-uuid>journal-archive-service-configs</sys:node-uuid>
+				<cm:name>archive-service-configs</cm:name>
+				<cm:title>
+					<view:mlvalue view:locale="en_US">${journal.archive-service-configs.title_en}</view:mlvalue>
+					<view:mlvalue view:locale="ru_RU">${journal.archive-service-configs.title_ru}</view:mlvalue>
+				</cm:title>
+				<journal:journalType>archive-service-configs</journal:journalType>
+			</view:properties>
+			<journal:searchCriteria>
+				<journal:criterion view:childName="journal:criterion-type">
+					<view:properties>
+						<journal:fieldQName>type</journal:fieldQName>
+						<journal:predicate>type-equals</journal:predicate>
+						<journal:criterionValue>{http://www.citeck.ru/model/archive-service-configuration/1.0}archConfig</journal:criterionValue>
+					</view:properties>
+				</journal:criterion>
+			</journal:searchCriteria>
+			<journal:createVariants>
+				<journal:createVariant view:childName="journal:createVariant">
+					<view:properties>
+						<sys:node-uuid>journal-meta-cv-arch-srv-conf</sys:node-uuid>
+						<cm:title>
+							<view:mlvalue view:locale="en_US">${journal.create.archive-service-config.title_en}</view:mlvalue>
+							<view:mlvalue view:locale="ru_RU">${journal.create.archive-service-config.title_ru}</view:mlvalue>
+						</cm:title>
+						<journal:type>{http://www.citeck.ru/model/archive-service-configuration/1.0}archConfig</journal:type>
+						<journal:formId></journal:formId>
+					</view:properties>
+				</journal:createVariant>
+			</journal:createVariants>
+		</journal:journal>
+	</cm:contains>
+	</view:reference>
+
+	<view:reference view:pathref="cm:journalLists/cm:global-system">
+		<view:associations>
+			<journal:journals>
+				<view:reference view:pathref="cm:journals/journal:archive-service-configs" />
+			</journal:journals>
+		</view:associations>
+	</view:reference>
+
+	<view:reference view:pathref="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:archive-service-configs/journal:createVariant">
+		<view:associations>
+			<journal:destination>
+				<view:reference view:pathref="/${spaces.company_home.childname}/cm:idocsDataLists/cm:archive-service-configs" />
+			</journal:destination>
+		</view:associations>
+	</view:reference>
+
+</view:view>

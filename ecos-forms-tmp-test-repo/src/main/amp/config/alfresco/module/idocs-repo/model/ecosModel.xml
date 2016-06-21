@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="ecos:ecosModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Ecos DMS</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
+    </namespaces>
+
+    <!--constraints></constraints-->
+
+    <types>
+        <type name="ecos:document">
+            <parent>dms:doc</parent>
+           <mandatory-aspects>
+               <aspect>tk:documentTypeKind</aspect>
+               <aspect>idocs:hasNote</aspect>
+               <aspect>ecos:hasNumberAndDate</aspect>
+               <aspect>idocs:hasLegalEntity</aspect>
+               <aspect>idocs:hasContractor</aspect>
+               <aspect>ecos:hasAmount</aspect>
+               <aspect>idocs:hasCurrency</aspect>
+               <aspect>idocs:lifeCycle</aspect>
+               <aspect>history:historical</aspect>
+               <aspect>dms:templateable</aspect>
+           </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+
+        <aspect name="ecos:hasNumberAndDate">
+            <title>Document Number and Date</title>
+            <properties>
+                <property name="ecos:documentNumber">
+                    <title>Document Number</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:documentDate">
+                    <title>Document Date</title>
+                    <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="ecos:hasAmount">
+            <title>Document Amount</title>
+            <properties>
+                <property name="ecos:documentAmount">
+                    <title>Document Amount</title>
+                    <type>d:double</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="ecos:hasVAT">
+            <title>Document VAT</title>
+            <properties>
+                <property name="ecos:VAT">
+                    <title>VAT</title>
+                    <type>d:double</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

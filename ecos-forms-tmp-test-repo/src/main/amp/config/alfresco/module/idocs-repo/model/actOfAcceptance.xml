@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="acts:acts" xmlns="http://www.alfresco.org/model/dictionary/1.0" xmlns:act="http://www.alfresco.org/model/action/1.0"
+       xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <description>Acts of Acceptance</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/acts/1.0" prefix="acts" />
+    </namespaces>
+
+    <types>
+        <type name="acts:actOfAcceptance">
+            <parent>idocs:doc</parent>
+            <properties>
+
+                <property name="acts:name">
+                    <title>Наименование</title>
+                    <type>d:text</type>
+                </property>
+
+                <property name="acts:number">
+                    <title>Номер</title>
+                    <type>d:text</type>
+                </property>
+
+                <property name="acts:date">
+                    <title>Дата</title>
+                    <type>d:date</type>
+                </property>
+
+                <property name="acts:sum">
+                    <title>Сумма</title>
+                    <type>d:text</type>
+                </property>
+
+                <property name="acts:description">
+                    <title>Описание</title>
+                    <type>d:text</type>
+                </property>
+
+            </properties>
+            <associations>
+
+                <association name="acts:legalEntity">
+                    <title>Юридическое лицо</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:legalEntity</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+
+                <association name="acts:contractor">
+                    <title>Контрагент</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:contractor</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+
+            </associations>
+            <!-- Связи ещё нужны -->
+        </type>
+    </types>
+
+</model>

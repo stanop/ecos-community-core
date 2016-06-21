@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Validation Constraint</shortname>
+    <description>Validation Constraint</description>
+    <url>/sample/valid-constraint/search?field={field};value={value};uuid={uuid}</url>
+    <authentication>guest</authentication>
+    <transaction>required</transaction>
+</webscript>

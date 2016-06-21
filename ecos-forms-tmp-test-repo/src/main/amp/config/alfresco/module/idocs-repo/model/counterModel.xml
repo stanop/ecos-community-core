@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="count:counterModel" xmlns="http://www.alfresco.org/model/dictionary/1.0"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<description>Counters model</description>
+	<version>1.0</version>
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/counter/1.0" prefix="count" />
+	</namespaces>
+	
+	<types>
+		<type name="count:counter">
+			<parent>cm:cmobject</parent>
+			<properties>
+				<property name="count:value">
+					<type>d:int</type>
+					<mandatory>true</mandatory>
+					<default>0</default>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="count:autonumberTemplate">
+			<parent>cm:content</parent>
+			<properties>
+				<property name="count:commonTemplate">
+					<type>d:text</type>
+				</property>
+				<property name="count:counterTemplate">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="count:initialValueTemplate">
+					<type>d:text</type>
+					<default>1</default>
+				</property>
+				<property name="count:numberTemplate">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<default>${count}</default>
+				</property>
+				<property name="count:errorMessageConfig">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+	</types>
+	
+	<aspects>
+		<aspect name="count:abbreviated">
+			<properties>
+				<property name="count:abbreviation">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+
+</model>

@@ -1,0 +1,43 @@
+<webscript>
+	<shortname>Org.Struct authorities</shortname>
+	<description>All registered orgstruct authorities</description>
+	<url>/api/orgstruct/authorities-explicit?nodeRefs={nodeRefs?}&amp;fullNames={fullNames?}</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+	<args>
+		<arg>
+			<shortname>nodeRefs</shortname>
+			<description>Comma-separated list of group/user nodeRefs</description>
+		</arg>
+		<arg>
+			<shortname>fullNames</shortname>
+			<description>Comma-separated list of group/user fullNames</description>
+		</arg>
+	</args>
+	<responses>
+		<response>
+			<format>json</format>
+			<type>
+				<![CDATA[
+		[
+			{
+				authorityType: ... // "GROUP" or "USER"
+				shortName: ...
+				fullName: ...
+				displayName: ...
+				groupType: ... // only for groups
+				groupSubType: ... // only for groups
+				... // custom attributes
+				nodeRef: ...
+			},
+			{
+				...
+			},
+			...
+		]
+        ]]>
+			</type>
+		</response>
+	</responses>
+</webscript>

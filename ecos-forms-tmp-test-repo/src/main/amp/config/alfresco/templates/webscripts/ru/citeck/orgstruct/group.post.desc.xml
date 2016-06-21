@@ -1,0 +1,45 @@
+<webscript>
+  <shortname>Create orgstruct group</shortname>
+  <description>Create or update orgstruct group</description>
+  <url>/api/orgstruct/group</url>
+  <url>/api/orgstruct/group/</url>
+  <format default="json">argument</format>
+  <authentication>admin</authentication>
+  <transaction>required</transaction>
+  <requests>
+    <request>
+	  <format>json</format>
+	  <type>
+        <![CDATA[
+		{
+			authorityType: "GROUP"
+			shortName: ...
+			displayName: ...
+			groupType: ... 
+			groupSubType: ...
+			... // custom attributes
+		}
+		]]>
+	  </type>
+	</request>
+  </requests>
+  <responses>
+    <response>
+	  <format>json</format>
+	  <type>
+        <![CDATA[
+		{
+			authorityType: ... "GROUP"
+			shortName: ...
+			fullName: ...
+			displayName: ...
+			groupType: ... 
+			groupSubType: ...
+			... // custom attributes
+			nodeRef: ...
+		}
+        ]]>
+	  </type>
+	</response>
+  </responses>
+</webscript>

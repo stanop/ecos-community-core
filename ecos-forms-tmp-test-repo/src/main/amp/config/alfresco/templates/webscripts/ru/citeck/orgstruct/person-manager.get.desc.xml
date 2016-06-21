@@ -1,0 +1,42 @@
+<webscript>
+  <shortname>Create orgstruct branch</shortname>
+  <description>Create orgstruct branch or convert from group</description>
+  <url>/api/orgstruct/people/{username}/manager</url>
+  <url>/api/orgstruct/people/manager?nodeRef={nodeRef}</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction allow="readonly">required</transaction>
+  <args>
+    <arg>
+	  <shortname>username</shortname>
+	  <description>username of user, whose manager to return</description>
+	</arg>
+  </args>
+  <responses>
+    <response>
+	  <format>json</format>
+	  <type>
+        <![CDATA[
+        {
+            managerRole: {
+                authorityType: ...
+                shortName: ...
+                fullName: ...
+                displayName: ...
+                groupType: ...
+                groupSubType: ...
+                nodeRef: ...
+            },
+            managerUsers: [
+                {
+                    authorityType: ...
+                    ...
+                },
+                ...
+            ]
+        }
+        ]]>
+	  </type>
+	</response>
+  </responses>
+</webscript>

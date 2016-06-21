@@ -1,0 +1,396 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<bean id="idocs.import-spaces.2-12-0" abstract="true" parent="idocs.import-spaces">
+		<property name="sinceVersion" value="2.0.0" />
+		<property name="appliesFromVersion" value="2.0.0" />
+	</bean>
+
+	<bean id="idocs.module-component.case-mgmt-cardlets" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="case-mgmt-cardlets" />
+		<property name="description" value="Case Management Cardlets" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.system-journals.cardlets" />
+				<ref bean="idocs.module-component.system-journals.cardmodes" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-mgmt-mode</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-element-configs</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="idocs.module-component.update-case-element-configs" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="update-case-element-configs" />
+		<property name="description" value="Update case element configs" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-documents" />
+				<ref bean="idocs.module-component.case-events-config" />
+				<ref bean="idocs.module-component.case-supplementary-files-config" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/update-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/documents</prop>
+				</props>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/update-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/events</prop>
+				</props>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/update-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/supplementary-files</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.associations-case-element-config" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="associations-case-element-config" />
+		<property name="description" value="Associations case element config" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/associations</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.subcases-case-element-config" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="subcases-case-element-config" />
+		<property name="description" value="Subcases case element config" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/subcases</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.categories-case-element-configs" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="categories-case-element-configs" />
+		<property name="description" value="Categories case element configs" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/category-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/categories</prop>
+				</props>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/category-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/tags</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.categories-cardlets" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="categories-cardlets" />
+		<property name="description" value="Categories Cardlets" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.system-journals.cardlets" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/tags</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+    <bean id="idocs.module-component.update-default-email-notification-2-12-0" parent="idocs.import-spaces.2-12-0">
+        <property name="name" value="update-default-email-notification-2-12-0" />
+        <property name="description" value="update default-email-notification 2-12-0" />
+        <!--<property name="executeOnceOnly" value="false"/>-->
+        <property name="bootstrapViews">
+        <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.workflowemailnotification.childname}/cm:default-email-notification.html.ftl</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/update-default-email-notification-2-12-0.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="idocs.module-component.case-templates-journal" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="case-templates-journal" />
+		<property name="description" value="Case Templates Journal" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.templates-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/case-templates</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/case-templates</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:case-templates</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/case-templates</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/templates/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/case-templates</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.card-template-types-journal" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="card-template-types-journal" />
+		<property name="description" value="Card Template Types Journal" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.idocs-root" />
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.templates-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/cardTemplateTypes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:card-template-types</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/cardTemplateTypes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:card-template-types</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/cardTemplateTypes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/templates/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/templates/cardTemplateTypes</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.cardlets-case-tasks" parent="idocs.import-spaces">
+		<property name="name" value="case-tasks" />
+		<property name="description" value="Case tasks" />
+		<property name="sinceVersion" value="2.0.0" />
+		<property name="appliesFromVersion" value="2.0.0" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.cardlets-cmobject" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case-tasks/case-tasks</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.tasks-case-element-configs" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="tasks-case-element-configs" />
+		<property name="description" value="Tasks case element configs" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/case-tasks</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.cardlets-case-roles" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="case-roles" />
+		<property name="description" value="Case roles" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.cardlets-cmobject" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case-roles/case-roles</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.roles-case-element-configs" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="roles-case-element-configs" />
+		<property name="description" value="Roles case element configs" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/case-roles</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.cardlets-case-activities" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="cardlets-case-activities" />
+		<property name="description" value="cardlets-case-activities" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.cardlets-cmobject" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/active-workflows</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/inactive-workflows</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.cardlet-documents" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="cardlet-documents" />
+		<property name="description" value="Documents Cardlet" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.cardlets-cmobject" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmfolder/documents</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.import-scripts.2-12-0" parent="idocs.import-scripts" abstract="true">
+		<property name="sinceVersion" value="2.0.0" />
+		<property name="appliesFromVersion" value="2.0.0" />
+	</bean>
+
+	<bean id="idocs.module-component.script.check-app-share" parent="idocs.import-scripts.2-12-0">
+		<property name="name" value="check-app-share" />
+		<property name="description" value="check-app-share" />
+		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/check-app-share.js"/>
+	</bean>
+
+<!--
+	<bean id="idocs.module-component.script.add-admin-to-orgstruct-groups" parent="idocs.import-scripts.2-12-0">
+		<property name="name" value="add-admin-to-orgstruct-groups" />
+		<property name="description" value="Add admin to all orgstruct groups" />
+		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-admin-to-orgstruct-groups.js"/>
+	</bean>
+-->
+</beans>

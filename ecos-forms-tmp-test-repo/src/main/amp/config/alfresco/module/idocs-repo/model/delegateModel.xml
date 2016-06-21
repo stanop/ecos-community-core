@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="delegate:delegateModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Delegation Model</description>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/delegate/1.0" prefix="delegate" />
+	</namespaces>
+	
+	<types>
+	
+		<!-- delegation record: what is delegated and to whom -->
+		<type name="delegate:delegationRecord">
+			<parent>cm:cmobject</parent>
+			<associations>
+				<association name="delegate:delegatedAuthority">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="delegate:delegate">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+
+        <type name="delegate:absenceEvent">
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="delegate:startAbsence">
+                    <type>d:datetime</type>
+                </property>
+                <property name="delegate:endAbsence">
+                    <type>d:datetime</type>
+                </property>
+                <property name="delegate:comment">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="delegate:user">
+                    <source>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="delegate:absenceReason">
+                    <source>
+                        <mandatory>true</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>delegate:absenceReason</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="delegate:absenceReason">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="delegate:reason">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+	
+	</types>
+	
+	<aspects>
+
+		<!-- aspect to add availability to user -->
+		<aspect name="delegate:availability">
+			<properties>
+				<property name="delegate:available">
+					<type>d:boolean</type>
+					<mandatory>true</mandatory>
+					<default>true</default>
+				</property>
+			</properties>
+		</aspect>
+
+		<!-- extended role settings, specific for delegation -->
+		<aspect name="delegate:roleSettings">
+			<properties>
+				<!-- can the role be managed by its members -->
+				<property name="delegate:managedByMembers">
+					<type>d:boolean</type>
+					<mandatory>true</mandatory>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+	
+	</aspects>
+
+</model>

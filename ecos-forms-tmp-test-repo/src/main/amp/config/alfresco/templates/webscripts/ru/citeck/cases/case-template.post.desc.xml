@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Case Template Save</shortname>
+	<description>Save Case Template on the basis of specified case (prototype)</description>
+	<url>/citeck/case/template?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

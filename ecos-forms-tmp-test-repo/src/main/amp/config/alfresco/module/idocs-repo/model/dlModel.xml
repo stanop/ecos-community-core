@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="cdl:cdl" xmlns="http://www.alfresco.org/model/dictionary/1.0"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<description>Document Management Data Lists Model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0"
+			prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0"
+			prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/cdl/1.0" prefix="cdl" />
+	</namespaces>
+
+	<types>
+		<type name="cdl:department">
+			<title>Department</title>
+			<parent>dl:dataListItem</parent>
+			<properties>
+				<property name="cdl:departmentIndex">
+					<title>Department Index</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+		</type>
+		<type name="cdl:currency">
+			<title>Currency</title>
+			<parent>dl:dataListItem</parent>
+			<properties>
+				<property name="cdl:conversionToEUR">
+					<title>Conversion to EURO coefficient</title>
+					<type>d:double</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</type>
+
+		<type name="cdl:nomenclature">
+			<title>Nomenclature</title>
+			<parent>cm:content</parent>
+			<properties>
+				<property name="cdl:nomenclatureIndex">
+					<title>Index</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+			<associations>
+				<association name="cdl:nomenclature_to_department">
+					<title>Nomenclature to department</title>
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authorityContainer</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="cdl:defaultFolder">
+					<title>Nomenclature default folder</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:folder</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+
+        <type name="cdl:cardTemplateType">
+            <title>Card Template Type</title>
+            <parent>dl:dataListItem</parent>
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+            </mandatory-aspects>
+        </type>
+
+	</types>
+
+</model>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:dms="http://www.citeck.ru/model/content/dms/1.0">
+    <view:reference view:pathref=".">
+        <view:properties>
+            <dms:subjectTemplate>
+                <![CDATA[<#if (task.description)?? && task.description != ''>#{task.description}<#elseif (task.name)??>#{task.name}</#if><#if workflow.documents??><#if workflow.documents?is_sequence><#if workflow.documents?size &gt; 0>, документ - #{workflow.documents[0].properties['cm:name']!''}</#if></#if></#if>]]>
+            </dms:subjectTemplate>
+        </view:properties>
+    </view:reference>
+</view:view>

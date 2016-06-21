@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>Get specified delegate of specified role or user</shortname>
+	<description>Delegate Service: get specified delegate for specified role or user (404 if he/she is not delegate)</description>
+	<url>/api/delegate/{userName}</url>
+	<url>/api/delegate/{fullName}/delegates/{userName}</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

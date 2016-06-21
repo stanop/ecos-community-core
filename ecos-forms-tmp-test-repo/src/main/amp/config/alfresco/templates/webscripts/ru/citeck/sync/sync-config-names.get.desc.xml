@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>sync config names</shortname>
+	<url>/citeck/sync-config-names</url>
+	<format default="json"/>
+	<authentication>admin</authentication>
+	<transaction>none</transaction>
+	<lifecycle>draft</lifecycle>
+</webscript>

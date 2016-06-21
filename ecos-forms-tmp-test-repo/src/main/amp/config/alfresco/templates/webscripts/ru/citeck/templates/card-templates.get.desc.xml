@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get cardTemplates for document</shortname>
+    <description>Get all available cardTemplates for document by nodeRef</description>
+    <url>/citeck/templates/card-templates?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

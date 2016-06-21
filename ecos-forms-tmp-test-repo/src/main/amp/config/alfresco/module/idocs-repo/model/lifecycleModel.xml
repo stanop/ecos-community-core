@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="lc:lifecycleModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <description>Life cycle model</description>
+    <version>1.0</version>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="lc:constraint:eventType" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>automaticTransition</value>
+                    <value>userTransition</value>
+                    <value>onStartProcess</value>
+                    <value>onEndProcess</value>
+                    <value>onSignal</value>
+                    <value>timerTransition</value>
+                </list>
+            </parameter>
+        </constraint>
+        
+        <constraint name="lc:constraint:lifecycleFormat" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>xml</value>
+                    <value>csv</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+		<type name="lc:lifecycleDefinition">
+			<parent>cm:content</parent>
+			<properties>
+				<property name="lc:lifecycleEnabled">
+					<type>d:boolean</type>
+					<mandatory>true</mandatory>
+					<default>false</default>
+				</property>
+				<property name="lc:lifecycleFormat">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+                    <default>xml</default>
+				</property>
+				<property name="lc:lifecycleTitle">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                    <default></default>
+                </property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>lc:hasDocType</aspect>
+			</mandatory-aspects>
+		</type>
+
+        <type name="lc:transitionRule">
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="lc:event">
+                    <type>d:text</type>
+                </property>
+                <property name="lc:transitionCondition">
+                    <type>d:text</type>
+                </property>
+                <property name="lc:fromState">
+                    <type>d:text</type>
+                </property>
+                <property name="lc:toState">
+                    <type>d:text</type>
+                </property>
+                <property name="lc:action">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+        
+        <type name="lc:transitionTable">
+            <parent>cm:cmobject</parent>
+            <associations>
+                <child-association name="lc:transitionRules">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>lc:transitionRule</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+			<mandatory-aspects>
+				<aspect>lc:hasDocType</aspect>
+			</mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="lc:hasState">
+            <properties>
+                <property name="lc:state">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="lc:hasTimer">
+            <properties>
+                <property name="lc:eventTime">
+                    <type>d:datetime</type>
+                </property>
+            </properties>
+        </aspect>
+        
+		<aspect name="lc:hasDocType">
+			<properties>
+				<property name="lc:docType">
+					<type>d:qname</type>
+				</property>
+			</properties>
+		</aspect>
+    </aspects>
+</model>

@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>Delete Route</shortname>
+  <description>Delete route</description>
+  <url>/api/citeck/routes?nodeRef={nodeRef}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+  <lifecycle>public_api</lifecycle>
+</webscript>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Digest and attributes</shortname>
+  <description>Return digest and attributes of current document</description>
+  <url>/acm/digestAndAttr</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:peccargo="http://www.citeck.ru/model/pecom/cargo/1.0"
+	xmlns:icase="http://www.citeck.ru/model/icase/1.0"
+	xmlns:rule="http://www.alfresco.org/model/rule/1.0"
+	xmlns:act="http://www.alfresco.org/model/action/1.0">
+	<view:reference view:pathref="./cm:${config.name}">
+		<view:properties>
+			<cm:name>${config.name}</cm:name>
+			<cm:title>
+				<view:mlvalue view:locale="en_US">${config.title_en}</view:mlvalue>
+				<view:mlvalue view:locale="ru_RU">${config.title_ru}</view:mlvalue>
+			</cm:title>
+			<icase:caseClass>${config.caseClass}</icase:caseClass>
+			<icase:elementType>${config.elementType}</icase:elementType>
+			<icase:copyElements>${config.copyElements}</icase:copyElements>
+		</view:properties>
+	</view:reference>
+</view:view>

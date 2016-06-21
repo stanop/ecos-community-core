@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Export data</shortname>
+	<description>Export data into acp file</description>
+	<url>/api/export</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

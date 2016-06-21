@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:dms="http://www.citeck.ru/model/content/dms/1.0">
+
+    <dms:notificationTemplate view:childName="${notification.child-name}">
+        <view:properties>
+            <cm:name>${notification.name}</cm:name>
+            <cm:title>${notification.title}</cm:title>
+            <dms:notificationType>${notification.type}</dms:notificationType>
+            <cm:content>contentUrl=classpath:${notification.content}|mimetype=text/plain|encoding=UTF-8</cm:content>
+        </view:properties>
+    </dms:notificationTemplate>
+</view:view>

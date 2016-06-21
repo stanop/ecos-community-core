@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="class:classification" xmlns="http://www.alfresco.org/model/dictionary/1.0"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+
+	<description>Classification Model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/content/classification/1.0" prefix="class" />
+		<namespace uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+	</namespaces>
+	
+	<aspects>
+		<aspect name="tk:documentTypeKind">
+			<properties>
+				<property name="tk:type">
+					<type>d:category</type>
+				</property>
+				<property name="tk:kind">
+					<type>d:category</type>
+				</property>
+			</properties>
+		</aspect>
+        <aspect name="tk:duration">
+            <properties>
+                <property name="tk:durationInDays">
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+		<aspect name="tk:documentTypeKindTemplate">
+			<properties>
+				<property name="tk:appliesToType">
+					<type>d:category</type>
+					<multiple>true</multiple>
+				</property>
+				<property name="tk:appliesToKind">
+					<type>d:category</type>
+					<multiple>true</multiple>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="tk:appliedClasses">
+			<properties>
+				<property name="tk:appliedType">
+					<type>d:qname</type>
+				</property>
+				<property name="tk:appliedAspects">
+					<type>d:qname</type>
+					<multiple>true</multiple>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="tk:typeWithJournal">
+			<properties>
+				<property name="tk:journalType">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="tk:documentSite">
+			<associations>
+				<association name="tk:siteDocumentTypes">
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:category</class>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
+
+		<aspect name="tk:typeRelation">
+			<properties>
+				<property name="tk:relatesToType">
+					<type>d:category</type>
+				</property>
+			</properties>
+		</aspect>
+
+		<!--aspect name="tk:documentTypeKindTemplate">
+			<associations>
+				<association name="tk:appliesToType">
+					<title>Type</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</source>
+					<target>
+						<class>cm:category</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+				<association name="tk:appliesToKind">
+					<title>Kind</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</source>
+					<target>
+						<class>cm:category</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</aspect-->
+
+	</aspects>
+
+</model>
