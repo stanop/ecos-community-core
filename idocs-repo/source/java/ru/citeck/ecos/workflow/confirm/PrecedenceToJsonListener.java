@@ -67,15 +67,15 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 		execution.setVariable(variableName, result);
 	}
 
-	private int getNumberOfHoursForStage(String timeStage) {
+	private double getNumberOfHoursForStage(String timeStage) {
 		String time = timeStage.split("/")[0];
 		String timeType = timeStage.split("/")[1];
 		if ("m".equals(timeType)) {
-			return Integer.parseInt(time) * 30 * 24;
+			return (double)Math.round(Double.parseDouble(time) * 30 * 24 * 1000)/1000;
 		} else if ("d".equals(timeType)) {
-			return Integer.parseInt(time) * 24;
+			return (double)Math.round(Double.parseDouble(time) * 24 * 1000)/1000;
 		} else {
-			return Integer.parseInt(time);
+			return Double.parseDouble(time);
 		}
 	}
 

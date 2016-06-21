@@ -19,6 +19,7 @@ function process(){
     for each (var day in arrUnworkDays) {
         if (someInterval.contains(day)) {
             i++;
+            someInterval = someInterval.withEnd(someInterval.getEnd().plusDays(1));
         }
     }
     var newEndDate = endDate.plusDays(i);
