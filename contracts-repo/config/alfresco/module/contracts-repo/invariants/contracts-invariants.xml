@@ -26,13 +26,11 @@
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value-title" language="javascript">value.properties["idocs:fullOrganizationName"]</invariant>
         </association>
-<!--
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
-            &lt;!&ndash; <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of contract:";} else if (navigator.languages[0].includes("ru")) {"Вид договора:";}
-            </invariant> &ndash;&gt;
+            <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of contract:";} else if (navigator.languages[0].includes("ru")) {"Вид договора:";}
+            </invariant> -->
         </property>
--->
         <property name="contracts:agreementNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
@@ -160,13 +158,11 @@
         <!-- <association name="contracts:closingDocumentAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association> -->
-<!--
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
-            &lt;!&ndash; <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
-</invariant> &ndash;&gt;
+            <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
+</invariant> -->
         </property>
--->
         <property name="contracts:closingDocumentNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
