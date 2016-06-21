@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Print any document to PDF with stamp</shortname>
+	<description>Print any document to PDF</description>
+	<url>/citeck/print/signature?nodeRef={nodeRef}&amp;shiftUp={shiftUp}&amp;shiftRight={shiftRight}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

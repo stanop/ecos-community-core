@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Download document content</shortname>
+	<description>Download document content</description>
+	<url>/citeck/print/content?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

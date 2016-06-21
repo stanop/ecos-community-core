@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Start case activity</shortname>
+    <description>Start case activity</description>
+    <url>/citeck/case-activity/start-activity?nodeRef={nodeRef}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+</webscript>

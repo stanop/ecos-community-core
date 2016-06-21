@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Roles for specified user with this user</shortname>
+    <description>Roles for specified user with this user</description>
+    <url>/api/delegate/currentUserRoles</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

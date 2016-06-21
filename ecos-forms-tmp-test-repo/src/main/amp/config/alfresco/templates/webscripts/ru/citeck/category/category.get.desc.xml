@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Category</shortname>
+  <description>Get information about category</description>
+  <url>/api/citeck/category?nodeRef={nodeRef}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <lifecycle>public_api</lifecycle>
+</webscript>

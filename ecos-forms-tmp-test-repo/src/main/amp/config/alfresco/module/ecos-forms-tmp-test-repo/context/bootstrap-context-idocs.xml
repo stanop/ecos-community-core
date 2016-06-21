@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+	<bean id="forms.tmp.test.idocs.import-spaces" abstract="true" class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+		<property name="moduleId" value="idocs-repo" />
+		<property name="importer" ref="spacesBootstrap"/>
+	</bean>
+
+    <bean id="idocs.module-component.main-journals-list" parent="forms.tmp.test.idocs.import-spaces">
+   		<property name="name" value="main-journals-list" />
+   		<property name="description" value="Main Journals List" />
+   		<property name="sinceVersion" value="0.0.1" />
+   		<property name="appliesFromVersion" value="0.0.1" />
+   		<!-- property name="executeOnceOnly" value="false" / -->
+   		<property name="dependsOn">
+   			<list>
+   				<ref bean="idocs.module-component.journals-meta-root" />
+   			</list>
+   		</property>
+   		<property name="bootstrapViews">
+   			<list>
+   				<props>
+   					<prop key="path">/app:company_home/app:dictionary</prop>
+   					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+   					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/journal-list</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   			</list>
+   		</property>
+   	</bean>
+
+    <bean id="idocs.module-component.main-journals.currency" parent="forms.tmp.test.idocs.import-spaces">
+   		<property name="name" value="currency-journal" />
+   		<property name="description" value="Currency Journal" />
+   		<property name="sinceVersion" value="0.0.1" />
+   		<property name="appliesFromVersion" value="0.0.1" />
+   		<!-- property name="executeOnceOnly" value="false" / -->
+   		<property name="dependsOn">
+   			<list>
+   				<ref bean="idocs.module-component.journals-meta-root" />
+   				<ref bean="idocs.module-component.main-journals-list" />
+   			</list>
+   		</property>
+   		<property name="bootstrapViews">
+   			<list>
+   				<props>
+   					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+   					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+   					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   				<props>
+   					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+   					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+   					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   				<props>
+   					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:currency</prop>
+   					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+   					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   				<props>
+   					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:currency</prop>
+   					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+   					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   				<props>
+   					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+   					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+   					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   			</list>
+   		</property>
+   	</bean>
+
+    <bean id="idocs.module-component.currency.data" parent="forms.tmp.test.idocs.import-spaces">
+   		<property name="name" value="Curency Data" />
+   		<property name="description" value="Curency Data (RUR, EUR, USD)" />
+   		<property name="dependsOn">
+   			<list>
+   				<ref bean="idocs.module-component.main-journals.currency" />
+   			</list>
+   		</property>
+   		<property name="bootstrapViews">
+   			<list>
+   				<props>
+   					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+   					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-rur.xml</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   				<props>
+   					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+   					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-usd.xml</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   				<props>
+   					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+   					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-eur.xml</prop>
+   					<prop key="encoding">UTF-8</prop>
+   				</props>
+   			</list>
+   		</property>
+   	</bean>
+
+
+</beans>

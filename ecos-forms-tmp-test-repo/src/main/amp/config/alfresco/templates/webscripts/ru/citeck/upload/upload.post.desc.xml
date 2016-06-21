@@ -1,0 +1,32 @@
+<webscript>
+	<shortname>File upload</shortname>
+	<description><![CDATA[
+  Upload file content and meta-data into repository.
+  
+  <br />
+  Request URL MUST contain parameter - assoctype, which means the child association type.
+  Also URL can contain parameter - contenttype, it is not required.
+  <br />
+  HTML form data
+  <ul>
+    <li>filedata, (mandatory) HTML type file</li>
+    <li>destination, (mandatory) target node path</li>
+    <li>overwrite (not required) it works like api/upload parameter</li>
+  </ul> 
+  
+  <br />
+  Return content
+  <ul>
+  <li>nodeRef</li>
+  </ul>
+
+  <br />
+  Return status: STATUS_OK (200)
+  ]]>
+	</description>
+	<url>/api/citeck/upload</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

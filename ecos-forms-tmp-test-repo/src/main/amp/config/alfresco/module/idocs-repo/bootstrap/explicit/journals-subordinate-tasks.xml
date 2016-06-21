@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0" 
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+	<view:reference view:pathref="cm:journals">
+		<cm:contains>
+			<journal:journal view:childName="journal:subordinate-tasks">
+				<view:properties>
+					<sys:node-uuid>journal-meta-j-subordinate-tasks</sys:node-uuid>
+					<cm:name>subordinate-tasks</cm:name>
+					<cm:title>
+						<view:mlvalue view:locale="en_US">${journal.subordinate-tasks_en}</view:mlvalue>
+						<view:mlvalue view:locale="ru_RU">${journal.subordinate-tasks_ru}</view:mlvalue>
+					</cm:title>
+					<journal:journalType>subordinate-tasks</journal:journalType>
+				</view:properties>
+				<journal:searchCriteria>
+					<journal:criterion view:childName="journal:criterion-type">
+						<view:properties>
+							<journal:fieldQName>type</journal:fieldQName>
+							<journal:predicate>type-equals</journal:predicate>
+							<journal:criterionValue>{http://www.alfresco.org/model/bpm/1.0}task</journal:criterionValue>
+						</view:properties>
+					</journal:criterion>
+					<journal:criterion view:childName="journal:criterion-manager">
+						<view:properties>
+							<journal:fieldQName>{http://www.citeck.ru/model/workflow-mirror/1.0}assigneeManager</journal:fieldQName>
+							<journal:predicate>noderef-contains</journal:predicate>
+							<journal:criterionValue><![CDATA[<#list (people.getContainerGroups(person)![]) as group>#{group.nodeRef},</#list>#{person.nodeRef}]]></journal:criterionValue>
+						</view:properties>
+					</journal:criterion>
+				</journal:searchCriteria>
+			</journal:journal>
+		</cm:contains>
+	</view:reference>
+
+	<view:reference view:pathref="cm:journalLists/journal:tasks">
+		<view:associations>
+			<journal:journals>
+				<view:reference view:pathref="cm:journals/journal:subordinate-tasks" />
+			</journal:journals>
+		</view:associations>
+	</view:reference>
+</view:view>

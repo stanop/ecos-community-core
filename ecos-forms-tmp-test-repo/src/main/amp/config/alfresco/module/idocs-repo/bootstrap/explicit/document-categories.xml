@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0">
+
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>category-document-type</sys:node-uuid>
+            <cm:name>${document.type.name}</cm:name>
+        </view:properties>
+
+        <cm:subcategories>
+
+            <!-- Marketing Materials -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-document-marketing-materials</sys:node-uuid>
+                    <cm:name>${document.marketing-materials.name}</cm:name>
+                </view:properties>
+            </cm:category>
+
+            <!-- Commercial Offer -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-document-commercial-offer</sys:node-uuid>
+                    <cm:name>${document.commercial-offer.name}</cm:name>
+                </view:properties>
+            </cm:category>
+
+            <!-- Other Documents -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-document-other</sys:node-uuid>
+                    <cm:name>${document.other.name}</cm:name>
+                </view:properties>
+            </cm:category>
+
+
+        </cm:subcategories>
+
+    </cm:category>
+
+</view:view>

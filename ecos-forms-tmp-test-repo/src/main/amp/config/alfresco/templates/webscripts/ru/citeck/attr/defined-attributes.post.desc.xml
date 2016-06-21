@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Defined attributes</shortname>
+	<description>Get attribute names, that are defined for the given nodes and/or types</description>
+	<url>/citeck/attributes/defined</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

@@ -1,0 +1,33 @@
+<webscript>
+  <shortname>Get information about authority</shortname>
+  <description>Information about authority in orgstruct format</description>
+  <url>/api/orgstruct/authority/{fullname}</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction allow="readonly">required</transaction>
+  <args>
+    <arg>
+	  <shortname>fullname</shortname>
+	  <description>authority full name</description>
+	</arg>
+  </args>
+  <responses>
+    <response>
+	  <format>json</format>
+	  <type>
+        <![CDATA[
+			{
+				authorityType: ... // "GROUP" or "USER"
+				shortName: ...
+				fullName: ...
+				displayName: ...
+				groupType: ... // only for groups
+				groupSubType: ... // only for groups
+				... // custom attributes
+				nodeRef: ...
+			}
+        ]]>
+	  </type>
+	</response>
+  </responses>
+</webscript>

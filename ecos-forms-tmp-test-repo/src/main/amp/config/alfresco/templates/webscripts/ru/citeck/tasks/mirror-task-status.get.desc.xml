@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>mirror-task-status</shortname>
+    <description>Return task status for mirror task nodeRef</description>
+    <url>/citeck/mirror-task/status?taskId={taskId}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

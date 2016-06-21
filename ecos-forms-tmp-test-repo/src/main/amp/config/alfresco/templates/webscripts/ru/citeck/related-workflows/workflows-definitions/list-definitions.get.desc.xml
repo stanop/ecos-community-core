@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>workflows definitions list</shortname>
+  <url>/api/related-workflows/list-definitions?filter={filterRegExp?}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+  <lifecycle>public_api</lifecycle>
+</webscript>

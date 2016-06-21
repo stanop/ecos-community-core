@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:org="http://www.citeck.ru/model/orgstruct/1.0">
+
+    <view:reference view:pathref="/org:metaRoot/org:branchTypes">
+        <view:associations>
+            <cm:contains>
+                <!--org:simpleBranchType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_branch_division</sys:node-uuid>
+                        <cm:name>division</cm:name>
+                        <cm:title>${division.title}</cm:title>
+                    </view:properties>
+                </org:simpleBranchType-->
+                <org:simpleBranchType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_branch_branch</sys:node-uuid>
+                        <cm:name>branch</cm:name>
+                        <cm:title>${branch.title}</cm:title>
+                    </view:properties>
+                </org:simpleBranchType>
+                <org:simpleBranchType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_branch_department</sys:node-uuid>
+                        <cm:name>department</cm:name>
+                        <cm:title>${department.title}</cm:title>
+                    </view:properties>
+                </org:simpleBranchType>
+                <!--org:simpleBranchType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_branch_subdivision</sys:node-uuid>
+                        <cm:name>subdivision</cm:name>
+                        <cm:title>${subdivision.title}</cm:title>
+                    </view:properties>
+                </org:simpleBranchType-->
+                <org:simpleBranchType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_branch_organization</sys:node-uuid>
+                        <cm:name>company</cm:name>
+                        <cm:title>${company.title}</cm:title>
+                    </view:properties>
+                </org:simpleBranchType>
+            </cm:contains>
+        </view:associations>
+    </view:reference>
+
+    <view:reference view:pathref="/org:metaRoot/org:roleTypes">
+        <view:associations>
+            <cm:contains>
+                <org:simpleRoleType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_role_manager</sys:node-uuid>
+                        <cm:name>manager</cm:name>
+                        <cm:title>${manager.title}</cm:title>
+                        <org:roleIsManager>true</org:roleIsManager>
+                    </view:properties>
+                </org:simpleRoleType>
+                <org:simpleRoleType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_role_employee</sys:node-uuid>
+                        <cm:name>employee</cm:name>
+                        <cm:title>${employee.title}</cm:title>
+                        <org:roleIsManager>false</org:roleIsManager>
+                    </view:properties>
+                </org:simpleRoleType>
+                <org:simpleRoleType>
+                    <view:properties>
+                        <sys:node-uuid>orgmeta_role_director</sys:node-uuid>
+                        <cm:name>director</cm:name>
+                        <cm:title>${director.title}</cm:title>
+                        <org:roleIsManager>true</org:roleIsManager>
+                    </view:properties>
+                </org:simpleRoleType>
+            </cm:contains>
+        </view:associations>
+    </view:reference>
+
+</view:view>

@@ -1,0 +1,21 @@
+.document-metadata-header .alfresco-twister-actions
+{
+  display: none;
+}
+
+.avatar
+{
+    width: 64px;
+}
+
+.yui-u.first .document-details-panel
+{
+  background-color: transparent;
+}
+
+.yui-g  .yui-gb:not(.plain) > div.yui-u.first,
+.yui-gb .yui-gb:not(.plain) > div.yui-u.first,
+.yui-gc .yui-gb:not(.plain) > div.yui-u.first,
+.yui-gd .yui-gb:not(.plain) > div.yui-u.first { 
+  width: 32%; 
+}

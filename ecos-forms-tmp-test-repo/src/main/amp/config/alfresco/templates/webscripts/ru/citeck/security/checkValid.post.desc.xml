@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>Check the validity</shortname>
+  <description>Checking validity of document</description>
+  <url>/acm/checkValid</url>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

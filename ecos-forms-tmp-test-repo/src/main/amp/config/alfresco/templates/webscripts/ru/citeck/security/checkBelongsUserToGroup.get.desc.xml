@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>checkBelongsUserToGroup</shortname>
+	<description>Check if user in access group(admin always has access)</description>
+	<url>/acm/checkBelongsUserToGroup/{username}/{accessgroup}</url>
+	<format default="json" />
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

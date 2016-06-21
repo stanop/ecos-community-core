@@ -1,0 +1,14 @@
+<webscript>
+	<shortname>Move the document to the archive</shortname>
+	<description>
+		It moves the document to the archive.
+		It takes parameters:
+			nodeRef - (mandatory) it is node reference of the target document
+			cause - additional parameter, which is caught in the behavior class
+	</description>
+	<url>/citeck/move-to-archive?nodeRef={nodeRef}&amp;cause={cause}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

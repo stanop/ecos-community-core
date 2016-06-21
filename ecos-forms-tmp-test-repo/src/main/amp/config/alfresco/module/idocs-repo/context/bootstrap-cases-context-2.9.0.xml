@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<bean id="idocs.module-component.journal-case-element-config-element-configs" parent="idocs.import-spaces"
+		depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="journal-case-element-configs" />
+		<property name="description" value="Journal of case element configs" />
+		<property name="sinceVersion" value="2.0" />
+		<property name="appliesFromVersion" value="2.0" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/class-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/element-configs</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+<!--
+	<bean id="idocs.module-component.case-folder-scripts" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="case-folder-scripts" />
+		<property name="description" value="Case Folder Scripts" />
+		<property name="sinceVersion" value="2.0" />
+		<property name="appliesFromVersion" value="2.0" />
+		<property name="bootstrapView">
+			<props>
+				<prop key="uuidBinding">UPDATE_EXISTING</prop>
+				<prop key="path">/</prop>
+				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/case-folder-scripts.xml</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+-->
+
+	<bean id="idocs.module-component.journal-case-element-documents" parent="idocs.import-spaces"
+		depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="journal-case-element-configs" />
+		<property name="description" value="Journal of case element configs" />
+		<property name="sinceVersion" value="2.0" />
+		<property name="appliesFromVersion" value="2.0" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/documents</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.case-events-config" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="case-events-config" />
+		<property name="description" value="case-events-config" />
+		<property name="sinceVersion" value="2.0.0" />
+		<property name="appliesFromVersion" value="2.0.0" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapView">
+			<props>
+				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+				<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+				<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/events</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.case-supplementary-files-config" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="case-supplementary-files-config" />
+		<property name="description" value="case-supplementary-files-config" />
+		<property name="sinceVersion" value="2.0.0" />
+		<property name="appliesFromVersion" value="2.0.0" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journal-case-element-configs" />
+			</list>
+		</property>
+		<property name="bootstrapView">
+			<props>
+				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+				<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config.xml</prop>
+				<prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/supplementary-files</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

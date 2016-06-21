@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="invoice:invoiceModel" xmlns="http://www.alfresco.org/model/dictionary/1.0" xmlns:act="http://www.alfresco.org/model/action/1.0"
+       xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <description>Invoice Models</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/invoice/1.0" prefix="invoice" />
+        <namespace uri="http://www.citeck.ru/model/inv/1.0" prefix="inv" />
+    </namespaces>
+
+    <types>
+
+        <!-- Abstract Invoice Model (абстрактный инвойс) -->
+        <type name="invoice:baseInvoice">
+            <parent>idocs:doc</parent>
+            <properties>
+                <property name="invoice:name">
+                    <title>Name</title>
+                    <type>d:text</type>
+                </property>
+                <property name="invoice:number">
+                    <title>Number</title>
+                    <type>d:text</type>
+                </property>
+                <property name="invoice:date">
+                    <title>Date</title>
+                    <type>d:date</type>
+                </property>
+                <property name="invoice:sum">
+                    <title>Sum</title>
+                    <type>d:text</type>
+                </property>
+                <property name="invoice:description">
+                    <title>Description</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="invoice:legalEntity">
+                    <title>Legal Entity</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:legalEntity</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="invoice:contractor">
+                    <title>Contractor</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:contractor</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+
+        <!-- Invoice (Счёт-фактура) -->
+        <type name="inv:invoice">
+            <parent>invoice:baseInvoice</parent>
+        </type>
+
+        <!-- Bill  (Счёт) -->
+        <type name="inv:bill">
+            <parent>invoice:baseInvoice</parent>
+        </type>
+
+        <!-- Acceptance Act (акт сдачи-приемки) -->
+        <type name="inv:acceptanceAct">
+            <parent>invoice:baseInvoice</parent>
+        </type>
+
+    </types>
+
+</model>

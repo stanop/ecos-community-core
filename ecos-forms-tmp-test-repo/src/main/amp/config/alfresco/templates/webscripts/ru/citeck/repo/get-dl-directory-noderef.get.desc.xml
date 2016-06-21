@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>get dl folder noderef </shortname>
+    <description>get dl folder noderef</description>
+    <url>/citeck/get-dl-nodeRef?dltype={type}</url>
+    <format default="json">argument</format>
+    <transaction allow="readonly">required</transaction>
+    <authentication>user</authentication>
+    <lifecycle>public_api</lifecycle>
+</webscript>

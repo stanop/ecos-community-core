@@ -1,0 +1,20 @@
+<webscript>
+    <shortname>Get tasks for case</shortname>
+    <description>Get task for case</description>
+    <url>/citeck/case-tasks/get?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <args>
+        <arg>
+            <shortname>nodeRef</shortname>
+            <description>nodeRef of node</description>
+        </arg>
+    </args>
+    <responses>
+        <response>
+            <format>json</format>
+            <type><![CDATA[{}]]></type>
+        </response>
+    </responses>
+</webscript>

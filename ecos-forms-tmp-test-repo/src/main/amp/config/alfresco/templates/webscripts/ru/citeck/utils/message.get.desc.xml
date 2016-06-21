@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>repository message</shortname>
+	<description>get repository message</description>
+	<url>/citeck/message?key={key}</url>
+	<format default="html">argument</format>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

@@ -49,6 +49,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-forms-tmp-test-share</artifactId>
+            <classifier>${ecos.build.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-share</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
@@ -128,6 +134,12 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-share</artifactId>
+                            <classifier>${ecos.build.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-forms-tmp-test-share</artifactId>
                             <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
