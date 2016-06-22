@@ -485,15 +485,15 @@
         },
 
         documentLink: function () {
-            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}', null)
+            return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', null)
         },
 
         folderLink: function () {
-            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}', null)
+            return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', null)
         },
 
         caseLink: function () {
-            return Citeck.format.siteURL('card-details?nodeRef={nodeRef}', '{displayName}', null)
+            return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', null)
         },
 
         siteURL: function (urlTemplate, labelTemplate, target) {

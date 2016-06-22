@@ -13,7 +13,7 @@
 		<option name="formId">search</option>
 
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 
 		<headers>
 			<!--header key="tk:kind" default="true"/ -->
@@ -33,7 +33,7 @@
 		<option name="formId">search</option>
 
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 
 		<headers>
 			<header key="cm:name" default="true" />
@@ -50,7 +50,7 @@
 		<option name="formId">search</option>
 
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 
 		<headers>
 			<header key="cm:name" default="true" />

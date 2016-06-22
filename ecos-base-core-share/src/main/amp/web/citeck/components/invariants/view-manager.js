@@ -76,7 +76,7 @@ Citeck.namespace('invariants');
         },
         
         goToCard: function(node) {
-            document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
+            document.location.href = Alfresco.constants.URL_PAGECONTEXT + "document-details?nodeRef=" + node.nodeRef;
         }
         
     };

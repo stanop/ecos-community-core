@@ -6,7 +6,7 @@
 
     <#if showLink == "true">
         <!-- ko if: $data instanceof koutils.koclass("invariants.Node") -->
-        <a class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: Alfresco.util.siteURL('card-details?nodeRef='+$data.nodeRef)}"></a>
+        <a class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: Alfresco.util.siteURL('document-details?nodeRef='+$data.nodeRef)}"></a>
         <!-- /ko -->
         <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
         <span class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data) }"></span>

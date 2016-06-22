@@ -21,7 +21,7 @@
 	<journal id="idocs-activity-direction">
 		<option name="type">idocs:activityDirection</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:activityDirectionName" default="true" />
 		</headers>
@@ -30,7 +30,7 @@
 	<journal id="legal-entities">
 		<option name="type">idocs:legalEntity</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:code" />
 			<header key="idocs:fullOrganizationName" default="true" />
@@ -49,7 +49,7 @@
 	<journal id="idocs-contractor">
 		<option name="type">idocs:contractor</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:fullOrganizationName" default="true" />
 			<header key="idocs:shortOrganizationName" />
@@ -68,7 +68,7 @@
 		<option name="formId">search</option>
 		<!--option name="actionGroupId">listInjournal</option -->
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:fileIndex" default="true" />
 			<header key="idocs:fileName" default="true" />
@@ -77,7 +77,7 @@
 	<journal id="currency">
 		<option name="type">idocs:currency</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:currencyCode" default="true" />
 			<header key="cm:title" default="true" />
@@ -86,7 +86,7 @@
 	<journal id="bank-accounts">
 		<option name="type">idocs:bankAccount</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:legalEntity" default="true" />
 			<header key="idocs:bankTitle" default="true" />
@@ -100,7 +100,7 @@
 	<journal id="budget-items">
 		<option name="type">budget:item</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="budget:itemCode" default="true" />
 			<header key="budget:itemName" default="true" />
@@ -109,7 +109,7 @@
 	<journal id="passports">
 		<option name="type">pass:passport</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="pass:person" default="true" />
 			<header key="tk:kind" default="true" />
@@ -124,7 +124,7 @@
 	<journal id="types-and-kinds">
 		<option name="type">cm:category</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="actionGroupId">buttons</option>
 		<headers>
 			<header key="cm:name" default="true" />
@@ -137,7 +137,7 @@
 	<journal id="archive-service-configs">
 		<option name="type">arch:archConfig</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="actionGroupId">buttons</option>
 		<headers>
 			<header key="arch:nodeType" default="true" />
@@ -148,7 +148,7 @@
 	<journal id="ecos-documents">
 		<option name="type">ecos:document</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="tk:kind" default="true" />
 			<header key="cm:name" default="true" />
@@ -166,7 +166,7 @@
 	<journal id="routes">
 		<option name="type">route:route</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="formId">filters</option>
 		<headers>
 			<header key="cm:name" default="true" />
@@ -178,7 +178,7 @@
 	<journal id="business-calendar">
 		<option name="type">bcal:calendar</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="bcal:dateFrom" default="true" />
 			<header key="bcal:dateTo" default="true" />
@@ -189,7 +189,7 @@
 	<journal id="units">
 		<option name="type">pas:unit</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="pas:unitShortName" default="true"/>
 			<header key="pas:unitName" default="true"/>
@@ -199,7 +199,7 @@
 	<journal id="products-and-services">
 		<option name="type">pas:pasEntityOriginal</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:title" default="true"/>
 			<header key="pas:pricePerUnit" default="true"/>
