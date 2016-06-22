@@ -51,7 +51,7 @@
 
 	<journal id="ecosConfig">
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="type">config:ecosConfig</option>
 		<headers>
 			<header key="cm:title" default="true" /> <!-- short description of the settings -->

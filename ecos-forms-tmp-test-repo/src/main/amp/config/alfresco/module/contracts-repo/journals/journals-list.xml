@@ -12,7 +12,7 @@
 	<journal id="contract-agreements">
 		<option name="type">contracts:agreement</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="formId">filters</option>
 		<option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
 		<headers>
@@ -43,7 +43,7 @@
 	<journal id="contract-subjects">
 		<option name="type">contracts:subject</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="contracts:subjectCode" default="true" />
 			<header key="contracts:subjectName" default="true" />
@@ -54,7 +54,7 @@
 	<journal id="payment-periods">
 		<option name="type">payments:period</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="formId">filters</option>
 		<headers>
 			<header key="cm:name" default="true" />
@@ -66,7 +66,7 @@
 	<journal id="payments">
 		<option name="type">payments:payment</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="formId">filters</option>
 		<headers>
 			<header key="cm:created" default="true" />
@@ -101,7 +101,7 @@
 	<journal id="closing-document-type">
 		<option name="type">contracts:documentType</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:name" default="true" />
 		</headers>
@@ -109,7 +109,7 @@
 
 	<journal id="contracts-closing-document">
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="type">contracts:closingDocument</option>
 		<!--option name="formId">filters</option-->
 		<headers>
@@ -131,7 +131,7 @@
 
 	<journal id="contracts-supplementary-agreement">
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="type">contracts:supplementaryAgreement</option>
 		<option name="formId">filters</option>
 		<headers>
@@ -164,7 +164,7 @@
 
 	<journal id="original-location">
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<option name="type">contracts:originalLocation</option>
 		<headers>
 			<header key="cm:name" default="true" />

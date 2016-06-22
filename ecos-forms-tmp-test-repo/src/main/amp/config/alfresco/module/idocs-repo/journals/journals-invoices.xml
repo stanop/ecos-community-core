@@ -9,7 +9,7 @@
 	<journal id="invoices-acceptanceAct">
 		<option name="type">inv:acceptanceAct</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="invoice:name" default="true" />
 			<header key="invoice:number" default="true" />
@@ -23,7 +23,7 @@
 	<journal id="invoices-invoice">
 		<option name="type">inv:invoice</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="invoice:name" default="true" />
 			<header key="invoice:number" default="true" />
@@ -37,7 +37,7 @@
 	<journal id="invoices-bill">
 		<option name="type">inv:bill</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="invoice:name" default="true" />
 			<header key="invoice:number" default="true" />

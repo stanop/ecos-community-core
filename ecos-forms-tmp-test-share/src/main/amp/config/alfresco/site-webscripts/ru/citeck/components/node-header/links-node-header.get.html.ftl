@@ -16,7 +16,7 @@
             <#assign site_url = site_url + "?path=" + node.displayPath>
         </#if>
     <#else>
-        <#assign site_url = site_url + "/card-details?nodeRef=" + node.nodeRef>
+        <#assign site_url = site_url + "/document-details?nodeRef=" + node.nodeRef>
     </#if>
     <#return site_url>
 </#function>

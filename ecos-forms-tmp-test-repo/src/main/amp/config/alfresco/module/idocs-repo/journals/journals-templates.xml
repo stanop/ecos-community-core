@@ -18,7 +18,7 @@
 	<journal id="templates">
 		<option name="type">dms:template</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:name" default="true" />
 			<header key="tk:appliesToType" default="true" />
@@ -31,7 +31,7 @@
 	<journal id="cardTemplate">
 		<option name="type">dms:cardTemplate</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:name" default="true" />
 			<header key="dms:cardType" default="true" />
@@ -44,7 +44,7 @@
 	<journal id="notificationTemplate">
 		<option name="type">dms:notificationTemplate</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:name" default="true" />
 			<header key="dms:notificationType" default="true" />
@@ -56,7 +56,7 @@
 	<journal id="autonumber-templates">
 		<option name="type">count:autonumberTemplate</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:name" default="true"/>
 			<header key="count:commonTemplate"/>
@@ -69,7 +69,7 @@
 	<journal id="case-templates">
 		<option name="type">icase:template</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="icase:caseType" default="true" />
 			<header key="icase:condition" />
@@ -79,7 +79,7 @@
 	<journal id="cardTemplateTypes">
 		<option name="type">cdl:cardTemplateType</option>
 		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="doubleClickLink">document-details?nodeRef={id}</option>
 		<headers>
 			<header key="cm:name" default="true" />
 			<header key="cm:title" default="true" />
