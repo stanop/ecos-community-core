@@ -1,6 +1,6 @@
 <#import "/ru/citeck/components/form/ftl-forms.lib.ftl" as forms />
 
-<@forms.setMandatoryFields fieldNames = [ "assoc_wfperf_controller" ] 
+<@forms.setMandatoryFields fieldNames = [ "assoc_wfperf_controller" ]
 	condition = "prop_wfperf_enableControl == 'true'" />
 
 <@forms.renderFormsRuntime formId=formId />
@@ -20,9 +20,18 @@
 					"params": {
 						"defaultUserName": "${(user.id)?js_string}"
 					}
-				} 
+				}
 			}/>
 		</@>
 	</div>
 	<#include "../common/task-items.ftl" />
+	<div class="set">
+    	<div class="set-title">${msg("workflow.set.other")}</div>
+		<@forms.renderField field = "prop_cwf_sendNotification" extension = { "control" : {
+			"template" : "/org/alfresco/components/form/controls/workflow/email-notification.ftl",
+			"params" : {
+				}
+			}
+		} />
+	</div>
 </@>
