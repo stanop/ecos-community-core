@@ -102,6 +102,14 @@
 		</property>
 	</bean>
 
+	<bean id="contracts.closingDocumentNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="contracts:closingDocument"/>
+		<property name="nameTemplate">
+			<value><![CDATA[<#if .locale == "ru_RU" && node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Счет-фактура<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Акт<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Накладная</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'б-н'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> для #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if>]]></value>
+		</property>
+		<property name="order" value="40"/>
+	</bean>
+
 	<bean id="contracts.agreementNumberBehaviour" parent="EnumerationBehaviour">
         <property name="className" value="contracts:agreement" />
         <property name="numberField" value="contracts:agreementNumber" />
