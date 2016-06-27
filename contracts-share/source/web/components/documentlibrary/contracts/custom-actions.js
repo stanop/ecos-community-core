@@ -146,7 +146,7 @@
                             }
 
                             var contracts = record.jsNode.properties["payments:basis_added"];
-                            if (contracts.length > 0) {
+                            if (contracts != null && contracts.length > 0) {
                                 redirection += '&param_contract=' + contracts[0];
                             }
 
