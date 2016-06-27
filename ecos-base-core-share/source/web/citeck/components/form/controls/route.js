@@ -402,8 +402,11 @@
                     var dueDateExpr;
                     $("input[type=\"text\"].time", this)
                         .each(function() {
-                            if (this.value) {
-                                dueDateExpr = this.value + "/";
+                            var str = this.value.replace(/\s+/,''); //remove spaces
+                            if (str.length == 0) {
+                                dueDateExpr = "0/";
+                            } else {
+                                dueDateExpr = str + "/";
                             }
                         });
                     $("select.time-type", this)
