@@ -325,6 +325,13 @@
             </field>
         </view>
         <view>
+            <field prop="payments:billDate">
+                <region name="label" template="label">
+                    <param name="key">payments_paymentsModel.property.payments_billDate.title</param>
+                </region>
+            </field>
+        </view>
+        <view>
             <field prop="payments:plannedPaymentDate">
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.property.payments_plannedPaymentDate.title</param>
@@ -362,13 +369,6 @@
             <field prop="payments:paymentVAT">
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.property.payments_paymentVAT.title</param>
-                </region>
-            </field>
-        </view>
-        <view>
-            <field prop="payments:billDate">
-                <region name="label" template="label">
-                    <param name="key">payments_paymentsModel.property.payments_billDate.title</param>
                 </region>
             </field>
         </view>

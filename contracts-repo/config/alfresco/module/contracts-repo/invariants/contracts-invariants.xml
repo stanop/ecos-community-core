@@ -71,6 +71,16 @@
         <property name="payments:paymentNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
+        <property name="payments:plannedPaymentDate">
+            <invariant on="default" language="javascript"><![CDATA[
+                (function() {
+                    var billDate = node.properties["payments:billDate"];
+                    var plannedPaymentDate = new Date();
+                    plannedPaymentDate.setDate(billDate.getDate() + 5);
+                    return plannedPaymentDate;
+                })()
+            ]]></invariant>
+        </property>
         <association name="payments:beneficiary">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
