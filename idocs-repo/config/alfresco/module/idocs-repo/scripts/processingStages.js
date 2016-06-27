@@ -12,16 +12,19 @@ function process(){
         arrUnworkDays.push(unWork.properties["bcal:dateTo"]);
     }
     var startDate = Packages.org.joda.time.DateTime.now();
-    var time = startDate.getMillis() + precedence.stages.get(stageIndex).confirmers.get(0).amountHours * 60 * 60 * 1000;
-    var endDate = new Packages.org.joda.time.DateTime(time);
-    var someInterval = new Packages.org.joda.time.Interval(startDate, endDate);
-    var i = 0;
-    for each (var day in arrUnworkDays) {
-        if (someInterval.contains(day)) {
-            i++;
-            someInterval = someInterval.withEnd(someInterval.getEnd().plusDays(1));
+    var hours = precedence.stages.get(stageIndex).confirmers.get(0).amountHours;
+    if (hours != 0) {
+        var time = startDate.getMillis() + hours * 60 * 60 * 1000;
+        var endDate = new Packages.org.joda.time.DateTime(time);
+        var someInterval = new Packages.org.joda.time.Interval(startDate, endDate);
+        var i = 0;
+        for each (var day in arrUnworkDays) {
+            if (someInterval.contains(day)) {
+                i++;
+                someInterval = someInterval.withEnd(someInterval.getEnd().plusDays(1));
+            }
         }
+        var newEndDate = endDate.plusDays(i);
+        execution.setVariable("bpm_workflowDueDate", newEndDate.toDate());
     }
-    var newEndDate = endDate.plusDays(i);
-    execution.setVariable("bpm_workflowDueDate", newEndDate.toDate());
 }
