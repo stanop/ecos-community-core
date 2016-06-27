@@ -155,6 +155,9 @@
     </type>
 
     <type name="contracts:closingDocument">
+        <property name="cm:name">
+            <invariant on="relevant" language="javascript">node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'</invariant>
+        </property>
         <!-- <association name="contracts:closingDocumentAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association> -->

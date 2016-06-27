@@ -102,6 +102,28 @@
 		</property>
 	</bean>
 
+	<bean id="contracts.closingDocumentNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="contracts:closingDocument"/>
+		<property name="nameTemplate">
+			<value><![CDATA[<#if .locale == "ru_RU" && node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Счет-фактура<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Акт<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Накладная</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'б-н'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> для #{'$'}{node.assocs['contracts:contractor'][0].name}</#if><#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Invoice<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Act<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Delivery</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'n/a'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> for #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if>]]></value>
+		</property>
+		<property name="order" value="40"/>
+	</bean>
+
+	<bean id="contracts.closingDocumentTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="contracts:closingDocument"/>
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[<#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Счет-фактура<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Акт<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Накладная</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'б-н'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> для #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[<#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Invoice<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Act<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Delivery</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'n/a'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> for #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
 	<bean id="contracts.agreementNumberBehaviour" parent="EnumerationBehaviour">
         <property name="className" value="contracts:agreement" />
         <property name="numberField" value="contracts:agreementNumber" />
