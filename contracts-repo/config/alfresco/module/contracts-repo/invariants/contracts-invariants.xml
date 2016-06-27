@@ -74,10 +74,20 @@
         <property name="payments:plannedPaymentDate">
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
-                    var billDate = node.properties["payments:billDate"];
-                    var plannedPaymentDate = new Date();
-                    plannedPaymentDate.setDate(billDate.getDate() + 5);
-                    return plannedPaymentDate;
+                    var currentDate = node.properties["payments:billDate"];
+
+                    var amtDay = 5;
+                    var nextDay = currentDate;
+
+                    while (amtDay > 0) {
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        if (nextDay.getDay() == 0 || nextDay.getDay() == 6) {
+                            //do nothing
+                        } else {
+                            amtDay--;
+                        }
+                    }
+                    return nextDay;
                 })()
             ]]></invariant>
         </property>
