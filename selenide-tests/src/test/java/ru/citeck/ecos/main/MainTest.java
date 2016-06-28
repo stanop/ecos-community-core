@@ -17,6 +17,7 @@ public class MainTest {
         $(By.name("password")).val("ivan").pressEnter();
         $(By.className("error")).shouldNotBe(Condition.visible);
         $(("#HEADER_USER_MENU_POPUP_text")).shouldHave(Condition.hasText("ivan"));
+        close();
     }
 
 }

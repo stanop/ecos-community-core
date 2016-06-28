@@ -26,8 +26,9 @@ public class TestJournalPage extends SelenideTests{
         SelenideElement table = journalsPage.getTable();
         table.shouldBe(present);
         CreatePage createPage = journalsPage.clickOnButtonCreate();
-        //Assert.assertTrue("Alfresco » Создать контент".equals(createPage.getTitle()) || "Alfresco » Create content".equals(createPage.getTitle()));
-        createPage.getTitle().shouldHave(hasText("Создать контент"));
+        Assert.assertTrue("Alfresco » Создать контент".equals(createPage.getTitle()) || "Alfresco » Create Content".equals(createPage.getTitle()));
+
+
     }
     @Test
     public void saveFilterContentJournal()
