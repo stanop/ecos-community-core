@@ -12,7 +12,7 @@ public class MainTest {
     public void openURL() {
 //        System.setProperty("selenide.timeout", "7500"); //Don't use
 //        System.setProperty("selenide.baseUrl", "http://37.230.155.222:4580");
-        open("/share/page/");
+        open("");
         $(By.name("username")).val("ivan");
         $(By.name("password")).val("ivan").pressEnter();
         $(By.className("error")).shouldNotBe(Condition.visible);

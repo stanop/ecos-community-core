@@ -36,7 +36,7 @@ public class JournalsPage {
     public CreatePage clickOnButtonCreate()
     {
         CreatePage createPage = new CreatePage();
-        $(By.cssSelector("#alf-content > div > span > span > button")).click();
+        $(By.cssSelector("#alf-content > div > span > span > button")).shouldBe(present).click();
         $(By.cssSelector("#alf-content [href *= \"create-content\"]")).shouldBe(present).click();
         return createPage;
     }

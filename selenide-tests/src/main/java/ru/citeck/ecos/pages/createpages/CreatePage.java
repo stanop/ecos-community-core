@@ -10,8 +10,8 @@ import static com.codeborne.selenide.Selenide.title;
 
 public class CreatePage {
 
-    public String getTitle() {
-        return title();
+    public SelenideElement getTitle() {
+        return $("#HEADER_TITLE");
     }
 
 

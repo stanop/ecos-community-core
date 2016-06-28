@@ -6,6 +6,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.junit.*;
 import org.openqa.selenium.By;
 
+import static com.codeborne.selenide.Condition.hasText;
 import static com.codeborne.selenide.Condition.present;
 
 
@@ -25,7 +26,8 @@ public class TestJournalPage extends SelenideTests{
         SelenideElement table = journalsPage.getTable();
         table.shouldBe(present);
         CreatePage createPage = journalsPage.clickOnButtonCreate();
-        Assert.assertTrue("Alfresco » Создать контент".equals(createPage.getTitle()) || "Alfresco » Create content".equals(createPage.getTitle()));
+        //Assert.assertTrue("Alfresco » Создать контент".equals(createPage.getTitle()) || "Alfresco » Create content".equals(createPage.getTitle()));
+        createPage.getTitle().shouldHave(hasText("Создать контент"));
     }
     @Test
     public void saveFilterContentJournal()
