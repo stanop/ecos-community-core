@@ -4,7 +4,6 @@ import ru.citeck.ecos.pages.AdminToolsPage;
 import ru.citeck.ecos.pages.HomePage;
 import  ru.citeck.ecos.pages.SiteHomePage;
 import org.junit.*;
-import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestHomePage extends SelenideTests {
 
@@ -28,7 +27,6 @@ public class TestHomePage extends SelenideTests {
     {
         HomePage homePage = new HomePage();
         AdminToolsPage adminToolsPage = homePage.openAdminTools();
-//        sleep(7000);
         Assert.assertTrue("Alfresco » Инструменты администратора".equals(adminToolsPage.getTitle()) || "Alfresco » Admin Tools".equals(adminToolsPage.getTitle()));
     }
 

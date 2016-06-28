@@ -38,7 +38,6 @@ public class JournalsPage {
         CreatePage createPage = new CreatePage();
         $(By.cssSelector("#alf-content > div > span > span > button")).click();
         $(By.cssSelector("#alf-content [href *= \"create-content\"]")).shouldBe(present).click();
-        //$$(By.cssSelector("#alf-content > div > div > div > ul > li > a")).get(0).click();
         return createPage;
     }
 
@@ -47,7 +46,7 @@ public class JournalsPage {
         $(By.cssSelector(".filter button")).shouldBe(present).click();
         return $(By.cssSelector("[id *= default-criteria-buttons]"));
     }
-    public void addCriterionNameContainsValue(/*передаю значение для setValue*/)//todo сделать метод getTable
+    public void addCriterionNameContainsValue(/*передаю значение для setValue*/)
     {
         $$(By.cssSelector("[id *= \"default-criteria-buttons\"] button")).get(3).shouldBe(present).click();//клик на кнопку "Добавить критерий"
         $(By.cssSelector("[id *= \"default-add-criterion-menu\"] [index=\"0\"]")).shouldBe(present).click();//выбор критерия "Имя" для журнала контент

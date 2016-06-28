@@ -52,5 +52,8 @@ public class TestCreatePage extends SelenideTests{
     {
         SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
         supplementaryAgreementCreatePage.openCreatePage();
+
+        supplementaryAgreementCreatePage.setLegalEntityFormCreateContract();
+        supplementaryAgreementCreatePage.setContractorFormCreateContract();
     }
 }

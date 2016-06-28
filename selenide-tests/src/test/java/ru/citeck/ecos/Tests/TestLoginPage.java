@@ -9,8 +9,5 @@ public class TestLoginPage extends SelenideTests{
     {
         HomePage homePage = new HomePage();
         Assert.assertTrue("Alfresco » Домашняя страница".equals(homePage.getTitle()) || "Alfresco » User Dashboard".equals(homePage.getTitle()));
-        //Assert.assertEquals("Citeck EcoS » Домашняя страница", homePage.GetTitle());
     }
-
-
 }

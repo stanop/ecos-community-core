@@ -17,15 +17,15 @@ public class CreatePage {
 
     public void setLegalEntityFormCreateContract()
     {
-        $(By.cssSelector("[id *= \"contracts_agreementLegalEntity-journalControl-button\"]")).shouldBe(present).click();
+        $(By.cssSelector("[id *= \"egalEntity-journalControl-button\"]")).shouldBe(present).click();
         $(By.cssSelector("[id *= \"workspace\"]")).click();
         $(By.cssSelector("[id *= \"contracts_agreementLegalEntity-journalControl-journalPanel-submitInput\"]")).click();
     }
     public void setContractorFormCreateContract()
     {
-        $(By.cssSelector("[id *= \"contracts_contractor-journalControl-button\"]")).shouldBe(present).click();
+        $(By.cssSelector("[id *= \"contractor-journalControl-button\"]")).shouldBe(present).click();
         $(By.cssSelector("[id *= \"workspace\"]")).shouldBe(present).click();
-        $(By.cssSelector("[id *= \"contracts_contractor-journalControl-journalPanel-submitInput\"]")).click();
+        $(By.cssSelector("[id *= \"contractor-journalControl-journalPanel-submitInput\"]")).click();
     }
     public void selectCurrency()
     {
