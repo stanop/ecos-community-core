@@ -14,7 +14,7 @@ public class ContractCreatePage extends CreatePage{
 
     public void  openNewCreatePage()
     {
-        open(Settings.getBaseURL()+"/node-create-page?type=contracts:agreement");
+        open("/node-create-page?type=contracts:agreement");
     }
     public void setContractWith()
     {

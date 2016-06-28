@@ -8,7 +8,7 @@ public class SupplementaryAgreementCreatePage extends CreatePage {
 
     public void openCreatePage()
     {
-        open(Settings.getBaseURL()+"/node-create-page?type=contracts:supplementaryAgreement");
+        open("/node-create-page?type=contracts:supplementaryAgreement");
     }
 
 }

@@ -14,7 +14,8 @@ public class LoginPage {
 
     public LoginPage()
     {
-        Selenide.open(Settings.getBaseURL());
+        Selenide.open("");
+
     }
     public void inLoginAndPassword(String username, String password) {
         $(By.name("username")).shouldBe(present).setValue(username);

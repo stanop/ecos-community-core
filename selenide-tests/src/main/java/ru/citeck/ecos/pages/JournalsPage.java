@@ -13,7 +13,7 @@ public class JournalsPage {
 
     public void openMainJournal()
     {
-        open(Settings.getBaseURL()+"/journals2/list/main");
+        open("/journals2/list/main");
 
     }
     public String getTitle()
