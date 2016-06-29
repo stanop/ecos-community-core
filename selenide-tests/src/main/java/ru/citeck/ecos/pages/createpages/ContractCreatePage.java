@@ -1,9 +1,5 @@
 package ru.citeck.ecos.pages.createpages;
 
-
-
-
-import  ru.citeck.ecos.Settings;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.present;
@@ -20,14 +16,7 @@ public class ContractCreatePage extends CreatePage{
     {
         $(By.cssSelector("[id *= \"contracts_contractWith\"]")).selectOptionByValue("client");
     }
-    public void setAgreementNumber()
-    {
-        $(By.cssSelector("[id *= \"contracts_agreementNumber\"]")).setValue("№"+Math.random()*100);
-    }
-    public void setContractDate()
-    {
-        $(By.cssSelector("[id *= \"contracts_agreementDate\"] input")).setValue("2016-06-22");
-    }
+
     public void setContractValue()
     {
         $(By.cssSelector("[id *= \"contracts_agreementAmount\"]")).setValue("2000");

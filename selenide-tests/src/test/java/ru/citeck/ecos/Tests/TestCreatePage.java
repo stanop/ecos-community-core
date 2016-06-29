@@ -1,6 +1,7 @@
 package ru.citeck.ecos.Tests;
 
 import com.codeborne.selenide.SelenideElement;
+import ru.citeck.ecos.pages.createpages.ClosingDocumentCreatePage;
 import ru.citeck.ecos.pages.createpages.ContractCreatePage;
 import ru.citeck.ecos.pages.createpages.CreatePage;
 import ru.citeck.ecos.pages.createpages.SupplementaryAgreementCreatePage;
@@ -22,38 +23,87 @@ public class TestCreatePage extends SelenideTests{
         contractCreatePage.setLegalEntityFormCreateContract();
         contractCreatePage.setContractorFormCreateContract();
         contractCreatePage.setContractWith();
-        contractCreatePage.setAgreementNumber();
-        contractCreatePage.setContractDate();
+        contractCreatePage.setDocumentNumber();
+        contractCreatePage.setDocumentDate();
         contractCreatePage.selectCurrency();
         contractCreatePage.setSummary();
-        //contractCreatePage.setContractValue();//bug ECOSCOM-453
-        //contractCreatePage.setVAT();
-        //contractCreatePage.setNumberOfAppendixPage();
-        //contractCreatePage.setNumberPage();
-        //contractCreatePage.createPaymentSchedule();
-
-        CreatePage createPage = new CreatePage();
-        SelenideElement selenideElement = createPage.clickOnResetButton();
-        selenideElement.shouldBe(visible);
-
-        contractCreatePage.setLegalEntityFormCreateContract();
+//        contractCreatePage.setContractValue();//bug ECOSCOM-453
+//        contractCreatePage.setVAT();
+//        contractCreatePage.setNumberOfAppendixPage();
+//        contractCreatePage.setNumberPage();
+//        contractCreatePage.createPaymentSchedule();
+//        SelenideElement resetButton = contractCreatePage.clickOnResetButton();
+//        resetButton.shouldBe(visible);
+//
+//        contractCreatePage.setLegalEntityFormCreateContract();
         contractCreatePage.setContractorFormCreateContract();
-        contractCreatePage.setContractWith();
-        contractCreatePage.setAgreementNumber();
-        contractCreatePage.setContractDate();
-        contractCreatePage.selectCurrency();
-
+//        contractCreatePage.setContractWith();
+        contractCreatePage.setDocumentNumber();
+        contractCreatePage.setDocumentDate();
+//        contractCreatePage.selectCurrency();
         DocumentDetailsPage documentDetailsPage = contractCreatePage.clickOnCreateContentButton();
-        Assert.assertTrue("Alfresco » Сведения о документе".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Card details".equals(documentDetailsPage.getTitle()));
-        //Assert.assertTrue("Alfresco » Карточка".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Card details".equals(documentDetailsPage.getTitle()));
+        Assert.assertTrue("Alfresco » Сведения о документе".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Document Details".equals(documentDetailsPage.getTitle()));
     }
     @Test
     public void createSupplementaryAgreement()
     {
         SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
         supplementaryAgreementCreatePage.openCreatePage();
+        supplementaryAgreementCreatePage.clickOnBCancelButton();
+
+        supplementaryAgreementCreatePage.openCreatePage();
+        supplementaryAgreementCreatePage.setLegalEntityFormCreateContract();
+//        supplementaryAgreementCreatePage.setContractorFormCreateContract();
+        supplementaryAgreementCreatePage.setDocumentNumber();
+//        supplementaryAgreementCreatePage.setDocumentDate();
+//        supplementaryAgreementCreatePage.selectMainAgreement();
+        SelenideElement resetButton = supplementaryAgreementCreatePage.clickOnResetButton();
+        resetButton.shouldBe(visible);
 
         supplementaryAgreementCreatePage.setLegalEntityFormCreateContract();
         supplementaryAgreementCreatePage.setContractorFormCreateContract();
+        supplementaryAgreementCreatePage.setDocumentNumber();
+        supplementaryAgreementCreatePage.setDocumentDate();
+        supplementaryAgreementCreatePage.selectMainAgreement();
+        DocumentDetailsPage documentDetailsPage = supplementaryAgreementCreatePage.clickOnCreateContentButton();
+        Assert.assertTrue("Alfresco » Сведения о документе".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Document Details".equals(documentDetailsPage.getTitle()));
     }
+    @Test
+    public void createClosingDocumentWithContact()
+    {
+        ClosingDocumentCreatePage closingDocumentCreatePage = new ClosingDocumentCreatePage();
+        closingDocumentCreatePage.openCreatePage();
+        closingDocumentCreatePage.clickOnBCancelButton();
+
+        closingDocumentCreatePage.openCreatePage();
+        closingDocumentCreatePage.setNameClosingDocument();
+        closingDocumentCreatePage.selectContract();
+        closingDocumentCreatePage.clickOnResetButton();
+
+        closingDocumentCreatePage.setNameClosingDocument();
+        closingDocumentCreatePage.selectContract();
+        closingDocumentCreatePage.selectPayment();
+        closingDocumentCreatePage.selectOriginalLocation();
+        closingDocumentCreatePage.setDocumentNumber();
+        closingDocumentCreatePage.setDocumentDate();
+        DocumentDetailsPage documentDetailsPage = closingDocumentCreatePage.clickOnCreateContentButton();
+        Assert.assertTrue("Alfresco » Сведения о документе".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Document Details".equals(documentDetailsPage.getTitle()));
+    }
+    @Test
+    public void createClosingDocumentWithoutContract()
+    {
+        ClosingDocumentCreatePage closingDocumentCreatePage = new ClosingDocumentCreatePage();
+        closingDocumentCreatePage.openCreatePage();
+        closingDocumentCreatePage.setNameClosingDocument();
+        closingDocumentCreatePage.selectPayment();
+        closingDocumentCreatePage.selectOriginalLocation();
+        closingDocumentCreatePage.setLegalEntityFormCreateContract();
+        closingDocumentCreatePage.setContractorFormCreateContract();
+        closingDocumentCreatePage.setDocumentNumber();
+        closingDocumentCreatePage.setDocumentDate();
+        closingDocumentCreatePage.selectCurrency();
+        DocumentDetailsPage documentDetailsPage = closingDocumentCreatePage.clickOnCreateContentButton();
+        Assert.assertTrue("Alfresco » Сведения о документе".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Document Details".equals(documentDetailsPage.getTitle()));
+    }
+
 }

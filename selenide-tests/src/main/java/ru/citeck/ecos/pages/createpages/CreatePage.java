@@ -17,15 +17,21 @@ public class CreatePage {
 
     public void setLegalEntityFormCreateContract()
     {
-        $(By.cssSelector("[id *= \"egalEntity-journalControl-button\"]")).shouldBe(present).click();
-        $(By.cssSelector("[id *= \"workspace\"]")).click();
-        $(By.cssSelector("[id *= \"contracts_agreementLegalEntity-journalControl-journalPanel-submitInput\"]")).click();
+        $("[id *= \"egalEntity-journalControl-button\"]").shouldBe(present).click();
+        $("[id *= \"workspace\"]").click();
+        $("[id *= \"egalEntity-journalControl-journalPanel-selectedElementsTable\"]").shouldBe(present);
+        $("[id *= \"egalEntity-journalControl-journalPanel-submitInput\"]").click();
     }
     public void setContractorFormCreateContract()
     {
         $(By.cssSelector("[id *= \"contractor-journalControl-button\"]")).shouldBe(present).click();
         $(By.cssSelector("[id *= \"workspace\"]")).shouldBe(present).click();
+        $("[id *= \"contractor-journalControl-journalPanel-selectedElementsTable\"]").shouldBe(present);
         $(By.cssSelector("[id *= \"contractor-journalControl-journalPanel-submitInput\"]")).click();
+    }
+    public void setDocumentNumber()
+    {
+        $(By.cssSelector("[id *= \"agreementNumber\"]")).setValue("№"+Math.random()*100);
     }
     public void selectCurrency()
     {
@@ -52,5 +58,9 @@ public class CreatePage {
     {
         $("[id *= 'form-reset']").click();
         return $("span.validation-message");
+    }
+    public void setDocumentDate()
+    {
+        $(By.cssSelector("[id *= \"contracts_agreementDate\"] input")).setValue("2016-06-29");
     }
 }
