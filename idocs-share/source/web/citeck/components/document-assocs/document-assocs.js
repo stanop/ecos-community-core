@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -364,7 +364,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                     page = "document";
                 }
                 elCell.innerHTML = '&nbsp;<a id="' + openId + '" href="/share/page/' + page + '-details?nodeRef=' + oRecord._oData.nodeRef + '" class="open-link">' +
-                    '<span>' + oRecord._oData.name + '</span></a>';
+                    '<span>' + oRecord._oData.title + '</span></a>';
             };
             var columnDefinitions =
                 [
@@ -383,7 +383,8 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                         { key: "name" },
                         { key: "isFolder" },
                         { key: "isContent" },
-                        { key: "typeDirect" }
+                        { key: "typeDirect" },
+                        { key: "title" }
                     ]
                 }
             });
