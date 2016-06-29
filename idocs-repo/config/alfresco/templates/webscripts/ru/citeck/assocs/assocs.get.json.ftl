@@ -14,6 +14,7 @@
                 "isFolder": "${source.isFolder}",
                 "isContent": "${source.isContent}",
                 "typeDirect": "sources",
+                "title": "${source.title}",
 				"attributes": {
                 <#if source.source.properties??>
                     <@search.propertiesJSON source.source.properties/>
@@ -36,6 +37,7 @@
                 "isFolder": "${target.isFolder}",
                 "isContent": "${target.isContent}",
                 "typeDirect": "targets",
+                "title": "${target.title}",
 				"attributes": {
                 <#if target.target.properties??>
                     <@search.propertiesJSON target.target.properties/>
@@ -57,6 +59,7 @@
                 "isFolder": "${child.isFolder}",
                 "isContent": "${child.isContent}",
                 "typeDirect": "children",
+                "title": "${child.title}",
                 "attributes": {
                 <#if child.child.properties??>
                     <@search.propertiesJSON child.child.properties/>
