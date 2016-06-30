@@ -9,11 +9,9 @@ import  com.codeborne.selenide.junit.ScreenShooter;
 
 import static com.codeborne.selenide.Selenide.close;
 
-
-
 public class SelenideTests {
     @BeforeClass
-    public static void Login()
+    public static void login()
     {
         LoginPage loginPage = new LoginPage();
         loginPage.inLoginAndPassword(Settings.getLogin(), Settings.getPassword());

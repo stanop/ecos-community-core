@@ -1,6 +1,5 @@
 package  ru.citeck.ecos.pages.createpages;
 
-
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 import  ru.citeck.ecos.pages.*;
@@ -18,7 +17,7 @@ public class CreatePage {
     public void setLegalEntityFormCreateContract()
     {
         $("[id *= \"egalEntity-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").click();
+        $("[id *= \"workspace\"]").shouldBe(present).click();
         $("[id *= \"egalEntity-journalControl-journalPanel-selectedElementsTable\"]").shouldBe(present);
         $("[id *= \"egalEntity-journalControl-journalPanel-submitInput\"]").click();
     }
@@ -31,18 +30,15 @@ public class CreatePage {
     }
     public void setDocumentNumber()
     {
-        $(By.cssSelector("[id *= \"agreementNumber\"]")).setValue("№"+Math.random()*100);
+        $(By.cssSelector("[id *= \"agreementNumber\"]")).setValue("№"+Math.random()*100).shouldBe(present);
     }
     public void selectCurrency()
     {
         $("[data-bind *= \"clear \"]").click();
         $(".autocomplete-twister").click();
-       // $("[data-bind *= 'searching']").setValue("руб").shouldBe(present).click();
         $("input.autocomplete-search").setValue("руб").shouldBe(present);
         $("ul.autocomplete-list > li.selected > a").click();
     }
-
-
     public DocumentDetailsPage clickOnCreateContentButton()
     {
         DocumentDetailsPage documentDetailsPage = new DocumentDetailsPage();
@@ -52,15 +48,15 @@ public class CreatePage {
     }
     public void clickOnBCancelButton()
     {
-        $(By.cssSelector("[id *= \"form-cancel\"]")).click();
+        $(By.cssSelector("[id *= \"form-cancel\"]")).shouldBe(present).click();
     }
     public SelenideElement clickOnResetButton()
     {
-        $("[id *= 'form-reset']").click();
+        $("[id *= 'form-reset']").shouldBe(present).click();
         return $("span.validation-message");
     }
     public void setDocumentDate()
     {
-        $(By.cssSelector("[id *= \"contracts_agreementDate\"] input")).setValue("2016-06-29");
+        $(By.cssSelector("[id *= \"contracts_agreementDate\"] input")).setValue("2016-06-29").shouldBe(present);
     }
 }

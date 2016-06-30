@@ -82,9 +82,9 @@ public class TestCreatePage extends SelenideTests{
 
         closingDocumentCreatePage.setNameClosingDocument();
         closingDocumentCreatePage.selectContract();
-        closingDocumentCreatePage.selectPayment();
         closingDocumentCreatePage.selectOriginalLocation();
         closingDocumentCreatePage.setDocumentNumber();
+        closingDocumentCreatePage.selectPayment();
         closingDocumentCreatePage.setDocumentDate();
         DocumentDetailsPage documentDetailsPage = closingDocumentCreatePage.clickOnCreateContentButton();
         Assert.assertTrue("Alfresco » Сведения о документе".equals(documentDetailsPage.getTitle()) ||  "Alfresco » Document Details".equals(documentDetailsPage.getTitle()));
@@ -95,11 +95,11 @@ public class TestCreatePage extends SelenideTests{
         ClosingDocumentCreatePage closingDocumentCreatePage = new ClosingDocumentCreatePage();
         closingDocumentCreatePage.openCreatePage();
         closingDocumentCreatePage.setNameClosingDocument();
-        closingDocumentCreatePage.selectPayment();
         closingDocumentCreatePage.selectOriginalLocation();
         closingDocumentCreatePage.setLegalEntityFormCreateContract();
         closingDocumentCreatePage.setContractorFormCreateContract();
         closingDocumentCreatePage.setDocumentNumber();
+        closingDocumentCreatePage.selectPayment();
         closingDocumentCreatePage.setDocumentDate();
         closingDocumentCreatePage.selectCurrency();
         DocumentDetailsPage documentDetailsPage = closingDocumentCreatePage.clickOnCreateContentButton();

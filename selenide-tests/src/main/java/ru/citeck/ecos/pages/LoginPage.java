@@ -1,14 +1,9 @@
 package ru.citeck.ecos.pages;
 
-import ru.citeck.ecos.Settings;
 import com.codeborne.selenide.Selenide;
 import org.openqa.selenium.By;
 import static com.codeborne.selenide.Condition.present;
-
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
 
 public class LoginPage {
 

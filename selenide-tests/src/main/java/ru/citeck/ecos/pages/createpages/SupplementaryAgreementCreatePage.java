@@ -1,8 +1,5 @@
 package  ru.citeck.ecos.pages.createpages;
 
-
-import ru.citeck.ecos.Settings;
-
 import static com.codeborne.selenide.Condition.present;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;

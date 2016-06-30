@@ -23,7 +23,6 @@ public class HomePage {
         SiteHomePage siteHomePage = new SiteHomePage();
         $(By.cssSelector("#alfresco-createSite-instance-form  #alfresco-createSite-instance-title")).shouldBe(present).setValue(mySite);
         $(By.cssSelector("#alfresco-createSite-instance-ok-button > span > button")).shouldBe(present).click();
-        //sleep(5000);
         $(By.cssSelector("#HEADER_SITE_DASHBOARD")).shouldBe(present);
         return siteHomePage;
     }
@@ -39,7 +38,6 @@ public class HomePage {
     {
         AdminToolsPage adminToolsPage = new AdminToolsPage();
         $("#HEADER_ADMIN_CONSOLE_text > a").shouldBe(present).click();
-        //open(Settings.Settings.getBaseURL()+"/console/admin-console/users");
         return adminToolsPage;
     }
 

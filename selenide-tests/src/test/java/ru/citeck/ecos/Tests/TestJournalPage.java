@@ -6,7 +6,6 @@ import com.codeborne.selenide.SelenideElement;
 import org.junit.*;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.hasText;
 import static com.codeborne.selenide.Condition.present;
 
 
@@ -76,7 +75,6 @@ public class TestJournalPage extends SelenideTests{
         journalsPage.clickOnSaveSettings();//сохранение настроек
         journalsPage.cancelSaveSettings();//отмена сохранения
 
-        //journalsPage.clickOnCheckboxSettings(4);
         journalsPage.clickOnSaveSettings();//сохранение настроек
         journalsPage.setNameSettings();
         journalsPage.saveSettings();//успешное сохранение
