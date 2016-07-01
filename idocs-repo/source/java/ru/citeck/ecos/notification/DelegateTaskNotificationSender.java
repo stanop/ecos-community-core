@@ -201,7 +201,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
 		for(String to : authorities) {
 			notificationContext.addTo(to);
 		}
-		notificationContext.setAsyncNotification(super.getAsyncNotification());
+		notificationContext.setAsyncNotification(getAsyncNotification());
 		if (null != from) {
 			notificationContext.setFrom(from);
 		}

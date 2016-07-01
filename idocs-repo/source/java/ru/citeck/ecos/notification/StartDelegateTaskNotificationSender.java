@@ -305,7 +305,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 							notificationContext.addTo(to);
 						}
 						notificationContext.setTemplateArgs(getNotificationArgs(task));
-						notificationContext.setAsyncNotification(super.getAsyncNotification());
+						notificationContext.setAsyncNotification(getAsyncNotification());
 						if (null != from) {
 							notificationContext.setFrom(from);
 						}
