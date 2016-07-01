@@ -61,8 +61,14 @@
     </type>
 
     <type name="payments:payment">
+        <association name="payments:basis">
+            <invariant on="value" language="javascript">view.params.contract</invariant>
+        </association>
         <property name="payments:paymentFor">
-            <invariant on="default" language="javascript">if (node.assocs["payments:basis"] != null) {node.assocs["payments:basis"][0].properties["contracts:contractWith"]}</invariant>
+            <invariant on="default" language="javascript">
+                if (node.assocs["payments:basis"] != null) 
+                    node.assocs["payments:basis"][0].properties["contracts:contractWith"]
+            </invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <association name="payments:payer">
@@ -178,9 +184,9 @@
         <property name="cm:name">
             <invariant on="relevant" language="javascript">node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'</invariant>
         </property>
-        <!-- <association name="contracts:closingDocumentAgreement">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </association> -->
+        <association name="contracts:closingDocumentAgreement">
+            <invariant on="value" language="javascript">view.params.contract</invariant>
+        </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
             <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
@@ -233,7 +239,20 @@
     <type name="contracts:supplementaryAgreement">
         <association name="contracts:mainAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value" language="javascript">view.params.contract</invariant>
         </association>
+        <association name="contracts:agreementSubject">
+            <invariant on="value" language="javascript">
+                if (node.assocs["contracts:mainAgreement"] != null) 
+                    node.assocs["contracts:mainAgreement"][0].properties["contracts:agreementSubject"]
+            </invariant>
+        </association>
+        <property name="tk:kind">
+            <invariant on="value" language="javascript">
+                if (node.assocs["contracts:mainAgreement"] != null) 
+                    node.assocs["contracts:mainAgreement"][0].properties["tk:kind"]
+            </invariant>
+        </property>
         <association name="contracts:agreementLegalEntity">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">
