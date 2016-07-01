@@ -112,6 +112,7 @@
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementCurrency.title</param>
                 </region>
+                <region name="input" template="select" />
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">
@@ -284,7 +285,7 @@
         <view>
             <field assoc="payments:payer">
                 <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                     <param name="journalType">legal-entities</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -310,7 +311,7 @@
         <view>
             <field assoc="payments:beneficiary">
                 <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                     <param name="journalType">idocs-contractor</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -359,6 +360,9 @@
             <field assoc="payments:currency">
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.association.payments_currency.title</param>
+                </region>
+                <region name="input" template="select" >
+                    <param name="alwaysSingle">true</param>
                 </region>
             </field>
             <field prop="payments:paymentAmount">
@@ -496,7 +500,7 @@
             </field>
             <field assoc="contracts:contractor">
                 <region name="select" template="select-journal">
-                    <param name="journalType">original-location</param>
+                    <param name="journalType">idocs-contractor</param>
                 </region>
             </field>
         </view>
@@ -525,7 +529,9 @@
             </field>
         </view>
         <view>
-            <field assoc="contracts:closingDocumentCurrency"/>
+            <field assoc="contracts:closingDocumentCurrency">
+                <region name="input" template="select" />
+            </field>
         </view>
         <field prop="dms:updateContent">
             <region name="label" template="label">
@@ -621,6 +627,7 @@
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementCurrency.title</param>
                 </region>
+                <region name="input" template="select" />
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">

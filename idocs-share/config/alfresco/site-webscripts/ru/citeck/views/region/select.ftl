@@ -1,4 +1,6 @@
 <#assign params = viewScope.region.params!{} />
+<#assign alwaysSingle = params.alwaysSingle!"false" />
+
 <!-- ko ifnot: multiple -->
 <select id="${fieldId}" data-bind="
 	options: options, 
@@ -11,8 +13,9 @@
 	disable: protected">
 </select>
 <!-- /ko -->
+
 <!-- ko if: multiple -->
-<select id="${fieldId}" <#if params.alwaysSingle!"false" != "true">multiple="true"</#if> data-bind="
+<select id="${fieldId}" <#if alwaysSingle != "true">multiple="true"</#if> data-bind="
 	options: options, 
 	optionsText: function(item) { return getValueTitle(item) }, 
 	selectedOptions: value, 
