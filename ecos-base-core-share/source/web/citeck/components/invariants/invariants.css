@@ -611,10 +611,7 @@
 }
 
 
-
-
 /* message */
-
 .invariants-form .template-table .template-message {
     display: block !important;
     clear: both;
@@ -645,8 +642,9 @@
   margin-left: 0;
 }
 
-.invariants-form .template-table .template-row > .template-textarea + .template-help + .template-message {
+.invariants-form .template-table .template-row > .template-textarea + .region-select-group + .template-help + .template-message {
   position: static;
+  margin-left: 0;
 }
 
 
