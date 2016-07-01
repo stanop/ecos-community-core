@@ -252,7 +252,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 					notificationContext.setSubject(subject);
 					setBodyTemplate(notificationContext, template);
 					notificationContext.setTemplateArgs(getNotificationArgs(task));
-					notificationContext.setAsyncNotification(super.getAsyncNotification());
+					notificationContext.setAsyncNotification(getAsyncNotification());
 					if (null != from) {
 						notificationContext.setFrom(from);
 					}
