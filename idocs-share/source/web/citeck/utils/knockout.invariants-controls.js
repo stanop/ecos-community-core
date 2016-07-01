@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals'], function(ko, koutils, invariants, journals) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals', 'lib/moment'], function(ko, koutils, invariants, journals, moment) {
 
 // ----------------
 // GLOBAL FUNCTIONS 
@@ -242,12 +242,13 @@ ko.bindingHandlers.dateControl = {
         var value = valueAccessor(),
             params = allBindings();
 
-        var localization = params.localization;
+        var localization = params.localization,
+            mode = params.mode;;
 
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (!Citeck.HTML5.supportedInputTypes.date) {
+        if (!Citeck.HTML5.supportedInputTypes.date || mode == "alfresco") {
             input.setAttribute("placeholder", localization.placeholder);
 
             var calendarDialogId = elementId + "-calendarDialog",

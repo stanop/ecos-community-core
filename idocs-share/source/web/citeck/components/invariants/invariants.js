@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(ko, koutils, moment) {
     
     var logger = Alfresco.logger,
         koclass = koutils.koclass,
@@ -193,7 +193,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         koutils: koutils,
         utils: UtilsImpl,
         dictionary: DictionaryServiceImpl,
-        enumeration: EnumerationServiceImpl
+        enumeration: EnumerationServiceImpl,
+        moment: moment
     };
     
     function evalJavaScript(expression, model) {
