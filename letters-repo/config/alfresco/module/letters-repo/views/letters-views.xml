@@ -54,7 +54,12 @@
 			<field prop="letters:deliveryMethod" />
 		</view>
 		<view>
-			<field assoc="letters:outcome" />
+			<field assoc="letters:outcome">
+				<region name="input" template="view" />
+				<region name="select" id="select" template="select-journal">
+					<param name="journalType">letters-outcome</param>
+				</region>
+			</field>
 			<field assoc="letters:nomenclature">
 				<region name="input" template="view" />
 				<region name="select" id="select" template="select-journal">
@@ -64,7 +69,12 @@
 			</field>
 		</view>
 		<view>
-			<field assoc="letters:reporterOrganization" />
+			<field assoc="letters:reporterOrganization">
+				<region name="input" template="view" />
+				<region name="select" id="select" template="select-journal">
+					<param name="journalType">idocs-contractor</param>
+				</region>
+			</field>
 			<field prop="letters:letterWriter" />
 		</view>
 		<view>
@@ -97,10 +107,20 @@
 		<field prop="tk:kind" />
 		<field prop="letters:deliveryMethod" />
 
-		<field assoc="letters:outcome" />
+		<field assoc="letters:outcome">
+			<region name="input" template="view" />
+			<region name="select" id="select" template="select-journal">
+				<param name="journalType">letters-outcome</param>
+			</region>
+		</field>
 		<field assoc="letters:nomenclature" />
 
-		<field assoc="letters:reporterOrganization" />
+		<field assoc="letters:reporterOrganization">
+			<region name="input" template="view" />
+			<region name="select" id="select" template="select-journal">
+				<param name="journalType">idocs-contractor</param>
+			</region>
+		</field>
 		<field prop="letters:letterWriter" />
 		
 		<field assoc="letters:subdivision" />
@@ -132,7 +152,12 @@
 		</view>
 		
 		<view>
-			<field assoc="letters:income" />
+			<field assoc="letters:income">
+				<region name="input" template="view" />
+				<region name="select" id="select" template="select-journal">
+					<param name="journalType">letters-income</param>
+				</region>
+			</field>
 			<field assoc="idocs:legalEntity" />
 		</view>
 
@@ -141,7 +166,12 @@
 			<field assoc="idocs:signatory" />
 		</view>
 
-		<field assoc="letters:addressee" />
+		<field assoc="letters:addressee">
+			<region name="input" template="view" />
+			<region name="select" id="select" template="select-journal">
+				<param name="journalType">idocs-contractor</param>
+			</region>
+		</field>
 
 		<field prop="idocs:summary" />
 		<field prop="idocs:note" />
@@ -163,13 +193,23 @@
 		<field prop="tk:kind" />
 		<field prop="letters:deliveryMethod" />
 
-		<field assoc="letters:income" />
+		<field assoc="letters:income">
+			<region name="input" template="view" />
+			<region name="select" id="select" template="select-journal">
+				<param name="journalType">letters-income</param>
+			</region>
+		</field>
 		<field assoc="idocs:legalEntity" />
 
 		<field assoc="idocs:performer" />
 		<field assoc="idocs:signatory" />
 
-		<field assoc="letters:addressee" />
+		<field assoc="letters:addressee">
+			<region name="input" template="view" />
+			<region name="select" id="select" template="select-journal">
+				<param name="journalType">idocs-contractor</param>
+			</region>
+		</field>
 	</view>
 	
 </views>
