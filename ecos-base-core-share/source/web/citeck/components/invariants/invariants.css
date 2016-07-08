@@ -242,7 +242,7 @@
   margin: 0 0 10px 0;
   position: relative;
   padding: 0 0 10px 0;
-  
+
   clear: both;
 
   box-sizing: border-box;
@@ -343,7 +343,8 @@
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number,
-.invariants-form .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row .template-free-content,
+.invariants-form .template-table .template-row .region-select-group {
   width: 54.5%;
   float: right;
 }
@@ -436,7 +437,7 @@
 
 .invariants-form .template-table .template-row .template-mandatory {
   top: 2px;
-  left: 2px; 
+  left: 2px;
   position: relative;
 }
 
@@ -589,7 +590,7 @@
 .invariants-form .template-table .template-checkbox .checkbox-option {
   margin-right: 15px;
   white-space: nowrap;
-  display: inline-block;  
+  display: inline-block;
 }
 
 .invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
@@ -617,10 +618,12 @@
     clear: both;
 }
 
-.invariants-form .template-table .template-third-width .template-message span.validation-message ,  
-.invariants-form .template-table .template-half-width .template-message span.validation-message {
+.invariants-form .template-table .template-third-width .template-message span.validation-message ,
+.invariants-form .template-table .template-half-width .template-message span.validation-message,
+.invariants-form .template-table .template-row .template-message span.validation-message {
   margin-top: 10px;
   display: inline-block;
+  line-height: 100%;
 }
 
 .invariants-form .template-table .template-row .template-message,
@@ -640,6 +643,10 @@
   white-space: nowrap;
   top: 1px;
   margin-left: 0;
+}
+
+.static .invariants-form .template-table .template-row .template-message span.validation-message {
+  margin-top: 0;
 }
 
 .invariants-form .template-table .template-row > .template-textarea + .region-select-group + .template-help + .template-message {
@@ -1142,7 +1149,7 @@
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 
 .journal-container {
@@ -1151,7 +1158,7 @@
 
 .journal-container.selected-elements {
   height: 92px;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .journal-container .loading {
@@ -1180,13 +1187,13 @@
     white-space: nowrap;
 }
 
-.journal-container .journal th:last-child, 
+.journal-container .journal th:last-child,
 .journal-container .journal tr.journal-element td:last-child {
     padding-right: 15px;
 }
 
 .journal-container .journal .journal-element td {
-  border-top: 1px solid #ccc; 
+  border-top: 1px solid #ccc;
 }
 
 .journal-container .journal .journal-element:hover td {
@@ -1377,7 +1384,7 @@
 }
 
 .invariants-form:not(.view-form) .template-table .template-row .template-view {
-  padding-top: 5px; 
+  padding-top: 5px;
   width: 30%;
   box-sizing: border-box;
   float: left;
