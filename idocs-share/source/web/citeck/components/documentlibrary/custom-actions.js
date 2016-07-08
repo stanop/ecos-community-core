@@ -975,7 +975,7 @@ YAHOO.Bubbling.fire("registerAction", {
                 sourceContext = Alfresco.constants.URL_SERVICECONTEXT;
             } else if (sourceContext != "") sourceContext = "";
 
-            if (props.actionTitle == "Register") {
+            if (props.actionTitle == "Register" || props.actionTitle == "Зарегистрировать") {
                 Citeck.forms.dialog(asset.node.nodeRef, "register", {
                     scope: this,
                     fn: function() {
