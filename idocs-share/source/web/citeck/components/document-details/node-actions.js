@@ -420,6 +420,7 @@
                     for (var i = 0; i < data.length; i++) {
                         var type = (data[i].actionType) ? data[i].actionType : "serverAction";
                         var params = {
+                            "actionTitle": data[i].title,
                             "actionURL": data[i].url,
                             "actionType": type
                         };
