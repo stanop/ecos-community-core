@@ -62,9 +62,10 @@
         </#if>
     </#macro>
 
-    <#assign VAT = 0>
     <#if document.properties["payments:paymentVAT"]??>
         <#assign VAT = '${document.properties["payments:paymentVAT"]?string.computer!0}'>
+    <#else>
+        <#assign VAT = 0>
     </#if>
 
     <@findPayer />
@@ -158,15 +159,15 @@
                 <tr>
                         <td style="border-style: hidden" colspan="5"><p align="right"><b>НДС:</b></p></td>
                         <td><p align="right">
-                            <#if VAT?? && VAT?number gt 0>
-                                ${VAT?number}
+                            <#if VAT?? && VAT gt 0>
+                                ${VAT}
                             <#else>-
                             </#if>
                         </p></td>
                 </tr>
                 <tr>
                         <td colspan="5" style="border-style: hidden"><p align="right"><b>Всего к оплате:</b></p></td>
-                        <td><p align="right">${totalAmount + VAT?number}</p></td>
+                        <td><p align="right">${totalAmount + VAT}</p></td>
                 </tr>
         </table>
 
