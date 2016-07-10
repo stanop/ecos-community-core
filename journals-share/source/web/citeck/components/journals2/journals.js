@@ -204,13 +204,36 @@ JournalType
 			return attr.isDefault();
 		}), '_info');
 	})
+	.computed('defaultSearchableAttributes', function(attr) {
+		return _.intersection(this.defaultAttributes(), this.searchableAttributes());
+	})
 	.computed('defaultFilter', function() {
+		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
+				if (attr.datatype() && attr.datatype().name()) {
+					var dtype = attr.datatype().name();
+
+					if (["cm:title", "idocs:documentStatus", "idocs:contractor"].indexOf(attr.name()) >= 0) return false;
+					if (dtype.indexOf("text") >= 0) {
+						return { field: attr.name(), predicate: "string-not-equals", value: "" }
+					}
+					if (dtype == "association") {
+						return { field: attr.name(), predicate: "assoc-not-contains", value: "" }
+					}
+					if (dtype == "float") {
+						return { field: attr.name(), predicate: "number-not-equals", value: "" }
+					}
+					if (dtype == "date") {
+						return { field: attr.name(), predicate: "date-not-equals", value: "" }
+					}
+				}
+		});
+
 		return new Filter({
 			nodeRef: null,
 			title: null,
 			permissions: { Write: false, Delete: false},
 			journalTypes: [ this.id() ],
-			criteria: []
+			criteria: _.compact(criteria)
 		});
 	})
 	.computed('defaultSettings', function() {
