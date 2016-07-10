@@ -177,6 +177,7 @@
         </property>
         <property name="payments:paymentVAT">
             <invariant on="valid" language="javascript" description="Это поле должно содержать положительно число.">value > 0</invariant>
+            <invariant on="default" language="explicit">0.001</invariant>
         </property>
     </type>
 
