@@ -388,6 +388,7 @@
 					<show id="contracts:agreementSubject" />
 					<show id="cm:created" />
 					<show id="cm:name" />
+					<show id="cm:title" force="true" />
 					<show id="idocs:documentStatus"  />
 					<show id="contracts:contractor" />
 					<show id="contracts:agreementNumber" />
