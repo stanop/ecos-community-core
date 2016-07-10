@@ -158,7 +158,12 @@
 					<param name="journalType">letters-income</param>
 				</region>
 			</field>
-			<field assoc="idocs:legalEntity" />
+			<field assoc="idocs:legalEntity">
+				<region name="select" template="select-journal">
+                    <param name="journalType">legal-entities</param>
+                </region>
+                <region name="input" template="view" />
+            </field>
 		</view>
 
 		<view>
@@ -199,7 +204,12 @@
 				<param name="journalType">letters-income</param>
 			</region>
 		</field>
-		<field assoc="idocs:legalEntity" />
+		<field assoc="idocs:legalEntity">
+			<region name="select" template="select-journal">
+                <param name="journalType">legal-entities</param>
+            </region>
+            <region name="input" template="view" />
+        </field>
 
 		<field assoc="idocs:performer" />
 		<field assoc="idocs:signatory" />
