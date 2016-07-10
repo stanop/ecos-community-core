@@ -42,7 +42,13 @@
 			<invariant on="protected" language="javascript"><![CDATA[view.params.income != null]]></invariant>
 		</fields>
 	</views>
-	
+
+	<views mode="view">
+		<fields prop="cm:content">
+			<invariant on="value-title" language="javascript">node.properties['cm:title']</invariant>
+		</fields>
+	</views>
+
 	<view class="letters:income">
 		<views mode="create" kind="2-column" />
 		<views mode="edit" kind="2-column" />
