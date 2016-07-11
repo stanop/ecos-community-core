@@ -29,6 +29,13 @@
 			</regions>
 			<region name="select" template="none" />
 		</fields>
+
+		<fields assoc="letters:outcome">
+			<invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
+		</fields>
+		<fields assoc="letters:income">
+			<invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
+		</fields>
 	</views>
 	
 	<views mode="create">
