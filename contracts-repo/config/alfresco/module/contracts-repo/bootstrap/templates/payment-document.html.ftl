@@ -63,7 +63,7 @@
     </#macro>
 
     <#if document.properties["payments:paymentVAT"]??>
-        <#assign VAT = '${document.properties["payments:paymentVAT"]?string.computer!0}'>
+        <#assign VAT = document.properties["payments:paymentVAT"]!0>
     <#else>
         <#assign VAT = 0>
     </#if>
@@ -184,7 +184,7 @@
     <tr>
         <td>
             <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
-            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && VAT == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
             </#if>
         </td>
     </tr>
