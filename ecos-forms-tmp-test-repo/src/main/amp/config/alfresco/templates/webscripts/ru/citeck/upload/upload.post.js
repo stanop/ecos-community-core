@@ -3,7 +3,7 @@ function childByFileName(destNode, filename, assocType) {
 	var nodeService = services.get("NodeService");
 	var qn = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(assocType));
 	var childRef = nodeService.getChildByName(destNode.getNodeRef(), qn, filename);
-	if (childRef != null)
+	if (childRef !== null)
 		result = search.findNode(childRef.toString());
 	return result;
 }
@@ -13,7 +13,7 @@ function extractMetadata(file) {
 	// This should use the MetadataExtracter API to fetch properties, allowing
 	// for possible failures.
 	var emAction = actions.create("extract-metadata");
-	if (emAction != null) {
+	if (emAction !== null) {
 		// Call using readOnly = false, newTransaction = false
 		emAction.execute(file, false, false);
 	}
@@ -31,6 +31,11 @@ function uploadFile(filename, contentType, assocType, content, destNode) {
 	// additional Writer operation.
 	node.properties["cm:name"] = filename;
 	node.properties.content.write(content, false, true);
+
+	if (logger.debugLoggingEnabled) {
+		logger.debug(content);
+	}
+
 	node.properties.content.guessMimetype(filename);
 	node.save();
 
@@ -66,11 +71,11 @@ function getUniqueFileName(destNode, filename, fileNode, assocType) {
 	var startName = filename.substring(0, dotIndex),
 		extensionName = filename.substring(dotIndex);
 
-	if (fileNode == null)
+	if (fileNode === null)
 		fileNode = childByFileName(destNode, filename, assocType);
 
-	while (fileNode != null) {
-		if (dotIndex == 0) {
+	while (fileNode !== null) {
+		if (dotIndex === 0) {
 			// File didn't have a proper 'name' instead it had just
 			// a suffix and started with a ".", create "1.txt"
 			result = counter + filename;
@@ -98,10 +103,10 @@ function getContentType(assocType) {
 	var result = null;
 	var cmContent = "cm:content";
 	var dictionaryService = services.get("DictionaryService");
-	if (dictionaryService != null) {
+	if (dictionaryService !== null) {
 		var contentQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(cmContent));
 		var assoc = getAssoc(assocType);
-		if (assoc != null) {
+		if (assoc !== null) {
 			var tc = assoc.getTargetClass().getName();
 			if (dictionaryService.isSubClass(tc, contentQName))
 				result = tc.toString();
@@ -120,64 +125,59 @@ function setProperty(node, name, value) {
 	}
 }
 
-function exitUpload(statusCode, statusMsg) {
+function exitUpload(statusCode, statusMsg, debugMsg) {
 	status.code = statusCode;
-	status.message = statusMsg;
+	status.message = statusMsg + (debugMsg ? ". Debug: " + debugMsg : "");
 	status.redirect = true;
 	formdata.cleanup();
 }
 
-function main()
-{
-	try
-	{
-		var filename = null,
-		content = null,
-		destination = null,
-		destNode = null,
-		assocType = null,
-		propertyName = null,
-		propertyValue = null;
+function main() {
+	try {
+		var filename 			= null,
+				content 			= null,
+				destination 	= null,
+				destNode 			= null,
+				assocType 		= null,
+				propertyName 	= null,
+				propertyValue = null;
 
 		// Upload specific
 		var contentType = null,
-		overwrite = true; // If a filename clashes for a versionable file
+				overwrite   = true; // If a filename clashes for a versionable file
 
 		// ------------------------
 		// Getting input parameters
 		// ------------------------
 
-		if (args["lang"] != null)
+		if (args["lang"] !== null)
 			utils.setLocale("" + args["lang"]);
-		if (args["assoctype"] != null)
+		if (args["assoctype"] !== null)
 			assocType = "" + args["assoctype"];
-		if (args["contenttype"] != null)
+		if (args["contenttype"] !== null)
 			contentType = "" + args["contenttype"];
-		if (args["propertyname"] != null)
+		if (args["propertyname"] !== null)
 			propertyName = "" + args["propertyname"];
-		if (args["propertyvalue"] != null)
+		if (args["propertyvalue"] !== null)
 			propertyValue = "" + args["propertyvalue"];
+
 		var assoc = getAssoc(assocType);
 
 		// Parse file attributes
-		for each (field in formdata.fields)
-		{
-			switch (String(field.name).toLowerCase())
-			{
-			case "filedata":
-				if (field.isFile)
-				{
-					filename = "" + field.filename;
+		for (var f in formdata.fields) {
+			var field = formdata.fields[f],
+					fieldName = field.name.toString().toLowerCase();
+
+  		if (fieldName == "filedata") {
+				if (field.isFile) {
+					filename = field.filename.toString();
 					content = field.content;
 				}
-				break;
-			case "destination":
-				destination = "" + field.value;
+			} else if (fieldName == "destination") {
+				destination = field.value.toString().replace("\\", "");
 				destNode = search.findNode(destination);
-				break;
-			case "overwrite":
-				overwrite = ("" + field.value) == "true";
-				break;
+			} else if (fieldName == "overwrite") {
+				overwrite = field.value.toString() == "true";
 			}
 		}
 
@@ -185,22 +185,22 @@ function main()
 		// Checking input parameters
 		// ------------------------
 
-		// Ensure mandatory file attributes have been located. Also need
-		// destination
-		if (filename == null || content == null || destination == null || assocType == null)
-		{
+		// Ensure mandatory file attributes have been located. Also need destination
+		if (filename === null || content === null || destination === null || assocType === null) {
 			exitUpload(400, "Required parameters are missing");
 			return;
 		}
-		if (destNode == null)
-		{
+
+		if (destNode === null) {
 			exitUpload(404, "Destination (" + destination + ") not found");
 			return;
 		}
-		if (assoc == null) {
+
+		if (assoc === null) {
 			exitUpload(404, "Specified association type (" + assocType + ") is not found");
 			return;
 		}
+
 		if (!assoc.isChild()) {
 			exitUpload(400, "Specified association type (" + assocType + ") is not a child association");
 			return;
@@ -210,41 +210,35 @@ function main()
 		// Uploading
 		// ------------------------
 
-		contentType = contentType == null ? getContentType(assocType) : contentType;
+		contentType = contentType === null ? getContentType(assocType) : contentType;
 		var existingFile;
+
 		// First of all we are checking the target association type
 		if(!assoc.isTargetMany()) {
 			existingFile = destNode.childAssocs[assocType] && destNode.childAssocs[assocType][0];
-			if (existingFile != null)
+			if (existingFile !== null) {
 				model.document = uploadVersionableFile(filename, content, existingFile);
-			else
-				model.document = uploadFile(filename, contentType, assocType, content, destNode);
-		}
-		else {
+			} else { model.document = uploadFile(filename, contentType, assocType, content, destNode); }
+		} else {
 			existingFile = childByFileName(destNode, filename, assocType);
-			if (existingFile != null && !assoc.getDuplicateChildNamesAllowed())
-			{
-				if (overwrite)
-				{
-					existingFile.ensureVersioningEnabled(true, false); 
+			if (existingFile !== null && !assoc.getDuplicateChildNamesAllowed()) {
+				if (overwrite) {
+					existingFile.ensureVersioningEnabled(true, false);
 					model.document = uploadVersionableFile(filename, content, existingFile);
-				}
-				else
-				{
+				} else {
 					filename = getUniqueFileName(destNode, filename, existingFile, assocType);
 					model.document = uploadFile(filename, contentType, assocType, content, destNode);
 				}
-			}
-			else {
+			} else {
 				model.document = uploadFile(filename, contentType, assocType, content, destNode);
 			}
 		}
+
 		setProperty(model.document, propertyName, propertyValue);
+
 		// It is IMPORTANT final operation.
 		formdata.cleanup();
-	}
-	catch (e)
-	{
+	}	catch (e) {
 		// NOTE: Do not clean formdata temp files to allow for retries. It's
 		// possible for a temp file
 		// to remain if max retry attempts are made, but this is rare, so leave
@@ -252,15 +246,13 @@ function main()
 		// file cleanup.
 
 		// capture exception, annotate it accordingly and re-throw
-		if (e.message && e.message.indexOf("org.alfresco.service.cmr.usage.ContentQuotaException") == 0)
-		{
+		if (e.message && e.message.indexOf("org.alfresco.service.cmr.usage.ContentQuotaException") === 0) {
 			e.code = 413;
-		}
-		else
-		{
+		} else {
 			e.code = 500;
-//			  e.message = "Unexpected error occurred during upload of new content.";
+		  e.message = "Unexpected error occurred during upload of new content.";
 		}
+
 		throw e;
 	}
 }
