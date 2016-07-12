@@ -31,11 +31,6 @@ function uploadFile(filename, contentType, assocType, content, destNode) {
 	// additional Writer operation.
 	node.properties["cm:name"] = filename;
 	node.properties.content.write(content, false, true);
-
-	if (logger.debugLoggingEnabled) {
-		logger.debug(content);
-	}
-
 	node.properties.content.guessMimetype(filename);
 	node.save();
 
@@ -166,18 +161,18 @@ function main() {
 		// Parse file attributes
 		for (var f in formdata.fields) {
 			var field = formdata.fields[f],
-					fieldName = field.name.toString().toLowerCase();
+					fieldName = String(field.name).toLowerCase();
 
   		if (fieldName == "filedata") {
 				if (field.isFile) {
-					filename = field.filename.toString();
+					filename = String(field.filename);
 					content = field.content;
 				}
 			} else if (fieldName == "destination") {
-				destination = field.value.toString().replace("\\", "");
+				destination = String(field.value).replace("\\", "");
 				destNode = search.findNode(destination);
 			} else if (fieldName == "overwrite") {
-				overwrite = field.value.toString() == "true";
+				overwrite = String(field.value) == "true";
 			}
 		}
 
