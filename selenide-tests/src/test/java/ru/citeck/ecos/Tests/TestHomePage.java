@@ -12,11 +12,11 @@ public class TestHomePage extends SelenideTests {
     {
         String mySite = "mySite"+Math.random();
         HomePage homePage = new HomePage();
-        //cancel create site
+
         homePage.openFormCreateSite();
         homePage.cancelCreateSiteFromHomePage();
         Assert.assertTrue("Alfresco » Домашняя страница".equals(homePage.getTitle()) || "Alfresco » User Dashboard".equals(homePage.getTitle()));
-        //success create site
+
         homePage.openFormCreateSite();
         SiteHomePage siteHomePage = homePage.createSite(mySite);
         Assert.assertTrue("Alfresco » Главная страница сайта".equals(siteHomePage.getTitle()) || "Alfresco » Site Dashboard".equals(siteHomePage.getTitle()));

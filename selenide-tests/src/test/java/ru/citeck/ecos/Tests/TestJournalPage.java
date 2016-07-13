@@ -38,7 +38,7 @@ public class TestJournalPage extends SelenideTests{
         table.shouldBe(present);
         journalsPage.addCriterionNameContainsValue();//применение фильтра
         journalsPage.getTable().$$("[tabindex = \"0\"] > tr").shouldHaveSize(4);
-        journalsPage.clearFilter();//сброс фильтра
+        journalsPage.clearFilter();
         journalsPage.getTable().$$("[tabindex = \"0\"] > tr").shouldHaveSize(10);
 
         journalsPage.clickOnFilter();
@@ -47,10 +47,10 @@ public class TestJournalPage extends SelenideTests{
         journalsPage.addCriterionNameContainsValue();
         journalsPage.getTable().$$("[tabindex = \"0\"] > tr").shouldHaveSize(4);
         journalsPage.clickOnSaveFilter();
-        journalsPage.cancelSaveFilter();//отмена сохранения фильтра
+        journalsPage.cancelSaveFilter();
 
         journalsPage.clickOnSaveFilter();
-        journalsPage.saveFilter();//сохранение фильтра
+        journalsPage.saveFilter();
 
         SelenideElement filter = journalsPage.getSavedFilter();
         Assert.assertTrue(filter.isDisplayed());
@@ -60,24 +60,24 @@ public class TestJournalPage extends SelenideTests{
     {
         JournalsPage journalsPage = new JournalsPage();
         journalsPage.clickOnJournal(0);
-        SelenideElement table = journalsPage.clickOnSettings();//клик на кнопку "Настройки"
+        SelenideElement table = journalsPage.clickOnSettings();
         table.shouldBe(present);
 
         journalsPage.clickOnCheckboxSettings(4);
         journalsPage.clickOnCheckboxSettings(5);
-        journalsPage.clickOnApplyButton();//применение настроек
+        journalsPage.clickOnApplyButton();
         journalsPage.getTable().$$(By.cssSelector("thead th")).shouldHaveSize(6);
 
-        journalsPage.clickClearSettings();//сброс настроек
+        journalsPage.clickClearSettings();
         journalsPage.getTable().$$(By.cssSelector("thead th")).shouldHaveSize(8);
 
         journalsPage.clickOnCheckboxSettings(4);
-        journalsPage.clickOnSaveSettings();//сохранение настроек
-        journalsPage.cancelSaveSettings();//отмена сохранения
+        journalsPage.clickOnSaveSettings();
+        journalsPage.cancelSaveSettings();
 
-        journalsPage.clickOnSaveSettings();//сохранение настроек
+        journalsPage.clickOnSaveSettings();
         journalsPage.setNameSettings();
-        journalsPage.saveSettings();//успешное сохранение
+        journalsPage.saveSettings();
         SelenideElement savedSetting = journalsPage.getSavedSettings();
         Assert.assertTrue(savedSetting.isDisplayed());
     }

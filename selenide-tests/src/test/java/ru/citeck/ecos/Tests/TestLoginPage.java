@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class TestLoginPage extends SelenideTests{
     @Test
-    public void successLogin()//test-case: EC.L1.001
+    public void successLogin()
     {
         HomePage homePage = new HomePage();
         Assert.assertTrue("Alfresco » Домашняя страница".equals(homePage.getTitle()) || "Alfresco » User Dashboard".equals(homePage.getTitle()));

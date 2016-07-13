@@ -23,7 +23,7 @@ public class ClosingDocumentCreatePage extends CreatePage{
     {
         $("[id *= \"contracts_closingDocumentPayment-journalControl-button\"]").shouldBe(present).click();
         $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"closingDocumentPayment-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
+        $("[id *= \"closingDocumentPayment-journalControl-journalPanel-selectedElementsTable\"] table tbody tr td").shouldBe(present);
         $("[id *= \"closingDocumentPayment-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
     }
     public void selectOriginalLocation()

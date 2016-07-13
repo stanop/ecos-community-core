@@ -14,19 +14,19 @@ public class CreatePage {
     }
 
 
-    public void setLegalEntityFormCreateContract()
+    public void setLegalEntity()
     {
         $("[id *= \"egalEntity-journalControl-button\"]").shouldBe(present).click();
         $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"egalEntity-journalControl-journalPanel-selectedElementsTable\"]").shouldBe(present);
+        $("[id *= \"egalEntity-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
         $("[id *= \"egalEntity-journalControl-journalPanel-submitInput\"]").click();
     }
-    public void setContractorFormCreateContract()
+    public void setContractor()
     {
         $(By.cssSelector("[id *= \"contractor-journalControl-button\"]")).shouldBe(present).click();
         $(By.cssSelector("[id *= \"workspace\"]")).shouldBe(present).click();
-        $("[id *= \"contractor-journalControl-journalPanel-selectedElementsTable\"]").shouldBe(present);
-        $(By.cssSelector("[id *= \"contractor-journalControl-journalPanel-submitInput\"]")).click();
+        $("[id *= \"contractor-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
+        $(By.cssSelector("[id *= \"contractor-journalControl-journalPanel-submitInput\"]")).shouldBe(present).click();
     }
     public void setDocumentNumber()
     {
