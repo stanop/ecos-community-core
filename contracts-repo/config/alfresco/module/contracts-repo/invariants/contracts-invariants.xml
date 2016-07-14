@@ -39,7 +39,13 @@
             <invariant on="value" language="javascript">node.properties["contracts:duration"].setFullYear(value.getFullYear() + 1)</invariant>
         </property> -->
         <property name="contracts:duration">
-            <invariant on="default" language="javascript">node.properties["contracts:agreementDate"].setFullYear(node.properties["contracts:agreementDate"].getFullYear() + 1)</invariant>
+            <invariant on="default" language="javascript">
+                if (node.properties["contracts:agreementDate"] != null &amp;&amp; node.properties["contracts:duration"] == null) {
+                    var expirationDate = new Date(node.properties["contracts:agreementDate"].valueOf());
+                    expirationDate = expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+                    node.properties["contracts:duration"] = expirationDate;
+                }
+            </invariant>
         </property>
         <association name="contracts:agreementCurrency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
