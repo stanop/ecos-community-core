@@ -1588,23 +1588,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('invariantSet', ExplicitInvariantSet)
         .constant('rootObjects', rootObjects)
 
-        .computed('loading', function() {
-            if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
-                var attributes = this.resolve("node.impl").attributes();
-
-                for (var a = 0; a < attributes.length; a++) {
-                    _.each(["title", "info", "value", "options"], function(attr) {
-                        if (!attributes[a][attr].loaded()) return true;
-                    });
-
-                    var v = attributes[a].value();
-                    if (v instanceof Node && !v.impl.loaded()) return true;
+        .property('_loading', b)
+        .computed('loaded', function() {
+          if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
+              var attributes = this.resolve("node.impl.attributes");
+              for (var a = 0; a < attributes.length; a++) {
+                for (var prop in attributes[a]) {
+                  if (ko.isObservable(!attributes[a][prop])) {
+                    if (!attributes[a][prop].loaded()) return false;
+                  }
                 }
+              }
 
-                return false;
-            }
+              // delay while controls are loading (2 seconds enough)
+              if (this._loading()) { setTimeout(function(scope) { scope._loading(false); }, 2000, this); }
+              return !this._loading();
+          }
 
-            return true;
+          return false;
         })
 
         .method('submit', function() {
@@ -1621,6 +1622,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 runtime: this,
                 node: this.node()
             });
+        })
+
+        .init(function() {
+          this._loading(true);
         })
         ;
 
