@@ -122,6 +122,7 @@
 			<doctype id="payments:payment">
 				<visible>
 					<association name="payments:basis" direction="target" />
+					<association name="contracts:closingDocumentPayment" direction="source" />
 				</visible>
 			</doctype>
 			<doctype id="contracts:closingDocument">
