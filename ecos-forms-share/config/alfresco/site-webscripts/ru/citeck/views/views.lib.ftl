@@ -42,7 +42,7 @@
 
 <#macro renderViewContainer view id>
 	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form loading"
-			 data-bind="css: { loading: loading }">
+			 data-bind="css: { loading: !loaded() }">
 		<div class="loading-container">
 			<div class="loading-indicator"></div>
 			<div class="loading-message">${msg('message.loading.form')}</div>
