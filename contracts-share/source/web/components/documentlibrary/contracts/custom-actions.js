@@ -108,7 +108,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/node-create?type=contracts:supplementaryAgreementdestination=' + destNodeRef + '&formId=' +formId + '&param_contract=' + nodeRef;
+                            var redirection = '/share/page/node-create?type=contracts:supplementaryAgreement&destination=' + destNodeRef + '&formId=' +formId + '&param_contract=' + nodeRef;
                             window.location = redirection;
                         }
                     }
