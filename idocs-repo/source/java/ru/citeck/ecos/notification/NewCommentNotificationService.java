@@ -27,6 +27,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.security.NodeOwnerDAO;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
@@ -42,6 +44,9 @@ public class NewCommentNotificationService {
     private NodeService nodeService;
     private AuthorityService authorityService;
 	private NodeOwnerDAO nodeOwnerDAO;
+    private boolean asyncNotification = true;
+
+    private static final Log logger = LogFactory.getLog(NewCommentNotificationService.class);
 
     public static final NodeRef NEW_COMMENT_NOTIFICATION_EMAIL_TEMPLATE = new NodeRef(
             StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
@@ -107,7 +112,8 @@ public class NewCommentNotificationService {
         for (String authority : assignedAuthorities) {
             notificationContext.addTo(authority);
         }
-        notificationContext.setAsyncNotification(true);
+        notificationContext.setAsyncNotification(asyncNotification);
+        logger.debug("asyncNotification: " + asyncNotification);
         return notificationContext;
     }
 
@@ -174,5 +180,9 @@ public class NewCommentNotificationService {
 	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
 		this.nodeOwnerDAO = nodeOwnerDAO;
 	}
+
+    public void setAsyncNotification(boolean asyncNotification) {
+        this.asyncNotification = asyncNotification;
+    }
 
 }
