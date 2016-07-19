@@ -975,7 +975,35 @@ YAHOO.Bubbling.fire("registerAction", {
                 sourceContext = Alfresco.constants.URL_SERVICECONTEXT;
             } else if (sourceContext != "") sourceContext = "";
 
-            if (actionType === "serverAction") {
+            if (props.actionTitle == "Register" || props.actionTitle == "Зарегистрировать") {
+                Citeck.forms.dialog(asset.node.nodeRef, "register", {
+                    scope: this,
+                    fn: function() {
+                        Alfresco.util.Ajax.jsonPost({
+                            url: Alfresco.constants.PROXY_URI + "api/lifecycle/do-transition?nodeRef=" + asset.nodeRef,
+                            successCallback: {
+                                scope: this,
+                                fn: function() {
+                                    PopupManager.displayMessage({
+                                        text: this.msg("message.transitionSuccess")
+                                    });
+                                    _.delay(function() {
+                                        window.location.reload();
+                                    }, 3000);
+                                }
+                            },
+                            failureCallback: {
+                                scope: this,
+                                fn: function() {
+                                    PopupManager.displayMessage({
+                                        text: this.msg("message.transitionError")
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }, { title : props.actionTitle });
+            } else if (actionType === "serverAction") {
                 Alfresco.util.Ajax.jsonPost({
                     url: (sourceContext === "" ? Alfresco.constants.PROXY_URI : sourceContext) + props.actionURL,
                     successCallback: {

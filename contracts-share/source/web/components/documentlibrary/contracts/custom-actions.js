@@ -30,7 +30,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/node-create?type=payments:payment&contractId='+ nodeRef + '&destination=' + destNodeRef + '&formId=' + formId;
+                            var redirection = '/share/page/node-create?type=payments:payment&destination=' + destNodeRef + '&formId=' + formId + '&param_contract=' + nodeRef;
                             window.location = redirection;
                         }
                     }
@@ -69,7 +69,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/node-create?type=contracts:closingDocument&contractId='+ nodeRef + '&destination=' + destNodeRef+'&formId='+formId;
+                            var redirection = '/share/page/node-create?type=contracts:closingDocument&destination=' + destNodeRef + '&formId=' + formId + '&param_contract=' + nodeRef;
                             window.location = redirection;
 
                         }
@@ -85,9 +85,6 @@
                 nodeRef = jsNode.nodeRef;
             var alfrescoSite = Alfresco.constants.SITE;
             var currentSite = alfrescoSite ? alfrescoSite : record.location.path.split('/')[2];
-            console.log('currentSite: ' + currentSite);
-            // console.log(record);
-            // console.log('alfrescoSite: ' + alfrescoSite);
 
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/" + currentSite,
@@ -111,7 +108,7 @@
                                     formId = "by-agreement";
                                 }
                             }
-                            var redirection = '/share/page/node-create?type=contracts:supplementaryAgreement&contractId='+ nodeRef + '&destination=' + destNodeRef + '&formId='+formId;
+                            var redirection = '/share/page/node-create?type=contracts:supplementaryAgreement&destination=' + destNodeRef + '&formId=' +formId + '&param_contract=' + nodeRef;
                             window.location = redirection;
                         }
                     }
@@ -146,7 +143,7 @@
                             }
 
                             var contracts = record.jsNode.properties["payments:basis_added"];
-                            if (contracts.length > 0) {
+                            if (contracts != null && contracts.length > 0) {
                                 redirection += '&param_contract=' + contracts[0];
                             }
 

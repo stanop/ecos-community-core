@@ -126,6 +126,10 @@ public class AutoNameBehaviour implements
 				return;
 			}
 
+			if (nameTemplate == null || "".equals(nameTemplate)) {
+				return;
+			}
+
 			String oldName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
 			int pos = oldName.lastIndexOf('.');
 			String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;

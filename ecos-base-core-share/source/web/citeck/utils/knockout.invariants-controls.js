@@ -338,12 +338,12 @@ ko.bindingHandlers.dateControl = {
             params = allBindings();
 
         var localization = params.localization,
-            mode = params.mode;;
-
+            mode = params.mode;
+        
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (!Citeck.HTML5.supportedInputTypes.date || mode == "alfresco") {
+        if (!Citeck.HTML5.supportedInputTypes.date) {
             input.setAttribute("placeholder", localization.placeholder);
 
             var calendarDialogId = elementId + "-calendarDialog",

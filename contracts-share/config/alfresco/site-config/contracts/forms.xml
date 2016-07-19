@@ -179,6 +179,7 @@
 					<show id="payments:payments" />
 					<show id="cm:created" />
 					<show id="cm:name" />
+					<show id="cm:title" />
 				</field-visibility>
 					<appearance>
 						<set id="" template="/ru/citeck/components/form/2-column-set.ftl" />
@@ -387,6 +388,7 @@
 					<show id="contracts:agreementSubject" />
 					<show id="cm:created" />
 					<show id="cm:name" />
+					<show id="cm:title" force="true" />
 					<show id="idocs:documentStatus"  />
 					<show id="contracts:contractor" />
 					<show id="contracts:agreementNumber" />

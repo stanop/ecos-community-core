@@ -39,7 +39,13 @@
             <invariant on="value" language="javascript">node.properties["contracts:duration"].setFullYear(value.getFullYear() + 1)</invariant>
         </property> -->
         <property name="contracts:duration">
-            <invariant on="default" language="javascript">node.properties["contracts:agreementDate"].setFullYear(node.properties["contracts:agreementDate"].getFullYear() + 1)</invariant>
+            <invariant on="default" language="javascript">
+                if (node.properties["contracts:agreementDate"] != null &amp;&amp; node.properties["contracts:duration"] == null) {
+                    var expirationDate = new Date(node.properties["contracts:agreementDate"].valueOf());
+                    expirationDate = expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+                    node.properties["contracts:duration"] = expirationDate;
+                }
+            </invariant>
         </property>
         <association name="contracts:agreementCurrency">
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
@@ -61,8 +67,14 @@
     </type>
 
     <type name="payments:payment">
+        <association name="payments:basis">
+            <invariant on="value" language="javascript">view.params.contract</invariant>
+        </association>
         <property name="payments:paymentFor">
-            <invariant on="default" language="javascript">if (node.assocs["payments:basis"] != null) {node.assocs["payments:basis"][0].properties["contracts:contractWith"]}</invariant>
+            <invariant on="default" language="javascript">
+                if (node.assocs["payments:basis"] != null) 
+                    node.assocs["payments:basis"][0].properties["contracts:contractWith"]
+            </invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <association name="payments:payer">
@@ -70,6 +82,26 @@
         </association>
         <property name="payments:paymentNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="payments:plannedPaymentDate">
+            <invariant on="default" language="javascript"><![CDATA[
+                (function() {
+                    var currentDate = node.properties["payments:billDate"];
+
+                    var amtDay = 5;
+                    var nextDay = currentDate;
+
+                    while (amtDay > 0) {
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        if (nextDay.getDay() == 0 || nextDay.getDay() == 6) {
+                            //do nothing
+                        } else {
+                            amtDay--;
+                        }
+                    }
+                    return nextDay;
+                })()
+            ]]></invariant>
         </property>
         <association name="payments:beneficiary">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -155,9 +187,12 @@
     </type>
 
     <type name="contracts:closingDocument">
-        <!-- <association name="contracts:closingDocumentAgreement">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </association> -->
+        <property name="cm:name">
+            <invariant on="relevant" language="javascript">node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'</invariant>
+        </property>
+        <association name="contracts:closingDocumentAgreement">
+            <invariant on="value" language="javascript">view.params.contract</invariant>
+        </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
             <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
@@ -195,7 +230,7 @@
             <invariant on="protected" language="javascript"><![CDATA[view.params.contract != null]]></invariant>
         </association>
         <association name="contracts:closingDocumentPayment">
-           <invariant on="mandatory" language="explicit">true</invariant>
+           <invariant on="mandatory" language="explicit">false</invariant>
            <invariant on="value" language="javascript">view.params.invoice</invariant>
            <invariant on="protected" language="javascript"><![CDATA[view.params.invoice != null]]></invariant>
         </association>
@@ -210,7 +245,20 @@
     <type name="contracts:supplementaryAgreement">
         <association name="contracts:mainAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value" language="javascript">view.params.contract</invariant>
         </association>
+        <association name="contracts:agreementSubject">
+            <invariant on="value" language="javascript">
+                if (node.assocs["contracts:mainAgreement"] != null) 
+                    node.assocs["contracts:mainAgreement"][0].properties["contracts:agreementSubject"]
+            </invariant>
+        </association>
+        <property name="tk:kind">
+            <invariant on="value" language="javascript">
+                if (node.assocs["contracts:mainAgreement"] != null) 
+                    node.assocs["contracts:mainAgreement"][0].properties["tk:kind"]
+            </invariant>
+        </property>
         <association name="contracts:agreementLegalEntity">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">
