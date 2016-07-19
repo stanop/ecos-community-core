@@ -57,7 +57,9 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 						conf.put("fullName", confirmer.split("_")[0]);
 						// 'can cancel' is not supported in old format
 						conf.put("canCancel", false);
-						conf.put("amountHours", getNumberOfHoursForStage(confirmer.split("_")[1]));
+						if (confirmer.indexOf("_") != -1) {
+							conf.put("amountHours", getNumberOfHoursForStage(confirmer.split("_")[1]));
+						}
 						confirmers.add(conf);
 					}
 				}
