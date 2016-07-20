@@ -52,13 +52,14 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 				for (String confirmer : confirmLines) {
 					if (confirmer.length() != 0) {
 						JSONObject conf = new JSONObject();
-						conf.put("nodeRef", confirmer.split("_")[0]);
+						String[] splittedStrings = confirmer.split("_");
+						conf.put("nodeRef", splittedStrings[0]);
 						// full name is not supported in old format
-						conf.put("fullName", confirmer.split("_")[0]);
+						conf.put("fullName", splittedStrings[0]);
 						// 'can cancel' is not supported in old format
 						conf.put("canCancel", false);
-						if (confirmer.indexOf("_") != -1) {
-							conf.put("amountHours", getNumberOfHoursForStage(confirmer.split("_")[1]));
+						if (splittedStrings.length > 1) {
+							conf.put("amountHours", getNumberOfHoursForStage(splittedStrings[1]));
 						}
 						confirmers.add(conf);
 					}
