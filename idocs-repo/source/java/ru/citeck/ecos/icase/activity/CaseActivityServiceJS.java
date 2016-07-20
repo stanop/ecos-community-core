@@ -4,6 +4,7 @@ import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
@@ -40,6 +41,13 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         NodeRef nRef = getNodeRef(nodeRef);
         QName typeQName = QName.createQName(type, namespaceService);
         List<NodeRef> activities = caseActivityService.getActivities(nRef, typeQName);
+        return JavaScriptImplUtils.wrapNodes(activities, this);
+    }
+
+    public ScriptNode[] getActivitiesByAssoc(Object nodeRef, String assocType) {
+        NodeRef nRef = getNodeRef(nodeRef);
+        QName assocTypeQName = QName.createQName(assocType, namespaceService);
+        List<NodeRef> activities = caseActivityService.getActivities(nRef, assocTypeQName, RegexQNamePattern.MATCH_ALL);
         return JavaScriptImplUtils.wrapNodes(activities, this);
     }
 
