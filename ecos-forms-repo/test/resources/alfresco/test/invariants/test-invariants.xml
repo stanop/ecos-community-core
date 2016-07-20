@@ -5,5 +5,7 @@
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
 	</imports>
-	
+
+	<!--TODO: add tests invariants for the Citeck forms-->
+
 </invariants>

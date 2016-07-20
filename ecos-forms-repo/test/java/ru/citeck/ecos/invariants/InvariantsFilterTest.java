@@ -16,6 +16,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -29,6 +30,7 @@ import ru.citeck.ecos.model.AttributeModel;
 //import ru.citeck.ecos.model.PassportModel;
 import ru.citeck.ecos.test.ApplicationContextHelper;
 
+@Ignore
 public class InvariantsFilterTest {
     
     private static final String TEST_SOURCE_ID = "test";

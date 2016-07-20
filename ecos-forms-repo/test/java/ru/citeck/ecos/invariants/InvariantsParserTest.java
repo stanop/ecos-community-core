@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -17,6 +18,7 @@ import ru.citeck.ecos.invariants.InvariantScope.ClassScopeKind;
 //import ru.citeck.ecos.model.PassportModel;
 import ru.citeck.ecos.search.SearchCriteria;
 
+@Ignore
 public class InvariantsParserTest {
     
     private InputStream invariantsFile;

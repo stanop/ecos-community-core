@@ -29,6 +29,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -49,6 +50,7 @@ import ru.citeck.ecos.search.CriteriaSearchService;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.test.ApplicationContextHelper;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader=ApplicationContextHelper.class)
 @Transactional
