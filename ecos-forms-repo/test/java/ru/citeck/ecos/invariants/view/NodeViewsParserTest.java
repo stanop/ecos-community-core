@@ -10,6 +10,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.namespace.QName;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -20,6 +21,7 @@ import ru.citeck.ecos.invariants.view.NodeViewsParser;
 //import ru.citeck.ecos.model.ClassificationModel;
 //import ru.citeck.ecos.model.PassportModel;
 
+@Ignore
 public class NodeViewsParserTest {
     
     private InputStream viewsFile;
