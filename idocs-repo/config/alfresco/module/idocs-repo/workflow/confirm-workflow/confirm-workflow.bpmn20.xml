@@ -102,7 +102,7 @@ execution.setVariable("wfcf_confirmOutcome", null);</activiti:expression>
             <activiti:field name="script">
               <activiti:expression>execution.setVariable("wfcf_confirmOutcome", task.getVariable("wfcf_confirmOutcome"));
 if (task.getVariable("bpm_comment") == "" &amp;&amp; task.getVariable("wfcf_confirmOutcome") != "Confirmed") {
-  throw("Необходимо ввести комментарии");
+  throw(Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage("wfcf_confirmworkflow.message_comment_is_empty"));
 }</activiti:expression>
             </activiti:field>
           </activiti:taskListener>
