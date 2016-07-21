@@ -8,6 +8,103 @@ var appMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_APP_MENU_BAR
     userMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_USER_MENU_BAR"),
     currentSite = page.url.templateArgs.site || "";
 
+// USER MENU
+var userMenuItems = [
+  {
+     id: "HEADER_USER_MENU_STATUS",
+     name: "alfresco/header/CurrentUserStatus",
+     config: { id: "HEADER_USER_MENU_STATUS" }
+  },
+
+  {
+     id: "HEADER_USER_MENU_MY_PROFILE",
+     name: "alfresco/header/AlfMenuItem",
+     config:
+     {
+        id: "HEADER_USER_MENU_MY_PROFILE",
+        label: "header.my-profile.label",
+        iconImage: "/share/res/components/images/header/my-profile.png",
+        targetUrl: "user/" + encodeURIComponent(user.name) + "/profile"
+     }
+  }
+];
+
+if (user.properties.available === true || user.properties.available === null) {
+  userMenuItems.push({
+     id: "HEADER_USER_MENU_MAKE_NOTAVAILABLE",
+     name: "alfresco/header/AlfMenuItem",
+     config:
+     {
+        id: "HEADER_USER_MENU_MAKE_NOTAVAILABLE",
+        label: "header.make-notavailable.label",
+        iconImage: "/share/res/components/images/header/make-notavailable.png",
+        targetUrl: "/components/delegate/make-available?available=false"
+     }
+  });
+} else if (user.properties.available === false) {
+  userMenuItems.push({
+     id: "HEADER_USER_MENU_MAKE_AVAILABLE",
+     name: "alfresco/header/AlfMenuItem",
+     config:
+     {
+        id: "HEADER_USER_MENU_MAKE_AVAILABLE",
+        label: "header.make-available.label",
+        iconImage: "/share/res/components/images/header/make-available.png",
+        targetUrl: "/components/delegate/make-available?available=true"
+     }
+  });
+}
+
+if (user.capabilities.isMutable) {
+   userMenuItems.push({
+      id: "HEADER_USER_MENU_PASSWORD",
+      name: "alfresco/header/AlfMenuItem",
+      config:
+      {
+         id: "HEADER_USER_MENU_CHANGE_PASSWORD",
+         label: "header.change-password.label",
+         iconImage: "/share/res/components/images/header/change-password.png",
+         targetUrl: "user/" + encodeURIComponent(user.name) + "/change-password"
+      }
+   });
+}
+
+if (!context.externalAuthentication) {
+   userMenuItems.push({
+      id: "HEADER_USER_MENU_LOGOUT",
+      name: "alfresco/header/AlfMenuItem",
+      config:
+      {
+         id: "HEADER_USER_MENU_LOGOUT",
+         label: "header.logout.label",
+         iconImage: "/share/res/components/images/header/logout.png",
+         targetUrl: "dologout"
+      }
+   });
+}
+
+userMenu.config.widgets = [
+  {
+     id: "HEADER_USER_MENU_POPUP",
+     name: "alfresco/header/AlfMenuBarPopup",
+     config: {
+        id: "HEADER_USER_MENU_POPUP",
+        label: user.fullName,
+        widgets: [
+           {
+              id: "HEADER_USER_MENU",
+              name: "alfresco/menus/AlfMenuGroup",
+              config: {
+                 id: "HEADER_USER_MENU",
+                 widgets: userMenuItems
+              }
+           }
+        ]
+     }
+  }
+];
+
+
 // APP MENU
 appMenu.config.widgets = [
   {
@@ -195,6 +292,8 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
 
    appMenu.config.widgets.push(loggingWidget);
 }
+
+
 
 
 function buildMorePopup() {
