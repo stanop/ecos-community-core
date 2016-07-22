@@ -306,13 +306,28 @@ function buildMyGroup() {
         { id: "completed-workflows", url: "completed-workflows#paging=%7C&filter=workflows%7Call", iconImage: "/share/res/components/images/header/completed-workflows.png" },
         { id: "my-content", url: "user/user-content", iconImage: "/share/res/components/images/header/my-content.png" },
         { id: "my-sites", url: "user/user-sites", iconImage: "/share/res/components/images/header/my-sites.png" },
-        { id: "my-profile", url: "user/admin/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
+        { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
         { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
         { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
       ], "my")
     }
   };
 };
+
+// function buildMovableGroup() {
+//   return {
+//     id: "HEADER_MORE_MOVABLE_GROUP",
+//     name: "alfresco/menus/AlfMenuGroup",
+//     config: {
+//       label: "",
+//       widgets: buildItems([
+//         {
+//           id: "documentlibrary", url: buildSiteUrl(currentSite) + "documentlibrary"
+//         }
+//       ], "movable")
+//     }
+//   };
+// };
 
 function buildAdminGroup() {
   return {
@@ -343,14 +358,18 @@ function buildSiteUrl(sitename) {
 function buildItems(items, groupName) {
   var result = [];
   for (var i = 0; i < items.length; i++) {
+    var configuration = {
+      label: "header." + items[i].id + ".label",
+      targetUrl: items[i].url,
+      iconImage: items[i].iconImage
+    };
+
+    if (items[i].movable) configuration["movable"] = items[i].movable;
+
     result.push({
       id: ("HEADER_MORE_" + groupName + "_" + items[i].id).toUpperCase(),
       name: "alfresco/menus/AlfMenuItem",
-      config: {
-         label: "header." + items[i].id + ".label",
-         targetUrl: items[i].url,
-         iconImage: items[i].iconImage
-      }
+      config: configuration
     });
   }
 
