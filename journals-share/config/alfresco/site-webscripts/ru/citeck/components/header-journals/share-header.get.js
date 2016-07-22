@@ -7,7 +7,6 @@ if (user.isAdmin) {
       id: "HEADER_MORE_TOOLS_META_JOURNALS",
       name: "alfresco/menus/AlfMenuBarItem",
       config: {
-        id: "HEADER_MORE_TOOLS_META_JOURNALS",
         label: "header.meta_journals.label",
         targetUrl: "journals2/list/meta"
       }

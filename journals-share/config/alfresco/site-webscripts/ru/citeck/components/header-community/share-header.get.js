@@ -12,8 +12,7 @@ var appMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_APP_MENU_BAR
 var userMenuItems = [
   {
      id: "HEADER_USER_MENU_STATUS",
-     name: "alfresco/header/CurrentUserStatus",
-     config: { id: "HEADER_USER_MENU_STATUS" }
+     name: "alfresco/header/CurrentUserStatus"
   },
 
   {
@@ -21,7 +20,6 @@ var userMenuItems = [
      name: "alfresco/header/AlfMenuItem",
      config:
      {
-        id: "HEADER_USER_MENU_MY_PROFILE",
         label: "header.my-profile.label",
         iconImage: "/share/res/components/images/header/my-profile.png",
         targetUrl: "user/" + encodeURIComponent(user.name) + "/profile"
@@ -35,7 +33,6 @@ if (user.properties.available === true || user.properties.available === null) {
      name: "alfresco/header/AlfMenuItem",
      config:
      {
-        id: "HEADER_USER_MENU_MAKE_NOTAVAILABLE",
         label: "header.make-notavailable.label",
         iconImage: "/share/res/components/images/header/make-notavailable.png",
         targetUrl: "/components/delegate/make-available?available=false"
@@ -47,7 +44,6 @@ if (user.properties.available === true || user.properties.available === null) {
      name: "alfresco/header/AlfMenuItem",
      config:
      {
-        id: "HEADER_USER_MENU_MAKE_AVAILABLE",
         label: "header.make-available.label",
         iconImage: "/share/res/components/images/header/make-available.png",
         targetUrl: "/components/delegate/make-available?available=true"
@@ -61,7 +57,6 @@ if (user.capabilities.isMutable) {
       name: "alfresco/header/AlfMenuItem",
       config:
       {
-         id: "HEADER_USER_MENU_CHANGE_PASSWORD",
          label: "header.change-password.label",
          iconImage: "/share/res/components/images/header/change-password.png",
          targetUrl: "user/" + encodeURIComponent(user.name) + "/change-password"
@@ -75,7 +70,6 @@ if (!context.externalAuthentication) {
       name: "alfresco/header/AlfMenuItem",
       config:
       {
-         id: "HEADER_USER_MENU_LOGOUT",
          label: "header.logout.label",
          iconImage: "/share/res/components/images/header/logout.png",
          targetUrl: "dologout"
@@ -88,14 +82,12 @@ userMenu.config.widgets = [
      id: "HEADER_USER_MENU_POPUP",
      name: "alfresco/header/AlfMenuBarPopup",
      config: {
-        id: "HEADER_USER_MENU_POPUP",
         label: user.fullName,
         widgets: [
            {
               id: "HEADER_USER_MENU",
               name: "alfresco/menus/AlfMenuGroup",
               config: {
-                 id: "HEADER_USER_MENU",
                  widgets: userMenuItems
               }
            }
@@ -111,7 +103,6 @@ appMenu.config.widgets = [
      id: "HEADER_HOME",
      name: "alfresco/menus/AlfMenuBarItem",
      config: {
-        id: "HEADER_HOME",
         label: "header.menu.home.label",
         targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard",
         targetUrlType: "SHARE_PAGE_RELATIVE"
@@ -122,7 +113,6 @@ appMenu.config.widgets = [
      id: "HEADER_SITES_MENU",
      name: "alfresco/header/AlfSitesMenu",
      config: {
-        id: "HEADER_SITES_MENU",
         label: "header.menu.sites.label",
         currentSite: currentSite,
         currentUser: user.name
@@ -133,7 +123,6 @@ appMenu.config.widgets = [
   //    id: "HEADER_CREATE_VARIANTS",
   //    name: "modules/header/create-variants",
   //    config: {
-  //       id: "HEADER_CREATE_VARIANTS",
   //       label: "header.create-variants.label",
   //       currentSite: currentSite,
   //       currentUser: user.name
@@ -144,7 +133,6 @@ appMenu.config.widgets = [
      id: "HEADER_JOURNALS",
      name: "alfresco/menus/AlfMenuBarItem",
      config: {
-        id: "HEADER_JOURNALS",
         iconImage: "journals.png",
         label: "header.journals.label",
         targetUrl: buildSiteUrl(currentSite) + "journals2/list/main"
@@ -155,7 +143,6 @@ appMenu.config.widgets = [
      id: "HEADER_DOCUMENTLIBRARY",
      name: "alfresco/menus/AlfMenuBarItem",
      config: {
-        id: "HEADER_DOCUMENTLIBRARY",
         label: "header.documentlibrary.label",
         targetUrl: buildSiteUrl(currentSite) + "documentlibrary"
      }
@@ -165,7 +152,6 @@ appMenu.config.widgets = [
      id: "HEADER_CREATE_WORKFLOW",
      name: "alfresco/header/AlfMenuBarPopup",
      config: {
-        id: "HEADER_CREATE_WORKFLOW",
         label: "header.create-workflow.label",
         widgets: [
           {
@@ -177,7 +163,6 @@ appMenu.config.widgets = [
                    id: "HEADER_CREATE_WORKFLOW_ADHOC",
                    name: "alfresco/menus/AlfMenuItem",
                    config: {
-                      id: "HEADER_CREATE_WORKFLOW_ADHOC",
                       label: "header.create-workflow-adhoc.label",
                       targetUrl: "start-specified-workflow?workflowId=activiti$perform"
                    }
@@ -186,7 +171,6 @@ appMenu.config.widgets = [
                    id: "HEADER_CREATE_WORKFLOW_CONFIRM",
                    name: "alfresco/menus/AlfMenuItem",
                    config: {
-                      id: "HEADER_CREATE_WORKFLOW_CONFIRM",
                       label: "header.create-workflow-confirm.label",
                       targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
                    }
@@ -304,7 +288,6 @@ function buildMorePopup() {
      id: "HEADER_MORE",
      name: "alfresco/header/AlfMenuBarPopup",
      config: {
-        id: "HEADER_MORE",
         label: "header.more.label",
         widgets: groups
      }
@@ -316,7 +299,6 @@ function buildMyGroup() {
     id: "HEADER_MORE_MY_GROUP",
     name: "alfresco/menus/AlfMenuGroup",
     config: {
-      id: "HEADER_MORE_MY_GROUP",
       label: "header.my.label",
       widgets: buildItems([
         { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
@@ -327,7 +309,7 @@ function buildMyGroup() {
         { id: "my-profile", url: "user/admin/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
         { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
         { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
-      ])
+      ], "my")
     }
   };
 };
@@ -337,7 +319,6 @@ function buildAdminGroup() {
     id: "HEADER_MORE_TOOLS_GROUP",
     name: "alfresco/menus/AlfMenuGroup",
     config: {
-      id: "HEADER_MORE_TOOLS_GROUP",
       label: "header.tools.label",
       widgets: buildItems([
         { id: "repository", url: "repository", iconImage: "/share/res/components/images/header/repository.png" },
@@ -350,7 +331,7 @@ function buildAdminGroup() {
         { id: "templates", url: "journals2/list/templates", iconImage: "/share/res/components/images/header/templates.png" },
         { id: "orgstruct", url: "orgstruct", iconImage: "/share/res/components/images/header/orgstruct.png" },
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
-      ])
+      ], "tools")
     }
   };
 };
@@ -366,7 +347,6 @@ function buildItems(items, groupName) {
       id: ("HEADER_MORE_" + groupName + "_" + items[i].id).toUpperCase(),
       name: "alfresco/menus/AlfMenuItem",
       config: {
-         id: ("HEADER_MORE_" + groupName + "_" + items[i].id).toUpperCase(),
          label: "header." + items[i].id + ".label",
          targetUrl: items[i].url,
          iconImage: items[i].iconImage
