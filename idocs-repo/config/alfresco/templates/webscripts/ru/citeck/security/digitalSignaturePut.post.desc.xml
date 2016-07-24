@@ -1,7 +1,0 @@
-<webscript>
-  <shortname>Digital signature put</shortname>
-  <description>Put digital signature of document in repository</description>
-  <url>/acm/digitalSignaturePut</url>
-  <authentication>user</authentication>
-  <transaction>required</transaction>
-</webscript>

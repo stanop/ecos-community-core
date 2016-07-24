@@ -146,14 +146,7 @@
 	</bean>
 
 	<!-- DMS specific evaluators -->
-	
-	<bean id="evaluator.doclib.dms.documentIsSigned" parent="evaluator.doclib.action.hasAspect">
-		<property name="aspects">
-			<list>
-				<value>sam:signable</value>
-			</list>
-		</property>
-	</bean>
+
 
 	<bean id="evaluator.doclib.dms.isActive" class="org.alfresco.web.evaluator.ValueEvaluator">
 		<property name="accessor">
