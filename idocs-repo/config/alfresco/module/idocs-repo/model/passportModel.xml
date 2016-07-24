@@ -103,6 +103,7 @@
 				</property>
 				<property name="tk:kind">
 					<mandatory>true</mandatory>
+					<default>workspace://SpacesStore/idocs-cat-dockind-passport-rus</default>
 				</property>
 			</overrides>
 		</aspect>

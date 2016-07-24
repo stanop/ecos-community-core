@@ -483,7 +483,7 @@
 		</property>
 	</bean>
 
-	<!-- <bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
+	<bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
 		<property name="name" value="doctype-passport" />
 		<property name="description" value="Passport Type Categories" />
 		<property name="sinceVersion" value="2.4" />
@@ -495,13 +495,14 @@
 		</property>
 		<property name="bootstrapView">
 			<props>
+				<prop key="uuidBinding">UPDATE_EXISTING</prop>
 				<prop key="path">workspace://SpacesStore/category-document-type-root</prop>
 				<prop key="location">alfresco/module/idocs-repo/bootstrap/doctypes/passport-types.xml</prop>
 				<prop key="messages">alfresco/module/idocs-repo/bootstrap/doctypes/passport-types</prop>
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
-	</bean> -->
+	</bean>
 
     <bean id="idocs.documentFolders" parent="idocs.import-spaces">
         <property name="name" value="idocs-document-folders" />
