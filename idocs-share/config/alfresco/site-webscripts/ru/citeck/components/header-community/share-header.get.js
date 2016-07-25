@@ -111,23 +111,29 @@ appMenu.config.widgets = [
 
   {
      id: "HEADER_SITES_MENU",
-     name: "alfresco/header/AlfSitesMenu",
+     name: "alfresco/wrapped/HeaderJsWrapper",
      config: {
+        id: "sites-global_x002e_share-header_x0023_default_sites",
         label: "header.menu.sites.label",
+        itemId: "sites-global_x002e_share-header_x0023_default_sites",
+        objectToInstantiate: "Alfresco.module.AllSites",
         currentSite: currentSite,
         currentUser: user.name
      }
   },
 
-  // {
-  //    id: "HEADER_CREATE_VARIANTS",
-  //    name: "modules/header/create-variants",
-  //    config: {
-  //       label: "header.create-variants.label",
-  //       currentSite: currentSite,
-  //       currentUser: user.name
-  //    }
-  // },
+  {
+     id: "HEADER_CREATE_VARIANTS",
+     name: "alfresco/wrapped/HeaderJsWrapper",
+     config: {
+        id: "create-variants-global_x002e_share-header_x0023_default_create-variants",
+        label: "header.create-variants.label",
+        itemId: "create-variants-global_x002e_share-header_x0023_default_create-variants",
+        objectToInstantiate: "Citeck.module.CreateVariants",
+        currentSite: currentSite,
+        currentUser: user.name
+     }
+  },
 
   {
      id: "HEADER_JOURNALS",
