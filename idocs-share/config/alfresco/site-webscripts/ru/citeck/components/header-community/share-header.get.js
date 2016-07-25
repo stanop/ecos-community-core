@@ -360,7 +360,7 @@ function buildAdminGroup() {
 };
 
 function buildSiteUrl(sitename) {
-  return sitename ? "site/" + encodeURIComponent(sitename) : "";
+  return sitename ? "site/" + encodeURIComponent(sitename) + "/" : "";
 };
 
 function buildItems(items, groupName) {
