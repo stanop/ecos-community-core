@@ -1,4 +1,4 @@
-function insertInHeaderMenu(item) {
+function insertInHeaderMenu(item, index) {
   var headerMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_APP_MENU_BAR");
 
   if (headerMenu) {
@@ -8,11 +8,11 @@ function insertInHeaderMenu(item) {
     if (lastElement().config.label == "Debug Menu") indexOfLastElement--;
     if (lastElement().id && lastElement.id == "HEADER_MORE") indexOfLastElement--;
 
-    headerMenu.config.widgets.splice(indexOfLastElement, 0, item);
+    headerMenu.config.widgets.splice(index || indexOfLastElement, 0, item);
   }
 }
 
-function insertInAdminGroup (item) {
+function insertInAdminGroup (item, index) {
   var adminMenuGroup = widgetUtils.findObject(model.jsonModel, "id", "HEADER_MORE_TOOLS_GROUP");
 
   if (adminMenuGroup) {
@@ -21,7 +21,7 @@ function insertInAdminGroup (item) {
 
     if (lastElement().id && lastElement.id == "HEADER_MORE_TOOLS_MORE") indexOfLastElement--;
 
-    adminMenuGroup.config.widgets.splice(indexOfLastElement, 0, item);
+    adminMenuGroup.config.widgets.splice(index || indexOfLastElement, 0, item);
   }
 }
 
