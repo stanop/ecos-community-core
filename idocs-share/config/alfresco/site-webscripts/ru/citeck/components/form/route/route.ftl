@@ -24,6 +24,14 @@
         }
     } />
 
+    <@forms.renderField field="prop_route_scriptCondition" extension = {
+        "label": msg("route.script.condition"),
+        "control" : {
+            "template" : "/org/alfresco/components/form/controls/textarea.ftl",
+            "params": {}
+        }
+    } />
+
     <#if form.mode != "view">
         <div class="set-title bold upcase">${msg("routes.set.stages")}</div>
     </#if>
