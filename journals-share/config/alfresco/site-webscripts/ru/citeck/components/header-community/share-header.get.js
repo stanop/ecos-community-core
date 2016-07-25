@@ -133,9 +133,9 @@ appMenu.config.widgets = [
      id: "HEADER_JOURNALS",
      name: "alfresco/menus/AlfMenuBarItem",
      config: {
-        iconImage: "journals.png",
         label: "header.journals.label",
-        targetUrl: buildSiteUrl(currentSite) + "journals2/list/main"
+        targetUrl: buildSiteUrl(currentSite) + "journals2/list/main",
+        movable: { minWidth: 701 }
      }
   },
 
@@ -144,7 +144,8 @@ appMenu.config.widgets = [
      name: "alfresco/menus/AlfMenuBarItem",
      config: {
         label: "header.documentlibrary.label",
-        targetUrl: buildSiteUrl(currentSite) + "documentlibrary"
+        targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
+        movable: { minWidth: 782 }
      }
   },
 
@@ -281,7 +282,7 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
 
 
 function buildMorePopup() {
-  var groups = [ buildMyGroup() ];
+  var groups = [ buildMovableGroup(), buildMyGroup() ];
   if (user.isAdmin) groups.push(buildAdminGroup());
 
   return {
@@ -314,20 +315,27 @@ function buildMyGroup() {
   };
 };
 
-// function buildMovableGroup() {
-//   return {
-//     id: "HEADER_MORE_MOVABLE_GROUP",
-//     name: "alfresco/menus/AlfMenuGroup",
-//     config: {
-//       label: "",
-//       widgets: buildItems([
-//         {
-//           id: "documentlibrary", url: buildSiteUrl(currentSite) + "documentlibrary"
-//         }
-//       ], "movable")
-//     }
-//   };
-// };
+function buildMovableGroup() {
+  return {
+    id: "HEADER_MORE_MOVABLE_GROUP",
+    name: "alfresco/menus/AlfMenuGroup",
+    config: {
+      label: "",
+      movable: { maxWidth: 781 },
+      widgets: buildItems([
+        {
+          id: "journals",
+          url: buildSiteUrl(currentSite) + "journals2/list/main",
+          movable: { maxWidth: 700 }
+        },
+        {
+          id: "documentlibrary", url: buildSiteUrl(currentSite) + "documentlibrary",
+          movable: { maxWidth: 781 }
+        }
+      ], "movable")
+    }
+  };
+};
 
 function buildAdminGroup() {
   return {
@@ -360,10 +368,10 @@ function buildItems(items, groupName) {
   for (var i = 0; i < items.length; i++) {
     var configuration = {
       label: "header." + items[i].id + ".label",
-      targetUrl: items[i].url,
-      iconImage: items[i].iconImage
+      targetUrl: items[i].url
     };
 
+    if (items[i].iconImage) configuration["iconImage"] = items[i].iconImage;
     if (items[i].movable) configuration["movable"] = items[i].movable;
 
     result.push({
