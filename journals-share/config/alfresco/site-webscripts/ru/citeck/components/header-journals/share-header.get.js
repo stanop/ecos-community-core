@@ -1,13 +1,21 @@
 if (user.isAdmin) {
-     var headerMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_APP_MENU_BAR");
-    if (headerMenu != null) {
-        headerMenu.config.widgets.push({
-            id: "HEADER_CUSTOM_PROFILE_LINK",
-            name: "alfresco/menus/AlfMenuBarItem",
-            config: {
-                label: msg.get("header.meta_journals.label"),
-                targetUrl: "journals2/list/meta"
-            }
-        });
-    }
+  var headerMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_APP_MENU_BAR"),
+      metajournals = widgetUtils.findObject(model.jsonModel, "id", "HEADER_MORE_TOOLS_META_JOURNALS");
+
+  if (headerMenu && !metajournals) {
+    var indexOfLastElement = headerMenu.config.widgets.length - 1,
+        lastElement = function() { return headerMenu.config.widgets[indexOfLastElement] };
+
+    if (lastElement().config.label == "Debug Menu") indexOfLastElement--;
+    if (lastElement().id && lastElement.id == "HEADER_MORE") indexOfLastElement--;
+
+    headerMenu.config.widgets.splice(indexOfLastElement, 0, {
+      id: "HEADER_META_JOURNALS",
+      name: "alfresco/menus/AlfMenuBarItem",
+      config: {
+        label: "header.meta_journals.label",
+        targetUrl: "journals2/list/meta"
+      }
+    });
+  }
 }

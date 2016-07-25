@@ -1,4 +1,19 @@
 <alfresco-config>
+  <!-- Global config section -->
+  <config replace="true">
+      <header>
+          <dependencies>
+              <css src="/modules/create-site.css"/>
+              <css src="/modules/header/all-sites.css"/>
+              <js src="/modules/create-site.js"/>
+              <js src="/modules/header/all-sites.js"/>
+              <js src="/modules/header/site-page-link.js"/>
+              <js src="/jquery/jquery-1.6.2-min.js"/>
+              <js src="/modules/common/ie_fix.js"/>
+              <js src="/modules/header/create-variants.js"/>
+          </dependencies>
+      </header>
+  </config>
 
 	<config>
 		<forms>
