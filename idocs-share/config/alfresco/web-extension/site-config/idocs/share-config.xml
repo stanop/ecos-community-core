@@ -1,7 +1,6 @@
 <alfresco-config>
   <!-- Global config section -->
   <config replace="true">
-
       <header>
           <dependencies>
               <css src="/modules/create-site.css"/>
@@ -14,7 +13,6 @@
               <js src="/modules/header/create-variants.js"/>
           </dependencies>
       </header>
-
   </config>
 
 	<config>
