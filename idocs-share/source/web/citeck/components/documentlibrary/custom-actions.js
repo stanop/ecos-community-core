@@ -666,26 +666,6 @@ Citeck.format.openCalendar = function() {
 		}
 	});
 
-function GetErrorMessage(e) {
-	var err = e.message;
-	if (!err) {
-		err = e;
-	} else if (e.number) {
-		err += " (" + e.number + ")";
-	}
-	return err;
-}
-
-function CreateObject(name) {
-	switch (navigator.appName) {
-		case "Microsoft Internet Explorer":
-			return new ActiveXObject(name);
-		default:
-			var cadesobject = document.getElementById("cadesplugin");
-			return cadesobject.CreateObject(name);
-	}
-}
-
 
 YAHOO.Bubbling.fire("registerAction", {
     actionName: "onActionDialogForm",
