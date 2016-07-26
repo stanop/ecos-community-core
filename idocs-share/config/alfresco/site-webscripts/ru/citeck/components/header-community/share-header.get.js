@@ -141,7 +141,7 @@ appMenu.config.widgets = [
      config: {
         label: "header.journals.label",
         targetUrl: buildSiteUrl(currentSite) + "journals2/list/main",
-        movable: { minWidth: 796 }
+        movable: { minWidth: 1089 }
      }
   },
 
@@ -151,7 +151,7 @@ appMenu.config.widgets = [
      config: {
         label: "header.documentlibrary.label",
         targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
-        movable: { minWidth: 878 }
+        movable: { minWidth: 1171 }
      }
   },
 
@@ -327,16 +327,16 @@ function buildMovableGroup() {
     name: "alfresco/menus/AlfMenuGroup",
     config: {
       label: "",
-      movable: { maxWidth: 877 },
+      movable: { maxWidth: 1170 },
       widgets: buildItems([
         {
           id: "journals",
           url: buildSiteUrl(currentSite) + "journals2/list/main",
-          movable: { maxWidth: 796 }
+          movable: { maxWidth: 1080 }
         },
         {
           id: "documentlibrary", url: buildSiteUrl(currentSite) + "documentlibrary",
-          movable: { maxWidth: 877 }
+          movable: { maxWidth: 1170 }
         }
       ], "movable")
     }
