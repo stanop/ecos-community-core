@@ -51,4 +51,63 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.update-case-documents-config" parent="idocs.import-spaces.3-0-0">
+        <property name="name" value="update-case-documents-config" />
+        <property name="description" value="Update case documents config" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.update-case-element-configs" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/update-assoc-config.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/documents</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.documents-card-mode-update" parent="idocs.import-spaces.3-0-0">
+        <property name="name" value="documents-card-mode-update" />
+        <property name="description" value="Documents card mode update" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.cardlets-tabs" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/documents-mode</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.icase-documents-cardlet" parent="idocs.import-spaces.3-0-0">
+        <property name="name" value="icase-documents-cardlet" />
+        <property name="description" value="iCase documents cardlet" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/documents</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
