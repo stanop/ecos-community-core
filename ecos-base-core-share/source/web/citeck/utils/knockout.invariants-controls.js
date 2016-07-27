@@ -215,16 +215,19 @@ ko.components.register("datetime", {
 
         this.calendar = function() {
             if (!calendarDialog) {
-                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, { 
-                    visible:    false, 
-                    context:    [calendarAccessorId, "tl", "bl"], 
-                    draggable:  false, 
+                var formContainer = $(element).closest(".yui-panel-container"),
+                    zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+
+                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                    visible:    false,
+                    context:    [calendarAccessorId, "tl", "bl"],
+                    draggable:  false,
                     close:      true,
-                    zindex:     15
+                    zindex:     zindex 
                 });
                 calendarDialog.setHeader(localization.labels.header);
                 calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                calendarDialog.render(document.body); 
+                calendarDialog.render(document.body);
             }
 
             if (!calendar) {
