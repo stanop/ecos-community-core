@@ -107,13 +107,15 @@ ko.components.register("number", {
         this.noValue = _.isEmpty(this.value());
 
         this.validation = function(data, event) {
-            var whiteNumbers = _.range(48, 58), whiteKeys = [46]
-                code = event.keyCode;
+            var whiteNumbers = _.range(48, 58),
+                whiteKeys = [8, 46, 37, 39],
+                whitePeriod = [44, 46],
+                code = event.keyCode || event.charCode;
 
             // return if code of key out of white list
-            if (!_.contains(_.union(whiteNumbers, whiteKeys), code)) return false;
+            if (!_.contains(_.union(whiteNumbers, whiteKeys, whitePeriod), code)) return false;
 
-            if (_.contains(whiteKeys, code)) {
+            if (_.contains(whitePeriod, event.charCode)) {
                 if (self.lastSymbolIsPeriod || self.hasPeriodSymbol || self.noValue) return false;
             };
 
