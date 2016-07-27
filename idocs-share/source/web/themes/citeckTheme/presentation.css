@@ -4289,3 +4289,9 @@ div#HEADER_USER_STATUS {
     position: static;
   }
 }
+
+
+/* dynamic-tree */
+.yui-skin-citeckTheme .dynamic-tree-picker .dynamic-tree-list .item-buttons {
+  right: -25px;
+}
