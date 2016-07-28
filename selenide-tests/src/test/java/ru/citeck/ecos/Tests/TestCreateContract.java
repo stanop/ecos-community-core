@@ -23,7 +23,7 @@ public class TestCreateContract extends SelenideTests{
         String UserNameAdmin = "Administrator";
         String message = "Согласуйте";
 
-        //createUser(userName, login, pass, "company_director");
+        createUser(userName, login, pass, "company_director");
 
         DocumentDetailsPage documentDetailsPage = createContract(valueContractWith, valueKindDocument, UserNameAdmin, userName);
         documentDetailsPage.getStatusDocument().shouldHave(text("New"));
