@@ -1,6 +1,7 @@
 package ru.citeck.ecos.Tests;
 
 import com.codeborne.selenide.SelenideElement;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.citeck.ecos.Settings;
@@ -11,16 +12,15 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestCreateContract extends SelenideTests{
-
+    String userName = "Остап";
+    String UserNameAdmin = "Administrator";
     @Test
     public void testForContract()
     {
         String login = "ostap";
         String pass = "ostap";
-        String userName = "Остап";
         String valueContractWith = "performer";
         String valueKindDocument = "Услуги";
-        String UserNameAdmin = "Administrator";
         String message = "Согласуйте";
 
         createUser(userName, login, pass, "company_director");
@@ -50,8 +50,11 @@ public class TestCreateContract extends SelenideTests{
         documentDetailsPage.clickOnActionMoveToArchive();
         sleep(10000);
         documentDetailsPage.getStatusDocument().shouldHave(text("Archive"));
-
-        AdminToolsPage adminToolsPage = deleteUser(login);
+    }
+    @After
+    public void deleteUser()
+    {
+        AdminToolsPage adminToolsPage = deleteUser(userName);
         LoginPage loginPage =  adminToolsPage.getMenu().logOut(UserNameAdmin);
         Assert.assertTrue("Citeck EcoS » Войти".equals(loginPage.getTitle()) ||  "Citeck EcoS » Login".equals(loginPage.getTitle()));
     }
@@ -70,12 +73,12 @@ public class TestCreateContract extends SelenideTests{
 
         adminToolsPage.searchUser(login).shouldBe(present);
     }
-    private AdminToolsPage deleteUser(String login)
+    private AdminToolsPage deleteUser(String username)
     {
         DocumentDetailsPage detailsPage = new DocumentDetailsPage();
         AdminToolsPage adminToolsPage = detailsPage.getMenu().openAdminTools();
-        adminToolsPage.searchUser(login).shouldBe(present);
-        adminToolsPage.clickOnUserName();
+        adminToolsPage.searchUser(username).shouldBe(present);
+        adminToolsPage.clickOnUserName(username);
         adminToolsPage.clickOnButtonDeleteUser();
         return adminToolsPage;
     }

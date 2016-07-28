@@ -4,6 +4,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.present;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.title;
 
@@ -48,9 +49,9 @@ public class AdminToolsPage extends PageBase{
         $("[id*=\"default-search-text\"]").setValue(login).pressEnter();
         return $(".yui-dt-data > tr");
     }
-    public void clickOnUserName()
+    public void clickOnUserName(String userName)
     {
-        $("[headers *= \"fullName\"] a").shouldBe(present).click();
+        $("[headers *= \"fullName\"] a").shouldHave(text(userName)).click();
     }
     public void clickOnButtonDeleteUser()
     {
