@@ -1192,6 +1192,8 @@ ko.bindingHandlers.journalControl = {
 
                 }
             }, Dom.get(journalPickerHeaderId));
+
+            if (value()) selectedElements(multiple() ? value() : [ value() ]);
         }
         
         panel.show();
