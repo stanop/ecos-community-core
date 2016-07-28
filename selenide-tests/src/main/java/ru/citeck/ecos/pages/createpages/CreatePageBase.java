@@ -57,7 +57,7 @@ public class CreatePageBase {
     }
     public void clickOnButtonGenerate()
     {
-        $("[name = 'number-generate']").shouldBe(present).click();
+        $("[name = \"number-generate\"]").shouldBe(present).click();
 
     }
     public void selectCurrency(String value)

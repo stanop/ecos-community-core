@@ -7,6 +7,6 @@ public class ContractorCreatePage extends LegalEntityCreatePageBase{
 
     public void setCeoName(String value)
     {
-        $("[id *= \"body-idocs_CEOname").shouldBe(present).setValue(value);
+        $("[id *= \"body-idocs_CEOname\"]").shouldBe(present).setValue(value);
     }
 }

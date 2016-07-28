@@ -50,11 +50,11 @@ public class AdminToolsPage extends PageBase{
     }
     public void clickOnUserName()
     {
-        $("[headers *= 'fullName'] a").shouldBe(present).click();
+        $("[headers *= \"fullName\"] a").shouldBe(present).click();
     }
     public void clickOnButtonDeleteUser()
     {
-        $("button[id *= 'deleteuser-button']").shouldBe(enabled).click();
+        $("button[id *= \"deleteuser-button\"]").shouldBe(enabled).click();
         $("#deleteDialog button").shouldBe(enabled).click();
     }
 }

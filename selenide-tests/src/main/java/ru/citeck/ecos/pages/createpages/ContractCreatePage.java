@@ -64,7 +64,7 @@ public class ContractCreatePage extends CreatePageBase {
     {
         $("[id *= \"signatory-orgstructControl-showVariantsButton\"]").shouldBe(enabled).click();
         $("[id *= \"signatory-orgstructControl-orgstructPanel-searchInput\"]").shouldBe(present).setValue(userName).pressEnter();
-        $("[id *= \"signatory-orgstructControl-orgstructPanel\"] table tr td[id *= 'contente']").shouldHave(text(userName)).click();
+        $("[id *= \"signatory-orgstructControl-orgstructPanel\"] table tr td[id *= \"contente\"]").shouldHave(text(userName)).click();
         $(".selected-object.authorityType-USER").shouldBe(present);
         $("[id *= \"signatory-orgstructControl-orgstructPanel-submitInput\"]").shouldBe(present).click();
         return $$(".value-item").get(1);
@@ -73,7 +73,7 @@ public class ContractCreatePage extends CreatePageBase {
     {
         $("[id *= \"performer-orgstructControl-showVariantsButton\"]").shouldBe(enabled).click();
         $("[id *= \"idocs_performer-orgstructControl-orgstructPanel-searchInput\"]").shouldBe(present).setValue(userName).pressEnter();
-        $("[id *= \"performer-orgstructControl-orgstructPanel\"] table tr td[id *= 'contente']").shouldHave(text(userName)).click();
+        $("[id *= \"performer-orgstructControl-orgstructPanel\"] table tr td[id *= \"contente\"]").shouldHave(text(userName)).click();
         $(".selected-object.authorityType-USER").shouldBe(present);
         $("[id *= \"performer-orgstructControl-orgstructPanel-submitInput\"]").shouldBe(present).click();
         return $$(".value-item").get(2);
