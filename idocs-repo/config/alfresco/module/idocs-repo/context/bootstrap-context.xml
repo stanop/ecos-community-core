@@ -20,7 +20,6 @@
 				<value>alfresco/module/idocs-repo/model/dmsModel.xml</value>
 				<value>alfresco/module/idocs-repo/workflow/related-workflows/related-workflows-task-model.xml</value>
 				<value>alfresco/module/idocs-repo/model/lifecycleModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/securityModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/workflowModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/grantModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/delegateModel.xml</value>
