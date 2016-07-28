@@ -87,26 +87,29 @@
 		}, this, true);
 	};
 
-	Citeck.widget.ButtonPanel.Commands.onPanelButtonCreate = function(options) {
-        if (options.assocType) {
-            var itemId = options.contentType,
-                formId = options.formId || null,
-                dest = _parseConfigParam(options.destination, "");
-            var dlg = new Citeck.forms.dialog(itemId, formId, {
-                scope: this,
-                fn: function(response) {
-                    YAHOO.Bubbling.fire("metadataRefresh");
-                }
-            }, {
-                title: Alfresco.util.message(options.createTitle || "button.create"), 
-                destination: dest, 
-                destinationAssoc: options.assocType 
-            });
-        }
-        else {
-            // This situation is related with defining options of this module, so you do not need to specify localization for this message
-            alert("Can not create a document without specified association type");
-        }
+	Citeck.widget.ButtonPanel.Commands.onPanelButtonCreate = function(options, context) {
+    if (options.assocType) {
+      var itemId = options.contentType,
+	        formId = options.formId || null,
+	        dest = _parseConfigParam(options.destination, ""),
+					afterCreateCallback = options.afterCreate ? new Function("persistedNode, ButtonPanel", options.afterCreate) : null;
+
+      var dlg = new Citeck.forms.dialog(itemId, formId, {
+        scope: this,
+        fn: function(response) {
+					if (afterCreateCallback) { afterCreateCallback(response, context); }
+					YAHOO.Bubbling.fire("metadataRefresh");
+				}
+      }, {
+        title: Alfresco.util.message(options.createTitle || "button.create"),
+        destination: dest,
+        destinationAssoc: options.assocType
+      });
+    }
+    else {
+      // This situation is related with defining options of this module, so you do not need to specify localization for this message
+      alert("Can not create a document without specified association type");
+    }
 	};
 
 	var _addCommandPickers = {};
