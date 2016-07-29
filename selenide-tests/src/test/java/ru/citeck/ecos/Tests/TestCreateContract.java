@@ -48,7 +48,7 @@ public class TestCreateContract extends SelenideTests{
         documentDetailsPage.performTaskSign(message);
         documentDetailsPage.getStatusDocument().shouldHave(text("Active"));
         documentDetailsPage.clickOnActionMoveToArchive();
-        sleep(10000);
+        sleep(15000);
         documentDetailsPage.getStatusDocument().shouldHave(text("Archive"));
     }
     @After

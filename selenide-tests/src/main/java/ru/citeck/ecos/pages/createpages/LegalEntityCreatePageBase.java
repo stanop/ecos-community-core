@@ -1,5 +1,6 @@
 package ru.citeck.ecos.pages.createpages;
 
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.present;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -19,6 +20,6 @@ public class LegalEntityCreatePageBase {
     }
     public void clickOnButtonCreate()
     {
-        $("[id *= \"body-form-submit\"]").shouldBe(present).click();
+        $("[id *= \"body-form-submit\"]").shouldBe(enabled).click();
     }
 }
