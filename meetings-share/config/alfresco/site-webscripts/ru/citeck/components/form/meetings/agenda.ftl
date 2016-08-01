@@ -1,8 +1,8 @@
 <#import "/ru/citeck/components/form/ftl-forms.lib.ftl" as forms />
 
 <@forms.setMandatoryFields
-fieldNames = [
-]/>
+	fieldNames = [ ]
+/>
 
 <#if formUI == "true">
 	<@formLib.renderFormsRuntime formId=formId />
@@ -18,12 +18,35 @@ fieldNames = [
 
 <#if form.mode == "create">
 	<@forms.formConfirmSupport formId=formId message="" />
+
+	<script type="text/javascript">
+		if (Alfresco.CreateContentMgr) {
+			Alfresco.CreateContentMgr.prototype.onCreateContentSuccess = function CreateContentMgr_onCreateContentSuccess(response) {
+				if (response.json && response.json.persistedObject) {
+					// Grab the new nodeRef and pass it on to _navigateForward() to optionally use
+					var nodeRef = new Alfresco.util.NodeRef(response.json.persistedObject),
+							nextNodeRef = response.json.redirect ? new Alfresco.util.NodeRef(response.json.redirect) : nodeRef;
+
+					if (!this.options.isContainer) {
+						Alfresco.Share.postActivity(
+							this.options.siteId,
+							"org.alfresco.documentlibrary.file-created",
+							"{cm:name}", "document-details?nodeRef=" + nodeRef.toString(),
+							{ appTool: "documentlibrary", nodeRef: nodeRef.toString() },
+							this.bind(function() { this._navigateForward(nextNodeRef); })
+						);
+					}
+				}
+			}
+		}
+	</script>
 </#if>
 
 <@formLib.renderFormContainer formId=formId>
 
 <#if form.mode == "create" >
 	<input id="alf_assoctype" value="meet:childAgenda" class="hidden" />
+	<input id="alf_redirect" value="${args['destination']!''}" class="hidden" />
 </#if>
 
 <@forms.renderField field="assoc_meet_plannedParticipants" extension = {
@@ -35,11 +58,13 @@ fieldNames = [
 		}
 	}
 } />
+
 <#if form.mode != "view" >
 	<#assign showAddButton = "true" />
 <#else>
 	<#assign showAddButton = "false" />
 </#if>
+
 <#if showAddButton == "true" >
 	<script type="text/javascript">//<![CDATA[
 		(function(){
@@ -148,6 +173,7 @@ fieldNames = [
 			});
 		})();
 	//]]></script>
+
 	<@forms.renderField field="assoc_meet_childQuestions" extension = {
 		"control": {
 			"template": "/ru/citeck/components/form/controls/table-children.ftl",
