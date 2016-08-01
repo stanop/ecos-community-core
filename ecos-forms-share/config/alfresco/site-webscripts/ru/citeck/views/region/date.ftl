@@ -30,7 +30,11 @@
             }
         }), disable: protected"> 
     <#else>
-        <input id="${fieldId}" placeholder="${formatIE}" type="date" data-bind="value: textValue, disable: protected" />
+        <#assign type><#if mode == "browser">date<#else>text</#if></#assign>
+        
+        <input id="${fieldId}" placeholder="${formatIE}" type="${type}"
+               data-bind="value: textValue, disable: protected" 
+        />
     </#if>
 
     <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">

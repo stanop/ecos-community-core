@@ -348,9 +348,7 @@ ko.bindingHandlers.dateControl = {
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (!Citeck.HTML5.supportedInputTypes.date) {
-            input.setAttribute("placeholder", localization.placeholder);
-
+        if (mode == "alfresco" || !Citeck.HTML5.supportedInputTypes.date) {
             var calendarDialogId = elementId + "-calendarDialog",
                 calendarContainerId = elementId + "-calendarContainer",
                 calendarAccessorId = elementId + "-calendarAccessor",
@@ -361,12 +359,15 @@ ko.bindingHandlers.dateControl = {
 
             Event.on(showCalendarButton, "click", function() {
                 if (!calendarDialog) {
+                    var formContainer = $(element).closest(".yui-panel-container"),
+                        zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+
                     calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, { 
                         visible:    false, 
                         context:    [calendarAccessorId, "tl", "bl"], 
                         draggable:  false, 
                         close:      true,
-                        zindex:     15
+                        zindex:     zindex
                     });
                     calendarDialog.setHeader(localization.labels.header);
                     calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
@@ -397,11 +398,7 @@ ko.bindingHandlers.dateControl = {
                     // selected date
                     calendar.selectEvent.subscribe(function() {
                         if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0],
-                                dStr = selectedDate.getDate(),
-                                mStr = selectedDate.getMonth(),
-                                yStr = selectedDate.getFullYear();
-                                
+                            var selectedDate = calendar.getSelectedDates()[0];
                             value(selectedDate.toString("yyyy-MM-dd"));                           
                         }
                         calendarDialog.hide();
