@@ -20,6 +20,6 @@ public class LegalEntityCreatePageBase {
     }
     public void clickOnButtonCreate()
     {
-        $("[id *= \"body-form-submit\"]").shouldBe(enabled).click();
+        $("[id *= \"body-form-submit\"]").shouldBe(present).shouldBe(enabled).click();
     }
 }
