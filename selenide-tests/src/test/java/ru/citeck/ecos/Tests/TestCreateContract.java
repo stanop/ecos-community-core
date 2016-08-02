@@ -140,7 +140,6 @@ public class TestCreateContract extends SelenideTests{
         contractorCreatePage.setJuridicalAddress(juridicalAddress);
         contractorCreatePage.setPostAddress(postAddress);
         contractorCreatePage.setCeoName(ceoName);
-        sleep(2000);
         contractorCreatePage.clickOnButtonCreate();
         contractCreatePage.setContractor(fullOrganisationName).shouldHave(text(fullOrganisationName));
     }
