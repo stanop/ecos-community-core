@@ -48,12 +48,6 @@ public class ContractCreatePage extends CreatePageBase {
     {
         $("[id *= \"idocs_pagesNumber\"]").shouldBe(present).setValue(value);
     }
-    public void createPaymentSchedule(String value)
-    {
-        $("[id *= \"payments_payments-createObjectControl\"] button").shouldBe(present).click();
-        $("[id *= \"payments_paymentAmount\"]").shouldBe(present).setValue(value);
-        $("[id *= \"form-submit\"]").shouldBe(present).click();
-    }
     public DocumentDetailsPage clickOnCreateContractButton()
     {
         $("[id *= \"form-submit\"]").shouldBe(present).click();

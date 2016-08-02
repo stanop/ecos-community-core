@@ -130,8 +130,7 @@ public class TestCreateContract extends SelenideTests{
         legalEntityCreatePage.setINN(inn);
         legalEntityCreatePage.setKPP(kpp);
         legalEntityCreatePage.clickOnButtonCreate();
-        SelenideElement legalEntityValue = contractCreatePage.setLegalEntity(fullOrganisationName);
-        legalEntityValue.shouldHave(text(fullOrganisationName));
+        contractCreatePage.setLegalEntity(fullOrganisationName).shouldHave(text(fullOrganisationName));
     }
     private void createContractor(String fullOrganisationName, String juridicalAddress, String postAddress, String ceoName)
     {
@@ -142,8 +141,7 @@ public class TestCreateContract extends SelenideTests{
         contractorCreatePage.setPostAddress(postAddress);
         contractorCreatePage.setCeoName(ceoName);
         contractorCreatePage.clickOnButtonCreate();
-        SelenideElement contractor = contractCreatePage.setContractor(fullOrganisationName);
-        contractor.shouldHave(text(fullOrganisationName));
+        contractCreatePage.setContractor(fullOrganisationName).shouldHave(text(fullOrganisationName));
     }
     private void createAgreementSubject(String code, String name)
     {

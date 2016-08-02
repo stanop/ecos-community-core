@@ -32,7 +32,6 @@ public class CreatePageBase {
     public ContractorCreatePage openContractorCreatePage()
     {
         $("[id *= \"contractor-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"journalControl-journalPanel-elementsTable\"] table tbody").shouldBe(present);
         $("[id *= \"contractor-journalControl-journalPanel-journal-picker-header\"] .create-object-button").shouldBe(enabled).click();
         ContractorCreatePage contractorCreatePage = new ContractorCreatePage();
         return contractorCreatePage;
