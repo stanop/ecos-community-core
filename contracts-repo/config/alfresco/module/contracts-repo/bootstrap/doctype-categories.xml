@@ -20,40 +20,40 @@
         <view:properties>
             <sys:node-uuid>contracts-cat-doctype-contract</sys:node-uuid>
             <cm:name>${doctype.contract.name}</cm:name>
-            <!-- <cm:title>
+             <cm:title>
                 <view:mlvalue view:locale="en_US">${doctype.contract.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.contract.title_ru}</view:mlvalue>
-            </cm:title> -->
+            </cm:title>
         </view:properties>
         <cm:subcategories>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-contract-rent</sys:node-uuid>
                     <cm:name>${doctype.contract.rent}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.contract.rent.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.contract.rent.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-contract-delivery</sys:node-uuid>
                     <cm:name>${doctype.contract.delivery}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.contract.delivery.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.contract.delivery.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-contract-services</sys:node-uuid>
                     <cm:name>${doctype.contract.services}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.contract.services.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.contract.services.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
         </cm:subcategories>
@@ -63,50 +63,50 @@
         <view:properties>
             <sys:node-uuid>contracts-cat-doctype-closing-doc</sys:node-uuid>
             <cm:name>${doctype.closing-doc.name}</cm:name>
-            <!-- <cm:title>
+             <cm:title>
                 <view:mlvalue view:locale="en_US">${doctype.closing-doc.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.closing-doc.title_ru}</view:mlvalue>
-            </cm:title> -->
+            </cm:title>
         </view:properties>
         <cm:subcategories>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-closing-doc-act</sys:node-uuid>
                     <cm:name>${doctype.closing-doc.act}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.closing-doc.act.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.closing-doc.act.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-closing-doc-invoice</sys:node-uuid>
                     <cm:name>${doctype.closing-doc.invoice}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.closing-doc.invoice.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.closing-doc.invoice.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-closing-doc-other</sys:node-uuid>
                     <cm:name>${doctype.closing-doc.other}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.closing-doc.other.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.closing-doc.other.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
             <cm:category>
                 <view:properties>
                     <sys:node-uuid>contracts-cat-closing-doc-delivery</sys:node-uuid>
                     <cm:name>${doctype.closing-doc.delivery-note}</cm:name>
-                    <!-- <cm:title>
+                     <cm:title>
                         <view:mlvalue view:locale="en_US">${doctype.closing-doc.delivery-note.title_en}</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">${doctype.closing-doc.delivery-note.title_ru}</view:mlvalue>
-                    </cm:title> -->
+                    </cm:title>
                 </view:properties>
             </cm:category>
         </cm:subcategories>
@@ -116,10 +116,10 @@
         <view:properties>
             <sys:node-uuid>contracts-cat-doctype-supp-agreement</sys:node-uuid>
             <cm:name>${doctype.supp-agreement.name}</cm:name>
-            <!-- <cm:title>
+             <cm:title>
                 <view:mlvalue view:locale="en_US">${doctype.supp-agreement.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.supp-agreement.title_ru}</view:mlvalue>
-            </cm:title> -->
+            </cm:title>
         </view:properties>
     </cm:category>
 
@@ -127,10 +127,10 @@
         <view:properties>
             <sys:node-uuid>contracts-cat-doctype-payment</sys:node-uuid>
             <cm:name>${doctype.payment.name}</cm:name>
-            <!-- <cm:title>
+             <cm:title>
                 <view:mlvalue view:locale="en_US">${doctype.payment.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.payment.title_ru}</view:mlvalue>
-            </cm:title> -->
+            </cm:title>
         </view:properties>
     </cm:category>
     <!-- </cm:subcategories>
