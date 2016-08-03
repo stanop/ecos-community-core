@@ -1,5 +1,6 @@
 package ru.citeck.ecos.pages.menu;
 
+import com.codeborne.selenide.SelenideElement;
 import ru.citeck.ecos.pages.AdminToolsPage;
 import ru.citeck.ecos.pages.LoginPage;
 import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
@@ -30,5 +31,9 @@ public class MenuElements {
         $("a[href *= \"site=contracts\"]").shouldBe(present).click();
         HomePageSiteContracts homePageContracts = new HomePageSiteContracts();
         return homePageContracts;
+    }
+    public SelenideElement searchByText(String value)
+    {
+        return $("[id *= \"alfresco/header/AlfMenuBarPopup\"]").$(byText(value));
     }
 }

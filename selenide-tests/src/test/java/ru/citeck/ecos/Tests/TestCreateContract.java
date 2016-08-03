@@ -54,9 +54,16 @@ public class TestCreateContract extends SelenideTests{
     @After
     public void deleteUser()
     {
+        PageBase pageBase = new PageBase();
+        if (pageBase.getMenu().searchByText(userName).exists())
+        {
+            LoginPage loginPage = pageBase.getMenu().logOut(userName);
+            loginPage.inLoginAndPassword(Settings.getLogin(),Settings.getPassword());
+            loginPage.clickOnLoginButton();
+        }
         AdminToolsPage adminToolsPage = deleteUser(userName);
-        LoginPage loginPage =  adminToolsPage.getMenu().logOut(UserNameAdmin);
-        Assert.assertTrue("Citeck EcoS » Войти".equals(loginPage.getTitle()) ||  "Citeck EcoS » Login".equals(loginPage.getTitle()));
+        LoginPage loginPage = adminToolsPage.getMenu().logOut(UserNameAdmin);
+        Assert.assertTrue("Citeck EcoS » Войти".equals(loginPage.getTitle()) || "Citeck EcoS » Login".equals(loginPage.getTitle()));
     }
 
     private void createUser(String username, String login, String password, String group)

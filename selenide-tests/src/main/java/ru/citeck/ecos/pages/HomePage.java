@@ -19,6 +19,7 @@ public class HomePage extends PageBase{
     }
     public SelenideElement getTableTasks()
     {
-        return $("[id *= \"yuievtautoid\"]").shouldBe(present);
+        //return $("[id *= \"yuievtautoid\"]").shouldBe(present);
+        return $("[id *= \"attributeswfmtaskType-liner\"]");
     }
 }
