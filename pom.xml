@@ -124,6 +124,19 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-citeckTheme-share</artifactId>
+                <version>${ecos-citeckTheme.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-citeckTheme-share</artifactId>
+                <version>${ecos-citeckTheme.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -308,8 +321,8 @@
              -->
             <id>run</id>
             <properties>
-                <!-- While running in rapid dev mode with -Prun, we don't want amp web resources 
-                    to be added to the war, so we can load them directly from the AMP project (see 
+                <!-- While running in rapid dev mode with -Prun, we don't want amp web resources
+                    to be added to the war, so we can load them directly from the AMP project (see
                     runner/tomcat/context-*.xml for more details) -->
                 <maven.alfresco.includeWebResources>false</maven.alfresco.includeWebResources>
             </properties>
@@ -321,7 +334,7 @@
             </properties>
         </profile>
 
-	<!-- if we're on a unix machine, chmod run.sh to be executable -->        
+	<!-- if we're on a unix machine, chmod run.sh to be executable -->
         <profile>
         	<id>chmod</id>
         	<activation><os><family>unix</family></os></activation>
@@ -352,6 +365,7 @@
         </profile>
     </profiles>
     <modules>
+        <module>ecos-citeckTheme-share</module>
         <module>ecos-base-core-repo</module>
         <module>ecos-base-core-share</module>
         <module>journals-repo</module>
