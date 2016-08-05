@@ -1,10 +1,22 @@
 <#assign params = viewScope.region.params!{} />
 <#assign alwaysSingle = params.alwaysSingle!"false" />
 
+<#assign caption>
+	<#if params.caption??>
+		${params.caption}
+	<#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].select??>
+		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["caption"]??>
+			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["caption"]}
+		</#if>
+	<#else>
+		form.select.label
+	</#if>
+</#assign>
+
 <!-- ko ifnot: multiple -->
 <select id="${fieldId}" data-bind="
 	options: options, 
-	optionsCaption: '${msg("form.select.label")}', 
+	optionsCaption: '${msg(caption?trim)}', 
 	optionsText: function(item) { return getValueTitle(item) }, 
 	value: value, 
 	<#-- use this to suppress initial value set -->
