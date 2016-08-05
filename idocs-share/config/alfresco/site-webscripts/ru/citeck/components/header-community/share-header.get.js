@@ -1,11 +1,12 @@
 <import resource="classpath:/alfresco/site-webscripts/org/alfresco/share/imports/share-header.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header-community/share-header.lib.js">
 
-//------------
+// ---------------------
 // HEADER MENU
-//------------
+// ---------------------
 
-var appMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_APP_MENU_BAR"),
-    userMenu = widgetUtils.findObject(model.jsonModel, "id", "HEADER_USER_MENU_BAR"),
+var appMenu = getWidget("HEADER_APP_MENU_BAR"),
+    userMenu = getWidget("HEADER_USER_MENU_BAR"),
     currentSite = page.url.templateArgs.site || "";
 
 // USER MENU
@@ -285,7 +286,31 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
 }
 
 
+// ---------------------
+// TITLE MENU
+// ---------------------
 
+var siteConfig = getWidget("HEADER_SITE_CONFIGURATION_DROPDOWN"),
+    siteData = getSiteData();
+
+if (siteConfig && siteData.userIsSiteManager) {
+  if (!page.titleId && !hasWidget("HEADER_CUSTOMIZE_SITE_DASHBOARD")) {
+    siteConfig.config.widgets.splice(0, 0, {
+      id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
+      name: "alfresco/menus/AlfMenuItem",
+      config: {
+        label: "customize_dashboard.label",
+        iconClass: "alf-cog-icon",
+        targetUrl: "site/" + page.url.templateArgs.site + "/customise-site-dashboard"
+      }
+    });
+  }
+}
+
+
+// ---------------------
+// FUNCTIONS
+// ---------------------
 
 function buildMorePopup() {
   var groups = [ buildMovableGroup(), buildMyGroup() ];
