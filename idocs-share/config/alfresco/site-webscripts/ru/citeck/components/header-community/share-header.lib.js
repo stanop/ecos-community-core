@@ -28,3 +28,7 @@ function insertInAdminGroup (item, index) {
 function hasWidget(id) {
   return widgetUtils.findObject(model.jsonModel, "id", id) !== undefined && widgetUtils.findObject(model.jsonModel, "id", id) !== null;
 }
+
+function getWidget(id) {
+  return widgetUtils.findObject(model.jsonModel, "id", id);
+}
