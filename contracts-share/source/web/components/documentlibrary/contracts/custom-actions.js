@@ -147,7 +147,7 @@
                                 redirection += '&param_contract=' + contracts[0];
                             }
 
-                            window.location = redirection;
+                            window.location.replace(redirection);
                         }
                     }
                 }
