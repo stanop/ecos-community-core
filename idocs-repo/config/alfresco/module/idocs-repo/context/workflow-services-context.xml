@@ -231,10 +231,10 @@
 				<ref bean="taskPriorityPull" />
 				<ref bean="assignTaskToSingleCandidate" />
 				<ref bean="grantWorkflowPackage" />
-				<ref bean="sendTaskNotificationListener" />
 				<ref bean="taskOriginalOwner"/>
 				<ref bean="workflowMirrorListener" />
 				<ref bean="taskHistoryListener" />
+				<ref bean="sendTaskNotificationListener" />
 			</list>
 		</property>
 	</bean>
