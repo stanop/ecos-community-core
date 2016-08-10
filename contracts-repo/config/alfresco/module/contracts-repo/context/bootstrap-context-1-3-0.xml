@@ -61,4 +61,69 @@
         </property>
     </bean>
 
+    <bean id="contracts.module-component.contracts-watermarks" parent="contracts.import-spaces.1-3-0">
+        <property name="name" value="contracts-watermarks" />
+        <property name="description" value="contracts-watermarks" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/explicit/watermarks.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.print.invoice-signature.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <bean parent="dbp.content">
+                    <property name="nodeRef" value="${args.nodeRef}" />
+                </bean>
+                <bean parent="dbp.transform.pdf" />
+                <bean parent="dbp.pdf.signature.under">
+                    <property name="transformCalculator" ref="dbp.transform.upper.right" />
+                    <property name="stampProcessors">
+                        <list>
+                            <bean parent="dbp.content">
+                                <property name="nodeRef" value="workspace://SpacesStore/contracts-wm-invoice-signature" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="findString" value="_________" />
+                    <property name="positionFindString" value="end" />
+                    <property name="shiftRight" value="${args.shiftRight}" />
+                    <property name="shiftUp" value="${args.shiftUp}" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.print.closing-document-signature.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <bean parent="dbp.content">
+                    <property name="nodeRef" value="${args.nodeRef}" />
+                </bean>
+                <bean parent="dbp.transform.pdf" />
+                <bean parent="dbp.pdf.signature.under">
+                    <property name="transformCalculator" ref="dbp.transform.upper.right" />
+                    <property name="stampProcessors">
+                        <list>
+                            <bean parent="dbp.content">
+                                <property name="nodeRef" value="workspace://SpacesStore/contracts-wm-clos-doc-signature" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="findString" value="_________" />
+                    <property name="positionFindString" value="end" />
+                    <property name="shiftRight" value="${args.shiftRight}" />
+                    <property name="shiftUp" value="${args.shiftUp}" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 </beans>
