@@ -129,7 +129,6 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
                 /*added generate template*/
                 boolean updateContent = (boolean) nodeService.getProperty(node, DmsModel.PROP_UPDATE_CONTENT);
                 if (updateContent) {
-                    logger.error("--------------------the template is generated----------------------");
                     ActionService actionService = serviceRegistry.getActionService();
                     Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
                     actionService.executeAction(actionGenerateContent, node);
