@@ -21,7 +21,7 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
@@ -34,8 +34,8 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.template.GenerateContentActionExecuter;
 
 import java.io.Serializable;
@@ -52,6 +52,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
     private ServiceRegistry serviceRegistry;
     private QName className;
     private Boolean enabled = null;
+    private int order = 500;
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
@@ -71,6 +72,10 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     @Override
@@ -124,6 +129,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
                 /*added generate template*/
                 boolean updateContent = (boolean) nodeService.getProperty(node, DmsModel.PROP_UPDATE_CONTENT);
                 if (updateContent) {
+                    logger.error("--------------------the template is generated----------------------");
                     ActionService actionService = serviceRegistry.getActionService();
                     Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
                     actionService.executeAction(actionGenerateContent, node);
@@ -148,7 +154,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
-                new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
+                new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
     }
 
     @SuppressWarnings("unchecked")
