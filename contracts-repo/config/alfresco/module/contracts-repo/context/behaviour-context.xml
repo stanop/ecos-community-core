@@ -7,6 +7,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Договор<#else>Contract</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
@@ -29,6 +30,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Доп.соглашение<#else>Add'l agreement</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
@@ -57,6 +59,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Счет<#else>Invoice</#if> №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
@@ -107,6 +110,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU" && node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Счет-фактура<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Акт<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Накладная</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'б-н'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> для #{'$'}{node.assocs['contracts:contractor'][0].name}</#if><#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Invoice<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Act<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Delivery</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'n/a'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> for #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if>]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
