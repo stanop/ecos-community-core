@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:budget="http://www.citeck.ru/model/budget/1.0">
+
+    <budget:item view:childName="cm:bi-unit">
+        <view:properties>
+            <sys:node-uuid>bi-unit</sys:node-uuid>
+            <cm:name>Единица</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">u.</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ед</view:mlvalue>
+            </cm:title>
+            <budget:itemName>Единица</budget:itemName>
+            <budget:itemCode>ед</budget:itemCode>
+        </view:properties>
+    </budget:item>
+
+</view:view>
