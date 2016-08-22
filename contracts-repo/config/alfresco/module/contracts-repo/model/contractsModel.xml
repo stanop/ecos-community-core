@@ -399,7 +399,7 @@
 						<many>true</many>
 					</source>
 					<target>
-						<class>contracts:agreement</class>
+						<class>idocs:doc</class>
 						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
