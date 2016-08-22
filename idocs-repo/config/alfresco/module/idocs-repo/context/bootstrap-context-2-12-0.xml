@@ -372,54 +372,54 @@
 		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-admin-to-orgstruct-groups.js"/>
 	</bean>
 
-	<bean id="idocs.module-component.budget-items.data" parent="idocs.import-spaces.2-12-0">
-		<property name="name" value="Budget Item Data" />
-		<property name="description" value="Budget Item Data (kg, mh, m, m2, %, pc, product, u.)" />
+	<bean id="idocs.module-component.units.data" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="Unit Data" />
+		<property name="description" value="Unit Data (kg, mh, m, m2, %, pc, product, u.)" />
 		<property name="dependsOn">
 			<list>
-				<ref bean="idocs.module-component.main-journals.budget-items" />
+				<ref bean="idocs.module-component.main-journals.units" />
 			</list>
 		</property>
 		<property name="bootstrapViews">
 			<list>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-piece.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-piece.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-killogramm.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-killogramm.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-metr2.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-metr2.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-metr.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-metr.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-manhour.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-manhour.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-product.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-product.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-percentage.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-percentage.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:budget-items</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/budget-items/bi-unit.xml</prop>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-unit.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 			</list>

@@ -3,19 +3,19 @@
         xmlns:view="http://www.alfresco.org/view/repository/1.0"
         xmlns:sys="http://www.alfresco.org/model/system/1.0"
         xmlns:cm="http://www.alfresco.org/model/content/1.0"
-        xmlns:budget="http://www.citeck.ru/model/budget/1.0">
+        xmlns:pas="http://www.citeck.ru/model/products-and-services/1.0">
 
-    <budget:item view:childName="cm:bi-pc">
+    <pas:unit view:childName="cm:u-pc">
         <view:properties>
-            <sys:node-uuid>bi-pc</sys:node-uuid>
+            <sys:node-uuid>u-pc</sys:node-uuid>
             <cm:name>Штука</cm:name>
             <cm:title>
                 <view:mlvalue view:locale="en_US">pc</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">шт</view:mlvalue>
             </cm:title>
-            <budget:itemName>Штука</budget:itemName>
-            <budget:itemCode>шт</budget:itemCode>
+            <pas:unitName>Штука</pas:unitName>
+            <pas:unitShortName>шт</pas:unitShortName>
         </view:properties>
-    </budget:item>
+    </pas:unit>
 
 </view:view>
