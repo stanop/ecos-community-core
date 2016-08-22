@@ -77,7 +77,7 @@
 					<value><![CDATA[Счет №#{'$'}{node.properties['payments:paymentNumber']!'б-н'} для<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 				</entry>
 				<entry key="en_US">
-					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} for<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 				</entry>
 				<entry key="lt_LT">
 					<value><![CDATA[Sąskaita №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} už<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
