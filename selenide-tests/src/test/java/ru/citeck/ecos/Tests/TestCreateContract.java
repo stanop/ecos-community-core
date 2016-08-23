@@ -20,7 +20,7 @@ public class TestCreateContract extends SelenideTests{
         String login = "ostap";
         String pass = "ostap";
         String valueContractWith = "performer";
-        String valueKindDocument = "Услуги";
+        String valueKindDocument = "Services";
         String message = "Согласуйте";
 
         createUser(userName, login, pass, "company_director");
