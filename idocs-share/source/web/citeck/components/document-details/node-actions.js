@@ -159,7 +159,7 @@
                 /**
                  * Class that is applied to action link
                  *  to separate these links from default action links of document library.
-                 *  
+                 *
                  *  @property actionLinkClass
                  *  @default "action-link"
                  */
@@ -413,7 +413,7 @@
             addServerNodeActions: function ServerNodeActions_addNodeActions() {
                 var url = Alfresco.constants.PROXY_URI + 'api/node-action-service/get-actions?nodeRef=' + this.options.nodeRef;
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", url, false);
+                xhr.open("GET", url, true);
                 xhr.send(null);
                 if(xhr.status === 200) {
                     var data = eval('(' + xhr.responseText + ')');

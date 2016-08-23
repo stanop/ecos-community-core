@@ -1046,7 +1046,7 @@ p#clear {
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .picker-header .search span.search-button button {
   padding-left: 10px;
   padding-right: 10px;
-  background-image: url(search.png);
+  background-image: url(../../images/search.png);
   background-repeat: no-repeat;
   text-indent: -9999px;
   background-position: left center;
@@ -5393,12 +5393,12 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 /* ICONS */
 
 .yui-skin-citeckTheme .alf-user-icon {
-   background: url(add-user.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/add-user.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme .title-menu .dijitMenuItemHover .alf-user-icon,
 .yui-skin-citeckTheme .title-menu .dijitMenuItemSelected .alf-user-icon {
-   background: url(add-user-active.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/add-user-active.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme .alf-configure-icon {
