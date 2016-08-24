@@ -174,7 +174,7 @@
 						<many>true</many>
 					</source>
 					<target>
-						<class>contracts:agreement</class>
+						<class>idocs:doc</class>
 						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
@@ -399,7 +399,7 @@
 						<many>true</many>
 					</source>
 					<target>
-						<class>idocs:doc</class>
+						<class>contracts:agreement</class>
 						<mandatory>false</mandatory>
 						<many>false</many>
 					</target>
