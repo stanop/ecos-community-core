@@ -326,8 +326,6 @@
 		onButtonOKClick: function(e) {
 			var selectedItems = this.model.getItem("selected-items")._item_children_;
 			this.fireEvent("itemsSelected", [].concat(selectedItems));
-			setTimeout(12000);
-			location.reload();
 			this.hide();
 		},
 
