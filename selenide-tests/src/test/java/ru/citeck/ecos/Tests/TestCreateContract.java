@@ -1,72 +1,118 @@
 package ru.citeck.ecos.Tests;
 
 import com.codeborne.selenide.SelenideElement;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import ru.citeck.ecos.Settings;
 import ru.citeck.ecos.pages.*;
 import ru.citeck.ecos.pages.createpages.*;
+
+import javax.print.Doc;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestCreateContract extends SelenideTests{
-    String userName = "Остап";
-    String UserNameAdmin = "Administrator";
-    @Test
-    public void testForContract()
+    static private String titleLoginPageRUS = "Citeck EcoS » Войти";
+    static private String titleLoginPageEN = "Citeck EcoS » Login";
+    private String titleCardDetailsRUS = "Citeck EcoS » Карточка";
+    private String titleCardDetailsEN = "Citeck EcoS » Card details";
+    private String statusNew = "New";
+    private String statusOnApproval = "On approval";
+    private String statusOnSign = "On sign";
+    private String statusActive = "Active";
+    private String statusArchive = "Archive";
+
+    static private String userName = "Остап";
+    static private String login = "ostap";
+    static private String pass = "ostap";
+    static private String group = "company_director";
+    static private String UserNameAdmin = "Administrator";
+    private String loginAdmin = "Administrator";
+
+    private String valueContractWith = "performer";
+    private String valueKindDocument = "Services";
+    private String documentDate = "2016-08-25";
+    private String agreementAmount = "50000";
+    private String vat = "10";
+    private String numberOfAppendixPage = "2";
+    private String numberPage = "7";
+    private String summary = "- Договор между физическими лицами на срок более одного года, а также, " +
+            "если одной из сторон является юридическое лицо, должен быть заключен в письменной форме. " +
+            "При аренде недвижимого имущества письменная форма также обязательна.\n" +
+            "Если аренда предполагает выкуп имущества, т.е. перемену собственника, то форма договора аренды " +
+            "должна соответствовать форме договора купли-продажи данного вида имущества.\n";
+    private String node = "Досрочное прекращение обязательства возможно при расторжении договора аренды. " +
+            "В ст. 619 ГК РФ перечислены следующие основания, позволяющие арендодателю требовать расторжения " +
+            "договора: использование имущества не по назначению, существенные нарушения условий договора; " +
+            "значительное ухудшение арендатором арендованного имущества; несвоевременное внесение арендной платы " +
+            "(более двух раз подряд по истечении установленного договором срока платежа); невыполнение " +
+            "обязанности по проведению капитального ремонта арендованного имущества. Стороны могут предусмотреть" +
+            " и иные основания расторжения договора. Применяя указанные положения, следует помнить, " +
+            "что они являются специальными основаниями расторжения договора аренды.";
+
+    private String nameLegalEntity = "ООО \"Зеленоглазое такси\"";
+    private String addressLegalEntity = "Россия";
+    private String postAddressLegalEntity = "Россия";
+    private String inn = "80056479781430";
+    private String kpp = "00688";
+
+    private String nameContractor = "ООО Империал";
+    private String addressContractor = "ул. Мира д.1";
+    private String postAddressContractor = "Ул. Мира д.2";
+    private String ceoNameContractor = "Империал";
+
+    private String agreementSubjectCode = "004";
+    private String agreementSubjectName = "Жилой дом";
+
+    private String paymentScheduleDate = "2016-07-27";
+    private String paymentScheduleAmount = "500";
+    private String paymentScheduleType = "rest";
+    private String paymentScheduleDescription = "нет";
+
+    private String message = "Согласуйте";
+    @BeforeClass
+    static public void createUser()
     {
-        String login = "ostap";
-        String pass = "ostap";
-        String valueContractWith = "performer";
-        String valueKindDocument = "Services";
-        String message = "Согласуйте";
-
-        createUser(userName, login, pass, "company_director");
-
-        DocumentDetailsPage documentDetailsPage = createContract(valueContractWith, valueKindDocument, UserNameAdmin, userName);
-        documentDetailsPage.getStatusDocument().shouldHave(text("New"));
-        Assert.assertTrue("Citeck EcoS » Карточка".equals(documentDetailsPage.getTitle()) ||
-                "Citeck EcoS » Card details".equals(documentDetailsPage.getTitle()));
+        createUser(userName, login, pass, group);
+    }
+    @Test
+    public void testCreateContract()
+    {
+        ContractCreatePage contractCreatePage =  new ContractCreatePage();
+        contractCreatePage.openCreatePageContract();
+        fillFieldsOnFormCreationContract(valueContractWith, valueKindDocument, UserNameAdmin, userName);
+        DocumentDetailsPage documentDetailsPage = contractCreatePage.clickOnCreateContentButton();
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusNew));
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
 
         sendToApproval(userName, message);
-        documentDetailsPage.getStatusDocument().shouldHave(text("On approval"));
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusOnApproval));
         String nameContract = "Contract №"+documentDetailsPage.getNumberAgreement();
 
-        documentDetailsPage.getMenu().logOut("Administrator");
+        documentDetailsPage.getMenu().logOut(loginAdmin);
         openDocumentWithTask(login, pass, nameContract);
-        Assert.assertTrue("Citeck EcoS » Карточка".equals(documentDetailsPage.getTitle()) ||
-                          "Citeck EcoS » Card details".equals(documentDetailsPage.getTitle()));
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                          titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
         documentDetailsPage.performTaskConfirm(message);
-        documentDetailsPage.getStatusDocument().shouldHave(text("On sign"));
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusOnSign));
         documentDetailsPage.getMenu().logOut(userName);
 
         openDocumentWithTask(Settings.getLogin(),Settings.getPassword(),nameContract);
-        Assert.assertTrue("Citeck EcoS » Карточка".equals(documentDetailsPage.getTitle()) ||
-                          "Citeck EcoS » Card details".equals(documentDetailsPage.getTitle()));
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                          titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
         documentDetailsPage.performTaskSign(message);
-        documentDetailsPage.getStatusDocument().shouldHave(text("Active"));
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusActive));
         documentDetailsPage.clickOnActionMoveToArchive();
         sleep(15000);
-        documentDetailsPage.getStatusDocument().shouldHave(text("Archive"));
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusArchive));
     }
-    @After
-    public void deleteUser()
+    @Test
+    public void testCreateSupplementaryAgreement()
     {
-        PageBase pageBase = new PageBase();
-        if (pageBase.getMenu().searchByText(userName).exists())
-        {
-            LoginPage loginPage = pageBase.getMenu().logOut(userName);
-            loginPage.inLoginAndPassword(Settings.getLogin(),Settings.getPassword());
-            loginPage.clickOnLoginButton();
-        }
-        AdminToolsPage adminToolsPage = deleteUser(userName);
-        LoginPage loginPage = adminToolsPage.getMenu().logOut(UserNameAdmin);
-        Assert.assertTrue("Citeck EcoS » Войти".equals(loginPage.getTitle()) || "Citeck EcoS » Login".equals(loginPage.getTitle()));
+        DocumentDetailsPage documentDetailsPage = createSupplementaryAgreement();
     }
-
-    private void createUser(String username, String login, String password, String group)
+    static private void createUser(String username, String login, String password, String group)
     {
         HomePage homePage = new HomePage();
         AdminToolsPage adminToolsPage =  homePage.getMenu().openAdminTools();
@@ -80,7 +126,7 @@ public class TestCreateContract extends SelenideTests{
 
         adminToolsPage.searchUser(login).shouldBe(present);
     }
-    private AdminToolsPage deleteUser(String username)
+    static private AdminToolsPage deleteUser(String username)
     {
         DocumentDetailsPage detailsPage = new DocumentDetailsPage();
         AdminToolsPage adminToolsPage = detailsPage.getMenu().openAdminTools();
@@ -89,43 +135,39 @@ public class TestCreateContract extends SelenideTests{
         adminToolsPage.clickOnButtonDeleteUser();
         return adminToolsPage;
     }
-    private DocumentDetailsPage createContract(String valueContractWith, String kindOfDocument, String signatory, String performer)
+    private void fillFieldsOnFormCreationContract(String valueContractWith, String kindOfDocument, String signatory, String performer)
     {
         ContractCreatePage contractCreatePage = new ContractCreatePage();
-        contractCreatePage.openCreatePageContract();
 
         contractCreatePage.setContractWith(valueContractWith);
         contractCreatePage.selectKindDocument(kindOfDocument);
         contractCreatePage.clickOnButtonGenerate();
-        contractCreatePage.setDocumentDate("2016-07-22");
-//        contractCreatePage.setDuration("2016-08-22");
-        contractCreatePage.setAgreementAmount("50000");
-        contractCreatePage.setVAT("10");
-        contractCreatePage.setNumberOfAppendixPage("2");
-        contractCreatePage.setNumberPage("7");
-        contractCreatePage.setSummary("- Договор между физическими лицами на срок более одного года, а также, " +
-                "если одной из сторон является юридическое лицо, должен быть заключен в письменной форме. " +
-                "При аренде недвижимого имущества письменная форма также обязательна.\n" +
-                "Если аренда предполагает выкуп имущества, т.е. перемену собственника, то форма договора аренды " +
-                "должна соответствовать форме договора купли-продажи данного вида имущества.\n");
-        contractCreatePage.setNode("Досрочное прекращение обязательства возможно при расторжении договора аренды. " +
-                "В ст. 619 ГК РФ перечислены следующие основания, позволяющие арендодателю требовать расторжения " +
-                "договора: использование имущества не по назначению, существенные нарушения условий договора; " +
-                "значительное ухудшение арендатором арендованного имущества; несвоевременное внесение арендной платы " +
-                "(более двух раз подряд по истечении установленного договором срока платежа); невыполнение " +
-                "обязанности по проведению капитального ремонта арендованного имущества. Стороны могут предусмотреть" +
-                " и иные основания расторжения договора. Применяя указанные положения, следует помнить, " +
-                "что они являются специальными основаниями расторжения договора аренды.");
+        contractCreatePage.setDocumentDate(documentDate);
+        contractCreatePage.setAgreementAmount(agreementAmount);
+        contractCreatePage.setVAT(vat);
+        contractCreatePage.setNumberOfAppendixPage(numberOfAppendixPage);
+        contractCreatePage.setNumberPage(numberPage);
+        contractCreatePage.setSummary(summary);
+        contractCreatePage.setNode(node);
         contractCreatePage.selectSignatory(signatory).shouldHave(text(signatory));
         contractCreatePage.selectPerformer(performer).shouldHave(text(performer));
 
-        createLegalEntity("ООО \"Зеленоглазое такси\"", "Россия", "Россия", "80056479781430", "00688");
-        createContractor("ООО Империал", "ул. Мира д.1", "Ул. Мира д.2", "Империал");
-        createAgreementSubject("004", "Жилой дом");
-        createPaymentSchedule("2016-07-27", "500", "rest", "нет");
-
-        DocumentDetailsPage documentDetailsPage = contractCreatePage.clickOnCreateContentButton();
-        return documentDetailsPage;
+        createLegalEntity(nameLegalEntity, addressLegalEntity, postAddressLegalEntity, inn, kpp);
+        createContractor(nameContractor, addressContractor, postAddressContractor, ceoNameContractor);
+        createAgreementSubject(agreementSubjectCode, agreementSubjectName);
+        createPaymentSchedule(paymentScheduleDate, paymentScheduleAmount, paymentScheduleType, paymentScheduleDescription);
+    }
+    private DocumentDetailsPage createSupplementaryAgreement()
+    {
+        SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
+        supplementaryAgreementCreatePage.openCreatePageSupplementaryAgreement();
+        supplementaryAgreementCreatePage.clickOnButtonMainAgreement();
+        ContractCreatePage mainAgreement = supplementaryAgreementCreatePage.openMainContractCreatePage();
+        fillFieldsOnFormCreationContract(valueContractWith, valueKindDocument, UserNameAdmin, userName);
+        mainAgreement.clickOnButtonCreate();
+        supplementaryAgreementCreatePage.selectMainAgreement();
+        DocumentDetailsPage detailsPage = new DocumentDetailsPage();
+        return detailsPage;
     }
     private void createLegalEntity(String fullOrganisationName, String juridicalAddress, String postAddress, String inn, String kpp)
     {
@@ -190,5 +232,18 @@ public class TestCreateContract extends SelenideTests{
         startWorkflowPage.selectParticipant(userName);
         startWorkflowPage.clickOnButtonStartApproval();
     }
-
+    @AfterClass
+    static public void deleteUser()
+    {
+        PageBase pageBase = new PageBase();
+        if (pageBase.getMenu().searchByText(userName).exists())
+        {
+            LoginPage loginPage = pageBase.getMenu().logOut(userName);
+            loginPage.inLoginAndPassword(Settings.getLogin(),Settings.getPassword());
+            loginPage.clickOnLoginButton();
+        }
+        AdminToolsPage adminToolsPage = deleteUser(userName);
+        LoginPage loginPage = adminToolsPage.getMenu().logOut(UserNameAdmin);
+        Assert.assertTrue(titleLoginPageRUS.equals(loginPage.getTitle()) || titleLoginPageEN.equals(loginPage.getTitle()));
+    }
 }

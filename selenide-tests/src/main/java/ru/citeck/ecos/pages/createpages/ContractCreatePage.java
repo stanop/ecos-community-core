@@ -26,7 +26,7 @@ public class ContractCreatePage extends CreatePageBase {
     }
     public void setAgreementAmount(String value)
     {
-        $("[id *= \"contracts_agreementAmount\"]").shouldBe(present).setValue(value);
+        $("input[id *= \"contracts_agreementAmount\"][data-bind *= \"keypress: validation\"]").shouldBe(present).setValue(value);
     }
     public void setVAT(String value)
     {

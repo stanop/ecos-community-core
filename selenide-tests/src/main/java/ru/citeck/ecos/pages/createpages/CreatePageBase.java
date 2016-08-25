@@ -1,13 +1,16 @@
 package  ru.citeck.ecos.pages.createpages;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import  ru.citeck.ecos.pages.*;
 import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class CreatePageBase {
 
@@ -70,6 +73,13 @@ public class CreatePageBase {
             DocumentDetailsPage documentDetailsPage = new DocumentDetailsPage();
             return documentDetailsPage;
         }
+    public void clickOnButtonCreate()
+    {
+        SelenideElement element = $("[id *= \"body-form-submit\"]");
+        String js = "arguments[0].scrollIntoView();";
+        ((JavascriptExecutor)getWebDriver()).executeScript(js, element);
+        element.shouldBe(present).shouldBe(enabled).click();
+    }
     public void setDocumentDate(String date)
     {
         $("[id *= \"agreementDate\"] input").shouldBe(present).setValue(date);
