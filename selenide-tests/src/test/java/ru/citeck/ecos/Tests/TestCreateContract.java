@@ -119,8 +119,8 @@ public class TestCreateContract extends SelenideTests{
         contractCreatePage.selectSignatory(signatory).shouldHave(text(signatory));
         contractCreatePage.selectPerformer(performer).shouldHave(text(performer));
 
-        createLegalEntity("ООО \"Старость\"", "Россия", "Россия", "80056479781430", "00688");
-        createContractor("ИП Печкин", "Простоквашино д.1", "Простоквашино д.2", "Печкин ");
+        createLegalEntity("ООО \"Зеленоглазое такси\"", "Россия", "Россия", "80056479781430", "00688");
+        createContractor("ООО Империал", "ул. Мира д.1", "Ул. Мира д.2", "Империал");
         createAgreementSubject("004", "Жилой дом");
         createPaymentSchedule("2016-07-27", "500", "rest", "нет");
 
