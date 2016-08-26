@@ -6,6 +6,7 @@ import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
 
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.present;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 
 public class SupplementaryAgreementCreatePage extends CreatePageBase {
@@ -23,7 +24,8 @@ public class SupplementaryAgreementCreatePage extends CreatePageBase {
     public ContractCreatePage openMainContractCreatePage()
     {
         $("[id *= \"contracts_mainAgreement-journalControl-journalPanel-elementsTable\"] table").shouldBe(present);
-        $("[id *= \"contracts_mainAgreement-journalControl-journalPanel-journal-picker-header\"] .create-object-button").shouldBe(enabled).click();
+        $("[id *= \"journalControl-journalPanel-elementsTable\"] table th").shouldHave(text("Created Date"));
+        $("[id *= \"contracts_mainAgreement-journalControl-journalPanel-journal-picker-header\"] .create-object-button").shouldBe(enabled).shouldBe(present).click();
         ContractCreatePage contractCreatePage = new ContractCreatePage();
         return contractCreatePage;
     }

@@ -25,6 +25,10 @@ public class DocumentDetailsPage extends PageBase{
     {
         return $$(".value-item-text").get(5).shouldBe(present).attr("title").toString();
     }
+    public String getNumberSupplementaryAgreement()
+    {
+        return $$(".value-item-text").get(3).shouldBe(present).attr("title").toString();
+    }
 
     public void performTaskConfirm(String message)
     {
