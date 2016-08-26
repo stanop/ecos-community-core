@@ -172,16 +172,8 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
                     nodeService.setProperty(document.getSourceRef(), property, totalAmount);
                 }
             }
-            updateTemplate(nodeRef);
         }
 
-    }
-
-    private void updateTemplate(NodeRef nodeRef) {
-        List<AssociationRef> assocs = nodeService.getSourceAssocs(nodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
-        ActionService actionService = serviceRegistry.getActionService();
-        Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
-        actionService.executeAction(actionGenerateContent, assocs.get(0).getSourceRef());
     }
 
 }
