@@ -371,12 +371,6 @@
 				<props>
 					<prop key="uuidBinding">UPDATE_EXISTING</prop>
 					<prop key="path">/</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/absence-events.xml</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="uuidBinding">UPDATE_EXISTING</prop>
-					<prop key="path">/</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/history.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
