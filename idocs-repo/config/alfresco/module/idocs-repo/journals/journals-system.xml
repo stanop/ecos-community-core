@@ -6,6 +6,7 @@
 		<import uri="http://www.citeck.ru/model/cardlet/1.0" prefix="cardlet" />
 		<import uri="http://www.citeck.ru/model/config/1.0" prefix="config" />
 		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+		<import uri="http://www.citeck.ru/model/delegate/1.0" prefix="delegate" />
 	</imports>
 
 	<journal id="cardlets">
@@ -58,6 +59,19 @@
 			<header key="config:key" default="true" />
 			<header key="config:value" default="true" />
 			<header key="cm:description" default="true" /> <!-- detailed description of the settings -->
+		</headers>
+	</journal>
+
+	<journal id="absence-events">
+		<option name="type">delegate:absenceEvent</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="delegate:startAbsence" default="true"/>
+			<header key="delegate:endAbsence" default="true"/>
+			<header key="delegate:reasonOfAbsence" default="true"/>
+			<header key="delegate:user" default="true"/>
+			<header key="delegate:comment" default="true"/>
 		</headers>
 	</journal>
 

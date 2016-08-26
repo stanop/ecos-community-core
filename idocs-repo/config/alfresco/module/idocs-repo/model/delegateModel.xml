@@ -69,7 +69,7 @@
                         <many>false</many>
                     </target>
                 </association>
-                <association name="delegate:absenceReason">
+                <association name="delegate:reasonOfAbsence">
                     <source>
                         <mandatory>true</mandatory>
                         <many>false</many>
