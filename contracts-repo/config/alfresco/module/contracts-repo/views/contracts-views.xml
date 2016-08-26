@@ -2,7 +2,6 @@
 <views xmlns="http://www.citeck.ru/ecos/views/1.0">
 
     <imports>
-        <!-- <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" /> -->
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
@@ -434,9 +433,6 @@
                 </region>
             </field>
             <field prop="payments:description">
-                <!-- <region name="label" template="label">
-                    <param name="key">payments_paymentsModel.property.payments_description.title</param>
-                </region> -->
             </field>
         </view>
     </view>
