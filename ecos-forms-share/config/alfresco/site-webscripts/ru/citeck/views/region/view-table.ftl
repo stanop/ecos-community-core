@@ -14,7 +14,7 @@
     <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
         <table>
             <thead data-bind="with: singleValue">
-                <tr>
+                <tr data-bind="if: $data.impl">
                     <!-- ko with: impl -->
                         <#if params.journalType??>
                             <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
@@ -45,51 +45,53 @@
                 </tr>
             </thead>
             <tbody data-bind="foreach: multipleValues">
-                <!-- ko with: impl -->
-                    <#if params.highlightedColumnMarker??>
-                        <tr class="value-item" 
-                            data-bind="css: { 
-                                'highlighted ${params.highlightedAdditionalClass!""}': ko.computed(function() {
-                                    if ($data.attribute('${params.highlightedColumnMarker?js_string}'))
-                                        return $data.attribute('${params.highlightedColumnMarker?js_string}').value();
-                                    return false;
-                                })
-                            }">
-                    <#else>
-                        <tr class="value-item">
-                    </#if>
-
-                        <#if params.journalType??>
-                            <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
-                                <!-- ko foreach: defaultAttributes -->
-                                    <!-- ko with: $parents[1].attribute($data.name()) -->
-                                        <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
-                                    <!-- /ko -->
-                                <!-- /ko -->
-                            <!-- /ko -->
-                        <#elseif params.columns??>
-                            <#list params.columns?split(",") as column>
-                                <!-- ko with: attribute("${column}") -->
-                                    <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
-                                <!-- /ko -->
-                            </#list>
+                <!-- ko if: $data.impl -->
+                    <!-- ko with: impl -->
+                        <#if params.highlightedColumnMarker??>
+                            <tr class="value-item" 
+                                data-bind="css: { 
+                                    'highlighted ${params.highlightedAdditionalClass!""}': ko.computed(function() {
+                                        if ($data.attribute('${params.highlightedColumnMarker?js_string}'))
+                                            return $data.attribute('${params.highlightedColumnMarker?js_string}').value();
+                                        return false;
+                                    })
+                                }">
                         <#else>
-                            <!-- ko foreach: attributes -->
-                                <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
-                            <!-- /ko -->
+                            <tr class="value-item">
                         </#if>
 
-                        <!-- ko ifnot: $parents[2].inViewMode || $parents[1].protected -->
-                            <td class="value-item-actions">
-                                <a class="edit-value-item" title="${msg('button.edit')}" 
-                                    data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $parent.nodeRef, null, function() { $data.reset(true) }), clickBubble: false"></a>
-                                <a class="delete-value-item" title="${msg('button.delete')}" 
-                                    data-bind="click: function() { 
-                                        Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
-                                    }, clickBubble: false"></a>
-                            </td>
-                        <!-- /ko -->
-                    </tr>
+                            <#if params.journalType??>
+                                <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
+                                    <!-- ko foreach: defaultAttributes -->
+                                        <!-- ko with: $parents[1].attribute($data.name()) -->
+                                            <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+                                <!-- /ko -->
+                            <#elseif params.columns??>
+                                <#list params.columns?split(",") as column>
+                                    <!-- ko with: attribute("${column}") -->
+                                        <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
+                                    <!-- /ko -->
+                                </#list>
+                            <#else>
+                                <!-- ko foreach: attributes -->
+                                    <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
+                                <!-- /ko -->
+                            </#if>
+
+                            <!-- ko ifnot: $parents[2].inViewMode || $parents[1].protected -->
+                                <td class="value-item-actions">
+                                    <a class="edit-value-item" title="${msg('button.edit')}" 
+                                        data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $parent.nodeRef, null, function() { $data.reset(true) }), clickBubble: false"></a>
+                                    <a class="delete-value-item" title="${msg('button.delete')}" 
+                                        data-bind="click: function() { 
+                                            Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
+                                        }, clickBubble: false"></a>
+                                </td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
                 <!-- /ko -->
             </tbody>
         </table> 
