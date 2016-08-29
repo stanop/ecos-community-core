@@ -5,12 +5,16 @@
           <dependencies>
               <css src="/modules/create-site.css"/>
               <css src="/modules/header/all-sites.css"/>
+
               <js src="/modules/create-site.js"/>
               <js src="/modules/header/all-sites.js"/>
               <js src="/modules/header/site-page-link.js"/>
-              <js src="/jquery/jquery-1.6.2-min.js"/>
-              <js src="/modules/common/ie_fix.js"/>
+
               <js src="/modules/header/create-variants.js"/>
+              
+              <js src="/jquery/jquery.js"/>
+
+              <js src="/modules/common/ie_fix.js"/>
           </dependencies>
       </header>
   </config>
@@ -28,8 +32,6 @@
 				<js src="/yui/datasource/datasource.js" />
 				<js src="/yui/datatable/datatable.js" />
 				<js src="/citeck/components/related-workflows/related-workflows-form-validation.js" />
-				<js src="/jquery/jquery-1.6.2-min.js" />
-				<js src="/lib/jquery.simulate.js" />
 
 				<js src="/citeck/components/form/controls/types-and-kinds.js" />
 				<css src="/citeck/components/form/controls/types-and-kinds.css" />
@@ -48,22 +50,22 @@
 		</forms>
 	</config>
 
-    <config evaluator="string-compare" condition="ShareHeader">
-        <page-titles>
-            <page id="create-content">
-                <title id="custom" template="create.content.header.{formId}.{itemId}" />
-                <title id="default" template="create.content.header.{itemId}" />
-            </page>
-            <page id="node-create-page">
-                <title id="custom" template="create.content.header.{viewId}.{type}" />
-                <title id="default" template="create.content.header.{type}" />
-            </page>
-            <page id="start-specified-workflow">
-                <title id="custom" template="workflow.start.{formId}.{workflowId}" />
-                <title id="default" template="workflow.start.{workflowId}" />
-            </page>
-        </page-titles>
-    </config>
+  <config evaluator="string-compare" condition="ShareHeader">
+      <page-titles>
+          <page id="create-content">
+              <title id="custom" template="create.content.header.{formId}.{itemId}" />
+              <title id="default" template="create.content.header.{itemId}" />
+          </page>
+          <page id="node-create-page">
+              <title id="custom" template="create.content.header.{viewId}.{type}" />
+              <title id="default" template="create.content.header.{type}" />
+          </page>
+          <page id="start-specified-workflow">
+              <title id="custom" template="workflow.start.{formId}.{workflowId}" />
+              <title id="default" template="workflow.start.{workflowId}" />
+          </page>
+      </page-titles>
+  </config>
 
 	<!-- Site pages -->
 	<config evaluator="string-compare" condition="SitePages">
