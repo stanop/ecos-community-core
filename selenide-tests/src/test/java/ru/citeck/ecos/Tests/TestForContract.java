@@ -6,6 +6,7 @@ import ru.citeck.ecos.pages.*;
 import ru.citeck.ecos.pages.createpages.*;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.sleep;
+import static ru.citeck.ecos.Tests.TestSuite.*;
 
 public class TestForContract extends ContractsModuleTestBase{
     private String valueContractWith = "performer";

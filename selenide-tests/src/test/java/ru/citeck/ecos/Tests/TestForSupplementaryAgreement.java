@@ -1,17 +1,14 @@
 package ru.citeck.ecos.Tests;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.citeck.ecos.Settings;
-import ru.citeck.ecos.pages.AdminToolsPage;
 import ru.citeck.ecos.pages.DocumentDetailsPage;
-import ru.citeck.ecos.pages.LoginPage;
-import ru.citeck.ecos.pages.PageBase;
 import ru.citeck.ecos.pages.createpages.SupplementaryAgreementCreatePage;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.sleep;
+import static ru.citeck.ecos.Tests.TestSuite.*;
 
 public class TestForSupplementaryAgreement extends ContractsModuleTestBase{
     private String valueContractWith = "performer";

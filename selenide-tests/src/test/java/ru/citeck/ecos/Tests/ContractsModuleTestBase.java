@@ -1,9 +1,6 @@
 package ru.citeck.ecos.Tests;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import ru.citeck.ecos.Settings;
+import com.codeborne.selenide.SelenideElement;
 import ru.citeck.ecos.pages.*;
 import ru.citeck.ecos.pages.createpages.*;
 
@@ -11,9 +8,7 @@ import static com.codeborne.selenide.Condition.present;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.sleep;
 
-public class ContractsModuleTestBase extends SelenideTests{
-    static protected String titleLoginPageRUS = "Citeck EcoS » Войти";
-    static protected String titleLoginPageEN = "Citeck EcoS » Login";
+public class ContractsModuleTestBase {
     protected  String titleCardDetailsRUS = "Citeck EcoS » Карточка";
     protected String titleCardDetailsEN = "Citeck EcoS » Card details";
     protected String statusNew = "New";
@@ -22,40 +17,8 @@ public class ContractsModuleTestBase extends SelenideTests{
     protected String statusActive = "Active";
     protected String statusArchive = "Archive";
 
-    static protected String userName = "Остап";
-    static protected String login = "ostap";
-    static protected String pass = "ostap";
-    static protected String group = "company_director";
-    static protected String UserNameAdmin = "Administrator";
     protected String loginAdmin = "Administrator";
-    @BeforeClass
-    static public void createUser()
-    {
-        createUser(userName, login, pass, group);
-    }
-    static protected void createUser(String username, String login, String password, String group)
-    {
-        HomePage homePage = new HomePage();
-        AdminToolsPage adminToolsPage =  homePage.getMenu().openAdminTools();
-        adminToolsPage.openUserContent().shouldBe(present);
 
-        adminToolsPage.clickOnButtonNewUser().shouldBe(present);
-
-        adminToolsPage.selectGroup(group);
-        adminToolsPage.setValueOnFromCreateNewUser(username,login,password);
-        adminToolsPage.clickOnButtonCreate();
-
-        adminToolsPage.searchUser(login).shouldBe(present);
-    }
-    static protected AdminToolsPage deleteUser(String username)
-    {
-        DocumentDetailsPage detailsPage = new DocumentDetailsPage();
-        AdminToolsPage adminToolsPage = detailsPage.getMenu().openAdminTools();
-        adminToolsPage.searchUser(username).shouldBe(present);
-        adminToolsPage.clickOnUserName(username);
-        adminToolsPage.clickOnButtonDeleteUser();
-        return adminToolsPage;
-    }
     protected void fillFieldsOnFormCreationContract(String valueContractWith, String kindOfDocument, String signatory,
      String performer, String documentDate, String agreementAmount, String vat,
      String numberOfAppendixPage, String numberPage, String summary,String node,
@@ -157,9 +120,20 @@ public class ContractsModuleTestBase extends SelenideTests{
         HomePage homePage = loginPage.clickOnLoginButton();
         homePage.getTableTasks().shouldBe(present);
         JournalsPage journalTask = homePage.openJournalTasks();
-        sleep(20000);
-        journalTask.refreshJournal();
-        journalTask.openLinkDocument(nameContract);
+        SelenideElement element = journalTask.getNameContract(nameContract);
+        for(int i=0;i<=5;i++)
+        {
+            if (element.exists())
+            {
+                journalTask.openLinkDocument(nameContract);
+                break;
+            }
+            else
+            {
+                sleep(5000);
+                journalTask.refreshJournal();
+            }
+        }
         return documentDetailsPage;
     }
     protected void sendToApproval(String userName, String message)
@@ -170,18 +144,5 @@ public class ContractsModuleTestBase extends SelenideTests{
         startWorkflowPage.selectParticipant(userName);
         startWorkflowPage.clickOnButtonStartApproval();
     }
-    @AfterClass
-    static public void deleteUser()
-    {
-        PageBase pageBase = new PageBase();
-        if (pageBase.getMenu().searchByText(userName).exists())
-        {
-            LoginPage loginPage = pageBase.getMenu().logOut(userName);
-            loginPage.inLoginAndPassword(Settings.getLogin(),Settings.getPassword());
-            loginPage.clickOnLoginButton();
-        }
-        AdminToolsPage adminToolsPage = deleteUser(userName);
-        LoginPage loginPage = adminToolsPage.getMenu().logOut(UserNameAdmin);
-        Assert.assertTrue(titleLoginPageRUS.equals(loginPage.getTitle()) || titleLoginPageEN.equals(loginPage.getTitle()));
-    }
+
 }
