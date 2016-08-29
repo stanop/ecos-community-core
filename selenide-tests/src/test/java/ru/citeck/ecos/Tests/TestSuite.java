@@ -25,8 +25,8 @@ public class TestSuite extends TestSuiteBase {
     static protected  String pass = "ostap";
     static protected  String group = "company_director";
     static protected String UserNameAdmin = "Administrator";
-    @BeforeClass
 
+    @BeforeClass
     static public void createUser()
     {
         createUser(userName, login, pass, group);
