@@ -66,7 +66,7 @@ public class ContractsModuleTestBase {
                 agreementSubjectCode,agreementSubjectName,
                 paymentScheduleDate,paymentScheduleAmount,paymentScheduleType,paymentScheduleDescription);
         mainAgreement.clickOnButtonCreate();
-        supplementaryAgreementCreatePage.selectMainAgreement();
+        supplementaryAgreementCreatePage.selectMainAgreement().shouldBe(present);
         supplementaryAgreementCreatePage.clickOnButtonGenerate();
         supplementaryAgreementCreatePage.setDocumentDate(documentDate);
     }

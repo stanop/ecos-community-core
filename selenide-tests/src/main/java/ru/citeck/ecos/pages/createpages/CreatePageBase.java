@@ -69,9 +69,7 @@ public class CreatePageBase {
     public DocumentDetailsPage clickOnCreateContentButton()
         {
             SelenideElement element = $("[id *= \"form-submit\"]");
-            String js = "arguments[0].scrollIntoView();";
-            ((JavascriptExecutor)getWebDriver()).executeScript(js, element);
-            element.shouldBe(enabled).click();
+            element.shouldBe(enabled).shouldBe(present).click();
             $(".value-item-text").shouldBe(present);
             DocumentDetailsPage documentDetailsPage = new DocumentDetailsPage();
             return documentDetailsPage;
