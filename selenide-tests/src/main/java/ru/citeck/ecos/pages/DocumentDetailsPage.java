@@ -1,6 +1,7 @@
 package ru.citeck.ecos.pages;
 
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.JavascriptExecutor;
 
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.present;
@@ -8,6 +9,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.title;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class DocumentDetailsPage extends PageBase{
 
@@ -41,7 +43,10 @@ public class DocumentDetailsPage extends PageBase{
     }
     public SelenideElement getStatusDocument()
     {
-        return $("span.panel-body").shouldBe(present);
+        SelenideElement element = $("span.panel-body");
+        String js = "arguments[0].scrollIntoView();";
+        ((JavascriptExecutor)getWebDriver()).executeScript(js, element);
+        return element.shouldBe(present);
     }
     public void clickOnActionMoveToArchive()
     {

@@ -2,6 +2,7 @@ package ru.citeck.ecos.pages.createpages;
 
 
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.JavascriptExecutor;
 import ru.citeck.ecos.pages.DocumentDetailsPage;
 import ru.citeck.ecos.pages.HomePage;
 import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
@@ -11,6 +12,7 @@ import static com.codeborne.selenide.Condition.present;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class ContractCreatePage extends CreatePageBase {
 
@@ -87,7 +89,10 @@ public class ContractCreatePage extends CreatePageBase {
     }
     public PaymentScheduleCreatePage openPaymentScheduleCreatePage()
     {
-        $("[id *= \"payments-createObjectControl\"] button").shouldBe(enabled).click();
+        SelenideElement element = $("[id *= \"payments-createObjectControl\"] button");
+        String js = "arguments[0].scrollIntoView();";
+        ((JavascriptExecutor)getWebDriver()).executeScript(js, element);
+        element.shouldBe(enabled).click();
         PaymentScheduleCreatePage paymentSchedule = new PaymentScheduleCreatePage();
         return paymentSchedule;
     }
