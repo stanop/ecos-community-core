@@ -698,17 +698,17 @@
     </bean>
 
     <bean id="idocs.deputy.reasonAbsence" parent="AutoNameBehaviour">
-        <property name="className" value="delegate:absenceReason" />
-        <property name="nameTemplate" value="#{'$'}{node.properties['delegate:reason']}"/>
+        <property name="className" value="deputy:absenceReason" />
+        <property name="nameTemplate" value="#{'$'}{node.properties['deputy:reason']}"/>
         <property name="appendExtension" value="false" />
     </bean>
 
     <bean id="idocs.deputy.absenceEvent" parent="AutoNameBehaviour">
-        <property name="className" value="delegate:absenceEvent" />
-        <property name="nameTemplate" value="{'$'}{node.properties['delegate:startAbsence']?string('dd.MM.yyyy')} - #{'$'}{node.properties['delegate:endAbsence']?string('dd.MM.yyyy')}"/>
+        <property name="className" value="deputy:absenceEvent" />
+        <property name="nameTemplate" value="{'$'}{node.properties['deputy:startAbsence']?string('dd.MM.yyyy')} - #{'$'}{node.properties['deputy:endAbsence']?string('dd.MM.yyyy')}"/>
         <!-- <property name="nameTemplate">
             <value><![CDATA[
-                <#if node.assocs['delegate:reasonOfAbsence']?? && node.assocs['delegate:reasonOfAbsence']?size &gt; 0>#{'$'}{node.assocs['delegate:reasonOfAbsence'][0].name} </#if><#if node.properties['delegate:startAbsence']??>#{'$'}{node.properties['delegate:startAbsence']?string('dd.MM.yyyy')} - </#if><#if node.properties['delegate:endAbsence']??>#{'$'}{node.properties['delegate:endAbsence']?string('dd.MM.yyyy')}</#if>
+                <#if node.assocs['deputy:reasonOfAbsence']?? && node.assocs['deputy:reasonOfAbsence']?size &gt; 0>#{'$'}{node.assocs['deputy:reasonOfAbsence'][0].name} </#if><#if node.properties['deputy:startAbsence']??>#{'$'}{node.properties['deputy:startAbsence']?string('dd.MM.yyyy')} - </#if><#if node.properties['deputy:endAbsence']??>#{'$'}{node.properties['deputy:endAbsence']?string('dd.MM.yyyy')}</#if>
             ]]></value>
         </property> -->
         <property name="appendExtension" value="false" />

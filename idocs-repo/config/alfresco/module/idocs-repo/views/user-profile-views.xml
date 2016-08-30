@@ -3,7 +3,7 @@
     <imports>
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-        <import uri="http://www.citeck.ru/model/delegate/1.0" prefix="delegate" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
         <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
     </imports>
 
@@ -18,8 +18,8 @@
                 /.+\@.+\..+/.test(value)
             </invariant>
         </field>
-        <view class="delegate:availability">
-            <field prop="delegate:available">
+        <view class="deputy:availability">
+            <field prop="deputy:available">
                 <invariant on="mandatory" language="explicit">true</invariant>
                 <invariant on="default" language="explicit">true</invariant>
             </field>
@@ -27,8 +27,8 @@
     </view>
 
     <views class="cm:person" mode="view">
-        <views class="delegate:availability">
-            <fields prop="delegate:available">
+        <views class="deputy:availability">
+            <fields prop="deputy:available">
                 <regions name="input" template="view">
                     <param name="emptyLabel">label.yes</param>
                 </regions>

@@ -4,7 +4,7 @@
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
-        <import uri="http://www.citeck.ru/model/delegate/1.0" prefix="delegate" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
     </imports>
 
     <view class="idocs:organizationInfo">
@@ -110,19 +110,19 @@
         <field prop="idocs:corresponentAccountNumber"/>
     </view>
 
-    <view class="delegate:absenceReason">
-        <field prop="delegate:reason"/>
+    <view class="deputy:absenceReason">
+        <field prop="deputy:reason"/>
     </view>
 
-    <view class="delegate:absenceEvent">
-        <field prop="delegate:startAbsence"/>
-        <field prop="delegate:endAbsence"/>
-        <field prop="delegate:comment"/>
-        <field assoc="delegate:reasonOfAbsence">
-            <!-- <region name="input" template="view"/>
+    <view class="deputy:absenceEvent">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:comment"/>
+        <field assoc="deputy:reasonOfAbsence">
+            <region name="input" template="view"/>
             <region name="select" template="select-journal">
                 <param name="journalType">reasons-absence</param>
-            </region> -->
+            </region>
         </field>
     </view>
 

@@ -86,7 +86,7 @@
             <list>
                 <value>data</value>
                 <value>properties</value>
-                <value>{http://www.citeck.ru/model/delegate/1.0}available</value>
+                <value>{http://www.citeck.ru/model/deputy/1.0}available</value>
             </list>
         </property>
     </bean>

@@ -16,7 +16,7 @@
         <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
         <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
         <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
-        <import uri="http://www.citeck.ru/model/delegate/1.0" prefix="delegate" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
 	</imports>
 
 	<journal id="idocs-activity-direction">
@@ -248,11 +248,11 @@
     </journal>
 
     <journal id="reasons-absence">
-		<option name="type">delegate:absenceReason</option>
+		<option name="type">deputy:absenceReason</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="delegate:reason" default="true"/>
+			<header key="deputy:reason" default="true"/>
 		</headers>
 	</journal>
 

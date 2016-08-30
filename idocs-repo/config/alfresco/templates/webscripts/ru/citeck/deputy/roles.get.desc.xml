@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Roles of specified user</shortname>
+	<description>Deputy Service: get roles for specified user</description>
+	<url>/api/deputy/{userName}/roles?status={all,own,manage,deputy}</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

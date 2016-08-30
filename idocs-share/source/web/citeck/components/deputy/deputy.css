@@ -1,0 +1,33 @@
+
+.ygtvcell.GROUP-role.deputy-false.manage-true
+{
+    background-image: url(icons/role-green-16.png);
+}
+
+.ygtvcell.GROUP-role.deputy-true.manage-true
+{
+    background-image: url(../orgstruct/icons/role-16.png);
+}
+
+.ygtvcell.GROUP-role.deputy-false.manage-false
+{
+    background-image: url(icons/role-orange-16.png);
+}
+
+.ygtvcell.GROUP-role.deputy-true.manage-false
+{
+    background-image: url(icons/role-yellow-16.png);
+}
+
+.orgstruct-config-selector
+{
+    visibility: hidden;
+}
+
+.orgstruct-console .toolbar
+{
+    margin: 0;
+}
+
+
+.orgstruct-console .ygtvlp

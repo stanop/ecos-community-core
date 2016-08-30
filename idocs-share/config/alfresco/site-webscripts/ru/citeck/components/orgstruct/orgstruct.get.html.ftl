@@ -204,7 +204,7 @@
 				},
 			},
 			{
-				name: "delegates",
+				name: "deputies",
 				model: {
 					formats: {
 						"authority": {
@@ -212,15 +212,15 @@
 							keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "authority" ]
 						},
 						"member": {
-							"name": "delegate-{delegate}-{userName}",
-							keys: [ "available-{available}", "delegate-{delegate}", "manage-{manage}", "member" ],
+							"name": "deputy-{deputy}-{userName}",
+							keys: [ "available-{available}", "deputy-{deputy}", "manage-{manage}", "member" ],
 							calc: function(item) {
-								if(typeof item.delegate == "undefined") item.delegate = true;
+								if(typeof item.deputy == "undefined") item.deputy = true;
 							}
 						},
-						"delegate": {
-							name: "delegate-true-{userName}",
-							keys: [ "available-{available}", "delegate-true", "manage-false", "member" ]
+						"deputy": {
+							name: "deputy-true-{userName}",
+							keys: [ "available-{available}", "deputy-true", "manage-false", "member" ]
 						},
 					},
 					item: {
@@ -228,13 +228,13 @@
 							"format": "authority",
 							"get": "${page.url.context}/proxy/alfresco/api/orgstruct/authority/{fullName}",
 						},
-						"delegate-false": {
+						"deputy-false": {
 							"format": "member",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{userName}",
+							"get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
 						},
-						"delegate-true": {
-							"format": "delegate",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{userName}",
+						"deputy-true": {
+							"format": "deputy",
+							"get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
 						},
 					},
 					children: {
@@ -244,15 +244,15 @@
 						},
 						"GROUP": {
 							"format": "member",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{fullName}/members",
-							"add": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
-							"delete": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
+							"get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/members",
+							"add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}",
+							"delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}",
 						},
 						"USER": {
-							"format": "delegate",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{fullName}/delegates",
-							"add": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
-							"delete": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
+							"format": "deputy",
+							"get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/deputies",
+							"add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}",
+							"delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}",
 						}
 					},
 					titles: {
@@ -271,19 +271,19 @@
 					buttons: {
 						"root": [ "search" ],
 						"search": [ "search", "resetSearch" ],
-						"authority": [ "addDelegate" ],
+						"authority": [ "addDeputy" ],
 						"": [],
 					},
 				},
 				tree: {
 					buttons: {
-						"delegate-true": [ "editItem", "deleteItem" ],
+						"deputy-true": [ "editItem", "deleteItem" ],
 						"": [ "editItem" ]
 					},
 				},
 				list: {
 					buttons: {
-						"delegate-true": [ "editItem", "deleteItem" ],
+						"deputy-true": [ "editItem", "deleteItem" ],
 						"": [ "editItem" ]
 					},
 				},

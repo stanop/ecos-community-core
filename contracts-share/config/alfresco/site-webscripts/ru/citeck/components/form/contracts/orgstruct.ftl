@@ -38,7 +38,7 @@
     </div>
 </div>
 
-    <@forms.renderField field="prop_delegate_available"  extension = {
+    <@forms.renderField field="prop_deputy_available"  extension = {
     "tepmlate": "/ru/citeck/components/form/controls/checkbox-checked-default.ftl"
     }/>
 

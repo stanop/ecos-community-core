@@ -155,7 +155,7 @@
 			$buttonSubscribe("createItem", this.onCreateItem, this, ids);
 			$buttonSubscribe("addGroup", this.onAddGroup, this, ids);
 			$buttonSubscribe("addUser", this.onAddUser, this, ids);
-			$buttonSubscribe("addDelegate", this.onAddUser, this, ids);
+			$buttonSubscribe("addDeputy", this.onAddUser, this, ids);
 			$buttonSubscribe("editItem", this.onEditItem, this, ids);
 			$buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
 			$buttonSubscribe("search", this.onSearch, this, ids);

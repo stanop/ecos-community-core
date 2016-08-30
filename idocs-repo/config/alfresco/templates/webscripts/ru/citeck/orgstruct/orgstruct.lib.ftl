@@ -12,7 +12,7 @@
 	"fullName": "${authority.userName}",
 	"firstName": "${authority.person.properties.firstName!}",
 	"lastName": "${authority.person.properties.lastName!}",
-    <#assign available = authority.person.properties["delegate:available"]!true />
+    <#assign available = authority.person.properties["deputy:available"]!true />
 	"available": ${available?string},
 	"nodeRef": "${authority.personNodeRef}"
 	<#else>

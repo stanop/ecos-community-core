@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>User branches</shortname>
-    <description>User branches</description>
-    <url>/api/delegate/currentUserBranches</url>
-    <format default="json">argument</format>
-    <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
-</webscript>

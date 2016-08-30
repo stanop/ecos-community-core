@@ -36,7 +36,7 @@ if (user.properties.available === true || user.properties.available === null) {
      {
         label: "header.make-notavailable.label",
         iconImage: "/share/res/components/images/header/make-notavailable.png",
-        targetUrl: "/components/delegate/make-available?available=false"
+        targetUrl: "/components/deputy/make-available?available=false"
      }
   });
 } else if (user.properties.available === false) {
@@ -47,7 +47,7 @@ if (user.properties.available === true || user.properties.available === null) {
      {
         label: "header.make-available.label",
         iconImage: "/share/res/components/images/header/make-available.png",
-        targetUrl: "/components/delegate/make-available?available=true"
+        targetUrl: "/components/deputy/make-available?available=true"
      }
   });
 }
@@ -60,7 +60,7 @@ if (user.properties.available === true || user.properties.available === null) {
      {
         label: "header.make-notavailable.label.test",
         iconImage: "/share/res/components/images/header/make-notavailable.png",
-        targetUrl: "node-create-page?type=delegate:absenceEvent&destination=workspace://SpacesStore/absence-events"
+        targetUrl: "node-create-page?type=deputy:absenceEvent&destination=workspace://SpacesStore/absence-events"
      }
   });
 } else if (user.properties.available === false) {
@@ -71,7 +71,7 @@ if (user.properties.available === true || user.properties.available === null) {
      {
         label: "header.make-available.label.test",
         iconImage: "/share/res/components/images/header/make-available.png",
-        targetUrl: "node-create-page?type=delegate:absenceEvent&destination=workspace://SpacesStore/absence-events"
+        targetUrl: "node-create-page?type=deputy:absenceEvent&destination=workspace://SpacesStore/absence-events"
      }
   });
 }

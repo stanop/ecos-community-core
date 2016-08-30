@@ -49,7 +49,7 @@
                     <show id="cm:authorityName" />
                     <show id="cm:authorityDisplayName" />
                     <show id="org:roleType" force="true" />
-					<show id="delegate:managedByMembers" force="true" />
+					<show id="deputy:managedByMembers" force="true" />
                 </field-visibility>
 				<appearance>
                     <field id="cm:authorityName" mandatory="true">
@@ -107,7 +107,7 @@
                     <show id="cm:authorityName" />
                     <show id="cm:authorityDisplayName" />
                     <show id="org:roleType" force="true" />
-					<show id="delegate:managedByMembers" force="true" />
+					<show id="deputy:managedByMembers" force="true" />
 				</field-visibility>
 				<appearance>
                     <field id="cm:authorityName" mandatory="true">
@@ -150,7 +150,7 @@
             <form id="orgstruct">
                 <field-visibility>
                     <show id="org:roleType" />
-					<show id="delegate:managedByMembers" force="true" />
+					<show id="deputy:managedByMembers" force="true" />
                 </field-visibility>
 				<appearance>
 					<field id="org:roleType" mandatory="true">
@@ -267,7 +267,7 @@
 					<show id="cm:firstName" />
 					<show id="cm:lastName" />
 					<show id="cm:email" />
-					<show id="delegate:available" force="true" />
+					<show id="deputy:available" force="true" />
 					<show id="org:preset" force="true" />
 				</field-visibility>
 				<appearance>
@@ -280,7 +280,7 @@
 							<control-param name="resultsList">presets</control-param>
 						</control>
 					</field>
-                    <field id="delegate:available">
+                    <field id="deputy:available">
                         <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
                     </field>
 				</appearance>
@@ -296,7 +296,7 @@
 					<show id="cm:firstName" />
 					<show id="cm:lastName" />
 					<show id="cm:email" />
-					<show id="delegate:available" force="true" />
+					<show id="deputy:available" force="true" />
 					<show id="org:preset" force="true" />
 				</field-visibility>
 				<appearance>
@@ -310,7 +310,7 @@
 							<control-param name="resultsList">presets</control-param>
 						</control>
 					</field>
-                    <field id="delegate:available">
+                    <field id="deputy:available">
                         <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
                     </field>
 				</appearance>
@@ -321,11 +321,11 @@
 					<show id="cm:firstName" />
 					<show id="cm:lastName" />
 					<show id="cm:email" />
-					<show id="delegate:available" force="true" />
+					<show id="deputy:available" force="true" />
 				</field-visibility>
 				<appearance>
                     <field id="cm:userName" read-only="true" />
-                    <field id="delegate:available">
+                    <field id="deputy:available">
                         <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
                     </field>
 				</appearance>

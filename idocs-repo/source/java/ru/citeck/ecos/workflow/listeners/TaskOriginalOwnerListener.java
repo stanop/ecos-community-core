@@ -24,8 +24,8 @@ import org.activiti.engine.task.IdentityLinkType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import ru.citeck.ecos.delegate.AvailabilityServiceImpl;
-import ru.citeck.ecos.delegate.TaskDelegateListener;
+import ru.citeck.ecos.deputy.AvailabilityServiceImpl;
+import ru.citeck.ecos.deputy.TaskDeputyListener;
 
 import java.util.ArrayList;
 
@@ -65,7 +65,7 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
         if (assignee != null) {
             if (!availabilityService.getUserAvailability(assignee)) {
                 delegateTask.setAssignee(null);
-                TaskDelegateListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDelegateListener.class);
+                TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
                 ArrayList<String> actorsList = delegateListener.getActorsList(assignee);
                 for (String actor : actorsList) {
                     delegateTask.addUserIdentityLink(actor, IdentityLinkType.CANDIDATE);

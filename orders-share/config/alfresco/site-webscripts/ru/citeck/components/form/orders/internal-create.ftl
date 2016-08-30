@@ -105,7 +105,7 @@ fieldNames = [
                 if (event.eventGroup && event.eventGroup.id == branchCtrlId) {
                     var branchCtrl = Alfresco.util.ComponentManager.get(branchCtrlId);
                     if (branchCtrl) {
-                        var uri = Alfresco.constants.PROXY_URI_RELATIVE + "api/delegate/currentUserBranches";
+                        var uri = Alfresco.constants.PROXY_URI_RELATIVE + "api/deputy/currentUserBranches";
                         Alfresco.util.Ajax.jsonGet({
                             url: uri,
                             successCallback: {

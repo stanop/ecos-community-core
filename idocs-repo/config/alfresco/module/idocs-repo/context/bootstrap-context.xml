@@ -22,7 +22,7 @@
 				<value>alfresco/module/idocs-repo/model/lifecycleModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/workflowModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/grantModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/delegateModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/deputyModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/helpConfigurationModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/counterModel.xml</value>
@@ -57,7 +57,7 @@
 				<value>alfresco/module/idocs-repo/messages/version-descriptions</value>
 				<value>alfresco/module/idocs-repo/messages/counter</value>
 				<value>alfresco/module/idocs-repo/messages/dms</value>
-				<value>alfresco/module/idocs-repo/messages/delegate</value>
+				<value>alfresco/module/idocs-repo/messages/deputy</value>
 				<value>alfresco/module/idocs-repo/messages/orgstruct</value>
 				<value>alfresco/module/idocs-repo/messages/lifecycle</value>
 				<value>alfresco/module/idocs-repo/messages/workflow</value>
@@ -365,7 +365,7 @@
 				<props>
 					<prop key="uuidBinding">UPDATE_EXISTING</prop>
 					<prop key="path">/</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/delegation-records-root.xml</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/deputation-records-root.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>

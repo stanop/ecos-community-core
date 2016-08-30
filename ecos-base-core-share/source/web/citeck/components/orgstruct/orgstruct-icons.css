@@ -52,22 +52,22 @@
     background-image: url(icons/user-unavailable-16.png);
 }
 
-.ygtvcell.delegate-true.available-true
+.ygtvcell.deputy-true.available-true
 {
-	background-image: url(icons/user-delegate-16.png);
+	background-image: url(icons/user-deputy-16.png);
 }
 
-.ygtvcell.delegate-true.available-false
+.ygtvcell.deputy-true.available-false
 {
-	background-image: url(icons/user-delegate-unavailable-16.png);
+	background-image: url(icons/user-deputy-unavailable-16.png);
 }
 
-.ygtvcell.delegate-false.available-true
+.ygtvcell.deputy-false.available-true
 {
 	background-image: url(icons/user-member-16.png);
 }
 
-.ygtvcell.delegate-false.available-false
+.ygtvcell.deputy-false.available-false
 {
 	background-image: url(icons/user-member-unavailable-16.png);
 }
@@ -111,9 +111,9 @@ button.addUser
    background-image: url(icons/user-add-16.png);
 }
 
-button.addDelegate
+button.addDeputy
 {
-   background-image: url(icons/user-delegate-add-16.png);
+   background-image: url(icons/user-deputy-add-16.png);
 }
 
 button.editItem
