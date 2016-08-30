@@ -16,6 +16,9 @@
     </bean>
 
     <bean id="evaluator.doclib.contracts.agreement" parent="evaluator.doclib.action.nodeType">
+        <property name="allowSubtypes">
+            <value>false</value>
+        </property>
         <property name="types">
             <list>
                 <value>contracts:agreement</value>
