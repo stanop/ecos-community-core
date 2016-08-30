@@ -52,7 +52,9 @@ Citeck.namespace('invariants');
             node.thisclass.save(node, {
                 scope: this,
                 fn: function(result) {
-                    var submitBehaviour = this.behaviours[this.options.onsubmit] || this.defaultBehaviour;
+                    var submitBehaviour = this.options.redirect ? 
+                                          this.behaviours.redirect : 
+                                          (this.behaviours[this.options.onsubmit] || this.defaultBehaviour);
                     submitBehaviour.call(this, result);
                 }
             });
@@ -79,6 +81,17 @@ Citeck.namespace('invariants');
             document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
         }
         
+        redirect: function(node) {
+            var link = _.clone(this.options.redirect);
+            _.each(link.match(/{{\w+(:\w+|)}}/g), function(property) {
+                var propertyName = property.replace(/({{|}})/g, ""),
+                    propertyValue = _.contains(propertyName, ":") ? node.properties[propertyName] : node[propertyName],
+                    templateRegExp = new RegExp(property, "g");
+                link = link.replace(templateRegExp, propertyValue)
+            });
+
+            document.location.href = link;
+        }
     };
     
 })()
