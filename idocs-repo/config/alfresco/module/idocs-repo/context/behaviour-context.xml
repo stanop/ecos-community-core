@@ -705,12 +705,11 @@
 
     <bean id="idocs.deputy.absenceEvent" parent="AutoNameBehaviour">
         <property name="className" value="deputy:absenceEvent" />
-        <property name="nameTemplate" value="{'$'}{node.properties['deputy:startAbsence']?string('dd.MM.yyyy')} - #{'$'}{node.properties['deputy:endAbsence']?string('dd.MM.yyyy')}"/>
-        <!-- <property name="nameTemplate">
+        <property name="nameTemplate">
             <value><![CDATA[
                 <#if node.assocs['deputy:reasonOfAbsence']?? && node.assocs['deputy:reasonOfAbsence']?size &gt; 0>#{'$'}{node.assocs['deputy:reasonOfAbsence'][0].name} </#if><#if node.properties['deputy:startAbsence']??>#{'$'}{node.properties['deputy:startAbsence']?string('dd.MM.yyyy')} - </#if><#if node.properties['deputy:endAbsence']??>#{'$'}{node.properties['deputy:endAbsence']?string('dd.MM.yyyy')}</#if>
             ]]></value>
-        </property> -->
+        </property>
         <property name="appendExtension" value="false" />
     </bean>
 

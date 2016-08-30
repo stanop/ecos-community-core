@@ -71,13 +71,13 @@
                 </association>
                 <association name="deputy:reasonOfAbsence">
                     <source>
-                        <mandatory>true</mandatory>
-                        <many>false</many>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>deputy:absenceReason</class>
                         <mandatory>false</mandatory>
-                        <many>true</many>
+                        <many>false</many>
                     </target>
                 </association>
             </associations>
