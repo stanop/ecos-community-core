@@ -3,18 +3,18 @@
   <config replace="true">
       <header>
           <dependencies>
+              <js src="/jquery/jquery.js"/>
+              <!-- <js src="/jquery/jquery-migrate.js"/> -->
+
               <css src="/modules/create-site.css"/>
               <css src="/modules/header/all-sites.css"/>
 
               <js src="/modules/create-site.js"/>
               <js src="/modules/header/all-sites.js"/>
               <js src="/modules/header/site-page-link.js"/>
-
-              <js src="/modules/header/create-variants.js"/>
-              
-              <js src="/jquery/jquery.js"/>
-
+             
               <js src="/modules/common/ie_fix.js"/>
+              <js src="/modules/header/create-variants.js"/>
           </dependencies>
       </header>
   </config>
