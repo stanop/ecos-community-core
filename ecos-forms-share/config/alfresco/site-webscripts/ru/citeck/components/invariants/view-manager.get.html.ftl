@@ -6,9 +6,9 @@
   <@script type="text/javascript" src="${url.context}/res/citeck/components/invariants/view-manager.js" group="node-view"/>
   <@inlineScript group="node-view">
     new Citeck.invariants.NodeViewManager("${args.runtimeKey}").setOptions({
-      <#if onsubmit??>onsubmit: "${onsubmit}",</#if>
-      <#if oncancel??>oncancel: "${oncancel}",</#if>
-      <#if redirect??>redirect: ${redirect}</#if>
+      <#if onsubmit?has_content>onsubmit: "${onsubmit}",</#if>
+      <#if oncancel?has_content>oncancel: "${oncancel}",</#if>
+      <#if redirect?has_content>redirect: ${redirect}</#if>
     });
   </@inlineScript>
 </@>
