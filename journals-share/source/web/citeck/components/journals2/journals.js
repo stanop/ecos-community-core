@@ -140,17 +140,14 @@ Criterion
 CreateVariant
 	.property('url', s)
 	.load('url', function() {
-        YAHOO.util.Connect.asyncRequest(
-            'GET',
-            Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template",
-            {
-                success: function(response) {
-                    var result = response.responseText;
-                    this.url(result);
-                },
-                scope: this
-            }
-        );
+      YAHOO.util.Connect.asyncRequest('GET', Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template", {
+          success: function(response) {
+              var result = response.responseText;
+              this.url(result);
+          },
+          scope: this
+        }
+      );
     })
 	.property('title', s)
 	.property('destination', s)
@@ -159,12 +156,15 @@ CreateVariant
 	.property('canCreate', b)
 	.property('isDefault', b)
 	.computed('link', function() {
-		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}';
-		if (this.url() != null) {
-			urlTemplate = this.url().replace(/(^\s+|\s+$)/g,''); //removing whitespace at the beginning and at the end of the string
-		} else {
-			urlTemplate = defaultUrlTemplate;
-		}
+		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
+				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+
+		// redirect back after submit
+		urlTemplate += "&onsubmit=back";
+
+		// TODO: 
+		// - support parameter from xml
+
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") {
 				return value();
