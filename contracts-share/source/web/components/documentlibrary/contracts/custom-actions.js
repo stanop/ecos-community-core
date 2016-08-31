@@ -1,64 +1,79 @@
 (function() {
 
-    
-    var actions = { 
-        onRedirectToCreatePaymentPage:  { type: "payments:payment", from: "contract" },
-        onRedirectToCreateClosingDocPage: { type: "contracts:closingDocument", from: "contract" },
-        onRedirectToCreateSupAgreementPage: { type: "contracts:supplementaryAgreement", from: "contract" },
-        onRedirectToCreateClosingDocForInvoice: { type: "contracts:closingDocument", from: "invoice" }
-    }
+    var onRedirectToCreatePaymentPage =  { type: "payments:payment", from: "contract" },
+        onRedirectToCreateClosingDocPage = { type: "contracts:closingDocument", from: "contract" },
+        onRedirectToCreateSupAgreementPage = { type: "contracts:supplementaryAgreement", from: "contract" },
+        onRedirectToCreateClosingDocForInvoice = { type: "contracts:closingDocument", from: "invoice" };
 
-    for (var a in actions) {        
-        YAHOO.Bubbling.fire("registerAction", { actionName: a,
-            fn: function(record) {
-                var jsNode = record.jsNode;
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreatePaymentPage",
+        fn: function (record) {
+            redirectToCreatePage(record, onRedirectToCreatePaymentPage)
+        }
+    });
 
-                var newWindow = window.open("", "on-redirect-from-" + actions[a].from);
-                newWindow.document.body.innerHTML = "<p>" + Alfresco.util.message("label.loading") + "</p>";
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreateClosingDocPage",
+        fn: function (record) {
+            redirectToCreatePage(record, onRedirectToCreateClosingDocPage)
+        }
+    });
 
-                Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/contracts",
-                    successCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            var destNodeRef = "";
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreateSupAgreementPage",
+        fn: function (record) {
+            redirectToCreatePage(record, onRedirectToCreateSupAgreementPage)
+        }
+    });
 
-                            for(var i = 0; i < response.json.createVariants.length; i++) {
-                                if(response.json.createVariants[i].type == actions[a].type) {
-                                    destNodeRef = response.json.createVariants[i].destination;
-                                    break;
-                                }
-                            }
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreateClosingDocForInvoice",
+        fn: function (record) {
+            redirectToCreatePage(record, onRedirectToCreateClosingDocForInvoice)
+        }
+    });
 
-                            if(destNodeRef) {
-                                var redirection = '/share/page/node-create?type=' + actions[a].type + '&destination=' + destNodeRef;
+    function redirectToCreatePage(record, pageOfCreate) {
+        var jsNode = record.jsNode;
 
-                                switch(actions[a].from) {
-                                    case "contract":
-                                        var formId = jsNode.properties && jsNode.properties["tk:type"] == "workspace://SpacesStore/contracts-cat-doctype-contract" ? "by-agreement" : "";
-                                        redirection += '&formId=' + formId;
-                                        break;
+        var newWindow = window.open("", "on-redirect-from-" + pageOfCreate.from);
+        newWindow.document.body.innerHTML = "<p>" + Alfresco.util.message("label.loading") + "</p>";
 
-                                    case "invoice":
-                                        var contracts = jsNode.properties["payments:basis_added"];
-                                        if (contracts != null && contracts.length > 0) {
-                                            redirection += '&param_contract=' + contracts[0];
-                                        }
-                                        break;
-                                }
+        Alfresco.util.Ajax.jsonGet({
+            url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/contracts",
+            successCallback: {
+                scope: this,
+                fn: function(response) {
+                    var destNodeRef = "";
 
-                                if (jsNode.nodeRef) {
-                                    redirection += '&param_' + actions[a].from + '=' + jsNode.nodeRef;
-                                }
-
-                                newWindow.location = redirection;
-                            }
+                    for(var i = 0; i < response.json.createVariants.length; i++) {
+                        if(response.json.createVariants[i].type == pageOfCreate.type) {
+                            destNodeRef = response.json.createVariants[i].destination;
+                            break;
                         }
-                    }                   
-                });
+                    }
+
+                    if(destNodeRef) {
+                        var redirection = '/share/page/node-create?type=' + pageOfCreate.type + '&destination=' + destNodeRef;
+
+                        switch(pageOfCreate.from) {
+                            case "contract":
+                                var formId = jsNode.properties && jsNode.properties["tk:type"] == "workspace://SpacesStore/contracts-cat-doctype-contract" ? "by-agreement" : "";
+                                redirection += '&formId=' + formId;
+                                break;
+
+                            case "invoice":
+                                var contracts = jsNode.properties["payments:basis_added"];
+                                if (contracts != null && contracts.length > 0) {
+                                    redirection += '&param_contract=' + contracts[0];
+                                }
+                                break;
+                        }
+
+                        if (jsNode.nodeRef) {
+                            redirection += '&param_' + pageOfCreate.from + '=' + jsNode.nodeRef;
+                        }
+
+                        newWindow.location = redirection;
+                    }
+                }
             }
         });
     }
-
-
 })();
