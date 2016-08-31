@@ -8,7 +8,7 @@
     new Citeck.invariants.NodeViewManager("${args.runtimeKey}").setOptions({
       <#if onsubmit??>onsubmit: "${onsubmit}",</#if>
       <#if oncancel??>oncancel: "${oncancel}",</#if>
-      <#if redirect??>redirect: "${redirect}"</#if>
+      <#if redirect??>redirect: ${redirect}</#if>
     });
   </@inlineScript>
 </@>
