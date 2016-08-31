@@ -121,19 +121,26 @@ public class ContractsModuleTestBase extends SelenideTests{
         homePage.getTableTasks().shouldBe(present);
         JournalsPage journalTask = homePage.openJournalTasks();
         SelenideElement element = journalTask.getNameContract(nameContract);
-        for(int i=0;i<=7;i++)
+//        for(int i=0;i<=7;i++)
+//        {
+//            if (element.exists())
+//            {
+//                journalTask.openLinkDocument(nameContract);
+//                break;
+//            }
+//            else
+//            {
+//                sleep(5000);
+//                journalTask.refreshJournal();
+//            }
+//        }
+        while(!element.exists())
         {
-            if (element.exists())
-            {
-                journalTask.openLinkDocument(nameContract);
-                break;
-            }
-            else
-            {
-                sleep(5000);
-                journalTask.refreshJournal();
-            }
+            sleep(5000);
+            journalTask.refreshJournal();
         }
+        journalTask.openLinkDocument(nameContract);
+
         return documentDetailsPage;
     }
     protected void sendToApproval(String userName, String message)
