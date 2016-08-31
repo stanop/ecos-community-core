@@ -1,6 +1,7 @@
 package ru.citeck.ecos.pages;
 
 import com.codeborne.selenide.SelenideElement;
+import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
@@ -21,5 +22,11 @@ public class HomePage extends PageBase{
     {
         //return $("[id *= \"yuievtautoid\"]").shouldBe(present);
         return $("[id *= \"attributeswfmtaskType-liner\"]");
+    }
+    public HomePageSiteContracts openSiteContract()
+    {
+        HomePage homePage = new HomePage();
+        HomePageSiteContracts homePageSiteContracts =  homePage.getMenu().goToContracts();
+        return homePageSiteContracts;
     }
 }

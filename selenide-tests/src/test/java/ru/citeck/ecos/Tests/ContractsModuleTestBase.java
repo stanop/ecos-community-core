@@ -8,7 +8,7 @@ import static com.codeborne.selenide.Condition.present;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.sleep;
 
-public class ContractsModuleTestBase {
+public class ContractsModuleTestBase extends SelenideTests{
     protected  String titleCardDetailsRUS = "Citeck EcoS » Карточка";
     protected String titleCardDetailsEN = "Citeck EcoS » Card details";
     protected String statusNew = "New";
@@ -121,7 +121,7 @@ public class ContractsModuleTestBase {
         homePage.getTableTasks().shouldBe(present);
         JournalsPage journalTask = homePage.openJournalTasks();
         SelenideElement element = journalTask.getNameContract(nameContract);
-        for(int i=0;i<=5;i++)
+        for(int i=0;i<=7;i++)
         {
             if (element.exists())
             {
@@ -143,6 +143,30 @@ public class ContractsModuleTestBase {
         startWorkflowPage.setWorkflowDescription(message);
         startWorkflowPage.selectParticipant(userName);
         startWorkflowPage.clickOnButtonStartApproval();
+    }
+    static protected void createUser(String username, String login, String password, String group)
+    {
+        HomePage homePage = new HomePage();
+        AdminToolsPage adminToolsPage =  homePage.getMenu().openAdminTools();
+        adminToolsPage.openUserContent().shouldBe(present);
+
+        adminToolsPage.clickOnButtonNewUser().shouldBe(present);
+
+        adminToolsPage.selectGroup(group);
+        adminToolsPage.setValueOnFromCreateNewUser(username,login,password);
+        adminToolsPage.clickOnButtonCreate();
+
+        adminToolsPage.searchUser(login).shouldBe(present);
+    }
+
+    static protected AdminToolsPage deleteUser(String username)
+    {
+        DocumentDetailsPage detailsPage = new DocumentDetailsPage();
+        AdminToolsPage adminToolsPage = detailsPage.getMenu().openAdminTools();
+        adminToolsPage.searchUser(username).shouldBe(present);
+        adminToolsPage.clickOnUserName(username);
+        adminToolsPage.clickOnButtonDeleteUser();
+        return adminToolsPage;
     }
 
 }

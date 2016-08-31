@@ -4,7 +4,6 @@ package ru.citeck.ecos.pages.createpages;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.JavascriptExecutor;
 import ru.citeck.ecos.pages.DocumentDetailsPage;
-import ru.citeck.ecos.pages.HomePage;
 import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
 
 import static com.codeborne.selenide.Condition.enabled;
@@ -18,8 +17,7 @@ public class ContractCreatePage extends CreatePageBase {
 
     public void openCreatePageContract()
     {
-        HomePage homePage = new HomePage();
-        HomePageSiteContracts homePageSiteContracts =  homePage.getMenu().goToContracts();
+        HomePageSiteContracts homePageSiteContracts = new HomePageSiteContracts();
         homePageSiteContracts.openCreateFormContracts();
     }
     public void setContractWith(String value)

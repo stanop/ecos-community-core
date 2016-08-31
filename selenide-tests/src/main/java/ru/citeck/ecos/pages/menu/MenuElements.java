@@ -11,9 +11,9 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 public class MenuElements {
-    public LoginPage logOut(String userName)
+    public LoginPage logOut()
     {
-        $(byText(userName)).shouldBe(present).click();
+        $(".right-widgets span[id*=\"alfresco/header/AlfMenuBarPopup\"]").shouldBe(present).shouldBe(enabled).click();
         $("[href = \"/share/page/dologout\"]").shouldBe(present).shouldBe(enabled).click();
         LoginPage loginPage = new LoginPage();
         return loginPage;
