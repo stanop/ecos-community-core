@@ -161,7 +161,6 @@
 
 <#macro nodeViewScripts>
 	<@script src="${url.context}/res/yui/resize/resize.js" group="node-view"></@script>
-	<@script src="${url.context}/res/jquery/jquery-1.6.2.js" group="node-view"></@script>
 
 	<@script src="${url.context}/res/components/form/form.js" group="node-view"></@script>
 	<@script src="${url.context}/res/components/form/date.js" group="node-view"/>
