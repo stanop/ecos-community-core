@@ -249,13 +249,11 @@
         </association>
         <association name="contracts:agreementSubject">
             <invariant on="value" language="javascript">
-                if (node.assocs["contracts:mainAgreement"] != null) 
-                    node.assocs["contracts:mainAgreement"][0].properties["contracts:agreementSubject"]
+                    node.assocs["contracts:mainAgreement"][0].assocs["contracts:agreementSubject"]
             </invariant>
         </association>
         <property name="tk:kind">
             <invariant on="value" language="javascript">
-                if (node.assocs["contracts:mainAgreement"] != null) 
                     node.assocs["contracts:mainAgreement"][0].properties["tk:kind"]
             </invariant>
         </property>
