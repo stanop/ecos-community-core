@@ -1,7 +1,5 @@
 <#include "/org/alfresco/components/component.head.inc">
 
-<@script type="text/javascript" src="${page.url.context}/res/jquery/jquery-1.6.2.js"></@script>
-
 <@script type="text/javascript" src="${page.url.context}/res/citeck/components/manage-permissions/manage-permissions.js"></@script>
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/manage-permissions/manage-permissions.css"/>
 

@@ -14,7 +14,7 @@
 <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/journals2/journals-page.css" />
 
 <#include "/org/alfresco/components/form/form.dependencies.inc" />
-<@script type="text/javascript" src="${url.context}/res/lib/jquery.simulate.js"></@script>
+<@script type="text/javascript" src="${url.context}/res/jquery/jquery.simulate.js"></@script>
 
 <@script type="text/javascript" src="${url.context}/res/citeck/components/document-journal/document-journal.js"></@script>
 <@link type="text/css" href="${url.context}/res/citeck/components/document-journal/document-journal.css" />

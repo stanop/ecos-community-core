@@ -259,12 +259,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         }
     }
 
-    // TODO support freemarker
     function evalFreeMarker(expression, model) {
         try {
-            return _.template(expression, model, {
-                interpolate: /\$\{(.+?)\}/g
-            });
+            var liveTemplate = _.template(expression, { interpolate: /\$\{(.+?)\}/g });
+            return liveTemplate(model);
         } catch(e) {
             return undefined;
         }
