@@ -876,14 +876,18 @@ ko.bindingHandlers.journalControl = {
     // open dialog
     Event.on(button, "click", function(event) {
         if (!panel) {
+            var coordinate
+
             panel = new YAHOO.widget.Panel(panelId, {
                 width:          "800px", 
                 visible:        false, 
-                fixedcenter:    true,  
+                fixedcenter:    false,  
                 draggable:      true,
                 modal:          true,
                 zindex:         5,
-                close:          true
+                close:          true,
+                x: $(window).width() / 2 - 400,
+                y: $(".alf-header").height() + 1
             });
 
             panel.setHeader(localization.title || 'Journal Picker');
