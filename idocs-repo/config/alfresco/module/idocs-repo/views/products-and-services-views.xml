@@ -37,6 +37,9 @@
             <!--<region name="select" template="create-object" />-->
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
+        <field assoc="pas:currency">
+            <region name="input" template="select"/>
+        </field>
     </view>
 
     <view class="pas:pasEntityCopied">
@@ -56,6 +59,9 @@
             </invariant>
             <!--<region name="select" template="create-object" />-->
             <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field assoc="pas:currency">
+            <region name="input" template="select"/>
         </field>
     </view>
 

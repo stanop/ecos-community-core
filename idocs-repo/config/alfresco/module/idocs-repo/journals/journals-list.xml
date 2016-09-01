@@ -207,6 +207,7 @@
 				<!--<option name="formatter"></option>-->
 			</header>
 			<header key="pas:type" default="true"/>
+			<header key="pas:currency" default="true"/>
 		</headers>
 	</journal>
 
