@@ -154,8 +154,8 @@
 
 			<!-- Fill document template -->
 			<action id="document-fill-template" label="actions.document.fill-template"
-					type="link">
-				<param name="href">/share/page/fill-template?nodeRef={node.nodeRef}</param>
+					type="javascript">
+				<param name="function">onDocumentFillTemplateDialog</param>
 				<permissions>
 					<permission allow="true">Write</permission>
 				</permissions>
