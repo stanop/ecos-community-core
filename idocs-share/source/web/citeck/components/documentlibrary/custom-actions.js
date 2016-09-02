@@ -566,6 +566,20 @@ YAHOO.Bubbling.fire("registerAction", {
 	}
 });
 
+YAHOO.Bubbling.fire("registerAction", {
+	actionName: "onDocumentFillTemplateDialog",
+	fn: function(record) {
+		var documentRef = record.nodeRef;
+
+		Citeck.forms.dialog(documentRef, "template", function() {
+			window.location.reload();
+		}, {
+			forceOldDialog: true
+		});
+
+	}
+});
+
 function getSiteNameFromLocation(location) {
 	var result = null;
 	if (location) {
