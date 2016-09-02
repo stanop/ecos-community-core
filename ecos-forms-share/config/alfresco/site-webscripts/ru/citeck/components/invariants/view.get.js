@@ -26,4 +26,6 @@
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
 
+    if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
+
 })()

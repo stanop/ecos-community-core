@@ -40,6 +40,15 @@ function getInvariantsRecursively(element, invariants) {
     }
 }
 
+function getWritePermission(nodeRef) {
+  if (!nodeRef) return;
+
+  var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
+      response = eval('(' + remote.call(serviceURI) + ')'); 
+
+  return response;
+}
+
 function getView(args) {
     var serviceURI = '/citeck/invariants/view?';
 
