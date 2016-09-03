@@ -17,6 +17,10 @@
     user.properties.available = available;
     user.save();
 
+    var redirectURL = "share/page/node-create-page?type=deputy:absenceEvent&destination=workspace://SpacesStore/absence-events";
+    status.code = 301; //303
+    status.location = redirectURL;
+
     if (argAvailable && argAvailable != available) {
         AlfrescoUtil.error(result.status, 'Available value is not right: request url = ' + url);
     }

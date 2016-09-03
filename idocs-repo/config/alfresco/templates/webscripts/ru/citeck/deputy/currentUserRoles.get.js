@@ -24,7 +24,7 @@
         "deputy": false
     });
 
-    var deputiedUsers = deputies.getUsersWhoHaveThisUserdeputy(person.properties.userName);
+    var deputiedUsers = deputies.getUsersWhoHaveThisUserDeputy(person.properties.userName);
     for (var i in deputiedUsers) {
         roles.push({
             "group": deputiedUsers[i],
