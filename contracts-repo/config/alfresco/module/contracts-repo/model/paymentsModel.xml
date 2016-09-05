@@ -73,6 +73,7 @@
                     <value>paid</value>
                     <value>canceled</value>
                     <value>onCorrection</value>
+                    <value>signed</value>
                 </list>
             </parameter>
         </constraint>
