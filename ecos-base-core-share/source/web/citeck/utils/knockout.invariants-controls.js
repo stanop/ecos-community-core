@@ -1202,8 +1202,8 @@ ko.bindingHandlers.journalControl = {
     YAHOO.Bubbling.on("object-was-created", function(layer, args) {
         if (args[1].fieldId == data.name()) {
             if (args[1].value) {
-                additionalOptions(_.union(additionalOptions(), args[1].value));
-                selectedElements(multiple() ? _.union(selectedElements(), args[1].value) : args[1].value); 
+                additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
+                selectedElements.push(args[1].value); 
             }
             
             criteria(_.clone(criteria()));
