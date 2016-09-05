@@ -379,7 +379,14 @@ Record
 	.key('nodeRef', s)
 	.property('attributes', o)
 	.property('permissions', o)
-	.property('aspects', [s])
+	.computed('aspects', function() {
+		var resAspectList = this.attributes()['attr:aspects'];
+		var aspectList = [];
+		for (var i = 0; i < resAspectList.length; i++) {
+			aspectList.push(resAspectList[i].shortQName);
+		}
+		return aspectList;
+	})
 	.property('isDocument', b)
 	.property('isContainer', b)
 	.computed('isDoclibNode', function() {
@@ -586,6 +593,12 @@ JournalsWidget
 				recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
 				recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
 				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
+
+		if (!linkSupplied) {
+			linkSupplied = !!(_.find(visibleAttributes, function(attr) {
+				return recordLinkAttribute.indexOf(attr.name()) >= 0;
+			}));
+		}
 
 		// set priority attribute to the first
 		var priorityAttribute = recordPriorityAttribute.split(",").map(function(attr) { return attr.trim() }).reverse();
