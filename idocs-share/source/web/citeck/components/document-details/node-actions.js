@@ -203,6 +203,8 @@
                     successCallback: {
                         scope: this,
                         fn: function(response) {
+                            var self = this;
+
                             for (var i = 0; i < response.json.length; i++) {
                                 var type = (response.json[i].actionType) ? response.json[i].actionType : "serverAction";
                                 var params = {
@@ -255,7 +257,7 @@
                             var fnActionHandler = function NodeActions_fnActionHandler(layer, args) {
                                 var owner = YAHOO.Bubbling.getOwnerByTagName(args[1].anchor, "div");
                                 if (owner) {
-                                    var me = Alfresco.util.ComponentManager.get(this.id);
+                                    var me = Alfresco.util.ComponentManager.get(self.id);
                                     if (typeof me[owner.id] === "function") {
                                         args[1].stop = true;
 
@@ -334,6 +336,15 @@
                         }
                     }
                 });
+            },
+
+            registerAction: function NodeActions_registerAction(actionName, fn) {
+                if ($isValueSet(actionName) && $isValueSet(fn)) {
+                    this.constructor.prototype[actionName] = fn;
+                    return true;
+                }
+
+                return false;
             },
 
             renderAction: function dlA_renderAction(p_action, p_record)
@@ -809,14 +820,14 @@
             {
                 YAHOO.Bubbling.unsubscribe("filesPermissionsUpdated", this.doRefresh, this);
                 YAHOO.Bubbling.unsubscribe("metadataRefresh", this.doRefresh, this);
-				var scope = this,
-					arg = function(x) {
-						return scope.options[x] ? '&' + x + '={' + x + '}' : '';
-					};
+                var scope = this,
+                    arg = function(x) {
+                        return scope.options[x] ? '&' + x + '={' + x + '}' : '';
+                    };
                 this.refresh('citeck/components/document-details/node-actions?nodeRef={nodeRef}' + arg('site') + arg('view') + arg('actionLinkClass'));
             },
 
-			// this function is called by document-edit-properties action
+            // this function is called by document-edit-properties action
             _updateDocList: function() {
                 YAHOO.Bubbling.fire("metadataRefresh");
             }
