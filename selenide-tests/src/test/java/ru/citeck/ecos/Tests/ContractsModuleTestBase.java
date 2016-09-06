@@ -8,8 +8,9 @@ import static com.codeborne.selenide.Condition.present;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.sleep;
 
-public class ContractsModuleTestBase extends SelenideTests{
-    protected  String titleCardDetailsRUS = "Citeck EcoS » Карточка";
+public class ContractsModuleTestBase extends SelenideTests {
+
+    protected String titleCardDetailsRUS = "Citeck EcoS » Карточка";
     protected String titleCardDetailsEN = "Citeck EcoS » Card details";
     protected String statusNew = "New";
     protected String statusOnApproval = "On approval";
@@ -17,18 +18,16 @@ public class ContractsModuleTestBase extends SelenideTests{
     protected String statusActive = "Active";
     protected String statusArchive = "Archive";
 
-    protected String loginAdmin = "Administrator";
-
     protected void fillFieldsOnFormCreationContract(String valueContractWith, String kindOfDocument, String signatory,
-     String performer, String documentDate, String agreementAmount, String vat,
-     String numberOfAppendixPage, String numberPage, String summary,String node,
-     String nameLegalEntity, String addressLegalEntity,String postAddressLegalEntity, String inn, String kpp,
-     String nameContractor, String addressContractor, String postAddressContractor, String ceoNameContractor,
-     String agreementSubjectCode, String agreementSubjectName,
-     String paymentScheduleDate, String paymentScheduleAmount, String paymentScheduleType, String paymentScheduleDescription)
-    {
-        ContractCreatePage contractCreatePage = new ContractCreatePage();
+            String performer, String documentDate, String agreementAmount, String vat,
+            String numberOfAppendixPage, String numberPage, String summary,String node,
+            String nameLegalEntity, String addressLegalEntity,String postAddressLegalEntity, String inn, String kpp,
+            String nameContractor, String addressContractor, String postAddressContractor, String ceoNameContractor,
+            String agreementSubjectCode, String agreementSubjectName,
+            String paymentScheduleDate, String paymentScheduleAmount,
+            String paymentScheduleType, String paymentScheduleDescription) {
 
+        ContractCreatePage contractCreatePage = new ContractCreatePage();
         contractCreatePage.setContractWith(valueContractWith);
         contractCreatePage.selectKindDocument(kindOfDocument);
         contractCreatePage.clickOnButtonGenerate();
@@ -45,18 +44,20 @@ public class ContractsModuleTestBase extends SelenideTests{
         createLegalEntity(nameLegalEntity, addressLegalEntity, postAddressLegalEntity, inn, kpp);
         createContractor(nameContractor, addressContractor, postAddressContractor, ceoNameContractor);
         createAgreementSubject(agreementSubjectCode, agreementSubjectName);
-        createPaymentSchedule(paymentScheduleDate, paymentScheduleAmount, paymentScheduleType, paymentScheduleDescription);
+        createPaymentSchedule(paymentScheduleDate, paymentScheduleAmount,
+                paymentScheduleType, paymentScheduleDescription);
     }
-    protected void fillFieldsOnFormSupplementaryAgreement(String valueContractWith, String kindOfDocument, String signatory,
-      String performer, String documentDate, String agreementAmount,
-      String vat, String numberOfAppendixPage, String numberPage, String summary,String node,
-      String nameLegalEntity, String addressLegalEntity,String postAddressLegalEntity, String inn, String kpp,
-      String nameContractor, String addressContractor, String postAddressContractor, String ceoNameContractor,
-      String agreementSubjectCode, String agreementSubjectName,
-      String paymentScheduleDate, String paymentScheduleAmount, String paymentScheduleType, String paymentScheduleDescription)
-    {
-        SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
 
+    protected void fillFieldsOnFormSupplementaryAgreement(String valueContractWith, String kindOfDocument,
+            String signatory, String performer, String documentDate, String agreementAmount,
+            String vat, String numberOfAppendixPage, String numberPage, String summary,String node,
+            String nameLegalEntity, String addressLegalEntity,String postAddressLegalEntity, String inn, String kpp,
+            String nameContractor, String addressContractor, String postAddressContractor, String ceoNameContractor,
+            String agreementSubjectCode, String agreementSubjectName,
+            String paymentScheduleDate, String paymentScheduleAmount,
+            String paymentScheduleType, String paymentScheduleDescription) {
+
+        SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
         supplementaryAgreementCreatePage.clickOnButtonMainAgreement();
         ContractCreatePage mainAgreement = supplementaryAgreementCreatePage.openMainContractCreatePage();
         fillFieldsOnFormCreationContract(valueContractWith, kindOfDocument, signatory, performer,documentDate,
@@ -70,8 +71,54 @@ public class ContractsModuleTestBase extends SelenideTests{
         supplementaryAgreementCreatePage.clickOnButtonGenerate();
         supplementaryAgreementCreatePage.setDocumentDate(documentDate);
     }
-    protected void createLegalEntity(String fullOrganisationName, String juridicalAddress, String postAddress, String inn, String kpp)
-    {
+
+    protected void fillFieldsOnFormPayment(String nameDocumentBase, String valueContractWith, String kindOfDocument,
+            String signatory, String performer, String documentDate, String agreementAmount, String vat,
+            String numberOfAppendixPage, String numberPage, String summary,String node,
+            String nameLegalEntity, String addressLegalEntity,String postAddressLegalEntity, String inn, String kpp,
+            String nameContractor, String addressContractor, String postAddressContractor, String ceoNameContractor,
+            String agreementSubjectCode, String agreementSubjectName,
+            String paymentScheduleDate, String paymentScheduleAmount, String paymentScheduleType,
+            String paymentScheduleDescription, String paymentFor,String titleProductOrService,
+            String typeProductOrService,String unit, String currency) {
+
+        PaymentCreatePage paymentCreatePage = new PaymentCreatePage();
+        if(nameDocumentBase == "Contract") {
+            ContractCreatePage contractCreatePage = paymentCreatePage.openContractCreatePage(nameDocumentBase);
+            fillFieldsOnFormCreationContract(valueContractWith, kindOfDocument, signatory, performer,documentDate,
+                    agreementAmount,vat,numberOfAppendixPage,numberPage,summary,node,
+                    nameLegalEntity,addressLegalEntity,postAddressLegalEntity,inn,kpp,
+                    nameContractor,addressContractor,postAddressContractor,ceoNameContractor,
+                    agreementSubjectCode,agreementSubjectName,
+                    paymentScheduleDate,paymentScheduleAmount,paymentScheduleType,paymentScheduleDescription);
+            contractCreatePage.clickOnButtonCreate();
+        }
+        if(nameDocumentBase == "contracts:supplementaryAgreement") {
+            SupplementaryAgreementCreatePage supplementaryAgreementCreatePage
+                    = paymentCreatePage.openSupplementaryAgreementCreatePage(nameDocumentBase);
+            fillFieldsOnFormSupplementaryAgreement(valueContractWith, kindOfDocument, signatory, performer,documentDate,
+                    agreementAmount,vat,numberOfAppendixPage,numberPage,summary,node,
+                    nameLegalEntity,addressLegalEntity,postAddressLegalEntity,inn,kpp,
+                    nameContractor,addressContractor,postAddressContractor,ceoNameContractor,
+                    agreementSubjectCode,agreementSubjectName,
+                    paymentScheduleDate,paymentScheduleAmount,paymentScheduleType,paymentScheduleDescription);
+            supplementaryAgreementCreatePage.clickOnButtonCreate();
+        }
+        paymentCreatePage.selectDocumentBase().shouldBe(present);
+        paymentCreatePage.clickOnButtonGenerate();
+        paymentCreatePage.setPaymentFor(paymentFor);
+        ProductsAndServicesCreatePage productsAndServicesCreatePage
+                = paymentCreatePage.openProductOrServiceCreatePage();
+        productsAndServicesCreatePage.setTitleProductOrService(titleProductOrService);
+        productsAndServicesCreatePage.selectType(typeProductOrService);
+        productsAndServicesCreatePage.selectUnit(unit);
+        productsAndServicesCreatePage.selectCurrency(currency);
+        productsAndServicesCreatePage.clickOnButtonCreate();
+        productsAndServicesCreatePage.selectProductOrService();
+    }
+
+    protected void createLegalEntity(String fullOrganisationName, String juridicalAddress, String postAddress,
+            String inn, String kpp) {
         ContractCreatePage contractCreatePage = new ContractCreatePage();
         LegalEntityCreatePage legalEntityCreatePage =  contractCreatePage.openCreatePageLegalEntity();
         legalEntityCreatePage.setFullOrganizationName(fullOrganisationName);
@@ -82,8 +129,9 @@ public class ContractsModuleTestBase extends SelenideTests{
         legalEntityCreatePage.clickOnButtonCreate();
         contractCreatePage.setLegalEntity(fullOrganisationName).shouldHave(text(fullOrganisationName));
     }
-    protected void createContractor(String fullOrganisationName, String juridicalAddress, String postAddress, String ceoName)
-    {
+
+    protected void createContractor(String fullOrganisationName, String juridicalAddress, String postAddress,
+            String ceoName) {
         ContractCreatePage contractCreatePage = new ContractCreatePage();
         ContractorCreatePage contractorCreatePage = contractCreatePage.openContractorCreatePage();
         contractorCreatePage.setFullOrganizationName(fullOrganisationName);
@@ -93,8 +141,8 @@ public class ContractsModuleTestBase extends SelenideTests{
         contractorCreatePage.clickOnButtonCreate();
         contractCreatePage.setContractor(fullOrganisationName).shouldHave(text(fullOrganisationName));
     }
-    protected void createAgreementSubject(String code, String name)
-    {
+
+    protected void createAgreementSubject(String code, String name) {
         ContractCreatePage contractCreatePage = new ContractCreatePage();
         AgreementSubjectCreatePage agreementSubject = contractCreatePage.openAgreementSubjectCreatePage();
         agreementSubject.setSubjectCode(code);
@@ -102,8 +150,8 @@ public class ContractsModuleTestBase extends SelenideTests{
         agreementSubject.clickOnButtonCreate();
         contractCreatePage.selectAgreementSubject();
     }
-    protected void createPaymentSchedule(String date, String amount, String type, String description)
-    {
+
+    protected void createPaymentSchedule(String date, String amount, String type, String description) {
         ContractCreatePage contractCreatePage = new ContractCreatePage();
         PaymentScheduleCreatePage paymentSchedule = contractCreatePage.openPaymentScheduleCreatePage();
         //paymentSchedule.setPlannedPaymentDate(date);
@@ -112,47 +160,41 @@ public class ContractsModuleTestBase extends SelenideTests{
         paymentSchedule.setPaymentDescription(description);
         contractCreatePage.createPaymentSchedule();
     }
-    protected DocumentDetailsPage openDocumentWithTask(String login, String pass, String nameContract)
-    {
+
+    protected DocumentDetailsPage openDocumentWithTask(String login, String pass, String nameDocument) {
         DocumentDetailsPage documentDetailsPage = new DocumentDetailsPage();
         LoginPage loginPage = new LoginPage();
         loginPage.inLoginAndPassword(login, pass);
         HomePage homePage = loginPage.clickOnLoginButton();
         homePage.getTableTasks().shouldBe(present);
         JournalsPage journalTask = homePage.openJournalTasks();
-        SelenideElement element = journalTask.getNameContract(nameContract);
-//        for(int i=0;i<=7;i++)
-//        {
-//            if (element.exists())
-//            {
+        SelenideElement element = journalTask.getNameContract(nameDocument);
+//        for(int i=0; i<=7; i++) {
+//            if (element.exists()){
 //                journalTask.openLinkDocument(nameContract);
 //                break;
-//            }
-//            else
-//            {
+//            } else {
 //                sleep(5000);
 //                journalTask.refreshJournal();
 //            }
 //        }
-        while(!element.exists())
-        {
+        while(!element.exists()) {
             sleep(5000);
             journalTask.refreshJournal();
         }
-        journalTask.openLinkDocument(nameContract);
-
+        journalTask.openLinkDocument(nameDocument);
         return documentDetailsPage;
     }
-    protected void sendToApproval(String userName, String message)
-    {
+
+    protected void sendToApproval(String userName, String message) {
         DocumentDetailsPage documentDetailsPage = new DocumentDetailsPage();
         StartWorkflowPage startWorkflowPage = documentDetailsPage.openStartWorkflowPage();
         startWorkflowPage.setWorkflowDescription(message);
         startWorkflowPage.selectParticipant(userName);
         startWorkflowPage.clickOnButtonStartApproval();
     }
-    static protected void createUser(String username, String login, String password, String group)
-    {
+
+    static protected void createUser(String username, String login, String password, String group) {
         HomePage homePage = new HomePage();
         AdminToolsPage adminToolsPage =  homePage.getMenu().openAdminTools();
         adminToolsPage.openUserContent().shouldBe(present);
@@ -166,8 +208,7 @@ public class ContractsModuleTestBase extends SelenideTests{
         adminToolsPage.searchUser(login).shouldBe(present);
     }
 
-    static protected AdminToolsPage deleteUser(String username)
-    {
+    static protected AdminToolsPage deleteUser(String username) {
         DocumentDetailsPage detailsPage = new DocumentDetailsPage();
         AdminToolsPage adminToolsPage = detailsPage.getMenu().openAdminTools();
         adminToolsPage.searchUser(username).shouldBe(present);

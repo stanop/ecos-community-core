@@ -9,6 +9,15 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestsWithCreateNewUser extends ContractsModuleTestBase{
+    static private String titleLoginPageRUS = "Citeck EcoS » Войти";
+    static private String titleLoginPageEN = "Citeck EcoS » Login";
+
+    static private String userName = "TestUser";
+    static private String login = "user1";
+    static private  String pass = "user1";
+    static private  String group = "company_director";
+    static private String UserNameAdmin = "Administrator";
+
     private String valueContractWith = "performer";
     private String valueKindDocument = "Services";
     private String documentDate = "2016-08-25";
@@ -50,28 +59,30 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
     private String paymentScheduleDescription = "нет";
 
     private String message = "Согласуйте";
-    static private String titleLoginPageRUS = "Citeck EcoS » Войти";
-    static private String titleLoginPageEN = "Citeck EcoS » Login";
 
-    static private String userName = "TestUser";
-    static private String login = "user1";
-    static private  String pass = "user1";
-    static private  String group = "company_director";
-    static private String UserNameAdmin = "Administrator";
+    private String nameBaseDocument = "Contract";
+    private String paymentFor = "client";
+    private String titleProductOrService = "TestService";
+    private String typeProductOrService = "service";
+    private String unit = "шт";
+    private String currency = "Рубль";
+    private String statusDraft = "Draft";
+    private String statusOnPayment = "On payment";
+    private String statusPaid = "Paid";
+
     @BeforeClass
-    static public void createUser()
-    {
+    static public void createUser() {
         createUser(userName, login, pass, group);
     }
+
     @Before
-    public void openSiteContract()
-    {
+    public void openSiteContract() {
         HomePage homePage = new HomePage();
         homePage.openSiteContract();
     }
+
     @Test
-    public void testForContract()
-    {
+    public void testForContract() {
         ContractCreatePage contractCreatePage =  new ContractCreatePage();
         contractCreatePage.openCreatePageContract();
         fillFieldsOnFormCreationContract(valueContractWith, valueKindDocument, UserNameAdmin, userName, documentDate,
@@ -87,7 +98,7 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
 
         sendToApproval(userName, message);
         documentDetailsPage.getStatusDocument().shouldHave(text(statusOnApproval));
-        String nameContract = "Contract №"+documentDetailsPage.getNumberAgreement();
+        String nameContract = "Contract №" + documentDetailsPage.getNumberAgreement();
 
         documentDetailsPage.getMenu().logOut();
         openDocumentWithTask(login, pass, nameContract);
@@ -100,7 +111,7 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
         openDocumentWithTask(Settings.getLogin(),Settings.getPassword(),nameContract);
         Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
                           titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
-        documentDetailsPage.performTaskSign(message);
+        documentDetailsPage.performTaskSign();
         documentDetailsPage.getStatusDocument().shouldHave(text(statusActive));
         documentDetailsPage.clickOnActionMoveToArchive();
         sleep(15000);
@@ -108,12 +119,11 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
     }
 
     @Test
-    public void testForSupplementaryAgreement()
-    {
+    public void testForSupplementaryAgreement() {
         SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
         supplementaryAgreementCreatePage.openCreatePageSupplementaryAgreement();
-        fillFieldsOnFormSupplementaryAgreement(valueContractWith, valueKindDocument, UserNameAdmin, userName, documentDate,
-                agreementAmount, vat, numberOfAppendixPage, numberPage, summary, node,
+        fillFieldsOnFormSupplementaryAgreement(valueContractWith, valueKindDocument, UserNameAdmin, userName,
+                documentDate,agreementAmount, vat, numberOfAppendixPage, numberPage, summary, node,
                 nameLegalEntity, addressLegalEntity, postAddressLegalEntity, inn, kpp,
                 nameContractor, addressContractor, postAddressContractor, ceoNameContractor,
                 agreementSubjectCode, agreementSubjectName,
@@ -125,31 +135,67 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
 
         sendToApproval(userName, message);
         documentDetailsPage.getStatusDocument().shouldHave(text(statusOnApproval));
-        String nameContract = "Add'l agreement №"+documentDetailsPage.getNumberSupplementaryAgreement();
+        String nameSupplementaryAgreement = "Add'l agreement №" + documentDetailsPage.getNumberSupplementaryAgreement();
 
         documentDetailsPage.getMenu().logOut();
-        openDocumentWithTask(login, pass, nameContract);
+        openDocumentWithTask(login, pass, nameSupplementaryAgreement);
         Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
                 titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
         documentDetailsPage.performTaskConfirm(message);
         documentDetailsPage.getStatusDocument().shouldHave(text(statusOnSign));
         documentDetailsPage.getMenu().logOut();
 
-        openDocumentWithTask(Settings.getLogin(),Settings.getPassword(),nameContract);
+        openDocumentWithTask(Settings.getLogin(),Settings.getPassword(),nameSupplementaryAgreement);
         Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
                 titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
-        documentDetailsPage.performTaskSign(message);
+        documentDetailsPage.performTaskSign();
         documentDetailsPage.getStatusDocument().shouldHave(text(statusActive));
         documentDetailsPage.clickOnActionMoveToArchive();
         sleep(15000);
         documentDetailsPage.getStatusDocument().shouldHave(text(statusArchive));
     }
+
+    @Test
+    public void testForPayment() {
+        PaymentCreatePage paymentCreatePage = new PaymentCreatePage();
+        paymentCreatePage.openCreatePagePayment();
+        fillFieldsOnFormPayment(nameBaseDocument,valueContractWith, valueKindDocument, UserNameAdmin, userName,
+                documentDate, agreementAmount, vat, numberOfAppendixPage, numberPage, summary, node,
+                nameLegalEntity, addressLegalEntity, postAddressLegalEntity, inn, kpp,
+                nameContractor, addressContractor, postAddressContractor, ceoNameContractor,
+                agreementSubjectCode, agreementSubjectName,
+                paymentScheduleDate, paymentScheduleAmount, paymentScheduleType, paymentScheduleDescription,
+                paymentFor, titleProductOrService,typeProductOrService,unit,currency);
+        DocumentDetailsPage documentDetailsPage = paymentCreatePage.clickOnCreateContentButton();
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusDraft));
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
+
+        sendToApproval(userName, message);
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusOnApproval));
+        String namePayment = "Invoice №" + documentDetailsPage.getNumberPayment() + " for " + nameContractor;
+
+        documentDetailsPage.getMenu().logOut();
+        openDocumentWithTask(login, pass, namePayment);
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
+        documentDetailsPage.performTaskConfirm(message);
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusOnPayment));
+        documentDetailsPage.getMenu().logOut();
+
+        openDocumentWithTask(Settings.getLogin(),Settings.getPassword(),namePayment);
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
+        documentDetailsPage.performTaskAffirm();
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusPaid));
+    }
+
     @AfterClass
-    static public void deleteUser()
-    {
+    static public void deleteUser() {
         AdminToolsPage adminToolsPage = new AdminToolsPage();
         LoginPage loginPage = adminToolsPage.getMenu().logOut();
-        Assert.assertTrue(titleLoginPageRUS.equals(loginPage.getTitle()) || titleLoginPageEN.equals(loginPage.getTitle()));
+        Assert.assertTrue(titleLoginPageRUS.equals(loginPage.getTitle())
+                || titleLoginPageEN.equals(loginPage.getTitle()));
 
         loginPage.inLoginAndPassword(Settings.getLogin(), Settings.getPassword());
         loginPage.clickOnLoginButton();
@@ -157,6 +203,7 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
         adminToolsPage = deleteUser(userName);
 
         loginPage  = adminToolsPage.getMenu().logOut();
-        Assert.assertTrue(titleLoginPageRUS.equals(loginPage.getTitle()) || titleLoginPageEN.equals(loginPage.getTitle()));
+        Assert.assertTrue(titleLoginPageRUS.equals(loginPage.getTitle())
+                || titleLoginPageEN.equals(loginPage.getTitle()));
     }
 }

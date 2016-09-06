@@ -8,24 +8,23 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class JournalsPage {
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title();
     }
-    public SelenideElement getTable()
-    {
+
+    public SelenideElement getTable() {
         return $("#yui-main table");
     }
-    public void refreshJournal()
-    {
+
+    public void refreshJournal() {
         $("[data-bind = \"click: performSearch\"]").shouldBe(enabled).click();
     }
-    public SelenideElement getNameContract(String nameContract)
-    {
+
+    public SelenideElement getNameContract(String nameContract) {
         return $(byText(nameContract));
     }
-    public DocumentDetailsPage openLinkDocument(String nameContract)
-    {
+
+    public DocumentDetailsPage openLinkDocument(String nameContract) {
         $(byText(nameContract)).shouldBe(present).click();
         DocumentDetailsPage detailsPage = new DocumentDetailsPage();
         return detailsPage;

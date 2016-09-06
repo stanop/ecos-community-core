@@ -1,6 +1,5 @@
 package ru.citeck.ecos.pages.createpages;
 
-
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.JavascriptExecutor;
 import ru.citeck.ecos.pages.DocumentDetailsPage;
@@ -15,78 +14,86 @@ import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class ContractCreatePage extends CreatePageBase {
 
-    public void openCreatePageContract()
-    {
+    public void openCreatePageContract() {
         HomePageSiteContracts homePageSiteContracts = new HomePageSiteContracts();
         homePageSiteContracts.openCreateFormContracts();
     }
-    public void setContractWith(String value)
-    {
+
+    public void setContractWith(String value) {
         $("[id *= \"contracts_contractWith\"]").shouldBe(present).selectOptionByValue(value);
     }
-    public void setAgreementAmount(String value)
-    {
-        $("input[id *= \"contracts_agreementAmount\"][data-bind *= \"keypress: validation\"]").shouldBe(present).setValue(value);
+
+    public void setAgreementAmount(String value) {
+        $("input[id *= \"contracts_agreementAmount\"][data-bind *= \"keypress: validation\"]")
+                .shouldBe(present).setValue(value);
     }
-    public void setVAT(String value)
-    {
+
+    public void setVAT(String value) {
         $("[id *= \"contracts_VAT\"]").shouldBe(present).setValue(value);
     }
-    public void setSummary(String value)
-    {
+
+    public void setSummary(String value) {
         $("[id *= \"idocs_summary\"]").shouldBe(present).setValue(value);
     }
-    public void setNode(String value)
-    {
+
+    public void setNode(String value) {
       $("[id *= \"idocs_note\"]").shouldBe(present).setValue(value);
     }
-    public void setNumberOfAppendixPage(String value)
-    {
+
+    public void setNumberOfAppendixPage(String value) {
         $("[id *= \"idocs_appendixPagesNumber\"]").shouldBe(present).setValue(value);
     }
-    public void setNumberPage(String value)
-    {
+
+    public void setNumberPage(String value) {
         $("[id *= \"idocs_pagesNumber\"]").shouldBe(present).setValue(value);
     }
-    public DocumentDetailsPage clickOnCreateContractButton()
-    {
+
+    public DocumentDetailsPage clickOnCreateContractButton() {
         $("[id *= \"form-submit\"]").shouldBe(present).click();
         DocumentDetailsPage documentDetailsPage = new DocumentDetailsPage();
         return documentDetailsPage;
     }
-    public SelenideElement selectSignatory(String userName)
-    {
+
+    public SelenideElement selectSignatory(String userName) {
         $("[id *= \"signatory-orgstructControl-showVariantsButton\"]").shouldBe(enabled).click();
-        $("[id *= \"signatory-orgstructControl-orgstructPanel-searchInput\"]").shouldBe(present).setValue(userName).pressEnter();
-        $("[id *= \"signatory-orgstructControl-orgstructPanel\"] table tr td[id *= \"contente\"]").shouldHave(text(userName)).click();
+        SelenideElement searchField = $("[id *= \"signatory-orgstructControl-orgstructPanel-searchInput\"]");
+        searchField.shouldBe(present).setValue(userName).pressEnter();
+        SelenideElement listOfValue
+                = $("[id *= \"signatory-orgstructControl-orgstructPanel\"] table tr td[id *= \"contente\"]");
+        listOfValue.shouldHave(text(userName)).click();
         $(".selected-object.authorityType-USER").shouldBe(present);
         $("[id *= \"signatory-orgstructControl-orgstructPanel-submitInput\"]").shouldBe(present).click();
         return $$(".value-item").get(1);
     }
-    public SelenideElement selectPerformer(String userName)
-    {
+
+    public SelenideElement selectPerformer(String userName) {
         $("[id *= \"performer-orgstructControl-showVariantsButton\"]").shouldBe(enabled).click();
-        $("[id *= \"idocs_performer-orgstructControl-orgstructPanel-searchInput\"]").shouldBe(present).setValue(userName).pressEnter();
-        $("[id *= \"performer-orgstructControl-orgstructPanel\"] table tr td[id *= \"contente\"]").shouldHave(text(userName)).click();
+        SelenideElement searchField = $("[id *= \"idocs_performer-orgstructControl-orgstructPanel-searchInput\"]");
+        searchField.shouldBe(present).setValue(userName).pressEnter();
+        SelenideElement listOfValue
+                = $("[id *= \"performer-orgstructControl-orgstructPanel\"] table tr td[id *= \"contente\"]");
+        listOfValue.shouldHave(text(userName)).click();
         $(".selected-object.authorityType-USER").shouldBe(present);
         $("[id *= \"performer-orgstructControl-orgstructPanel-submitInput\"]").shouldBe(present).click();
         return $$(".value-item").get(2);
     }
-    public AgreementSubjectCreatePage openAgreementSubjectCreatePage()
-    {
+
+    public AgreementSubjectCreatePage openAgreementSubjectCreatePage() {
         $("[id *= \"agreementSubject-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"agreementSubject-journalControl-journalPanel-journal-picker-header\"] .create-object-button").shouldBe(enabled).click();
+        SelenideElement buttonCreate
+                = $("[id *= \"agreementSubject-journalControl-journalPanel-journal-picker-header\"] " +
+                ".create-object-button");
+        buttonCreate.shouldBe(enabled).click();
         AgreementSubjectCreatePage agreementSubjectCreatePage = new AgreementSubjectCreatePage();
         return agreementSubjectCreatePage;
     }
-    public void selectAgreementSubject()
-    {
+
+    public void selectAgreementSubject() {
         $("[id *= \"agreementSubject-journalControl-journalPanel-selectedElementsTable\"] table td").shouldBe(present);
         $("[id *= \"contracts_agreementSubject-journalControl-journalPanel-submitInput\"]").shouldBe(enabled).click();
-        //return $$(".value-item").get(1);
     }
-    public PaymentScheduleCreatePage openPaymentScheduleCreatePage()
-    {
+
+    public PaymentScheduleCreatePage openPaymentScheduleCreatePage() {
         SelenideElement element = $("[id *= \"payments-createObjectControl\"] button");
         String js = "arguments[0].scrollIntoView();";
         ((JavascriptExecutor)getWebDriver()).executeScript(js, element);
@@ -94,8 +101,8 @@ public class ContractCreatePage extends CreatePageBase {
         PaymentScheduleCreatePage paymentSchedule = new PaymentScheduleCreatePage();
         return paymentSchedule;
     }
-    public void createPaymentSchedule()
-    {
+
+    public void createPaymentSchedule() {
         $("[id *= \"body-form-submit\"]").shouldBe(enabled).click();
     }
 

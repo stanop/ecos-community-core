@@ -8,23 +8,21 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class HomePage extends PageBase{
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title();
     }
-    public JournalsPage openJournalTasks()
-    {
+
+    public JournalsPage openJournalTasks() {
         $("[href *= \"journal-meta\"]").shouldBe(enabled).click();
         JournalsPage journalsPage = new JournalsPage();
         return  journalsPage;
     }
-    public SelenideElement getTableTasks()
-    {
-        //return $("[id *= \"yuievtautoid\"]").shouldBe(present);
+
+    public SelenideElement getTableTasks() {
         return $("[id *= \"attributeswfmtaskType-liner\"]");
     }
-    public HomePageSiteContracts openSiteContract()
-    {
+
+    public HomePageSiteContracts openSiteContract() {
         HomePage homePage = new HomePage();
         HomePageSiteContracts homePageSiteContracts =  homePage.getMenu().goToContracts();
         return homePageSiteContracts;

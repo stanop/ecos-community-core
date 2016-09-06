@@ -11,29 +11,25 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 public class MenuElements {
-    public LoginPage logOut()
-    {
+
+    public LoginPage logOut() {
         $(".right-widgets span[id*=\"alfresco/header/AlfMenuBarPopup\"]").shouldBe(present).shouldBe(enabled).click();
         $("[href = \"/share/page/dologout\"]").shouldBe(present).shouldBe(enabled).click();
         LoginPage loginPage = new LoginPage();
         return loginPage;
     }
-    public AdminToolsPage openAdminTools()
-    {
+
+    public AdminToolsPage openAdminTools() {
         AdminToolsPage adminToolsPage = new AdminToolsPage();
         $(byText("More...")).shouldBe(present).shouldBe(enabled).click();
         $(byText("Users")).shouldBe(present).click();
         return adminToolsPage;
     }
-    public HomePageSiteContracts goToContracts()
-    {
+
+    public HomePageSiteContracts goToContracts() {
         $("[id *= \"sites-button\"]").shouldBe(present).shouldBe(enabled).click();
         $("a[href *= \"site=contracts\"]").shouldBe(present).shouldBe(enabled).click();
         HomePageSiteContracts homePageContracts = new HomePageSiteContracts();
         return homePageContracts;
-    }
-    public SelenideElement searchByText(String value)
-    {
-        return $("[id *= \"alfresco/header/AlfMenuBarPopup\"]").$(byText(value));
     }
 }

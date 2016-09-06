@@ -5,12 +5,11 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class LegalEntityCreatePage extends LegalEntityCreatePageBase{
 
-    public void setINN(String value)
-    {
+    public void setINN(String value) {
         $("[id *= \"body-idocs_inn\"]").shouldBe(present).setValue(value);
     }
-    public void setKPP(String value)
-    {
+
+    public void setKPP(String value) {
         $("[id *= \"body-idocs_kpp\"]").shouldBe(present).setValue(value);
     }
 }

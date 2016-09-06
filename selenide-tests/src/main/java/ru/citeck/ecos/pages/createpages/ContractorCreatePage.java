@@ -5,8 +5,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class ContractorCreatePage extends LegalEntityCreatePageBase{
 
-    public void setCeoName(String value)
-    {
+    public void setCeoName(String value) {
         $("[id *= \"body-idocs_CEOname\"]").shouldBe(present).setValue(value);
     }
 }
