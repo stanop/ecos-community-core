@@ -17,8 +17,6 @@
 <@markup id="js">
     <#include "/org/alfresco/components/form/form.js.ftl"/>
 
-    <@script type="text/javascript" src="${url.context}/res/lib/underscore.js" group="journals-list"/>
-
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="journals-list" />
 
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals-list" />

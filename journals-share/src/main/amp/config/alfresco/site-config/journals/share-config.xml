@@ -3,8 +3,6 @@
 	<config>
 		<forms>
 			<dependencies>
-				<js src="/lib/underscore.js" />
-
 				<js src="/modules/simple-dialog.js" />
 
 				<js src="/lib/grouped-datatable.js" />
