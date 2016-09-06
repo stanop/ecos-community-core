@@ -54,6 +54,7 @@
 	
 	
 	<bean id="deputyService" class="ru.citeck.ecos.deputy.DeputyServiceImpl">
+		<property name="deputyListener" ref="deputyListener.Composite" />
 		<property name="authenticationService" ref="authenticationService" />
 		<property name="authorityService" ref="authorityService" />
 		<property name="nodeService" ref="dbNodeService" />
@@ -76,6 +77,8 @@
 		<property name="priority" value="100" />
 		<property name="authorityService" ref="authorityService" />
 		<property name="availabilityService" ref="availabilityService" />
+		<property name="searchService" ref="searchService" />
+		<property name="nodeService" ref="nodeService" />
 	</bean>
 	
 	<bean id="deputyListener.taskManagement" class="ru.citeck.ecos.deputy.TaskDeputyListener"
@@ -85,7 +88,9 @@
 		<property name="advancedWorkflowService" ref="advancedWorkflowService"/>
         <property name="personService" ref="personService"/>
 	</bean>
-	
+
+	<bean id="deputyListener.Composite" class="ru.citeck.ecos.deputy.CompositeDeputyListener" />
+
 	<bean id="DeputyService" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="proxyInterfaces">
 			<list>

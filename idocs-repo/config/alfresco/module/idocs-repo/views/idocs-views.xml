@@ -118,12 +118,13 @@
         <field prop="deputy:startAbsence"/>
         <field prop="deputy:endAbsence"/>
         <field prop="deputy:comment"/>
-        <field assoc="deputy:reasonOfAbsence">
+        <field assoc="deputy:user" />
+        <!-- <field assoc="deputy:reasonOfAbsence">
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
                 <param name="journalType">reasons-absence</param>
             </region>
-        </field>
+        </field> -->
     </view>
 
 </views>

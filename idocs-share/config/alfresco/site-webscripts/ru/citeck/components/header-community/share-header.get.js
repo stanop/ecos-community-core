@@ -30,7 +30,7 @@ var userMenuItems = [
 
 var availability = "make-" + (user.properties.available === false ? "" : "not") + "available",
     clickEvent = function(event, element) {
-      Citeck.forms.dialog("deputy:absenceEvent", "", { 
+      Citeck.forms.dialog("deputy:absenceEvent", "", {
         scope: this, 
         fn: function(node) { 
           this.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: this.targetUrl, type: this.targetUrlType, target: this.targetUrlLocation});
@@ -47,10 +47,10 @@ userMenuItems.push({
    config:
    {
       id: "HEADER_USER_MENU_AVAILABILITY",
-      label: "header." + availability + ".label.test",
+      label: "header." + availability + ".label",
       iconImage: "/share/res/components/images/header/" + availability + ".png",
-      targetUrl: "/components/delegate/make-available?available=" + (user.properties.available === false ? "true" : "false"),
-      clickEvent: clickEvent.toString()
+      targetUrl: "/components/deputy/make-available?available=" + (user.properties.available === false ? "true" : "false"),
+      clickEvent: "" + (user.properties.available === false ? "" : clickEvent.toString())
    }
 });
 

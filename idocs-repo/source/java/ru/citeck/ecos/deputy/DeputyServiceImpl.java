@@ -39,7 +39,7 @@ import java.util.*;
 public class DeputyServiceImpl implements DeputyService
 {
 	private static final Log logger = LogFactory.getLog(DeputyServiceImpl.class);
-	
+
 	private AuthenticationService authenticationService;
 	private AuthorityService authorityService;
 	private NodeService nodeService;
@@ -47,7 +47,7 @@ public class DeputyServiceImpl implements DeputyService
 	private AuthorityHelper authorityHelper;
 	private AvailabilityService availabilityService;
 	
-	private CompositeDeputyListener deputyListener = new CompositeDeputyListener();
+	private CompositeDeputyListener deputyListener;
 	
 	private NodeRef deputationRecordsRoot;
 	private QName deputationRecordAssoc;
@@ -97,7 +97,7 @@ public class DeputyServiceImpl implements DeputyService
     public void setBranchGroupType(String branchGroupType) {
         this.branchGroupType = branchGroupType;
     }
-	
+
 
 	/////////////////////////////////////////////////////////////////
 	//                       ADMIN INTERFACE                       //
@@ -574,4 +574,7 @@ public class DeputyServiceImpl implements DeputyService
 		return Boolean.TRUE.equals(managed);
 	}
 
+	public void setDeputyListener(CompositeDeputyListener deputyListener) {
+		this.deputyListener = deputyListener;
+	}
 }

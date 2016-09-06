@@ -18,12 +18,21 @@
  */
 package ru.citeck.ecos.deputy;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.DeputyModel;
 
 /**
  * Deputy Listener, that processes role membership changes.
@@ -40,13 +49,23 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 {
 	private AuthorityService authorityService;
 	private AvailabilityService availabilityService;
-	
+	private SearchService searchService;
+	private NodeService nodeService;
+
 	public void setAuthorityService(AuthorityService authorityService) {
 		this.authorityService = authorityService;
 	}
 
 	public void setAvailabilityService(AvailabilityService availabilityService) {
 		this.availabilityService = availabilityService;
+	}
+
+	public void setSearchService(SearchService searchService) {
+		this.searchService = searchService;
+	}
+
+	public void setNodeService(NodeService nodeService) {
+		this.nodeService = nodeService;
 	}
 
 	@Override
@@ -60,7 +79,7 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 	}
 	
 	private void onRoleMemberAvailabilityChanged(String roleFullName, String memberName, boolean deputy) {
-		
+
 		// get all current users in role
 		Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
 		
@@ -102,7 +121,7 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 			if(!members.contains(deputy)) continue;
 			authorityService.removeAuthority(roleFullName, deputy);
 		}
-		
+		updateDeputyEndAbsence();
 	}
 
 	// TODO encapsulate this decision into abstract predicate
@@ -115,5 +134,21 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 		}
 		return true;
 	}
-	
+
+	private List<NodeRef> getDeputyAbsenceEvent() {
+		String query = "PATH:\"/app:company_home/app:dictionary/cm:absence-events/*\" " +
+				"AND TYPE:\"deputy:absenceEvent\" AND @deputy\\:startAbsence:[MIN TO NOW] " +
+				"AND (ISNULL:\"deputy:endAbsence\" OR @deputy\\:endAbsence:[NOW TO MAX])";
+		ResultSet queryResults =
+				searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, query);
+		return queryResults.getNodeRefs();
+	}
+
+	private void updateDeputyEndAbsence() {
+		if (!getDeputyAbsenceEvent().isEmpty()) {
+			for (NodeRef nodeRef: getDeputyAbsenceEvent()) {
+				nodeService.setProperty(nodeRef, DeputyModel.PROP_END_ABSENCE, new Date());
+			}
+		}
+	}
 }

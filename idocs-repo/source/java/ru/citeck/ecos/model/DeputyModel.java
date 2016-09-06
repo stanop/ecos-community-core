@@ -22,16 +22,23 @@ import org.alfresco.service.namespace.QName;
 
 public interface DeputyModel {
 	
-	public static final String NAMESPACE = "http://www.citeck.ru/model/deputy/1.0";
+	String NAMESPACE = "http://www.citeck.ru/model/deputy/1.0";
 
-	public static final QName TYPE_DEPUTATION_RECORD = QName.createQName(NAMESPACE, "deputationRecord");
-	public static final QName ASSOC_DEPUTIED_AUTHORITY = QName.createQName(NAMESPACE, "deputiedAuthority");
-	public static final QName ASSOC_DEPUTY = QName.createQName(NAMESPACE, "deputy");
+	QName TYPE_DEPUTATION_RECORD 	= QName.createQName(NAMESPACE, "deputationRecord");
+	QName ASSOC_DEPUTIED_AUTHORITY 	= QName.createQName(NAMESPACE, "deputiedAuthority");
+	QName ASSOC_DEPUTY 				= QName.createQName(NAMESPACE, "deputy");
 
-	public static final QName ASPECT_AVAILABILITY = QName.createQName(NAMESPACE, "availability");
-	public static final QName PROP_AVAILABLE = QName.createQName(NAMESPACE, "available");
+	QName ASPECT_AVAILABILITY 		= QName.createQName(NAMESPACE, "availability");
+	QName PROP_AVAILABLE 			= QName.createQName(NAMESPACE, "available");
 	
-	public static final QName ASPECT_ROLE_SETTINGS = QName.createQName(NAMESPACE, "roleSettings");
-	public static final QName PROP_MANAGED_BY_MEMBERS = QName.createQName(NAMESPACE, "managedByMembers");
+	QName ASPECT_ROLE_SETTINGS 		= QName.createQName(NAMESPACE, "roleSettings");
+	QName PROP_MANAGED_BY_MEMBERS 	= QName.createQName(NAMESPACE, "managedByMembers");
+
+	QName TYPE_DEPUTY_ABSENCE_EVENT = QName.createQName(NAMESPACE, "absenceEvent");
+	QName PROP_START_ABSENCE 		= QName.createQName(NAMESPACE, "startAbsence");
+	QName PROP_END_ABSENCE 			= QName.createQName(NAMESPACE, "endAbsence");
+	QName PROP_COMMENT 				= QName.createQName(NAMESPACE, "comment");
+	QName ASSOC_USER 				= QName.createQName(NAMESPACE, "user");
+	QName ASSOC_REASON_OF_ABSENCE	= QName.createQName(NAMESPACE, "reasonOfAbsence");
 
 }
