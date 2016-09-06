@@ -257,11 +257,11 @@
 		<property name="values">
 			<list>
 				<ref bean="setInitiatorStartProcessListener" />
-				<ref bean="sendStartWorkflowNotificationListener" />
 				<ref bean="lifeCycleStartProcessListener" />
 				<ref bean="workflowHistoryListener" />
 				<ref bean="setPriorityWorkflowListener" />
 				<ref bean="packageFieldsFillingListener" />
+				<ref bean="sendStartWorkflowNotificationListener" />
 			</list>
 		</property>
 	</bean>
