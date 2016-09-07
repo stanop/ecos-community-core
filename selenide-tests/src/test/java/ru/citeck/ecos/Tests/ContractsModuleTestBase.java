@@ -44,8 +44,8 @@ public class ContractsModuleTestBase extends SelenideTests {
         createLegalEntity(nameLegalEntity, addressLegalEntity, postAddressLegalEntity, inn, kpp);
         createContractor(nameContractor, addressContractor, postAddressContractor, ceoNameContractor);
         createAgreementSubject(agreementSubjectCode, agreementSubjectName);
-        createPaymentSchedule(paymentScheduleDate, paymentScheduleAmount,
-                paymentScheduleType, paymentScheduleDescription);
+//        createPaymentSchedule(paymentScheduleDate, paymentScheduleAmount,
+//                paymentScheduleType, paymentScheduleDescription);
     }
 
     protected void fillFieldsOnFormSupplementaryAgreement(String valueContractWith, String kindOfDocument,
@@ -115,6 +115,66 @@ public class ContractsModuleTestBase extends SelenideTests {
         productsAndServicesCreatePage.selectCurrency(currency);
         productsAndServicesCreatePage.clickOnButtonCreate();
         productsAndServicesCreatePage.selectProductOrService();
+    }
+
+    protected void fillFieldsOnFormCreateClosingDocument(String nameDocumentBase, String valueContractWith,
+            String kindOfDocument, String signatory, String performer, String documentDate, String agreementAmount,
+            String vat, String numberOfAppendixPage, String numberPage, String summary,String node,
+            String nameLegalEntity, String addressLegalEntity,String postAddressLegalEntity, String inn, String kpp,
+            String nameContractor, String addressContractor, String postAddressContractor, String ceoNameContractor,
+            String agreementSubjectCode, String agreementSubjectName,
+            String paymentScheduleDate, String paymentScheduleAmount, String paymentScheduleType,
+            String paymentScheduleDescription, String paymentFor,String titleProductOrService,
+            String typeProductOrService,String unit, String currency, String nameOriginalLocation,
+             String typeClosingDocument)
+    {
+        ClosingDocumentCreatePage closingDocumentCreatePage = new ClosingDocumentCreatePage();
+
+        if(nameDocumentBase == "Contract") {
+            ContractCreatePage contractCreatePage = closingDocumentCreatePage.openContractCreatePage(nameDocumentBase);
+            fillFieldsOnFormCreationContract(valueContractWith, kindOfDocument, signatory, performer,documentDate,
+                    agreementAmount,vat,numberOfAppendixPage,numberPage,summary,node,
+                    nameLegalEntity,addressLegalEntity,postAddressLegalEntity,inn,kpp,
+                    nameContractor,addressContractor,postAddressContractor,ceoNameContractor,
+                    agreementSubjectCode,agreementSubjectName,
+                    paymentScheduleDate,paymentScheduleAmount,paymentScheduleType,paymentScheduleDescription);
+            contractCreatePage.clickOnButtonCreate();
+        }
+        if(nameDocumentBase == "contracts:supplementaryAgreement") {
+            SupplementaryAgreementCreatePage supplementaryAgreementCreatePage
+                    =closingDocumentCreatePage.openSupplementaryAgreementCreatePage(nameDocumentBase);
+            fillFieldsOnFormSupplementaryAgreement(valueContractWith, kindOfDocument, signatory, performer,documentDate,
+                    agreementAmount,vat,numberOfAppendixPage,numberPage,summary,node,
+                    nameLegalEntity,addressLegalEntity,postAddressLegalEntity,inn,kpp,
+                    nameContractor,addressContractor,postAddressContractor,ceoNameContractor,
+                    agreementSubjectCode,agreementSubjectName,
+                    paymentScheduleDate,paymentScheduleAmount,paymentScheduleType,paymentScheduleDescription);
+            supplementaryAgreementCreatePage.clickOnButtonCreate();
+        }
+        closingDocumentCreatePage.selectDocumentBase();
+
+        PaymentCreatePage paymentCreatePage = closingDocumentCreatePage.openPaymentCreatePage();
+        fillFieldsOnFormPayment(nameDocumentBase, valueContractWith, kindOfDocument, signatory, performer,documentDate,
+                agreementAmount,vat,numberOfAppendixPage,numberPage,summary,node,
+                nameLegalEntity,addressLegalEntity,postAddressLegalEntity,inn,kpp,
+                nameContractor,addressContractor,postAddressContractor,ceoNameContractor,
+                agreementSubjectCode,agreementSubjectName,
+                paymentScheduleDate,paymentScheduleAmount,paymentScheduleType,paymentScheduleDescription,
+                paymentFor, titleProductOrService, typeProductOrService, unit, currency);
+        paymentCreatePage.clickOnButtonCreate();
+        closingDocumentCreatePage.selectPayment();
+
+        OriginalLocationCreatePage originalLocation = closingDocumentCreatePage.openCreatePageOriginalLocation();
+        originalLocation.setName(nameOriginalLocation);
+        originalLocation.clickOnButtonCreate();
+        closingDocumentCreatePage.selectOriginalLocation();
+
+        closingDocumentCreatePage.clickOnButtonGenerate();
+        closingDocumentCreatePage.selectKindDocument(typeClosingDocument);
+        if (typeClosingDocument == "Other"){
+            closingDocumentCreatePage.setNameClosingDocument("Name");
+    }
+
     }
 
     protected void createLegalEntity(String fullOrganisationName, String juridicalAddress, String postAddress,

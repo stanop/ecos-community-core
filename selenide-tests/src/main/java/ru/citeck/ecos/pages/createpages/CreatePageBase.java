@@ -48,7 +48,7 @@ public class CreatePageBase {
     public void selectKindDocument(String value) {
         $("[id *= \"tk_kind-journalControl-button\"]").shouldBe(present).click();
         $(byText(value)).shouldBe(exist).click();
-        $("[id *= \"tk_kind-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
+        $("[id *= \"tk_kind-journalControl-journalPanel-selectedElementsTable\"] table td").shouldBe(present);
         $("[id *= \"tk_kind-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
     }
 

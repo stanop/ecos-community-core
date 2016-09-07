@@ -70,6 +70,9 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
     private String statusOnPayment = "On payment";
     private String statusPaid = "Paid";
 
+    private String nameOriginalLocation = "В архиве";
+    private String typeClosingDocument = "Act";
+
     @BeforeClass
     static public void createUser() {
         createUser(userName, login, pass, group);
@@ -188,6 +191,24 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
                 titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
         documentDetailsPage.performTaskAffirm();
         documentDetailsPage.getStatusDocument().shouldHave(text(statusPaid));
+    }
+
+    @Test
+    public void testForClosingDocument()
+    {
+        ClosingDocumentCreatePage closingDocumentCreatePage = new ClosingDocumentCreatePage();
+        closingDocumentCreatePage.openCreatePageClosingDocument();
+        fillFieldsOnFormCreateClosingDocument(nameBaseDocument,valueContractWith, valueKindDocument, UserNameAdmin,
+                userName, documentDate, agreementAmount, vat, numberOfAppendixPage, numberPage, summary, node,
+                nameLegalEntity, addressLegalEntity, postAddressLegalEntity, inn, kpp,
+                nameContractor, addressContractor, postAddressContractor, ceoNameContractor,
+                agreementSubjectCode, agreementSubjectName,
+                paymentScheduleDate, paymentScheduleAmount, paymentScheduleType, paymentScheduleDescription, paymentFor,
+                titleProductOrService,typeProductOrService,unit,currency, nameOriginalLocation, typeClosingDocument);
+        DocumentDetailsPage documentDetailsPage = closingDocumentCreatePage.clickOnCreateContentButton();
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusNew));
+        Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
+                titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
     }
 
     @AfterClass
