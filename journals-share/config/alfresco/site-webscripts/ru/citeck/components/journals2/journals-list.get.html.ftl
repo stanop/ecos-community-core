@@ -37,8 +37,8 @@
         new Alfresco.widget.Resizer("journals").setOptions({
             initialWidth: 250
         });
-        require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui',
-                 'citeck/utils/knockout.invariants-controls'], function(JournalsPage, koyui, koic) {
+        require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components',
+                 'citeck/utils/knockout.invariants-controls'], function(JournalsPage, koyui, kocomponents, koic) {
 
             new JournalsPage("${id}").setOptions({
                 model: {
@@ -61,32 +61,36 @@
 
     <script type="html/template" id="visible-criterion">
         <div class="criterion">
-                            <span class="criterion-actions">
-                                <a class="criterion-remove" title="${msg("button.remove-criterion")}" data-bind="click: $root._filter().criteria.remove.bind($root._filter().criteria, $data)"></a>
-                            </span>
-                            <span class="criterion-field">
-                                <input type="hidden" data-bind="attr: { name: 'field_' + id() }, value: field().name" />
-                                <label data-bind="text: field().displayName"></label>
-                            </span>
-                            <span class="criterion-predicate">
-                                <!-- ko if: resolve('field.datatype.predicates.length', 0) == 0 && predicate() != null -->
-                                <input type="hidden" data-bind="attr: { name: 'predicate_' + id() }, value: predicate().id" />
-                                <!-- /ko -->
-                                <!-- ko if: resolve('field.datatype.predicates.length', 0) != 0 -->
-                                <select data-bind="attr: { name: 'predicate_' + id() }, value: predicate, options: field().datatype().predicates, optionsText: 'label'"></select>
-                                <!-- /ko -->
-                            </span>
-                            <span class="criterion-value" data-bind="visible: resolve('predicate.needsValue', false)">
-                                <!-- ko template: { name: valueTemplate() || 'hidden-value' } -->
-                                <!-- /ko -->
-                            </span>
+            <span class="criterion-actions">
+                <a class="criterion-remove" title="${msg("button.remove-criterion")}" data-bind="click: $root._filter().criteria.remove.bind($root._filter().criteria, $data)"></a>
+            </span>
+
+            <span class="criterion-field">
+                <input type="hidden" data-bind="attr: { name: 'field_' + id() }, value: field().name" />
+                <label data-bind="text: field().displayName"></label>
+            </span>
+
+            <span class="criterion-predicate">
+                <!-- ko if: resolve('field.datatype.predicates.length', 0) == 0 && predicate() != null -->
+                <input type="hidden" data-bind="attr: { name: 'predicate_' + id() }, value: predicate().id" />
+                <!-- /ko -->
+                <!-- ko if: resolve('field.datatype.predicates.length', 0) != 0 -->
+                <select data-bind="attr: { name: 'predicate_' + id() }, value: predicate, options: field().datatype().predicates, optionsText: 'label'"></select>
+                <!-- /ko -->
+            </span>
+
+            <span class="criterion-value" data-bind="visible: resolve('predicate.needsValue', false)">
+                <!-- ko template: { name: valueTemplate() || 'hidden-value' } -->
+                <!-- /ko -->
+            </span>
+
             <!-- ko if: $root.resolve('journal.type.formInfo') != null -->
             <div class="hidden" data-bind="
-                                templateSetter: {
-                                    name: valueTemplate,
-                                    field: 'value_' + id(),
-                                    url: '${url.context}/page/citeck/components/form-control?htmlid=${id}-criterion-' + id() + '&itemKind=type&itemId=' + $root.journal().type().formInfo().type() + '&formId=' + ($root.journal().type().formInfo().formId()||'') + '&field=' + field().name() + '&name=value_' + id() + '&value=' + encodeURIComponent(value()) + '&disabled=false&mode=create'
-                                }">
+                templateSetter: {
+                    name: valueTemplate,
+                    field: 'value_' + id(),
+                    url: '${url.context}/page/citeck/components/form-control?htmlid=${id}-criterion-' + id() + '&itemKind=type&itemId=' + $root.journal().type().formInfo().type() + '&formId=' + ($root.journal().type().formInfo().formId()||'') + '&field=' + field().name() + '&name=value_' + id() + '&value=' + encodeURIComponent(value()) + '&disabled=false&mode=create'
+                }">
             </div>
             <!-- /ko -->
         </div>
@@ -192,10 +196,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="${id}-filter-criteria" class="filter-criteria">
-                                <!-- ko template: { name: 'visible-criterion', foreach: _filter().criteria() } -->
-                                <!-- /ko -->
-                                </div>
+
+                                <!-- ko component: { name: "filter-criteria", params: {
+                                    journalType: $root.resolve("journal.type", null),
+                                    filter: _filter,
+                                    id: "${id}"
+                                }} --><!-- /ko -->                               
+                                
                             </div>
                         </form>
                     </div>

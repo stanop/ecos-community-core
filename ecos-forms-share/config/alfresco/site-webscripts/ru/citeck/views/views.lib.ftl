@@ -188,7 +188,7 @@
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#escape x as x?js_string>
-		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
+		require(['citeck/components/invariants/invariants'], function(InvariantsRuntime) {
 			new InvariantsRuntime("${args.htmlid}-form", "${runtimeKey}").setOptions({
 				model: {
 					key: "${runtimeKey}",
