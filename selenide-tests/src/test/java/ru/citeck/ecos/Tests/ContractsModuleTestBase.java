@@ -10,14 +10,6 @@ import static com.codeborne.selenide.Selenide.sleep;
 
 public class ContractsModuleTestBase extends SelenideTests {
 
-    protected String titleCardDetailsRUS = "Citeck EcoS » Карточка";
-    protected String titleCardDetailsEN = "Citeck EcoS » Card details";
-    protected String statusNew = "New";
-    protected String statusOnApproval = "On approval";
-    protected String statusOnSign = "On sign";
-    protected String statusActive = "Active";
-    protected String statusArchive = "Archive";
-
     protected void fillFieldsOnFormCreationContract(String valueContractWith, String kindOfDocument, String signatory,
             String performer, String documentDate, String agreementAmount, String vat,
             String numberOfAppendixPage, String numberPage, String summary,String node,

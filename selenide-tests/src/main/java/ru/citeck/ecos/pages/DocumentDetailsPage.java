@@ -31,9 +31,12 @@ public class DocumentDetailsPage extends PageBase{
         return $("span.value-item-text").shouldBe(present).attr("title").toString();
     }
 
-    public String getNumberPayment()
-    {
+    public String getNumberPayment() {
         return $$("span.value-item-text").get(2).shouldBe(present).attr("title").toString();
+    }
+
+    public String getNumberClosingDocument() {
+        return $$("span.value-item-text").get(1).shouldBe(present).attr("title").toString();
     }
 
     public void performTaskConfirm(String message) {

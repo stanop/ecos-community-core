@@ -9,6 +9,7 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestsWithCreateNewUser extends ContractsModuleTestBase{
+
     static private String titleLoginPageRUS = "Citeck EcoS » Войти";
     static private String titleLoginPageEN = "Citeck EcoS » Login";
 
@@ -17,6 +18,19 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
     static private  String pass = "user1";
     static private  String group = "company_director";
     static private String UserNameAdmin = "Administrator";
+
+    private String statusNew = "New";
+    private String statusOnApproval = "On approval";
+    private String statusOnSign = "On sign";
+    private String statusActive = "Active";
+    private String statusArchive = "Archive";
+    private String statusDraft = "Draft";
+    private String statusOnPayment = "On payment";
+    private String statusPaid = "Paid";
+    private String statusApproved = "Approved";
+
+    private String titleCardDetailsRUS = "Citeck EcoS » Карточка";
+    private String titleCardDetailsEN = "Citeck EcoS » Card details";
 
     private String valueContractWith = "performer";
     private String valueKindDocument = "Services";
@@ -66,9 +80,6 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
     private String typeProductOrService = "service";
     private String unit = "шт";
     private String currency = "Рубль";
-    private String statusDraft = "Draft";
-    private String statusOnPayment = "On payment";
-    private String statusPaid = "Paid";
 
     private String nameOriginalLocation = "В архиве";
     private String typeClosingDocument = "Act";
@@ -193,6 +204,7 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
         documentDetailsPage.getStatusDocument().shouldHave(text(statusPaid));
     }
 
+
     @Test
     public void testForClosingDocument()
     {
@@ -209,6 +221,16 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
         documentDetailsPage.getStatusDocument().shouldHave(text(statusNew));
         Assert.assertTrue(titleCardDetailsRUS.equals(documentDetailsPage.getTitle()) ||
                 titleCardDetailsEN.equals(documentDetailsPage.getTitle()));
+
+        sendToApproval(UserNameAdmin, message);
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusOnApproval));
+
+        documentDetailsPage.performTaskConfirm(message);
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusApproved));
+
+        documentDetailsPage.clickOnActionMoveToArchive();
+        sleep(15000);
+        documentDetailsPage.getStatusDocument().shouldHave(text(statusArchive));
     }
 
     @AfterClass
