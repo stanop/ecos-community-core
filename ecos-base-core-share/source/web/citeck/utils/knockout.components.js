@@ -30,15 +30,29 @@ define(['lib/knockout'], function(ko) {
     // COMPONENTS
     // ----------
 
-    // TODO:
-    // - 'applyBindings' after render html
-
     ko.components.register("filter-criterion-value", {
         viewModel: function(params) {
+            var self = this;
             initializeParameters.call(this, params);
 
             this.html = ko.observable("");
-            this.containerId = this.fieldId + "-container";
+            this.valueContainerId = this.fieldId + "-value";
+
+            this.nestedViewModel = {
+                fieldId: this.fieldId,
+
+                mandatory: ko.observable(false),
+                protected: ko.observable(false),
+                multiple: ko.observable(false),
+                relevant: ko.observable(true),
+
+                value: this.value
+
+                // TODO:
+                // - options
+                // - optionsText (getValueTitle)
+ 
+            }
 
             if (this.datatype) {
                 this.templateName = defineTemplateByDatatype(this.datatype);
@@ -48,21 +62,24 @@ define(['lib/knockout'], function(ko) {
                     successCallback: {
                         scope: this,
                         fn: function(response) {
-                            this.html(response.serverResponse.responseText);
+                            this.html(prepareHTMLByTemplate(response.serverResponse.responseText));
                         }
                     }
-                });   
+                });
             }
+
+            this.html.subscribe(function(newValue) {            
+                var zeroEl = $("<div>", { html: newValue });
+                $("#" + self.valueContainerId).append(zeroEl);
+
+                ko.cleanNode(zeroEl);
+                ko.applyBindings(self.nestedViewModel, zeroEl[0]);
+            });
 
         }, 
         template: 
-           '<div class="criterion-value" data-bind="html: html, attr: { id: containerId }"></div>'
+           '<div class="criterion-value" data-bind="attr: { id: valueContainerId }"></div>'
     });
-
-    // TODO:
-    // - Start InvariantRuntime for filter-criteria.
-    //      * Use a blank node or a similar viewScope
-    // - cache for criteria
 
     ko.components.register("filter-criteria", {
         viewModel: function(params) {
@@ -105,7 +122,8 @@ define(['lib/knockout'], function(ko) {
                     </div>\
                     <!-- ko component: { name: "filter-criterion-value", params: {\
                         fieldId: $component.id + "-criterion-" + id(),\
-                        datatype: resolve(\'field.datatype.name\', null)\
+                        datatype: resolve(\'field.datatype.name\', null),\
+                        value: value\
                     }} --><!-- /ko -->\
                 </div>\
             </div>'
@@ -253,7 +271,7 @@ define(['lib/knockout'], function(ko) {
         if (!templateName) {
             switch (datatype) {
                 case "association":
-                    templateName = "journal";
+                    templateName = "select";
                     break;
                 case "float":
                 case "long":
@@ -268,6 +286,12 @@ define(['lib/knockout'], function(ko) {
             }
         } 
         return templateName;
+    }
+
+    function prepareHTMLByTemplate(html) {
+        var fixedHTML = html.replace("textInput: textValue", "value: value");
+        fixedHTML = fixedHTML.replace("value: textValue", "value: value");
+        return fixedHTML;
     }
 });
 

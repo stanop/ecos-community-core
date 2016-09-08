@@ -414,13 +414,15 @@ ko.bindingHandlers.dateControl = {
             var date = new Date(), 
                 year = date.getFullYear()
 
-            input.setAttribute("max", (year + 50) + "-12-31");
-            input.setAttribute("min", (year - 25) + "-12-31");
+            if (input) {
+                input.setAttribute("max", (year + 50) + "-12-31");
+                input.setAttribute("min", (year - 25) + "-12-31");
 
-            Dom.setStyle(input, "color", "lightgray");
-            value.subscribe(function(value) {
-              Dom.setStyle(input, "color", value ? "" : "lightgray");
-            });
+                Dom.setStyle(input, "color", "lightgray");
+                value.subscribe(function(value) {
+                  Dom.setStyle(input, "color", value ? "" : "lightgray");
+                });
+            }
         }
     }
 };
