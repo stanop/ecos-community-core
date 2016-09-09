@@ -12,6 +12,8 @@
 
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals.css" group="journals-list"/>
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals-page.css" group="journals-list" />
+
+    <@script type="text/javascript" src="${url.context}/res/yui/calendar/assets/calendar.css" group="journals-list" />
 </@>
 
 <@markup id="js">
@@ -28,8 +30,11 @@
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="journals-list" />
 
+    <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="journals-list" />
+
     <@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/form/select.js" group="journals-list"/>
+
+
 </@>
 
 <@markup id="widgets">
