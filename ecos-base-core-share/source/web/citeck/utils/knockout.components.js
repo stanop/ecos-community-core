@@ -39,18 +39,18 @@ define(['lib/knockout'], function(ko) {
             this.valueContainerId = this.fieldId + "-value";
 
             this.nestedViewModel = {
-                fieldId: this.fieldId,
+                "fieldId": this.fieldId,
 
-                mandatory: ko.observable(false),
-                protected: ko.observable(false),
-                multiple: ko.observable(false),
-                relevant: ko.observable(true),
+                "mandatory": ko.observable(false),
+                "protected": ko.observable(false),
+                "multiple": ko.observable(false),
+                "relevant": ko.observable(true),
 
-                value: this.value,
+                "value": this.value,
 
-                options: ko.observable([]),
-                optionsText: function(o) { return o.attributes["cm:name"]; },
-                optionsValue: function(o) { return o.nodeRef; }
+                "options": ko.observable([]),
+                "optionsText": function(o) { return o.attributes["cm:name"]; },
+                "optionsValue": function(o) { return o.nodeRef; }
  
             }
 
@@ -105,8 +105,6 @@ define(['lib/knockout'], function(ko) {
             var self = this;
             initializeParameters.call(this, params);
       
-            console.log(self)
-
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
             }

@@ -13,7 +13,7 @@
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals.css" group="journals-list"/>
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals-page.css" group="journals-list" />
 
-    <@script type="text/javascript" src="${url.context}/res/yui/calendar/assets/calendar.css" group="journals-list" />
+    <@link rel="stylesheet" href="${page.url.context}/res/yui/calendar/assets/calendar.css" group="journals-list" />
 </@>
 
 <@markup id="js">
