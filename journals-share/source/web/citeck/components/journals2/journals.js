@@ -120,21 +120,21 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
-	.computed('valueTemplate', {
-		read: function() {
-				if(!this._valueTemplate) {
-					// make this 'private' to suppress cloning
-					this._valueTemplate = ko.observable();
-				}
-				return this._valueTemplate();
-		},
-		write: function(value) {
-			if(!this._valueTemplate) {
-				this._valueTemplate = ko.observable();
-			}
-			this._valueTemplate(value);
-		}
-	})
+	// .computed('valueTemplate', {
+	// 	read: function() {
+	// 			if(!this._valueTemplate) {
+	// 				// make this 'private' to suppress cloning
+	// 				this._valueTemplate = ko.observable();
+	// 			}
+	// 			return this._valueTemplate();
+	// 	},
+	// 	write: function(value) {
+	// 		if(!this._valueTemplate) {
+	// 			this._valueTemplate = ko.observable();
+	// 		}
+	// 		this._valueTemplate(value);
+	// 	}
+	// })
 	;
 
 CreateVariant
@@ -330,6 +330,7 @@ Attribute
 	.shortcut('type', '_info.type')
 	.shortcut('displayName', '_info.displayName')
 	.shortcut('datatype', '_info.datatype')
+	.shortcut('nodetype', '_info.nodetype')
 	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
@@ -345,6 +346,7 @@ AttributeInfo
 	.property('displayName', s)
 	.property('datatype', Datatype)
 	.property('labels', o)
+	.property('nodetype', s)
 	;
 
 Datatype

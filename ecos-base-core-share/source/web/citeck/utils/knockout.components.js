@@ -46,16 +46,36 @@ define(['lib/knockout'], function(ko) {
                 multiple: ko.observable(false),
                 relevant: ko.observable(true),
 
-                value: this.value
+                value: this.value,
 
-                // TODO:
-                // - options
-                // - optionsText (getValueTitle)
+                options: ko.observable([]),
+                optionsText: function(o) { return o.attributes["cm:name"]; },
+                optionsValue: function(o) { return o.nodeRef; }
  
             }
 
             if (this.datatype) {
                 this.templateName = defineTemplateByDatatype(this.datatype);
+
+                if (this.datatype == "association" && this.nodetype()) {
+                    var query = {
+                        field_1: "type",
+                        predicate_1: "type-equals",
+                        value_1: this.nodetype(),
+                        skipCount: 0,
+                        maxItems: 10,
+                        sortBy: []
+                    };
+
+                    Alfresco.util.Ajax.jsonPost({
+                        url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                        dataObj: query,
+                        successCallback: {
+                            scope: this,
+                            fn: function(response) { this.nestedViewModel.options(response.json.results); }
+                        }
+                    });
+                }
 
                 Alfresco.util.Ajax.request({
                     url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId=" + this.fieldId + "&template=" + this.templateName,
@@ -75,7 +95,6 @@ define(['lib/knockout'], function(ko) {
                 ko.cleanNode(zeroEl);
                 ko.applyBindings(self.nestedViewModel, zeroEl[0]);
             });
-
         }, 
         template: 
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }"></div>'
@@ -85,11 +104,17 @@ define(['lib/knockout'], function(ko) {
         viewModel: function(params) {
             var self = this;
             initializeParameters.call(this, params);
-        
+      
             console.log(self)
 
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
+            }
+
+            this.nodetype = function(data) {
+                return ko.computed(function() {
+                    return self.journalType.attribute(data.resolve("field.name", null)).nodetype();
+                });
             }
         },
         template: 
@@ -123,6 +148,7 @@ define(['lib/knockout'], function(ko) {
                     <!-- ko component: { name: "filter-criterion-value", params: {\
                         fieldId: $component.id + "-criterion-" + id(),\
                         datatype: resolve(\'field.datatype.name\', null),\
+                        nodetype: $component.nodetype($data),\
                         value: value\
                     }} --><!-- /ko -->\
                 </div>\
@@ -291,6 +317,8 @@ define(['lib/knockout'], function(ko) {
     function prepareHTMLByTemplate(html) {
         var fixedHTML = html.replace("textInput: textValue", "value: value");
         fixedHTML = fixedHTML.replace("value: textValue", "value: value");
+        fixedHTML = fixedHTML.replace("optionsText: function(item) { return getValueTitle(item) }", 
+                                      "optionsText: optionsText, optionsValue: optionsValue");
         return fixedHTML;
     }
 });

@@ -14,6 +14,7 @@ for(var i = 0; i < atrList.length; i++)
     var name = "";
     var displayLabels = {};
     var atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(atrList[i]));
+    var nodetype = "";
     var propDef = dictionaryService.getProperty(atrQName);
     var messageService = services.get('messageService');
     var scriptAttributes = services.get('virtualScriptAttributesProvider');
@@ -47,8 +48,9 @@ for(var i = 0; i < atrList.length; i++)
     else
     {
         var assocDef = dictionaryService.getAssociation(atrQName);
-        if(assocDef!=null)
+        if(assocDef != null)
         {
+            nodetype = assocDef.getTargetClass().getName();
             name = assocDef.getTitle();
             dataType = "association";
             if(assocDef.isChild())
@@ -69,13 +71,14 @@ for(var i = 0; i < atrList.length; i++)
         }
     }
 
-	if(!type) continue;
+    if(!type) continue;
 
     model.metadata.push({
         propName: atrList[i],
         type: type,
         displayName: name,
         datatype: dataType,
-        labels: displayLabels
+        labels: displayLabels,
+        nodetype: nodetype
     })
 }
