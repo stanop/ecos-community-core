@@ -22,6 +22,7 @@ public final class ProductsAndServicesModel {
     public static final QName ASSOC_CONTAINS_ORIG_PRODUCTS_AND_SERVICES = QName.createQName(PAS_NAMESPACE, "containsOriginalProductsAndServices");
     public static final QName TYPE_ENTITY_COPIED = QName.createQName(PAS_NAMESPACE, "pasEntityCopied");
     public static final QName ASSOC_ENTITY_UNIT = QName.createQName(PAS_NAMESPACE, "entityUnit");
+    public static final QName ASSOC_CURRENCY = QName.createQName(PAS_NAMESPACE, "currency");
 
     public static final QName ASPECT_HASUNIT = QName.createQName(PAS_NAMESPACE, "hasUnit");
 }

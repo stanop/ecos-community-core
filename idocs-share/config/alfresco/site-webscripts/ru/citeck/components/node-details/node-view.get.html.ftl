@@ -7,8 +7,9 @@
       <h2 id="${el}-heading" class="thin dark">
          ${msg(args.header!"header.view")}
          <span class="alfresco-twister-actions <#if args.hideEditAction?? && args.hideEditAction == "true">hidden</#if>">
-            <#-- TODO hide this if there is no permissions -->
-            <a class="edit" href="${url.context}/page/node-edit?nodeRef=${args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
+            <#if writePermission?? && writePermission>
+               <a class="edit" href="${url.context}/page/node-edit?nodeRef=${args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
+            </#if>
          </span>
       </h2>
 

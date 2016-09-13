@@ -301,7 +301,8 @@
             viewId = id + "-body",
             header = params.title || msg("actions.document.dialog-form"),
             destination = params.destination || "",
-            destinationAssoc = params.destinationAssoc || "";
+            destinationAssoc = params.destinationAssoc || "",
+            forceOldDialog = params.forceOldDialog || false;
 
         var newDialog = function() {
             var dataObj = 
@@ -420,7 +421,9 @@
         Alfresco.util.Ajax.jsonGet({
             url: checkUrl,
             successCallback: { fn: function(response) {
-                if(response.json.exists) {
+                if (forceOldDialog) {
+                    oldDialog();
+                } else if (response.json.exists) {
                     newDialog();
                 } else if(response.json.defaultExists) {
                     formId = "";

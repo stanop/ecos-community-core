@@ -120,37 +120,34 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
-	.computed('valueTemplate', {
-		read: function() {
-				if(!this._valueTemplate) {
-					// make this 'private' to suppress cloning
-					this._valueTemplate = ko.observable();
-				}
-				return this._valueTemplate();
-		},
-		write: function(value) {
-			if(!this._valueTemplate) {
-				this._valueTemplate = ko.observable();
-			}
-			this._valueTemplate(value);
-		}
-	})
+	// .computed('valueTemplate', {
+	// 	read: function() {
+	// 			if(!this._valueTemplate) {
+	// 				// make this 'private' to suppress cloning
+	// 				this._valueTemplate = ko.observable();
+	// 			}
+	// 			return this._valueTemplate();
+	// 	},
+	// 	write: function(value) {
+	// 		if(!this._valueTemplate) {
+	// 			this._valueTemplate = ko.observable();
+	// 		}
+	// 		this._valueTemplate(value);
+	// 	}
+	// })
 	;
 
 CreateVariant
 	.property('url', s)
 	.load('url', function() {
-        YAHOO.util.Connect.asyncRequest(
-            'GET',
-            Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template",
-            {
-                success: function(response) {
-                    var result = response.responseText;
-                    this.url(result);
-                },
-                scope: this
-            }
-        );
+      YAHOO.util.Connect.asyncRequest('GET', Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template", {
+          success: function(response) {
+              var result = response.responseText;
+              this.url(result);
+          },
+          scope: this
+        }
+      );
     })
 	.property('title', s)
 	.property('destination', s)
@@ -159,12 +156,15 @@ CreateVariant
 	.property('canCreate', b)
 	.property('isDefault', b)
 	.computed('link', function() {
-		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}';
-		if (this.url() != null) {
-			urlTemplate = this.url().replace(/(^\s+|\s+$)/g,''); //removing whitespace at the beginning and at the end of the string
-		} else {
-			urlTemplate = defaultUrlTemplate;
-		}
+		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
+				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+
+		// redirect back after submit
+		urlTemplate += "&onsubmit=back";
+
+		// TODO: 
+		// - support parameter from xml
+
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") {
 				return value();
@@ -330,6 +330,7 @@ Attribute
 	.shortcut('type', '_info.type')
 	.shortcut('displayName', '_info.displayName')
 	.shortcut('datatype', '_info.datatype')
+	.shortcut('nodetype', '_info.nodetype')
 	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
@@ -345,6 +346,7 @@ AttributeInfo
 	.property('displayName', s)
 	.property('datatype', Datatype)
 	.property('labels', o)
+	.property('nodetype', s)
 	;
 
 Datatype

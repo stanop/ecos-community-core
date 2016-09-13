@@ -55,13 +55,3 @@ if (typeof String.prototype.trim !== 'function') {
         return this.replace(/^\s+|\s+$/g, '');
     }
 }
-
-//onchange event fix
-if ($.browser.msie) {
-    $(function() {
-        $('input:radio, input:checkbox').click(function() {
-            this.blur();
-            this.focus();
-        });
-    });
-}

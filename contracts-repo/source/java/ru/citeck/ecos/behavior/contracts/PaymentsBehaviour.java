@@ -177,6 +177,9 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
             List<AssociationRef> assocRefs = nodeService.getTargetAssocs(assocRef.getTargetRef(), ProductsAndServicesModel.ASSOC_ENTITY_UNIT);
             nodeService.createAssociation(childNodeRef, assocRefs.get(0).getTargetRef(), ProductsAndServicesModel.ASSOC_ENTITY_UNIT);
 
+            NodeRef currencyRef = (nodeService.getTargetAssocs(assocRef.getTargetRef(), ProductsAndServicesModel.ASSOC_CURRENCY)).get(0).getTargetRef();
+            nodeService.createAssociation(childNodeRef, currencyRef, ProductsAndServicesModel.ASSOC_CURRENCY);
+
             nodeService.createAssociation(nodeRef, childNodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
         }
     }

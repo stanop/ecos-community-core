@@ -70,7 +70,8 @@
 		<option name="formId">filters</option>
 		<headers>
 			<header key="cm:created" default="true" />
-			<header key="cm:name" default="true" />
+			<header key="cm:name" default="false" />
+			<header key="cm:title" default="true"/>
 			<header key="idocs:documentStatus" default="true" />
 			<header key="payments:basis" default="true" />
 			<header key="payments:budgetItem" default="true" />
@@ -114,7 +115,8 @@
 		<!--option name="formId">filters</option-->
 		<headers>
 			<header key="cm:created" default="true" />
-			<header key="cm:name" default="true" />
+			<header key="cm:name" default="false" />
+			<header key="cm:title" default="true"/>
 			<header key="idocs:documentStatus" default="true"/>
 			<header key="contracts:closingDocumentNumber" default="true"/>
 			<header key="tk:kind" default="true"/>
@@ -136,7 +138,8 @@
 		<option name="formId">filters</option>
 		<headers>
 			<header key="cm:created" default="true" />
-			<header key="cm:name" default="true" />
+			<header key="cm:name" default="false" />
+			<header key="cm:title" default="true"/>
 			<header key="contracts:mainAgreement" default="true" /> <!-- default="true" -->
 			<header key="idocs:registrationNumber" /> <!-- default="true" -->
 			<header key="idocs:registrationDate" /> <!-- default="true" -->

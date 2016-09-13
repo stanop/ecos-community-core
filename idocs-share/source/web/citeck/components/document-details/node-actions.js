@@ -159,7 +159,7 @@
                 /**
                  * Class that is applied to action link
                  *  to separate these links from default action links of document library.
-                 *  
+                 *
                  *  @property actionLinkClass
                  *  @default "action-link"
                  */
@@ -197,143 +197,154 @@
              *
              * @method: onReady
              */
-            onReady: function NodeActions_onReady()
-            {
-                var componentId = this.id;
+            onReady: function NodeActions_onReady() {
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + 'api/node-action-service/get-actions?nodeRef=' + this.options.nodeRef,
+                    successCallback: {
+                        scope: this,
+                        fn: function(response) {
+                            var self = this;
 
-                // Dynamic actions - from NodeActionsService
-                this.addServerNodeActions();
-
-                // Asset data
-                this.recordData = this.options.documentDetails.item;
-
-                this.doclistMetadata = this.options.documentDetails.metadata;
-
-                this.currentPath = this.recordData.location.path;
-
-                // Populate convenience property
-                this.recordData.jsNode = new Alfresco.util.Node(this.recordData.node);
-                // Retrieve the actionSet for this record
-                var record = this.recordData,
-                    node = record.node,
-                    actions = record.actions,
-                    actionsEl = Dom.get(this.id + "-actionSet"),
-                    actionHTML = "",
-                    actionsSel;
-                record.actionParams = {};
-                for (var i = 0, ii = actions.length; i < ii; i++)
-                {
-                    actionHTML += this.renderAction(actions[i], record);
-                }
-
-                // Token replacement (actionUrls is re-used further down)
-                var actionUrls = this.getActionUrls(record);
-                actionsEl.innerHTML = YAHOO.lang.substitute(actionHTML, actionUrls);
-
-                Dom.addClass(actionsEl, "action-set");
-                Dom.setStyle(actionsEl, "visibility", "visible");
-
-                var displayName = record.displayName,
-                    downloadUrl = actionUrls.downloadUrl;
-
-                // Hook action events
-                var fnActionHandler = function NodeActions_fnActionHandler(layer, args)
-                {
-                    var owner = YAHOO.Bubbling.getOwnerByTagName(args[1].anchor, "div");
-                    if (owner !== null)
-                    {
-                        var me = Alfresco.util.ComponentManager.get(componentId);
-                        if (typeof me[owner.id] === "function")
-                        {
-                            args[1].stop = true;
-                            try
-                            {
-                                me[owner.id].call(me, me.recordData, owner);
+                            for (var i = 0; i < response.json.length; i++) {
+                                var type = (response.json[i].actionType) ? response.json[i].actionType : "serverAction";
+                                var params = {
+                                    "actionTitle": response.json[i].title,
+                                    "actionURL": response.json[i].url,
+                                    "actionType": type
+                                };
+                                this.options.documentDetails.item.actions.push({
+                                    id: "server-node-action-" + i,
+                                    label: response.json[i].title,
+                                    icon: "task",
+                                    type: "javascript",
+                                    index: 65535 + i,
+                                    params: {"function": "onServerAction", actionProperties: params}
+                                });
                             }
-                            catch (e)
-                            {
-                                Alfresco.logger.error("NodeActions_fnActionHandler", owner.id, e);
+
+                            // Asset data
+                            this.recordData = this.options.documentDetails.item;
+                            this.doclistMetadata = this.options.documentDetails.metadata;
+                            this.currentPath = this.recordData.location.path;
+
+                            // Populate convenience property
+                            this.recordData.jsNode = new Alfresco.util.Node(this.recordData.node);
+
+                            // Retrieve the actionSet for this record
+                            var record = this.recordData,
+                                node = record.node,
+                                actions = record.actions,
+                                actionsEl = Dom.get(this.id + "-actionSet"),
+                                actionHTML = "",
+                                actionsSel;
+
+                            record.actionParams = {};
+                            for (var i = 0, ii = actions.length; i < ii; i++) {
+                                actionHTML += this.renderAction(actions[i], record);
+                            }
+
+                            // Token replacement (actionUrls is re-used further down)
+                            var actionUrls = this.getActionUrls(record);
+                            actionsEl.innerHTML = YAHOO.lang.substitute(actionHTML, actionUrls);
+
+                            Dom.addClass(actionsEl, "action-set");
+                            Dom.setStyle(actionsEl, "visibility", "visible");
+
+                            var displayName = record.displayName,
+                                downloadUrl = actionUrls.downloadUrl;
+
+                            // Hook action events
+                            var fnActionHandler = function NodeActions_fnActionHandler(layer, args) {
+                                var owner = YAHOO.Bubbling.getOwnerByTagName(args[1].anchor, "div");
+                                if (owner) {
+                                    var me = Alfresco.util.ComponentManager.get(self.id);
+                                    if (typeof me[owner.id] === "function") {
+                                        args[1].stop = true;
+
+                                        try {
+                                            me[owner.id].call(me, me.recordData, owner);
+                                        } catch (e) {
+                                            Alfresco.logger.error("NodeActions_fnActionHandler", owner.id, e);
+                                        }
+                                    }
+                                }
+                                return true;
+                            };
+                            YAHOO.Bubbling.addDefaultAction(this.options.actionLinkClass, fnActionHandler);
+
+                            // DocLib Actions module
+                            this.modules.actions = new Alfresco.module.DoclibActions();
+
+                            switch (window.location.hash) {
+                                case "#editOffline":
+                                    window.location.hash = "";
+                                    if (YAHOO.env.ua.ie > 6) {
+                                        // MSIE7 blocks the download and gets the wrong URL in the "manual download bar"
+                                        Alfresco.util.PopupManager.displayPrompt({
+                                            title: this.msg("message.edit-offline.success", displayName),
+                                            text: this.msg("message.edit-offline.success.ie7"),
+                                            buttons: [
+                                                {
+                                                    text: this.msg("button.download"),
+                                                    handler: function NodeActions_oAEO_success_download() {
+                                                        window.location = downloadUrl;
+                                                        this.destroy();
+                                                    },
+                                                    isDefault: true
+                                                },
+                                                {
+                                                    text: this.msg("button.close"),
+                                                    handler: function NodeActions_oAEO_success_close() {
+                                                        this.destroy();
+                                                    }
+                                                }
+                                            ]
+                                        });
+                                    } else {
+                                        Alfresco.util.PopupManager.displayMessage({
+                                            text: this.msg("message.edit-offline.success", displayName)
+                                        });
+
+                                        // Kick off the download 3 seconds after the confirmation message
+                                        YAHOO.lang.later(3000, this, function() {
+                                            window.location = downloadUrl;
+                                        });
+                                    }
+                                    break;
+
+                                case "#editCancelled":
+                                    window.location.hash = "";
+                                    Alfresco.util.PopupManager.displayMessage({
+                                        text: this.msg("message.edit-cancel.success", displayName)
+                                    });
+                                    break;
+
+                                case "#checkoutToGoogleDocs":
+                                    window.location.hash = "";
+                                    Alfresco.util.PopupManager.displayMessage({
+                                        text: this.msg("message.checkout-google.success", displayName)
+                                    });
+                                    break;
+
+                                case "#checkinFromGoogleDocs":
+                                    window.location.hash = "";
+                                    Alfresco.util.PopupManager.displayMessage({
+                                        text: this.msg("message.checkin-google.success", displayName)
+                                    });
+                                    break;
                             }
                         }
                     }
+                });
+            },
+
+            registerAction: function NodeActions_registerAction(actionName, fn) {
+                if ($isValueSet(actionName) && $isValueSet(fn)) {
+                    this.constructor.prototype[actionName] = fn;
                     return true;
-                };
-                YAHOO.Bubbling.addDefaultAction(this.options.actionLinkClass, fnActionHandler);
-
-                // DocLib Actions module
-                this.modules.actions = new Alfresco.module.DoclibActions();
-
-                // Prompt auto-download (after Edit Offline action)?
-                if (window.location.hash == "#editOffline")
-                {
-                    window.location.hash = "";
-
-                    if (YAHOO.env.ua.ie > 6)
-                    {
-                        // MSIE7 blocks the download and gets the wrong URL in the "manual download bar"
-                        Alfresco.util.PopupManager.displayPrompt(
-                            {
-                                title: this.msg("message.edit-offline.success", displayName),
-                                text: this.msg("message.edit-offline.success.ie7"),
-                                buttons: [
-                                    {
-                                        text: this.msg("button.download"),
-                                        handler: function NodeActions_oAEO_success_download()
-                                        {
-                                            window.location = downloadUrl;
-                                            this.destroy();
-                                        },
-                                        isDefault: true
-                                    },
-                                    {
-                                        text: this.msg("button.close"),
-                                        handler: function NodeActions_oAEO_success_close()
-                                        {
-                                            this.destroy();
-                                        }
-                                    }]
-                            });
-                    }
-                    else
-                    {
-                        Alfresco.util.PopupManager.displayMessage(
-                            {
-                                text: this.msg("message.edit-offline.success", displayName)
-                            });
-                        // Kick off the download 3 seconds after the confirmation message
-                        YAHOO.lang.later(3000, this, function()
-                        {
-                            window.location = downloadUrl;
-                        });
-                    }
                 }
 
-                if (window.location.hash == "#editCancelled")
-                {
-                    window.location.hash = "";
-                    Alfresco.util.PopupManager.displayMessage(
-                        {
-                            text: this.msg("message.edit-cancel.success", displayName)
-                        });
-                }
-
-                if (window.location.hash == "#checkoutToGoogleDocs")
-                {
-                    window.location.hash = "";
-                    Alfresco.util.PopupManager.displayMessage(
-                        {
-                            text: this.msg("message.checkout-google.success", displayName)
-                        });
-                }
-
-                if (window.location.hash == "#checkinFromGoogleDocs")
-                {
-                    window.location.hash = "";
-                    Alfresco.util.PopupManager.displayMessage(
-                        {
-                            text: this.msg("message.checkin-google.success", displayName)
-                        });
-                }
+                return false;
             },
 
             renderAction: function dlA_renderAction(p_action, p_record)
@@ -408,32 +419,6 @@
                 }
 
                 return YAHOO.lang.substitute(actionTypeMarkup[p_action.type], markupParams);
-            },
-
-            addServerNodeActions: function ServerNodeActions_addNodeActions() {
-                var url = Alfresco.constants.PROXY_URI + 'api/node-action-service/get-actions?nodeRef=' + this.options.nodeRef;
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", url, false);
-                xhr.send(null);
-                if(xhr.status === 200) {
-                    var data = eval('(' + xhr.responseText + ')');
-                    for (var i = 0; i < data.length; i++) {
-                        var type = (data[i].actionType) ? data[i].actionType : "serverAction";
-                        var params = {
-                            "actionTitle": data[i].title,
-                            "actionURL": data[i].url,
-                            "actionType": type
-                        };
-                        this.options.documentDetails.item.actions.push({
-                            id: "server-node-action-" + i,
-                            label: data[i].title,
-                            icon: "task",
-                            type: "javascript",
-                            index: 65535 + i,
-                            params: {"function": "onServerAction", actionProperties: params}
-                        });
-                    }
-                }
             },
 
             /**
@@ -835,14 +820,14 @@
             {
                 YAHOO.Bubbling.unsubscribe("filesPermissionsUpdated", this.doRefresh, this);
                 YAHOO.Bubbling.unsubscribe("metadataRefresh", this.doRefresh, this);
-				var scope = this,
-					arg = function(x) {
-						return scope.options[x] ? '&' + x + '={' + x + '}' : '';
-					};
+                var scope = this,
+                    arg = function(x) {
+                        return scope.options[x] ? '&' + x + '={' + x + '}' : '';
+                    };
                 this.refresh('citeck/components/document-details/node-actions?nodeRef={nodeRef}' + arg('site') + arg('view') + arg('actionLinkClass'));
             },
 
-			// this function is called by document-edit-properties action
+            // this function is called by document-edit-properties action
             _updateDocList: function() {
                 YAHOO.Bubbling.fire("metadataRefresh");
             }
