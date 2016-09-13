@@ -4,22 +4,22 @@
 
     <property name="ecos-base-core.project.name" value="ecos-base-core-share" />
     <property name="ecos-base-core.project.dir" value="../${ecos-base-core.project.name}" />
-    <property name="ecos-base-core.project.version" value="1.0.0.0${module.release}" />
+    <property name="ecos-base-core.project.version" value="1.0.0.1${module.release}" />
 
     <property name="journals.project.name" value="journals-share" />
     <property name="journals.project.dir" value="../${journals.project.name}" />
-    <property name="journals.project.version" value="1.0.0.0${module.release}"/>
+    <property name="journals.project.version" value="1.0.0.1${module.release}"/>
 
     <property name="ecos-forms.project.name" value="ecos-forms-share" />
     <property name="ecos-forms.project.dir" value="../${ecos-forms.project.name}" />
-    <property name="ecos-forms.project.version" value="1.0.0.0${module.release}"/>
+    <property name="ecos-forms.project.version" value="1.0.0.1${module.release}"/>
 
     <property name="override.project.name" value="1st-override-share" />
     <property name="override.project.dir" value="${override.project.name}" />
-    <property name="override.project.version" value="3.0.1.0${module.release}" />
+    <property name="override.project.version" value="3.0.1.1${module.release}" />
 
     <property name="core.project.name" value="idocs-share" />
-    <property name="core.project.version" value="3.0.1.0${module.release}" />
+    <property name="core.project.version" value="3.0.1.1${module.release}" />
     <property name="core.project.dir" value="${core.project.name}" />
 
     <path id="project.classpath">
