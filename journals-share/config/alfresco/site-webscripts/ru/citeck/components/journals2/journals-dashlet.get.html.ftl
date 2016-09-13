@@ -4,7 +4,7 @@
 <#assign pagingOptions = args.pagingOptions!"10,30,50,100" />
 
 <script type="text/javascript">//<![CDATA[
-require(['citeck/components/journals2/journals-dashlet', 'citeck/utils/knockout.yui'], function(JournalsDashlet, koyui) {
+require(['citeck/components/journals2/journals-dashlet', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components'], function(JournalsDashlet, koyui, kocomponents) {
 //new Alfresco.widget.DashletResizer("${id}", "");
 var editEvent = new YAHOO.util.CustomEvent("editJournalsDashlet");
 new Alfresco.widget.DashletTitleBarActions("${id}").setOptions({

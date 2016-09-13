@@ -47,6 +47,8 @@ public class ICaseTaskModel {
     public static final QName ASSOC_TASK_ROLES_MAPPING = QName.createQName(NAMESPACE, "taskRolesMapping");
     public static final QName ASSOC_TASKS = QName.createQName(NAMESPACE, "tasks");
     public static final QName ASSOC_PERFORMER = QName.createQName(NAMESPACE, "performer");
+    public static final QName ASSOC_PERFORMERS = QName.createQName(NAMESPACE, "performers");
+    public static final QName ASSOC_CONTROLLER = QName.createQName(NAMESPACE, "controller");
     public static final QName ASSOC_WORKFLOW_PACKAGE = QName.createQName(NAMESPACE, "workflowPackage");
     public static final QName ASSOC_CONFIRMERS = QName.createQName(NAMESPACE, "confirmers");
 

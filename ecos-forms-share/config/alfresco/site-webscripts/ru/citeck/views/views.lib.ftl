@@ -152,23 +152,12 @@
 
 <#macro nodeViewStyles>
 	<@link rel="stylesheet" href="${url.context}/res/citeck/components/invariants/invariants.css" group="node-view" />
-	<@link rel="stylesheet" href="${url.context}/res/citeck/components/dynamic-tree/dynamic-tree.css" group="node-view" />
-	<@link rel="stylesheet" href="${url.context}/res/citeck/components/dynamic-tree/dynamic-tree-picker.css" group="node-view" />
-	<@link rel="stylesheet" href="${url.context}/res/components/object-finder/object-finder.css" group="node-view" />
-	<@link rel="stylesheet" href="${url.context}/res/citeck/components/form/citeck-object-finder.css" group="node-view" />
 	<@link rel="stylesheet" href="${url.context}/res/yui/calendar/assets/calendar.css" group="node-view"/>
 </#macro>
 
 <#macro nodeViewScripts>
 	<@script src="${url.context}/res/yui/resize/resize.js" group="node-view"></@script>
-
-	<@script src="${url.context}/res/components/form/form.js" group="node-view"></@script>
-	<@script src="${url.context}/res/components/form/date.js" group="node-view"/>
-	<@script src="${url.context}/res/components/form/date-picker.js" group="node-view"/>
-	<@script src="${url.context}/res/components/form/period.js" group="node-view"/>
-	<@script src="${url.context}/res/yui/calendar/calendar.js" group="node-view"/>
-	<@script src="${url.context}/res/components/form/rich-text.js" group="node-view"/>
-	<@script src="${url.context}/res/modules/simple-dialog.js" group="node-view"></@script>
+	<@script src="${url.context}/res/yui/calendar/calendar.js" group="node-view"></@script>
 
 	<@script src="${url.context}/res/citeck/components/form/constraints.js" group="node-view"></@script>
 
@@ -177,11 +166,6 @@
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="node-view"></@script>
-	<@script src="${url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="node-view"></@script>
-	<@script src="${url.context}/res/citeck/components/dynamic-tree/dynamic-tree-picker.js" group="node-view"></@script>
-
-	<@script src="${url.context}/res/components/object-finder/object-finder.js" group="node-view"></@script>
-	<@script src="${url.context}/res/citeck/components/form/citeck-object-finder.js" group="node-view"></@script>
 </#macro>
 
 <#macro nodeViewWidget nodeRef="" type="">
