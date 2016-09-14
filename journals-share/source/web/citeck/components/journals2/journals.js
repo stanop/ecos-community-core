@@ -120,21 +120,6 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
-	// .computed('valueTemplate', {
-	// 	read: function() {
-	// 			if(!this._valueTemplate) {
-	// 				// make this 'private' to suppress cloning
-	// 				this._valueTemplate = ko.observable();
-	// 			}
-	// 			return this._valueTemplate();
-	// 	},
-	// 	write: function(value) {
-	// 		if(!this._valueTemplate) {
-	// 			this._valueTemplate = ko.observable();
-	// 		}
-	// 		this._valueTemplate(value);
-	// 	}
-	// })
 	;
 
 CreateVariant
@@ -209,23 +194,9 @@ JournalType
 	})
 	.computed('defaultFilter', function() {
 		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
-				if (attr.datatype() && attr.datatype().name()) {
-					var dtype = attr.datatype().name();
-
-					if (["cm:title", "idocs:documentStatus", "idocs:contractor"].indexOf(attr.name()) >= 0) return false;
-					if (dtype.indexOf("text") >= 0) {
-						return { field: attr.name(), predicate: "string-not-equals", value: "" }
-					}
-					if (dtype == "association") {
-						return { field: attr.name(), predicate: "assoc-not-contains", value: "" }
-					}
-					if (dtype == "float") {
-						return { field: attr.name(), predicate: "number-not-equals", value: "" }
-					}
-					if (dtype == "date") {
-						return { field: attr.name(), predicate: "date-not-equals", value: "" }
-					}
-				}
+			var predicates = attr.resolve("datatype.predicates");
+			if (!predicates) return;
+			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
 		});
 
 		return new Filter({
@@ -292,6 +263,11 @@ Filter
 			title: this.title(),
 			journalTypes: _.invoke(this.journalTypes(), 'id')
 		};
+	})
+	.computed('usableCriteria', function() {
+		return _.filter(this.criteria(), []), function(criterion) { 
+			return criterion.value() ? true : false; 
+		});
 	})
 	.init(function() {
 		this.criteria.extend({ rateLimit: 0 });
@@ -951,7 +927,9 @@ JournalsWidget
 		},
 
 		applyCriteria: function() {
-			this.filter(this._filter().clone());
+			var criteria = this._filter().usableCriteria(),
+				filter = this._filter().clone();
+			this.filter(filter.criteria(criteria));
 		},
 
 		clearCriteria: function() {
@@ -1200,7 +1178,7 @@ JournalsWidget
 				return;
 			}
 
-			var filterCriteria = filter.criteria();
+			var filterCriteria = filter.usableCriteria();
 			if(!filter.criteria.loaded()) {
 				logger.debug("Filter criteria are not loaded, deferring search");
 				koutils.subscribeOnce(filter.criteria, load, this);
