@@ -18,16 +18,8 @@
  */
 package ru.citeck.ecos.delegate;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -39,9 +31,10 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.util.GUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.model.DelegateModel;
 import ru.citeck.ecos.orgstruct.OrgStructService;
+
+import java.util.*;
 
 public class DelegateServiceImpl implements DelegateService
 {
@@ -332,29 +325,34 @@ public class DelegateServiceImpl implements DelegateService
 	}
 
 	@Override
-	public void userAvailabilityChanged(String userName) {
-		authorityHelper.needUser(userName);
-		boolean available = availabilityService.getUserAvailability(userName);
-		List<String> userRoles = getUserRoles(userName);
-		List<String> delegatedRoles = getRolesDelegatedToUser(userName);
-
-		if(available) {
-			delegateListener.onUserAvailable(userName);
-			for(String role : userRoles) {
-				delegateListener.onRoleMemberAvailable(role, userName);
+	public void userAvailabilityChanged(final String userName) {
+		AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
+			@Override
+			public Object doWork() throws Exception {
+				authorityHelper.needUser(userName);
+				boolean available = availabilityService.getUserAvailability(userName);
+				List<String> userRoles = getUserRoles(userName);
+				List<String> delegatedRoles = getRolesDelegatedToUser(userName);
+				if(available) {
+					delegateListener.onUserAvailable(userName);
+					for(String role : userRoles) {
+						delegateListener.onRoleMemberAvailable(role, userName);
+					}
+					for(String role : delegatedRoles) {
+						delegateListener.onRoleDelegateAvailable(role, userName);
+					}
+				} else {
+					delegateListener.onUserUnavailable(userName);
+					for(String role : userRoles) {
+						delegateListener.onRoleMemberUnavailable(role, userName);
+					}
+					for(String role : delegatedRoles) {
+						delegateListener.onRoleDelegateUnavailable(role, userName);
+					}
+				}
+				return null;
 			}
-			for(String role : delegatedRoles) {
-				delegateListener.onRoleDelegateAvailable(role, userName);
-			}
-		} else {
-			delegateListener.onUserUnavailable(userName);
-			for(String role : userRoles) {
-				delegateListener.onRoleMemberUnavailable(role, userName);
-			}
-			for(String role : delegatedRoles) {
-				delegateListener.onRoleDelegateUnavailable(role, userName);
-			}
-		}
+		});
 	}
 
 	@Override

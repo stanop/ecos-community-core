@@ -72,12 +72,12 @@
 			<dispatch-module target="@{target}" scopes="all,core,1st-override"     		module="1st-override" />
 			<dispatch-module target="@{target}" scopes="all,core,journals,base-core"   	module="ecos-base-core" />
 			<dispatch-module target="@{target}" scopes="all,core,journals"         		module="journals" />
+			<dispatch-module target="@{target}" scopes="all,core,ecos-forms"         	module="ecos-forms" />
 			<dispatch-module target="@{target}" scopes="all,core,idocs"            		module="idocs" />
 			<dispatch-module target="@{target}" scopes="all,apps,contracts"        		module="contracts" />
 			<dispatch-module target="@{target}" scopes="all,apps,letters"          		module="letters" />
 			<dispatch-module target="@{target}" scopes="all,apps,orders"           		module="orders" />
 			<dispatch-module target="@{target}" scopes="all,apps,meetings"         		module="meetings" />
-			<dispatch-share-module target="@{target}" scopes="all,apps,demo"        	module="demo" />
 		</sequential>
 	</macrodef>
 	

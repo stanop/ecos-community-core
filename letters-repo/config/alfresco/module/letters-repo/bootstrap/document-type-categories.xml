@@ -14,30 +14,30 @@
 				<view:properties>
 					<sys:node-uuid>letter-doctype-income-a</sys:node-uuid>
 					<cm:name>${doctype.income-form.type-a.name}</cm:name>
-					<!-- <cm:title>
+					 <cm:title>
 						<view:mlvalue view:locale="en_US">${doctype.income-form.type-a.title_en}</view:mlvalue>
 						<view:mlvalue view:locale="ru_RU">${doctype.income-form.type-a.title_ru}</view:mlvalue>
-					</cm:title> -->
+					</cm:title>
 				</view:properties>
 			</cm:category>
 			<cm:category>
 				<view:properties>
 					<sys:node-uuid>letter-doctype-income-b</sys:node-uuid>
 					<cm:name>${doctype.income-form.type-b.name}</cm:name>
-					<!-- <cm:title>
+					 <cm:title>
 						<view:mlvalue view:locale="en_US">${doctype.income-form.type-b.title_en}</view:mlvalue>
 						<view:mlvalue view:locale="ru_RU">${doctype.income-form.type-b.title_ru}</view:mlvalue>
-					</cm:title> -->
+					</cm:title>
 				</view:properties>
 			</cm:category>
 			<cm:category>
 				<view:properties>
 					<sys:node-uuid>letter-doctype-income-c</sys:node-uuid>
 					<cm:name>${doctype.income-form.type-c.name}</cm:name>
-					<!-- <cm:title>
+					 <cm:title>
 						<view:mlvalue view:locale="en_US">${doctype.income-form.type-c.title_en}</view:mlvalue>
 						<view:mlvalue view:locale="ru_RU">${doctype.income-form.type-c.title_ru}</view:mlvalue>
-					</cm:title> -->
+					</cm:title>
 				</view:properties>
 			</cm:category>
 		</cm:subcategories>
@@ -53,30 +53,30 @@
 				<view:properties>
 					<sys:node-uuid>letter-doctype-outcome-a</sys:node-uuid>
 					<cm:name>${doctype.outcome-form.type-a.name}</cm:name>
-					<!-- <cm:title>
+					 <cm:title>
 						<view:mlvalue view:locale="en_US">${doctype.outcome-form.type-a.title_en}</view:mlvalue>
 						<view:mlvalue view:locale="ru_RU">${doctype.outcome-form.type-a.title_ru}</view:mlvalue>
-					</cm:title> -->
+					</cm:title>
 				</view:properties>
 			</cm:category>
 			<cm:category>
 				<view:properties>
 					<sys:node-uuid>letter-doctype-outcome-b</sys:node-uuid>
 					<cm:name>${doctype.outcome-form.type-b.name}</cm:name>
-					<!-- <cm:title>
+					 <cm:title>
 						<view:mlvalue view:locale="en_US">${doctype.outcome-form.type-b.title_en}</view:mlvalue>
 						<view:mlvalue view:locale="ru_RU">${doctype.outcome-form.type-b.title_ru}</view:mlvalue>
-					</cm:title> -->
+					</cm:title>
 				</view:properties>
 			</cm:category>
 			<cm:category>
 				<view:properties>
 					<sys:node-uuid>letter-doctype-outcome-c</sys:node-uuid>
 					<cm:name>${doctype.outcome-form.type-c.name}</cm:name>
-					<!-- <cm:title>
+					 <cm:title>
 						<view:mlvalue view:locale="en_US">${doctype.outcome-form.type-c.title_en}</view:mlvalue>
 						<view:mlvalue view:locale="ru_RU">${doctype.outcome-form.type-c.title_ru}</view:mlvalue>
-					</cm:title> -->
+					</cm:title>
 				</view:properties>
 			</cm:category>
 		</cm:subcategories>

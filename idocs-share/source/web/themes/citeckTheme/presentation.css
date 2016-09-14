@@ -2263,7 +2263,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding: 5px 10px 5px 30px !important;
    border-radius: 10px;
    position: initial;
-   width: 200px !important;
+   width: 135px !important;
 }
 
 #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text:hover {
@@ -4288,4 +4288,10 @@ div#HEADER_USER_STATUS {
   #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
     position: static;
   }
+}
+
+
+/* dynamic-tree */
+.yui-skin-citeckTheme .dynamic-tree-picker .dynamic-tree-list .item-buttons {
+  right: -25px;
 }

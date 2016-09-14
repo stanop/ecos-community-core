@@ -593,6 +593,12 @@
   display: inline-block;
 }
 
+.invariants-form .template-table .form-field.template-row .template-checkbox,
+.invariants-form .template-table .form-field.template-half-width .template-checkbox,
+.invariants-form .template-table .form-field.template-third-width .template-checkbox {
+  margin-top: 7px;
+}
+
 .invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
   display: block;
 }

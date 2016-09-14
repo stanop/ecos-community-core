@@ -203,6 +203,15 @@
 				</list>
 			</parameter>
 		</constraint>
+
+		<constraint name="dms:constraint:dmsTrueFalse" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>true</value>
+					<value>false</value>
+				</list>
+			</parameter>
+		</constraint>
 	</constraints>
 
 
@@ -675,6 +684,9 @@
 					<title>Generate from template</title>
 					<type>d:boolean</type>
 					<default>true</default>
+					<constraints>
+						<constraint ref="dms:constraint:dmsTrueFalse" />
+					</constraints>
 				</property>
 			</properties>
 			<associations>

@@ -355,26 +355,6 @@
 		</property>
 	</bean>
 
-	<bean id="idocs.module-component.cardlet-documents" parent="idocs.import-spaces.2-12-0">
-		<property name="name" value="cardlet-documents" />
-		<property name="description" value="Documents Cardlet" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="idocs.module-component.cardlets-cmobject" />
-			</list>
-		</property>
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
-					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmfolder/documents</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
-
 	<bean id="idocs.import-scripts.2-12-0" parent="idocs.import-scripts" abstract="true">
 		<property name="sinceVersion" value="2.12.0" />
 		<property name="appliesFromVersion" value="2.12.0" />
@@ -391,4 +371,59 @@
 		<property name="description" value="Add admin to all orgstruct groups" />
 		<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-admin-to-orgstruct-groups.js"/>
 	</bean>
+
+	<bean id="idocs.module-component.units.data" parent="idocs.import-spaces.2-12-0">
+		<property name="name" value="Unit Data" />
+		<property name="description" value="Unit Data (kg, mh, m, m2, %, pc, product, u.)" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.main-journals.units" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-piece.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-killogramm.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-metr2.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-metr.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-manhour.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-product.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-percentage.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-unit.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
 </beans>

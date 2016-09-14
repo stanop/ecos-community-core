@@ -1,8 +1,0 @@
-<webscript>
-  <shortname>Version and Name by NodeRef</shortname>
-  <description>Last Version and Name get by NodeRef</description>
-  <url>/acm/name_lastversion_by_noderef</url>
-  <format default="json">argument</format>
-  <!-- authentication>user</authentication-->
-  <transaction>required</transaction>
-</webscript>

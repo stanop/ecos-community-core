@@ -7,6 +7,28 @@ fieldNames = [
 
 <#if form.mode == "create">
 	<@forms.formConfirmSupport formId=formId message="" />
+
+	<script type="text/javascript">
+		if (Alfresco.CreateContentMgr) {
+			Alfresco.CreateContentMgr.prototype.onCreateContentSuccess = function CreateContentMgr_onCreateContentSuccess(response) {
+				if (response.json && response.json.persistedObject) {
+					// Grab the new nodeRef and pass it on to _navigateForward() to optionally use
+					var nodeRef = new Alfresco.util.NodeRef(response.json.persistedObject),
+							nextNodeRef = response.json.redirect ? new Alfresco.util.NodeRef(response.json.redirect) : nodeRef;
+
+					if (!this.options.isContainer) {
+						Alfresco.Share.postActivity(
+							this.options.siteId,
+							"org.alfresco.documentlibrary.file-created",
+							"{cm:name}", "document-details?nodeRef=" + nodeRef.toString(),
+							{ appTool: "documentlibrary", nodeRef: nodeRef.toString() },
+							this.bind(function() { this._navigateForward(nextNodeRef); })
+						);
+					}
+				}
+			}
+		}
+	</script>
 </#if>
 
 <#if formUI == "true">
@@ -23,9 +45,10 @@ fieldNames = [
 
 <@formLib.renderFormContainer formId=formId>
 
-<input id="alf_assoctype" value="meet:childProtocol" class="hidden" />
-
 <#if form.mode == "create">
+	<input id="alf_assoctype" value="meet:childProtocol" class="hidden" />
+	<input id="alf_redirect" value="${args['destination']!''}" class="hidden" />
+
 	<#assign caseNodeRef=(args.destination!'') />
 <#else>
 	<#assign caseNodeRef="${url.context}/proxy/alfresco/api/citeck/meetings/parent-node-ref?child=${args.itemId!''}" />
@@ -82,7 +105,7 @@ fieldNames = [
 	<#if (form.fields['prop_cm_creator']?exists)&&(form.fields['prop_idocs_documentStatus']?exists)&&(form.fields['prop_idocs_documentStatus'].value == "approved")&&(form.fields['prop_cm_creator'].value == user.id)>
 		<#assign q_actions = "{key: 'actions', label: Alfresco.util.message('form.meetings.actions'), formatter: Citeck.format.actionStartWorkflow({panelID: 'meetings-protocol-${args.htmlid}', actionTitle: 'Отправить на исполнение', workflowId: 'activiti$perform', formId: 'meetings'}) }">
 	</#if>
-	
+
 	<@forms.renderField field="assoc_meet_answeredQuestions" extension = {
 		"control": {
 			"template": "/ru/citeck/components/form/controls/table-children.ftl",

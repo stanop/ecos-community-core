@@ -7,7 +7,7 @@
 
 <script type="text/javascript">
   //<![CDATA[
-    require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui'], function(JournalsPage, koyui) {
+    require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components'], function(JournalsPage, koyui, kocomponents) {
 
       new JournalsPage("${id}").setOptions({
         model: {

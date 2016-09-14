@@ -1,6 +1,7 @@
 package ru.citeck.ecos.icase.activity;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
 
 import java.util.List;
@@ -38,6 +39,13 @@ public interface CaseActivityService {
      * @param type activity type
      */
     List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type);
+
+    /**
+     * @param nodeRef node with activities in children
+     * @param assocType association type between node and activities in children
+     * @param type activity type
+     */
+    List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type);
 
     /**
      * @param activityRef activity node reference

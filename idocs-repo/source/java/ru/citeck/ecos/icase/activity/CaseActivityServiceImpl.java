@@ -99,7 +99,12 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type) {
-        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, ActivityModel.ASSOC_ACTIVITIES, type);
+        return getActivities(nodeRef, ActivityModel.ASSOC_ACTIVITIES, type);
+    }
+
+    @Override
+    public List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type) {
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, type);
 
         if (children == null || children.isEmpty()) {
             return new ArrayList<>(0);

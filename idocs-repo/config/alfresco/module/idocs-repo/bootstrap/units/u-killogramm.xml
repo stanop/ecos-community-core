@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:pas="http://www.citeck.ru/model/products-and-services/1.0">
+
+    <pas:unit view:childName="cm:u-kg">
+        <view:properties>
+            <sys:node-uuid>u-kg</sys:node-uuid>
+            <cm:name>Килограмм</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">kg</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">кг</view:mlvalue>
+            </cm:title>
+            <pas:unitName>Килограмм</pas:unitName>
+            <pas:unitShortName>кг</pas:unitShortName>
+        </view:properties>
+    </pas:unit>
+
+</view:view>

@@ -96,7 +96,7 @@
         <field assoc="idocs:legalEntity">
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
-                <param name="journalType">original-location</param>
+                <param name="journalType">legal-entities</param>
             </region>
         </field>
         <field prop="idocs:bankTitle"/>

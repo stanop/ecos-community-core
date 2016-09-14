@@ -378,6 +378,7 @@ esac
 
 	<target name="package-javadoc" depends="generate-javadoc,check.java" if="has.java">
 		<mkdir dir="${dist.doc.dir}" />
+		<mkdir dir="${build.doc.dir}" />
 		<jar destfile="${javadoc.file}">
 			<fileset dir="${build.doc.dir}" />
 		</jar>

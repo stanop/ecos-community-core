@@ -40,6 +40,11 @@
         name = json.get("prop_cm_name"),
         itemId = "", type = "", kind = "", taggable = "";
 
+    var routeScript = "";
+    if (json.has("prop_route_scriptCondition")) {
+        routeScript = json.get("prop_route_scriptCondition");
+    }
+
     if (json.has("nodeRefItemId")) {
         itemId = json.get("nodeRefItemId");
     }
@@ -74,9 +79,14 @@
                     route.properties["cm:name"] = name;
                 }
 
+                // Change route script condition
+                if (route.properties["route:scriptCondition"] != routeScript) {
+                    route.properties["route:scriptCondition"] = routeScript;
+                }
+
                 // Change the priority
                 if(route.properties["route:precedence"] != precedence) {
-                    route.properties["route:precedence"] = precedence;   
+                    route.properties["route:precedence"] = precedence;
                 }
 
                 // Update the type of document
@@ -151,13 +161,13 @@
                                         // Change position
                                         if (rsp_position != participant.position) {
                                             rsp_position = participant.position;
-                                        } 
+                                        }
                                     }
                                 } else {
                                     createParticipant(participant, routeStage)
                                 }
                             }
-                        } 
+                        }
                     } else {
                         // if stage has not nodeRef
                         createStage(stage, route);
@@ -171,20 +181,24 @@
 
         } else {
             // CREATE MODE
-            route = routeRootFolder.createNode(name, "route:route", { 
+            route = routeRootFolder.createNode(name, "route:route", {
                 "route:precedence":     precedence
             });
 
-            if (type && type != "") { 
+            if (type && type != "") {
                 route.properties["tk:appliesToType"] = type.split(",");
-            }     
+            }
 
             if (kind && kind != "") {
-                route.properties["tk:appliesToKind"] = kind.split(",");   
+                route.properties["tk:appliesToKind"] = kind.split(",");
             }
 
             if (taggable && taggable != "") {
                 route.properties["cm:taggable"] = taggable.split(",");
+            }
+
+            if (routeScript && routeScript != "") {
+                route.properties["route:scriptCondition"] = routeScript;
             }
 
             route.save();
@@ -211,7 +225,7 @@
         var participants = stage.participants;
         if (participants.length > 0) {
             var newStage = route.createNode(null, "route:stage", "route:stages");
-            if (stage.dueDateExpr) 
+            if (stage.dueDateExpr)
                 newStage.properties["route:dueDateExpr"] = stage.dueDateExpr;
             if (stage.position) {
                 newStage.properties["cm:position"] = stage.position;
@@ -250,4 +264,4 @@
         }
         return null;
     }
-})()
+})();

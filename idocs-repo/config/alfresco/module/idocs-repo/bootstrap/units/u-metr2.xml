@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:pas="http://www.citeck.ru/model/products-and-services/1.0">
+
+    <pas:unit view:childName="cm:u-m2">
+        <view:properties>
+            <sys:node-uuid>u-m2</sys:node-uuid>
+            <cm:name>Квадратный метр</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">m2</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">м2</view:mlvalue>
+            </cm:title>
+            <pas:unitName>Квадратный метр</pas:unitName>
+            <pas:unitShortName>м2</pas:unitShortName>
+        </view:properties>
+    </pas:unit>
+
+</view:view>

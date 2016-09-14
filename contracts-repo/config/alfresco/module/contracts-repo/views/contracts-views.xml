@@ -2,7 +2,6 @@
 <views xmlns="http://www.citeck.ru/ecos/views/1.0">
 
     <imports>
-        <!-- <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" /> -->
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
@@ -434,9 +433,6 @@
                 </region>
             </field>
             <field prop="payments:description">
-                <!-- <region name="label" template="label">
-                    <param name="key">payments_paymentsModel.property.payments_description.title</param>
-                </region> -->
             </field>
         </view>
     </view>
@@ -455,8 +451,18 @@
         <view>
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
-                    <param name="journalType">contract-agreements</param>
+                    <param name="journalType">original-location</param>
                     <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
+                    <param name="defaultCriteria">
+                        [
+                            {attribute: 'type', predicate: 'type-not-equals', value: 'contracts:closingDocument'},
+                            {attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment'},
+                            {attribute: 'type', predicate: 'type-not-equals', value: 'letters:income'},
+                            {attribute: 'type', predicate: 'type-not-equals', value: 'letters:outcome'},
+                            {attribute: 'type', predicate: 'type-not-equals', value: 'orders:internal'}
+                        ]</param>
+                    <param name="defaultVisibleAttributes">cm:title, tk:type</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -556,7 +562,6 @@
             <field assoc="contracts:mainAgreement">
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
-                    <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

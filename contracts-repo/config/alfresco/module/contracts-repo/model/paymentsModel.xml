@@ -73,9 +73,18 @@
                     <value>paid</value>
                     <value>canceled</value>
                     <value>onCorrection</value>
+                    <value>signed</value>
                 </list>
             </parameter>
         </constraint>
+		<constraint name="payments:constraint:paymentTrueFalse" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>true</value>
+					<value>false</value>
+				</list>
+			</parameter>
+		</constraint>
     </constraints>
 
 	<types>
@@ -153,11 +162,17 @@
 					<title>Перерасход</title>
 					<type>d:boolean</type>
 					<default>false</default>
+					<constraints>
+						<constraint ref="payments:constraint:paymentTrueFalse" />
+					</constraints>
 				</property>
 				<property name="payments:exportedToERP">
 					<title>Выгружено во внешнюю ERP-систему</title>
 					<type>d:boolean</type>
 					<default>false</default>
+					<constraints>
+						<constraint ref="payments:constraint:paymentTrueFalse" />
+					</constraints>
 				</property>
                 <property name="payments:requestDate">
                     <title>Дата запроса</title>
@@ -174,6 +189,9 @@
 				<property name="payments:prepayment">
 					<title>Предоплата</title>
 					<type>d:boolean</type>
+					<constraints>
+						<constraint ref="payments:constraint:paymentTrueFalse" />
+					</constraints>
 				</property>
 			</properties>
 			<associations>

@@ -26,6 +26,8 @@
                     null
                 <#elseif nodeService.isContentProperty(attributes[key])>
                     <@printValue node.properties[key] />
+                <#elseif nodeService.isDateProperty(key)>
+                    <@printValue value=attributes[key] dateFormat="yyyy-MM-dd" />
                 <#else>
                     <@printValue attributes[key] />
                 </#if><#if key_has_next>,</#if>

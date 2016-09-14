@@ -41,7 +41,7 @@
             </form>
         </forms>
     </config>
-    
+
     <config evaluator="node-type" condition="route:stage">
         <forms>
             <form>
@@ -57,7 +57,7 @@
             </form>
         </forms>
     </config>
-    
+
     <config evaluator="model-type" condition="route:route">
         <forms>
             <form submission-url="/api/citeck/route">
@@ -78,6 +78,13 @@
                         </control>
                     </field>
                 </appearance>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="tk:appliesToType"/>
+                    <show id="route:scriptCondition" force="true"/>
+                    <show id="route:stages"/>
+                    <show id="cm:taggable"/>
+                </field-visibility>
             </form>
             <form id="filters">
                 <field-visibility>
@@ -110,6 +117,13 @@
                         </control>
                     </field>
                 </appearance>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="tk:appliesToType"/>
+                    <show id="route:scriptCondition" force="true"/>
+                    <show id="route:stages"/>
+                    <show id="cm:taggable"/>
+                </field-visibility>
             </form>
         </forms>
     </config>
