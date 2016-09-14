@@ -546,8 +546,9 @@ ko.bindingHandlers.journalControl = {
 
     if (!journalType) {
         // TODO: other way to get journalType
+        // use 'journal-maptypes' to find journalType by nodetype
     }
-    
+
     // get default criteria
     var defaultCriteria = ko.computed(function() {
         if (defaultSearchableAttributes) return journalType.attributes();

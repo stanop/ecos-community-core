@@ -1,24 +1,16 @@
 (function() {
-    var journalTypes = journals.getAllJournalTypes();
+    var journalTypes = journals.getAllJournalTypes(),
+        mapTypes = [];
 
-    if(args.filter) {
-        var filteredJournalTypes = [];
-        for(var i in journalTypes) {
-            if((journalTypes[i].id + "").indexOf(args.filter + "") != -1) {
-                filteredJournalTypes.push(journalTypes[i]);
-            }
-        }
-        journalTypes = filteredJournalTypes;
-    }
-
-    var mapTypes = [];
     for(var i in journalTypes) {
-        var mapType = {};
-        var journalTypeId = journalTypes[i].id;
-        var journalType = journals.getJournalType(journalTypeId);
-        mapType["journalTypes"] = journalTypeId;
-        mapType["type"] = journalType.getOptions()["type"];
-        mapTypes.push(mapType);
+        var journalType = journals.getJournalType(journalTypes[i].id),
+            key = args.by && args.by == "type" ? journalType.getOptions()["type"] : journalTypes[i].id;
+
+        if (args.filter) {
+            if (key.indexOf(args.filter) == -1) continue;
+        } 
+
+        mapTypes.push({ journalTypes: journalTypes[i].id, type: journalType.getOptions()["type"] });
     }
 
     model.mapTypes = mapTypes;

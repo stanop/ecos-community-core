@@ -45,17 +45,22 @@ define(['lib/knockout'], function(ko) {
                 "protected": ko.observable(false),
                 "multiple": ko.observable(false),
                 "relevant": ko.observable(true),
-
                 "value": this.value,
+                "nodetype": ko.observable(this.nodetype),
 
                 "options": ko.observable([]),
                 "optionsText": function(o) { return o.attributes["cm:name"]; },
-                "optionsValue": function(o) { return o.nodeRef; }
+                "optionsValue": function(o) { return o.nodeRef; },
+                "journalType": this.journalType,
+
+                "filterOptions": function(criteria, pagination) {
+                    return [];
+                }
  
             }
 
             if (this.datatype) {
-                this.templateName = defineTemplateByDatatype(this.datatype);
+                this.templateName = defineTemplateByDatatype(this.datatype, this.labels);
 
                 if (this.datatype == "association" && this.nodetype()) {
                     var query = {
@@ -77,10 +82,7 @@ define(['lib/knockout'], function(ko) {
                             }
                         }
                     });
-                }
-
-                if (this.labels) {
-                    this.templateName = "select";
+                } else if (this.labels) {
                     this.nestedViewModel.options(_.pairs(this.labels));
                     this.nestedViewModel.optionsText = function(o) { return o[1]; }
                     this.nestedViewModel.optionsValue = function(o) { return o[0]; }
@@ -109,9 +111,50 @@ define(['lib/knockout'], function(ko) {
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }"></div>'
     });
 
-
     // TODO:
     // - refactoring 'filter-criteria' and 'list-of-selected-criterion'. Combine methods
+
+    ko.components.register('list-of-selected-criterion', {
+        viewModel: function(params) {
+            var self = this;
+            initializeParameters.call(this, params);
+
+            self.remove = function(data, event) {
+                self.selectedFilterCriteria.remove(data);
+            };
+
+            this.nodetype = function(data) {
+                return ko.computed(function() {
+                    return self.journalType.attribute(data.name()).nodetype();
+                });
+            }
+        },
+        template: 
+           '<table class="selected-criteria-list">\
+                <tbody>\
+                    <!-- ko foreach: selectedFilterCriteria -->\
+                        <tr>\
+                            <td class="action-col"><a class="remove-selected-criterion" data-bind="click: $component.remove">X</a></td>\
+                            <td class="name-col"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
+                            <td class="predicate-col" data-bind="with: datatype">\
+                                <select class="predicate" data-bind="options: predicates,\
+                                                                     optionsText: \'label\',\
+                                                                     optionsValue: \'id\',\
+                                                                     value: $parent.predicateValue"></select>\
+                            </td>\
+                            <td class="value-col">\
+                                <!-- ko component: { name: "filter-criterion-value", params: {\
+                                    fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                    datatype: resolve(\'datatype.name\', null),\
+                                    nodetype: $component.nodetype($data),\
+                                    value: value\
+                                }} --><!-- /ko -->\
+                            </td>\
+                        </tr>\
+                    <!-- /ko -->\
+                </tbody>\
+            </table>'
+    });
 
     ko.components.register("filter-criteria", {
         viewModel: function(params) {
@@ -162,52 +205,11 @@ define(['lib/knockout'], function(ko) {
                         datatype: resolve(\'field.datatype.name\', null),\
                         labels: resolve(\'field.labels\', null),\
                         nodetype: $component.nodetype($data),\
+                        journalType: $component.journalType,\
                         value: value\
                     }} --><!-- /ko -->\
                 </div>\
             </div>'
-    });
-
-    ko.components.register('list-of-selected-criterion', {
-        viewModel: function(params) {
-            var self = this;
-            initializeParameters.call(this, params);
-
-            self.remove = function(data, event) {
-                self.selectedFilterCriteria.remove(data);
-            };
-
-            this.nodetype = function(data) {
-                return ko.computed(function() {
-                    return self.journalType.attribute(data.name()).nodetype();
-                });
-            }
-        },
-        template: 
-           '<table class="selected-criteria-list">\
-                <tbody>\
-                    <!-- ko foreach: selectedFilterCriteria -->\
-                        <tr>\
-                            <td class="action-col"><a class="remove-selected-criterion" data-bind="click: $component.remove">X</a></td>\
-                            <td class="name-col"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
-                            <td class="predicate-col" data-bind="with: datatype">\
-                                <select class="predicate" data-bind="options: predicates,\
-                                                                     optionsText: \'label\',\
-                                                                     optionsValue: \'id\',\
-                                                                     value: $parent.predicateValue"></select>\
-                            </td>\
-                            <td class="value-col">\
-                                <!-- ko component: { name: "filter-criterion-value", params: {\
-                                    fieldId: $component.htmlId + "-criterion-" + $index(),\
-                                    datatype: resolve(\'datatype.name\', null),\
-                                    nodetype: $component.nodetype($data),\
-                                    value: value\
-                                }} --><!-- /ko -->\
-                            </td>\
-                        </tr>\
-                    <!-- /ko -->\
-                </tbody>\
-            </table>'
     });
 
     ko.components.register('journal', {
@@ -505,12 +507,13 @@ define(['lib/knockout'], function(ko) {
         for (var p in params) { this[p] = params[p] }
     }
 
-    function defineTemplateByDatatype(datatype) {
-        var templateName =  _.contains(["text", "date", "datetime"], datatype) ? datatype : "";
+    function defineTemplateByDatatype(datatype, labels) {
+        var templateName =  labels ? "select" : (_.contains(["text", "date", "datetime"], datatype) ? datatype : "");
+
         if (!templateName) {
             switch (datatype) {
                 case "association":
-                    templateName = "select";
+                    templateName = "journal";
                     break;
                 case "float":
                 case "long":
@@ -523,7 +526,8 @@ define(['lib/knockout'], function(ko) {
                     templateName = "text";
                     break;                 
             }
-        } 
+        }
+
         return templateName;
     }
 
@@ -538,8 +542,6 @@ define(['lib/knockout'], function(ko) {
     function isInvariantsObject(object) {
         return object.toString().toLowerCase().indexOf("invariants") != -1
     }
-
-
 
 });
 
