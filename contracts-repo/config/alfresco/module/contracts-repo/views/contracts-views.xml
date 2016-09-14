@@ -247,8 +247,8 @@
                     <param name="journalType">original-location</param>
                     <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                     <param name="defaultCriteria">[{ attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment' }]</param>
-                    <param name="defaultVisibleAttributes">cm:name, tk:type</param>
-                    <param name="searchCriteria">[{ attribute: 'cm:name', predicate: 'string-contains' }]</param>
+                    <param name="defaultVisibleAttributes">cm:title, tk:type</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
