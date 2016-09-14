@@ -79,6 +79,13 @@ define(['lib/knockout'], function(ko) {
                     });
                 }
 
+                if (this.labels) {
+                    this.templateName = "select";
+                    this.nestedViewModel.options(_.pairs(this.labels));
+                    this.nestedViewModel.optionsText = function(o) { return o[1]; }
+                    this.nestedViewModel.optionsValue = function(o) { return o[0]; }
+                }
+
                 Alfresco.util.Ajax.request({
                     url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId=" + this.fieldId + "&template=" + this.templateName,
                     successCallback: {
@@ -117,7 +124,8 @@ define(['lib/knockout'], function(ko) {
 
             this.nodetype = function(data) {
                 return ko.computed(function() {
-                    return self.journalType.attribute(data.resolve("field.name", null)).nodetype();
+                    var attribute = self.journalType.attribute(data.resolve("field.name", null));
+                    return attribute ? attribute.nodetype() : null;
                 });
             }
         },
@@ -152,6 +160,7 @@ define(['lib/knockout'], function(ko) {
                     <!-- ko component: { name: "filter-criterion-value", params: {\
                         fieldId: $component.id + "-criterion-" + id(),\
                         datatype: resolve(\'field.datatype.name\', null),\
+                        labels: resolve(\'field.labels\', null),\
                         nodetype: $component.nodetype($data),\
                         value: value\
                     }} --><!-- /ko -->\
