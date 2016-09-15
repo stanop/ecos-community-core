@@ -57,13 +57,65 @@ define(['lib/knockout'], function(ko) {
                 this.templateName = defineTemplateByDatatype(this.datatype);
 
                 if (this.datatype == "association" && this.nodetype()) {
-                    console.log(this);
-
                     if (this.journalType) {
+                        this.nestedViewModel.cache = {
+                            result: ko.observable([])
+                        }
                         this.nestedViewModel.journalType = this.journalType();
                         this.nestedViewModel.filterOptions = function(criteria, pagination) {
-                            // TODO: simulate 'filterOptions'
-                            return [];
+                            var query = {
+                                skipCount: 0,
+                                maxItems: 10,
+                                field_1: "type",
+                                predicate_1: "type-equals",
+                                value_1: self.nodetype()
+                            };
+
+                            if (pagination) {
+                                if (pagination.maxItems) query.maxItems = pagination.maxItems;
+                                if (pagination.skipCount) query.skipCount = pagination.skipCount;
+                            }
+
+                            _.each(criteria, function(criterion, index) {
+                                query['field_' + (index + 1)] = criterion.attribute;
+                                query['predicate_' + (index + 1)] = criterion.predicate;
+                                query['value_' + (index + 1)] = criterion.value;
+                            });
+
+                            console.log("query", query);
+
+                            if(_.isUndefined(this.cache.result)) this.cache.result = ko.observable(null);
+                            if(this.cache.query) {
+                                if(_.isEqual(query, this.cache.query)) return this.cache.result();
+                            }
+
+                            this.cache.query = query;
+                            if (_.some(_.keys(query), function(p) {
+                                return _.some(["field", "predicate", "value"], function(ci) {
+                                    return p.indexOf(ci) != -1;
+                                });
+                            })) {
+                                Alfresco.util.Ajax.jsonPost({
+                                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                                    dataObj: query,
+                                    successCallback: {
+                                        scope: this,
+                                        fn: function(response) {
+                                            var result = response.json.results;
+                                            result.pagination = response.json.paging;
+                                            result.query = response.json.query;
+                                            this.cache.result(result);
+
+                                            console.log("result", result);
+
+                                            // TODO:
+                                            // - convert option to node
+                                        }
+                                    }
+                                });
+                            }
+
+                            return this.cache.result();
                         }
                     } else { 
                         this.templateName = "select";

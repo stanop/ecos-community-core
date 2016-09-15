@@ -544,9 +544,7 @@ ko.bindingHandlers.journalControl = {
     options.extend({ notify: 'always' });
 
     var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
-    if (!journalType) { 
-        // so, it is fail
-    }
+    if (!journalType) { /* so, it is fail */ }
 
     // get default criteria
     var defaultCriteria = ko.computed(function() {

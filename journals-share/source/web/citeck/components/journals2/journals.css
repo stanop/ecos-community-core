@@ -70,13 +70,12 @@
 
 /* criteria styles (journals-page, journals-selector) */
 
-.filter-criteria
-{
+.filter-criteria {
 	display: table;
 	vertical-align: middle;
 }
-.filter-criteria .criterion
-{
+
+.filter-criteria .criterion {
 	display: table-row;
 	vertical-align: middle;
 }
@@ -84,8 +83,7 @@
 .filter-criteria .criterion .criterion-actions,
 .filter-criteria .criterion .criterion-field,
 .filter-criteria .criterion .criterion-predicate,
-.filter-criteria .criterion .criterion-value
-{
+.filter-criteria .criterion .criterion-value {
 	display: table-cell;
 	vertical-align: top;
 	padding: 0 5px;
@@ -93,22 +91,28 @@
 
 .filter-criteria .criterion .criterion-field,
 .filter-criteria .criterion .criterion-predicate,
-.filter-criteria .criterion .criterion-value
-{
+.filter-criteria .criterion .criterion-value {
 	min-width: 200px;
 }
 
-.filter-criteria .criterion .criterion-field
-{
+.filter-criteria .criterion .criterion-predicate select {
+	width: 100%;
+}
+
+.filter-criteria .criterion .criterion-field {
 	padding: 4px;
 }
 
-.criterion-predicate.does-not-need-value + .criterion-value
-{
+.criterion-predicate.does-not-need-value + .criterion-value {
 	display: none;
 }
 
 /* criteria form field */
+
+.filter-criteria .criterion .criterion-value .region select,
+.filter-criteria .criterion .criterion-value .region input {
+	width: 100%;
+}
 
 .filter-criteria .criterion .criterion-value .region select {
     background-color: white;
