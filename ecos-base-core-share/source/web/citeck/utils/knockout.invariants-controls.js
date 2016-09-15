@@ -483,7 +483,6 @@ ko.bindingHandlers.journalControl = {
 
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
         loading = ko.observable(true), criteriaListShow = ko.observable(false), 
-        journalType = params.journalType ? new JournalType(params.journalType) : null,
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
         pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
@@ -544,9 +543,9 @@ ko.bindingHandlers.journalControl = {
     pageNumber.extend({ notify: 'always' });
     options.extend({ notify: 'always' });
 
-    if (!journalType) {
-        // TODO: other way to get journalType
-        // use 'journal-maptypes' to find journalType by nodetype
+    var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+    if (!journalType) { 
+        // so, it is fail
     }
 
     // get default criteria

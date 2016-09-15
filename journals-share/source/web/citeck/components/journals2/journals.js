@@ -265,7 +265,7 @@ Filter
 		};
 	})
 	.computed('usableCriteria', function() {
-		return _.filter(this.criteria(), []), function(criterion) { 
+		return _.filter(this.criteria(), function(criterion) { 
 			return criterion.value() ? true : false; 
 		});
 	})
@@ -307,6 +307,7 @@ Attribute
 	.shortcut('displayName', '_info.displayName')
 	.shortcut('datatype', '_info.datatype')
 	.shortcut('nodetype', '_info.nodetype')
+	.shortcut('journalType', '_info.journalType')
 	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
@@ -323,6 +324,7 @@ AttributeInfo
 	.property('datatype', Datatype)
 	.property('labels', o)
 	.property('nodetype', s)
+	.property('journalType', JournalType)
 	;
 
 Datatype
@@ -1128,7 +1130,9 @@ AttributeInfo
 	.load('*', koutils.bulkLoad(new BulkLoader({
 		url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
 		method: "GET",
-		emptyFn: function() { return { attributes: [] }; },
+		emptyFn: function() { 
+			return { attributes: [] }; 
+		},
 		addFn: function(query, id) {
 			if(id) {
 				query.attributes.push(id);
@@ -1137,7 +1141,9 @@ AttributeInfo
 				return false;
 			}
 		},
-		getFn: function(response) { return response.json.attributes; }
+		getFn: function(response) { 
+			return response.json.attributes; 
+		}
 	}), 'name'))
 	;
 

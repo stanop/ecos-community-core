@@ -9,6 +9,10 @@
                 <#if md.nodetype??>
                     "nodetype": "${md.nodetype}",
                 </#if>
+
+                <#if md.journalType??>
+                    "journalType": "${md.journalType}",
+                </#if>
                 
                 "displayName": "<#if (md.displayName)??>${md.displayName}</#if>",
                 "datatype": "<#if (md.datatype)??>${md.datatype}</#if>"

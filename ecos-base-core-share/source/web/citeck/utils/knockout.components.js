@@ -50,39 +50,45 @@ define(['lib/knockout'], function(ko) {
 
                 "options": ko.observable([]),
                 "optionsText": function(o) { return o.attributes["cm:name"]; },
-                "optionsValue": function(o) { return o.nodeRef; },
-                "journalType": this.journalType,
-
-                "filterOptions": function(criteria, pagination) {
-                    return [];
-                }
- 
+                "optionsValue": function(o) { return o.nodeRef; }
             }
 
             if (this.datatype) {
-                this.templateName = defineTemplateByDatatype(this.datatype, this.labels);
+                this.templateName = defineTemplateByDatatype(this.datatype);
 
                 if (this.datatype == "association" && this.nodetype()) {
-                    var query = {
-                        field_1: "type",
-                        predicate_1: "type-equals",
-                        value_1: this.nodetype(),
-                        skipCount: 0,
-                        maxItems: 10,
-                        sortBy: []
-                    };
+                    console.log(this);
 
-                    Alfresco.util.Ajax.jsonPost({
-                        url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                        dataObj: query,
-                        successCallback: {
-                            scope: this,
-                            fn: function(response) { 
-                                this.nestedViewModel.options(response.json ? response.json.results : []);
-                            }
+                    if (this.journalType) {
+                        this.nestedViewModel.journalType = this.journalType();
+                        this.nestedViewModel.filterOptions = function(criteria, pagination) {
+                            // TODO: simulate 'filterOptions'
+                            return [];
                         }
-                    });
+                    } else { 
+                        this.templateName = "select";
+                        
+                        var query = {
+                            field_1: "type",
+                            predicate_1: "type-equals",
+                            value_1: this.nodetype(),
+                            skipCount: 0,
+                            sortBy: []
+                        };
+
+                        Alfresco.util.Ajax.jsonPost({
+                            url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                            dataObj: query,
+                            successCallback: {
+                                scope: this,
+                                fn: function(response) { 
+                                    this.nestedViewModel.options(response.json ? response.json.results : []);
+                                }
+                            }
+                        });
+                    }
                 } else if (this.labels) {
+                    this.templateName = "select";
                     this.nestedViewModel.options(_.pairs(this.labels));
                     this.nestedViewModel.optionsText = function(o) { return o[1]; }
                     this.nestedViewModel.optionsValue = function(o) { return o[0]; }
@@ -165,10 +171,17 @@ define(['lib/knockout'], function(ko) {
                 self.filter().criteria.remove(data);
             }
 
-            this.nodetype = function(data) {
+            this.getNodeType = function(data) {
                 return ko.computed(function() {
                     var attribute = self.journalType.attribute(data.resolve("field.name", null));
                     return attribute ? attribute.nodetype() : null;
+                });
+            }
+
+            this.getJournalType = function(data) {
+                return ko.computed(function() {
+                    var attribute = self.journalType.attribute(data.resolve("field.name", null));
+                    return attribute ? attribute.journalType() : null;
                 });
             }
         },
@@ -204,8 +217,8 @@ define(['lib/knockout'], function(ko) {
                         fieldId: $component.id + "-criterion-" + id(),\
                         datatype: resolve(\'field.datatype.name\', null),\
                         labels: resolve(\'field.labels\', null),\
-                        nodetype: $component.nodetype($data),\
-                        journalType: $component.journalType,\
+                        nodetype: $component.getNodeType($data),\
+                        journalType: $component.getJournalType($data),\
                         value: value\
                     }} --><!-- /ko -->\
                 </div>\
@@ -507,8 +520,8 @@ define(['lib/knockout'], function(ko) {
         for (var p in params) { this[p] = params[p] }
     }
 
-    function defineTemplateByDatatype(datatype, labels) {
-        var templateName =  labels ? "select" : (_.contains(["text", "date", "datetime"], datatype) ? datatype : "");
+    function defineTemplateByDatatype(datatype) {
+        var templateName =  _.contains(["text", "date", "datetime"], datatype) ? datatype : "";
 
         if (!templateName) {
             switch (datatype) {
