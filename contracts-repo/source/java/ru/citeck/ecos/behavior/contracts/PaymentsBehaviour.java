@@ -138,17 +138,16 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
     private void setCopiedAssociations(NodeRef nodeRef) {
         NodeRef parentRef = null;
-        ResultSet results = null;
+        ResultSet resultset = null;
         try {
-            results = searchService.query(nodeRef.getStoreRef(), SearchService.LANGUAGE_XPATH, "/app:company_home/st:sites/cm:contracts/cm:dataLists/cm:products-and-services");
-        } finally {
-            if(results != null) {
-                results.close();
+            resultset = searchService.query(nodeRef.getStoreRef(), SearchService.LANGUAGE_XPATH, "/app:company_home/st:sites/cm:contracts/cm:dataLists/cm:products-and-services");
+            if (resultset != null) {
+                parentRef = resultset.getNodeRef(0);
             }
-        }
-
-        if(results != null) {
-            parentRef = results.getNodeRef(0);
+        } finally {
+            if(resultset != null) {
+                resultset.close();
+            }
         }
 
         List<AssociationRef> origProdAndServs = nodeService.getTargetAssocs(nodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_ORIG_PRODUCTS_AND_SERVICES);
