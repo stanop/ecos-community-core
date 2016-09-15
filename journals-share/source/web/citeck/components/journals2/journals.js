@@ -265,7 +265,7 @@ Filter
 		};
 	})
 	.computed('usableCriteria', function() {
-		return _.filter(this.criteria(), []), function(criterion) { 
+		return _.filter(this.criteria(), function(criterion) { 
 			return criterion.value() ? true : false; 
 		});
 	})
