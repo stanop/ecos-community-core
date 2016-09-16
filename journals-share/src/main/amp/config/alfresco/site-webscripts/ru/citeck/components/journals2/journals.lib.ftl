@@ -78,18 +78,17 @@
 }
 </#macro>
 
-<#macro renderMultiActionsJSON>
+<#macro renderMultiActionsJSON actions>
 <#escape x as x?js_string>
 [
-	<#assign multiActions = config.scoped["DocumentLibrary"]["multi-select"] />
-	<#list multiActions.children as action>
+	<#list actions as action>
 	{
-		"id": "${action.attributes.id}",
-		"label": "${msg(action.attributes.label)}",
-		"permission": <#if action.attributes.permission??>"${action.attributes.permission}"<#else>null</#if>,
-		"requiredAspect": <#if action.attributes.hasAspect??>"${action.attributes.hasAspect}"<#else>null</#if>,
-		"forbiddenAspect": <#if action.attributes.notAspect??>"${action.attributes.notAspect}"<#else>null</#if>,
-		"syncMode": <#if action.attributes.syncMode??>"${action.attributes.syncMode}"<#else>null</#if>
+	"id": "${action.id}",
+	"label": "${msg(action.label)}",
+	"permission": <#if action.permission??>"${action.permission}"<#else>null</#if>,
+	"requiredAspect": <#if action.hasAspect??>"${action.hasAspect}"<#else>null</#if>,
+	"forbiddenAspect": <#if action.notAspect??>"${action.notAspect}"<#else>null</#if>,
+	"syncMode": <#if action.syncMode??>"${action.syncMode}"<#else>null</#if>
 	}<#if action_has_next>,</#if>
 	</#list>
 ]

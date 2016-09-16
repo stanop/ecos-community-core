@@ -41,7 +41,7 @@
             new JournalsPage("${id}").setOptions({
                 model: {
                     <@journals.renderCurrentIds />
-                    multiActions: <@journals.renderMultiActionsJSON />,
+                    multiActions: <@journals.renderMultiActionsJSON multiActions />
                 },
                 cache: <@journals.renderCacheJSON />,
                 pagingOptions: [${pagingOptions}]
