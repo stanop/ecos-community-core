@@ -591,6 +591,9 @@ ko.bindingHandlers.journalControl = {
 
     // open dialog
     Event.on(button, "click", function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
         if (!panel) {
             panel = new YAHOO.widget.Panel(panelId, {
                 width:          "800px", 

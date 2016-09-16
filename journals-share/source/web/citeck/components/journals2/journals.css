@@ -97,6 +97,7 @@
 
 .filter-criteria .criterion .criterion-predicate select {
 	width: 100%;
+	padding: 2px 5px;
 }
 
 .filter-criteria .criterion .criterion-field {
@@ -109,36 +110,46 @@
 
 /* criteria form field */
 
-.filter-criteria .criterion .criterion-value .region select,
-.filter-criteria .criterion .criterion-value .region input {
-	width: 100%;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input {
+    margin-right: 10px;
 }
 
-.filter-criteria .criterion .criterion-value .region select {
+.filter-criteria .criterion .criterion-value .criterion-value-field-input, 
+.filter-criteria .criterion .criterion-value .criterion-value-field-view {
+    display: inline-block;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input {
+	width: 100%;
+	padding: 3px 5px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select {
     background-color: white;
 }
 
-.filter-criteria .criterion .criterion-value .region select,
-.filter-criteria .criterion .criterion-value .region input[type="date"],
-.filter-criteria .criterion .criterion-value .region input[type="datetime-local"] {
-    padding: 2px;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="date"],
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="datetime-local"] {
+  	padding: 2px;
 }
 
-.filter-criteria .criterion .criterion-value .region input[type="text"],
-.filter-criteria .criterion .criterion-value .region input[type="number"] {
-  padding: 3px;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="text"],
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="number"] {
+  	padding: 3px;
 }
 
-.filter-criteria .criterion .criterion-value .region .template-date a.calendar-link-button,
-.filter-criteria .criterion .criterion-value .region .template-datetime a.calendar-link-button {
-  display: inline-block;
-  cursor: pointer;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date a.calendar-link-button,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime a.calendar-link-button {
+  	display: inline-block;
+  	cursor: pointer;
 }
 
-.filter-criteria .criterion .criterion-value .region .template-date img.datepicker-icon,
-.filter-criteria .criterion .criterion-value .region .template-datetime img.datepicker-icon {
-  position: relative;
-  top: 3px;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date img.datepicker-icon,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime img.datepicker-icon {
+  	position: relative;
+  	top: 3px;
 }
 
 /* toolbar styles (journals-page, journals-dashlet) */

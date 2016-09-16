@@ -929,9 +929,7 @@ JournalsWidget
 		},
 
 		applyCriteria: function() {
-			var criteria = this._filter().usableCriteria(),
-				filter = this._filter().clone();
-			this.filter(filter.criteria(criteria));
+			this.filter(this._filter().clone());
 		},
 
 		clearCriteria: function() {

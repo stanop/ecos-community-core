@@ -17,7 +17,7 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['lib/knockout'], function(ko) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'citeck/components/invariants/invariants'], function(ko, koutils, journals, invariants) {
 
 
     var koValue = function(value) {
@@ -26,6 +26,7 @@ define(['lib/knockout'], function(ko) {
 
     var Get = YAHOO.util.Get;
 
+    var Node = koutils.koclass('invariants.Node');
 
     // COMPONENTS
     // ----------
@@ -36,114 +37,104 @@ define(['lib/knockout'], function(ko) {
             initializeParameters.call(this, params);
 
             this.html = ko.observable("");
-            this.valueContainerId = this.fieldId + "-value";
+            this._value = ko.observable(null);
 
-            this.nestedViewModel = {
+            // prepare fake viewModel
+            this.fakeViewModel = {
                 "fieldId": this.fieldId,
 
                 "mandatory": ko.observable(false),
                 "protected": ko.observable(false),
                 "multiple": ko.observable(false),
                 "relevant": ko.observable(true),
-                "value": this.value,
-                "nodetype": ko.observable(this.nodetype),
+
+                "value": self.value,
+
+                "title": ko.computed(function() {
+                    return self._value() ? self._value().properties["cm:name"] : Alfresco.util.message("label.none");
+                }),
+
+                "nodetype": ko.observable(self.nodetype),
 
                 "options": ko.observable([]),
                 "optionsText": function(o) { return o.attributes["cm:name"]; },
-                "optionsValue": function(o) { return o.nodeRef; }
+                "optionsValue": function(o) { return o.nodeRef; },
+
+                "cache": {
+                    result: ko.observable([])
+                }
             }
 
             if (this.datatype) {
                 this.templateName = defineTemplateByDatatype(this.datatype);
 
-                if (this.datatype == "association" && this.nodetype()) {
-                    if (this.journalType) {
-                        this.nestedViewModel.cache = {
-                            result: ko.observable([])
-                        }
-                        this.nestedViewModel.journalType = this.journalType();
-                        this.nestedViewModel.filterOptions = function(criteria, pagination) {
-                            var query = {
-                                skipCount: 0,
-                                maxItems: 10,
-                                field_1: "type",
-                                predicate_1: "type-equals",
-                                value_1: self.nodetype()
-                            };
+                if (this.datatype == "association" && this.nodetype() && this.journalType()) {
+                    this.fakeViewModel.value = ko.computed({
+                        read: function() { return self._value() ? self._value() : null; }, 
+                        write: function(model) { self._value(model[0]); }
+                    });
 
-                            if (pagination) {
-                                if (pagination.maxItems) query.maxItems = pagination.maxItems;
-                                if (pagination.skipCount) query.skipCount = pagination.skipCount;
-                            }
+                    if (this.value() && Citeck.utils.isNodeRef(this.value().toString())) {
+                        this._value(new Node(this.value()));
+                    }
 
-                            _.each(criteria, function(criterion, index) {
-                                query['field_' + (index + 1)] = criterion.attribute;
-                                query['predicate_' + (index + 1)] = criterion.predicate;
-                                query['value_' + (index + 1)] = criterion.value;
-                            });
-
-                            console.log("query", query);
-
-                            if(_.isUndefined(this.cache.result)) this.cache.result = ko.observable(null);
-                            if(this.cache.query) {
-                                if(_.isEqual(query, this.cache.query)) return this.cache.result();
-                            }
-
-                            this.cache.query = query;
-                            if (_.some(_.keys(query), function(p) {
-                                return _.some(["field", "predicate", "value"], function(ci) {
-                                    return p.indexOf(ci) != -1;
-                                });
-                            })) {
-                                Alfresco.util.Ajax.jsonPost({
-                                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                                    dataObj: query,
-                                    successCallback: {
-                                        scope: this,
-                                        fn: function(response) {
-                                            var result = response.json.results;
-                                            result.pagination = response.json.paging;
-                                            result.query = response.json.query;
-                                            this.cache.result(result);
-
-                                            console.log("result", result);
-
-                                            // TODO:
-                                            // - convert option to node
-                                        }
-                                    }
-                                });
-                            }
-
-                            return this.cache.result();
-                        }
-                    } else { 
-                        this.templateName = "select";
-                        
+                    this.fakeViewModel.journalType = this.journalType();
+                    this.fakeViewModel.filterOptions = function(criteria, pagination) {
                         var query = {
+                            skipCount: 0,
+                            maxItems: 10,
                             field_1: "type",
                             predicate_1: "type-equals",
-                            value_1: this.nodetype(),
-                            skipCount: 0,
-                            sortBy: []
+                            value_1: self.nodetype()
                         };
 
-                        Alfresco.util.Ajax.jsonPost({
-                            url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                            dataObj: query,
-                            successCallback: {
-                                scope: this,
-                                fn: function(response) { 
-                                    this.nestedViewModel.options(response.json ? response.json.results : []);
-                                }
-                            }
+                        if (pagination) {
+                            if (pagination.maxItems) query.maxItems = pagination.maxItems;
+                            if (pagination.skipCount) query.skipCount = pagination.skipCount;
+                        }
+
+                        _.each(criteria, function(criterion, index) {
+                            query['field_' + (index + 1)] = criterion.attribute;
+                            query['predicate_' + (index + 1)] = criterion.predicate;
+                            query['value_' + (index + 1)] = criterion.value;
                         });
+
+                        if(_.isUndefined(this.cache.result)) this.cache.result = ko.observable(null);
+                        if(this.cache.query) {
+                            if(_.isEqual(query, this.cache.query)) return this.cache.result();
+                        }
+
+                        this.cache.query = query;
+                        if (_.some(_.keys(query), function(p) {
+                            return _.some(["field", "predicate", "value"], function(ci) {
+                                return p.indexOf(ci) != -1;
+                            });
+                        })) {
+                            Alfresco.util.Ajax.jsonPost({
+                                url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                                dataObj: query,
+                                successCallback: {
+                                    scope: self.fakeViewModel,
+                                    fn: function(response) {
+                                        var result = response.json.results;
+                                        result.pagination = response.json.paging;
+                                        result.query = response.json.query;
+                                        
+                                        this.cache.result(_.map(result, function(node) {
+                                            return new Node(node);
+                                        }));
+                                    }
+                                }
+                            });
+                        }
+
+                        return this.cache.result();
                     }
                 } else if (this.labels) {
                     this.templateName = "select";
-                    this.nestedViewModel.options(_.pairs(this.labels));
-                    this.nestedViewModel.optionsText = function(o) { return o[1]; }
-                    this.nestedViewModel.optionsValue = function(o) { return o[0]; }
+                    this.fakeViewModel.options(_.pairs(this.labels));
+                    this.fakeViewModel.optionsText = function(o) { return o[1]; }
+                    this.fakeViewModel.optionsValue = function(o) { return o[0]; }
                 }
 
                 Alfresco.util.Ajax.request({
@@ -157,12 +148,33 @@ define(['lib/knockout'], function(ko) {
                 });
             }
 
-            this.html.subscribe(function(newValue) {            
-                var zeroEl = $("<div>", { html: newValue });
-                $("#" + self.valueContainerId).append(zeroEl);
+            this.valueContainerId = this.fieldId + "-value";
+            this.html.subscribe(function(newValue) {
+                var container = $("<div>", { "class": "criterion-value-control-container" });
+                container.append($("<div>", { "html": newValue, "class": "criterion-value-field-input" }));
 
-                ko.cleanNode(zeroEl);
-                ko.applyBindings(self.nestedViewModel, zeroEl[0]);
+                if (self.templateName == "journal") {
+                    container
+                        .append(
+                            $("<div>", { "class": "criterion-value-field-view" })
+                                .append($("<span>", { "data-bind": "text: title" }))
+                        );
+                }
+
+                var criterionValueElement = $("#" + self.valueContainerId);
+                if (!criterionValueElement.find(".criterion-value-control-container").empty()) {
+                    criterionValueElement.html("");
+                } 
+                criterionValueElement.append(container);
+
+                ko.cleanNode(container);
+                ko.applyBindings(self.fakeViewModel, container[0]);
+            });
+
+            this._value.subscribe(function(newValue) {
+                if (newValue.nodeRef != self.value()) {
+                    self.value(newValue.nodeRef);
+                }
             });
         }, 
         template: 
@@ -344,11 +356,14 @@ define(['lib/knockout'], function(ko) {
                 return null;
             };
         },
+
+        // <!-- ko if: loading -->\
+        //     <div class="loading"></div>\
+        // <!-- /ko -->\
+            
+
         template:
-           '<!-- ko if: loading -->\
-                <div class="loading"></div>\
-            <!-- /ko -->\
-            <table class="journal">\
+           '<table class="journal">\
                 <thead>\
                     <!-- ko if: columns ? true : false -->\
                         <tr data-bind="foreach: columns">\
