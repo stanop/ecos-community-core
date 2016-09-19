@@ -536,6 +536,8 @@ ko.bindingHandlers.journalControl = {
     // hide loading indicator if options got elements
     options.subscribe(function(newValue) {
         loading(_.isUndefined(newValue.pagination));
+        
+        // TODO: disable loading if options is empty
     });
 
     // extend notify

@@ -65,7 +65,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 }
             }
 
-            if (this.datatype) {
+            if (this.datatype && this.nodetype && this.journalType) {
                 this.templateName = defineTemplateByDatatype(this.datatype);
 
                 if (this.datatype == "association" && this.nodetype() && this.journalType()) {
@@ -116,13 +116,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 successCallback: {
                                     scope: self.fakeViewModel,
                                     fn: function(response) {
-                                        var result = response.json.results;
+                                        var result = _.map(response.json.results, function(node) {
+                                            return new Node(node);
+                                        });
                                         result.pagination = response.json.paging;
                                         result.query = response.json.query;
                                         
-                                        this.cache.result(_.map(result, function(node) {
-                                            return new Node(node);
-                                        }));
+                                        this.cache.result(result);
                                     }
                                 }
                             });
@@ -300,7 +300,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             initializeParameters.call(this, params);
 
             // options
-            self.options = {
+            this.options = {
                 multiple: false,
                 pagination: false,
                 loading: false,
@@ -311,12 +311,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     previousPageTitle: "<--" 
                 } 
             };
-            Citeck.utils.concatOptions(self.options, params.options);
+            Citeck.utils.concatOptions(this.options, params.options);
 
-            if (!self.loading) { self.loading = self.options.loading; }
+            
+            if (!this.loading) { 
+                this.loading = this.options.loading; 
+            } else { console.log("loading in journal", this.loading()); }
 
             // methods
-            self.selectElement = function(data, event) {
+            this.selectElement = function(data, event) {
                 if (self.targetElements) {
                     if (self.options.multiple && (ko.isObservable(self.options.multiple) ? self.options.multiple() : self.options.multiple)) {
                         if (self.targetElements.indexOf(data) == -1) self.targetElements.push(data);
@@ -328,15 +331,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 if (self.callback) self.callback(data, event);
             };
 
-            self.nextPage = function(data, event) {
+            this.nextPage = function(data, event) {
                 self.page(self.page() + 1);
             };
 
-            self.previousPage = function(data, event) {
+            this.previousPage = function(data, event) {
                 self.page(self.page() - 1);
             };
 
-            self.displayText = function(value, attr) {
+            this.displayText = function(value, attr) {
                 if (value) {
                     // if string
                     if (typeof value == "string") {
@@ -356,14 +359,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 return null;
             };
         },
-
-        // <!-- ko if: loading -->\
-        //     <div class="loading"></div>\
-        // <!-- /ko -->\
-            
+          
 
         template:
-           '<table class="journal">\
+           '<!-- ko if: loading -->\
+                <div class="loading"></div>\
+            <!-- /ko -->\
+            <table class="journal">\
                 <thead>\
                     <!-- ko if: columns ? true : false -->\
                         <tr data-bind="foreach: columns">\
