@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <webscript>
     <shortname>Related Journal types</shortname>
     <description>Related Journal types</description>
-    <url>/api/journals/maptypes?filter={filter?}</url>
+    <url>/api/journals/maptypes?filter={filter?}&amp;by={by?}</url>
     <format default="json"/>
     <authentication>user</authentication>
     <transaction readonly="true">required</transaction>

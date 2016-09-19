@@ -1,26 +1,27 @@
 var dictionaryService = services.get("DictionaryService");
 
-var attributes = args.attributes || '';
-var atrList = attributes.split(',');
+var attributes = args.attributes || '',
+    atrList = attributes.split(','),
+    processedAttributes = {};
+
 model.metadata = [];
-var processedAttributes = {};
-for(var i = 0; i < atrList.length; i++)
-{
+
+for(var i = 0; i < atrList.length; i++) {
     if (processedAttributes[atrList[i]]) continue;
     processedAttributes[atrList[i]] = true;
 
-    var type = "";
-    var dataType = "";
-    var name = "";
-    var displayLabels = {};
-    var atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(atrList[i]));
-    var nodetype = "";
-    var propDef = dictionaryService.getProperty(atrQName);
-    var messageService = services.get('messageService');
-    var scriptAttributes = services.get('virtualScriptAttributesProvider');
+    var type = "",
+        dataType = "",
+        name = "",
+        displayLabels = {},
+        atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(atrList[i])),
+        nodetype = "",
+        journalTypeId = "",
+        propDef = dictionaryService.getProperty(atrQName),
+        messageService = services.get('messageService'),
+        scriptAttributes = services.get('virtualScriptAttributesProvider');
 
-    if(propDef!=null)
-    {
+    if(propDef != null) {
         type = "property";
         name = propDef.getTitle();
         dataType = propDef.getDataType().getName().getLocalName();
@@ -30,40 +31,36 @@ for(var i = 0; i < atrList.length; i++)
         var constraintIter = constr.iterator();
         while (constraintIter.hasNext()) {
             var constraint = constraintIter.next().getConstraint();
-            if (constraint instanceof Packages.org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint)
-            {
-                var listConstraint = constraint;
-                var iter = listConstraint.getAllowedValues().listIterator();
-                while (iter.hasNext())
-                {
-                    var evaluator = iter.next();
-                    var label = listConstraint.getDisplayLabel(evaluator, messageService);
+            if (constraint instanceof Packages.org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint) {
+                var listConstraint = constraint,
+                    iter = listConstraint.getAllowedValues().listIterator();
+                while (iter.hasNext()) {
+                    var evaluator = iter.next(),
+                        label = listConstraint.getDisplayLabel(evaluator, messageService);
                     if (label && (!displayLabels[evaluator] || !label.equals(evaluator))) {
                         displayLabels[evaluator] = label;
                     }
                 }
             }
         }
-    }
-    else
-    {
+    } else {
         var assocDef = dictionaryService.getAssociation(atrQName);
-        if(assocDef != null)
-        {
+        if(assocDef != null) {
+            var journalTypes = journals.getAllJournalTypes();
+
             nodetype = assocDef.getTargetClass().getName();
             name = assocDef.getTitle();
             dataType = "association";
-            if(assocDef.isChild())
-            {
-                type = "child-association";
+            type = assocDef.isChild() ? "child-association" : "association";
+
+            for(var j in journalTypes) {
+                var journalType = journals.getJournalType(journalTypes[j].id);
+                if (journalType.getOptions()["type"] == nodetype.getPrefixString()) {
+                    journalTypeId = journalTypes[j].id;
+                    break;
+                }
             }
-            else
-            {
-                type = "association";
-            }
-        }
-        else if (scriptAttributes.provides(atrQName))
-        {
+        } else if (scriptAttributes.provides(atrQName)) {
             var attrDef = scriptAttributes.getAttributeDefinition(atrQName);
             type = "property";
             name = attrDef.getTitle();
@@ -79,6 +76,7 @@ for(var i = 0; i < atrList.length; i++)
         displayName: name,
         datatype: dataType,
         labels: displayLabels,
-        nodetype: nodetype
+        nodetype: nodetype,
+        journalType: journalTypeId
     })
 }

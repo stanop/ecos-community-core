@@ -483,7 +483,6 @@ ko.bindingHandlers.journalControl = {
 
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
         loading = ko.observable(true), criteriaListShow = ko.observable(false), 
-        journalType = params.journalType ? new JournalType(params.journalType) : null,
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
         pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
@@ -537,6 +536,8 @@ ko.bindingHandlers.journalControl = {
     // hide loading indicator if options got elements
     options.subscribe(function(newValue) {
         loading(_.isUndefined(newValue.pagination));
+        
+        // TODO: disable loading if options is empty
     });
 
     // extend notify
@@ -544,10 +545,9 @@ ko.bindingHandlers.journalControl = {
     pageNumber.extend({ notify: 'always' });
     options.extend({ notify: 'always' });
 
-    if (!journalType) {
-        // TODO: other way to get journalType
-    }
-    
+    var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+    if (!journalType) { /* so, it is fail */ }
+
     // get default criteria
     var defaultCriteria = ko.computed(function() {
         if (defaultSearchableAttributes) return journalType.attributes();
@@ -593,6 +593,9 @@ ko.bindingHandlers.journalControl = {
 
     // open dialog
     Event.on(button, "click", function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
         if (!panel) {
             panel = new YAHOO.widget.Panel(panelId, {
                 width:          "800px", 
