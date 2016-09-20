@@ -213,11 +213,11 @@
 		<property name="values">
 			<list>
 				<ref bean="assignTaskToSingleCandidate" />
-				<ref bean="grantWorkflowPackage" />
 				<ref bean="onAssignTaskSetLastOwnerListener" />
 				<ref bean="onAssignPoolTaskListener" />
 				<ref bean="workflowMirrorListener" />
 				<ref bean="taskAssignDateListener" />
+				<ref bean="grantWorkflowPackage" />
 				<ref bean="taskHistoryListener" />
 			</list>
 		</property>
@@ -230,9 +230,9 @@
 				<ref bean="lastCommentPull" />
 				<ref bean="taskPriorityPull" />
 				<ref bean="assignTaskToSingleCandidate" />
-				<ref bean="grantWorkflowPackage" />
 				<ref bean="taskOriginalOwner"/>
 				<ref bean="workflowMirrorListener" />
+				<ref bean="grantWorkflowPackage" />
 				<ref bean="taskHistoryListener" />
 				<ref bean="sendTaskNotificationListener" />
 			</list>
