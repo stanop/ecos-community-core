@@ -311,6 +311,7 @@
                 <aspect>idocs:organizationInfo</aspect>
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
+                <aspect>idocs:hasLegalForm</aspect>
             </mandatory-aspects>
         </type>
         
@@ -530,6 +531,21 @@
             </properties>
         </type>
 
+        <type name="idocs:legalForm">
+            <title>Legal Form</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:nameLegalForm">
+                    <title>Наименование организационно-правовой формы контрагента</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:descriptionLegalForm">
+                    <title>Описание организационно-правовой формы контрагента</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+
     </types>
 
     <aspects>
@@ -592,6 +608,22 @@
                     <mandatory>false</mandatory>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="idocs:hasLegalForm">
+            <associations>
+                <association name="idocs:legalForm">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:legalForm</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
         
         <!-- DEPRECATED -->

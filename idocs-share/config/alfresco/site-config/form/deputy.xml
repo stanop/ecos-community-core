@@ -1,0 +1,29 @@
+<alfresco-config>
+
+    <config evaluator="node-type" condition="deputy:absenceEvent">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/deputy/absence-event-form.ftl"/>
+                <view-form template="/ru/citeck/components/form/deputy/absence-event-form.ftl"/>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="deputy:absenceEvent">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/deputy/absence-event-form.ftl"/>
+            </form>
+            <!-- Search form -->
+            <form id="filters">
+                <field-visibility>
+                    <show id="deputy:startAbsence"/>
+                    <show id="deputy:endAbsence"/>
+                    <show id="deputy:reasonOfAbsence"/>
+                    <show id="deputy:comment"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

@@ -15,7 +15,7 @@
 
 	<bean id="idocs.module-component.currency.data" parent="idocs.import-spaces.2-9-0">
 		<property name="name" value="Curency Data" />
-		<property name="description" value="Curency Data (RUR, EUR, USD)" />
+		<property name="description" value="Curency Data (RUR, EUR, USD and other)" />
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.main-journals.currency" />
@@ -36,6 +36,26 @@
 				<props>
 					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-eur.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-byr.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-gbp.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-jpy.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-uah.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 			</list>

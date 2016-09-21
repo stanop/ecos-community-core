@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<bean id="authorityHelper" class="ru.citeck.ecos.deputy.AuthorityHelper">
+		<property name="authorityService" ref="authorityService" />
+		<property name="nodeService" ref="dbNodeService" />
+		<property name="personService" ref="personService" />
+		<property name="orgStructService" ref="orgStructService" />
+		<property name="roleGroupType" value="role" />
+	</bean>
+
+	<bean id="availabilityService" class="ru.citeck.ecos.deputy.AvailabilityServiceImpl">
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="nodeService" ref="dbNodeService" />
+		<property name="authorityHelper" ref="authorityHelper" />
+	</bean>
+
+	<bean id="AvailabilityService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>ru.citeck.ecos.deputy.AvailabilityService</value>
+			</list>
+		</property>
+		<property name="target" ref="availabilityService" />
+		<property name="interceptorNames">
+			<list>
+				<idref bean="AvailabilityService_transaction"/>
+				<idref bean="AuditMethodInterceptor" />
+				<idref bean="exceptionTranslator" />
+				<idref bean="AvailabilityService_security"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="AvailabilityService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="AvailabilityService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+    
+	<bean id="AvailabilityServiceJS" class="ru.citeck.ecos.deputy.AvailabilityServiceJSImpl" 
+		parent="baseJavaScriptExtension">
+		<property name="extensionName" value="availability" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+	
+	
+	<bean id="deputyService" class="ru.citeck.ecos.deputy.DeputyServiceImpl">
+		<property name="deputyListener" ref="deputyListener.Composite" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="authorityService" ref="authorityService" />
+		<property name="nodeService" ref="dbNodeService" />
+		<property name="orgStructService" ref="orgStructService" />
+		<property name="availabilityService" ref="availabilityService" />
+		<property name="authorityHelper" ref="authorityHelper" />
+		<property name="deputationRecordsRoot" value="workspace://SpacesStore/deputationRecordsRoot" />
+		<property name="deputationRecordAssoc" value="{http://www.alfresco.org/model/system/1.0}children" />
+		<property name="roleGroupType" value="role" />
+		<property name="branchGroupType" value="branch" />
+	</bean>
+	
+	<bean id="deputyListener" class="ru.citeck.ecos.deputy.AbstractDeputyListener"
+		abstract="true" init-method="init">
+		<property name="deputyService" ref="deputyService" />
+	</bean>
+	
+	<bean id="deputyListener.roleMembership" class="ru.citeck.ecos.deputy.RoleMembershipDeputyListener"
+		parent="deputyListener">
+		<property name="priority" value="100" />
+		<property name="authorityService" ref="authorityService" />
+		<property name="availabilityService" ref="availabilityService" />
+		<property name="searchService" ref="searchService" />
+		<property name="nodeService" ref="nodeService" />
+	</bean>
+	
+	<bean id="deputyListener.taskManagement" class="ru.citeck.ecos.deputy.TaskDeputyListener"
+		parent="deputyListener">
+		<property name="priority" value="200"/>
+		<property name="workflowService" ref="WorkflowService"/>
+		<property name="advancedWorkflowService" ref="advancedWorkflowService"/>
+        <property name="personService" ref="personService"/>
+	</bean>
+
+	<bean id="deputyListener.Composite" class="ru.citeck.ecos.deputy.CompositeDeputyListener" />
+
+	<bean id="DeputyService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>ru.citeck.ecos.deputy.DeputyService</value>
+			</list>
+		</property>
+		<property name="target" ref="deputyService" />
+		<property name="interceptorNames">
+			<list>
+				<idref bean="DeputyService_transaction"/>
+				<idref bean="AuditMethodInterceptor" />
+				<idref bean="exceptionTranslator" />
+				<idref bean="DeputyService_security"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="DeputyService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="DeputyService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+    
+	<bean id="UserAvailabilityBehaviour" class="ru.citeck.ecos.deputy.AvailabilityBehaviour" 
+		depends-on="idocs.dictionaryBootstrap" init-method="init">
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+	
+	<bean id="DeputyServiceJS" class="ru.citeck.ecos.deputy.DeputyServiceJSImpl" 
+		parent="baseJavaScriptExtension">
+		<property name="extensionName" value="deputies" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+	
+</beans>

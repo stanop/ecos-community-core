@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>deputy</shortname>
+    <description>get deputy data for user</description>
+    <url>/components/profile/deputy</url>
+</webscript>

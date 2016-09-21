@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<bean id="idocs.import-spaces.3-0-1" abstract="true" parent="idocs.import-spaces">
+		<property name="sinceVersion" value="3.0.1" />
+		<property name="appliesFromVersion" value="3.0.1" />
+	</bean>
+
+    <bean id="idocs.module-component.absence-events" parent="idocs.import-spaces.3-0-1" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="absence-events" />
+        <property name="description" value="Absence events objects" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/absence-events.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.legal-form.data" parent="idocs.import-spaces.3-0-1">
+        <property name="name" value="Legal Form Data" />
+        <property name="description" value="Legal Form Data" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.main-journals.legal-form" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:legal-form</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/data/legal-forms.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

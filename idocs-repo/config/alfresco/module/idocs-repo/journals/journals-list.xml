@@ -16,6 +16,7 @@
         <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
         <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
         <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
 	</imports>
 
 	<journal id="idocs-activity-direction">
@@ -246,5 +247,24 @@
             <header key="wfm:workflowInitiator"/>
         </headers>
     </journal>
+
+    <journal id="reasons-absence">
+		<option name="type">deputy:absenceReason</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="deputy:reason" default="true"/>
+		</headers>
+	</journal>
+
+	<journal id="legal-form">
+		<option name="type">idocs:legalForm</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:nameLegalForm" default="true"/>
+			<header key="idocs:descriptionLegalForm" default="true"/>
+		</headers>
+	</journal>
 
 </journals>

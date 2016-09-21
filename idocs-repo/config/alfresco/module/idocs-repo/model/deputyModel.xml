@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="deputy:deputyModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Deputation Model</description>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+	</namespaces>
+	
+	<types>
+	
+		<!-- deputation record: what is deputied and to whom -->
+		<type name="deputy:deputationRecord">
+			<parent>cm:cmobject</parent>
+			<associations>
+				<association name="deputy:deputiedAuthority">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:authority</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+				<association name="deputy:deputy">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+
+        <type name="deputy:absenceEvent">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="deputy:startAbsence">
+                    <type>d:datetime</type>
+                </property>
+                <property name="deputy:endAbsence">
+                    <type>d:datetime</type>
+                </property>
+                <property name="deputy:comment">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="deputy:user">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="deputy:reasonOfAbsence">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>deputy:absenceReason</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="deputy:absenceReason">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="deputy:reason">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+	
+	</types>
+	
+	<aspects>
+
+		<!-- aspect to add availability to user -->
+		<aspect name="deputy:availability">
+			<properties>
+				<property name="deputy:available">
+					<type>d:boolean</type>
+					<mandatory>true</mandatory>
+					<default>true</default>
+				</property>
+			</properties>
+		</aspect>
+
+		<!-- extended role settings, specific for deputation -->
+		<aspect name="deputy:roleSettings">
+			<properties>
+				<!-- can the role be managed by its members -->
+				<property name="deputy:managedByMembers">
+					<type>d:boolean</type>
+					<mandatory>true</mandatory>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+	
+	</aspects>
+
+</model>

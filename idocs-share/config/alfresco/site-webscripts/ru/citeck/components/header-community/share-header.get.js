@@ -28,29 +28,31 @@ var userMenuItems = [
   }
 ];
 
-if (user.properties.available === true || user.properties.available === null) {
-  userMenuItems.push({
-     id: "HEADER_USER_MENU_MAKE_NOTAVAILABLE",
-     name: "alfresco/header/AlfMenuItem",
-     config:
-     {
-        label: "header.make-notavailable.label",
-        iconImage: "/share/res/components/images/header/make-notavailable.png",
-        targetUrl: "/components/delegate/make-available?available=false"
-     }
-  });
-} else if (user.properties.available === false) {
-  userMenuItems.push({
-     id: "HEADER_USER_MENU_MAKE_AVAILABLE",
-     name: "alfresco/header/AlfMenuItem",
-     config:
-     {
-        label: "header.make-available.label",
-        iconImage: "/share/res/components/images/header/make-available.png",
-        targetUrl: "/components/delegate/make-available?available=true"
-     }
-  });
-}
+var availability = "make-" + (user.properties.available === false ? "" : "not") + "available",
+    clickEvent = function(event, element) {
+      Citeck.forms.dialog("deputy:absenceEvent", "", {
+        scope: this, 
+        fn: function(node) { 
+          this.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: this.targetUrl, type: this.targetUrlType, target: this.targetUrlLocation});
+        }
+      }, {
+        title: "",
+        destination: "workspace://SpacesStore/absence-events"
+      })
+    };
+
+userMenuItems.push({
+   id: "HEADER_USER_MENU_AVAILABILITY",
+   name: "alfresco/header/AlfMenuItem",
+   config:
+   {
+      id: "HEADER_USER_MENU_AVAILABILITY",
+      label: "header." + availability + ".label",
+      iconImage: "/share/res/components/images/header/" + availability + ".png",
+      targetUrl: "/components/deputy/make-available?available=" + (user.properties.available === false ? "true" : "false"),
+      clickEvent: "" + (user.properties.available === false ? "" : clickEvent.toString())
+   }
+});
 
 if (user.capabilities.isMutable) {
    userMenuItems.push({

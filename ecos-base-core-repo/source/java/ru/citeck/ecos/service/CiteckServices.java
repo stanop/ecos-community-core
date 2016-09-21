@@ -27,7 +27,7 @@ public interface CiteckServices {
 	public QName GRANT_PERMISSION_SERVICE = QName.createQName(CITECK_NAMESPACE, "GrantPermissionService");
 	public QName CONFISCATE_SERVICE = QName.createQName(CITECK_NAMESPACE, "ConfiscateService");
 	public QName AVAILABILITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "AvailabilityService");;
-	public QName DELEGATE_SERVICE = QName.createQName(CITECK_NAMESPACE, "DelegateService");;
+	public QName DEPUTY_SERVICE = QName.createQName(CITECK_NAMESPACE, "DeputyService");;
 	public QName ORG_STRUCT_SERVICE = QName.createQName(CITECK_NAMESPACE, "OrgStructService");
 	public QName ORG_META_SERVICE = QName.createQName(CITECK_NAMESPACE, "OrgMetaService");
 	public QName COUNTER_SERVICE = QName.createQName(CITECK_NAMESPACE, "CounterService");

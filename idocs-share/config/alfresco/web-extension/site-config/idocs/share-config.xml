@@ -15,6 +15,7 @@
              
               <js src="/modules/common/ie_fix.js"/>
               <js src="/modules/header/create-variants.js"/>
+              <js src="/citeck/components/form/constraints.js"/>
           </dependencies>
       </header>
   </config>

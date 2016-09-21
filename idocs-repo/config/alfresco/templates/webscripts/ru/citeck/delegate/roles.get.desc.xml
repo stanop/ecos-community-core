@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Roles of specified user</shortname>
-	<description>Delegate Service: get roles for specified user</description>
-	<url>/api/delegate/{userName}/roles?status={all,own,manage,delegate}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

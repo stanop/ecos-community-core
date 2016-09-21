@@ -24,7 +24,7 @@
  * @mixes module:alfresco/core/Core
  * @author Dave Draper
  */
-define(["dojo/_base/declare", "dijit/MenuItem", "alfresco/_Alf.lib",
+define(["dojo/_base/declare", "dijit/MenuItem", "alfresco/_Alf.lib", 
         "alfresco/menus/_AlfMenuItemMixin", "alfresco/core/Core", "dojo/dom-class"],
         function(declare, MenuItem, _alflib, _AlfMenuItemMixin, AlfCore, domClass) {
 
@@ -34,6 +34,36 @@ define(["dojo/_base/declare", "dijit/MenuItem", "alfresco/_Alf.lib",
    * without needing to modify page definition files.
    */
   return declare([MenuItem, _AlfMenuItemMixin, AlfCore], {
+
+    clickEvent: null,
+    inheriteClickEvent: false,
+
+    movable: null,
+
+    postMixInProperties: function alfresco_menus__AlfMenuItem__postMixInProperties() {
+      if (this.clickEvent) this.clickEvent = eval("(" + this.clickEvent + ")")
+      this.inherited(arguments);
+    },
+
+    onClick: function(event) {
+      this.alfLog("log", "AlfMenuBarItem clicked");
+
+      this.emitClosePopupEvent();
+      event.stopPropagation();
+
+      if (this.clickEvent) {
+        this.clickEvent(event, document.getElementById(this.id), this);
+        if (!this.inheriteClickEvent) return false;
+      }
+
+      if (this.targetUrl) {
+        this.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: this.targetUrl, type: this.targetUrlType, target: this.targetUrlLocation});
+      } else if (this.publishTopic) {
+        this.alfPublish(this.publishTopic, this.publishPayload ? this.publishPayload : {});
+      } else {
+        this.alfLog("error", "An AlfMenuItem was clicked but did not define a 'targetUrl' or 'publishTopic' or 'clickEvent' attribute", event);
+      }
+    },
 
     /**
      * Ensures that the supplied menu item label is translated.

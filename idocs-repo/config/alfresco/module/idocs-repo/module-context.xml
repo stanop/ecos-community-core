@@ -9,7 +9,7 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/case-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/cardlet-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/case-activity-service-context.xml" />
-    <import resource="classpath:alfresco/module/idocs-repo/context/delegate-services-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/deputy-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/lifecycle-services-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/scheduled-jobs-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/case-roles-service-context.xml" />
@@ -34,5 +34,6 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-1.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-12-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-0-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-0-1.xml" />
 
 </beans>

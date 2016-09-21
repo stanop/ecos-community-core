@@ -697,5 +697,21 @@
         <property name="siteService" ref="siteService" />
     </bean>
 
+    <bean id="idocs.deputy.reasonAbsence" parent="AutoNameBehaviour">
+        <property name="className" value="deputy:absenceReason" />
+        <property name="nameTemplate" value="#{'$'}{node.properties['deputy:reason']}"/>
+        <property name="appendExtension" value="false" />
+    </bean>
+
+    <bean id="idocs.deputy.absenceEvent" parent="AutoNameBehaviour">
+        <property name="className" value="deputy:absenceEvent" />
+        <property name="nameTemplate">
+            <value><![CDATA[
+                <#if node.assocs['deputy:reasonOfAbsence']?? && node.assocs['deputy:reasonOfAbsence']?size &gt; 0>#{'$'}{node.assocs['deputy:reasonOfAbsence'][0].name} </#if><#if node.properties['deputy:startAbsence']??>#{'$'}{node.properties['deputy:startAbsence']?string('dd.MM.yyyy')} - </#if><#if node.properties['deputy:endAbsence']??>#{'$'}{node.properties['deputy:endAbsence']?string('dd.MM.yyyy')}</#if>
+            ]]></value>
+        </property>
+        <property name="appendExtension" value="false" />
+    </bean>
+
 </beans>
 
