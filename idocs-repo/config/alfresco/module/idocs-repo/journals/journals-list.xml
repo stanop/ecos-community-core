@@ -257,4 +257,14 @@
 		</headers>
 	</journal>
 
+	<journal id="legal-form">
+		<option name="type">idocs:legalForm</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:nameLegalForm" default="true"/>
+			<header key="idocs:descriptionLegalForm" default="true"/>
+		</headers>
+	</journal>
+
 </journals>

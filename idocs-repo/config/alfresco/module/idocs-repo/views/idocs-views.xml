@@ -127,4 +127,9 @@
         </field> -->
     </view>
 
+    <view class="idocs:legalForm">
+        <field prop="idocs:nameLegalForm" />
+        <field prop="idocs:descriptionLegalForm" />
+    </view>
+
 </views>

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0">
+
+    <idocs:legalForm view:childName="cm:lf-gbou">
+        <view:properties>
+            <sys:node-uuid>lf-gbou</sys:node-uuid>
+            <cm:name>ГБОУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ГБОУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ГБОУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ГБОУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-pao">
+        <view:properties>
+            <sys:node-uuid>lf-pao</sys:node-uuid>
+            <cm:name>ПАО</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ПАО</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ПАО</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ПАО</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-mp">
+        <view:properties>
+            <sys:node-uuid>lf-mp</sys:node-uuid>
+            <cm:name>МП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">МП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">МП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>МП</idocs:nameLegalForm>
+            <idocs:descriptionLegalForm>Муниципальное предприятие</idocs:descriptionLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-fgbu">
+        <view:properties>
+            <sys:node-uuid>lf-fgbu</sys:node-uuid>
+            <cm:name>ФГБУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ФГБУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ФГБУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ФГБУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-ab">
+        <view:properties>
+            <sys:node-uuid>lf-ab</sys:node-uuid>
+            <cm:name>АБ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">АБ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">АБ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>АБ</idocs:nameLegalForm>
+            <idocs:descriptionLegalForm>Адвокатское бюро / контора</idocs:descriptionLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-ao">
+        <view:properties>
+            <sys:node-uuid>lf-ao</sys:node-uuid>
+            <cm:name>АО</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">АО</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">АО</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>АО</idocs:nameLegalForm>
+            <idocs:descriptionLegalForm>Акционерное общество</idocs:descriptionLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-llc">
+        <view:properties>
+            <sys:node-uuid>lf-llc</sys:node-uuid>
+            <cm:name>ООО</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">LLC</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ООО</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ООО</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-zao">
+        <view:properties>
+            <sys:node-uuid>lf-zao</sys:node-uuid>
+            <cm:name>ЗАО</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ЗАО</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ЗАО</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ЗАО</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-oao">
+        <view:properties>
+            <sys:node-uuid>lf-oao</sys:node-uuid>
+            <cm:name>ОАО</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ОАО</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ОАО</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ОАО</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-ip">
+        <view:properties>
+            <sys:node-uuid>lf-ip</sys:node-uuid>
+            <cm:name>ИП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ИП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ИП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ИП</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-chp">
+        <view:properties>
+            <sys:node-uuid>lf-chp</sys:node-uuid>
+            <cm:name>ЧП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ЧП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ЧП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ЧП</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-fgup">
+        <view:properties>
+            <sys:node-uuid>lf-fgup</sys:node-uuid>
+            <cm:name>ФГУП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ФГУП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ФГУП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ФГУП</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-gup">
+        <view:properties>
+            <sys:node-uuid>lf-gup</sys:node-uuid>
+            <cm:name>ГУП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ГУП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ГУП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ГУП</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-gp">
+        <view:properties>
+            <sys:node-uuid>lf-gp</sys:node-uuid>
+            <cm:name>ГП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ГП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ГП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ГП</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-gou">
+        <view:properties>
+            <sys:node-uuid>lf-gou</sys:node-uuid>
+            <cm:name>ГОУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ГОУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ГОУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ГОУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-nou">
+        <view:properties>
+            <sys:node-uuid>lf-nou</sys:node-uuid>
+            <cm:name>НОУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">НОУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">НОУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>НОУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-person">
+        <view:properties>
+            <sys:node-uuid>lf-person</sys:node-uuid>
+            <cm:name>Физ. Лицо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Физ. Лицо</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Физ. Лицо</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>Физ. Лицо</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-fgu">
+        <view:properties>
+            <sys:node-uuid>lf-fgu</sys:node-uuid>
+            <cm:name>ФГУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ФГУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ФГУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ФГУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-mup">
+        <view:properties>
+            <sys:node-uuid>lf-mup</sys:node-uuid>
+            <cm:name>МУП</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">МУП</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">МУП</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>МУП</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-fgbou">
+        <view:properties>
+            <sys:node-uuid>lf-fgbou</sys:node-uuid>
+            <cm:name>ФГБОУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ФГБОУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ФГБОУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ФГБОУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-fbu">
+        <view:properties>
+            <sys:node-uuid>lf-fbu</sys:node-uuid>
+            <cm:name>ФБУ</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">ФБУ</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ФБУ</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>ФБУ</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-representation">
+        <view:properties>
+            <sys:node-uuid>lf-representation</sys:node-uuid>
+            <cm:name>Представительство</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Представительство</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Представительство</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>Представительство</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+    <idocs:legalForm view:childName="cm:lf-non-comm-partnership">
+        <view:properties>
+            <sys:node-uuid>lf-non-comm-partnership</sys:node-uuid>
+            <cm:name>Некоммерческое партнёрство</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Некоммерческое партнёрство</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Некоммерческое партнёрство</view:mlvalue>
+            </cm:title>
+            <idocs:nameLegalForm>Некоммерческое партнёрство</idocs:nameLegalForm>
+        </view:properties>
+    </idocs:legalForm>
+
+</view:view>

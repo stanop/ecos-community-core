@@ -28,4 +28,23 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.legal-form.data" parent="idocs.import-spaces.3-0-1">
+        <property name="name" value="Legal Form Data" />
+        <property name="description" value="Legal Form Data" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.main-journals.legal-form" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:legal-form</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/data/legal-forms.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
