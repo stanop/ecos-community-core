@@ -103,7 +103,7 @@ fieldNames = [
 </div>
 	<#assign q_actions = "">
 	<#if (form.fields['prop_cm_creator']?exists)&&(form.fields['prop_idocs_documentStatus']?exists)&&(form.fields['prop_idocs_documentStatus'].value == "approved")&&(form.fields['prop_cm_creator'].value == user.id)>
-		<#assign q_actions = "{key: 'actions', label: Alfresco.util.message('form.meetings.actions'), formatter: Citeck.format.actionStartWorkflow({panelID: 'meetings-protocol-${args.htmlid}', actionTitle: 'Отправить на исполнение', workflowId: 'activiti$perform', formId: 'meetings'}) }">
+		<#assign q_actions = "{key: 'actions', label: Alfresco.util.message('form.meetings.actions'), formatter: Citeck.format.actionStartWorkflow({panelID: 'meetings-protocol-${args.htmlid}', actionTitle: Alfresco.util.message('workflow.submit-perform-task.send-action'), workflowId: 'activiti$perform', formId: 'meetings'}) }">
 	</#if>
 
 	<@forms.renderField field="assoc_meet_answeredQuestions" extension = {
