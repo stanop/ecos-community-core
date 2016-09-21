@@ -37,11 +37,7 @@ import org.alfresco.service.cmr.repository.ScriptService;
 
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
-import ru.citeck.ecos.search.CriteriaSearchService;
-import ru.citeck.ecos.search.SearchCriteriaFactory;
-import ru.citeck.ecos.search.SearchCriteria;
-import ru.citeck.ecos.search.FieldType;
-import ru.citeck.ecos.search.SearchPredicate;
+import ru.citeck.ecos.search.*;
 
 public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy {
 	private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
@@ -104,7 +100,10 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
         Set<NodeRef> resultTemplates = new HashSet<>();
 
-        List<NodeRef> templates = getCaseTemplatesByEcosTypeKind(caseNode);
+        NodeRef caseType = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_TYPE);
+        NodeRef caseKind = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_KIND);
+
+        List<NodeRef> templates = getCaseTemplatesByEcosTypeKind(caseType, caseKind);
         if (templates.size() == 0) {
             templates = getCaseTemplatesByType(caseNode);
         }
@@ -150,10 +149,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         return searchService.query(searchCriteria, language).getResults();
     }
 
-    private List<NodeRef> getCaseTemplatesByEcosTypeKind(NodeRef caseNode) {
-
-        NodeRef type = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_TYPE);
-        NodeRef kind = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_KIND);
+    private List<NodeRef> getCaseTemplatesByEcosTypeKind(NodeRef type, NodeRef kind) {
 
         if (type == null) {
             return Collections.emptyList();
@@ -168,7 +164,11 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
                                               SearchPredicate.STRING_EQUALS, kind.toString());
         }
 
-        return searchService.query(searchCriteria, language).getResults();
+        List<NodeRef> results = searchService.query(searchCriteria, language).getResults();
+        if (results.size() == 0 && kind != null) {
+            results = getCaseTemplatesByEcosTypeKind(type, null);
+        }
+        return results;
     }
 
     private boolean isAllowedCaseNode(NodeRef caseNode) {
