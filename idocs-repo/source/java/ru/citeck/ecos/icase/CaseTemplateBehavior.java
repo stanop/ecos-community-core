@@ -18,12 +18,7 @@
  */
 package ru.citeck.ecos.icase;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -40,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.alfresco.service.cmr.repository.ScriptService;
 
+import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.search.CriteriaSearchService;
 import ru.citeck.ecos.search.SearchCriteriaFactory;
@@ -47,14 +43,13 @@ import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.FieldType;
 import ru.citeck.ecos.search.SearchPredicate;
 
-public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
+public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy {
 	private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
 
 	private static final Log logger = LogFactory.getLog(CaseTemplateBehavior.class);
 
 	protected PolicyComponent policyComponent;
 	protected NodeService nodeService;
-	//protected SearchService searchService;
 	protected NamespaceService namespaceService;
 	protected CaseElementServiceImpl caseElementService;
 	protected int order = 40;
@@ -66,17 +61,15 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     private CriteriaSearchService searchService;
     private SearchCriteriaFactory criteriaFactory;
     private String language;
-	
-	public void resetCaseTemplates() {
-		caseTemplates = new HashMap<QName, NodeRef>();
-	}
 
-	public void init() {
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ICaseModel.ASPECT_CASE, 
-				new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnAddAspectPolicy.QNAME, ICaseModel.ASPECT_CASE, 
-		        new OrderedBehaviour(this, "onAddAspect", NotificationFrequency.TRANSACTION_COMMIT, order));
-		resetCaseTemplates();
+    public void init() {
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ContentModel.TYPE_CMOBJECT,
+                new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
+        resetCaseTemplates();
+    }
+
+	public void resetCaseTemplates() {
+		caseTemplates = new HashMap<>();
 	}
 
     @Override
@@ -85,49 +78,112 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         copyFromTemplate(caseNode);
     }
 
-    @Override
-    public void onAddAspect(NodeRef caseNode, QName aspectTypeQName) {
-        if(!nodeService.exists(caseNode) ||
-                !ICaseModel.ASPECT_CASE.equals(aspectTypeQName)) {
-            return;
-        }
-        copyFromTemplate(caseNode);
-    }
-
     private void copyFromTemplate(NodeRef caseNode) {
-        if (!nodeService.exists(caseNode)
-                || nodeService.hasAspect(caseNode,
-                        ContentModel.ASPECT_COPIEDFROM)
-                || nodeService.hasAspect(caseNode,
-                        ICaseModel.ASPECT_COPIED_FROM_TEMPLATE)
-                || nodeService.hasAspect(caseNode,
-                        ICaseModel.ASPECT_CASE_TEMPLATE)) {
+        if (!isAllowedCaseNode(caseNode) || !getFilledCaseNodes().add(caseNode)) {
             return;
         }
 
-        if (logger.isDebugEnabled())
-            logger.debug("Creating node with icase:case aspect. nodeRef="
-                    + caseNode);
-        
-        Set<NodeRef> filledCaseNodes = AlfrescoTransactionSupport.getResource(KEY_FILLED_CASE_NODES);
-        if(filledCaseNodes == null) {
-            AlfrescoTransactionSupport.bindResource(KEY_FILLED_CASE_NODES, filledCaseNodes = new HashSet<>());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Applying template to node. nodeRef=" + caseNode);
         }
-        if(filledCaseNodes.contains(caseNode)) return;
-        filledCaseNodes.add(caseNode);
 
-        List<NodeRef> templates = getCaseTemplateByType(caseNode, nodeService.getType(caseNode));
-        if (templates.isEmpty()) {
-            return;
-        }
-		for(NodeRef template : templates)
-		{
+        Set<NodeRef> templates = getCaseTemplates(caseNode);
+
+		for (NodeRef template : templates) {
+
 		    caseElementService.copyTemplateToCase(template, caseNode);
 		    
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				logger.debug("Case elements are successfully copied from template. nodeRef="
-						+ caseNode + "; template=" + template);
+						                                + caseNode + "; template=" + template);
+			}
 		}
+    }
+
+    private Set<NodeRef> getCaseTemplates(NodeRef caseNode) {
+
+        Set<NodeRef> resultTemplates = new HashSet<>();
+
+        List<NodeRef> templates = getCaseTemplatesByEcosTypeKind(caseNode);
+        if (templates.size() == 0) {
+            templates = getCaseTemplatesByType(caseNode);
+        }
+
+        for (NodeRef ref : templates) {
+            if (isApplicableTemplate(caseNode, ref)) {
+                resultTemplates.add(ref);
+            }
+        }
+
+        return resultTemplates;
+    }
+
+    private boolean isApplicableTemplate(NodeRef node, NodeRef template) {
+
+        String condition = (String)nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
+
+        if (condition == null || condition.trim().isEmpty()) {
+            return true;
+        }
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNode", node);
+
+        Object result = scriptService.executeScriptString(scriptEngine, condition, model);
+
+        logger.debug("condition " + condition);
+        logger.debug("result " + result);
+
+        return Boolean.TRUE.equals(result);
+    }
+
+    private List<NodeRef> getCaseTemplatesByType(NodeRef caseNode) {
+
+        QName type = nodeService.getType(caseNode);
+
+        SearchCriteria searchCriteria = criteriaFactory.createSearchCriteria()
+                .addCriteriaTriplet(FieldType.TYPE, SearchPredicate.TYPE_EQUALS, ICaseModel.TYPE_CASE_TEMPLATE)
+                .addCriteriaTriplet(ICaseModel.PROP_CASE_TYPE, SearchPredicate.STRING_EQUALS, type.toString());
+
+        logger.debug("searchCriteria for getting case template " + searchCriteria);
+
+        return searchService.query(searchCriteria, language).getResults();
+    }
+
+    private List<NodeRef> getCaseTemplatesByEcosTypeKind(NodeRef caseNode) {
+
+        NodeRef type = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_TYPE);
+        NodeRef kind = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_KIND);
+
+        if (type == null) {
+            return Collections.emptyList();
+        }
+
+        SearchCriteria searchCriteria = criteriaFactory.createSearchCriteria()
+                .addCriteriaTriplet(FieldType.TYPE, SearchPredicate.TYPE_EQUALS, ICaseModel.TYPE_CASE_TEMPLATE)
+                .addCriteriaTriplet(ICaseModel.PROP_CASE_ECOS_TYPE, SearchPredicate.STRING_EQUALS, type.toString());
+
+        if (kind != null) {
+            searchCriteria.addCriteriaTriplet(ICaseModel.PROP_CASE_ECOS_KIND,
+                                              SearchPredicate.STRING_EQUALS, kind.toString());
+        }
+
+        return searchService.query(searchCriteria, language).getResults();
+    }
+
+    private boolean isAllowedCaseNode(NodeRef caseNode) {
+        return caseNode != null && nodeService.exists(caseNode)
+                && !nodeService.hasAspect(caseNode, ContentModel.ASPECT_COPIEDFROM)
+                && !nodeService.hasAspect(caseNode, ICaseModel.ASPECT_COPIED_FROM_TEMPLATE)
+                && !nodeService.hasAspect(caseNode, ICaseModel.ASPECT_CASE_TEMPLATE);
+    }
+
+    private Set<NodeRef> getFilledCaseNodes() {
+        Set<NodeRef> filledCaseNodes = AlfrescoTransactionSupport.getResource(KEY_FILLED_CASE_NODES);
+        if (filledCaseNodes == null) {
+            AlfrescoTransactionSupport.bindResource(KEY_FILLED_CASE_NODES, filledCaseNodes = new HashSet<>());
+        }
+        return filledCaseNodes;
     }
 
 	public void setPolicyComponent(PolicyComponent policyComponent) {
@@ -169,35 +225,5 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     public void setScriptEngine(String engine) {
         this.scriptEngine = engine;
     }
-
-	protected List<NodeRef> getCaseTemplateByType(NodeRef caseNode, QName type) {
-        SearchCriteria searchCriteria = criteriaFactory.createSearchCriteria()
-                .addCriteriaTriplet(FieldType.TYPE, SearchPredicate.TYPE_EQUALS, ICaseModel.TYPE_CASE_TEMPLATE)
-                .addCriteriaTriplet(ICaseModel.PROP_CASE_TYPE, SearchPredicate.STRING_EQUALS, type.toString());
-        List<NodeRef> nodeRefs = searchService.query(searchCriteria, language).getResults();
-		logger.debug("searchCriteria for getting case template "+searchCriteria);
-		List<NodeRef> resultTemplates = new ArrayList<NodeRef>();
-
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("caseNode", caseNode);
-		for(NodeRef template : nodeRefs)
-		{
-			String condition = (String)nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
-			if(condition!=null && !condition.isEmpty())
-			{
-				Object result = scriptService.executeScriptString(scriptEngine, condition, model);
-				logger.debug("condition "+condition);
-				logger.debug("result "+result);
-				if(Boolean.TRUE.equals(result))
-					resultTemplates.add(template);
-			}
-			else
-			{
-				resultTemplates.add(template);
-			}
-		}
-		
-		return resultTemplates;
-	}
 
 }

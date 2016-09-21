@@ -56,6 +56,8 @@ public class ICaseModel {
 	public static final QName PROP_FOLDER_ASSOC_TYPE = QName.createQName(NAMESPACE, "folderAssocName");
 	public static final QName PROP_ELEMENT_FOLDER = QName.createQName(NAMESPACE, "elementFolder");
 	public static final QName PROP_TYPE_KIND = QName.createQName(NAMESPACE, "typeKind");
+	public static final QName PROP_CASE_ECOS_KIND = QName.createQName(NAMESPACE, "caseEcosKind");
+	public static final QName PROP_CASE_ECOS_TYPE = QName.createQName(NAMESPACE, "caseEcosType");
 
 	// icase:subcase
 	public static final QName ASPECT_SUBCASE = QName.createQName(NAMESPACE, "subcase");
