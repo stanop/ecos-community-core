@@ -16,10 +16,18 @@
         status.setCode(status.STATUS_INTERNAL_ERROR, "Can not find case-templates root");
         return;
     }
-    
-    var template = caseTemplateRoot.createNode(null, "icase:template", {
-    	"icase:caseType": proto.type
-    }, "cm:contains");
+
+    var templateProperties = {};
+
+    var ecosType = proto.properties["tk:type"];
+    if (ecosType) {
+        templateProperties["icase:caseEcosType"] = ecosType;
+        templateProperties["icase:caseEcosKind"] = proto.properties["tk:kind"];
+    } else {
+        templateProperties["icase:caseType"] = proto.type;
+    }
+
+    var template = caseTemplateRoot.createNode(null, "icase:template", templateProperties, "cm:contains");
     caseService.copyCaseToTemplate(proto, template);
 
     model.success = true;

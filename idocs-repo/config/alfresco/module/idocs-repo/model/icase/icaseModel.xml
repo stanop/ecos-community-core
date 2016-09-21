@@ -142,9 +142,18 @@
                 <property name="icase:caseType">
                     <title>Case Type</title>
                     <type>d:qname</type>
-                    <mandatory>true</mandatory>
                 </property>
-				<!-- condition, when the template is applicable -->
+                <!-- ecos type of document, for which this template is designed -->
+                <property name="icase:caseEcosType">
+                    <title>Case EcoS Type</title>
+                    <type>d:category</type>
+                </property>
+                <!-- ecos kind of document, for which this template is designed -->
+                <property name="icase:caseEcosKind">
+                    <title>Case EcoS Kind</title>
+                    <type>d:category</type>
+                </property>
+                <!-- condition, when the template is applicable -->
                 <property name="icase:condition">
                     <title>Condition</title>
                     <type>d:text</type>
