@@ -21,6 +21,7 @@ package ru.citeck.ecos.icase;
 import java.util.*;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.admin.RepositoryState;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.OrderedBehaviour;
@@ -40,20 +41,23 @@ import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.search.*;
 
 public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy {
-	private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
+    private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
 
-	private static final Log logger = LogFactory.getLog(CaseTemplateBehavior.class);
+    private static final Log logger = LogFactory.getLog(CaseTemplateBehavior.class);
 
-	protected PolicyComponent policyComponent;
-	protected NodeService nodeService;
-	protected NamespaceService namespaceService;
-	protected CaseElementServiceImpl caseElementService;
-	protected int order = 40;
-	
-	protected Map<QName, NodeRef> caseTemplates;
+    protected PolicyComponent policyComponent;
+    protected NodeService nodeService;
+    protected NamespaceService namespaceService;
+    protected CaseElementServiceImpl caseElementService;
+
+    private RepositoryState repositoryState;
+
+    protected int order = 40;
+
+    protected Map<QName, NodeRef> caseTemplates;
     private ScriptService scriptService;
     private String scriptEngine;
-	
+
     private CriteriaSearchService searchService;
     private SearchCriteriaFactory criteriaFactory;
     private String language;
@@ -64,14 +68,16 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         resetCaseTemplates();
     }
 
-	public void resetCaseTemplates() {
-		caseTemplates = new HashMap<>();
-	}
+    public void resetCaseTemplates() {
+        caseTemplates = new HashMap<>();
+    }
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
-        NodeRef caseNode = childAssocRef.getChildRef();
-        copyFromTemplate(caseNode);
+        if (!repositoryState.isBootstrapping()) {
+            NodeRef caseNode = childAssocRef.getChildRef();
+            copyFromTemplate(caseNode);
+        }
     }
 
     private void copyFromTemplate(NodeRef caseNode) {
@@ -85,15 +91,15 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
         Set<NodeRef> templates = getCaseTemplates(caseNode);
 
-		for (NodeRef template : templates) {
+        for (NodeRef template : templates) {
 
-		    caseElementService.copyTemplateToCase(template, caseNode);
-		    
-			if (logger.isDebugEnabled()) {
-				logger.debug("Case elements are successfully copied from template. nodeRef="
-						                                + caseNode + "; template=" + template);
-			}
-		}
+            caseElementService.copyTemplateToCase(template, caseNode);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Case elements are successfully copied from template. nodeRef="
+                                                        + caseNode + "; template=" + template);
+            }
+        }
     }
 
     private Set<NodeRef> getCaseTemplates(NodeRef caseNode) {
@@ -188,37 +194,37 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         return filledCaseNodes;
     }
 
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setSearchService(CriteriaSearchService searchService) {
-		this.searchService = searchService;
-	}
+    public void setSearchService(CriteriaSearchService searchService) {
+        this.searchService = searchService;
+    }
 
-	public void setCriteriaFactory(SearchCriteriaFactory criteriaFactory) {
-		this.criteriaFactory = criteriaFactory;
-	}
+    public void setCriteriaFactory(SearchCriteriaFactory criteriaFactory) {
+        this.criteriaFactory = criteriaFactory;
+    }
 
     public void setLanguage(String language) {
         this.language = language;
     }
 
-	public void setNamespaceService(NamespaceService namespaceService) {
-		this.namespaceService = namespaceService;
-	}
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
 
-	public void setCaseElementService(CaseElementServiceImpl caseElementService) {
-		this.caseElementService = caseElementService;
-	}
+    public void setCaseElementService(CaseElementServiceImpl caseElementService) {
+        this.caseElementService = caseElementService;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
     public void setScriptService(ScriptService scriptService) {
         this.scriptService = scriptService;
@@ -228,4 +234,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
         this.scriptEngine = engine;
     }
 
+    public void setRepositoryState(RepositoryState repositoryState) {
+        this.repositoryState = repositoryState;
+    }
 }
