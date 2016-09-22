@@ -46,6 +46,11 @@
 	<bean id="idocs.module-component.idocs-approval-list-template" parent="idocs.import-spaces.2-10-0" depends-on="idocs.dictionaryBootstrap">
 		<property name="name" value="idocs-approval-list-template" />
 		<property name="description" value="approval-list-template" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.templates-journals.card-template" />
+			</list>
+		</property>
 		<property name="bootstrapViews">
 			<list>
 				<props>
