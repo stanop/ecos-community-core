@@ -4,7 +4,6 @@
         <module>
             <id>Custom Share Community Header Menu</id>
             <auto-deploy>true</auto-deploy>
-            <auto-deploy-index>10</auto-deploy-index>
             <version>1.0</version>
             <customizations>
                 <customization>
