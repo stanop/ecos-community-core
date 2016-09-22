@@ -40,7 +40,7 @@ import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.search.*;
 
-public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy {
+public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
     private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
 
     private static final Log logger = LogFactory.getLog(CaseTemplateBehavior.class);
@@ -63,8 +63,10 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     private String language;
 
     public void init() {
-        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ContentModel.TYPE_CMOBJECT,
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ICaseModel.ASPECT_CASE,
                 new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnAddAspectPolicy.QNAME, ICaseModel.ASPECT_CASE,
+                new OrderedBehaviour(this, "onAddAspect", NotificationFrequency.TRANSACTION_COMMIT, order));
         resetCaseTemplates();
     }
 
@@ -73,15 +75,24 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     }
 
     @Override
-    public void onCreateNode(ChildAssociationRef childAssocRef) {
-        if (!repositoryState.isBootstrapping()) {
-            NodeRef caseNode = childAssocRef.getChildRef();
-            copyFromTemplate(caseNode);
+    public void onAddAspect(NodeRef caseNode, QName aspectTypeQName) {
+        if(!nodeService.exists(caseNode) ||
+                !ICaseModel.ASPECT_CASE.equals(aspectTypeQName)) {
+            return;
         }
+        copyFromTemplate(caseNode);
+    }
+
+    @Override
+    public void onCreateNode(ChildAssociationRef childAssocRef) {
+        NodeRef caseNode = childAssocRef.getChildRef();
+        copyFromTemplate(caseNode);
     }
 
     private void copyFromTemplate(NodeRef caseNode) {
-        if (!isAllowedCaseNode(caseNode) || !getFilledCaseNodes().add(caseNode)) {
+        if (repositoryState.isBootstrapping()
+                || !isAllowedCaseNode(caseNode)
+                || !getFilledCaseNodes().add(caseNode)) {
             return;
         }
 
