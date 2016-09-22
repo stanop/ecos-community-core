@@ -83,6 +83,7 @@
 		<property name="language" value="lucene"/>
 		<property name="scriptService" ref="ScriptService"/>
 		<property name="scriptEngine" value="javascript"/>
+		<property name="repositoryState" ref="repositoryState"/>
 	</bean>
 
 	<bean id="subcaseBehavior" class="ru.citeck.ecos.icase.CaseSubcaseBehavior" init-method="init">
