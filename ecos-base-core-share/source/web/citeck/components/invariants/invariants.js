@@ -599,6 +599,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('datatype', s)
         .property('javaclass', s)
         .load('*', koutils.bulkLoad(attributeLoader, 'name'))
+
+        // auxiliary variables
+        .property('_options', [ Node ])
+        .property('_dependencies', o)
         ;
 
     Attribute
