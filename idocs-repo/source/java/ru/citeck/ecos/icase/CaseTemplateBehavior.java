@@ -160,8 +160,10 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
                 .addCriteriaTriplet(ICaseModel.PROP_CASE_ECOS_TYPE, SearchPredicate.STRING_EQUALS, type.toString());
 
         if (kind != null) {
-            searchCriteria.addCriteriaTriplet(ICaseModel.PROP_CASE_ECOS_KIND,
-                                              SearchPredicate.STRING_EQUALS, kind.toString());
+            String kindStr = kind.toString();
+            searchCriteria.addCriteriaTriplet(ICaseModel.PROP_CASE_ECOS_KIND, SearchPredicate.STRING_EQUALS, kindStr);
+        } else {
+            searchCriteria.addCriteriaTriplet(ICaseModel.PROP_CASE_ECOS_KIND, SearchPredicate.NODEREF_EMPTY, "");
         }
 
         List<NodeRef> results = searchService.query(searchCriteria, language).getResults();

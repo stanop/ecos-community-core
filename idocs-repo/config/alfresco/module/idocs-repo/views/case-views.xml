@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+    </imports>
+
+    <view class="icase:template">
+        <fields datatype="d:category">
+            <region name="input" template="select"/>
+        </fields>
+        <field prop="cm:name" />
+        <field prop="icase:caseEcosType" />
+        <field prop="icase:caseEcosKind" />
+        <field prop="icase:caseType" />
+        <field prop="icase:condition">
+            <region name="input" template="textarea">
+                <param name="height">120px</param>
+            </region>
+        </field>
+    </view>
+
+</views>
