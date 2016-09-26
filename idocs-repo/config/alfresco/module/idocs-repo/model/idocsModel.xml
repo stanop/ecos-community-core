@@ -546,6 +546,43 @@
             </properties>
         </type>
 
+        <type name="idocs:attorneys">
+            <title>Поверенные</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:citizenship">
+                    <title>Гражданство</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:numberPass">
+                    <title>Номер паспорта</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:whoIssuedPass">
+                    <title>Кем выдан паспорт</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:passIssueDate">
+                    <title>Дата выдачи паспорта</title>
+                    <type>d:date</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:fullName">
+                    <title>ФИО</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
     </types>
 
     <aspects>
@@ -1096,6 +1133,22 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="idocs:hasAttorneys">
+            <associations>
+                <association name="idocs:attorneys">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:attorneys</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
 
     </aspects>

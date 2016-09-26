@@ -132,4 +132,12 @@
         <field prop="idocs:descriptionLegalForm" />
     </view>
 
+    <view class="idocs:attorneys">
+        <field assoc="idocs:fullName" />
+        <field prop="idocs:citizenship" />
+        <field prop="idocs:numberPass" />
+        <field prop="idocs:whoIssuedPass" />
+        <field prop="idocs:passIssueDate" />
+    </view>
+
 </views>

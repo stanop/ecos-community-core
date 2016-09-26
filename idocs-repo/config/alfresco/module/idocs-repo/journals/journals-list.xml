@@ -267,4 +267,17 @@
 		</headers>
 	</journal>
 
+	<journal id="attorney">
+		<option name="type">idocs:attorneys</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:fullName" default="true"/>
+			<header key="idocs:citizenship" default="true"/>
+			<header key="idocs:numberPass" default="true"/>
+			<header key="idocs:whoIssuedPass" default="true"/>
+			<header key="idocs:passIssueDate" default="true"/>
+		</headers>
+	</journal>
+
 </journals>
