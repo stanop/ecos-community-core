@@ -262,8 +262,8 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="idocs:nameLegalForm" default="true"/>
-			<header key="idocs:descriptionLegalForm" default="true"/>
+			<header key="idocs:legalFormName" default="true"/>
+			<header key="idocs:legalFormDescription" default="true"/>
 		</headers>
 	</journal>
 
