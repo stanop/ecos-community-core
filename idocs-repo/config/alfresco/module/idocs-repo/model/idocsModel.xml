@@ -556,10 +556,6 @@
             <title>Поверенное лицо</title>
             <parent>idocs:abstractAttorney</parent>
             <properties>
-                <property name="idocs:citizenship">
-                    <title>Гражданство</title>
-                    <type>d:text</type>
-                </property>
                 <property name="idocs:numberPass">
                     <title>Номер паспорта</title>
                     <type>d:text</type>
