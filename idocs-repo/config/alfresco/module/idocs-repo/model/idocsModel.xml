@@ -546,9 +546,29 @@
             </properties>
         </type>
 
-        <type name="idocs:attorneys">
-            <title>Поверенные</title>
+        <type name="idocs:abstractAttorney">
+            <title>Абстрактный тип поверенного</title>
+            <description>Данный тип наследуют все поверенные</description>
             <parent>dl:dataListItem</parent>
+            <associations>
+                <association name="idocs:attorneysType">
+                    <title>Тип поверенного</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>dl:dataListItem</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="idocs:personAttorney">
+            <title>Поверенное лицо</title>
+            <parent>idocs:abstractAttorney</parent>
             <properties>
                 <property name="idocs:citizenship">
                     <title>Гражданство</title>
@@ -568,7 +588,7 @@
                 </property>
             </properties>
             <associations>
-                <association name="idocs:fullName">
+                <association name="idocs:personFullName">
                     <title>ФИО</title>
                     <source>
                         <mandatory>false</mandatory>
@@ -582,6 +602,25 @@
                 </association>
             </associations>
         </type>
+
+        <type name="idocs:abstractOrganizationAttorney">
+            <title>Абстрактная поверенная организация</title>
+            <parent>idocs:abstractAttorney</parent>
+            <properties>
+                <property name="idocs:organizationAddress">
+                    <title>Organization Address</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:organizationInn">
+                    <title>INN</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>idocs:hasLegalForm</aspect>
+            </mandatory-aspects>
+        </type>
+
 
     </types>
 
@@ -1138,15 +1177,15 @@
 
         <aspect name="idocs:hasAttorneys">
             <associations>
-                <association name="idocs:attorneys">
+                <association name="idocs:docAttorneys">
                     <source>
                         <mandatory>false</mandatory>
                         <many>true</many>
                     </source>
                     <target>
-                        <class>idocs:attorneys</class>
+                        <class>idocs:abstractAttorney</class>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </target>
                 </association>
             </associations>
