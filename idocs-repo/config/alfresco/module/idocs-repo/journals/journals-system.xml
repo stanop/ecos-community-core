@@ -75,4 +75,14 @@
 		</headers>
 	</journal>
 
+	<journal id="case-status">
+		<option name="type">icase:caseStatus</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="cm:name" default="true"/>
+			<header key="cm:title" default="true"/>
+		</headers>
+	</journal>
+
 </journals>

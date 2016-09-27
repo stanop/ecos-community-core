@@ -82,4 +82,6 @@ public class ICaseModel {
     public static final QName TYPE_CASE_TEMPLATE = QName.createQName(NAMESPACE, "template");
     public static final QName PROP_CASE_TYPE = QName.createQName(NAMESPACE, "caseType");
     public static final QName PROP_CONDITION = QName.createQName(NAMESPACE, "condition");
+
+	public static final QName ASSOC_CASE_STATUS = QName.createQName(NAMESPACE, "caseStatusAssoc");
 }
