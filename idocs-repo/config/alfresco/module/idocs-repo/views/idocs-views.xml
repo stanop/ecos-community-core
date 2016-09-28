@@ -132,7 +132,7 @@
         <field prop="idocs:descriptionLegalForm" />
     </view>
 
-    <view class="idocs:attorneys">
+    <view class="idocs:baseAttorneys">
         <field assoc="idocs:fullName" />
         <field prop="idocs:citizenship" />
         <field prop="idocs:numberPass" />

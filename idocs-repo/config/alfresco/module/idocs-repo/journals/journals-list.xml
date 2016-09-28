@@ -268,7 +268,7 @@
 	</journal>
 
 	<journal id="attorney">
-		<option name="type">idocs:attorneys</option>
+		<option name="type">idocs:baseAttorneys</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
