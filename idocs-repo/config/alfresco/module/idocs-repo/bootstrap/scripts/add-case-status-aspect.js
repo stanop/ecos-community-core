@@ -1,7 +1,7 @@
 /**
  * Created by Maxim Strizhov on 27.09.2016.
  */
-var docs = search.luceneSearch('ASPECT:"icase:case"');
+var docs = search.query({query:'ASPECT:"icase:case"', language: 'fts-alfresco', store: 'workspace://SpacesStore'});
 if (docs) {
     logger.log("Found cases: " + docs.length);
     for(var i = 0; i < docs.length; i++) {
