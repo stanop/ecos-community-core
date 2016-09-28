@@ -2686,6 +2686,31 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    border-top: none;
 }
 
+.filter-criteria .criterion .criterion-predicate select {
+  background-color: white;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button {
+  padding: 2px 10px;
+  font-weight: 900;
+  background-color: white;
+  border: 2px solid #1c55da;
+  color: #1c55da;
+  cursor: pointer;
+}
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:hover,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:focus {
+  color: white;
+  background-color: #1c55da;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  background-color: white;
+  cursor: default;
+}
+
 /*  end journal */
 
 

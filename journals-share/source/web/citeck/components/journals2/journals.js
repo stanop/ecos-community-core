@@ -120,21 +120,6 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
-	// .computed('valueTemplate', {
-	// 	read: function() {
-	// 			if(!this._valueTemplate) {
-	// 				// make this 'private' to suppress cloning
-	// 				this._valueTemplate = ko.observable();
-	// 			}
-	// 			return this._valueTemplate();
-	// 	},
-	// 	write: function(value) {
-	// 		if(!this._valueTemplate) {
-	// 			this._valueTemplate = ko.observable();
-	// 		}
-	// 		this._valueTemplate(value);
-	// 	}
-	// })
 	;
 
 CreateVariant
@@ -209,23 +194,9 @@ JournalType
 	})
 	.computed('defaultFilter', function() {
 		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
-				if (attr.datatype() && attr.datatype().name()) {
-					var dtype = attr.datatype().name();
-
-					if (["cm:title", "idocs:documentStatus", "idocs:contractor"].indexOf(attr.name()) >= 0) return false;
-					if (dtype.indexOf("text") >= 0) {
-						return { field: attr.name(), predicate: "string-not-equals", value: "" }
-					}
-					if (dtype == "association") {
-						return { field: attr.name(), predicate: "assoc-not-contains", value: "" }
-					}
-					if (dtype == "float") {
-						return { field: attr.name(), predicate: "number-not-equals", value: "" }
-					}
-					if (dtype == "date") {
-						return { field: attr.name(), predicate: "date-not-equals", value: "" }
-					}
-				}
+			var predicates = attr.resolve("datatype.predicates");
+			if (!predicates) return;
+			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
 		});
 
 		return new Filter({
@@ -293,6 +264,11 @@ Filter
 			journalTypes: _.invoke(this.journalTypes(), 'id')
 		};
 	})
+	.computed('usableCriteria', function() {
+		return _.filter(this.criteria(), function(criterion) { 
+			return criterion.value() ? true : false; 
+		});
+	})
 	.init(function() {
 		this.criteria.extend({ rateLimit: 0 });
 	})
@@ -331,6 +307,7 @@ Attribute
 	.shortcut('displayName', '_info.displayName')
 	.shortcut('datatype', '_info.datatype')
 	.shortcut('nodetype', '_info.nodetype')
+	.shortcut('journalType', '_info.journalType')
 	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
@@ -347,6 +324,7 @@ AttributeInfo
 	.property('datatype', Datatype)
 	.property('labels', o)
 	.property('nodetype', s)
+	.property('journalType', JournalType)
 	;
 
 Datatype
@@ -1150,7 +1128,9 @@ AttributeInfo
 	.load('*', koutils.bulkLoad(new BulkLoader({
 		url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
 		method: "GET",
-		emptyFn: function() { return { attributes: [] }; },
+		emptyFn: function() { 
+			return { attributes: [] }; 
+		},
 		addFn: function(query, id) {
 			if(id) {
 				query.attributes.push(id);
@@ -1159,7 +1139,9 @@ AttributeInfo
 				return false;
 			}
 		},
-		getFn: function(response) { return response.json.attributes; }
+		getFn: function(response) { 
+			return response.json.attributes; 
+		}
 	}), 'name'))
 	;
 
@@ -1200,7 +1182,7 @@ JournalsWidget
 				return;
 			}
 
-			var filterCriteria = filter.criteria();
+			var filterCriteria = filter.usableCriteria();
 			if(!filter.criteria.loaded()) {
 				logger.debug("Filter criteria are not loaded, deferring search");
 				koutils.subscribeOnce(filter.criteria, load, this);
