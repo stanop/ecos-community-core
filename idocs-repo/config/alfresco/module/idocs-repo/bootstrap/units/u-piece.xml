@@ -13,8 +13,14 @@
                 <view:mlvalue view:locale="en_US">pc</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">шт</view:mlvalue>
             </cm:title>
-            <pas:unitName>Штука</pas:unitName>
-            <pas:unitShortName>шт</pas:unitShortName>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Piece</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Штука</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">pc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">шт</view:mlvalue>
+            </pas:unitShortName>
         </view:properties>
     </pas:unit>
 

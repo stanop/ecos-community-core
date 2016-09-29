@@ -13,8 +13,14 @@
                 <view:mlvalue view:locale="en_US">mh</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">чел.-ч</view:mlvalue>
             </cm:title>
-            <pas:unitName>Человеко-час</pas:unitName>
-            <pas:unitShortName>чел.-ч</pas:unitShortName>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Man-hour</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Человеко-час</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">mh</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">чел.-ч</view:mlvalue>
+            </pas:unitShortName>
         </view:properties>
     </pas:unit>
 

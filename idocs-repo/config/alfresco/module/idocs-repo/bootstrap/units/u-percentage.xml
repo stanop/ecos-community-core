@@ -13,8 +13,14 @@
                 <view:mlvalue view:locale="en_US">%</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">%</view:mlvalue>
             </cm:title>
-            <pas:unitName>Процент</pas:unitName>
-            <pas:unitShortName>%</pas:unitShortName>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Percentage</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Процент</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">%</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">%</view:mlvalue>
+            </pas:unitShortName>
         </view:properties>
     </pas:unit>
 

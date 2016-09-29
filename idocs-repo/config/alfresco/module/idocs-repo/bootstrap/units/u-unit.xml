@@ -13,8 +13,14 @@
                 <view:mlvalue view:locale="en_US">u.</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">ед</view:mlvalue>
             </cm:title>
-            <pas:unitName>Единица</pas:unitName>
-            <pas:unitShortName>ед</pas:unitShortName>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Unit</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Единица</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">u.</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">ед</view:mlvalue>
+            </pas:unitShortName>
         </view:properties>
     </pas:unit>
 

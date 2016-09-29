@@ -422,6 +422,11 @@
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-unit.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:units</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/units/u-litre.xml</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
 			</list>
 		</property>
 	</bean>
