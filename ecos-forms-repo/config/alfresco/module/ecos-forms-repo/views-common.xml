@@ -40,11 +40,13 @@
 	
 	<views kind="2-column">
 		<views any="true" kind="2-column" />
+		<fields datatype="d:boolean" template="half-width-checkbox" />
 		<fields any="true" template="half-width" />
 	</views>
 
 	<views kind="3-column">
 		<views any="true" kind="3-column" />
+		<fields datatype="d:boolean" template="third-width-checkbox" />
 		<fields any="true" template="third-width" />
 	</views>
 	
