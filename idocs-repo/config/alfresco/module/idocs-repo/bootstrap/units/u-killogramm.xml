@@ -13,8 +13,14 @@
                 <view:mlvalue view:locale="en_US">kg</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">кг</view:mlvalue>
             </cm:title>
-            <pas:unitName>Килограмм</pas:unitName>
-            <pas:unitShortName>кг</pas:unitShortName>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Kilogram</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Килограмм</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">kg</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">кг</view:mlvalue>
+            </pas:unitShortName>
         </view:properties>
     </pas:unit>
 
