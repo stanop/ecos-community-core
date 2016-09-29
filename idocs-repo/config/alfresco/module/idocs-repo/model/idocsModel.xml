@@ -558,7 +558,7 @@
             <properties>
                 <property name="idocs:numberPass">
                     <title>Номер паспорта</title>
-                    <type>d:int</type>
+                    <type>d:text</type>
                 </property>
                 <property name="idocs:whoIssuedPass">
                     <title>Кем выдан паспорт</title>
@@ -595,7 +595,7 @@
                 </property>
                 <property name="idocs:organizationInn">
                     <title>INN</title>
-                    <type>d:int</type>
+                    <type>d:text</type>
                 </property>
             </properties>
             <mandatory-aspects>
