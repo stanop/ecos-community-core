@@ -984,7 +984,7 @@
 
 .autocomplete-control .autocomplete-container {
   position: absolute;
-  padding: 7px;
+  padding: 7px 7px 0 7px;
   z-index: 5;
   border-top: none;
   box-shadow: 0 0 25px -5px gray;
@@ -1023,6 +1023,7 @@
 
 .autocomplete-container ul.autocomplete-list {
   margin-top: 7px;
+  margin-bottom: 7px;
 }
 
 .autocomplete-container ul.autocomplete-list a {
@@ -1041,6 +1042,19 @@
 .autocomplete-container .emplty-message {
     margin-top: 7px;
     color: #777;
+}
+
+.autocomplete-container .autocomplete-more {
+    text-align: center;
+    border-top: 1px solid #ccc;
+}
+
+.autocomplete-container .autocomplete-more a {
+    display: block;
+    width: calc(100% + 14px);
+    margin-left: -7px;
+    padding: 0 0 7px 0;
+    letter-spacing: 5px;
 }
 
 
