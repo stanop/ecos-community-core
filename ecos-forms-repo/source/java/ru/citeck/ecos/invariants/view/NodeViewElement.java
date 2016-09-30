@@ -218,12 +218,12 @@ public abstract class NodeViewElement {
         }
         
         public B id(String id) {
-            this.id = id == null || id.isEmpty() ? null : id;
+            this.id = (id == null || id.isEmpty() ? null : id);
             return (B) this;
         }
         
         public B kind(String kind) {
-            this.kind = kind == null || kind.isEmpty() ? null : kind;
+            this.kind = (kind == null || kind.isEmpty() ? null : kind);
             return (B) this;
         }
         
