@@ -5,21 +5,21 @@
         xmlns:cm="http://www.alfresco.org/model/content/1.0"
         xmlns:pas="http://www.citeck.ru/model/products-and-services/1.0">
 
-    <pas:unit view:childName="cm:u-m">
+    <pas:unit view:childName="cm:u-l">
         <view:properties>
-            <sys:node-uuid>u-m</sys:node-uuid>
-            <cm:name>Метр</cm:name>
+            <sys:node-uuid>u-l</sys:node-uuid>
+            <cm:name>Литр</cm:name>
             <cm:title>
-                <view:mlvalue view:locale="en_US">m</view:mlvalue>
-                <view:mlvalue view:locale="ru_RU">м</view:mlvalue>
+                <view:mlvalue view:locale="en_US">l</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">л</view:mlvalue>
             </cm:title>
             <pas:unitName>
-                <view:mlvalue view:locale="en_US">Metre</view:mlvalue>
-                <view:mlvalue view:locale="ru_RU">Метр</view:mlvalue>
+                <view:mlvalue view:locale="en_US">Litre</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Литр</view:mlvalue>
             </pas:unitName>
             <pas:unitShortName>
-                <view:mlvalue view:locale="en_US">m</view:mlvalue>
-                <view:mlvalue view:locale="ru_RU">м</view:mlvalue>
+                <view:mlvalue view:locale="en_US">l</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">л</view:mlvalue>
             </pas:unitShortName>
         </view:properties>
     </pas:unit>

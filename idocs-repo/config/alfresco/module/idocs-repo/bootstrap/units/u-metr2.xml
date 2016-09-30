@@ -13,8 +13,14 @@
                 <view:mlvalue view:locale="en_US">m2</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">м2</view:mlvalue>
             </cm:title>
-            <pas:unitName>Квадратный метр</pas:unitName>
-            <pas:unitShortName>м2</pas:unitShortName>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Square metre</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Квадратный метр</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">m2</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">м2</view:mlvalue>
+            </pas:unitShortName>
         </view:properties>
     </pas:unit>
 

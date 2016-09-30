@@ -31,10 +31,10 @@
             <parent>dl:dataListItem</parent>
             <properties>
                 <property name="pas:unitShortName">
-                    <type>d:text</type>
+                    <type>d:mltext</type>
                 </property>
                 <property name="pas:unitName">
-                    <type>d:text</type>
+                    <type>d:mltext</type>
                 </property>
             </properties>
         </type>
