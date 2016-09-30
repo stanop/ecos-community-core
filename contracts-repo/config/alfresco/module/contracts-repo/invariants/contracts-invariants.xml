@@ -86,7 +86,7 @@
         <property name="payments:plannedPaymentDate">
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
-                    var currentDate = node.properties["payments:billDate"];
+                    var currentDate = new Date(node.properties["payments:billDate"].valueOf());
 
                     var amtDay = 5;
                     var nextDay = currentDate;
