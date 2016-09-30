@@ -600,13 +600,11 @@ ko.bindingHandlers.journalControl = {
             panel = new YAHOO.widget.Panel(panelId, {
                 width:          "800px", 
                 visible:        false, 
-                fixedcenter:    false,  
+                fixedcenter:    true,  
                 draggable:      true,
                 modal:          true,
                 zindex:         5,
-                close:          true,
-                x: $(window).width() / 2 - 400,
-                y: $(".alf-header").height() + 1
+                close:          true
             });
 
             panel.setHeader(localization.title || 'Journal Picker');

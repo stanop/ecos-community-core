@@ -87,8 +87,8 @@
   <!-- Configurable site-presets -->
   <config evaluator="string-compare" condition="SurfPresets">
     <site-presets>
-      <preset id="document-site-dashboard" name="Сайт для управления документами" />
-      <preset id="file-site-dashboard" name="Сайт для хранения файлов" />
+      <preset id="document-site-dashboard" name="document.site.presets" />
+      <preset id="file-site-dashboard" name="file.site.presets" />
     </site-presets>
     <user-presets>
       <preset id="user-dashboard" name="Стандартная домашняя страница пользователя" />
