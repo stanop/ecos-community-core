@@ -1084,8 +1084,8 @@ ko.components.register("autocomplete", {
         // base variables
         this.element = params.element;
         this.data  = params.data;
-        this.value = this.data.singleValue;
-        this.disabled = this.data.protected;
+        this.value = this.data["singleValue"];
+        this.disabled = this.data["protected"];
 
         this.searchScript = params.searchScript || self.defaults.searchScript;
         this.minQueryLength = params.minQueryLength;
