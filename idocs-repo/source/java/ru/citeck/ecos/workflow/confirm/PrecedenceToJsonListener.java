@@ -30,17 +30,20 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 	private Expression var;
 	private Expression precedence;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void notifyImpl(DelegateExecution execution) throws Exception {
 		String variableName = (String) var.getValue(execution);
 		String precedenceLine = (String) precedence.getValue(execution);
-		//precedenceLine
+		execution.setVariable(variableName, convertPrecedence(precedenceLine));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static JSONObject convertPrecedence(String precedence) {
 		JSONObject result = new JSONObject();
 		JSONArray stages = new JSONArray();
 		result.put("stages", stages);
-		if (precedenceLine != null && precedenceLine.length() != 0) {
-			String[] stageLines = precedenceLine.split("[,]");
+		if (precedence != null && precedence.length() != 0) {
+			String[] stageLines = precedence.split("[,]");
 			for (String line : stageLines) {
 				JSONObject stage = new JSONObject();
 
@@ -67,10 +70,10 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 				stages.add(stage);
 			}
 		}
-		execution.setVariable(variableName, result);
+		return result;
 	}
 
-	private double getNumberOfHoursForStage(String timeStage) {
+	private static double getNumberOfHoursForStage(String timeStage) {
 		String time = timeStage.split("/")[0];
 		String timeType = timeStage.split("/")[1];
 		if ("m".equals(timeType)) {
