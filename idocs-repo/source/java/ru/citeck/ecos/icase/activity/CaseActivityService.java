@@ -69,4 +69,10 @@ public interface CaseActivityService {
      *                 In other case activity position in result list of "getActivities" equals to this parameter.
      */
     void setIndex(NodeRef activityRef, int newIndex);
+
+    /**
+     * Check there is active activities in children
+     * @param activityRef activity node reference. Mandatory parameter.
+     */
+    boolean hasActiveChildren(NodeRef activityRef);
 }
