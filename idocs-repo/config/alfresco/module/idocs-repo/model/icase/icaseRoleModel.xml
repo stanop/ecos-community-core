@@ -20,6 +20,9 @@
         <type name="icaseRole:role">
             <parent>dl:dataListItem</parent>
             <properties>
+                <property name="icaseRole:varName">
+                    <type>d:text</type>
+                </property>
                 <property name="icaseRole:isReferenceRole">
                     <type>d:boolean</type>
                     <default>false</default>

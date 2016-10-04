@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>add-case-roles</shortname>
+    <description>Add association to roles</description>
+    <url>/citeck/add-case-roles?sourceRef={sourceRef}&amp;targetRef={targetRef}&amp;assocTypes={assocTypes}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

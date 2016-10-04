@@ -7,6 +7,7 @@
 		<import uri="http://www.citeck.ru/model/config/1.0" prefix="config" />
 		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
 		<import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+		<import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
 	</imports>
 
 	<journal id="cardlets">
@@ -92,7 +93,7 @@
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<option name="actionGroupId">role-injournal</option>
 		<headers>
-			<header key="cm:name" default="true" />
+			<header key="icaseRole:varName" default="true" />
 			<header key="cm:title" default="true" />
 			<header key="cm:description" />
 		</headers>

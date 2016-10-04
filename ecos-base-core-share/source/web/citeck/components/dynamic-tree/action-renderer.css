@@ -132,6 +132,14 @@
 	background-image: url(icons/edit-properties-active.png) !important;
 }
 
+.yui-dt div.action-set .role-edit-properties-cardlet a {
+	background-image: url(icons/edit-properties.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties-cardlet a:hover {
+	background-image: url(icons/edit-properties-active.png) !important;
+}
+
 .requestDeleteRemote-checkBox
 {
 	margin-top: 10px;

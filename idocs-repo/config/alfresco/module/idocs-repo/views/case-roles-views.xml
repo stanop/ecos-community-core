@@ -9,8 +9,7 @@
     </imports>
 
     <view class="icaseRole:role" id="case">
-        <field prop="cm:name">
-            <invariant on="mandatory" language="explicit">true</invariant>
+        <field prop="icaseRole:varName">
         </field>
         <field prop="cm:title">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -38,9 +37,7 @@
     <!--</view>-->
 
     <view class="icaseRole:role" id="journal">
-        <field prop="cm:name">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </field>
+        <field prop="icaseRole:varName"/>
         <field prop="cm:title">
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
@@ -51,8 +48,7 @@
     </view>
 
     <view class="icaseRole:role" mode="create" id="journal">
-        <field prop="cm:name">
-            <invariant on="mandatory" language="explicit">true</invariant>
+        <field prop="icaseRole:varName">
         </field>
         <field prop="cm:title">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -64,7 +60,7 @@
     </view>
 
     <view class="icaseRole:role" mode="edit" id="journal">
-        <field prop="cm:name">
+        <field prop="icaseRole:varName">
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field prop="cm:title">
