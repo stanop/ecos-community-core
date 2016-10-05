@@ -19,6 +19,14 @@
 			<action id="document-edit-metadata" type="pagelink">
 				<param name="page">node-edit?nodeRef={node.nodeRef}</param>
 			</action>
+			<action id="role-edit-properties" type="javascript" label="actions.role.edit-properties">
+				<param name="function">onActionDialogForm</param>
+				<param name="formId">journal</param>
+			</action>
+			<action id="role-edit-properties-cardlet" type="javascript" label="actions.role.edit-properties">
+				<param name="function">onActionDialogForm</param>
+				<param name="formId">case</param>
+			</action>
 			<action id="document-edit-properties" type="javascript">
 				<param name="function">onActionDialogForm</param>
 				<param name="formId">doclib-simple-metadata</param>
@@ -340,12 +348,18 @@
 			</actionGroup>
 
 			<actionGroup id="document-case-roles">
-				<action index="20" id="document-edit-properties"/>
+				<action index="20" id="role-edit-properties-cardlet"/>
 				<action index="30" id="document-delete"/>
 			</actionGroup>
 
 			<actionGroup id="document-products-and-services">
 				<action index="10" id="document-edit-properties" />
+				<action index="20" id="document-view-details" />
+				<action index="30" id="document-delete" />
+			</actionGroup>
+
+			<actionGroup id="document-role-injournal">
+				<action index="10" id="role-edit-properties" />
 				<action index="20" id="document-view-details" />
 				<action index="30" id="document-delete" />
 			</actionGroup>

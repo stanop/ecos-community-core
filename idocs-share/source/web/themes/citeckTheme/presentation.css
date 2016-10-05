@@ -3537,6 +3537,13 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    background-image: url(images/upload-active.png) !important;
 }
 
+ .alfresco-twister.alfresco-twister-open .alfresco-twister-actions a[id$="onPanelButtonAddRole"] {
+     background-image: url(images/create-document.png) !important;
+ }
+
+ .alfresco-twister.alfresco-twister-open .alfresco-twister-actions a[id$="onPanelButtonAddRole"]:hover {
+     background-image: url(images/create-document-active.png) !important;
+ }
 
 
 .alfresco-header-CurrentUserStatus .status {
