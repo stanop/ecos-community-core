@@ -1,0 +1,70 @@
+/* ECOS FORMS */
+
+.mobile	.ecos-form .form-fields .template-table {
+    width: 100%;
+    margin: 0;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-view:after {
+	display: none;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field,
+.mobile	.ecos-form .form-fields .template-table .form-field.with-help {
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+.mobile .ecos-form .form-fields .template-table .form-field:after {
+    content: "";
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region,
+.mobile	.ecos-form .form-fields .template-table .form-field .region-group {
+    display: block;
+    clear: both;
+    position: static;
+    float: none;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .region-group {
+	margin-top: 10px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .region-group .form-region {
+	margin: 0 10px 0 0;
+	float: left;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region.template-checkbox,
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region.template-label, 
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region.template-mandatory {
+    display: inline-block;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region.template-label {
+	padding: 0;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region.template-label label {
+	padding: 0;
+	line-height: 100%;
+}
+
+.mobile	.ecos-form .form-fields .template-table .form-field .form-region.template-help {
+	position: absolute;
+}
+
+
+/* YUI */
+
+.mobile .yui-overlay-hidden {
+	display: none;
+}

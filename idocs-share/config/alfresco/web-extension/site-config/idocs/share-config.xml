@@ -17,7 +17,8 @@
               <js src="/modules/header/create-variants.js"/>
               <js src="/citeck/components/form/constraints.js"/>
 
-              <js src="/citeck/mobile.js" />
+              <js src="/citeck/mobile/mobile.js" />
+              <css src="/citeck/mobile/mobile.css"/>
           </dependencies>
       </header>
   </config>
