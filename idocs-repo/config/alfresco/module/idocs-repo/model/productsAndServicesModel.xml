@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <model name="pas:productsAndServicesModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
     <description>Products and services</description>
+    <author>Citeck</author>
     <version>1.0</version>
 
     <imports>
