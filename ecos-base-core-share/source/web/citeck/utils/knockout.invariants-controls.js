@@ -1062,86 +1062,121 @@ ko.components.register('createObjectButton', {
 
 ko.components.register("autocomplete", {
     viewModel: function(params) {
+        var self = this;
+
         this.defaults = {
             criteria: [{ attribute: "all", predicate: "string-contains" }],
             searchScript: "criteria-search",
-            minQueryLength: 3,
-
-            // messages
-            labelMessage: "Select...",
-            helpMessage:  "Start typing..."
+            maxItems: 10
         }
 
-        var self = this;
+        this.labels = {
+            label: Alfresco.util.message("autocomplete.label"),
+            help: Alfresco.util.message("autocomplete.help"),
+            more: Alfresco.util.message("autocomplete.more")
+        }
 
-        this.data  = params["data"];
+        this.cache = {
+            criteria: [],
+            options: []
+        }
+
+        // base variables
+        this.element = params.element;
+        this.data  = params.data;
         this.value = this.data["singleValue"];
         this.disabled = this.data["protected"];
-        this.searchScript = params["searchScript"] || self.defaults.searchScript;
-        this.minQueryLength = params["minQueryLength"] || self.defaults.minQueryLength;
+
+        this.searchScript = params.searchScript || self.defaults.searchScript;
+        this.minQueryLength = params.minQueryLength;
+        this.maxItems = params.maxItems || self.defaults.maxItems;
 
         // observables
         this.containerVisibility = ko.observable(false);
         this.highlightedElement = ko.observable();
-        this.componentFocused = ko.observable(false);
         this.searchQuery = ko.observable();
-        this.searchInput = ko.observable();
         this.searching = ko.observable(false);
-        this.searchFocused = ko.observable(false);
+
+        this.componentFocused = ko.observable(false);
+        this.searchFocused = ko.observable(true);
+
+        this.hasMore = ko.observable(false);
+        this.skipCount = ko.observable(0);
 
         
         // computed
         this.label = ko.pureComputed(function() {
-            var defaultLabel = params.labelMessage || self.defaults.labelMessage;
-            return self.value() ? self.data.getValueTitle(self.value()) : defaultLabel; 
+            return self.value() ? self.data.getValueTitle(self.value()) : self.labels.label; 
         });
 
-        this.search = ko.computed(function() {
-            var input = self.searchInput();
-            if (input && input.length >= self.minQueryLength) {
-                self.searching(true);
-                self.searchQuery(input);
+        this.searchInput = ko.computed({
+            read: function() {
+                return self.searchQuery();
+            },
+            write: function(newValue) {
+                if (!newValue || (!self.minQueryLength || (newValue.length >= self.minQueryLength))) {
+                    self.searchQuery(newValue);
+                    self.searching(true);
+                }
             }
         }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
         this.criteria = ko.pureComputed(function() {
-            var query = self.searchQuery();
-            return _.map(params["criteria"] || self.defaults.criteria, function(item) {
-                return _.defaults({ value: query }, item);
-            });
+            if (self.searchQuery()) {
+                return _.map(params["criteria"] || self.defaults.criteria, function(item) {
+                    return _.defaults({ value: self.searchQuery() }, item);
+                });
+            } else { return [] }
         });
 
         this.options = ko.pureComputed(function() {
-            return self.criteria().length > 0 ? self.data.filterOptions(self.criteria(), { 
-                                                    maxItems: 10, 
-                                                    skipCount: 0, 
-                                                    searchScript: self.searchScript 
-                                                }) : [];
+            return self.data.filterOptions(self.criteria(), { maxItems: 10, skipCount: self.skipCount(), searchScript: self.searchScript });
         }).extend({ notify: 'always' });
         
 
+        this.visibleOptions = ko.computed(function() {
+            self.cache.options = self.cache.options.concat(self.options());
+            return self.cache.options;
+        });
+
+
         // subscription and events
+        this.containerVisibility.subscribe(function() {
+            self.searchFocused(true);
+        });
+
+        this.criteria.subscribe(function(newValue) {
+            self.skipCount(0);
+            self.cache.options = [];
+        });      
+         
         this.options.subscribe(function(newValue) {
-            // highlight first element of list
             if (newValue && newValue.pagination) {
-                if (newValue.length > 0) self.highlightedElement(newValue[0]);
-                if (newValue.length == 0) self.searching(false);
+                self.hasMore(newValue.pagination.hasMore);
+
+                if (newValue.length > 0 && self.skipCount() == 0) self.highlightedElement(newValue[0]);
+                if (newValue.length == 0) self.searching(false);        
             }
         });
 
-        // public methods
-        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()) };
-        this.helpMessage = function() { return params.helpMessage || self.defaults.helpMessage };
-        this.searchBlur = function() { self.containerVisibility(false) };
 
+        // public methods
+        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
+        this.renderHandler = function(element, data) { if(this.foreach()[this.foreach().length - 1] === data) self.searching(false); };
+
+        this.more = function(element, data) { 
+            self.skipCount(self.skipCount() + 10);
+            self.searchFocused(true);
+        };
+        
         this.selectItem = function(data, event) {
             if (event.which == 1) {
                 self.value(data);
                 self.containerVisibility(false);
+                self.highlightedElement(data);
             }
         };
-
-        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
 
         this.keyAction = function(data, event) {
             if ([9, 13, 27, 38, 40].indexOf(event.keyCode) != -1) {
@@ -1160,9 +1195,15 @@ ko.components.register("autocomplete", {
 
                 // move selection
                 if (event.keyCode == 38 || event.keyCode == 40) {
-                    var selectedIndex = self.options().indexOf(self.highlightedElement()),
+                    var selectedIndex = self.visibleOptions().indexOf(self.highlightedElement()),
                         nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
-                    if (selectedIndex != -1 && self.options()[nextSelectIndex]) { self.highlightedElement(self.options()[nextSelectIndex]) };
+                    
+                    if (selectedIndex != -1 && self.visibleOptions()[nextSelectIndex]) { 
+                        self.highlightedElement(self.visibleOptions()[nextSelectIndex]) 
+                    };
+
+                    // TODO:
+                    // - select 'more' throuth keyboard
                 }
 
                 return false;
@@ -1185,10 +1226,21 @@ ko.components.register("autocomplete", {
             return true;
         };
 
-        this.renderHandler = function(element, data) {
-            // stop loading when all elements was rendred
-            if(this.foreach()[this.foreach().length - 1] === data) self.searching(false);
-        };
+        // blur
+        $("body").click(function(event, a) {
+            var node = event.target,
+                body = document.getElementById("Share");
+
+            while (node != body) {
+                if (node == self.element) {
+                    return;
+                }
+    
+                node = node.parentNode;
+            }
+
+            self.containerVisibility(false);
+        });
     },
     template: 
        '<!-- ko if: disabled -->\
@@ -1214,27 +1266,30 @@ ko.components.register("autocomplete", {
             <div class="autocomplete-container" data-bind="css: { loading: searching() }">\
                 <div class="autocomplete-search-container">\
                     <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
-                        <div class="help-message" data-bind="text: helpMessage()"></div>\
+                        <div class="help-message" data-bind="text: labels.help"></div>\
                     <!-- /ko -->\
                     <input type="text" class="autocomplete-search"\
                         data-bind="\
                             textInput: searchInput,\
-                            event: { keydown: keyAction, blur: searchBlur },\
+                            event: { keydown: keyAction },\
                             keydownBubble: false,\
-                            attr: { placeholder: helpMessage() },\
-                            hasFocus: true">\
+                            attr: { placeholder: labels.help },\
+                            hasFocus: searchFocused">\
                     <div class="loading-indicator" data-bind="css: { hidden: !searching() }"></div>\
                 </div>\
-                <!-- ko if: searchQuery() && options() -->\
-                    <!-- ko if: options().length > 0 -->\
-                        <ul class="autocomplete-list" data-bind="foreach: { data: options, afterRender: renderHandler }">\
-                            <li data-bind="\
-                                event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
-                                css: { selected: $parent.highlightedElement() == $data }">\
-                                <a data-bind="text: $parent.data.getValueTitle($data)"></a>\
-                            </li>\
-                        </ul>\
-                    <!-- /ko -->\
+                <!-- ko if: visibleOptions() && visibleOptions().length > 0 -->\
+                    <ul class="autocomplete-list" data-bind="foreach: { data: visibleOptions, afterRender: renderHandler }">\
+                        <li data-bind="\
+                            event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
+                            css: { selected: $parent.highlightedElement() == $data }">\
+                            <a data-bind="text: $parent.data.getValueTitle($data)"></a>\
+                        </li>\
+                    </ul>\
+                <!-- /ko -->\
+                <!-- ko if: hasMore -->\
+                    <div class="autocomplete-more">\
+                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    </div>\
                 <!-- /ko -->\
             </div>\
         <!-- /ko -->'

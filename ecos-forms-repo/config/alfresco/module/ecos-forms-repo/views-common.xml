@@ -129,8 +129,7 @@
 <!-- 			<regions name="input" template="view" /> -->
 <!-- 			<regions name="select" template="select-journal" /> -->
 			<regions name="input" template="autocomplete">
-				<param name="attribute">all</param>
-				<param name="predicate">string-starts-with</param>
+				<param name="criteria">[ { attribute: "all", predicate: "string-starts-with" } ]</param>
 			</regions>
 <!-- 			<regions name="input" template="select" /> -->
 		</fields>

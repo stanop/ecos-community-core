@@ -80,15 +80,23 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         caseActivityService.setIndex(getNodeRef(activityRef), index);
     }
 
+    public boolean hasActiveChildren(Object activityRef) {
+        return caseActivityService.hasActiveChildren(getNodeRef(activityRef));
+    }
+
     private NodeRef getNodeRef(Object object) {
-        if(object == null)
+        if (object == null) {
             return null;
-        if(object instanceof NodeRef)
+        }
+        if (object instanceof NodeRef) {
             return (NodeRef) object;
-        if(object instanceof String)
+        }
+        if (object instanceof String) {
             return new NodeRef((String) object);
-        if(object instanceof ScriptNode)
+        }
+        if (object instanceof ScriptNode) {
             return ((ScriptNode) object).getNodeRef();
+        }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to NodeRef");
     }
 

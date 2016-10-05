@@ -204,6 +204,20 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         }
     }
 
+    @Override
+    public boolean hasActiveChildren(NodeRef activityRef) {
+        mandatoryActivity("activityRef", activityRef);
+
+        List<NodeRef> children = RepoUtils.getChildrenByAssoc(activityRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
+        for (NodeRef childRef : children) {
+            String state = (String) nodeService.getProperty(childRef, LifeCycleModel.PROP_STATE);
+            if (state != null && state.equals(STATE_STARTED)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void mandatoryActivity(String paramName, NodeRef activityRef) {
         mandatoryNodeRef(paramName, activityRef);
         QName type = nodeService.getType(activityRef);
