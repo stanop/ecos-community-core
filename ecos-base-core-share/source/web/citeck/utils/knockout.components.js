@@ -367,6 +367,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                 return null;
             };
+
+            this.getTitle = function(data) {
+                return ko.computed(function() {
+                    var value = data.value(), title;
+                    if (isInvariantsObject(value)) title = value.properties["cm:title"];
+                    return title || (data.valueTitle || data.textValue)
+                });
+            };
         },
           
 
@@ -403,7 +411,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                     <!-- /ko -->\
                                     <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
                                         <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
-                                            <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
+                                            <td data-bind="text: $component.getTitle($data)"></td>\
                                         <!-- /ko -->\
                                     <!-- /ko -->\
                                 <!-- /ko -->\
@@ -419,7 +427,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             <!-- /ko -->\
                             <!-- ko ifnot: $parent.properties[$data.name()] -->\
                                 <!-- ko with: $parent.impl().attribute($data.name()) -->\
-                                    <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
+                                    <td data-bind="text: $component.getTitle($data)"></td>\
                                 <!-- /ko -->\
                             <!-- /ko -->\
                         </tr>\
