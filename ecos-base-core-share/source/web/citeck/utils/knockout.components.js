@@ -25,7 +25,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
     };
 
     var Get = YAHOO.util.Get;
-
     var Node = koutils.koclass('invariants.Node');
 
     // COMPONENTS
@@ -193,9 +192,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 self.selectedFilterCriteria.remove(data);
             };
 
-            this.nodetype = function(data) {
+            this.getNodeType = function(data) {
                 return ko.computed(function() {
-                    return self.journalType.attribute(data.name()).nodetype();
+                    var attribute = self.journalType.attribute(data.name());
+                    return attribute ? attribute.nodetype() : null;
+                });
+            }
+
+            this.getJournalType = function(data) {
+                return ko.computed(function() {
+                    var attribute = self.journalType.attribute(data.name());
+                    return attribute ? attribute.journalType() : null;
                 });
             }
         },
@@ -215,8 +222,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             <td class="value-col">\
                                 <!-- ko component: { name: "filter-criterion-value", params: {\
                                     fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                    labels: labels,\
                                     datatype: resolve(\'datatype.name\', null),\
-                                    nodetype: $component.nodetype($data),\
+                                    nodetype: $component.getNodeType($data),\
+                                    journalType: $component.getJournalType($data),\
                                     value: value\
                                 }} --><!-- /ko -->\
                             </td>\
@@ -316,7 +325,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             
             if (!this.loading) { 
                 this.loading = this.options.loading; 
-            } else { console.log("loading in journal", this.loading()); }
+            }
 
             // methods
             this.selectElement = function(data, event) {
