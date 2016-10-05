@@ -198,5 +198,20 @@ public class JavaScriptImplUtils {
         }
         return qnames;
     }
-    
+
+    public static NodeRef getNodeRef(Object object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof NodeRef) {
+            return (NodeRef) object;
+        }
+        if (object instanceof String) {
+            return new NodeRef((String) object);
+        }
+        if (object instanceof ScriptNode) {
+            return ((ScriptNode) object).getNodeRef();
+        }
+        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to NodeRef");
+    }
 }
