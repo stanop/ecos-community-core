@@ -1443,7 +1443,7 @@ ko.bindingHandlers.fileUploadControl = {
 // ---------
 
 ko.bindingHandlers.orgstructControl = {
-    init: function(element, valueAccessor, allBindings) {
+    init: function(element, valueAccessor, allBindings, data, context) {
         var self = this;
 
         // default option
@@ -1451,6 +1451,10 @@ ko.bindingHandlers.orgstructControl = {
             allowedAuthorityType: "USER",
             allowedGroupType: ""
         }
+
+        // from fake model option
+        if (data.allowedAuthorityType && data.allowedAuthorityType())
+            options.allowedAuthorityType = data.allowedAuthorityType();
 
         var settings = valueAccessor(),
             value = settings.value,
@@ -1466,6 +1470,9 @@ ko.bindingHandlers.orgstructControl = {
 
 
         Event.on(showVariantsButton, "click", function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+
             if (!orgstructPanel) {
                 orgstructPanel = new YAHOO.widget.Panel(orgstructPanelId, {
                     width:          "800px", 
@@ -1803,7 +1810,7 @@ function updatedControlValue(valueObject, ulSelected, tree) {
         }
 
         if (typeof valueObject == "string") {
-            valueArray = field.value.split(",");
+            valueArray = valueObject.split(",");
         }
 
         for (var i in valueArray) {
