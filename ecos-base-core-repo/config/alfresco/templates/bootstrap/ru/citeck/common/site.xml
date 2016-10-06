@@ -36,7 +36,10 @@
         <view:mlvalue view:locale="en_US">${site.title_en}</view:mlvalue>
         <view:mlvalue view:locale="ru_RU">${site.title_ru}</view:mlvalue>
       </cm:title>
-      <cm:description>${site.description}</cm:description>
+      <cm:description>
+        <view:mlvalue view:locale="en_US">${site.description_en}</view:mlvalue>
+        <view:mlvalue view:locale="ru_RU">${site.description_ru}</view:mlvalue>
+      </cm:description>
       <st:sitePreset>${site.preset}</st:sitePreset>
       <st:siteVisibility>${site.visibility}</st:siteVisibility>
     </view:properties>
