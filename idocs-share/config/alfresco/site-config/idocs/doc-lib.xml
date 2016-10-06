@@ -5,6 +5,7 @@
 			<action id="document-download">
 				<param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}</param>
 				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
+				<evaluator negate="true">evaluator.doclib.contracts.payment</evaluator>
 			</action>
 			<action id="document-publish" type="javascript" label="actions.document.publish">
 				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
