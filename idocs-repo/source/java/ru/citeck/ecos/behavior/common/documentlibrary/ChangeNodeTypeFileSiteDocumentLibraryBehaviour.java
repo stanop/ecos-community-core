@@ -52,7 +52,8 @@ public class ChangeNodeTypeFileSiteDocumentLibraryBehaviour implements NodeServi
             @Override
             public Boolean doWork() throws Exception {
                 SiteInfo siteInfo = siteService.getSite(nodeRef);
-                return isNodeInDocumentLibraryOnFileSite(siteInfo, nodeRef);
+                return nodeService.getType(nodeRef).isMatch(ContentModel.TYPE_CONTENT)
+                        && isNodeInDocumentLibraryOnFileSite(siteInfo, nodeRef);
             }
         });
 
