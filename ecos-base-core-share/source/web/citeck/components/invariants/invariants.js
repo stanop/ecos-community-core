@@ -991,7 +991,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             var invariant = this.evaluatedValid().invariant;
-            return invariant != null ? invariant.description() : "";
+            return invariant != null ? Alfresco.util.message(invariant.description()) : "";
         })
 
         .computed('single', function() {
