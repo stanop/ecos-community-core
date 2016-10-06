@@ -103,6 +103,9 @@ ${pickerVar}.setOptions({
 					<div id="${pickerId}-results" class="picker-items">
 						<#nested>
 					</div>
+					<div id="${pickerId}-emptyMessage" class="no-items-message hidden">
+						${msg("form.control.object-picker.no-items")}
+					</div>
 				</div>
 				<div id="${pickerId}-right" class="yui-u panel-right">
 					<div id="${pickerId}-selectedItems" class="picker-items"></div>
