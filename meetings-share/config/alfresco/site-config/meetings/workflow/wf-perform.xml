@@ -52,7 +52,7 @@
 				<view-form template="/ru/citeck/components/form/workflow/perform/control-task.ftl" />
 				<appearance>
 					<field id="wfperf:controlOutcome">
-						<control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl">
+						<control template="/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl">
 							<control-param name="options">PerformAccepted|workflow.control-task.outcome.PerformAccepted#alf#ReturnToPerform|workflow.control-task.outcome.ReturnToPerform</control-param>
 						</control>
 					</field>
@@ -62,7 +62,7 @@
 				<edit-form template="/ru/citeck/components/form/workflow/perform/control-task-inline.ftl" />
 				<appearance>
 					<field id="wfperf:controlOutcome">
-						<control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl">
+						<control template="/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl">
 							<control-param name="options">PerformAccepted|workflow.control-task.outcome.PerformAccepted#alf#ReturnToPerform|workflow.control-task.outcome.ReturnToPerform</control-param>
 						</control>
 					</field>
