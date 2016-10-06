@@ -81,7 +81,8 @@
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
 			<header key="idocs:currencyCode" default="true" />
-			<header key="idocs:currencyName" default="true" />
+			<header key="idocs:currencyName" />
+			<header key="cm:title" default="true" />
 		</headers>
 	</journal>
 	<journal id="bank-accounts">

@@ -215,7 +215,6 @@
                     <show id="idocs:currencyCode"/>
                     <show id="idocs:currencyName"/>
                     <show id="idocs:currencyShortName"/>
-                    <show id="cm:title"/>
                 </field-visibility>
             </form>
         </forms>
@@ -228,13 +227,7 @@
                     <show id="idocs:currencyCode"/>
                     <show id="idocs:currencyName"/>
                     <show id="idocs:currencyShortName"/>
-                    <show id="cm:title"/>
                 </field-visibility>
-                <appearance>
-                    <field id="cm:title">
-                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
-                    </field>
-                </appearance>
             </form>
         </forms>
     </config>
