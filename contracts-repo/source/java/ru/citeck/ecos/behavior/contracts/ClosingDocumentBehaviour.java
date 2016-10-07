@@ -8,8 +8,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.ContractsModel;
-import ru.citeck.ecos.utils.ConvertAmountInWords;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.utils.wordconverter.AmountInWordConverter;
+import ru.citeck.ecos.utils.wordconverter.AmountInWordConverterFactory;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -54,40 +56,23 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnUpdatePro
 
     private void setTotalAmountInWords(NodeRef nodeRef) {
         Double amount;
-        String closingDocumentCurrency = "";
-        String currency;
-        NodeRef currencyRefFromAgreement = null;
+        String currencyCode = "";
 
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_CURRENCY, nodeService);
         NodeRef agreementRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_AGREEMENT, nodeService);
 
-        if (agreementRef != null) {
-            currencyRefFromAgreement = RepoUtils.getFirstTargetAssoc(agreementRef, ContractsModel.ASSOC_AGREEMENT_CURRENCY, nodeService);
+        if (nodeService.exists(agreementRef)) {
+            currencyRef = RepoUtils.getFirstTargetAssoc(agreementRef, ContractsModel.ASSOC_AGREEMENT_CURRENCY, nodeService);
         }
 
-        if (currencyRef != null) {
-            closingDocumentCurrency = currencyRef.toString();
-        } else if (currencyRefFromAgreement != null) {
-            closingDocumentCurrency = currencyRefFromAgreement.toString();
-        }
-
-        switch (closingDocumentCurrency) {
-            case "workspace://SpacesStore/currency-usd": {
-                currency = "USD";
-                break;
-            }
-            case "workspace://SpacesStore/currency-eur": {
-                currency = "EUR";
-                break;
-            }
-            default: {
-                currency = "RUB";
-            }
+        if (nodeService.exists(currencyRef)) {
+            currencyCode = (String) nodeService.getProperty(currencyRef, IdocsModel.PROP_CURRENCY_CODE);
         }
 
         if (nodeService.getProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT) != null) {
             amount = (Double) nodeService.getProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
-            String amountInWords = ConvertAmountInWords.convert(amount, currency);
+            AmountInWordConverter wordConverter = new AmountInWordConverterFactory().getConverter();
+            String amountInWords = wordConverter.convert(amount, currencyCode);
             nodeService.setProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS, amountInWords);
         }
     }

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ConvertAmountInWordsTest {
 
-    @Test
+    /*@Test
     public void convertTest() {
         assertEquals("Один миллион двести четыре тысячи девятьсот двадцать четыре рубля 67 копеек", ConvertAmountInWords.convert(1204924.67, "RUB"));
         assertEquals("Двадцать пять тысяч восемьсот девяносто два рубля 25 копеек", ConvertAmountInWords.convert(25892.25, "RUB"));
@@ -38,5 +38,5 @@ public class ConvertAmountInWordsTest {
         assertEquals("Двести девять долларов США 00 центов", ConvertAmountInWords.convert(209.00, "USD"));
         assertEquals("Тридцать три доллара США 70 центов", ConvertAmountInWords.convert(33.7, "USD"));
         assertEquals("Десять тысяч долларов США 00 центов", ConvertAmountInWords.convert(10000, "USD"));
-    }
+    }*/
 }
