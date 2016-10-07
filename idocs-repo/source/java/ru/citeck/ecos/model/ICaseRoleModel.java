@@ -36,6 +36,8 @@ public class ICaseRoleModel {
     // aspects
 
     // properties
+    public static final QName PROP_VARNAME = QName.createQName(NAMESPACE, "varName");
+    public static final QName PROP_IS_REFERENCE_ROLE = QName.createQName(NAMESPACE, "isReferenceRole");
 
     // association
     public static final QName ASSOC_ASSIGNEES = QName.createQName(NAMESPACE, "assignees");
