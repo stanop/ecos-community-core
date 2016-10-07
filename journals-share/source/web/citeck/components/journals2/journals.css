@@ -176,11 +176,6 @@
 	vertical-align: top;
 }
 
-.toolbar .yui-pg-container a.yui-pg-previous,
-.toolbar .yui-pg-container a.yui-pg-next {
-	font-weight: bold;
-}
-
 div.toolbar.flat-button span.yui-checkbox-button-checked,
 div.toolbar.flat-button span.yui-checkbox-button-checked.yui-checkbox-button-hover
 {
@@ -402,6 +397,19 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 	background-image: url(images/refresh-active.png);
 }
 
+/* selected-menu button */
+.toolbar .yui-button.selected-menu span.first-child button {
+    background-image: url(images/journals.png);
+}
+
+.toolbar .yui-button.selected-menu.yui-button-hover span.first-child button,
+.toolbar .yui-button.selected-menu.yui-button-active span.first-child button  {
+    background-image: url(images/journals-active.png);
+}
+
+.toolbar .yui-button.selected-menu.yui-button-disabled span.first-child button  {
+    background-image: url(images/journals-disabled.png);
+}
 
 /* export button */
 .toolbar .yui-button.report span.first-child button {

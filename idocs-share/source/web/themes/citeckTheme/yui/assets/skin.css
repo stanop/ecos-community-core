@@ -3323,9 +3323,33 @@ body.yui-layout {
 	text-decoration: underline;
 	/*outline: 0;*/
 }
-.yui-skin-citeckTheme span.yui-pg-first,.yui-skin-citeckTheme span.yui-pg-previous,.yui-skin-citeckTheme span.yui-pg-next,.yui-skin-citeckTheme span.yui-pg-last {
+.yui-skin-citeckTheme span.yui-pg-first,
+.yui-skin-citeckTheme span.yui-pg-previous,
+.yui-skin-citeckTheme span.yui-pg-next,
+.yui-skin-citeckTheme span.yui-pg-last {
 	color: #a6a6a6;
 }
+
+.yui-skin-citeckTheme .yui-pg-previous,
+.yui-skin-citeckTheme .yui-pg-next {
+	font-size: 0;
+	text-decoration: none !important;
+}
+
+.yui-skin-citeckTheme .yui-pg-previous:before,
+.yui-skin-citeckTheme .yui-pg-next:before {
+	font-family: FontAwesome;
+	font-size: 13px;
+}
+
+.yui-skin-citeckTheme .yui-pg-previous:before {
+  	content: "\f100";
+}
+
+.yui-skin-citeckTheme .yui-pg-next:before {
+  	content: "\f101";
+}
+
 .yui-skin-citeckTheme .yui-pg-page {
 	background-color: #fff;
 	border: 1px solid #CBCBCB;

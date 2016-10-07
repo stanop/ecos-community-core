@@ -640,21 +640,24 @@ JournalsWidget
 
 		columns = _.map(columns, Column);
 
-		// init action column
-		var actionGroupId = this.actionGroupId();
-		if(actionGroupId == buttonsActionGroupId) {
-			columns.unshift(new ActionsColumn({
-				id: 'actions',
-				label: this.msg("column.actions"),
-				formatter: formatters.buttons()
-			}));
-		} else if(actionGroupId != noneActionGroupId) {
-			columns.unshift(new ActionsColumn({
-				id: 'actions',
-				label: this.msg("column.actions"),
-				formatter: formatters.actions(actionGroupId)
-			}));
+		// init action column. Not for mobile version
+		if (!Citeck.mobile.isMobileDevice() && !Citeck.mobile.hasTouchEvent()) {
+			var actionGroupId = this.actionGroupId();
+			if(actionGroupId == buttonsActionGroupId) {
+				columns.unshift(new ActionsColumn({
+					id: 'actions',
+					label: this.msg("column.actions"),
+					formatter: formatters.buttons()
+				}));
+			} else if(actionGroupId != noneActionGroupId) {
+				columns.unshift(new ActionsColumn({
+					id: 'actions',
+					label: this.msg("column.actions"),
+					formatter: formatters.actions(actionGroupId)
+				}));
+			}
 		}
+		
 		// init selected column
 		columns.unshift(new ActionsColumn({
 			id: 'selected',

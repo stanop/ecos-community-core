@@ -66,8 +66,30 @@
     width: 100%;
 }
 
+
 /* YUI */
 
 .mobile .yui-overlay-hidden {
     display: none;
+}
+
+
+/* JOURNAL */
+
+.mobile .toolbar.icon-buttons .yui-button,
+.mobile .toolbar-menu .icon-buttons .yui-button {
+    margin-right: 0;
+}
+
+.mobile .toolbar.icon-buttons .yui-button.yui-menu-button span.first-child,
+.mobile .toolbar-menu .icon-buttons .yui-button.yui-menu-button span.first-child {
+    background-image: none !important;
+    padding: 5px;
+}
+
+.mobile .toolbar.icon-buttons .yui-button span.first-child button:not(:empty),
+.mobile .toolbar-menu .icon-buttons .yui-button span.first-child button:not(:empty) {
+  background-position: center;
+  font-size: 0;
+  height: 19px;
 }
