@@ -25,7 +25,6 @@ import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
 import org.alfresco.repo.workflow.WorkflowModel;
-import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.*;
@@ -202,7 +201,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
 		for(String to : authorities) {
 			notificationContext.addTo(to);
 		}
-		notificationContext.setAsyncNotification(true);
+		notificationContext.setAsyncNotification(getAsyncNotification());
 		if (null != from) {
 			notificationContext.setFrom(from);
 		}

@@ -18,15 +18,6 @@
  */
 package ru.citeck.ecos.template;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.alfresco.cmis.client.impl.AlfrescoUtils;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.exporter.NodeContentData;
 import org.alfresco.repo.i18n.MessageService;
@@ -35,29 +26,26 @@ import org.alfresco.repo.template.BaseContentNode.TemplateContentData;
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
 import org.alfresco.repo.template.TemplateNode;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNameMap;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.workflow.WorkflowService;
-import org.alfresco.service.cmr.workflow.WorkflowInstance;
-import org.alfresco.service.cmr.workflow.WorkflowDefinition;
-
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.DictionaryUtils;
+
+import java.util.*;
 
 /**
  * Provides extended node service capabilities for templates.
@@ -186,7 +174,36 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
             || value instanceof TemplateContentData
             || value instanceof ContentData;
     }
-    
+
+    public boolean isDateProperty(String propertyName) {
+        return DataTypeDefinition.DATE.equals(getAttributeTypeName(propertyName));
+    }
+
+    public boolean isDatetimeProperty(String propertyName) {
+        return DataTypeDefinition.DATETIME.equals(getAttributeTypeName(propertyName));
+    }
+
+    public QName getAttributeTypeName(String attribute) {
+
+        if (attribute == null) {
+            return null;
+        }
+
+        QName qName = QName.resolveToQName(namespaceService, attribute);
+
+        PropertyDefinition property = dictionaryService.getProperty(qName);
+        if (property != null) {
+            return property.getDataType().getName();
+        }
+
+        AssociationDefinition association = dictionaryService.getAssociation(qName);
+        if (association != null) {
+            return association.getTargetClass().getName();
+        }
+
+        return null;
+    }
+
     public String getContentUrl(Object value) {
         String urlRegexp = "^/d/d/(.+)/(.+)/(.+)/.+$";
         String urlReplace = "$1://$2/$3";

@@ -96,7 +96,7 @@
         <field assoc="idocs:legalEntity">
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
-                <param name="journalType">original-location</param>
+                <param name="journalType">legal-entities</param>
             </region>
         </field>
         <field prop="idocs:bankTitle"/>
@@ -107,6 +107,15 @@
         <field prop="idocs:corresponentBankTitle"/>
         <field prop="idocs:correspondentBankId"/>
         <field prop="idocs:corresponentAccountNumber"/>
+    </view>
+
+    <view class="idocs:filesNomenclature">
+        <views mode="create" kind="1-column" />
+        <views mode="edit" kind="1-column" />
+        <field prop="idocs:fileIndex"/>
+        <field prop="idocs:fileName"/>
+        <field prop="idocs:fileYear"/>
+        <field prop="idocs:clauseNumber"/>
     </view>
 
 </views>

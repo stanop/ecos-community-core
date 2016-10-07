@@ -294,52 +294,6 @@ YAHOO.Bubbling.fire("registerRenderer", {
 	}
 });
 
-/**
- * Sign document action
- *
- * @method onActionDocumentSign
- * @param asset {object} Object literal representing file or folder to be actioned
-*/
-YAHOO.Bubbling.fire("registerAction", {
-	actionName: "onActionDocumentSign",
-	fn: function(asset) {
-
-		   if(!isPluginInstalled()) {
-			   alert(Alfresco.util.message("message.signing.plugin-not-installed"));
-			   open("http://www.cryptopro.ru/products/cades/plugin", "CryptoProBrowserPlug-in");
-			   return;
-		   }
-
-		   var nodeRef = new Alfresco.util.NodeRef(asset.nodeRef);
-		   if(this.recordData.jsNode.hasAspect("cm:versionable")) {
-			   var xmlHttp_add = new XMLHttpRequest();
-			   xmlHttp_add.open("GET", Alfresco.constants.PROXY_URI + "acm/name_lastversion_by_noderef?nodeRef=" + nodeRef, false);
-			   xmlHttp_add.send(null);
-			   if (xmlHttp_add.status != 200) {
-				   return;
-			   }
-			   nodeRef = eval('(' + xmlHttp_add.responseText + ')').nodeRef;
-		   }
-
-		   var dataForSign = getDataForSign(nodeRef);
-		   if (this.recordData.jsNode.hasAspect("cm:versionable")) {
-			   var currentDocDataForSign = getDataForSign(this.recordData.jsNode.nodeRef);
-			   if(dataForSign[0].base64 !== currentDocDataForSign[0].base64) {
-				   alert(Alfresco.util.message("message.signing.invalid-hash-sum"));
-				   return;
-			   }
-		   }
-
-		   var signedMessage = signCreate(Alfresco.constants.USERNAME, dataForSign[0].base64);
-		   var verifyResult = Verify(signedMessage, dataForSign[0].base64);
-		   if (verifyResult) {
-			   signPut(nodeRef, signedMessage);
-		   }
-		   document.location.reload();
-	}
-});
-
-
 
 /**
  * Block contractor action.
@@ -612,6 +566,20 @@ YAHOO.Bubbling.fire("registerAction", {
 	}
 });
 
+YAHOO.Bubbling.fire("registerAction", {
+	actionName: "onDocumentFillTemplateDialog",
+	fn: function(record) {
+		var documentRef = record.nodeRef;
+
+		Citeck.forms.dialog(documentRef, "template", function() {
+			window.location.reload();
+		}, {
+			forceOldDialog: true
+		});
+
+	}
+});
+
 function getSiteNameFromLocation(location) {
 	var result = null;
 	if (location) {
@@ -712,138 +680,6 @@ Citeck.format.openCalendar = function() {
 		}
 	});
 
-/**************************************/
-/*              SIGNING               */
-/**************************************/
-
-var CADESCOM_CADES_X_LONG_TYPE_1 = 0x5d;
-var CAPICOM_CURRENT_USER_STORE = 2;
-var CAPICOM_MY_STORE = "My";
-var CAPICOM_STORE_OPEN_MAXIMUM_ALLOWED = 2;
-var CAPICOM_CERTIFICATE_FIND_SUBJECT_NAME = 1;
-var CADESCOM_BASE64_TO_BINARY = 1;
-var CADES_BES = 1;
-
-function signCreate(certSubjectName, dataToSign) {
-	var oStore = CreateObject("CAPICOM.Store");
-	oStore.Open(
-		CAPICOM_CURRENT_USER_STORE,
-		CAPICOM_MY_STORE,
-		CAPICOM_STORE_OPEN_MAXIMUM_ALLOWED
-	);
-
-	var oCertificates = oStore.Certificates.Find(CAPICOM_CERTIFICATE_FIND_SUBJECT_NAME, certSubjectName);
-	if (oCertificates.Count == 0) {
-		alert("Certificate not found");
-		return;
-	}
-	var oCertificate = oCertificates.Item(1);
-
-	var oSigner = CreateObject("CAdESCOM.CPSigner");
-	oSigner.Certificate = oCertificate;
-	oSigner.TSAAddress = "http://cryptopro.ru/tsp/";
-	oSigner.Options = 1; //CAPICOM_CERTIFICATE_INCLUDE_WHOLE_CHAIN
-
-	var oSignedData = CreateObject("CAdESCOM.CadesSignedData");
-	oSignedData.ContentEncoding = CADESCOM_BASE64_TO_BINARY;
-	oSignedData.Content = dataToSign;
-
-	try {
-//        var sSignedMessage = oSignedData.SignCades(oSigner, CADESCOM_CADES_X_LONG_TYPE_1, true);
-		var sSignedMessage = oSignedData.SignCades(oSigner, CADES_BES, true);
-	} catch (err) {
-		alert("Failed to create signature. Error: " + GetErrorMessage(err));
-		return;
-	}
-
-	oStore.Close();
-
-	return sSignedMessage;
-}
-
-function signPut(nodeRef, signedMessage) {
-	try {
-		var xmlHttp_add = new XMLHttpRequest();
-		xmlHttp_add.open("POST", Alfresco.constants.PROXY_URI + "acm/digitalSignaturePut", false);
-		xmlHttp_add.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlHttp_add.send(
-			"nodeRef=" + encodeURIComponent(nodeRef) +
-				"&sign=" + encodeURIComponent(signedMessage) +
-				"&signer=" + encodeURIComponent(Alfresco.constants.USERNAME)
-		);
-		if (xmlHttp_add.status != 200) {
-			alert(xmlHttp_add.status);
-		}
-	} catch(e) {
-		alert(e);
-	}
-}
-
-function getDataForSign(nodeRef) {
-	var xmlHttp_add = new XMLHttpRequest();
-	xmlHttp_add.open("GET", Alfresco.constants.PROXY_URI + "acm/digestAndAttr?nodeRef=" + nodeRef, false);
-	xmlHttp_add.send(null);
-	if (xmlHttp_add.status != 200) {
-		return null;
-	}
-	return eval('(' + xmlHttp_add.responseText + ')').data;
-}
-
-function Verify(sSignedMessage,dataToSign) {
-	var oSignedData = CreateObject("CAdESCOM.CadesSignedData");
-	oSignedData.ContentEncoding = CADESCOM_BASE64_TO_BINARY;
-	oSignedData.Content = dataToSign;
-	try {
-//        oSignedData.VerifyCades(sSignedMessage, CADESCOM_CADES_X_LONG_TYPE_1);
-//        oSignedData.VerifyCades(sSignedMessage, CADESCOM_CADES_X_LONG_TYPE_1,true);
-		oSignedData.VerifyCades(sSignedMessage, CADES_BES, true);
-	} catch (err) {
-		alert("Failed to verify signature. Error: " + GetErrorMessage(err));
-		return false;
-	}
-	return true;
-}
-
-function GetErrorMessage(e) {
-	var err = e.message;
-	if (!err) {
-		err = e;
-	} else if (e.number) {
-		err += " (" + e.number + ")";
-	}
-	return err;
-}
-
-function CreateObject(name) {
-	switch (navigator.appName) {
-		case "Microsoft Internet Explorer":
-			return new ActiveXObject(name);
-		default:
-			var cadesobject = document.getElementById("cadesplugin");
-			return cadesobject.CreateObject(name);
-	}
-}
-
-function isPluginInstalled() {
-	switch (navigator.appName) {
-		case 'Microsoft Internet Explorer':
-			try {
-				var obj = new ActiveXObject("CAdESCOM.CPSigner");
-				return true;
-			} catch (err) {}
-			break;
-		default:
-			var mimetype = navigator.mimeTypes["application/x-cades"];
-			if (mimetype) {
-				var plugin = mimetype.enabledPlugin;
-				if (plugin) {
-					return true;
-				}
-			}
-			break;
-	}
-	return false;
-}
 
 YAHOO.Bubbling.fire("registerAction", {
     actionName: "onActionDialogForm",
@@ -975,7 +811,35 @@ YAHOO.Bubbling.fire("registerAction", {
                 sourceContext = Alfresco.constants.URL_SERVICECONTEXT;
             } else if (sourceContext != "") sourceContext = "";
 
-            if (actionType === "serverAction") {
+            if (props.actionTitle == "Register" || props.actionTitle == "Зарегистрировать") {
+                Citeck.forms.dialog(asset.node.nodeRef, "register", {
+                    scope: this,
+                    fn: function() {
+                        Alfresco.util.Ajax.jsonPost({
+                            url: Alfresco.constants.PROXY_URI + "api/lifecycle/do-transition?nodeRef=" + asset.nodeRef,
+                            successCallback: {
+                                scope: this,
+                                fn: function() {
+                                    PopupManager.displayMessage({
+                                        text: this.msg("message.transitionSuccess")
+                                    });
+                                    _.delay(function() {
+                                        window.location.reload();
+                                    }, 3000);
+                                }
+                            },
+                            failureCallback: {
+                                scope: this,
+                                fn: function() {
+                                    PopupManager.displayMessage({
+                                        text: this.msg("message.transitionError")
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }, { title : props.actionTitle });
+            } else if (actionType === "serverAction") {
                 Alfresco.util.Ajax.jsonPost({
                     url: (sourceContext === "" ? Alfresco.constants.PROXY_URI : sourceContext) + props.actionURL,
                     successCallback: {

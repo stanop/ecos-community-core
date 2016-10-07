@@ -38,6 +38,10 @@ Citeck.namespace = function(namespace) {
 	return scope;
 };
 
+
+// HTML5
+// -----
+
 Citeck.HTML5.supportedInputTypes = function() {
   var input = document.createElement("INPUT");
 
@@ -73,6 +77,21 @@ for (var i in inputTypes) {
 }
 supportedInputTypes = null;
 inputTypes = null;
+
+
+// UTILS
+// -----
+
+Citeck.utils.concatOptions = function(defaultOptions, newOptions) {
+    for (var key in newOptions) {
+        var newValue = newOptions[key],
+            oldValue = defaultOptions[key];
+
+        if (newValue && newValue != oldValue) {
+            defaultOptions[key] = newOptions[key];
+        }
+    }
+};
 
 /**
  * Format user name

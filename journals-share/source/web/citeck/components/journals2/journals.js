@@ -120,37 +120,19 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
-	.computed('valueTemplate', {
-		read: function() {
-				if(!this._valueTemplate) {
-					// make this 'private' to suppress cloning
-					this._valueTemplate = ko.observable();
-				}
-				return this._valueTemplate();
-		},
-		write: function(value) {
-			if(!this._valueTemplate) {
-				this._valueTemplate = ko.observable();
-			}
-			this._valueTemplate(value);
-		}
-	})
 	;
 
 CreateVariant
 	.property('url', s)
 	.load('url', function() {
-        YAHOO.util.Connect.asyncRequest(
-            'GET',
-            Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template",
-            {
-                success: function(response) {
-                    var result = response.responseText;
-                    this.url(result);
-                },
-                scope: this
-            }
-        );
+      YAHOO.util.Connect.asyncRequest('GET', Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template", {
+          success: function(response) {
+              var result = response.responseText;
+              this.url(result);
+          },
+          scope: this
+        }
+      );
     })
 	.property('title', s)
 	.property('destination', s)
@@ -159,12 +141,15 @@ CreateVariant
 	.property('canCreate', b)
 	.property('isDefault', b)
 	.computed('link', function() {
-		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}';
-		if (this.url() != null) {
-			urlTemplate = this.url().replace(/(^\s+|\s+$)/g,''); //removing whitespace at the beginning and at the end of the string
-		} else {
-			urlTemplate = defaultUrlTemplate;
-		}
+		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
+				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+
+		// redirect back after submit
+		urlTemplate += "&onsubmit=back";
+
+		// TODO: 
+		// - support parameter from xml
+
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") {
 				return value();
@@ -204,13 +189,22 @@ JournalType
 			return attr.isDefault();
 		}), '_info');
 	})
+	.computed('defaultSearchableAttributes', function(attr) {
+		return _.intersection(this.defaultAttributes(), this.searchableAttributes());
+	})
 	.computed('defaultFilter', function() {
+		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
+			var predicates = attr.resolve("datatype.predicates");
+			if (!predicates) return;
+			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
+		});
+
 		return new Filter({
 			nodeRef: null,
 			title: null,
 			permissions: { Write: false, Delete: false},
 			journalTypes: [ this.id() ],
-			criteria: []
+			criteria: _.compact(criteria)
 		});
 	})
 	.computed('defaultSettings', function() {
@@ -270,6 +264,11 @@ Filter
 			journalTypes: _.invoke(this.journalTypes(), 'id')
 		};
 	})
+	.computed('usableCriteria', function() {
+		return _.filter(this.criteria(), function(criterion) { 
+			return criterion.value() ? true : false; 
+		});
+	})
 	.init(function() {
 		this.criteria.extend({ rateLimit: 0 });
 	})
@@ -307,6 +306,8 @@ Attribute
 	.shortcut('type', '_info.type')
 	.shortcut('displayName', '_info.displayName')
 	.shortcut('datatype', '_info.datatype')
+	.shortcut('nodetype', '_info.nodetype')
+	.shortcut('journalType', '_info.journalType')
 	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
@@ -322,6 +323,8 @@ AttributeInfo
 	.property('displayName', s)
 	.property('datatype', Datatype)
 	.property('labels', o)
+	.property('nodetype', s)
+	.property('journalType', JournalType)
 	;
 
 Datatype
@@ -1125,7 +1128,9 @@ AttributeInfo
 	.load('*', koutils.bulkLoad(new BulkLoader({
 		url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
 		method: "GET",
-		emptyFn: function() { return { attributes: [] }; },
+		emptyFn: function() { 
+			return { attributes: [] }; 
+		},
 		addFn: function(query, id) {
 			if(id) {
 				query.attributes.push(id);
@@ -1134,7 +1139,9 @@ AttributeInfo
 				return false;
 			}
 		},
-		getFn: function(response) { return response.json.attributes; }
+		getFn: function(response) { 
+			return response.json.attributes; 
+		}
 	}), 'name'))
 	;
 
@@ -1175,7 +1182,7 @@ JournalsWidget
 				return;
 			}
 
-			var filterCriteria = filter.criteria();
+			var filterCriteria = filter.usableCriteria();
 			if(!filter.criteria.loaded()) {
 				logger.debug("Filter criteria are not loaded, deferring search");
 				koutils.subscribeOnce(filter.criteria, load, this);

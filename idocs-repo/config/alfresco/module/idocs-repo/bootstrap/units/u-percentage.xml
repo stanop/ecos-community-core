@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:pas="http://www.citeck.ru/model/products-and-services/1.0">
+
+    <pas:unit view:childName="cm:u-pct">
+        <view:properties>
+            <sys:node-uuid>u-pct</sys:node-uuid>
+            <cm:name>Процент</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">%</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">%</view:mlvalue>
+            </cm:title>
+            <pas:unitName>
+                <view:mlvalue view:locale="en_US">Percentage</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Процент</view:mlvalue>
+            </pas:unitName>
+            <pas:unitShortName>
+                <view:mlvalue view:locale="en_US">%</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">%</view:mlvalue>
+            </pas:unitShortName>
+        </view:properties>
+    </pas:unit>
+
+</view:view>

@@ -21,6 +21,86 @@
     margin: 0 0 10px 0;
 }
 
+
+/* loading-indicator */
+.invariants-form.loading {
+  position: relative;
+}
+
+.invariants-form.loading .form-fields {
+  height: 300px;
+}
+
+.invariants-form.loading .form-fields,
+.invariants-form.loading .form-buttons {
+  visibility: hidden;
+}
+
+.invariants-form .loading-container {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 25%;
+  width: 270px;
+  height: 270px;
+  text-align: center;
+}
+
+.invariants-form.loading .loading-container {
+  display: block;
+}
+
+.static .loading-container {
+  left: 45%;
+}
+
+/*.invariants-form.loading .loading-container {
+  display: block;
+}*/
+
+.loading-container .loading-indicator {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  border: 10px solid #2d3541;
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: cssload-spin 1100ms infinite linear;
+    -o-animation: cssload-spin 1100ms infinite linear;
+    -ms-animation: cssload-spin 1100ms infinite linear;
+    -webkit-animation: cssload-spin 1100ms infinite linear;
+    -moz-animation: cssload-spin 1100ms infinite linear;
+}
+
+.loading-container .loading-message {
+  width: 175px;
+  position: absolute;
+  left: 18%;
+  top: 43%;
+}
+
+@keyframes cssload-spin {
+  100%{ transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-o-keyframes cssload-spin {
+  100%{ -o-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-ms-keyframes cssload-spin {
+  100%{ -ms-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-webkit-keyframes cssload-spin {
+  100%{ -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-moz-keyframes cssload-spin {
+  100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+
 /* select */
 .ecos-form .form-fields .form-field select {
     background-color: white;
@@ -162,7 +242,7 @@
   margin: 0 0 10px 0;
   position: relative;
   padding: 0 0 10px 0;
-  
+
   clear: both;
 
   box-sizing: border-box;
@@ -263,7 +343,8 @@
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number,
-.invariants-form .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row .template-free-content,
+.invariants-form .template-table .template-row .region-select-group {
   width: 54.5%;
   float: right;
 }
@@ -356,7 +437,7 @@
 
 .invariants-form .template-table .template-row .template-mandatory {
   top: 2px;
-  left: 2px; 
+  left: 2px;
   position: relative;
 }
 
@@ -509,7 +590,13 @@
 .invariants-form .template-table .template-checkbox .checkbox-option {
   margin-right: 15px;
   white-space: nowrap;
-  display: inline-block;  
+  display: inline-block;
+}
+
+.invariants-form .template-table .form-field.template-row .template-checkbox,
+.invariants-form .template-table .form-field.template-half-width .template-checkbox,
+.invariants-form .template-table .form-field.template-third-width .template-checkbox {
+  margin-top: 7px;
 }
 
 .invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
@@ -531,24 +618,28 @@
 }
 
 
-
-
 /* message */
-
 .invariants-form .template-table .template-message {
     display: block !important;
     clear: both;
 }
 
-.invariants-form .template-table .template-third-width .template-message span.validation-message ,  
-.invariants-form .template-table .template-half-width .template-message span.validation-message {
+.invariants-form .template-table .template-third-width .template-message span.validation-message ,
+.invariants-form .template-table .template-half-width .template-message span.validation-message,
+.invariants-form .template-table .template-row .template-message span.validation-message {
   margin-top: 10px;
   display: inline-block;
+  line-height: 100%;
 }
 
 .invariants-form .template-table .template-row .template-message,
 .invariants-form .template-table [class*="template-row-"] .template-message {
   margin-left: 45.5%;
+}
+
+.invariants-form .template-table .template-row.with-help .template-message,
+.invariants-form .template-table [class*="template-row-"].with-help .template-message {
+  margin-left: 46.5%;
 }
 
 .static .invariants-form .template-table .template-row .template-message,
@@ -560,8 +651,13 @@
   margin-left: 0;
 }
 
-.invariants-form .template-table .template-row > .template-textarea + .template-help + .template-message {
+.static .invariants-form .template-table .template-row .template-message span.validation-message {
+  margin-top: 0;
+}
+
+.invariants-form .template-table .template-row > .template-textarea + .region-select-group + .template-help + .template-message {
   position: static;
+  margin-left: 0;
 }
 
 
@@ -1059,7 +1155,7 @@
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 
 .journal-container {
@@ -1068,7 +1164,7 @@
 
 .journal-container.selected-elements {
   height: 92px;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .journal-container .loading {
@@ -1097,13 +1193,13 @@
     white-space: nowrap;
 }
 
-.journal-container .journal th:last-child, 
+.journal-container .journal th:last-child,
 .journal-container .journal tr.journal-element td:last-child {
     padding-right: 15px;
 }
 
 .journal-container .journal .journal-element td {
-  border-top: 1px solid #ccc; 
+  border-top: 1px solid #ccc;
 }
 
 .journal-container .journal .journal-element:hover td {
@@ -1222,7 +1318,6 @@
 
 .selected-filter-criteria-container table.selected-criteria-list td.value-col {
   width: 35%;
-  position: relative;
 }
 
 .selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate,
@@ -1295,7 +1390,7 @@
 }
 
 .invariants-form:not(.view-form) .template-table .template-row .template-view {
-  padding-top: 5px; 
+  padding-top: 5px;
   width: 30%;
   box-sizing: border-box;
   float: left;

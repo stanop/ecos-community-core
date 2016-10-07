@@ -102,7 +102,7 @@ execution.setVariable("wfcf_confirmOutcome", null);</activiti:expression>
             <activiti:field name="script">
               <activiti:expression>execution.setVariable("wfcf_confirmOutcome", task.getVariable("wfcf_confirmOutcome"));
 if (task.getVariable("bpm_comment") == "" &amp;&amp; task.getVariable("wfcf_confirmOutcome") != "Confirmed") {
-  throw("Необходимо ввести комментарии");
+  throw(Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage("wfcf_confirmworkflow.message_comment_is_empty"));
 }</activiti:expression>
             </activiti:field>
           </activiti:taskListener>
@@ -238,6 +238,13 @@ if(execution.getVariable("wfcf_resubmitOnNewVersion") == null) {
     <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
     <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow19" sourceRef="exclusivegateway4" targetRef="subprocess2">
+      <extensionElements>
+        <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.SystemScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[<import resource="classpath:alfresco/module/idocs-repo/scripts/processingStages.js">process();]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${precedence.stages.get(stageIndex).confirmers.size() > 0}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent4" name="cancelled"></endEvent>

@@ -26,6 +26,9 @@
             <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
             <invariant on="default" language="javascript">0</invariant>
         </property>
+        <association name="pas:currency">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
     </type>
 
 </invariants>

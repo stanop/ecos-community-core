@@ -27,12 +27,6 @@
 	<!--                    Document WebScripts                       -->
 	<!--==============================================================-->
 
-	<bean id="webscript.ru.citeck.workflow.name-last-version-by-node.get"
-		class="ru.citeck.ecos.webscripts.document.NameAndLastVersionByNodeRefGet"
-		parent="webscript">
-		<property name="serviceRegistry" ref="ServiceRegistry" />
-	</bean>
-
 	<bean id="webscript.ru.citeck.document.supplementary-files.get"
 		class="ru.citeck.ecos.webscripts.document.SupplementaryFilesGet"
 		parent="webscript">
@@ -71,38 +65,6 @@
         <property name="nodeInfoFactory" ref="NodeInfoFactory" />
     </bean>
 
-	<!--==============================================================-->
-	<!--                    Security WebScripts                       -->
-	<!--==============================================================-->
-
-	<bean id="webscript.ru.citeck.security.digestAndAttr.get"
-		class="ru.citeck.ecos.webscripts.security.DigestAttrGet"
-		parent="webscript">
-        <property name="nodeService" ref="NodeService" />
-        <property name="contentService" ref="ContentService" />
-        <property name="versionService" ref="versionService" />
-	</bean>
-
-    <bean id="webscript.ru.citeck.security.checkValid.post"
-          class="ru.citeck.ecos.webscripts.security.ValidCheck"
-          parent="webscript">
-        <property name="nodeService" ref="NodeService" />
-    </bean>
-
-	<bean id="webscript.ru.citeck.security.digitalSignaturePut.post"
-		class="ru.citeck.ecos.webscripts.security.DigitalSignaturePut"
-		parent="webscript">
-        <property name="nodeService" ref="NodeService" />
-        <property name="personService" ref="PersonService" />
-        <property name="versionService" ref="versionService" />
-	</bean>
-
-	<bean id="webscript.ru.citeck.security.digitalSignature.get"
-		class="ru.citeck.ecos.webscripts.security.DigitalSignatureGet"
-		parent="webscript">
-        <property name="nodeService" ref="NodeService" />
-        <property name="versionService" ref="versionService" />
-	</bean>
 
     <bean id="webscript.ru.citeck.print.metadata-printpdf.get" parent="dbp.webscript.view">
         <property name="processors">

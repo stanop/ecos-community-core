@@ -70,13 +70,12 @@
 
 /* criteria styles (journals-page, journals-selector) */
 
-.filter-criteria
-{
+.filter-criteria {
 	display: table;
 	vertical-align: middle;
 }
-.filter-criteria .criterion
-{
+
+.filter-criteria .criterion {
 	display: table-row;
 	vertical-align: middle;
 }
@@ -84,8 +83,7 @@
 .filter-criteria .criterion .criterion-actions,
 .filter-criteria .criterion .criterion-field,
 .filter-criteria .criterion .criterion-predicate,
-.filter-criteria .criterion .criterion-value
-{
+.filter-criteria .criterion .criterion-value {
 	display: table-cell;
 	vertical-align: top;
 	padding: 0 5px;
@@ -93,37 +91,65 @@
 
 .filter-criteria .criterion .criterion-field,
 .filter-criteria .criterion .criterion-predicate,
-.filter-criteria .criterion .criterion-value
-{
+.filter-criteria .criterion .criterion-value {
 	min-width: 200px;
 }
 
-.filter-criteria .criterion .criterion-field
-{
+.filter-criteria .criterion .criterion-predicate select {
+	width: 100%;
+	padding: 2px 5px;
+}
+
+.filter-criteria .criterion .criterion-field {
 	padding: 4px;
 }
 
-.criterion-predicate.does-not-need-value + .criterion-value
-{
+.criterion-predicate.does-not-need-value + .criterion-value {
 	display: none;
 }
 
-/* criteria form overrides (journals-page, journals-selector) */
+/* criteria form field */
 
-.form-container .criterion-value .form-field label,
-.form-container .criterion-value .form-field .help-icon
-{
-	display: none;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input {
+    margin-right: 10px;
 }
 
-.form-container .criterion-value .form-field,
-.form-container .criterion-value .form-field .object-finder,
-.form-container .criterion-value .form-field .object-finder .current-values,
-.form-container .criterion-value .form-field .object-finder .show-picker
-{
-	display: inline-block;
-	vertical-align: middle;
-	margin: 0;
+.filter-criteria .criterion .criterion-value .criterion-value-field-input, 
+.filter-criteria .criterion .criterion-value .criterion-value-field-view {
+    display: inline-block;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input {
+	width: 100%;
+	padding: 3px 5px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select {
+    background-color: white;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="date"],
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="datetime-local"] {
+  	padding: 2px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="text"],
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="number"] {
+  	padding: 3px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date a.calendar-link-button,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime a.calendar-link-button {
+  	display: inline-block;
+  	cursor: pointer;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date img.datepicker-icon,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime img.datepicker-icon {
+  	position: relative;
+  	top: 3px;
 }
 
 /* toolbar styles (journals-page, journals-dashlet) */
@@ -587,4 +613,3 @@ select.yui-pg-rpp-options
 	border-color: #ccc;
 	cursor: pointer;
 }
-

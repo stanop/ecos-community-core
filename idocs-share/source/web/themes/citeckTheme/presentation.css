@@ -762,6 +762,12 @@ span.navigation-separator-alt
    width: 100% !important;
 }
 
+.formsCheckBox {
+  margin-left: 10px;
+  top: 3px;
+  position: relative;
+}
+
 .mceEditor.defaultSkin
 {
    box-shadow: 0.33px 2px 8px rgba(0, 0, 0, 0.15);
@@ -2257,7 +2263,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding: 5px 10px 5px 30px !important;
    border-radius: 10px;
    position: initial;
-   width: 200px !important;
+   width: 135px !important;
 }
 
 #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text:hover {
@@ -2678,6 +2684,31 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 #bd #alfresco-journals {
    border-top: none;
+}
+
+.filter-criteria .criterion .criterion-predicate select {
+  background-color: white;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button {
+  padding: 2px 10px;
+  font-weight: 900;
+  background-color: white;
+  border: 2px solid #1c55da;
+  color: #1c55da;
+  cursor: pointer;
+}
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:hover,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:focus {
+  color: white;
+  background-color: #1c55da;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  background-color: white;
+  cursor: default;
 }
 
 /*  end journal */
@@ -4282,4 +4313,10 @@ div#HEADER_USER_STATUS {
   #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
     position: static;
   }
+}
+
+
+/* dynamic-tree */
+.yui-skin-citeckTheme .dynamic-tree-picker .dynamic-tree-list .item-buttons {
+  right: -25px;
 }

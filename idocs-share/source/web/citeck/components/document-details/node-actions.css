@@ -33,7 +33,11 @@
 }
 
 
-/* all add link */
+/* --------------------- */
+/*     base styles       */
+/* --------------------- */
+
+/* add link */
 .node-actions [class*="add"] a {
     background-image: url(../../../themes/citeckTheme/images/create.png) !important; 
 }
@@ -42,7 +46,7 @@
     background-image: url(../../../themes/citeckTheme/images/create-active.png) !important; 
 }
 
-/* all edit link */
+/* edit link */
 .node-actions [class*="edit"] a {
     background-image: url(../../../themes/citeckTheme/images/edit.png) !important; 
 }
@@ -51,7 +55,7 @@
     background-image: url(../../../themes/citeckTheme/images/edit-active.png) !important; 
 }
 
-/* all delete link */
+/* delete link */
 .node-actions [class*="delete"] a {
     background-image: url(../../../themes/citeckTheme/images/remove.png) !important; 
 }
@@ -60,19 +64,55 @@
     background-image: url(../../../themes/citeckTheme/images/remove-active.png) !important; 
 }
 
-
 /* download link */
-
-.node-actions .document-download a,
-.node-actions .folder-download a {
-    background-image: url(../../../themes/citeckTheme/images/download.png) !important;    
+.node-actions [class*="download"] a {
+    background-image: url(../../../themes/citeckTheme/images/download.png) !important; 
 }
 
-.node-actions .document-download a:hover,
-.node-actions .folder-download a:hover {
-    background-image: url(../../../themes/citeckTheme/images/download-active.png) !important;
+.node-actions [class*="download"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/download-active.png) !important; 
 }
 
+/* upload link */
+.node-actions [class*="upload"] a {
+    background-image: url(../../../themes/citeckTheme/images/upload.png) !important; 
+}
+
+.node-actions [class*="upload"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/upload-active.png) !important; 
+}
+
+/* save link */
+.node-actions [class*="save"] a {
+    background-image: url(../../../themes/citeckTheme/images/save.png) !important; 
+}
+
+.node-actions [class*="save"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/save-active.png) !important; 
+}
+
+/* copy link */
+.node-actions [class*="copy"] a {
+    background-image: url(../../../themes/citeckTheme/images/copy.png) !important; 
+}
+
+.node-actions [class*="copy"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/copy-active.png) !important; 
+}
+
+/* start link */
+.node-actions [class*="start"] a {
+    background-image: url(../../../themes/citeckTheme/images/do-transition.png) !important; 
+}
+
+.node-actions [class*="start"] a:hover {
+    background-image: url(../../../themes/citeckTheme/images/do-transition-active.png) !important; 
+}
+
+
+/* --------------------- */
+/*     special styles    */
+/* --------------------- */
 
 /* edit properties link */
 .node-actions .document-edit-metadata a,
@@ -85,79 +125,7 @@
     background-image: url(../../../themes/citeckTheme/images/edit-properties-active.png) !important; 
 }
 
-/* save as template link */
-.node-actions .case-save-as-template a {
-    background-image: url(../../../themes/citeckTheme/images/save.png) !important; 
-}
-
-.node-actions .case-save-as-template a:hover {
-    background-image: url(../../../themes/citeckTheme/images/save-active.png) !important; 
-}
-
-
-/* workflow link and documents*/
-.node-actions .document-start-adhoc a,
-.node-actions .document-start-statement a,
-.node-actions .document-add-payment-for-approved a,
-.node-actions .document-add-closing-doc-for-payment a,
-.node-actions .document-add-payment-for-approved a {
-    background-image: url(../../../themes/citeckTheme/images/create-document.png) !important;
-}
-
-.node-actions .document-start-adhoc a:hover,
-.node-actions .document-start-statement a:hover,
-.node-actions .document-add-payment-for-approved a:hover,
-.node-actions .document-add-closing-doc-for-payment a:hover,
-.node-actions .document-add-payment-for-approved a:hover {
-    background-image: url(../../../themes/citeckTheme/images/create-document-active.png) !important;
-}
-
-
-/* delete link */
-.node-actions .document-delete a {
-    background-image: url(../../../themes/citeckTheme/images/delete-case.png) !important;
-}
-
-.node-actions .document-delete a:hover {
-    background-image: url(../../../themes/citeckTheme/images/delete-case-active.png) !important;
-}
-
-
-/* copy to */
-
-.node-actions .document-copy-to a {
-    background-image: url(../../../themes/citeckTheme/images/copy.png) !important;
-}
-
-.node-actions .document-copy-to a:hover {
-    background-image: url(../../../themes/citeckTheme/images/copy-active.png) !important;
-}
-
-
-/* upload new version */
-
-.node-actions .document-upload-new-version a {
-    background-image: url(../../../themes/citeckTheme/images/upload.png) !important;
-}
-
-.node-actions .document-upload-new-version a:hover {
-    background-image: url(../../../themes/citeckTheme/images/upload-active.png) !important;
-}
-
-
-/* do transition */
-
-.node-actions #onActionDoTransition a {
-    background-image: url(../../../themes/citeckTheme/images/do-transition.png) !important;
-}
-
-.node-actions #onActionDoTransition a:hover {
-    background-image: url(../../../themes/citeckTheme/images/do-transition-active.png) !important;
-}
-
-
 /* template */
-
 .node-actions .document-fill-template a {
     background-image: url(../../../themes/citeckTheme/images/edit.png) !important; 
 }

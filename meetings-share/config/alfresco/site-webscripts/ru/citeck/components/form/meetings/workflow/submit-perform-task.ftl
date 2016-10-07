@@ -57,6 +57,10 @@
 		</div>
 	</div>
 
+	<div id="prop_wfperf_enableControl_hidden" style="display: none;">
+		<@forms.renderField field="prop_wfperf_enableControl" />
+	</div>
+
 	<@forms.renderField field="assoc_wfperf_controller" extension = {
 		"endpointType": "cm:person",
 		"control": {
@@ -117,5 +121,9 @@
 			}
 		});
 	}
+
+	var enableControlField = YAHOO.util.Dom.get("${args.htmlid}_prop_wfperf_enableControl");
+	enableControlField.value = "true";
+
 // ]]></script>
 </@>

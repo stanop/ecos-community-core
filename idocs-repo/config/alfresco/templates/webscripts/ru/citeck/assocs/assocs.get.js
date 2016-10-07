@@ -34,12 +34,19 @@
                             if(source != null && source.length != 0 && source.hasPermission("Read")) {
                                 if (contentTypes.length > 0 && !checkContentType(source, contentTypes))
                                     continue;
+
+                                var titleSource = source.name;
+                                if (source.properties["cm:title"] != null && source.properties["cm:title"] != "") {
+                                    titleSource = source.properties["cm:title"];
+                                }
+
                                 sourceNodeRef.push({
                                     'nodeRef': source.nodeRef.toString(),
                                     'name': source.name,
                                     'isFolder': source.isSubType("cm:folder").toString(),
                                     'isContent': source.isSubType("cm:content").toString(),
-									'source': source
+                                    'source': source,
+                                    'title': titleSource
                                 });
                             }
                     }
@@ -52,12 +59,19 @@
                             if(target != null && target.length != 0 && target.hasPermission("Read")) {
                                 if (contentTypes.length > 0 && !checkContentType(target, contentTypes))
                                     continue;
+
+                                var titleTarget = target.name;
+                                if (target.properties["cm:title"] != null && target.properties["cm:title"] != "") {
+                                    titleTarget = target.properties["cm:title"];
+                                }
+
                                 targetNodeRef.push({
                                     'nodeRef': target.nodeRef.toString(),
                                     'name': target.name,
                                     'isFolder': target.isSubType("cm:folder").toString(),
                                     'isContent': target.isSubType("cm:content").toString(),
-									'target': target
+                                    'target': target,
+                                    'title': titleTarget
                                 });
                             }
                     }
@@ -70,12 +84,19 @@
                             if(child != null && child.length != 0 && child.hasPermission("Read")) {
                                 if (contentTypes.length > 0 && !checkContentType(child, contentTypes))
                                     continue;
+
+                                var titleChild = child.name;
+                                if (child.properties["cm:title"] != null && child.properties["cm:title"] != "") {
+                                    titleChild = child.properties["cm:title"];
+                                }
+
                                 childNodeRef.push({
                                     'nodeRef': child.nodeRef.toString(),
                                     'name': child.name,
                                     'isFolder': child.isSubType("cm:folder").toString(),
                                     'isContent': child.isSubType("cm:content").toString(),
-									'child': child
+                                    'child': child,
+                                    'title': titleChild
                                 });
                             }
                     }
@@ -93,4 +114,4 @@
         'addAssocs': addAssocs
     }
 
-})()
+})();

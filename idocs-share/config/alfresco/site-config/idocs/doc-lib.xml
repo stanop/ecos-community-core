@@ -5,6 +5,7 @@
 			<action id="document-download">
 				<param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}</param>
 				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
+				<evaluator>evaluator.doclib.contracts.all</evaluator>
 			</action>
 			<action id="document-publish" type="javascript" label="actions.document.publish">
 				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
@@ -34,6 +35,7 @@
 			<action id="document-assign-workflow">
 				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
 				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+				<evaluator negate="true">evaluator.doclib.ecos.document</evaluator>
 			</action>
 			<action id="document-manage-site-permissions">
 				<evaluator>evaluator.doclib.action.disableAction</evaluator>
@@ -82,19 +84,13 @@
 				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
 			</action>
 
-			<action id="document-sign"
-					label="actions.document.sign"
-					type="javascript">
-				<param name="function">onActionDocumentSign</param>
-				<evaluator negate="true">evaluator.doclib.dms.documentIsSigned</evaluator>
-			</action>
-
 			<!-- Start confirm workflow -->
 			<action id="document-start-confirm" type="link" icon="document-assign-workflow" label="actions.document.start-confirm">
 				<param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$confirm</param>
 				<permissions>
 					<permission allow="true">Write</permission>
 				</permissions>
+				<evaluator>evaluator.doclib.ecos.document</evaluator>
 			</action>
 
 			<!-- Start perform workflow -->
@@ -158,8 +154,8 @@
 
 			<!-- Fill document template -->
 			<action id="document-fill-template" label="actions.document.fill-template"
-					type="link">
-				<param name="href">/share/page/fill-template?nodeRef={node.nodeRef}</param>
+					type="javascript">
+				<param name="function">onDocumentFillTemplateDialog</param>
 				<permissions>
 					<permission allow="true">Write</permission>
 				</permissions>
@@ -252,6 +248,7 @@
 				<action index="99" id="custom-manage-permissions" />
 				<action index="450" id="document-fill-template" />
 				<action index="500" id="document-start-statement" />
+				<action index="550" id="document-start-confirm" />
 			</actionGroup>
 
 			<actionGroup id="folder-browse">

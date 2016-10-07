@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(ko, koutils, moment) {
 
     var logger = Alfresco.logger,
         koclass = koutils.koclass,
@@ -244,6 +244,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         dictionary: DictionaryServiceImpl,
         enumeration: EnumerationServiceImpl,
         journals: JournalServiceImpl,
+        moment: moment
     };
 
     function evalJavaScript(expression, model) {
@@ -258,12 +259,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         }
     }
 
-    // TODO support freemarker
     function evalFreeMarker(expression, model) {
         try {
-            return _.template(expression, model, {
-                interpolate: /\$\{(.+?)\}/g
-            });
+            var liveTemplate = _.template(expression, { interpolate: /\$\{(.+?)\}/g });
+            return liveTemplate(model);
         } catch(e) {
             return undefined;
         }
@@ -271,8 +270,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
 
     function evalCriteriaQuery(criteria, model, pagination) {
         var query = {
-            skipCount: 0,
-            maxItems: 50
+            skipCount: 0
         };
 
         if (pagination) {
@@ -1588,6 +1586,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
         .property('invariantSet', ExplicitInvariantSet)
         .constant('rootObjects', rootObjects)
 
+        .property('_loading', b)
+        .computed('loaded', function() {
+          if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
+              var attributes = this.resolve("node.impl.attributes");
+              for (var a = 0; a < attributes.length; a++) {
+                for (var prop in attributes[a]) {
+                  if (ko.isObservable(!attributes[a][prop])) {
+                    if (!attributes[a][prop].loaded()) return false;
+                  }
+                }
+              }
+
+              // delay while controls are loading (2 seconds enough)
+              if (this._loading()) { setTimeout(function(scope) { scope._loading(false); }, 2000, this); }
+              return !this._loading();
+          }
+
+          return false;
+        })
+
         .method('submit', function() {
             if(this.node().impl().valid()) {
                 this.broadcast('node-view-submit');
@@ -1602,6 +1620,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
                 runtime: this,
                 node: this.node()
             });
+        })
+
+        .init(function() {
+          this._loading(true);
         })
         ;
 

@@ -12,7 +12,7 @@
             <bean parent="dbp.sequential" />
         </property>
         <property name="evaluator" ref="TemplateExpressionEvaluator" />
-        <property name="mimetypeService" ref="MimetypeService" />
+        <property name="mimetypeService" ref="mimetypeService" />
     </bean>
 
     <bean id="DataBundleProcessorWebScript.download" name="dbp.webscript.download" parent="DataBundleProcessorWebscript">

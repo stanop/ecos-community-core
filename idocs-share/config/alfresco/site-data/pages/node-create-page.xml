@@ -27,6 +27,7 @@
 				<runtimeKey>node-create</runtimeKey>
 				<onsubmit>card</onsubmit>
 				<oncancel>back</oncancel>
+				<redirect>{redirect}</redirect>
 			</properties>
 		</component>
 

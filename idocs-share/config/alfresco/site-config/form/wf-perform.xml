@@ -3,6 +3,17 @@
 	<config evaluator="string-compare" condition="activiti$perform">
 		<forms>
 			<form>
+				<field-visibility>
+					<show id="bpm:workflowDescription" />
+					<show id="bpm:workflowDueDate" />
+					<show id="bpm:workflowPriority" />
+					<show id="wfperf:performers" />
+					<show id="wfperf:coperformers" />
+					<show id="wfperf:enableControl" />
+					<show id="wfperf:controller" />
+					<show id="packageItems" />
+					<show id="cwf:sendNotification" force="true"/>
+				</field-visibility>
 				<create-form template="/ru/citeck/components/form/workflow/perform/submit-perform-task.ftl" />
 			</form>
 		</forms>

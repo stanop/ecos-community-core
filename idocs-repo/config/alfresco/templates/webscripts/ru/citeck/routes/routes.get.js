@@ -27,6 +27,10 @@
                             }
                         }
 
+                        if (routes.length != 0) {
+                            routes = filterScriptCondition(routes, node);
+                        }
+
                     }
                 } else {
                     status.setCode(404);
@@ -79,4 +83,47 @@
     function filterType(routes, type) {
         return filter(routes, { property: "tk:appliesToType", value: type });
     }
-})()
+
+    function filterScriptCondition(routes, document) {
+        var result = [];
+        var routesWithoutScript = [];
+        var foundRoutWithValidScript = false;
+
+        logger.debug("route.get.js - document: " + document.nodeRef);
+
+        for (var rout in routes) {
+            var routScript = routes[rout].properties["route:scriptCondition"];
+
+            pushRoutesWithoutScript(routScript, routes[rout], routesWithoutScript);
+
+            if (routScript && routScript != "") {
+                logger.debug("route.get.js - current rout: " + routes[rout].nodeRef);
+                logger.debug("route.get.js - routeScript: " + routScript);
+
+                var conditionFunction = new Function('document', routScript);
+                var condition = conditionFunction(document);
+
+                logger.debug("route.get.js - script result: " + condition);
+
+                if (condition == true) {
+                    result.push(routes[rout]);
+                    foundRoutWithValidScript = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundRoutWithValidScript == false && routesWithoutScript.length > 0) {
+            result = routesWithoutScript;
+        }
+
+        return result;
+    }
+
+    function pushRoutesWithoutScript(routScript, rout, routesWithoutScript) {
+        if (routScript == null || routScript == "") {
+            routesWithoutScript.push(rout);
+        }
+    }
+
+})();

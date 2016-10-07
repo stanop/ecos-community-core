@@ -1,7 +1,8 @@
 site.id=siteid
 site.title_en=Title
 site.title_ru=Заголовок
-site.description=Description
+site.description_en=Description
+site.description_ru=Описание
 
 # whether site is public or not (inherit permissions or not)
 site.public=false

@@ -18,11 +18,6 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -34,19 +29,18 @@ import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.repo.version.VersionServicePolicies;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-import org.alfresco.service.cmr.repository.MimetypeService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.TemplateService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.model.IdocsTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoNameBehaviour implements 
     NodeServicePolicies.OnUpdatePropertiesPolicy,
@@ -126,8 +120,15 @@ public class AutoNameBehaviour implements
 				return;
 			}
 
+			if (nameTemplate == null || "".equals(nameTemplate)) {
+				return;
+			}
+
 			String oldName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
 			int pos = oldName.lastIndexOf('.');
+			if (!appendExtension && pos >= 0) {
+				nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, oldName.substring(0, pos));
+			}
 			String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
 			String newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
 				@Override

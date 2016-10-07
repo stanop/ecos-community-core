@@ -11,7 +11,10 @@
                 <view:properties>
                     <sys:node-uuid>journal-types-and-kinds</sys:node-uuid>
                     <cm:name>types-and-kinds</cm:name>
-                    <cm:title>${journal.types-and-kinds}</cm:title>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.types-and-kinds_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.types-and-kinds_ru}</view:mlvalue>
+                    </cm:title>
                     <journal:journalType>types-and-kinds</journal:journalType>
                 </view:properties>
                 <journal:searchCriteria>

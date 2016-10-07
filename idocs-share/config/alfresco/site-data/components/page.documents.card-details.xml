@@ -8,7 +8,7 @@
         <nodeRef>{nodeRef}</nodeRef>
         <header>cardlet.case-element-documents.header</header>
         
-        <childrenUrl>Alfresco.constants.PROXY_URI+"/citeck/node/child-assocs?nodeRef={nodeRef}&amp;assocType=cm:contains"</childrenUrl>
+        <childrenUrl>Alfresco.constants.PROXY_URI+"/citeck/node/child-assocs?nodeRef={nodeRef}&amp;assocType=icase:documents"</childrenUrl>
         <responseSchema>
         { resultsList: 'nodes', fields: [ 
         	{key: 'nodeRef'}, 
@@ -31,7 +31,7 @@
         <buttonsInHeader>onPanelButtonUpload</buttonsInHeader>
         
         <contentType>cm:content</contentType>
-        <assocType>cm:contains</assocType>
+        <assocType>icase:documents</assocType>
         <destination>{nodeRef}</destination>
         
         <caseElementConfigName>documents</caseElementConfigName>

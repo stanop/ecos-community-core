@@ -12,6 +12,17 @@
 	<namespaces>
 		<namespace uri="http://www.citeck.ru/model/delegate/1.0" prefix="delegate" />
 	</namespaces>
+
+	<constraints>
+		<constraint name="delegate:constraint:delegateTrueFalse" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>true</value>
+					<value>false</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
 	
 	<types>
 	
@@ -103,6 +114,9 @@
 					<type>d:boolean</type>
 					<mandatory>true</mandatory>
 					<default>true</default>
+					<constraints>
+						<constraint ref="delegate:constraint:delegateTrueFalse" />
+					</constraints>
 				</property>
 			</properties>
 		</aspect>

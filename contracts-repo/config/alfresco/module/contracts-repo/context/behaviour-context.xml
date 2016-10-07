@@ -7,6 +7,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Договор<#else>Contract</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
@@ -20,6 +21,9 @@
 				<entry key="en_US">
 					<value><![CDATA[Contract №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 				</entry>
+				<entry key="lt_LT">
+					<value><![CDATA[Susitarimas №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
+				</entry>
 			</map>
 		</property>
 	</bean>
@@ -29,6 +33,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Доп.соглашение<#else>Add'l agreement</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
@@ -41,6 +46,9 @@
 				</entry>
 				<entry key="en_US">
 					<value><![CDATA[Add'l agreement №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
+				</entry>
+				<entry key="lt_LT">
+					<value><![CDATA[Papildomo susitarimo №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 				</entry>
 			</map>
 		</property>
@@ -57,6 +65,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Счет<#else>Invoice</#if> №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 		</property>
+		<property name="appendExtension" value="false" />
 		<property name="order" value="40"/>
 	</bean>
 
@@ -68,7 +77,10 @@
 					<value><![CDATA[Счет №#{'$'}{node.properties['payments:paymentNumber']!'б-н'} для<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 				</entry>
 				<entry key="en_US">
-					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} <#if .locale == "ru_RU">для<#else>for</#if><#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+					<value><![CDATA[Invoice №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} for<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
+				</entry>
+				<entry key="lt_LT">
+					<value><![CDATA[Sąskaita №#{'$'}{node.properties['payments:paymentNumber']!'n/a'} už<#if node.assocs['payments:beneficiary']?? && node.assocs['payments:beneficiary']?size &gt; 0> #{'$'}{node.assocs['payments:beneficiary'][0].name}</#if>]]></value>
 				</entry>
 			</map>
 		</property>
@@ -91,6 +103,9 @@
 				<entry key="en_US">
 					<value><![CDATA[Payment<#if node.parent.nodeRef??> for contract №#{'$'}{node.parent.properties['contracts:agreementNumber']!'n/a'}</#if>]]></value>
 				</entry>
+				<entry key="lt_LT">
+					<value><![CDATA[Mokėjimas<#if node.parent.nodeRef??> sutarčiai №#{'$'}{node.parent.properties['contracts:agreementNumber']!'n/a'}</#if>]]></value>
+				</entry>
 			</map>
 		</property>
 	</bean>
@@ -99,6 +114,32 @@
 		<property name="className" value="payments:period" />
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Период<#else>Period</#if> #{'$'}{node.properties['payments:periodStart']?string('dd.MM.yyyy')}-#{'$'}{node.properties['payments:periodEnd']?string('dd.MM.yyyy')}]]></value>
+		</property>
+	</bean>
+
+	<bean id="contracts.closingDocumentNamingBehaviour" parent="AutoNameBehaviour">
+		<property name="className" value="contracts:closingDocument"/>
+		<property name="nameTemplate">
+			<value><![CDATA[<#if .locale == "ru_RU" && node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Счет-фактура<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Акт<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Накладная</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'б-н'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> для #{'$'}{node.assocs['contracts:contractor'][0].name}</#if><#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Invoice<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Act<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Delivery</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'n/a'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> for #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if>]]></value>
+		</property>
+		<property name="appendExtension" value="false" />
+		<property name="order" value="40"/>
+	</bean>
+
+	<bean id="contracts.closingDocumentTitleBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="contracts:closingDocument"/>
+		<property name="titleMLTemplate">
+			<map>
+				<entry key="ru_RU">
+					<value><![CDATA[<#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Счет-фактура<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Акт<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Накладная</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'б-н'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> для #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+				</entry>
+				<entry key="en_US">
+					<value><![CDATA[<#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Invoice<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Act<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Delivery</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'n/a'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> for #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+				</entry>
+				<entry key="lt_LT">
+					<value><![CDATA[<#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef != 'workspace://SpacesStore/contracts-cat-closing-doc-other'><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-invoice'>Faktūra<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-act'>Aktas<#elseif node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-delivery'>Važtaraštis</#if> №#{'$'}{node.properties['contracts:closingDocumentNumber']!'n/a'}<#if node.assocs['contracts:contractor']?? && node.assocs['contracts:contractor']?size &gt; 0> už #{'$'}{node.assocs['contracts:contractor'][0].name}</#if></#if><#if node.properties['tk:kind']?? && node.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/contracts-cat-closing-doc-other'>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+				</entry>
+			</map>
 		</property>
 	</bean>
 
@@ -135,6 +176,7 @@
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="namespace" value="http://www.citeck.ru/model/products-and-services/1.0"/>
 		<property name="type" value="pasEntityCopied"/>
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
 	<bean id="paymentsBehaviour" class="ru.citeck.ecos.behavior.contracts.PaymentsBehaviour" init-method="init">
