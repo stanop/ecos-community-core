@@ -623,7 +623,7 @@ ko.bindingHandlers.journalControl = {
                 <div class="journal-picker-page-container ' + mode + '">\
                     <div class="filter-page hidden" id="' + filterPageId + '">\
                         <div class="selected-filter-criteria-container">\
-                            <!-- ko component: { name: \'list-of-selected-criterion\',\
+                            <!-- ko component: { name: \'filter-criteria-table\',\
                                 params: {\
                                     htmlId: htmlId,\
                                     itemId: itemId,\

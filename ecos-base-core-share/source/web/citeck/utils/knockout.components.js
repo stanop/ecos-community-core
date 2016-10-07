@@ -259,7 +259,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                                    optionsValue: \'id\',\
                                                    value: $parent.predicateValue"></select>\
                             </td>\
-                            <td class="criterion-predicate-selector">\
+                            <td class="criterion-value-selector">\
                                 <!-- ko component: { name: "filter-criterion-value", params: {\
                                     fieldId: $component.htmlId + "-criterion-" + $index(),\
                                     labels: labels(),\
