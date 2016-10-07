@@ -1,7 +1,7 @@
 package ru.citeck.ecos.utils.wordconverter;
 
 /**
- * Created by Roman on 10/7/2016.
+ * @author Roman.Makarskiy on 10.07.2016.
  */
 class CurrencyFactory {
 
@@ -21,7 +21,7 @@ class CurrencyFactory {
                 currency = new CurrencyEur();
                 break;
             }
-            default: currency = new CurrencyRub();
+            default: currency = new CurrencyUsd();
         }
         return currency;
     }

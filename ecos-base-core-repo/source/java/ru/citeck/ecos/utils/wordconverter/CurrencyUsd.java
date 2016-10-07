@@ -3,7 +3,7 @@ package ru.citeck.ecos.utils.wordconverter;
 import org.springframework.extensions.surf.util.I18NUtil;
 
 /**
- * Created by Roman on 10/7/2016.
+ * @author Roman.Makarskiy on 10.07.2016.
  */
 class CurrencyUsd extends Currency{
     CurrencyUsd() {

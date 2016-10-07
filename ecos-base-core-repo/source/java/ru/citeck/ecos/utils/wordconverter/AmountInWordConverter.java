@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by Roman on 10/7/2016.
+ * Convert Amount In Words class, essential for convert amount to amount in words.
+ * <p>
+ * The need to add this class occurred during the creation of templates for payments and closing documents
+ *
+ * @author Roman.Makarskiy on 10.07.2016.
  */
 public abstract class AmountInWordConverter {
 
@@ -63,7 +67,7 @@ public abstract class AmountInWordConverter {
 
     private static final String MILLION_DECLENSION_1 = "amount-in-word-converter.million.1";
     private static final String MILLION_DECLENSION_2 = "amount-in-word-converter.million.2";
-    private final static String MILLION_DECLENSION_3 = "amount-in-word-converter.million.3";
+    private static final String MILLION_DECLENSION_3 = "amount-in-word-converter.million.3";
 
     private static final String BILLION_DECLENSION_1 = "amount-in-word-converter.billion.1";
     private static final String BILLION_DECLENSION_2 = "amount-in-word-converter.billion.2";
@@ -73,8 +77,7 @@ public abstract class AmountInWordConverter {
     private static final String TRILLION_DECLENSION_2 = "amount-in-word-converter.trillion.2";
     private static final String TRILLION_DECLENSION_3 = "amount-in-word-converter.trillion.3";
 
-
-
+    private static final String INDENT = " ";
 
     private String[][] ONE = {};
     private String[] THOUSAND = {};
@@ -87,8 +90,43 @@ public abstract class AmountInWordConverter {
     private String trillion1, trillion2, trillion3;
     private String zero;
 
+    /**
+     * Return a amount in words
+     *
+     * @param amount   - amount to convert
+     * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
+     * @return amount in words
+     */
     public String convert(double amount, String currencyCode) {
+        return processConvert(amount, currencyCode);
+    }
 
+    String getDecade(int position) {
+        return DECADE[position] + INDENT;
+    }
+
+    String getOne(int kind, int position) {
+        return ONE[kind][position] + INDENT;
+    }
+
+    String getThousand(int position) {
+        return THOUSAND[position] + INDENT;
+    }
+
+    String getTen(int position) {
+        return TEN[position] + INDENT;
+    }
+
+    private String getDeclination(long n, String form1, String from2, String form5) {
+        n = Math.abs(n) % 100;
+        long n1 = n % 10;
+        if (n > 10 && n < 20) return form5;
+        if (n1 > 1 && n1 < 5) return from2;
+        if (n1 == 1) return form1;
+        return form5;
+    }
+
+    private String processConvert(double amount, String currencyCode) {
         Currency currency = new CurrencyFactory().createCurrency(currencyCode);
 
         String[][] DECLINATION = new String[][]{
@@ -129,8 +167,8 @@ public abstract class AmountInWordConverter {
 
         String result = "";
         if (total == 0) {
-            result = zero + " " + getDeclination(0, DECLINATION[1][0], DECLINATION[1][1], DECLINATION[1][2]);
-            return result + " " + fraction + " " + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
+            result = zero + INDENT + getDeclination(0, DECLINATION[1][0], DECLINATION[1][1], DECLINATION[1][2]);
+            return result + INDENT + fraction + INDENT + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
         }
 
         int amt = segments.size();
@@ -151,35 +189,26 @@ public abstract class AmountInWordConverter {
             int number3 = Integer.valueOf(stringNumber.substring(2, 3));
             int number23 = Integer.valueOf(stringNumber.substring(1, 3));
 
-            if (currentSegment > 99) result += THOUSAND[number1] + " ";
+            if (currentSegment > 99) result += getThousand(number1) + INDENT;
             if (number23 > 20) {
-                result += DECADE[number2] + " ";
-                result += ONE[kind][number3] + " ";
+                result += getDecade(number2);
+                result += getOne(kind, number3);
             } else {
-                if (number23 > 9) result += TEN[number23 - 9] + " ";
-                else result += ONE[kind][number3] + " ";
+                if (number23 > 9) result += getTen(number23 - 9);
+                else result += getOne(kind, number3);
             }
 
-            result += getDeclination(currentSegment, DECLINATION[amt][0], DECLINATION[amt][1], DECLINATION[amt][2]) + " ";
+            result += getDeclination(currentSegment, DECLINATION[amt][0], DECLINATION[amt][1], DECLINATION[amt][2]) + INDENT;
             amt--;
         }
-        result = result + "" + fractions + " " + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
-        result = result.replaceAll(" {2,}", " ");
+        result = result + "" + fractions + INDENT + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
+        result = result.replaceAll(" {2,}", INDENT);
         result = result.substring(0, 1).toUpperCase() + result.substring(1);
 
         return result;
     }
 
-    private String getDeclination(long n, String form1, String from2, String form5) {
-        n = Math.abs(n) % 100;
-        long n1 = n % 10;
-        if (n > 10 && n < 20) return form5;
-        if (n1 > 1 && n1 < 5) return from2;
-        if (n1 == 1) return form1;
-        return form5;
-    }
-
-    void initializationStrings() {
+    void initializationResources() {
         ONE = new String[][]{
                 {"", I18NUtil.getMessage(NUMERAL_ONE),
                         I18NUtil.getMessage(NUMERAL_TWO),
