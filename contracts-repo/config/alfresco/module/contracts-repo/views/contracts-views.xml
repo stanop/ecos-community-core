@@ -309,7 +309,13 @@
         </view>
         <view>
             <field assoc="payments:beneficiary">
-
+                <region name="select" template="select-journal" >
+                    <param name="journalType">idocs-contractor</param>
+                </region>
+                <region name="input" template="view" />
+                <region name="label" template="label">
+                    <param name="key">payments_paymentsModel.association.payments_beneficiary.title</param>
+                </region>
             </field>
             <field prop="payments:beneficiaryType">
                 <region name="input" template="select" />
