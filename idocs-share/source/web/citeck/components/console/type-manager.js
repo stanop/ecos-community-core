@@ -510,7 +510,7 @@
       
     _buildTreeNode: function DLT__buildTreeNode(p_oData, p_oParent, p_expanded) {
       var textNode = new YAHOO.widget.TextNode({
-        label: $html(p_oData.name),
+        label: $html(p_oData.title || p_oData.name),
         nodeRef: p_oData.nodeRef,
         description: p_oData.description,
         editable : false
