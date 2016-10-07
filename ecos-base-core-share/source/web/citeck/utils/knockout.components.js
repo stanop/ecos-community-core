@@ -223,7 +223,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
     // TODO:
     // - refactoring 'filter-criteria' and 'list-of-selected-criterion'. Combine methods
 
-    ko.components.register('list-of-selected-criterion', {
+    ko.components.register('filter-criteria-table', {
         viewModel: function(params) {
             var self = this;
             initializeParameters.call(this, params);
@@ -247,22 +247,22 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             }
         },
         template: 
-           '<table class="selected-criteria-list">\
+           '<table class="filter-criteria-table">\
                 <tbody>\
                     <!-- ko foreach: selectedFilterCriteria -->\
-                        <tr>\
-                            <td class="action-col"><a class="remove-selected-criterion" data-bind="click: $component.remove">X</a></td>\
-                            <td class="name-col"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
-                            <td class="predicate-col" data-bind="with: datatype">\
-                                <select class="predicate" data-bind="options: predicates,\
-                                                                     optionsText: \'label\',\
-                                                                     optionsValue: \'id\',\
-                                                                     value: $parent.predicateValue"></select>\
+                        <tr class="criterion">\
+                            <td class="criterion-actions"><a class="remove-criterion" data-bind="click: $component.remove">X</a></td>\
+                            <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
+                            <td class="criterion-predicate" data-bind="with: datatype">\
+                                <select data-bind="options: predicates,\
+                                                   optionsText: \'label\',\
+                                                   optionsValue: \'id\',\
+                                                   value: $parent.predicateValue"></select>\
                             </td>\
-                            <td class="value-col">\
+                            <td class="criterion-predicate-selector">\
                                 <!-- ko component: { name: "filter-criterion-value", params: {\
                                     fieldId: $component.htmlId + "-criterion-" + $index(),\
-                                    labels: labels,\
+                                    labels: labels(),\
                                     datatype: resolve(\'datatype.name\', null),\
                                     nodetype: $component.getNodeType($data),\
                                     journalType: $component.getJournalType($data),\
@@ -412,7 +412,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 return ko.computed(function() {
                     var value = data.value(), title;
                     if (isInvariantsObject(value)) title = value.properties["cm:title"];
-                    return title || (data.valueTitle || data.textValue)
+                    return title || (data.valueTitle() || data.textValue())
                 });
             };
         },
@@ -690,7 +690,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
     }
 
     function isInvariantsObject(object) {
-        return object.toString().toLowerCase().indexOf("invariants") != -1
+        return object ? object.toString().toLowerCase().indexOf("invariants") != -1 : null;
     }
 
 });

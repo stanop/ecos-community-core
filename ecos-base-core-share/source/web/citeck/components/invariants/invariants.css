@@ -1305,39 +1305,48 @@
   overflow: auto;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list {
+.selected-filter-criteria-container table.filter-criteria-table {
   width: 100%;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td:not(:last-child) {
+.selected-filter-criteria-container table.filter-criteria-table td:not(:last-child) {
   padding-right: 10px;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.action-col {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-actions {
   width: 5%;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.name-col {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-field {
   width: 30%;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.predicate-col {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate {
   width: 30%;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate select {
   width: 100%;
   background-color: white;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector {
   width: 35%;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.predicate-col select.predicate,
-.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="text"],
-.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="number"],
-.selected-filter-criteria-container table.selected-criteria-list td.value-col select {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .criterion-value-field-input {
+    margin-right: 10px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .criterion-value-field-input, 
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .criterion-value-field-view {
+    display: inline-block;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate select,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="number"],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector select {
   width: 100%;
   background-color: white;
   box-sizing: border-box;
@@ -1347,22 +1356,22 @@
 
 /* date & time */
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="text"].date-entry,
-.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="text"].time-entry {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].date-entry,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].time-entry {
   width: 30%;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col input[type="text"].time-entry {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].time-entry {
   margin-left: 15px;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .format-info,
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .help-icon,
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .help-text {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .format-info,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .help-icon,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .help-text {
   display: none;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .datepicker {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .datepicker {
   position: absolute;
   z-index: 10;
   display: none;
@@ -1370,26 +1379,26 @@
 }
 
 /* object-finder */
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .object-finder-items {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .object-finder-items {
   margin: 0;
   float: left;
   min-height: 26px;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .object-finder-items > div {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .object-finder-items > div {
   margin-top: 3px;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .object-finder-items img {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .object-finder-items img {
   vertical-align: -3px;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .show-picker {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .show-picker {
   float: right;
   clear: none;
 }
 
-.selected-filter-criteria-container table.selected-criteria-list td.value-col .show-picker .yui-button button {
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .show-picker .yui-button button {
   line-height: 125%;
 }
 

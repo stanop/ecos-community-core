@@ -127,6 +127,7 @@
 
 .filter-criteria .criterion .criterion-value .criterion-value-field-input select {
     background-color: white;
+    
 }
 
 .filter-criteria .criterion .criterion-value .criterion-value-field-input select,
@@ -621,3 +622,5 @@ select.yui-pg-rpp-options
 	border-color: #ccc;
 	cursor: pointer;
 }
+
+
