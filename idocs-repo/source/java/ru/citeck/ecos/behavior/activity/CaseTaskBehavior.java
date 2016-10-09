@@ -82,7 +82,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
         NodeRef wfPackage = workflowService.createPackage(null);
-        nodeService.createAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+        createOrReplaceAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
         workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
 
         NodeRef parent = caseActivityService.getDocument(taskRef);
@@ -119,7 +119,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
                 if (processVariablesObj != null && processVariablesObj instanceof Map) {
                     Map<String, Serializable> processVariables = (Map) processVariablesObj;
                     for (String parameter : transmittedParameters) {
-                        workflowProperties.put(QName.createQName(parameter), processVariables.get(parameter));
+                        Serializable value = processVariables.get(parameter);
+                        if (value != null) {
+                            workflowProperties.put(QName.createQName(parameter), value);
+                        }
                     }
                 }
             }
@@ -221,6 +224,16 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         if (wfPackage != null) {
             nodeService.removeAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
         }
+    }
+
+    private void createOrReplaceAssociation(NodeRef source, NodeRef target, QName assocType) {
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(source, assocType);
+        if (assocs != null) {
+            for (AssociationRef assoc : assocs) {
+                nodeService.removeAssociation(source, assoc.getTargetRef(), assocType);
+            }
+        }
+        nodeService.createAssociation(source, target, assocType);
     }
 
     public void registerAttributesMapping(Map<String, Map<String, String>> attributesMappingByWorkflow) {

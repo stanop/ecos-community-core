@@ -9,7 +9,7 @@
         <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
         <import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" />
         <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
-
+        <import uri="http://www.citeck.ru/model/workflow/case-perform/1.0" prefix="wfcp" />
     </imports>
 
     <associations type="icaseRole:role">
@@ -91,5 +91,11 @@
             <invariant on="relevant" language="javascript">node.properties["wfperf:enableControl"]</invariant>
         </association>
     </type>
+
+    <aspect name="wfcp:basePerformData">
+        <property name="wfcp:formKey">
+            <invariant on="options" language="javascript">dictionary.getSubTypes("wfcp:performTask")</invariant>
+        </property>
+    </aspect>
 
 </invariants>
