@@ -123,7 +123,42 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     var DDClasses = koclass('dictionary.Classes'),
         DDClass = koclass('dictionary.Class'),
         DDProperty = koclass('dictionary.Property'),
-        DDAssociation = koclass('dictionary.Association');
+        DDAssociation = koclass('dictionary.Association'),
+        DDProperties = koclass('dictionary.Properties');
+
+    DDProperties
+        .key('parentDocType', s)
+        .property('properties', [QName])
+        .load('properties', function () {
+            var load = function () {
+                var properties = [];
+                var attributes = [];
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + "/api/fullChildrenClasses",
+                    dataObj: {'cf': 'all', 'ctbp': this.parentDocType(), 'wap': 'true'},
+                    successCallback: {
+                        scope: this,
+                        fn: function (response) {
+                            var classDefs = response.json;
+                            for (var c in classDefs) {
+                                properties = _.keys(classDefs[c].properties);
+                                break;
+                            }
+                            for (var p in properties) {
+                                attributes.push(new QName(properties[p]));
+                            }
+                            //console.log('attributes1 = ' + attributes);
+                            this.model({
+                                properties: attributes
+                            });
+                            return attributes;
+                        }
+                    }
+                });
+            };
+            load.call(this);
+        })
+    ;
 
     DDClass
         .key('name', s)
@@ -185,6 +220,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             new DDClasses('all').ctbp("").classes();
             return new DDClass(name.key()).title();
         },
+
+        getProperties: function (parentDocType) {
+            return DDProperties(parentDocType).properties();
+        }
 
     };
 

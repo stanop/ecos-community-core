@@ -2,6 +2,7 @@ package ru.citeck.ecos.dictionary;
 
 import org.alfresco.repo.web.scripts.dictionary.ClassesGet;
 import org.alfresco.repo.web.scripts.dictionary.DictionaryComparators;
+import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -30,14 +31,16 @@ import java.util.*;
         private static final String REQ_PARAM_CLASS_FILTER = "cf";
         private static final String REQ_PARAM_CHILDREN_TYPE_BY_PARENT = "ctbp";
         private static final String REQ_PARAM_NAME = "n";
+        private static final String REQ_PARAM_WITH_ASPECTS_PROPERTIES = "wap";
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String classFilter = getValidInput(req.getParameter(REQ_PARAM_CLASS_FILTER));
         String childrenTypeByParent = getValidInput(req.getParameter(REQ_PARAM_CHILDREN_TYPE_BY_PARENT));
         String name = getValidInput(req.getParameter(REQ_PARAM_NAME));
+        boolean withAspectProperties = Boolean.valueOf(getValidInput(req.getParameter(REQ_PARAM_WITH_ASPECTS_PROPERTIES)));
         Map<QName, ClassDefinition> classdef = new HashMap<>();
-        Map<QName, Collection<PropertyDefinition>> propdef = new HashMap<>();
+        Map<QName, Set<PropertyDefinition>> propdef = new HashMap<>();
         Map<QName, Collection<AssociationDefinition>> assocdef = new HashMap<>();
         Map<String, Object> model = new HashMap<>();
         Collection<QName> qnames = new ArrayList<>();
@@ -63,8 +66,9 @@ import java.util.*;
                         if (name.equals(qname.getLocalName())) {
                             QName classQname = getClassQname(qname.getPrefixString().split(":")[0], name);
                             classdef.put(classQname, dictionaryservice.getClass(classQname));
-                            propdef.put(classQname, dictionaryservice.getClass(classQname).getProperties().values());
+                            propdef.put(classQname, new HashSet<PropertyDefinition>(dictionaryservice.getClass(classQname).getProperties().values()));
                             assocdef.put(classQname, dictionaryservice.getClass(classQname).getAssociations().values());
+                            addAspectProperties(withAspectProperties, propdef, classQname);
                         }
                     }
                 } else {
@@ -93,8 +97,9 @@ import java.util.*;
             if(classdef.isEmpty()) {
                 for (QName qname: qnames) {
                     classdef.put(qname, dictionaryservice.getClass(qname));
-                    propdef.put(qname, dictionaryservice.getClass(qname).getProperties().values());
+                    propdef.put(qname, new HashSet<PropertyDefinition>(dictionaryservice.getClass(qname).getProperties().values()));
                     assocdef.put(qname, dictionaryservice.getClass(qname).getAssociations().values());
+                    addAspectProperties(withAspectProperties, propdef, qname);
                 }
             }
 
@@ -107,4 +112,12 @@ import java.util.*;
             return model;
         }
     }
-}
+
+        private void addAspectProperties(boolean withAspectProperties, Map<QName, Set<PropertyDefinition>> propdef, QName classQname) {
+            if (withAspectProperties) {
+                for (AspectDefinition aspectDefinition : dictionaryservice.getClass(classQname).getDefaultAspects()) {
+                    propdef.get(classQname).addAll(aspectDefinition.getProperties().values());
+                }
+            }
+        }
+    }
