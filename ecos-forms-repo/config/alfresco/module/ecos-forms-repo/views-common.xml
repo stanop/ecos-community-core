@@ -125,17 +125,11 @@
 		</fields>
 		
 		<fields datatype="d:noderef">
-<!-- 		TODO support select from journals -->
-<!-- 			<regions name="input" template="view" /> -->
-<!-- 			<regions name="select" template="select-journal" /> -->
-			<regions name="input" template="autocomplete">
-				<param name="criteria">[ { attribute: "all", predicate: "string-starts-with" } ]</param>
-			</regions>
-<!-- 			<regions name="input" template="select" /> -->
+			<regions name="input" template="autocomplete" />
 		</fields>
 		
 		<fields nodetype="cm:content">
-<!-- 			<regions name="select" template="select-doclib" /> -->
+			<!-- <regions name="select" template="select-doclib" /> -->
 		</fields>
 	
 		<fields nodetype="cm:folder">
