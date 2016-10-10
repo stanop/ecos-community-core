@@ -53,22 +53,57 @@ onPerformTaskAssigned();]]></activiti:string>
       <sequenceFlow id="flow26" sourceRef="confirm" targetRef="endevent3"></sequenceFlow>
     </subProcess>
     <endEvent id="endevent4" name="completed"></endEvent>
-    <sequenceFlow id="flowAfterPerforming" sourceRef="subprocess2" targetRef="endevent4"></sequenceFlow>
-    <sequenceFlow id="flowBeforePerforming" sourceRef="startevent1" targetRef="subprocess2">
+    <sequenceFlow id="flowAfterPerforming" sourceRef="subprocess2" targetRef="exclusivegateway2">
       <extensionElements>
         <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
           <activiti:field name="script">
             <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onTakeFlowBeforePerforming();]]></activiti:string>
+onAfterPerformingFlowTake();]]></activiti:string>
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flowBeforePerforming" sourceRef="startevent1" targetRef="exclusivegateway1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
+onBeforePerformingFlowTake();]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway">
+      <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
+onSkipPerformingGatewayStarted();]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </exclusiveGateway>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow27" sourceRef="exclusivegateway1" targetRef="subprocess2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!skipPerforming}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow28" sourceRef="exclusivegateway2" targetRef="endevent4"></sequenceFlow>
+    <sequenceFlow id="flow29" sourceRef="exclusivegateway1" targetRef="exclusivegateway2">
+      <extensionElements>
+        <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
+onSkipPerformingFlowTake();]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${skipPerforming}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_case-perform">
     <bpmndi:BPMNPlane bpmnElement="case-perform" id="BPMNPlane_case-perform">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="130.0" y="129.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="129.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="subprocess2" id="BPMNShape_subprocess2">
         <omgdc:Bounds height="101.0" width="275.0" x="207.0" y="96.0"></omgdc:Bounds>
@@ -83,7 +118,13 @@ onTakeFlowBeforePerforming();]]></activiti:string>
         <omgdc:Bounds height="35.0" width="35.0" x="421.0" y="126.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
-        <omgdc:Bounds height="35.0" width="35.0" x="530.0" y="129.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="630.0" y="132.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="120.0" y="126.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="540.0" y="129.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
         <omgdi:waypoint x="266.0" y="143.0"></omgdi:waypoint>
@@ -95,11 +136,25 @@ onTakeFlowBeforePerforming();]]></activiti:string>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flowAfterPerforming" id="BPMNEdge_flowAfterPerforming">
         <omgdi:waypoint x="482.0" y="146.0"></omgdi:waypoint>
-        <omgdi:waypoint x="530.0" y="146.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="149.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flowBeforePerforming" id="BPMNEdge_flowBeforePerforming">
-        <omgdi:waypoint x="165.0" y="146.0"></omgdi:waypoint>
+        <omgdi:waypoint x="75.0" y="146.0"></omgdi:waypoint>
+        <omgdi:waypoint x="120.0" y="146.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="160.0" y="146.0"></omgdi:waypoint>
         <omgdi:waypoint x="207.0" y="146.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="580.0" y="149.0"></omgdi:waypoint>
+        <omgdi:waypoint x="630.0" y="149.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+        <omgdi:waypoint x="140.0" y="166.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="559.0" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="560.0" y="169.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -3,7 +3,7 @@ function onWorkflowStart() {
 
 }
 
-function onTakeFlowBeforePerforming() {
+function onBeforePerformingFlowTake() {
     var initialPerformers = toJSArray(execution.getVariable("wfcp_performers")),
         excludedPerformers = toJSArray(execution.getVariable("excludedPerformers")),
         performers = [],
@@ -17,6 +17,18 @@ function onTakeFlowBeforePerforming() {
     }
 
     execution.setVariable("performers", toJavaList(performers));
+}
+
+function onAfterPerformingFlowTake() {
+
+}
+
+function onSkipPerformingFlowTake() {
+
+}
+
+function onSkipPerformingGatewayStarted() {
+    execution.setVariable("skipPerforming", performers.size() == 0);
 }
 
 function onPerformTaskCreated() {
