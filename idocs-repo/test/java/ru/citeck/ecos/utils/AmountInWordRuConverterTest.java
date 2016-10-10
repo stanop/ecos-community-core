@@ -73,8 +73,8 @@ public class AmountInWordRuConverterTest {
 
     @Test
     public void convertGbpTest() {
-        assertEquals("Одна тысяча сто девяносто девять фунтов стерлингов 00 пенни", ruConverter.convert(1199.00, "GBP"));
-        assertEquals("Двадцать два фунта стерлингов 50 пенни", ruConverter.convert(22.50, "GBP"));
+        assertEquals("Одна тысяча сто девяносто девять фунтов стерлингов 00 пенсов", ruConverter.convert(1199.00, "GBP"));
+        assertEquals("Двадцать два фунта стерлингов 50 пенсов", ruConverter.convert(22.50, "GBP"));
     }
 
     @Test

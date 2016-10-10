@@ -21,6 +21,10 @@ class CurrencyFactory {
                 currency = new CurrencyRub();
                 break;
             }
+            case "RUR": {
+                currency = new CurrencyRub();
+                break;
+            }
             case "EUR": {
                 currency = new CurrencyEur();
                 break;

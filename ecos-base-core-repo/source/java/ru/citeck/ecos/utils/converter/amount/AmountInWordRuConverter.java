@@ -25,6 +25,7 @@ class AmountInWordRuConverter extends AmountInWordConverter {
     }
 
     private String getFixedFeminineOfCurrency (String result) {
+        result = result.toLowerCase();
         if (result.contains(ONE_HRYVNIA)) {
             result = result.replace(ONE_HRYVNIA, FEMININE_ONE_HRYVNIA);
         }

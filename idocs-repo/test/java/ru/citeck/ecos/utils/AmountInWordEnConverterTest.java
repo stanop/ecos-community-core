@@ -27,7 +27,7 @@ public class AmountInWordEnConverterTest {
     public void convertRubTest() {
         assertEquals("One million two hundred four thousand nine hundred twenty-four ruble 67 kopeck", enConverter.convert(1204924.67, "RUB"));
         assertEquals("Twenty-five thousand eight hundred ninety-two ruble 25 kopeck", enConverter.convert(25892.25, "RUB"));
-        assertEquals("Два триллиона двести пятьдесят восемь миллиардов четыреста сорок один миллион пятьсот пятьдесят восемь тысяч четыреста пятьдесят шесть rubles 52 kopeck", enConverter.convert(2258441558456.51997, "RUB"));
+        assertEquals("Two trillion two hundred fifty-eight billion four hundred forty-one million five hundred fifty-eight thousand four hundred fifty-six rubles 52 kopeck", enConverter.convert(2258441558456.51997, "RUB"));
         assertEquals("Three ruble 21 kopeck", enConverter.convert(3.21, "RUB"));
         assertEquals("Ten rubles 00 kopeck", enConverter.convert(10, "RUB"));
         assertEquals("Thirty-one ruble 80 kopeck", enConverter.convert(31.8, "RUB"));
@@ -68,7 +68,7 @@ public class AmountInWordEnConverterTest {
 
     @Test
     public void convertGbpTest() {
-        assertEquals("One thousand one hundred ninety-nine  pounds Sterling 02 penny", enConverter.convert(1199.02, "GBP"));
+        assertEquals("One thousand one hundred ninety-nine pounds Sterling 02 penny", enConverter.convert(1199.02, "GBP"));
         assertEquals("Twenty-two pound Sterling 50 pence", enConverter.convert(22.50, "GBP"));
     }
 
