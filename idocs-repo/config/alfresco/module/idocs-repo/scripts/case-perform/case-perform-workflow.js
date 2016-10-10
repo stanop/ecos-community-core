@@ -29,6 +29,8 @@ function onPerformTaskAssigned() {
 
 function onPerformTaskCompleted() {
 
+    execution.setVariable("wfcp_performOutcome", task.getVariable("wfcp_performOutcome"));
+
     saveTaskResult();
     checkCommentConstraint();
 
