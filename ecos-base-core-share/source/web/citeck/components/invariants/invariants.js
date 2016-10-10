@@ -175,6 +175,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return _.invoke(new DDClasses('aspect').classes(), 'name');
         },
 
+        getSubTypes: function(type) {
+            var ddClasses = new DDClasses('type');
+            ddClasses.ctbp(type);
+            return _.invoke(ddClasses.classes(), 'name');
+        },
+
         getTitle: function(name) {
             new DDClasses('all').ctbp("").classes();
             return new DDClass(name.key()).title();

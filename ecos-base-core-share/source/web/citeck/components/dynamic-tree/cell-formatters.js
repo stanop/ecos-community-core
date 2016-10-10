@@ -476,6 +476,75 @@
 			};
 		},
 
+		taskHistoryOutcome: function() {
+			var cache = repoMessageCache;
+			return function(elCell, oRecord, oColumn, sData) {
+				if (!sData) { return; }
+
+				var getMessages = function(keys, onSuccess, onFailure) {
+					var result = {};
+					var notCachedKeys = [];
+					for (var k = 0; k < keys.length; k++) {
+						var key = keys[k];
+						var cachedValue = cache[key];
+						if (cachedValue) {
+							result[key] = cachedValue;
+						} else {
+							notCachedKeys.push(key);
+						}
+					}
+					if (notCachedKeys.length > 0) {
+						Alfresco.util.Ajax.jsonPost({
+							url: Alfresco.constants.PROXY_URI + "citeck/util/messages",
+							dataObj: {"keys" : notCachedKeys},
+							successCallback: {
+								fn: function(response) {
+									for (var i = 0; i < notCachedKeys.length; i++) {
+										var key = notCachedKeys[i];
+										result[key] = response.json[key];
+										cache[key] = response.json[key];
+									}
+									onSuccess(result);
+								}
+							},
+							failureCallback: {
+								fn: function() {
+									for (var i = 0; i < notCachedKeys.length; i++) {
+										result[notCachedKeys[i]] = notCachedKeys[i];
+									}
+									onFailure(result);
+								}
+							}
+						});
+					} else {
+						onSuccess(result);
+					}
+				};
+
+				var typeQName = oRecord.getData()['attributes["event:taskType"]']["shortQName"];
+				var outcome = sData;
+
+				elCell.innerHTML = '<span class="column-loading"></span>';
+
+				var keyByType = "workflowtask." + typeQName.replace(/:/g, "_") + ".outcome." + outcome;
+				var globalKey = "workflowtask.outcome." + outcome;
+
+				getMessages([keyByType, globalKey],
+					function(msgs) {
+						if (msgs[keyByType] != keyByType) {
+							elCell.innerHTML = msgs[keyByType];
+						} else if (msgs[globalKey] != globalKey) {
+							elCell.innerHTML = msgs[globalKey];
+						} else {
+							elCell.innerHTML = keyByType;
+						}
+					},
+					function (msgs) {
+						elCell.innerHTML = keyByType;
+					});
+			};
+		},
+
         documentDetailsLink: function (target) {
             return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', target)
         },

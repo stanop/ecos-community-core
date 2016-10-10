@@ -110,6 +110,7 @@
 		<value>alfresco/module/idocs-repo/workflow/prolongation-workflow/prolongation-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow-model.xml</value>
+		<value>alfresco/module/idocs-repo/workflow/case-perform/case-perform-model.xml</value>
 	</util:list>
 
 	<util:list id="idocs.workflowLabelsList">
@@ -131,6 +132,7 @@
 		<value>alfresco/module/idocs-repo/workflow/prolongation-workflow/prolongation-workflow</value>
 		<value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment</value>
 		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow</value>
+		<value>alfresco/module/idocs-repo/workflow/case-perform/case-perform</value>
 	</util:list>
 
 	<bean id="idocs.workflowModelsBootstrap" parent="dictionaryModelBootstrap"
@@ -256,11 +258,17 @@
                     <prop key="mimetype">text/xml</prop>
                     <prop key="redeploy">true</prop>
                 </props>
-			</list>
-		</property>
-		<property name="models" ref="idocs.workflowModelsList" />
-		<property name="labels" ref="idocs.workflowLabelsList" />
-	</bean>
+                <props>
+                    <prop key="engineId">activiti</prop>
+                    <prop key="location">alfresco/module/idocs-repo/workflow/case-perform/case-perform.bpmn</prop>
+                    <prop key="mimetype">text/xml</prop>
+                    <prop key="redeploy">true</prop>
+                </props>
+            </list>
+        </property>
+        <property name="models" ref="idocs.workflowModelsList" />
+        <property name="labels" ref="idocs.workflowLabelsList" />
+    </bean>
 
 	<bean id="idocs.import-lifecycle" class="ru.citeck.ecos.lifecycle.LifeCycleDeployer" abstract="true">
 		<property name="lifeCycleService" ref="lifeCycleService"/>
