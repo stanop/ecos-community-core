@@ -16,8 +16,8 @@ import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
 import ru.citeck.ecos.utils.RepoUtils;
-import ru.citeck.ecos.utils.wordconverter.AmountInWordConverter;
-import ru.citeck.ecos.utils.wordconverter.AmountInWordConverterFactory;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverter;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverterFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;

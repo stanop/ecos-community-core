@@ -1,4 +1,4 @@
-package ru.citeck.ecos.utils.wordconverter;
+package ru.citeck.ecos.utils.converter.amount;
 
 /**
  * English realization of converter
@@ -8,10 +8,6 @@ package ru.citeck.ecos.utils.wordconverter;
  class AmountInWordEnConverter extends AmountInWordConverter {
     private static final String EN_DECADE_HYPHEN = "-";
     private static final String INDENT =" ";
-
-    AmountInWordEnConverter() {
-        initializationResources();
-    }
 
     @Override
     String getDecade(int position) {

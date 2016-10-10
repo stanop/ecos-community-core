@@ -1,19 +1,19 @@
-package ru.citeck.ecos.utils.wordconverter;
+package ru.citeck.ecos.utils.converter.amount;
 
 import org.springframework.extensions.surf.util.I18NUtil;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-
 /**
- * Convert Amount In Words class, essential for convert amount to amount in words.
- * <p>
- * The need to add this class occurred during the creation of templates for payments and closing documents
- *
  * @author Roman.Makarskiy on 10.07.2016.
  */
-public abstract class AmountInWordConverter {
+class ConverterResources {
+
+    String[][] ONE = {};
+    String[] THOUSAND = {};
+    String[] TEN = {};
+    String[] DECADE = {};
+    String[][] DECLINATION = {};
+    final String INDENT = " ";
+    String zero;
 
     private static final String NUMERAL_ZERO = "amount-in-word-converter.numeral.zero";
     private static final String NUMERAL_ONE = "amount-in-word-converter.numeral.one";
@@ -77,138 +77,33 @@ public abstract class AmountInWordConverter {
     private static final String TRILLION_DECLENSION_2 = "amount-in-word-converter.trillion.2";
     private static final String TRILLION_DECLENSION_3 = "amount-in-word-converter.trillion.3";
 
-    private static final String INDENT = " ";
+    void initializationResources(Currency currency) {
 
-    private String[][] ONE = {};
-    private String[] THOUSAND = {};
-    private String[] TEN = {};
-    private String[] DECADE = {};
-
-    private String thousand1, thousand2, thousand3;
-    private String million1, million2, million3;
-    private String billion1, billion2, billion3;
-    private String trillion1, trillion2, trillion3;
-    private String zero;
-
-    /**
-     * Return a amount in words
-     *
-     * @param amount   - amount to convert
-     * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
-     * @return amount in words
-     */
-    public String convert(double amount, String currencyCode) {
-        return processConvert(amount, currencyCode);
-    }
-
-    String getDecade(int position) {
-        return DECADE[position] + INDENT;
-    }
-
-    String getOne(int kind, int position) {
-        return ONE[kind][position] + INDENT;
-    }
-
-    String getThousand(int position) {
-        return THOUSAND[position] + INDENT;
-    }
-
-    String getTen(int position) {
-        return TEN[position] + INDENT;
-    }
-
-    private String getDeclination(long n, String form1, String from2, String form5) {
-        n = Math.abs(n) % 100;
-        long n1 = n % 10;
-        if (n > 10 && n < 20) return form5;
-        if (n1 > 1 && n1 < 5) return from2;
-        if (n1 == 1) return form1;
-        return form5;
-    }
-
-    private String processConvert(double amount, String currencyCode) {
-        Currency currency = new CurrencyFactory().createCurrency(currencyCode);
-
-        String[][] DECLINATION = new String[][]{
+        DECLINATION = new String[][]{
                 {currency.getFractional1(), currency.getFractional2(), currency.getFractional3(), "1"},
                 {currency.getIntact1(), currency.getIntact2(), currency.getIntact3(), "0"},
-                {thousand1, thousand2, thousand3, "1"},
-                {million1, million2, million3, "0"},
-                {billion1, billion2, billion3, "0"},
-                {trillion1, trillion2, trillion3, "0"},
+                {
+                        I18NUtil.getMessage(THOUSAND_DECLENSION_1),
+                        I18NUtil.getMessage(THOUSAND_DECLENSION_2),
+                        I18NUtil.getMessage(THOUSAND_DECLENSION_3), "1"
+                },
+                {
+                        I18NUtil.getMessage(MILLION_DECLENSION_1),
+                        I18NUtil.getMessage(MILLION_DECLENSION_2),
+                        I18NUtil.getMessage(MILLION_DECLENSION_3), "0"
+                },
+                {
+                        I18NUtil.getMessage(BILLION_DECLENSION_1),
+                        I18NUtil.getMessage(BILLION_DECLENSION_2),
+                        I18NUtil.getMessage(BILLION_DECLENSION_3), "0"
+                },
+                {
+                        I18NUtil.getMessage(TRILLION_DECLENSION_1),
+                        I18NUtil.getMessage(TRILLION_DECLENSION_2),
+                        I18NUtil.getMessage(TRILLION_DECLENSION_3), "0"
+                },
         };
 
-        BigDecimal BigDecimalAmount = new BigDecimal(amount);
-        BigDecimalAmount = BigDecimalAmount.setScale(2, BigDecimal.ROUND_HALF_DOWN);
-
-        ArrayList<Long> segments = new ArrayList<>();
-
-        long total = BigDecimalAmount.longValue();
-        String[] divided = BigDecimalAmount.toString().split("\\.");
-        divided[1] = divided[1].substring(0, 2);
-        long fraction = Long.valueOf(divided[1]);
-        if (!divided[1].substring(0, 1).equals("0")) {
-            if (fraction < 10)
-                fraction *= 10;
-        }
-
-        String fractions = String.valueOf(fraction);
-        if (fractions.length() == 1)
-            fractions = "0" + fractions;
-        long totalSegment = total;
-
-        while (totalSegment > 999) {
-            long seg = totalSegment / 1000;
-            segments.add(totalSegment - (seg * 1000));
-            totalSegment = seg;
-        }
-        segments.add(totalSegment);
-        Collections.reverse(segments);
-
-        String result = "";
-        if (total == 0) {
-            result = zero + INDENT + getDeclination(0, DECLINATION[1][0], DECLINATION[1][1], DECLINATION[1][2]);
-            return result + INDENT + fraction + INDENT + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
-        }
-
-        int amt = segments.size();
-        for (Long segment : segments) {
-            int kind = Integer.valueOf(DECLINATION[amt][3]);
-            int currentSegment = Integer.valueOf(segment.toString());
-            if (currentSegment == 0 && amt > 1) {
-                amt--;
-                continue;
-            }
-            String stringNumber = String.valueOf(currentSegment);
-
-            if (stringNumber.length() == 1) stringNumber = "00" + stringNumber;
-            if (stringNumber.length() == 2) stringNumber = "0" + stringNumber;
-
-            int number1 = Integer.valueOf(stringNumber.substring(0, 1));
-            int number2 = Integer.valueOf(stringNumber.substring(1, 2));
-            int number3 = Integer.valueOf(stringNumber.substring(2, 3));
-            int number23 = Integer.valueOf(stringNumber.substring(1, 3));
-
-            if (currentSegment > 99) result += getThousand(number1) + INDENT;
-            if (number23 > 20) {
-                result += getDecade(number2);
-                result += getOne(kind, number3);
-            } else {
-                if (number23 > 9) result += getTen(number23 - 9);
-                else result += getOne(kind, number3);
-            }
-
-            result += getDeclination(currentSegment, DECLINATION[amt][0], DECLINATION[amt][1], DECLINATION[amt][2]) + INDENT;
-            amt--;
-        }
-        result = result + "" + fractions + INDENT + getDeclination(fraction, DECLINATION[0][0], DECLINATION[0][1], DECLINATION[0][2]);
-        result = result.replaceAll(" {2,}", INDENT);
-        result = result.substring(0, 1).toUpperCase() + result.substring(1);
-
-        return result;
-    }
-
-    void initializationResources() {
         ONE = new String[][]{
                 {"", I18NUtil.getMessage(NUMERAL_ONE),
                         I18NUtil.getMessage(NUMERAL_TWO),
@@ -265,21 +160,7 @@ public abstract class AmountInWordConverter {
                 I18NUtil.getMessage(DECADE_EIGHTY),
                 I18NUtil.getMessage(DECADE_NINETY)};
 
-        thousand1 = I18NUtil.getMessage(THOUSAND_DECLENSION_1);
-        thousand2 = I18NUtil.getMessage(THOUSAND_DECLENSION_2);
-        thousand3 = I18NUtil.getMessage(THOUSAND_DECLENSION_3);
 
-        million1 = I18NUtil.getMessage(MILLION_DECLENSION_1);
-        million2 = I18NUtil.getMessage(MILLION_DECLENSION_2);
-        million3 = I18NUtil.getMessage(MILLION_DECLENSION_3);
-
-        billion1 = I18NUtil.getMessage(BILLION_DECLENSION_1);
-        billion2 = I18NUtil.getMessage(BILLION_DECLENSION_2);
-        billion3 = I18NUtil.getMessage(BILLION_DECLENSION_3);
-
-        trillion1 = I18NUtil.getMessage(TRILLION_DECLENSION_1);
-        trillion2 = I18NUtil.getMessage(TRILLION_DECLENSION_2);
-        trillion3 = I18NUtil.getMessage(TRILLION_DECLENSION_3);
 
         zero = I18NUtil.getMessage(NUMERAL_ZERO);
     }

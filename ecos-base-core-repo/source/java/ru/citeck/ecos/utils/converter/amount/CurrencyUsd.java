@@ -1,4 +1,4 @@
-package ru.citeck.ecos.utils.wordconverter;
+package ru.citeck.ecos.utils.converter.amount;
 
 import org.springframework.extensions.surf.util.I18NUtil;
 
@@ -6,7 +6,9 @@ import org.springframework.extensions.surf.util.I18NUtil;
  * @author Roman.Makarskiy on 10.07.2016.
  */
 class CurrencyUsd extends Currency{
-    CurrencyUsd() {
+
+    @Override
+    void initializationResources() {
         setFractional1(I18NUtil.getMessage("amount-in-word-converter.currency.usd.fractional-1"));
         setFractional2(I18NUtil.getMessage("amount-in-word-converter.currency.usd.fractional-2"));
         setFractional3(I18NUtil.getMessage("amount-in-word-converter.currency.usd.fractional-3"));

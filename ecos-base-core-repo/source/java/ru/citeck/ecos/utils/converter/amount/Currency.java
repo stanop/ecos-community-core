@@ -1,4 +1,4 @@
-package ru.citeck.ecos.utils.wordconverter;
+package ru.citeck.ecos.utils.converter.amount;
 
 /**
  * @author Roman.Makarskiy on 10.07.2016.
@@ -7,6 +7,12 @@ package ru.citeck.ecos.utils.wordconverter;
 
     private String fractional1, fractional2, fractional3;
     private String intact1, intact2, intact3;
+
+    public Currency () {
+        initializationResources();
+    }
+
+    abstract void initializationResources  ();
 
     String getFractional1() {
         return fractional1;

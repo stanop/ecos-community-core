@@ -10,8 +10,8 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.ContractsModel;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
-import ru.citeck.ecos.utils.wordconverter.AmountInWordConverter;
-import ru.citeck.ecos.utils.wordconverter.AmountInWordConverterFactory;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverter;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverterFactory;
 
 import java.io.Serializable;
 import java.util.Map;
