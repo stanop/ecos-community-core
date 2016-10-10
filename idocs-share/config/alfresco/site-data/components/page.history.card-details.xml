@@ -16,7 +16,7 @@
                     {key: 'attributes["event:initiator"][0]', label: Alfresco.util.message("dochist.header.person"), formatter: Citeck.format.node()},
                     {key: 'attributes["event:taskPooledActors"][0]', label: Alfresco.util.message("dochist.header.group"), formatter: Citeck.format.node()},
                     {key: 'attributes["event:taskType"]', label: Alfresco.util.message("dochist.header.task"), formatter: Citeck.format.typeName('shortQName')},
-                    {key: 'attributes["event:taskOutcome"]', label: Alfresco.util.message("dochist.header.outcome"), formatter: Citeck.format.repoMessage('workflowtask.outcome.')},
+                    {key: 'attributes["event:taskOutcome"]', label: Alfresco.util.message("dochist.header.outcome"), formatter: Citeck.format.taskHistoryOutcome()},
                     {key: 'attributes["event:taskComment"]', label: Alfresco.util.message("dochist.header.comment")}]</columns>
                 <responseSchema>{resultsList: 'history', fields: [{key: 'attributes["event:name"]'}, 
                     {key: 'attributes["event:date"]'}, 

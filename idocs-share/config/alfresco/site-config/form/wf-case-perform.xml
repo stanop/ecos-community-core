@@ -1,7 +1,7 @@
 
 <alfresco-config>
 
-    <config evaluator="task-type" condition="wfcp:confirmTask">
+    <config evaluator="task-type" condition="wfcp:performTask">
         <forms>
             <form id="inline">
                 <field-visibility>
@@ -17,57 +17,7 @@
                         <control template="/org/alfresco/components/form/controls/textarea.ftl" />
                     </field>
                     <field id="wfcp:performOutcome">
-                        <control template="/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl">
-                            <control-param name="options">Approve|Approve#alf#Denied|Denied#alf#Refine|Refine</control-param>
-                        </control>
-                    </field>
-                </appearance>
-            </form>
-        </forms>
-    </config>
-
-    <config evaluator="task-type" condition="wfcp:signTask">
-        <forms>
-            <form id="inline">
-                <field-visibility>
-                    <show id="message" />
-                    <show id="bpm:comment" />
-                    <show id="wfcp:performOutcome" />
-                </field-visibility>
-                <appearance>
-                    <field id="message">
-                        <control template="/org/alfresco/components/form/controls/info.ftl" />
-                    </field>
-                    <field id="bpm:comment" label-id="workflow.field.comment">
-                        <control template="/org/alfresco/components/form/controls/textarea.ftl" />
-                    </field>
-                    <field id="wfcp:performOutcome">
-                        <control template="/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl" />
-                    </field>
-                </appearance>
-            </form>
-        </forms>
-    </config>
-
-    <config evaluator="task-type" condition="wfcp:scanTask">
-        <forms>
-            <form id="inline">
-                <field-visibility>
-                    <show id="message" />
-                    <show id="bpm:comment" />
-                    <show id="wfcp:performOutcome" />
-                </field-visibility>
-                <appearance>
-                    <field id="message">
-                        <control template="/org/alfresco/components/form/controls/info.ftl" />
-                    </field>
-                    <field id="bpm:comment" label-id="workflow.field.comment">
-                        <control template="/org/alfresco/components/form/controls/textarea.ftl" />
-                    </field>
-                    <field id="wfcp:performOutcome">
-                        <control template="/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl">
-                            <control-param name="options">Approve|Approve#alf#Denied|Denied#alf#Refine|Refine</control-param>
-                        </control>
+                        <control template="/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl" />
                     </field>
                 </appearance>
             </form>

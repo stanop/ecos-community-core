@@ -86,61 +86,6 @@
             </associations>
         </type>
 
-        <type name="wfcp:confirmTask">
-            <parent>wfcp:performTask</parent>
-            <overrides>
-                <property name="wfcp:performOutcome">
-                    <constraints>
-                        <constraint name="wfcp:confirmOutcomeConstraint" type="LIST">
-                            <parameter name="allowedValues">
-                                <list>
-                                    <value>Confirm</value>
-                                    <value>Refine</value>
-                                    <value>Denied</value>
-                                </list>
-                            </parameter>
-                        </constraint>
-                    </constraints>
-                </property>
-            </overrides>
-        </type>
-
-        <type name="wfcp:signTask">
-            <parent>wfcp:performTask</parent>
-            <overrides>
-                <property name="wfcp:performOutcome">
-                    <constraints>
-                        <constraint name="wfcp:signOutcomeConstraint" type="LIST">
-                            <parameter name="allowedValues">
-                                <list>
-                                    <value>Sign</value>
-                                    <value>Denied</value>
-                                </list>
-                            </parameter>
-                        </constraint>
-                    </constraints>
-                </property>
-            </overrides>
-        </type>
-
-        <type name="wfcp:scanTask">
-            <parent>wfcp:performTask</parent>
-            <overrides>
-                <property name="wfcp:performOutcome">
-                    <constraints>
-                        <constraint name="wfcp:scanOutcomeConstraint" type="LIST">
-                            <parameter name="allowedValues">
-                                <list>
-                                    <value>Scan</value>
-                                    <value>Denied</value>
-                                </list>
-                            </parameter>
-                        </constraint>
-                    </constraints>
-                </property>
-            </overrides>
-        </type>
-
         <type name="wfcp:performCaseTask">
             <parent>icaseTask:task</parent>
             <associations>
