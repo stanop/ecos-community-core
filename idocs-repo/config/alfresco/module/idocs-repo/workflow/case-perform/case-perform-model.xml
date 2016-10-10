@@ -96,7 +96,7 @@
                     </source>
                     <target>
                         <class>icaseRole:role</class>
-                        <mandatory>true</mandatory>
+                        <mandatory>false</mandatory>
                         <many>true</many>
                     </target>
                 </association>
