@@ -12,10 +12,12 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
-import ru.citeck.ecos.utils.ConvertAmountInWords;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverter;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverterFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -109,29 +111,20 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
     private void setTotalAmountInWords(NodeRef nodeRef) {
         Double amount;
-        String paymentCurrency;
-        String currency;
+        String currencyCode = "";
 
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.ASSOC_PAYMENT_CURRENCY, nodeService);
-        paymentCurrency = currencyRef != null ? currencyRef.toString() : "";
 
-        switch (paymentCurrency) {
-            case "workspace://SpacesStore/currency-usd": {
-                currency = "USD";
-                break;
-            }
-            case "workspace://SpacesStore/currency-eur": {
-                currency = "EUR";
-                break;
-            }
-            default: {
-                currency = "RUB";
-            }
+        if (nodeService.exists(currencyRef)) {
+            currencyCode = (String) nodeService.getProperty(currencyRef, IdocsModel.PROP_CURRENCY_CODE);
         }
 
         if (nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT) != null) {
             amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
-            String amountInWords = ConvertAmountInWords.convert(amount, currency);
+
+            AmountInWordConverter wordConverter = new AmountInWordConverterFactory().getConverter();
+            String amountInWords = wordConverter.convert(amount, currencyCode);
+
             nodeService.setProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT_IN_WORDS, amountInWords);
         }
     }

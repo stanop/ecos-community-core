@@ -48,6 +48,7 @@
             </invariant>
         </property>
         <association name="contracts:agreementCurrency">
+            <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
         </association>
@@ -117,6 +118,7 @@
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"]</invariant>
         </association>
         <association name="payments:currency">
+            <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">
                 if (node.assocs["payments:basis"][0].type
                         == "{http://www.citeck.ru/model/contracts/1.0}agreement"
@@ -172,6 +174,7 @@
 
     <type name="payments:paymentDraft">
         <association name="payments:currency">
+            <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
         </association>

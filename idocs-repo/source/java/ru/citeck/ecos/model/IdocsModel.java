@@ -63,6 +63,7 @@ public final class IdocsModel {
     public static final QName PROP_STREET_NAME = QName.createQName(IDOCS_NAMESPACE, "streetName");
     public static final QName PROP_HOUSE = QName.createQName(IDOCS_NAMESPACE, "house");
     public static final QName PROP_ADDRESS_EXTRA_INFO = QName.createQName(IDOCS_NAMESPACE, "addressExtraInfo");
+    public static final QName PROP_CURRENCY_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCode");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");

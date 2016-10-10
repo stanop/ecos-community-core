@@ -310,7 +310,7 @@
         <view>
             <field assoc="payments:beneficiary">
                 <region name="select" template="select-journal" >
-                     <param name="journalType">idocs-contractor</param>
+                    <param name="journalType">idocs-contractor</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

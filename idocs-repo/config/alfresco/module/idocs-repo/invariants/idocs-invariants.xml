@@ -14,10 +14,10 @@
 
     <aspect name="idocs:pagesInfo">
         <property name="idocs:pagesNumber">
-            <invariant on="valid" language="javascript" description="Количество листов не может быть меньше нуля.">+value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">+value >= 0 ? true : false</invariant>
         </property>
         <property name="idocs:appendixPagesNumber">
-            <invariant on="valid" language="javascript" description="Количество листов приложений не может быть меньше нуля.">+value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">+value >= 0 ? true : false</invariant>
         </property>
     </aspect>
 

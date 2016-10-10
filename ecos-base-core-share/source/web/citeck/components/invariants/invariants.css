@@ -624,9 +624,7 @@
     clear: both;
 }
 
-.invariants-form .template-table .template-third-width .template-message span.validation-message ,
-.invariants-form .template-table .template-half-width .template-message span.validation-message,
-.invariants-form .template-table .template-row .template-message span.validation-message {
+.invariants-form .template-table .template-message span.validation-message {
   margin-top: 10px;
   display: inline-block;
   line-height: 100%;
@@ -640,19 +638,6 @@
 .invariants-form .template-table .template-row.with-help .template-message,
 .invariants-form .template-table [class*="template-row-"].with-help .template-message {
   margin-left: 46.5%;
-}
-
-.static .invariants-form .template-table .template-row .template-message,
-.static .invariants-form .template-table [class*="template-row-"] .template-message {
-  position: absolute;
-  left: 105%;
-  white-space: nowrap;
-  top: 1px;
-  margin-left: 0;
-}
-
-.static .invariants-form .template-table .template-row .template-message span.validation-message {
-  margin-top: 0;
 }
 
 .invariants-form .template-table .template-row > .template-textarea + .region-select-group + .template-help + .template-message {
@@ -984,7 +969,7 @@
 
 .autocomplete-control .autocomplete-container {
   position: absolute;
-  padding: 7px 7px 0 7px;
+  padding: 7px;
   z-index: 5;
   border-top: none;
   box-shadow: 0 0 25px -5px gray;
@@ -1047,6 +1032,7 @@
 .autocomplete-container .autocomplete-more {
     text-align: center;
     border-top: 1px solid #ccc;
+    margin-bottom: -7px;
 }
 
 .autocomplete-container .autocomplete-more a {
@@ -1059,11 +1045,15 @@
 
 
 /* file-upload */
-.invariants-form .template-table .template-row .file-upload-control button.file-upload-open-dialog-button {
+.invariants-form .template-table .form-field:not(.template-row) .template-file-upload {
+  margin: 10px 10px 0 0;
+}
+
+.invariants-form .template-table .template-row .template-file-upload {
   float: right;
 }
 
-.invariants-form .template-table .file-upload-control.loading button.file-upload-open-dialog-button {
+.invariants-form .template-table .template-file-upload .file-upload-control.loading button.file-upload-open-dialog-button {
   color: transparent;
   background-image: url(images/loading.gif);
   background-position: center;
