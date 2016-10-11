@@ -31,6 +31,7 @@ Citeck.mobile.isMobileDevice = function() {
 	        $("body").addClass("mobile");
 
 	        // viewport only for dashboard and forms (while development process)
+	        // and for all pages in production after all tests
 	        var formPages = ["node-create-page", "node-edit-page", "dashboard"];
 	        for (var fp in formPages) {
 	        	if (window.location.pathname.indexOf(formPages[fp]) != -1) {
@@ -41,6 +42,17 @@ Citeck.mobile.isMobileDevice = function() {
 			        switch (formPages[fp]) {
 			        	case "dashboard":
 			        		$("#bd .grid").attr("class", "grid");
+
+			        		$.each($(".dashlet"), function(i, el) {
+			        			// remove resizer
+			        			$(el).find(".yui-resize-handle").remove();
+
+			        			// hide all DIVs in dashlet without 'title'
+			        			$(".title", el).click(function(event) {
+			        				$(el).children().filter(":not(.title)").toggle();
+			        			});
+			        		});
+
 			        		break;
 			        }
 			         
