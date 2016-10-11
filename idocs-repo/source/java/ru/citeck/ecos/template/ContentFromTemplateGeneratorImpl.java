@@ -52,6 +52,7 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
     private static final Log logger = LogFactory.getLog(ContentFromTemplateGeneratorImpl.class);
 
     private static final String KEY_DOCUMENT = "document";
+    private static final String DOCX_EXTENSION = "docx";
 
     private NodeService nodeService;
     private VersionService versionService;
@@ -90,9 +91,11 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
 
         // get template encoding
         String encoding = "ISO-8859-1";
+        String docxTemplateMimetype = mimetypeService.getMimetypesByExtension().get(DOCX_EXTENSION);
         if (nodeService.hasAspect(nodeRef, DmsModel.ASPECT_TEMPLATEABLE)
                 && !Objects.equals(templateContent.getEncoding(), "")
-                && templateContent.getEncoding() != null) {
+                && templateContent.getEncoding() != null
+                && !templateContent.getMimetype().equals(docxTemplateMimetype)) {
             encoding = templateContent.getEncoding();
         }
 
