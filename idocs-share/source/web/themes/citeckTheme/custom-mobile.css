@@ -18,4 +18,47 @@
 }
 
 
-/*  */
+/* HEADER */
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right {
+    padding: 0 15px !important;
+    height: auto !important;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets,
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets {
+	width: 100% !important;
+	box-sizing: border-box;
+	height: auto !important;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .horizontal-widget {
+	transform: none !important;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .horizontal-widget:first-child {
+	width: 100%;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .horizontal-widget:nth-child(2) {
+    max-width: 70%;
+}
+
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .logo {
+	margin-bottom: 15px;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .logo img {
+	margin: 0 auto;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets .navigation-menu {
+	margin-left: -13px !important;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets .navigation-menu .alf-menu-bar {
+	padding-bottom: 0;
+}
