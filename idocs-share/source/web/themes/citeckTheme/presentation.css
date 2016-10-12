@@ -1,5 +1,8 @@
 @import "/share/res/fonts/FontAwesome/css/font-awesome.css";
 
+/* mobile */
+@import "/share/res/themes/citeckTheme/custom-mobile.css";
+
 
  /* Site-wide Styles */
 

@@ -1,0 +1,21 @@
+/* DASHLETS */
+
+.yui-skin-citeckTheme.mobile #bd .grid {
+    padding: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.yui-skin-citeckTheme.mobile .dashlet {
+    min-height: 0;
+    box-shadow: none;
+    margin: 0;
+    border-top: 1px solid white;
+}
+
+.yui-skin-citeckTheme.mobile .yui-u.first > div:first-child .dashlet {
+	border-top: none;
+}
+
+
+/*  */
