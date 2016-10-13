@@ -20,19 +20,27 @@ Citeck.mobile.isMobileDevice = function() {
 // WORK PROCESS
 (function() {
 
+	// TODO:
+	// - изменитять на 'mobile' режим если ширина окна <= 525px
+	// - иконка лупы вместо строки поиска. При клике по лупу выезжает строка поиска
+	// - вместо имени пользователя использовать иконку (в конкретной теме)
+	// - при сильном сжатии меню пользователя и строка поиска уходит в общее выпадающее меню
+
+
     if (Citeck.mobile.isMobileDevice() && Citeck.mobile.hasTouchEvent()) {       
+        
         // share global handler
         YAHOO.Bubbling.on("on-mobile-device", function(e, args) { 
             if (args.fn) fn();
         });
 
-        $(document).ready(function() {
-	        // global mobile style
-	        $("body").addClass("mobile");
+        // global mobile style
+        $("body").addClass("mobile");
 
-	        // viewport only for dashboard and forms (while development process)
+        $(document).ready(function() {
+	        // viewport only for dashboard (while development process)
 	        // and for all pages in production after all tests
-	        var formPages = ["node-create-page", "node-edit-page", "dashboard"];
+	        var formPages = ["dashboard"];
 	        for (var fp in formPages) {
 	        	if (window.location.pathname.indexOf(formPages[fp]) != -1) {
 			        $("head").append(
