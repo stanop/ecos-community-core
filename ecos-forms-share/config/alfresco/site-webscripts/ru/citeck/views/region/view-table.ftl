@@ -70,7 +70,7 @@
                                         <!-- ko with: $parents[1].attribute($data.name()) -->
                                             <td data-bind="text: ko.computed(function() {
                                                 var value = $data.value(), title;
-                                                if (value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
+                                                if (value && value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
                                                 return title || ($data.valueTitle() || $data.textValue())
                                             })"></td>
                                         <!-- /ko -->
@@ -81,7 +81,7 @@
                                     <!-- ko with: attribute("${column}") -->
                                         <td data-bind="text: ko.computed(function() {
                                             var value = $data.value(), title;
-                                            if (value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
+                                            if (value && value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
                                             return title || ($data.valueTitle() || $data.textValue())
                                         })"></td>
                                     <!-- /ko -->
@@ -90,7 +90,7 @@
                                 <!-- ko foreach: attributes -->
                                     <td data-bind="text: ko.computed(function() {
                                         var value = $data.value(), title;
-                                        if (value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
+                                        if (value && value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
                                         return title || ($data.valueTitle() || $data.textValue())
                                     })"></td>
                                 <!-- /ko -->
