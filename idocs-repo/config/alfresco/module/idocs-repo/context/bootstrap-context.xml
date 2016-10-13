@@ -480,7 +480,6 @@
 				<prop key="uuidBinding">UPDATE_EXISTING</prop>
 				<prop key="path">/cm:categoryRoot/cm:generalclassifiable</prop>
 				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/document-type-categories.xml</prop>
-				<prop key="messages">alfresco/module/idocs-repo/messages/document-type-categories</prop>
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
