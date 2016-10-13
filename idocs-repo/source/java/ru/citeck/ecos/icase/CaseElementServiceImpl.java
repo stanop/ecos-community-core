@@ -128,8 +128,9 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         List<ChildAssociationRef> configAssocs = nodeService.getChildAssocs(root, Collections.singleton(configType));
         return RepoUtils.getChildNodeRefs(configAssocs);
     }
-    
-    /*package*/ NodeRef getConfig(String configName) {
+
+    @Override
+    public NodeRef getConfig(String configName) {
         NodeRef root = caseElementConfigRoot.getNodeRef();
         NodeRef config = nodeService.getChildByName(root, ContentModel.ASSOC_CONTAINS, configName);
         if(config == null) {

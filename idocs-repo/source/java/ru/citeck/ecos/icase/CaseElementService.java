@@ -119,5 +119,10 @@ public interface CaseElementService {
      * @param caseNodeRef
      */
     void copyTemplateToCase(NodeRef templateRef, NodeRef caseNodeRef);
-    
+
+
+    /**
+     * Get elements config by name
+     */
+    NodeRef getConfig(String configName);
 }
