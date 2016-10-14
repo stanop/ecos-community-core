@@ -36,38 +36,25 @@ Citeck.mobile.isMobileDevice = function() {
 
 	        // viewport only for dashboard (while development process)
 	        // and for all pages in production after all tests
-	        var formPages = ["dashboard"];
-	        for (var fp in formPages) {
-	        	if (window.location.pathname.indexOf(formPages[fp]) != -1) {
-			        $("head").append(
-			        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
-			        );
-			        
-			        switch (formPages[fp]) {
-			        	case "dashboard":
-			        		$("#bd .grid").attr("class", "grid");
+        	if (window.location.pathname.indexOf("dashboard") != -1) {
+		        $("head").append(
+		        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
+		        );
+		        
+        		$("#bd .grid").attr("class", "grid");
 
-			        		$.each($(".dashlet"), function(i, el) {
-			        			// remove resizer
-			        			$(el).find(".yui-resize-handle").remove();
-
-			        			// hide all DIVs in dashlet without 'title'
-			        			$(".title", el).click(function(event) {
-			        				$(el).children().filter(":not(.title)").toggle();
-			        			});
-			        		});
-
-			        		break;
-			        }
-			         
-			        break;
-	        	}
-	        }
+        		$.each($(".dashlet"), function(i, el) {
+        			$(el).find(".yui-resize-handle").remove();
+        			$(".title", el).click(function(event) {
+        				$(el).children().filter(":not(.title)").toggle();
+        			});
+        		});
+        	}
     	});
     } else {
     	$(document).ready(function() {
 	    	$("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
-    	
+
 	    	$(window).resize(function(event) {
 	    		if (window.innerWidth <= 525) {
 	    			$("body").addClass("mobile");
@@ -81,6 +68,7 @@ Citeck.mobile.isMobileDevice = function() {
 	    			transformDashboard(false);
 	    		}
 	    	});
+			$(window).resize();
     	});
     }
 

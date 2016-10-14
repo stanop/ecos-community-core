@@ -1,22 +1,56 @@
-/* GENERAL */
+/* HEADER and MAIN MENU and USER MENU*/
 
-.mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] {
+#HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,
+.mobile #HEADER_APP_MENU_BAR .dijitMenuItem {
+    display: none;
+}
+
+.mobile #HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,
+#HEADER_APP_MENU_BAR .dijitMenuItem {
+    display: inline-block;
+}
+
+.mobile #HEADER_APP_MENU_BAR .dijitMenuBar {
+    padding-left: 0;
+}
+
+.mobile #HEADER_MOBILE_MENU,
+.mobile #HEADER_USER_MENU {
+    margin: 0;
+}
+
+.mobile #HEADER_MOBILE_MENU {
+    padding-left: 10px;
+}
+
+.mobile #HEADER_USER_MENU {
+    padding-right: 10px;
+}
+
+.mobile #HEADER_MOBILE_MENU_text {
+    content: url(../images/treeline-20.png);
+    width: 22px;
+    height: 20px;
+    float: left;
+}
+
+.mobile .dijitPopup[id*="HEADER_MOBILE_MENU"],
+.mobile .dijitPopup[id*="HEADER_USER_MENU"] {
     width: 100%;
     box-sizing: border-box;
     left: 0 !important;
 }
 
-.mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] .alf-header-menu-bar {
+.mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] .alf-header-menu-bar,
+.mobile .dijitPopup[id*="HEADER_USER_MENU"] .alf-header-menu-bar  {
     box-shadow: none;
     border: none;
     border-radius: 0;
 }
 
 
-/* HEADER and MAIN MENU and USER MENU*/
-
 .mobile #share-header .alf-header {
-    margin: 0   ;
+    margin: 0;
 }
 
 .mobile #share-header .widgets > .left-and-right .left-widgets .horizontal-widget:nth-child(2) {
