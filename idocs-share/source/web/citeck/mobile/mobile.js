@@ -21,23 +21,19 @@ Citeck.mobile.isMobileDevice = function() {
 (function() {
 
 	// TODO:
-	// - изменитять на 'mobile' режим если ширина окна <= 525px
-	// - иконка лупы вместо строки поиска. При клике по лупу выезжает строка поиска
-	// - вместо имени пользователя использовать иконку (в конкретной теме)
-	// - при сильном сжатии меню пользователя и строка поиска уходит в общее выпадающее меню
+	// - изменитять на 'mobile' режим если ширина окна <= 522px
 
-
-    if (Citeck.mobile.isMobileDevice() && Citeck.mobile.hasTouchEvent()) {       
+    if (Citeck.mobile.isMobileDevice()) {       
         
         // share global handler
         YAHOO.Bubbling.on("on-mobile-device", function(e, args) { 
             if (args.fn) fn();
         });
 
-        // global mobile style
-        $("body").addClass("mobile");
-
         $(document).ready(function() {
+	        // global mobile style
+	        $("body").addClass("mobile");
+
 	        // viewport only for dashboard (while development process)
 	        // and for all pages in production after all tests
 	        var formPages = ["dashboard"];
@@ -68,6 +64,41 @@ Citeck.mobile.isMobileDevice = function() {
 	        	}
 	        }
     	});
+    } else {
+    	$(document).ready(function() {
+	    	$("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
+    	
+	    	$(window).resize(function(event) {
+	    		if (window.innerWidth <= 525) {
+	    			$("body").addClass("mobile");
+			        $("head").append(
+			        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
+			        );
+			        transformDashboard(true);
+	    		} else { 
+	    			$("body").removeClass("mobile");
+	    			$("meta[name='viweport']").remove();
+	    			transformDashboard(false);
+	    		}
+	    	});
+    	});
     }
+
+    function transformDashboard(isMobile) {
+    	var gridContainer = $("#bd .grid"),
+    		dashletHandler = function(event) {
+				$("#bd .grid").children().filter(":not(.title)").toggle();
+			};
+
+    	if (isMobile) {
+    		gridContainer.attr("class", "grid");
+			$(".title", gridContainer).on("click", dashletHandler);
+    	} else {
+    		gridContainer.attr("class", gridContainer.attr("data-class-backup"));
+    		$(gridContainer).children().filter(":not(.title)").show();
+    		$(".title", gridContainer).off("click", dashletHandler);
+    	}
+    	
+    };
 
 })()

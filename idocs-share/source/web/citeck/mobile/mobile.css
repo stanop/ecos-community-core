@@ -1,4 +1,19 @@
-/* HEADER and MAIN MENU*/
+/* GENERAL */
+
+.mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] {
+    width: 100%;
+    box-sizing: border-box;
+    left: 0 !important;
+}
+
+.mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] .alf-header-menu-bar {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+}
+
+
+/* HEADER and MAIN MENU and USER MENU*/
 
 .mobile #share-header .alf-header {
     margin: 0   ;
@@ -16,8 +31,7 @@
     font-size: 22px;
 }
 
-
-.mobile .logo {
+/*.mobile .logo {
     margin: 0;
     padding: 0;
     border: none;
@@ -36,17 +50,11 @@
     background-color: transparent;
     border: none;
     margin-left: 10px;
-}
+}*/
 
-.mobile .alf-menu-bar .dijitMenuBar > span.dijitMenuItem {
+/*.mobile .alf-menu-bar .dijitMenuBar > span.dijitMenuItem {
     display: none;
 }
-
-/* hide menu while transformation is in process */
-.mobile #share-header {
-    display: none;
-}
-/*----------------------------------------------*/
 
 .mobile .alf-menu-bar {
     margin-top: 10px;
@@ -55,6 +63,31 @@
 
 .mobile .alf-menu-bar .dijitMenuBar > div.dijitMenuItem {
     display: block;
+}*/
+
+@media screen and (max-width: 845px) {
+    #HEADER_SEARCH_BOX {
+        margin: 3px 10px;
+    }
+
+    #HEADER_USER_MENU {
+        margin: 0 5px 0 0;
+    }
+
+    #HEADER_USER_MENU > span#HEADER_USER_MENU_text {
+        font-size: 0;
+        display: block;
+        background-image: url(/share/res/js/alfresco/header/css/images/user-profile.png);
+        width: 20px;
+        height: 20px;
+        float: left;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #HEADER_USER_MENU > span.alf-menu-arrow {
+        padding: 0;
+    }
 }
 
 /* DASHLETS */

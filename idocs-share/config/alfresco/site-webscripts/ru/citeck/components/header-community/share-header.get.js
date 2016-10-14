@@ -99,23 +99,20 @@ if (!context.externalAuthentication) {
 
 
 // USER MENU
-userMenu.config.widgets = [
-  {
-     id: "HEADER_USER_MENU",
-     name: "alfresco/header/AlfMenuBarPopup",
-     config: {
-        label: user.fullName,
-        widgets: [
-           {
-              name: "alfresco/menus/AlfMenuGroup",
-              config: {
-                 widgets: userMenuItems
-              }
-           }
-        ]
-     }
+userMenu.config.widgets = [{
+  id: "HEADER_USER_MENU",
+  name: "alfresco/header/AlfMenuBarPopup",
+  config: {
+    id: "HEADER_USER_MENU",
+    label: user.fullName,
+    widgets: [{
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: userMenuItems
+      }
+    }]
   }
-];
+}];
 
 
 // APP MENU ITEMS
