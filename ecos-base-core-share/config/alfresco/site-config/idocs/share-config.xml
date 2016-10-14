@@ -10,7 +10,6 @@
               <js src="/modules/create-site.js"/>
              
               <js src="/modules/common/ie_fix.js"/>
-              <js src="/modules/header/create-variants.js"/>
           </dependencies>
       </header>
   </config>
