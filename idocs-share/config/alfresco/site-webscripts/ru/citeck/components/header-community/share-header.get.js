@@ -1,5 +1,6 @@
 <import resource="classpath:/alfresco/site-webscripts/org/alfresco/share/imports/share-header.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header-community/share-header.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header/header-tokens.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/citeck.lib.js">
 
 // GLOBAL VARIABLES
@@ -11,7 +12,7 @@ var isMobile = isMobileDevice(context.headers["user-agent"]);
 
 var appMenu = getWidget("HEADER_APP_MENU_BAR"),
     userMenu = getWidget("HEADER_USER_MENU_BAR"),
-    currentSite = page.url.templateArgs.site || "";
+    currentSite = page.url.templateArgs.site || getLastSite();
 
 // USER MENU ITEMS
 var userMenuItems = [
@@ -156,14 +157,9 @@ var HEADER_HOME = {
     },
     HEADER_CREATE_VARIANTS = {
       id: "HEADER_CREATE_VARIANTS",
-      name: "alfresco/wrapped/HeaderJsWrapper",
+      name: "alfresco/menus/AlfMenuGroup",
       config: {
-        id: "create-variants-global_x002e_share-header_x0023_default_create-variants",
-        label: "header.create-variants.label",
-        itemId: "create-variants-global_x002e_share-header_x0023_default_create-variants",
-        objectToInstantiate: "Citeck.module.CreateVariants",
-        currentSite: currentSite,
-        currentUser: user.name
+        widgets: buildCreateVariantsForSite(currentSite)
       }
     },
     HEADER_JOURNALS = {
@@ -309,7 +305,15 @@ if (!isMobile) {
       }
     },
 
-    // HEADER_CREATE_VARIANTS,
+    {
+      id: "HEADER_CREATE",
+      name: "alfresco/header/AlfMenuBarPopup",
+      config: {
+        label: "header.create-variants.label",
+        widgets: [ HEADER_CREATE_VARIANTS ]
+      }
+    },
+
     HEADER_JOURNALS,
     HEADER_DOCUMENTLIBRARY,
 
@@ -524,7 +528,7 @@ function buildSitesForUser(username) {
   if (result.status == 200 && result != "{}") {
     var sites = eval('(' + result + ')');
 
-    if (sites) {
+    if (sites && sites.length > 0) {
       for (var sd = 0; sd < sites.length; sd++) {
         sitesPresets.push({
           url: "?site=" + sites[sd].shortName,
@@ -537,3 +541,25 @@ function buildSitesForUser(username) {
 
   return buildItems(sitesPresets);
 };
+
+function buildCreateVariantsForSite(sitename) {
+  var createVariantsPresets = [],
+      result = remote.call("/api/journals/create-variants/site/" + encodeURIComponent(sitename));
+
+  if (result.status == 200 && result != "{}") {
+    var responseData = eval('(' + result + ')'),
+        createVariants = responseData.createVariants;
+
+    if (createVariants && createVariants.length > 0) {
+      for (var cv = 0; cv < createVariants.length; cv++) {
+        createVariantsPresets.push({
+          label: createVariants[cv].title,
+          id: "create_variant_" + createVariants[cv].type.replace(":", "_"),
+          url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
+        });
+      }
+    }
+  }
+
+  return buildItems(createVariantsPresets);
+}
