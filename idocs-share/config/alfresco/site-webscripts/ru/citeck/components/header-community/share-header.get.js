@@ -1,15 +1,35 @@
 <import resource="classpath:/alfresco/site-webscripts/org/alfresco/share/imports/share-header.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header-community/share-header.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header/header-tokens.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/citeck.lib.js">
+
+
+// TODO:
+// - fix click on open popup item
+
+
+// GLOBAL VARIABLES
+var isMobile = isMobileDevice(context.headers["user-agent"]);
 
 // ---------------------
 // HEADER MENU
 // ---------------------
 
-var appMenu = getWidget("HEADER_APP_MENU_BAR"),
+var header = getWidget("SHARE_HEADER"),
+    appMenu = getWidget("HEADER_APP_MENU_BAR"),
     userMenu = getWidget("HEADER_USER_MENU_BAR"),
-    currentSite = page.url.templateArgs.site || "";
+    search = getWidget("HEADER_SEARCH"),
 
-// USER MENU
+    currentSite = page.url.templateArgs.site || getLastSite();
+
+appMenu.config.id = "HEADER_APP_MENU_BAR";
+userMenu.config.id = "HEADER_USER_MENU_BAR";
+
+// SEARCH
+header.config.widgets.splice(2, 1);
+header.config.widgets.splice(1, 0, search);
+
+// USER MENU ITEMS
 var userMenuItems = [
   {
      id: "HEADER_USER_MENU_STATUS",
@@ -80,127 +100,130 @@ if (!context.externalAuthentication) {
    });
 }
 
-userMenu.config.widgets = [
-  {
-     id: "HEADER_USER_MENU_POPUP",
-     name: "alfresco/header/AlfMenuBarPopup",
-     config: {
-        label: user.fullName,
-        widgets: [
-           {
-              id: "HEADER_USER_MENU",
-              name: "alfresco/menus/AlfMenuGroup",
-              config: {
-                 widgets: userMenuItems
-              }
-           }
-        ]
-     }
+
+// USER MENU
+userMenu.config.widgets = [{
+  id: "HEADER_USER_MENU",
+  name: "alfresco/header/AlfMenuBarPopup",
+  config: {
+    id: "HEADER_USER_MENU",
+    label: user.fullName,
+    widgets: [{
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: userMenuItems
+      }
+    }]
   }
-];
+}];
 
 
-// APP MENU
-appMenu.config.widgets = [
-  {
-     id: "HEADER_HOME",
-     name: "alfresco/menus/AlfMenuBarItem",
-     config: {
+// APP MENU ITEMS
+var createSiteClickEvent = function(event, element) {
+  Alfresco.module.getCreateSiteInstance().show(); 
+}
+ 
+var HEADER_HOME = {
+      id: "HEADER_HOME",
+      name: "alfresco/menus/AlfMenuBarItem",
+      config: {
         label: "header.menu.home.label",
-        targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard",
-        targetUrlType: "SHARE_PAGE_RELATIVE"
-     }
-  },
-
-  {
-     id: "HEADER_SITES_MENU",
-     name: "alfresco/wrapped/HeaderJsWrapper",
-     config: {
-        id: "sites-global_x002e_share-header_x0023_default_sites",
-        label: "header.menu.sites.label",
-        itemId: "sites-global_x002e_share-header_x0023_default_sites",
-        objectToInstantiate: "Alfresco.module.AllSites",
-        currentSite: currentSite,
-        currentUser: user.name
-     }
-  },
-
-  {
-     id: "HEADER_CREATE_VARIANTS",
-     name: "alfresco/wrapped/HeaderJsWrapper",
-     config: {
-        id: "create-variants-global_x002e_share-header_x0023_default_create-variants",
-        label: "header.create-variants.label",
-        itemId: "create-variants-global_x002e_share-header_x0023_default_create-variants",
-        objectToInstantiate: "Citeck.module.CreateVariants",
-        currentSite: currentSite,
-        currentUser: user.name
-     }
-  },
-
-  {
-     id: "HEADER_JOURNALS",
-     name: "alfresco/menus/AlfMenuBarItem",
-     config: {
-        label: "header.journals.label",
-        targetUrl: buildSiteUrl(currentSite) + "journals2/list/main",
-        movable: { minWidth: 1089 }
-     }
-  },
-
-  {
-     id: "HEADER_DOCUMENTLIBRARY",
-     name: "alfresco/menus/AlfMenuBarItem",
-     config: {
-        label: "header.documentlibrary.label",
-        targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
-        movable: { minWidth: 1171 }
-     }
-  },
-
-  {
-     id: "HEADER_CREATE_WORKFLOW",
-     name: "alfresco/header/AlfMenuBarPopup",
-     config: {
-        label: "header.create-workflow.label",
-        widgets: [
-          {
-            id: "HEADER_CREATE_WORKFLOW_VARIANTS",
-            name: "alfresco/menus/AlfMenuGroup",
+        targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
+      }
+    },
+    HEADER_SITES = {
+      id: "HEADER_SITES",
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: buildSitesForUser(user.name)
+      }
+    },
+    HEADER_SITES_SEARCH = {
+      id: "HEADER_SITES_SEARCH",
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: [{
+          name: "alfresco/menus/AlfMenuItem",
+          config: {
+            label: "header.find-sites.label",
+            targetUrl: "site-finder"
+          }
+        }]
+      }
+    },
+    HEADER_SITES_CREATE = {
+      id: "HEADER_SITES_CREATE_",
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: [{
+            name: "alfresco/menus/AlfMenuItem",
             config: {
-              widgets: [
-                {
-                   id: "HEADER_CREATE_WORKFLOW_ADHOC",
-                   name: "alfresco/menus/AlfMenuItem",
-                   config: {
-                      label: "header.create-workflow-adhoc.label",
-                      targetUrl: "start-specified-workflow?workflowId=activiti$perform"
-                   }
-                },
-                {
-                   id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-                   name: "alfresco/menus/AlfMenuItem",
-                   config: {
-                      label: "header.create-workflow-confirm.label",
-                      targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
-                   }
-                }
-              ]
+              label: "header.create-site.label",
+              clickEvent: createSiteClickEvent.toString(),
+              inheriteClickEvent: false
             }
           }
         ]
-     }
-  },
+      }
+    },
+    HEADER_CREATE_VARIANTS = {
+      id: "HEADER_CREATE_VARIANTS",
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: buildCreateVariantsForSite(currentSite)
+      }
+    },
+    HEADER_JOURNALS = {
+      id: "HEADER_JOURNALS",
+      name: "alfresco/menus/AlfMenuBarItem",
+      config: {
+        label: "header.journals.label",
+        targetUrl: buildSiteUrl(currentSite) + "journals2/list/main",
+        movable: { minWidth: 1089 }
+      }
+    },
+    HEADER_DOCUMENTLIBRARY = {
+      id: "HEADER_DOCUMENTLIBRARY",
+      name: "alfresco/menus/AlfMenuBarItem",
+      config: {
+        label: "header.documentlibrary.label",
+        targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
+        movable: { minWidth: 1171 }
+      }
+    },
+    HEADER_CREATE_WORKFLOW_VARIANTS = {
+      id: "HEADER_CREATE_WORKFLOW_VARIANTS",
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        widgets: [
+          {
+             id: "HEADER_CREATE_WORKFLOW_ADHOC",
+             name: "alfresco/menus/AlfMenuItem",
+             config: {
+                label: "header.create-workflow-adhoc.label",
+                targetUrl: "start-specified-workflow?workflowId=activiti$perform"
+             }
+          },
+          {
+             id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+             name: "alfresco/menus/AlfMenuItem",
+             config: {
+                label: "header.create-workflow-confirm.label",
+                targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
+             }
+          }
+        ]
+      }
+    };
 
-  buildMorePopup()
-];
 
 // DEBUG MENU
+var loggingWidgetItems;
 if (config.global.flags.getChildValue("client-debug") == "true") {
   var loggingEnabled = false,
-       allEnabled     = false,
-       warnEnabled    = false,
-       errorEnabled   = false;
+      allEnabled     = false,
+      warnEnabled    = false,
+      errorEnabled   = false;
 
   if (userPreferences &&
       userPreferences.org &&
@@ -215,78 +238,178 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
       errorEnabled = (loggingPreferences.error != null) ?  loggingPreferences.error : false;
    }
 
-   var loggingWidget = {
-      name: "alfresco/header/AlfMenuBarPopup",
+  loggingWidgetItems = [
+    {
+      name: "alfresco/menus/AlfMenuGroup",
       config: {
-         label: "Debug Menu",
-         widgets: [
-            {
-               name: "alfresco/menus/AlfMenuGroup",
-               config: {
-                  label: "Quick Settings",
-                  widgets: [
-                     {
-                        name: "alfresco/menus/AlfCheckableMenuItem",
-                        config: {
-                           label: "Debug Logging",
-                           value: "enabled",
-                           publishTopic: "ALF_LOGGING_STATUS_CHANGE",
-                           checked: loggingEnabled
-                        }
-                     },
-                     {
-                        name: "alfresco/menus/AlfCheckableMenuItem",
-                        config: {
-                           label: "Show All Logs",
-                           value: "all",
-                           publishTopic: "ALF_LOGGING_STATUS_CHANGE",
-                           checked: allEnabled
-                        }
-                     },
-                     {
-                        name: "alfresco/menus/AlfCheckableMenuItem",
-                        config: {
-                           label: "Show Warning Messages",
-                           value: "warn",
-                           publishTopic: "ALF_LOGGING_STATUS_CHANGE",
-                           checked: warnEnabled
-                        }
-                     },
-                     {
-                        name: "alfresco/menus/AlfCheckableMenuItem",
-                        config: {
-                           label: "Show Error Messages",
-                           value: "error",
-                           publishTopic: "ALF_LOGGING_STATUS_CHANGE",
-                           checked: errorEnabled
-                        }
-                     },
-
-                  ]
-               }
-            },
-            {
-               name: "alfresco/menus/AlfMenuGroup",
-               config: {
-                  label: "Logging Configuration",
-                  widgets: [
-                     {
-                        name: "alfresco/menus/AlfMenuItem",
-                        config: {
-                           label: "Update Logging Preferences",
-                           publishTopic: "ALF_UPDATE_LOGGING_PREFERENCES"
-                        }
-                     }
-                  ]
-               }
+        label: "Quick Settings",
+        widgets: [
+          {
+            name: "alfresco/menus/AlfCheckableMenuItem",
+            config: {
+              label: "Debug Logging",
+              value: "enabled",
+              publishTopic: "ALF_LOGGING_STATUS_CHANGE",
+              checked: loggingEnabled
             }
-         ]
+          },
+          {
+            name: "alfresco/menus/AlfCheckableMenuItem",
+            config: {
+              label: "Show All Logs",
+              value: "all",
+              publishTopic: "ALF_LOGGING_STATUS_CHANGE",
+              checked: allEnabled
+            }
+          },
+          {
+            name: "alfresco/menus/AlfCheckableMenuItem",
+            config: {
+              label: "Show Warning Messages",
+              value: "warn",
+              publishTopic: "ALF_LOGGING_STATUS_CHANGE",
+              checked: warnEnabled
+            }
+          },
+          {
+            name: "alfresco/menus/AlfCheckableMenuItem",
+            config: {
+              label: "Show Error Messages",
+              value: "error",
+              publishTopic: "ALF_LOGGING_STATUS_CHANGE",
+              checked: errorEnabled
+            }
+          },
+        ]
       }
-   };
-
-   appMenu.config.widgets.push(loggingWidget);
+    },
+    {
+      name: "alfresco/menus/AlfMenuGroup",
+      config: {
+        label: "Logging Configuration",
+        widgets: [
+          {
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+              label: "Update Logging Preferences",
+              publishTopic: "ALF_UPDATE_LOGGING_PREFERENCES"
+            }
+          }
+        ]
+      }
+    }
+  ];
 }
 
+
+// BUILD MAIN MENU
+appMenu.config.widgets = [];
+
+// BUILD DESKTOP MENU
+if (!isMobile) {
+  appMenu.config.widgets.push(HEADER_HOME);
+  appMenu.config.widgets.push({
+    id: "HEADER_SITES",
+    name: "alfresco/header/AlfMenuBarPopup",
+    config: {
+      label: "header.sites.label",
+      widgets: [ HEADER_SITES, HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+    }
+  }); 
+  appMenu.config.widgets.push({
+    id: "HEADER_CREATE",
+    name: "alfresco/header/AlfMenuBarPopup",
+    config: {
+      label: "header.create-variants.label",
+      widgets: [ HEADER_CREATE_VARIANTS ]
+    }
+  })
+  appMenu.config.widgets.push(HEADER_JOURNALS);
+  appMenu.config.widgets.push(HEADER_DOCUMENTLIBRARY);
+  appMenu.config.widgets.push({
+    id: "HEADER_CREATE_WORKFLOW",
+    name: "alfresco/header/AlfMenuBarPopup",
+    config: {
+      label: "header.create-workflow.label",
+      widgets: [ HEADER_CREATE_WORKFLOW_VARIANTS ]
+    }
+  });
+
+  appMenu.config.widgets.push(buildMorePopup(false));
+
+  if (loggingWidgetItems) {
+    appMenu.config.widgets.push({
+      id: "HEADER_LOGGING",
+      name: "alfresco/header/AlfMenuBarPopup",
+      config: {
+        label: "Debug Menu",
+        widgets: loggingWidgetItems
+      }
+    });
+  };
+}
+
+// BUILD MOBILE MENU
+var HEADER_MOBILE_JOURNALS = cloneWidget(HEADER_JOURNALS);
+HEADER_MOBILE_JOURNALS.name = "alfresco/menus/AlfMenuItem";
+HEADER_MOBILE_JOURNALS.config.movable = null;
+
+var HEADER_MOBILE_DOCUMENTLIBRARY = cloneWidget(HEADER_DOCUMENTLIBRARY);
+HEADER_MOBILE_DOCUMENTLIBRARY.name = "alfresco/menus/AlfMenuItem";
+HEADER_MOBILE_DOCUMENTLIBRARY.config.movable = null;
+
+var HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS = cloneWidget(HEADER_CREATE_WORKFLOW_VARIANTS);
+HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS.config.label = "header.create-workflow.label";
+
+var HEADER_MOBILE_CREATE_VARIANTS = cloneWidget(HEADER_CREATE_VARIANTS);
+HEADER_MOBILE_CREATE_VARIANTS.config.label = "header.create-variants.label";
+
+var HEADER_MOBILE_MENU_VARIANTS = {
+  id: "HEADER_MOBILE_MENU_VARIANTS",
+  name: "alfresco/menus/AlfMenuGroup",
+  config: {
+    id: "HEADER_MOBILE_MENU_VARIANTS",
+    widgets: [
+      HEADER_HOME,
+      HEADER_MOBILE_JOURNALS,
+      HEADER_MOBILE_DOCUMENTLIBRARY,
+
+      {
+        id: "HEADER_SITES",
+        name: "alfresco/menus/AlfMenuGroup",
+        config: {
+          label: "header.sites.label",
+          widgets: [ HEADER_SITES, HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+        }
+      },
+
+      HEADER_MOBILE_CREATE_VARIANTS,
+      HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS
+    ]
+  }
+};
+
+HEADER_MOBILE_MENU_VARIANTS.config.widgets.push(buildMorePopup(true));
+
+if (loggingWidgetItems) {
+  HEADER_MOBILE_MENU_VARIANTS.config.widgets.push({
+    id: "HEADER_LOGGING",
+    name: "alfresco/header/AlfMenuGroup",
+    config: {
+      label: "Debug Menu",
+      widgets: loggingWidgetItems
+    }
+  });
+}
+
+appMenu.config.widgets.unshift({
+   id: "HEADER_MOBILE_MENU",
+   name: "alfresco/header/AlfMenuBarPopup",
+   config: {
+      id: "HEADER_MOBILE_MENU",
+      widgets: [ HEADER_MOBILE_MENU_VARIANTS ]
+   }
+});
 
 // ---------------------
 // TITLE MENU
@@ -314,18 +437,23 @@ if (siteConfig && siteData.userIsSiteManager) {
 // FUNCTIONS
 // ---------------------
 
-function buildMorePopup() {
-  var groups = [ buildMovableGroup(), buildMyGroup() ];
-  if (user.isAdmin) groups.push(buildAdminGroup());
+function buildMorePopup(isMobile) {
+  var config = {
+    widgets: [ buildMyGroup() ]
+  };
+
+  if (!isMobile) {
+    config.label = "header.more.label";
+    config.widgets.unshift(buildMovableGroup());
+  }
+
+  if (user.isAdmin) config.widgets.push(buildAdminGroup());
 
   return {
-     id: "HEADER_MORE",
-     name: "alfresco/header/AlfMenuBarPopup",
-     config: {
-        label: "header.more.label",
-        widgets: groups
-     }
-  }
+    id: "HEADER_MORE",
+    name: isMobile ? "alfresco/menus/AlfMenuGroup" : "alfresco/header/AlfMenuBarPopup",
+    config: config
+  };
 };
 
 function buildMyGroup() {
@@ -343,7 +471,7 @@ function buildMyGroup() {
         { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
         { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
         { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
-      ], "my")
+      ], "more_my")
     }
   };
 };
@@ -387,7 +515,7 @@ function buildAdminGroup() {
         { id: "templates", url: "journals2/list/templates", iconImage: "/share/res/components/images/header/templates.png" },
         { id: "orgstruct", url: "orgstruct", iconImage: "/share/res/components/images/header/orgstruct.png" },
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
-      ], "tools")
+      ], "more_tools")
     }
   };
 };
@@ -400,15 +528,16 @@ function buildItems(items, groupName) {
   var result = [];
   for (var i = 0; i < items.length; i++) {
     var configuration = {
-      label: "header." + items[i].id + ".label",
-      targetUrl: items[i].url
+      label: items[i].label || "header." + items[i].id + ".label",
+      targetUrl: items[i].url,
+      targetUrlType: items[i].urlType || "SHARE_PAGE_RELATIVE"
     };
 
     if (items[i].iconImage) configuration["iconImage"] = items[i].iconImage;
     if (items[i].movable) configuration["movable"] = items[i].movable;
 
     result.push({
-      id: ("HEADER_MORE_" + groupName + "_" + items[i].id).toUpperCase(),
+      id: ("HEADER_" + groupName + "_" + items[i].id).toUpperCase(),
       name: "alfresco/menus/AlfMenuItem",
       config: configuration
     });
@@ -416,3 +545,50 @@ function buildItems(items, groupName) {
 
   return result;
 };
+
+function buildSitesForUser(username) {
+  var sitesPresets = [],
+      result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
+
+  if (result.status == 200 && result != "{}") {
+    var sites = eval('(' + result + ')');
+
+    if (sites && sites.length > 0) {
+      for (var sd = 0; sd < sites.length; sd++) {
+        sitesPresets.push({
+          url: "?site=" + sites[sd].shortName,
+          id: "sites_" + sites[sd].shortName,
+          label: sites[sd].title
+        });
+      }
+    }
+  }
+
+  return buildItems(sitesPresets);
+};
+
+function buildCreateVariantsForSite(sitename) {
+  var createVariantsPresets = [],
+      result = remote.call("/api/journals/create-variants/site/" + encodeURIComponent(sitename));
+
+  if (result.status == 200 && result != "{}") {
+    var responseData = eval('(' + result + ')'),
+        createVariants = responseData.createVariants;
+
+    if (createVariants && createVariants.length > 0) {
+      for (var cv = 0; cv < createVariants.length; cv++) {
+        createVariantsPresets.push({
+          label: createVariants[cv].title,
+          id: "create_variant_" + createVariants[cv].type.replace(":", "_"),
+          url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
+        });
+      }
+    }
+  }
+
+  return buildItems(createVariantsPresets);
+}
+
+function cloneWidget(object) {
+  return jsonUtils.toObject(jsonUtils.toJSONObject(object));
+}

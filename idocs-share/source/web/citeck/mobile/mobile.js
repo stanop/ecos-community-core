@@ -20,7 +20,11 @@ Citeck.mobile.isMobileDevice = function() {
 // WORK PROCESS
 (function() {
 
-    if (Citeck.mobile.isMobileDevice() && Citeck.mobile.hasTouchEvent()) {       
+	// TODO:
+	// - изменитять на 'mobile' режим если ширина окна <= 522px
+
+    if (Citeck.mobile.isMobileDevice()) {       
+        
         // share global handler
         YAHOO.Bubbling.on("on-mobile-device", function(e, args) { 
             if (args.fn) fn();
@@ -30,36 +34,59 @@ Citeck.mobile.isMobileDevice = function() {
 	        // global mobile style
 	        $("body").addClass("mobile");
 
-	        // viewport only for dashboard and forms (while development process)
+	        // viewport only for dashboard (while development process)
 	        // and for all pages in production after all tests
-	        var formPages = ["node-create-page", "node-edit-page", "dashboard"];
-	        for (var fp in formPages) {
-	        	if (window.location.pathname.indexOf(formPages[fp]) != -1) {
+        	if (window.location.pathname.indexOf("dashboard") != -1) {
+		        $("head").append(
+		        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
+		        );
+		        
+        		$("#bd .grid").attr("class", "grid");
+
+        		$.each($(".dashlet"), function(i, el) {
+        			$(el).find(".yui-resize-handle").remove();
+        			$(".title", el).click(function(event) {
+        				$(el).children().filter(":not(.title)").toggle();
+        			});
+        		});
+        	}
+    	});
+    } else {
+    	$(document).ready(function() {
+	    	$("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
+
+	    	$(window).resize(function(event) {
+	    		if (window.innerWidth <= 525) {
+	    			$("body").addClass("mobile");
 			        $("head").append(
 			        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
 			        );
-			        
-			        switch (formPages[fp]) {
-			        	case "dashboard":
-			        		$("#bd .grid").attr("class", "grid");
-
-			        		$.each($(".dashlet"), function(i, el) {
-			        			// remove resizer
-			        			$(el).find(".yui-resize-handle").remove();
-
-			        			// hide all DIVs in dashlet without 'title'
-			        			$(".title", el).click(function(event) {
-			        				$(el).children().filter(":not(.title)").toggle();
-			        			});
-			        		});
-
-			        		break;
-			        }
-			         
-			        break;
-	        	}
-	        }
+			        transformDashboard(true);
+	    		} else { 
+	    			$("body").removeClass("mobile");
+	    			$("meta[name='viweport']").remove();
+	    			transformDashboard(false);
+	    		}
+	    	});
+			$(window).resize();
     	});
     }
+
+    function transformDashboard(isMobile) {
+    	var gridContainer = $("#bd .grid"),
+    		dashletHandler = function(event) {
+				$("#bd .grid").children().filter(":not(.title)").toggle();
+			};
+
+    	if (isMobile) {
+    		gridContainer.attr("class", "grid");
+			$(".title", gridContainer).on("click", dashletHandler);
+    	} else {
+    		gridContainer.attr("class", gridContainer.attr("data-class-backup"));
+    		$(gridContainer).children().filter(":not(.title)").show();
+    		$(".title", gridContainer).off("click", dashletHandler);
+    	}
+    	
+    };
 
 })()
