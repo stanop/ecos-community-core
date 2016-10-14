@@ -3,6 +3,11 @@
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header/header-tokens.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/citeck.lib.js">
 
+
+// TODO:
+// - fix click on open popup item
+
+
 // GLOBAL VARIABLES
 var isMobile = isMobileDevice(context.headers["user-agent"]);
 
@@ -10,9 +15,16 @@ var isMobile = isMobileDevice(context.headers["user-agent"]);
 // HEADER MENU
 // ---------------------
 
-var appMenu = getWidget("HEADER_APP_MENU_BAR"),
+var header = getWidget("SHARE_HEADER"),
+    appMenu = getWidget("HEADER_APP_MENU_BAR"),
     userMenu = getWidget("HEADER_USER_MENU_BAR"),
+    search = getWidget("HEADER_SEARCH"),
+
     currentSite = page.url.templateArgs.site || getLastSite();
+
+// SEARCH
+header.config.widgets.splice(2, 1);
+header.config.widgets.splice(1, 0, search);
 
 // USER MENU ITEMS
 var userMenuItems = [
@@ -89,13 +101,12 @@ if (!context.externalAuthentication) {
 // USER MENU
 userMenu.config.widgets = [
   {
-     id: "HEADER_USER_MENU_POPUP",
+     id: "HEADER_USER_MENU",
      name: "alfresco/header/AlfMenuBarPopup",
      config: {
         label: user.fullName,
         widgets: [
            {
-              id: "HEADER_USER_MENU",
               name: "alfresco/menus/AlfMenuGroup",
               config: {
                  widgets: userMenuItems
@@ -347,17 +358,28 @@ if (isMobile) {
   HEADER_JOURNALS.name = "alfresco/menus/AlfMenuItem";
   HEADER_DOCUMENTLIBRARY.name = "alfresco/menus/AlfMenuItem";
   HEADER_CREATE_WORKFLOW_VARIANTS.config.label = "header.create-workflow.label";
+  HEADER_CREATE_VARIANTS.config.label = "header.create-variants.label";
 
   var HEADER_MOBILE_MENU_VARIANTS = {
     id: "HEADER_MOBILE_MENU_VARIANTS",
     name: "alfresco/menus/AlfMenuGroup",
     config: {
+      id: "HEADER_MOBILE_MENU_VARIANTS",
       widgets: [
         HEADER_HOME,
-        // HEADER_SITES_MENU,
-        // HEADER_CREATE_VARIANTS,
         HEADER_JOURNALS,
         HEADER_DOCUMENTLIBRARY,
+
+        {
+          id: "HEADER_SITES",
+          name: "alfresco/menus/AlfMenuGroup",
+          config: {
+            label: "header.sites.label",
+            widgets: [ HEADER_SITES, HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+          }
+        },
+
+        HEADER_CREATE_VARIANTS,
         HEADER_CREATE_WORKFLOW_VARIANTS
       ]
     }
@@ -380,6 +402,7 @@ if (isMobile) {
      id: "HEADER_MOBILE_MENU",
      name: "alfresco/header/AlfMenuBarPopup",
      config: {
+        id: "HEADER_MOBILE_MENU",
         widgets: [ HEADER_MOBILE_MENU_VARIANTS ]
      }
   }]; 
