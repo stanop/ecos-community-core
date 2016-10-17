@@ -2,6 +2,7 @@ package ru.citeck.ecos.behavior.activity;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
@@ -39,6 +40,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
 
+    private final ValueConverter valueConverter = new ValueConverter();
+
     private Map<String, Map<String, String>> attributesMappingByWorkflow;
     private Map<String, List<String>> workflowTransmittedVariables;
 
@@ -62,10 +65,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         );
 
         if (attributesMappingByWorkflow == null) {
-            attributesMappingByWorkflow = new HashMap<String, Map<String, String>>();
+            attributesMappingByWorkflow = new HashMap<>();
         }
         if (workflowTransmittedVariables == null) {
-            workflowTransmittedVariables = new HashMap<String, List<String>>();
+            workflowTransmittedVariables = new HashMap<>();
         }
     }
 
@@ -110,16 +113,15 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
             workflowProperties.put(value, getAttribute(taskRef, key, value));
         }
 
-        //transmit variables from previous process
         List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
         if (transmittedParameters != null && transmittedParameters.size() > 0) {
             Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
             if (variables != null) {
-                Object processVariablesObj = variables.get("process");
+                Object processVariablesObj = variables.get(ActionConstants.PROCESS_VARIABLES);
                 if (processVariablesObj != null && processVariablesObj instanceof Map) {
                     Map<String, Serializable> processVariables = (Map) processVariablesObj;
                     for (String parameter : transmittedParameters) {
-                        Serializable value = processVariables.get(parameter);
+                        Serializable value = valueConverter.convertValueForRepo(processVariables.get(parameter));
                         if (value != null) {
                             workflowProperties.put(QName.createQName(parameter), value);
                         }
