@@ -83,18 +83,26 @@ Citeck.mobile.isMobileDevice = function() {
     }
 
     function transformDashboard(isMobile) {
-        var gridContainer = $("#bd .grid"),
-            dashletHandler = function(event) {
-                $($(event.target).parent()).children().filter(":not(.title)").toggle();
-            };
+        var gridContainer = $("#bd .grid");
 
         if (isMobile) {
             gridContainer.attr("class", "grid");
-            $(".dashlet .title", gridContainer).on("click", dashletHandler);
+            
+            if (!gridContainer.attr("data-dashlet-clickable")) {
+                $(".dashlet .title", gridContainer).bind("click.title-clickable", function(event) {
+                    $($(event.target).parent()).children().filter(":not(.title)").toggle();
+                });
+                gridContainer.attr("data-dashlet-clickable", "true");
+            }
         } else {
+            $(".dashlet").children().filter(":not(.title)").show();
+           
+            if (gridContainer.attr("data-dashlet-clickable")) {
+                $(".dashlet .title", gridContainer).unbind("click.title-clickable");
+                gridContainer.removeAttr("data-dashlet-clickable");
+            }
+
             gridContainer.attr("class", gridContainer.attr("data-class-backup"));
-            $(gridContainer).children().filter(":not(.title)").show();
-            $(".dashlet .title", gridContainer).off("click", dashletHandler);
         }
     };
 
