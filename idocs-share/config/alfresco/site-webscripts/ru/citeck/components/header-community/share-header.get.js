@@ -1,7 +1,7 @@
 <import resource="classpath:/alfresco/site-webscripts/org/alfresco/share/imports/share-header.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header-community/share-header.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/header/header-tokens.lib.js">
-<import resource="classpath:/alfresco/site-webscripts/ru/citeck/citeck.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/citeck.lib.js">
 
 
 // TODO:
