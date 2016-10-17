@@ -19,6 +19,7 @@
 package ru.citeck.ecos.action;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,8 +112,7 @@ public class ScriptParamActionExecuter extends ActionExecuterAbstractBase
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
 
         // add context variables
-        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-        if(variables != null)
+        Map<String, Object> variables = getContextVariables();
         for(Map.Entry<String, Object> variable : variables.entrySet()) {
             if(!model.containsKey(variable.getKey())) {
                 model.put(variable.getKey(), variable.getValue());
@@ -129,6 +129,18 @@ public class ScriptParamActionExecuter extends ActionExecuterAbstractBase
         {
             action.setParameterValue(PARAM_RESULT, (Serializable)result);
         }
+    }
+
+    private Map<String, Object> getContextVariables() {
+        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
+        if (variables == null) {
+            variables = new HashMap<>();
+            AlfrescoTransactionSupport.bindResource(ActionConstants.ACTION_CONDITION_VARIABLES, variables);
+        }
+        if (!variables.containsKey(ActionConstants.PROCESS_VARIABLES)) {
+            variables.put(ActionConstants.PROCESS_VARIABLES, new HashMap<String, Object>());
+        }
+        return variables;
     }
     
     /**

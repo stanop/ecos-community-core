@@ -112,5 +112,15 @@
                 </entry>
             </map>
         </property>
+        <property name="workflowTransmittedVariables">
+            <map>
+                <entry key="activiti$case-perform">
+                    <list>
+                        <value>optionalPerformers</value>
+                        <value>excludedPerformers</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
     </bean>
 </beans>

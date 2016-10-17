@@ -1,20 +1,31 @@
 
-function onWorkflowStart() {
+const OPTIONAL_PERFORMERS = 'optionalPerformers';
+const EXCLUDED_PERFORMERS = 'excludedPerformers';
+const TASKS_PERFORMERS = 'tasksPerformers';
+const MANDATORY_TASKS = 'mandatoryTasks';
 
+function onWorkflowStart() {
+    if (execution.hasVariable(OPTIONAL_PERFORMERS)) {
+        var optionalPerformers = convertForJS(execution.getVariable(OPTIONAL_PERFORMERS));
+        var expandedPerformers = [];
+        forEach(optionalPerformers, function(p) {
+            expandedPerformers.push(p);
+            expandedPerformers = expandedPerformers.concat(people.getMembers(p, true));
+        });
+        execution.setVariable(OPTIONAL_PERFORMERS, convertForRepo(expandedPerformers));
+    }
 }
 
 function onBeforePerformingFlowTake() {
     var initialPerformers = toJSArray(execution.getVariable("wfcp_performers")),
-        excludedPerformers = toJSArray(execution.getVariable("excludedPerformers")),
-        performers = [],
-        performer;
+        excludedPerformers = toJSArray(getExecutionList(EXCLUDED_PERFORMERS)),
+        performers = [];
 
-    for (var i = 0; i < initialPerformers.length; i++) {
-        performer = initialPerformers[i];
+    forEach(initialPerformers, function(performer) {
         if (excludedPerformers.indexOf(performer) == -1) {
             performers.push(performer);
         }
-    }
+    });
 
     execution.setVariable("performers", toJavaList(performers));
 }
@@ -28,26 +39,66 @@ function onSkipPerformingFlowTake() {
 }
 
 function onSkipPerformingGatewayStarted() {
-    execution.setVariable("skipPerforming", performers.size() == 0);
+    var optionalPerformers = getExecutionList(OPTIONAL_PERFORMERS),
+        performers = execution.getVariable("performers"),
+        hasMandatoryTasks = false;
+
+    for (var i = 0; i < performers.size(); i++) {
+        var performer = performers.get(i);
+        if (!optionalPerformers.contains(performer)) {
+            hasMandatoryTasks = true;
+            break;
+        }
+    }
+
+    execution.setVariable("skipPerforming", performers.size() == 0 || !hasMandatoryTasks);
 }
 
 function onPerformTaskCreated() {
 
+    var variables = execution.getVariables();
+    for (var variable in variables) {
+        var value = variables[variable];
+        if (isSharedVariable(variable)) {
+            task.setVariable(variable, value);
+        }
+    }
+
+    saveTaskPerformers();
+
+    var optionalPerformers = getExecutionList(OPTIONAL_PERFORMERS),
+        performers = getTaskPerformers(),
+        isOptional = containsAll(optionalPerformers, extractNodeRefs(performers));
+
+    task.setVariableLocal('cwf_isOptionalTask', isOptional);
+    if (!isOptional) {
+        var mandatoryTasks = getExecutionList(MANDATORY_TASKS);
+        mandatoryTasks.add("task$" + task.getId());
+    }
 }
 
 function onPerformTaskAssigned() {
-
 }
 
 function onPerformTaskCompleted() {
 
-    execution.setVariable("wfcp_performOutcome", task.getVariable("wfcp_performOutcome"));
+    var variables = task.getVariables();
+    for (var variable in variables) {
+        var value = variables[variable];
+        if (isSharedVariable(variable)) {
+            execution.setVariable(variable, value);
+        }
+    }
 
     saveTaskResult();
     checkCommentConstraint();
 
-    execution.setVariable("abortPerforming", isAllMandatoryPerformersDone()
+    var mandatoryTasks = getExecutionList(MANDATORY_TASKS);
+    mandatoryTasks.remove("task$" + task.getId());
+
+    execution.setVariable("abortPerforming", mandatoryTasks.size() == 0
                                              || isAbortOutcomeReceived());
+
 }
 
 function checkCommentConstraint() {
@@ -63,29 +114,6 @@ function checkCommentConstraint() {
     }
 }
 
-/* ************************abort conditions***************************/
-/*                                                                   */
-
-function isAllMandatoryPerformersDone() {
-    var optionalPerformers = toJSArray(execution.getVariable("optionalPerformers")),
-        performers = toJSArray(execution.getVariable("performers")),
-        outcomes = toJSArray(execution.getVariable("outcomes")),
-        completedPerformers = getPerformersFromResults();
-
-    if (performers.length == outcomes.length) {
-        return true;
-    }
-
-    for (var i = 0; i < performers.length; i++) {
-        var performer = performers[i];
-        if (completedPerformers.indexOf(performer) == -1
-                && optionalPerformers.indexOf(performer) == -1) {
-            return false;
-        }
-    }
-    return true;
-}
-
 function isAbortOutcomeReceived() {
     var outcome = task.getVariable("wfcp_performOutcome"),
         outcomesStr = execution.getVariable("wfcp_abortOutcomes") || "",
@@ -94,52 +122,66 @@ function isAbortOutcomeReceived() {
     return arrayContains(outcomes, outcome);
 }
 
-/*                                                                   */
-/* ************************abort conditions***************************/
-
 function onWorkflowEnd() {
-
+    clearList(OPTIONAL_PERFORMERS);
+    clearList(EXCLUDED_PERFORMERS);
 }
 
 /* ******************************utils********************************/
 /*                                                                   */
 
 function saveTaskResult() {
-    var outcome = task.getVariable("wfcp_performOutcome"),
+    var taskVariables = task.getVariables(),
+        outcome = taskVariables["wfcp_performOutcome"],
         properties = {
             'wfcp:resultOutcome': outcome,
             'wfcp:resultDate': new Date()
         },
-        name = getUniqueName(bpm_package, "perform-result-" + person.properties["cm:userName"]),
-        candidate = task.getCandidates().toArray()[0],
-        performerName;
-
-    if (candidate) {
-        if (candidate.isGroup()) {
-            performer = people.getGroup(candidate.getGroupId());
-        } else if (candidate.isUser()){
-            performer = people.getPerson(candidate.getUserId());
-        }
-    } else {
-        performer = people.getPerson(task.getAssignee());
-    }
+        name = "perform-result-" + person.properties["cm:userName"],
+        performersByTask = convertForJS(execution.getVariable(TASKS_PERFORMERS)) || {},
+        performers = performersByTask["task$" + task.getId()] || getTaskPerformers();
 
     var result = bpm_package.createNode(name, "wfcp:performResult", properties, "wfcp:performResults");
 
     result.createAssociation(person, "wfcp:resultPerson");
-    if (performer) {
+
+    forEach(performers, function(performer) {
         result.createAssociation(performer, "wfcp:resultPerformer");
-    }
+    });
 }
 
-function getUniqueName(parent, nameBase) {
-    var counter = 1,
-        name = nameBase;
-    while (parent.childByNamePath(name)) {
-        name = nameBase + ' (' + counter + ')';
-        counter++;
-    }
-    return name;
+function saveTaskPerformers() {
+    var tasksPerformers = convertForJS(execution.getVariable(TASKS_PERFORMERS)) || {},
+        performers = tasksPerformers[task.getId()] || [],
+        performersFromTask = getTaskPerformers();
+
+    forEach(performersFromTask, function(p) {
+        var contains = false;
+        for (var performer in performers) {
+            if (performer.equals(p)) {
+                contains = true;
+                break;
+            }
+        }
+        if (!contains) {
+            performers.push(p);
+        }
+    });
+
+    tasksPerformers["task$" + task.getId()] = performers;
+    execution.setVariable(TASKS_PERFORMERS, convertForRepo(tasksPerformers));
+}
+
+function isSharedVariable(name) {
+    var transferableVars = [],
+        ignoredVars = [],
+        ignoredPrefixes = ['bpm', 'cwf', 'wfcf', 'cm'],
+        prefix = (name.match(/^([^_]+)_.+/) || [])[1];
+
+    return arrayContains(transferableVars, name)
+           || !arrayContains(ignoredVars, name)
+              && prefix != undefined
+              && !arrayContains(ignoredPrefixes, prefix);
 }
 
 function toJSArray(list) {
@@ -164,6 +206,14 @@ function toJavaList(arr) {
     return result;
 }
 
+function clearList(varName) {
+    var variable = execution.getVariable(varName);
+    if (variable) {
+        variable.clear();
+    }
+}
+
+
 function msg(key) {
     return Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage(key);
 }
@@ -174,10 +224,12 @@ function getPerformResults() {
 
 function getPerformersFromResults() {
     var results = getPerformResults(),
-        performers = [];
+        performers = new Packages.java.util.ArrayList(),
+        performer;
 
     for (var i = 0; i < results.length; i++) {
-        performers = performers.concat(results[i].assocs['wfcp:resultPerformer'] || []);
+        performer = (results[i].assocs['wfcp:resultPerformer'] || [])[0];
+        if (performer) performers.add(performer);
     }
 
     return performers;
@@ -190,4 +242,90 @@ function arrayContains(arr, value) {
         }
     }
     return false;
+}
+
+function getTaskPerformers() {
+    var candidates = task.getCandidates(),
+        performers = new Packages.java.util.ArrayList(),
+        assignee = task.getAssignee();
+
+    if (assignee) {
+        performers.add(people.getPerson(assignee));
+    }
+
+    forEach(candidates, function(candidate) {
+        if (candidate.isGroup()) {
+            performers.add(people.getGroup(candidate.getGroupId()));
+        } else if (candidate.isUser()){
+            performers.add(people.getPerson(candidate.getUserId()));
+        }
+    });
+
+    return performers;
+}
+
+function containsAll(list, elements) {
+    var result = true;
+    forEach(elements, function(element) {
+        if (result && !list.contains(element)) {
+            result = false;
+        }
+    });
+    return result;
+}
+
+function forEach(arr, func) {
+    if (arr == null) return;
+    if (arr.iterator) {
+        var it = arr.iterator();
+        while (it.hasNext()) {
+            func(it.next());
+        }
+    } else {
+        for each(var val in arr) {
+            func(val);
+        }
+    }
+}
+
+function extractNodeRefs(arr) {
+    var result = new Packages.java.util.ArrayList();
+    forEach(arr, function(it) {
+        result.add(it.nodeRef);
+    });
+    return result;
+}
+
+function getExecutionList(name) {
+    var list = execution.getVariable(name);
+    if (!list) {
+        list = new Packages.java.util.ArrayList();
+        execution.setVariable(name, list);
+    }
+    return list;
+}
+
+function convertForRepo(value) {
+    if (value == null) {
+        return null;
+    }
+    var converter = new Packages.org.alfresco.repo.jscript.ValueConverter();
+    return converter.convertValueForRepo(value);
+}
+
+function convertForJS(value) {
+    if (value == null) {
+        return null;
+    }
+
+    if (value instanceof Packages.java.util.Map) {
+        var result = {};
+        for (var key in value){
+            result[key] = convertForJS(value[key]);
+        }
+        return result;
+    }
+
+    var converter = new Packages.org.alfresco.repo.jscript.ValueConverter();
+    return converter.convertValueForScript(services.get("ServiceRegistry"), {}, null, value);
 }
