@@ -2218,9 +2218,9 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding-left: 5px;
 }
 
-#alf-hd .alf-header .right-widgets .horizontal-widget {
+/*#alf-hd .alf-header .right-widgets .horizontal-widget {
    float: right;
-}
+}*/
 
 #alf-hd .alf-header #HEADER_SEARCH_BOX {
    margin: 5px 10px;

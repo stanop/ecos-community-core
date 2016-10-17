@@ -39,6 +39,7 @@
     width: 100%;
     box-sizing: border-box;
     left: 0 !important;
+    overflow-y: visible !important;
 }
 
 .mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] .alf-header-menu-bar,
