@@ -142,6 +142,10 @@ JournalsPage
 		this.userInteraction.simulateChange();
 		this.$super.applyCriteria();
 	})
+
+	.method('toggleSidebar', function() {
+		$("#alf-filters").toggle();
+	})
 	;
 	
 var JournalsPageWidget = function(htmlid) {

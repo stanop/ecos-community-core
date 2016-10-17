@@ -110,6 +110,12 @@
             <div id="yui-main">
                 <div class="yui-b" id="alf-content">
                     <div id="${toolbarId}" class="toolbar flat-button icon-buttons" data-bind="css: { hidden: journal() == null }">
+                        <span id="${id}-sidebar-toggle" class="sidebar-toggle" title="" 
+                              data-bind="yuiButton: { type: 'push'}">
+                            <span class="first-child">
+                                <button data-bind="click: toggleSidebar">Sidebar</button>
+                            </span>          
+                        </span>
 
                         <@journals.renderCreateVariantsMenu id />
 
@@ -250,13 +256,16 @@
                         <!-- /ko -->
 
                     </div>
+
                     <!-- ko if: journal() != null -->
-                    <div id="${id}-content">
-                        <@journals.renderJournalTable />
-                        <#assign pagingTemplate = '{PreviousPageLink} {PageLinks} {NextPageLink} <span class=rows-per-page-label>' + (msg('label.rows-per-page')?html) + '</span> {RowsPerPageDropdown}' />
-                        <div id="${id}-paging" data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />">
+                        <div id="${id}-content" class="journal-content">
+                            <@journals.renderJournalTable />
+
+                            <#assign pagingTemplate = '{PreviousPageLink} {PageLinks} {NextPageLink} <span class=rows-per-page-label>' + (msg('label.rows-per-page')?html) + '</span> {RowsPerPageDropdown}' />
+
+                            <div id="${id}-paging" class="journal-content-pagination"
+                                 data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />"></div>
                         </div>
-                    </div>
                     <!-- /ko -->
 
                     <!-- ko if: journal() == null && journalsList() != null && journalsList().journals().length > 0 -->
@@ -341,8 +350,7 @@
             </div>
         </div>
 
-        <!-- ko gotoAddress: gotoAddress -->
-        <!-- /ko -->
+        <!-- ko gotoAddress: gotoAddress --><!-- /ko -->
 
         <iframe id="${id}-history-iframe" src="${url.context}/res/favicon.ico" style="position: absolute;top: 0;left: 0;width: 1px;height: 1px;visibility: hidden;"></iframe>
         <input id="${id}-history-field" type="hidden" data-bind="yuiHistory: {
@@ -356,7 +364,6 @@
             }
         } "/>
 
-        <!-- ko dependencies: dependencies --><!-- /ko -->
         <!-- ko dependencies: dependencies --><!-- /ko -->
     </@>
 </@>
