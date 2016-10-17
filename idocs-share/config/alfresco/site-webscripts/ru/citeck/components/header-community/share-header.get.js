@@ -140,30 +140,19 @@ var HEADER_HOME = {
     },
     HEADER_SITES_SEARCH = {
       id: "HEADER_SITES_SEARCH",
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "alfresco/menus/AlfMenuItem",
       config: {
-        widgets: [{
-          name: "alfresco/menus/AlfMenuItem",
-          config: {
-            label: "header.find-sites.label",
-            targetUrl: "site-finder"
-          }
-        }]
+        label: "header.find-sites.label",
+        targetUrl: "site-finder"
       }
     },
     HEADER_SITES_CREATE = {
-      id: "HEADER_SITES_CREATE_",
-      name: "alfresco/menus/AlfMenuGroup",
+      id: "HEADER_SITES_CREATE",
+      name: "alfresco/menus/AlfMenuItem",
       config: {
-        widgets: [{
-            name: "alfresco/menus/AlfMenuItem",
-            config: {
-              label: "header.create-site.label",
-              clickEvent: createSiteClickEvent.toString(),
-              inheriteClickEvent: false
-            }
-          }
-        ]
+        label: "header.create-site.label",
+        clickEvent: createSiteClickEvent.toString(),
+        inheriteClickEvent: false
       }
     },
     HEADER_CREATE_VARIANTS = {
@@ -313,7 +302,17 @@ if (!isMobile) {
     name: "alfresco/header/AlfMenuBarPopup",
     config: {
       label: "header.sites.label",
-      widgets: [ HEADER_SITES, HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+      widgets: [
+        HEADER_SITES,
+        {
+          id: "HEADER_SITES_MANAGEMENT",
+          name: "alfresco/menus/AlfMenuGroup",
+          config: {
+            id: "HEADER_SITES_MANAGEMENT",
+            widgets: [ HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+          }
+        }
+      ]
     }
   }); 
   appMenu.config.widgets.push({
@@ -350,6 +349,9 @@ if (!isMobile) {
 }
 
 // BUILD MOBILE MENU
+var HEADER_MOBILE_HOME = cloneWidget(HEADER_HOME);
+HEADER_MOBILE_HOME.name = "alfresco/menus/AlfMenuItem";
+
 var HEADER_MOBILE_JOURNALS = cloneWidget(HEADER_JOURNALS);
 HEADER_MOBILE_JOURNALS.name = "alfresco/menus/AlfMenuItem";
 HEADER_MOBILE_JOURNALS.config.movable = null;
@@ -370,16 +372,26 @@ var HEADER_MOBILE_MENU_VARIANTS = {
   config: {
     id: "HEADER_MOBILE_MENU_VARIANTS",
     widgets: [
-      HEADER_HOME,
+      HEADER_MOBILE_HOME,
       HEADER_MOBILE_JOURNALS,
       HEADER_MOBILE_DOCUMENTLIBRARY,
 
       {
-        id: "HEADER_SITES",
+        id: "HEADER_MOBILE_SITES",
         name: "alfresco/menus/AlfMenuGroup",
         config: {
           label: "header.sites.label",
-          widgets: [ HEADER_SITES, HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+          widgets: [
+            HEADER_SITES, 
+            {
+              id: "HEADER_MOBILE_SITES_MANAGEMENT",
+              name: "alfresco/menus/AlfMenuGroup",
+              config: {
+                id: "HEADER_MOBILE_SITES_MANAGEMENT",
+                widgets: [ HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+              }
+            }
+          ]
         }
       },
 

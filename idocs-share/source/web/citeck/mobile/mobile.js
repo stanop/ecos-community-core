@@ -20,9 +20,6 @@ Citeck.mobile.isMobileDevice = function() {
 // WORK PROCESS
 (function() {
 
-	// TODO:
-	// - изменитять на 'mobile' режим если ширина окна <= 522px
-
     if (Citeck.mobile.isMobileDevice()) {       
         
         // share global handler
@@ -31,62 +28,74 @@ Citeck.mobile.isMobileDevice = function() {
         });
 
         $(document).ready(function() {
-	        // global mobile style
-	        $("body").addClass("mobile");
+            // global mobile style
+            $("body").addClass("mobile");
 
-	        // viewport only for dashboard (while development process)
-	        // and for all pages in production after all tests
-        	if (window.location.pathname.indexOf("dashboard") != -1) {
-		        $("head").append(
-		        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
-		        );
-		        
-        		$("#bd .grid").attr("class", "grid");
+            // viewport only for dashboard (while development process)
+            // and for all pages in production after all tests
+            if (window.location.pathname.indexOf("dashboard") != -1) {
+                $("head").append(
+                    $("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
+                );
+                
+                $("#bd .grid").attr("class", "grid");
 
-        		$.each($(".dashlet"), function(i, el) {
-        			$(el).find(".yui-resize-handle").remove();
-        			$(".title", el).click(function(event) {
-        				$(el).children().filter(":not(.title)").toggle();
-        			});
-        		});
-        	}
-    	});
+                $.each($(".dashlet"), function(i, el) {
+                    $(el).find(".yui-resize-handle").remove();
+                    $(".title", el).click(function(event) {
+                        $(el).children().filter(":not(.title)").toggle();
+                    });
+                });
+            }
+        });
     } else {
-    	$(document).ready(function() {
-	    	$("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
+        $(document).ready(function() {
+            // define mobile width for specified themes
+            var mobileWidth = (function() {
+                var defaultMobileWidth = 525, themesMobileWidth = {
+                        "yui-skin-citeckTheme": 585,
+                        "yui-skin-uedmsTheme": 543
+                    };
 
-	    	$(window).resize(function(event) {
-	    		if (window.innerWidth <= 525) {
-	    			$("body").addClass("mobile");
-			        $("head").append(
-			        	$("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
-			        );
-			        transformDashboard(true);
-	    		} else { 
-	    			$("body").removeClass("mobile");
-	    			$("meta[name='viweport']").remove();
-	    			transformDashboard(false);
-	    		}
-	    	});
-			$(window).resize();
-    	});
+                var bodyThemeClass = document.getElementById("Share").className.match(/yui-skin-\w+Theme/),
+                    yuiThemeName = bodyThemeClass ? bodyThemeClass[0] : "";
+
+                return themesMobileWidth[yuiThemeName] || defaultMobileWidth;
+            })();
+
+            $("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
+
+            $(window).resize(function(event) {
+                if (window.innerWidth <= mobileWidth) {
+                    $("body").addClass("mobile");
+                    $("head").append(
+                        $("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
+                    );
+                    transformDashboard(true);
+                } else { 
+                    $("body").removeClass("mobile");
+                    $("meta[name='viweport']").remove();
+                    transformDashboard(false);
+                }
+            });
+            $(window).resize();
+        });
     }
 
     function transformDashboard(isMobile) {
-    	var gridContainer = $("#bd .grid"),
-    		dashletHandler = function(event) {
-				$("#bd .grid").children().filter(":not(.title)").toggle();
-			};
+        var gridContainer = $("#bd .grid"),
+            dashletHandler = function(event) {
+                $($(event.target).parent()).children().filter(":not(.title)").toggle();
+            };
 
-    	if (isMobile) {
-    		gridContainer.attr("class", "grid");
-			$(".title", gridContainer).on("click", dashletHandler);
-    	} else {
-    		gridContainer.attr("class", gridContainer.attr("data-class-backup"));
-    		$(gridContainer).children().filter(":not(.title)").show();
-    		$(".title", gridContainer).off("click", dashletHandler);
-    	}
-    	
+        if (isMobile) {
+            gridContainer.attr("class", "grid");
+            $(".dashlet .title", gridContainer).on("click", dashletHandler);
+        } else {
+            gridContainer.attr("class", gridContainer.attr("data-class-backup"));
+            $(gridContainer).children().filter(":not(.title)").show();
+            $(".dashlet .title", gridContainer).off("click", dashletHandler);
+        }
     };
 
 })()
