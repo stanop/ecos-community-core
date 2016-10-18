@@ -1,3 +1,77 @@
+/* JOURNALS */
+
+.yui-skin-citeckTheme.mobile .yui-t1 #yui-main {
+    margin: 0 !important;
+    float: none;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content {
+    padding: 10px;
+    margin-left: 0 !important;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-table,
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-pagination {
+    width: 100%;
+    margin: 0;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-pagination {
+    margin: 15px 0 0 0;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-pagination .rows-per-page-label {
+    margin-left: 20px;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .toolbar {
+    overflow: hidden;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .toolbar .align-right {
+    margin-top: 3px;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .toolbar.icon-buttons .yui-button.sidebar-toggle {
+    display: inline-block;
+    border-right: 1px solid #ccc;
+    padding-right: 11px;
+    margin-right: 5px;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content:before {
+    content: "";
+    border-top: 1px solid #ccc;
+    display: block;
+    margin: 10px -10px;
+    width: calc(100% + 20px);
+}
+
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters {
+    top: 50px !important;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .items-list,
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .toolbar {
+    margin: 0;
+    padding: 0;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .toolbar h2 {
+    padding: 10px 15px;
+    color: white;
+    background-color: #2d3541;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .items-list li {
+    padding: 5px 15px;
+}
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.yui-button-selected.sidebar-toggle span.first-child button {
+    color: red;
+}
+
 /* DASHLETS */
 
 .yui-skin-citeckTheme.mobile #bd .grid {

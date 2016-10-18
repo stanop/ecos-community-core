@@ -195,7 +195,7 @@ JournalType
 	.computed('defaultFilter', function() {
 		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
 			var predicates = attr.resolve("datatype.predicates");
-			if (!predicates) return;
+			if (!predicates || predicates.length == 0) return;
 			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
 		});
 
