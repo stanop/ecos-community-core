@@ -143,8 +143,9 @@ JournalsPage
 		this.$super.applyCriteria();
 	})
 
-	.method('toggleSidebar', function() {
+	.method('toggleSidebar', function(data, event) {
 		$("#alf-filters").toggle();
+		$("#alfresco-journals #alf-content .toolbar .sidebar-toggle").toggleClass("yui-button-selected");
 	})
 	;
 	

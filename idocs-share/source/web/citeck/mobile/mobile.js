@@ -47,6 +47,14 @@ Citeck.mobile.isMobileDevice = function() {
                     });
                 });
             }
+
+            if (window.location.pathname.indexOf("journals2/list") != -1) {
+                $("#alfresco-journals #alf-filters").on("click", "li", function() {
+                    if ($("body").hasClass("mobile")) {
+                        $("#alfresco-journals #alf-filters").hide();
+                    }
+                });
+            }
         });
     } else {
         $(document).ready(function() {
@@ -68,41 +76,63 @@ Citeck.mobile.isMobileDevice = function() {
             $(window).resize(function(event) {
                 if (window.innerWidth <= mobileWidth) {
                     $("body").addClass("mobile");
-                    $("head").append(
-                        $("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
-                    );
                     transformDashboard(true);
+                    transformJournalsSidebar(true);
                 } else { 
                     $("body").removeClass("mobile");
-                    $("meta[name='viweport']").remove();
                     transformDashboard(false);
+                    transformJournalsSidebar(false);
                 }
             });
+
             $(window).resize();
         });
     }
 
+
+    function transformJournalsSidebar(isMobile) {
+        if (window.location.pathname.indexOf("journals2/list") != -1) {
+            if (isMobile) {
+                $("#alfresco-journals #alf-filters")
+                    .hide()
+                    .on("click.sidebar-toggle", "li", function() {
+                        if ($("body").hasClass("mobile")) {
+                            $("#alfresco-journals #alf-filters").hide();
+                        }
+                    });
+            } else {
+                $("#alfresco-journals #alf-filters")
+                    .show()
+                    .off("click.sidebar-toggle", "li");
+                $("#alfresco-journals #alf-content .toolbar .sidebar-toggle").removeClass("yui-button-selected");
+            }
+        }
+    }
+
     function transformDashboard(isMobile) {
-        var gridContainer = $("#bd .grid");
+        if (window.location.pathname.indexOf("dashboard") != -1) {
+            var gridContainer = $("#bd .grid");
+            if (isMobile) {
+                $("head").append($("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
+                gridContainer.attr("class", "grid");
+                
+                if (!gridContainer.attr("data-dashlet-clickable")) {
+                    $(".dashlet .title", gridContainer).bind("click.title-clickable", function(event) {
+                        $($(event.target).parent()).children().filter(":not(.title)").toggle();
+                    });
+                    gridContainer.attr("data-dashlet-clickable", "true");
+                }
+            } else {
+                $("meta[name='viweport']").remove();
+                $(".dashlet").children().filter(":not(.title)").show();
+               
+                if (gridContainer.attr("data-dashlet-clickable")) {
+                    $(".dashlet .title", gridContainer).unbind("click.title-clickable");
+                    gridContainer.removeAttr("data-dashlet-clickable");
+                }
 
-        if (isMobile) {
-            gridContainer.attr("class", "grid");
-            
-            if (!gridContainer.attr("data-dashlet-clickable")) {
-                $(".dashlet .title", gridContainer).bind("click.title-clickable", function(event) {
-                    $($(event.target).parent()).children().filter(":not(.title)").toggle();
-                });
-                gridContainer.attr("data-dashlet-clickable", "true");
+                gridContainer.attr("class", gridContainer.attr("data-class-backup"));
             }
-        } else {
-            $(".dashlet").children().filter(":not(.title)").show();
-           
-            if (gridContainer.attr("data-dashlet-clickable")) {
-                $(".dashlet .title", gridContainer).unbind("click.title-clickable");
-                gridContainer.removeAttr("data-dashlet-clickable");
-            }
-
-            gridContainer.attr("class", gridContainer.attr("data-class-backup"));
         }
     };
 

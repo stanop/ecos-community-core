@@ -113,7 +113,7 @@
                         <span id="${id}-sidebar-toggle" class="sidebar-toggle" title="" 
                               data-bind="yuiButton: { type: 'push'}">
                             <span class="first-child">
-                                <button data-bind="click: toggleSidebar">Sidebar</button>
+                                <button data-bind="click: toggleSidebar"></button>
                             </span>          
                         </span>
 
