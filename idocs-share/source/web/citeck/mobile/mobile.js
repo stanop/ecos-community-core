@@ -98,6 +98,7 @@ Citeck.mobile.isMobileDevice = function() {
                     .on("click.sidebar-toggle", "li", function() {
                         if ($("body").hasClass("mobile")) {
                             $("#alfresco-journals #alf-filters").hide();
+                            $("#alfresco-journals #alf-content .toolbar .sidebar-toggle").removeClass("yui-button-selected");
                         }
                     });
             } else {
