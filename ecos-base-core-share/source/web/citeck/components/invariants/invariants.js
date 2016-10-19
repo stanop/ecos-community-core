@@ -1083,6 +1083,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('isPersisted', function() {
             return this.nodeRef() != null;
         })
+        .property('isDraft', b)
         .property('node', Node)
         .property('type', s)
         .shortcut('typeShort', 'type')
@@ -1382,10 +1383,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             },
             toRequest: function(node) {
                 node.impl().inSubmitProcess(true);
-                return {
+                var data = {
                     view: node.impl().defaultModel().view(),
                     attributes: node.impl().data().attributes
                 };
+                var isDraft = node.impl().isDraft();
+                if (_.isBoolean(isDraft)) {
+                    data['isDraft'] = isDraft;
+                }
+                return data;
             },
             toResult: function(response) {
                 return new Node(response.result);
@@ -1657,6 +1663,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .method('submit', function() {
             if(this.node().impl().valid()) {
+                if (this.node().hasAspect("invariants:draftAspect")) {
+                    this.node().impl().isDraft(false);
+                }
+                this.broadcast('node-view-submit');
+            }
+        })
+        .method('submitDraft', function() {
+            if (this.node().hasAspect("invariants:draftAspect")) {
+                this.node().impl().isDraft(true);
                 this.broadcast('node-view-submit');
             }
         })

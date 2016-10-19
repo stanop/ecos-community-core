@@ -58,11 +58,19 @@
 		
 		<#if view.mode != 'view'>
 		<div class="form-buttons" data-bind="with: node().impl">
-			<input id="${id}-form-submit" type="submit" 
-					value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>" 
-					data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 
-			<#-- TODO support create and continue -->
+			<#if classNames?? && classNames?seq_contains("invariants:draftAspect")>
+                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg("button.send")}"
+                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+
+                <input id="${args.htmlid}-form-submit" type="submit" value="${msg("button.save")}"
+                       data-bind="enable: !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
+			<#else>
+                <input id="${id}-form-submit" type="submit"
+                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>"
+                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+			</#if>
+
 			<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
 			<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
 		</div>

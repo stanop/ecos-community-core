@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="invariants:invariantsModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/invariants/1.0" prefix="invariants" />
+	</namespaces>
+
+	<aspects>
+		<aspect name="invariants:draftAspect">
+			<properties>
+				<property name="invariants:isDraft">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+
+</model>
