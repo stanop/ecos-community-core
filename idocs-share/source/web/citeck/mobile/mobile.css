@@ -1,49 +1,3 @@
-/* JOURNALS */
-
-.mobile #alfresco-journals {
-    position: relative;
-}
-
-.mobile #alfresco-journals #alf-content {
-    margin-left: 0 !important;
-}
-
-.mobile #alfresco-journals #alf-content .journal-content-table {
-    margin: 5px 10px 5px 10px;
-    box-sizing: border-box !important;
-    width: auto;
-}
-
-.mobile #alfresco-journals #alf-content .journal-content-pagination {
-    margin: 5px 10px;
-}
-
-.mobile #alf-filters {
-    display: none;
-    position: absolute;
-    top: 32px;
-    background-color: white;
-    width: 100% !important;
-    border: 1px solid #ccc;
-}
-
-.mobile #alfresco-journals #alf-filters .yui-resize-handle {
-    display: none;
-}
-
-.mobile #alfresco-journals #alf-filters .toolbar {
-    padding: 0 10px;
-}
-
-.mobile #alfresco-journals #alf-filters .items-list {
-    padding: 10px;
-}
-
-.mobile #alfresco-journals #alf-filters .items-list li {
-    padding: 3px 10px;
-}
-
-
 /* HEADER and MAIN MENU and USER MENU*/
 
 #HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,
@@ -112,39 +66,6 @@
     font-size: 22px;
 }
 
-/*.mobile .logo {
-    margin: 0;
-    padding: 0;
-    border: none;
-    border-left: 1px solid #ccc;
-    padding-left: 10px;
-    margin-left: 10px;
-}
-
-.mobile .mobile-menu-button {
-    height: 48px;
-    width: 48px;
-    padding: 0;
-    background-image: url(/share/res/citeck/images/treeline-48.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: transparent;
-    border: none;
-    margin-left: 10px;
-}*/
-
-/*.mobile .alf-menu-bar .dijitMenuBar > span.dijitMenuItem {
-    display: none;
-}
-
-.mobile .alf-menu-bar {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.mobile .alf-menu-bar .dijitMenuBar > div.dijitMenuItem {
-    display: block;
-}*/
 
 @media screen and (max-width: 845px) {
     #HEADER_SEARCH_BOX {
@@ -194,6 +115,15 @@
 
 /* ECOS FORMS */
 
+.mobile .static .ecos-form {
+    padding: 10px;
+}
+
+.mobile .ecos-form .loading-container .loading-indicator {
+    width: 200px;
+    height: 200px;
+}
+
 .mobile .ecos-form .form-fields .template-table {
     width: 100%;
     margin: 0;
@@ -209,6 +139,19 @@
     padding: 0;
     border: none;
     width: 100%;
+}
+
+.mobile .ecos-form .template-table .template-select, 
+.mobile .ecos-form .template-table .template-date, 
+.mobile .ecos-form .template-table .template-datetime, 
+.mobile .ecos-form .template-table .template-text, 
+.mobile .ecos-form .template-table .template-auto-number, 
+.mobile .ecos-form .template-table .template-autocomplete, 
+.mobile .ecos-form .template-table .template-checkbox, 
+.mobile .ecos-form .template-table .template-number, 
+.mobile .ecos-form .template-table .template-free-content, 
+.mobile .ecos-form .template-table .region-select-group {
+    width: 100% !important;
 }
 
 .mobile .ecos-form .form-fields .template-table .form-field:after {
@@ -243,6 +186,10 @@
     display: inline-block;
 }
 
+.mobile .ecos-form .form-fields .template-table .form-field .form-region.template-checkbox {
+    width: 13px !important;
+}
+
 .mobile .ecos-form .form-fields .template-table .form-field .form-region.template-label {
     padding: 0;
 }
@@ -252,18 +199,21 @@
     line-height: 100%;
 }
 
+.mobile .ecos-form .form-fields .template-table .form-field .form-region.template-message {
+    margin-left: 0;
+}
+
 .mobile .ecos-form .form-fields .template-table .form-field .form-region.template-help {
     position: absolute;
 }
 
 .mobile .ecos-form .form-fields .template-table .form-field .form-region.template-date input[type="date"] {
     width: 100%;
+    box-sizing: border-box;
 }
-
 
 /* YUI */
 
-.mobile .yui-overlay,
 .mobile .yui-overlay-hidden {
     display: none;
 }
@@ -287,4 +237,51 @@
   background-position: center;
   font-size: 0;
   height: 19px;
+}
+
+.mobile #alfresco-journals {
+    position: relative;
+}
+
+.mobile #alfresco-journals #alf-content {
+    margin-left: 0 !important;
+}
+
+.mobile #alfresco-journals #alf-content .toolbar.icon-buttons .yui-button.sidebar-toggle {
+    display: inline-block;
+}
+
+.mobile #alfresco-journals #alf-content .journal-content-table {
+    margin: 5px 10px 5px 10px;
+    box-sizing: border-box !important;
+    width: auto;
+}
+
+.mobile #alfresco-journals #alf-content .journal-content-pagination {
+    margin: 5px 10px;
+}
+
+.mobile #alfresco-journals #alf-filters {
+    display: none;
+    position: absolute;
+    top: 32px;
+    background-color: white;
+    width: 100% !important;
+    border: 1px solid #ccc;
+}
+
+.mobile #alfresco-journals #alf-filters .yui-resize-handle {
+    display: none;
+}
+
+.mobile #alfresco-journals #alf-filters .toolbar {
+    padding: 0 10px;
+}
+
+.mobile #alfresco-journals #alf-filters .items-list {
+    padding: 10px;
+}
+
+.mobile #alfresco-journals #alf-filters .items-list li {
+    padding: 3px 10px;
 }
