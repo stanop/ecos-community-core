@@ -494,6 +494,10 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
     color: #1c55da;
 }
 
+/* toggle sidebar */
+.toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button {
+	background-image: url(/share/res/citeck/images/treeline-gray-20.png);
+}
 
 /* add criteria and create filter */
 

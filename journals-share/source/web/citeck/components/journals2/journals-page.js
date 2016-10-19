@@ -142,6 +142,11 @@ JournalsPage
 		this.userInteraction.simulateChange();
 		this.$super.applyCriteria();
 	})
+
+	.method('toggleSidebar', function(data, event) {
+		$("#alf-filters").toggle();
+		$("#alfresco-journals #alf-content .toolbar .sidebar-toggle").toggleClass("yui-button-selected");
+	})
 	;
 	
 var JournalsPageWidget = function(htmlid) {

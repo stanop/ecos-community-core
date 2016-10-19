@@ -32,19 +32,20 @@ header.config.widgets.splice(1, 0, search);
 // USER MENU ITEMS
 var userMenuItems = [
   {
-     id: "HEADER_USER_MENU_STATUS",
-     name: "alfresco/header/CurrentUserStatus"
+    id: "HEADER_USER_MENU_STATUS",
+    name: "alfresco/header/CurrentUserStatus"
   },
 
   {
-     id: "HEADER_USER_MENU_MY_PROFILE",
-     name: "alfresco/header/AlfMenuItem",
-     config:
-     {
-        label: "header.my-profile.label",
-        iconImage: "/share/res/components/images/header/my-profile.png",
-        targetUrl: "user/" + encodeURIComponent(user.name) + "/profile"
-     }
+    id: "HEADER_USER_MENU_MY_PROFILE",
+    name: "alfresco/header/AlfMenuItem",
+    config:
+    {
+      id: "HEADER_USER_MENU_MY_PROFILE",
+      label: "header.my-profile.label",
+      iconImage: "/share/res/components/images/header/my-profile.png",
+      targetUrl: "user/" + encodeURIComponent(user.name) + "/profile"
+    }
   }
 ];
 
@@ -62,42 +63,44 @@ var availability = "make-" + (user.properties.available === false ? "" : "not") 
     };
 
 userMenuItems.push({
-   id: "HEADER_USER_MENU_AVAILABILITY",
-   name: "alfresco/header/AlfMenuItem",
-   config:
-   {
-      id: "HEADER_USER_MENU_AVAILABILITY",
-      label: "header." + availability + ".label",
-      iconImage: "/share/res/components/images/header/" + availability + ".png",
-      targetUrl: "/components/deputy/make-available?available=" + (user.properties.available === false ? "true" : "false"),
-      clickEvent: "" + (user.properties.available === false ? "" : clickEvent.toString())
-   }
+  id: "HEADER_USER_MENU_AVAILABILITY",
+  name: "alfresco/header/AlfMenuItem",
+  config:
+  {
+    id: "HEADER_USER_MENU_AVAILABILITY",
+    label: "header." + availability + ".label",
+    iconImage: "/share/res/components/images/header/" + availability + ".png",
+    targetUrl: "/components/deputy/make-available?available=" + (user.properties.available === false ? "true" : "false"),
+    clickEvent: "" + (user.properties.available === false ? "" : clickEvent.toString())
+  }
 });
 
 if (user.capabilities.isMutable) {
-   userMenuItems.push({
+  userMenuItems.push({
+    id: "HEADER_USER_MENU_PASSWORD",
+    name: "alfresco/header/AlfMenuItem",
+    config:
+    {
       id: "HEADER_USER_MENU_PASSWORD",
-      name: "alfresco/header/AlfMenuItem",
-      config:
-      {
-         label: "header.change-password.label",
-         iconImage: "/share/res/components/images/header/change-password.png",
-         targetUrl: "user/" + encodeURIComponent(user.name) + "/change-password"
-      }
-   });
+      label: "header.change-password.label",
+      iconImage: "/share/res/components/images/header/change-password.png",
+      targetUrl: "user/" + encodeURIComponent(user.name) + "/change-password"
+    }
+  });
 }
 
 if (!context.externalAuthentication) {
-   userMenuItems.push({
+  userMenuItems.push({
+    id: "HEADER_USER_MENU_LOGOUT",
+    name: "alfresco/header/AlfMenuItem",
+    config:
+    {
       id: "HEADER_USER_MENU_LOGOUT",
-      name: "alfresco/header/AlfMenuItem",
-      config:
-      {
-         label: "header.logout.label",
-         iconImage: "/share/res/components/images/header/logout.png",
-         targetUrl: "dologout"
-      }
-   });
+      label: "header.logout.label",
+      iconImage: "/share/res/components/images/header/logout.png",
+      targetUrl: "dologout"
+    }
+  });
 }
 
 
@@ -127,14 +130,16 @@ var HEADER_HOME = {
       id: "HEADER_HOME",
       name: "alfresco/menus/AlfMenuBarItem",
       config: {
+        id: "HEADER_HOME",
         label: "header.menu.home.label",
         targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
       }
     },
-    HEADER_SITES = {
-      id: "HEADER_SITES",
+    HEADER_SITES_VARIANTS = {
+      id: "HEADER_SITES_VARIANTS",
       name: "alfresco/menus/AlfMenuGroup",
       config: {
+        id: "HEADER_SITES_VARIANTS",
         widgets: buildSitesForUser(user.name)
       }
     },
@@ -142,6 +147,7 @@ var HEADER_HOME = {
       id: "HEADER_SITES_SEARCH",
       name: "alfresco/menus/AlfMenuItem",
       config: {
+        id: "HEADER_SITES_SEARCH",
         label: "header.find-sites.label",
         targetUrl: "site-finder"
       }
@@ -150,6 +156,7 @@ var HEADER_HOME = {
       id: "HEADER_SITES_CREATE",
       name: "alfresco/menus/AlfMenuItem",
       config: {
+        id: "HEADER_SITES_CREATE",
         label: "header.create-site.label",
         clickEvent: createSiteClickEvent.toString(),
         inheriteClickEvent: false
@@ -159,6 +166,7 @@ var HEADER_HOME = {
       id: "HEADER_CREATE_VARIANTS",
       name: "alfresco/menus/AlfMenuGroup",
       config: {
+        id: "HEADER_CREATE_VARIANTS",
         widgets: buildCreateVariantsForSite(currentSite)
       }
     },
@@ -166,6 +174,7 @@ var HEADER_HOME = {
       id: "HEADER_JOURNALS",
       name: "alfresco/menus/AlfMenuBarItem",
       config: {
+        id: "HEADER_JOURNALS",
         label: "header.journals.label",
         targetUrl: buildSiteUrl(currentSite) + "journals2/list/main",
         movable: { minWidth: 1089 }
@@ -175,6 +184,7 @@ var HEADER_HOME = {
       id: "HEADER_DOCUMENTLIBRARY",
       name: "alfresco/menus/AlfMenuBarItem",
       config: {
+        id: "HEADER_DOCUMENTLIBRARY",
         label: "header.documentlibrary.label",
         targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
         movable: { minWidth: 1171 }
@@ -184,22 +194,25 @@ var HEADER_HOME = {
       id: "HEADER_CREATE_WORKFLOW_VARIANTS",
       name: "alfresco/menus/AlfMenuGroup",
       config: {
+        id: "HEADER_CREATE_WORKFLOW_VARIANTS",
         widgets: [
           {
-             id: "HEADER_CREATE_WORKFLOW_ADHOC",
-             name: "alfresco/menus/AlfMenuItem",
-             config: {
-                label: "header.create-workflow-adhoc.label",
-                targetUrl: "start-specified-workflow?workflowId=activiti$perform"
-             }
+            id: "HEADER_CREATE_WORKFLOW_ADHOC",
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+              id: "HEADER_CREATE_WORKFLOW_ADHOC",
+              label: "header.create-workflow-adhoc.label",
+              targetUrl: "start-specified-workflow?workflowId=activiti$perform"
+            }
           },
           {
-             id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-             name: "alfresco/menus/AlfMenuItem",
-             config: {
-                label: "header.create-workflow-confirm.label",
-                targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
-             }
+            id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+              id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+              label: "header.create-workflow-confirm.label",
+              targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
+            }
           }
         ]
       }
@@ -301,15 +314,19 @@ if (!isMobile) {
     id: "HEADER_SITES",
     name: "alfresco/header/AlfMenuBarPopup",
     config: {
+      id: "HEADER_SITES",
       label: "header.sites.label",
       widgets: [
-        HEADER_SITES,
+        HEADER_SITES_VARIANTS,
         {
           id: "HEADER_SITES_MANAGEMENT",
           name: "alfresco/menus/AlfMenuGroup",
           config: {
             id: "HEADER_SITES_MANAGEMENT",
-            widgets: [ HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+            widgets: [ 
+              HEADER_SITES_SEARCH, 
+              HEADER_SITES_CREATE 
+            ]
           }
         }
       ]
@@ -319,6 +336,7 @@ if (!isMobile) {
     id: "HEADER_CREATE",
     name: "alfresco/header/AlfMenuBarPopup",
     config: {
+      id: "HEADER_CREATE",
       label: "header.create-variants.label",
       widgets: [ HEADER_CREATE_VARIANTS ]
     }
@@ -329,6 +347,7 @@ if (!isMobile) {
     id: "HEADER_CREATE_WORKFLOW",
     name: "alfresco/header/AlfMenuBarPopup",
     config: {
+      id: "HEADER_CREATE_WORKFLOW",
       label: "header.create-workflow.label",
       widgets: [ HEADER_CREATE_WORKFLOW_VARIANTS ]
     }
@@ -341,6 +360,7 @@ if (!isMobile) {
       id: "HEADER_LOGGING",
       name: "alfresco/header/AlfMenuBarPopup",
       config: {
+        id: "HEADER_LOGGING",
         label: "Debug Menu",
         widgets: loggingWidgetItems
       }
@@ -349,22 +369,26 @@ if (!isMobile) {
 }
 
 // BUILD MOBILE MENU
-var HEADER_MOBILE_HOME = cloneWidget(HEADER_HOME);
+var HEADER_MOBILE_HOME = toMobileWidget(HEADER_HOME);
 HEADER_MOBILE_HOME.name = "alfresco/menus/AlfMenuItem";
 
-var HEADER_MOBILE_JOURNALS = cloneWidget(HEADER_JOURNALS);
+var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
 HEADER_MOBILE_JOURNALS.name = "alfresco/menus/AlfMenuItem";
 HEADER_MOBILE_JOURNALS.config.movable = null;
 
-var HEADER_MOBILE_DOCUMENTLIBRARY = cloneWidget(HEADER_DOCUMENTLIBRARY);
+var HEADER_MOBILE_DOCUMENTLIBRARY = toMobileWidget(HEADER_DOCUMENTLIBRARY);
 HEADER_MOBILE_DOCUMENTLIBRARY.name = "alfresco/menus/AlfMenuItem";
 HEADER_MOBILE_DOCUMENTLIBRARY.config.movable = null;
 
-var HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS = cloneWidget(HEADER_CREATE_WORKFLOW_VARIANTS);
+var HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS = toMobileWidget(HEADER_CREATE_WORKFLOW_VARIANTS);
 HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS.config.label = "header.create-workflow.label";
 
-var HEADER_MOBILE_CREATE_VARIANTS = cloneWidget(HEADER_CREATE_VARIANTS);
+var HEADER_MOBILE_CREATE_VARIANTS = toMobileWidget(HEADER_CREATE_VARIANTS);
 HEADER_MOBILE_CREATE_VARIANTS.config.label = "header.create-variants.label";
+
+var HEADER_MOBILE_SITES_VARIANTS = toMobileWidget(HEADER_SITES_VARIANTS);
+var HEADER_MOBILE_SITES_SEARCH = toMobileWidget(HEADER_SITES_SEARCH);
+var HEADER_MOBILE_SITES_CREATE = toMobileWidget(HEADER_SITES_CREATE);
 
 var HEADER_MOBILE_MENU_VARIANTS = {
   id: "HEADER_MOBILE_MENU_VARIANTS",
@@ -380,15 +404,16 @@ var HEADER_MOBILE_MENU_VARIANTS = {
         id: "HEADER_MOBILE_SITES",
         name: "alfresco/menus/AlfMenuGroup",
         config: {
+          id: "HEADER_MOBILE_SITES",
           label: "header.sites.label",
           widgets: [
-            HEADER_SITES, 
+            HEADER_MOBILE_SITES_VARIANTS, 
             {
               id: "HEADER_MOBILE_SITES_MANAGEMENT",
               name: "alfresco/menus/AlfMenuGroup",
               config: {
                 id: "HEADER_MOBILE_SITES_MANAGEMENT",
-                widgets: [ HEADER_SITES_SEARCH, HEADER_SITES_CREATE ]
+                widgets: [ HEADER_MOBILE_SITES_SEARCH, HEADER_MOBILE_SITES_CREATE ]
               }
             }
           ]
@@ -408,6 +433,7 @@ if (loggingWidgetItems) {
     id: "HEADER_LOGGING",
     name: "alfresco/header/AlfMenuGroup",
     config: {
+      id: "HEADER_MOBILE_LOGGING",
       label: "Debug Menu",
       widgets: loggingWidgetItems
     }
@@ -451,7 +477,7 @@ if (siteConfig && siteData.userIsSiteManager) {
 
 function buildMorePopup(isMobile) {
   var config = {
-    widgets: [ buildMyGroup() ]
+    widgets: [ buildMyGroup(isMobile) ]
   };
 
   if (!isMobile) {
@@ -459,7 +485,7 @@ function buildMorePopup(isMobile) {
     config.widgets.unshift(buildMovableGroup());
   }
 
-  if (user.isAdmin) config.widgets.push(buildAdminGroup());
+  if (user.isAdmin) config.widgets.push(buildAdminGroup(isMobile));
 
   return {
     id: "HEADER_MORE",
@@ -468,31 +494,12 @@ function buildMorePopup(isMobile) {
   };
 };
 
-function buildMyGroup() {
-  return {
-    id: "HEADER_MORE_MY_GROUP",
-    name: "alfresco/menus/AlfMenuGroup",
-    config: {
-      label: "header.my.label",
-      widgets: buildItems([
-        { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
-        { id: "my-workflows", url: "my-workflows", iconImage: "/share/res/components/images/header/my-workflows.png" },
-        { id: "completed-workflows", url: "completed-workflows#paging=%7C&filter=workflows%7Call", iconImage: "/share/res/components/images/header/completed-workflows.png" },
-        { id: "my-content", url: "user/user-content", iconImage: "/share/res/components/images/header/my-content.png" },
-        { id: "my-sites", url: "user/user-sites", iconImage: "/share/res/components/images/header/my-sites.png" },
-        { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
-        { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
-        { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
-      ], "more_my")
-    }
-  };
-};
-
 function buildMovableGroup() {
   return {
     id: "HEADER_MORE_MOVABLE_GROUP",
     name: "alfresco/menus/AlfMenuGroup",
     config: {
+      id: "HEADER_MORE_MOVABLE_GROUP",
       label: "",
       movable: { maxWidth: 1170 },
       widgets: buildItems([
@@ -510,11 +517,39 @@ function buildMovableGroup() {
   };
 };
 
-function buildAdminGroup() {
+function buildMyGroup(isMobile) {
+  var id = "HEADER_" + (isMobile ? "MOBILE" : "") + "_MORE_MY_GROUP",
+      group = (isMobile ? "MOBILE_" : "") + "MORE";
+
   return {
-    id: "HEADER_MORE_TOOLS_GROUP",
+    id: id,
     name: "alfresco/menus/AlfMenuGroup",
     config: {
+      id: id,
+      label: "header.my.label",
+      widgets: buildItems([
+        { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
+        { id: "my-workflows", url: "my-workflows", iconImage: "/share/res/components/images/header/my-workflows.png" },
+        { id: "completed-workflows", url: "completed-workflows#paging=%7C&filter=workflows%7Call", iconImage: "/share/res/components/images/header/completed-workflows.png" },
+        { id: "my-content", url: "user/user-content", iconImage: "/share/res/components/images/header/my-content.png" },
+        { id: "my-sites", url: "user/user-sites", iconImage: "/share/res/components/images/header/my-sites.png" },
+        { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
+        { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
+        { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
+      ], group)
+    }
+  };
+};
+
+function buildAdminGroup(isMobile) {
+  var id = "HEADER_" + (isMobile ? "MOBILE" : "") + "_MORE_TOOLS_GROUP",
+      group = (isMobile ? "MOBILE_" : "") + "MORE_TOOLS";
+
+  return {
+    id: id,
+    name: "alfresco/menus/AlfMenuGroup",
+    config: {
+      id: id,
       label: "header.tools.label",
       widgets: buildItems([
         { id: "repository", url: "repository", iconImage: "/share/res/components/images/header/repository.png" },
@@ -527,7 +562,7 @@ function buildAdminGroup() {
         { id: "templates", url: "journals2/list/templates", iconImage: "/share/res/components/images/header/templates.png" },
         { id: "orgstruct", url: "orgstruct", iconImage: "/share/res/components/images/header/orgstruct.png" },
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
-      ], "more_tools")
+      ], group)
     }
   };
 };
@@ -538,18 +573,21 @@ function buildSiteUrl(sitename) {
 
 function buildItems(items, groupName) {
   var result = [];
+
   for (var i = 0; i < items.length; i++) {
-    var configuration = {
-      label: items[i].label || "header." + items[i].id + ".label",
-      targetUrl: items[i].url,
-      targetUrlType: items[i].urlType || "SHARE_PAGE_RELATIVE"
-    };
+    var id = "HEADER_" + (groupName + "_" + items[i].id.replace(/-/, "_")).toUpperCase(),
+        configuration = {
+          id: id,
+          label: items[i].label || "header." + items[i].id + ".label",
+          targetUrl: items[i].url,
+          targetUrlType: items[i].urlType || "SHARE_PAGE_RELATIVE"
+        };
 
     if (items[i].iconImage) configuration["iconImage"] = items[i].iconImage;
     if (items[i].movable) configuration["movable"] = items[i].movable;
 
     result.push({
-      id: ("HEADER_" + groupName + "_" + items[i].id).toUpperCase(),
+      id: configuration.id,
       name: "alfresco/menus/AlfMenuItem",
       config: configuration
     });
@@ -569,14 +607,14 @@ function buildSitesForUser(username) {
       for (var sd = 0; sd < sites.length; sd++) {
         sitesPresets.push({
           url: "?site=" + sites[sd].shortName,
-          id: "sites_" + sites[sd].shortName,
+          id: sites[sd].shortName.replace(/-/, "_"),
           label: sites[sd].title
         });
       }
     }
   }
 
-  return buildItems(sitesPresets);
+  return buildItems(sitesPresets, "SITE");
 };
 
 function buildCreateVariantsForSite(sitename) {
@@ -591,16 +629,25 @@ function buildCreateVariantsForSite(sitename) {
       for (var cv = 0; cv < createVariants.length; cv++) {
         createVariantsPresets.push({
           label: createVariants[cv].title,
-          id: "create_variant_" + createVariants[cv].type.replace(":", "_"),
+          id: createVariants[cv].type.replace(":", "_"),
           url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
         });
       }
     }
   }
 
-  return buildItems(createVariantsPresets);
+  return buildItems(createVariantsPresets, "CREATE_VARIANT");
 }
 
-function cloneWidget(object) {
-  return jsonUtils.toObject(jsonUtils.toJSONObject(object));
+function toMobileWidget(object) {
+  var widget = jsonUtils.toObject(jsonUtils.toJSONObject(object));
+  widget.id = widget.config.id = widget.id.replace("HEADER_", "HEADER_MOBILE_");
+
+  if (widget.config.widgets && widget.config.widgets.length > 0) {
+    for (var i in widget.config.widgets) {
+      widget.config.widgets[i] = toMobileWidget(widget.config.widgets[i])
+    }
+  }
+  
+  return widget;
 }

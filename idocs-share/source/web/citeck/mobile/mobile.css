@@ -1,3 +1,49 @@
+/* JOURNALS */
+
+.mobile #alfresco-journals {
+    position: relative;
+}
+
+.mobile #alfresco-journals #alf-content {
+    margin-left: 0 !important;
+}
+
+.mobile #alfresco-journals #alf-content .journal-content-table {
+    margin: 5px 10px 5px 10px;
+    box-sizing: border-box !important;
+    width: auto;
+}
+
+.mobile #alfresco-journals #alf-content .journal-content-pagination {
+    margin: 5px 10px;
+}
+
+.mobile #alf-filters {
+    display: none;
+    position: absolute;
+    top: 32px;
+    background-color: white;
+    width: 100% !important;
+    border: 1px solid #ccc;
+}
+
+.mobile #alfresco-journals #alf-filters .yui-resize-handle {
+    display: none;
+}
+
+.mobile #alfresco-journals #alf-filters .toolbar {
+    padding: 0 10px;
+}
+
+.mobile #alfresco-journals #alf-filters .items-list {
+    padding: 10px;
+}
+
+.mobile #alfresco-journals #alf-filters .items-list li {
+    padding: 3px 10px;
+}
+
+
 /* HEADER and MAIN MENU and USER MENU*/
 
 #HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,

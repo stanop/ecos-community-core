@@ -10,7 +10,7 @@ public final class ProductsAndServicesModel {
 
     public static final String PAS_NAMESPACE = "http://www.citeck.ru/model/products-and-services/1.0";
 
-    public static final QName ASSOC_PROD_AND_SERV = QName.createQName("products-and-services");
+    public static final QName ASSOC_PROD_AND_SERV = QName.createQName(PAS_NAMESPACE, "products-and-services");
 
     public static final QName PROP_ORDER = QName.createQName(PAS_NAMESPACE, "order");
     public static final QName PROP_PRICE_PER_UNIT = QName.createQName(PAS_NAMESPACE, "pricePerUnit");
