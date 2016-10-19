@@ -21,9 +21,7 @@ Citeck.mobile.isMobileDevice = function() {
 (function() {
 
     if (Citeck.mobile.isMobileDevice()) {       
-        YAHOO.Bubbling.on("on-mobile-device", function(e, args) { 
-            if (args.fn) fn();
-        });
+        YAHOO.Bubbling.on("on-mobile-device", function(e, args) { if (args[1].fn) fn(); });
 
         $(document).ready(function() {
             // global mobile style
@@ -35,7 +33,7 @@ Citeck.mobile.isMobileDevice = function() {
             transformJournalsSidebar(true);
             transformForm(true);
         });
-    } else {
+    } else {       
         $(document).ready(function() {
             var mobileWidth = (function() {
                 var defaultMobileWidth = 525, themesMobileWidth = {
@@ -68,6 +66,9 @@ Citeck.mobile.isMobileDevice = function() {
 
 
     function mobileGlobalClassToggle(isMobile) {
+        if (isMobile != !!$("body").hasClass("mobile")) {
+            YAHOO.Bubbling.fire("on-change-mobile-mode", { mobileMode: isMobile });
+        }
         isMobile ? $("body").addClass("mobile") : $("body").removeClass("mobile");
     }
 

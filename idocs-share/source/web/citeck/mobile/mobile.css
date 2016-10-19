@@ -296,6 +296,36 @@
     height: 10px;
 }
 
+.mobile .journal-container {
+    height: 188px;
+}
+
+.mobile .journal-container.selected-elements {
+    height: 80px;
+}
+
+.mobile .journal-picker-page-container.collapse .filter-page .selected-filter-criteria-container {
+    max-height: 86px;
+    padding: 10px;
+}
+
+.mobile .journal-picker-page-container .filter-page .selected-filter-criteria-container .filter-criteria-actions {
+    padding: 0 10px;
+}
+
+.mobile .journal-picker-header {
+    padding: 5px 10px;
+}
+
+.mobile .journal-container .journal th, 
+.mobile .journal-container .journal tr.journal-element td {
+    padding: 7px 10px;
+}
+
+.mobile  .journal-capture {
+    padding: 10px;
+}
+
 
 /* YUI */
 
