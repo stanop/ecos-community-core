@@ -16,10 +16,10 @@
 
     <property name="override.project.name" value="1st-override-share" />
     <property name="override.project.dir" value="${override.project.name}" />
-    <property name="override.project.version" value="3.0.3.0${module.release}" />
+    <property name="override.project.version" value="3.0.2.0${module.release}" />
 
     <property name="core.project.name" value="idocs-share" />
-    <property name="core.project.version" value="3.0.3.0${module.release}" />
+    <property name="core.project.version" value="3.0.2.0${module.release}" />
     <property name="core.project.dir" value="${core.project.name}" />
 
     <path id="project.classpath">
