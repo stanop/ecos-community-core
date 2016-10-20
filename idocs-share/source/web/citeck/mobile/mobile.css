@@ -175,6 +175,7 @@
 }
 
 .mobile .ecos-form .template-table .template-view,
+.mobile .ecos-form .template-table .template-view-table,
 .mobile .ecos-form .template-table .template-select, 
 .mobile .ecos-form .template-table .template-date, 
 .mobile .ecos-form .template-table .template-datetime, 
@@ -188,7 +189,8 @@
     width: 100% !important;
 }
 
-.mobile .ecos-form .template-table .template-view {
+.mobile .ecos-form .template-table .template-view,
+.mobile .ecos-form .template-table .template-view-table {
     margin-bottom: 10px;
 }
 
