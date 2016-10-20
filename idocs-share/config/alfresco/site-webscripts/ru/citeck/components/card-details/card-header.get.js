@@ -43,7 +43,7 @@ function main() {
 
         var nodeHeader = {
             id: "NodeHeader",
-            name: "Alfresco.component.NodeHeader",
+            name: "Citeck.widget.NodeHeader",
             options: {
                 nodeRef: model.nodeRef,
                 siteId: model.site,
@@ -63,7 +63,9 @@ function main() {
                 sharedId: model.item.node.properties["qshare:sharedId"] || null,
                 sharedBy: model.item.node.properties["qshare:sharedBy"] || null,
                 pagecontext: model.pagecontext,
-                libraryRoot: model.libraryRoot
+                libraryRoot: model.libraryRoot,
+                refreshURL: 'components/card-details/card-header',
+                displayNameTemplate: template
             }
         };
 

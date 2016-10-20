@@ -10,6 +10,10 @@
         * highlightedAdditionalClass - additional classes for highlighted rows. use only with 'highlightedColumnMarker' ("selected my-item") [optional]
 -->
 
+<#-- TODO:
+        - rewrite control on knockout.component
+-->
+
 <!-- ko ifnot: empty -->
     <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
         <table>
@@ -64,19 +68,31 @@
                                 <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
                                     <!-- ko foreach: defaultAttributes -->
                                         <!-- ko with: $parents[1].attribute($data.name()) -->
-                                            <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
+                                            <td data-bind="text: ko.computed(function() {
+                                                var value = $data.value(), title;
+                                                if (value && value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
+                                                return title || ($data.valueTitle() || $data.textValue())
+                                            })"></td>
                                         <!-- /ko -->
                                     <!-- /ko -->
                                 <!-- /ko -->
                             <#elseif params.columns??>
                                 <#list params.columns?split(",") as column>
                                     <!-- ko with: attribute("${column}") -->
-                                        <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
+                                        <td data-bind="text: ko.computed(function() {
+                                            var value = $data.value(), title;
+                                            if (value && value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
+                                            return title || ($data.valueTitle() || $data.textValue())
+                                        })"></td>
                                     <!-- /ko -->
                                 </#list>
                             <#else>
                                 <!-- ko foreach: attributes -->
-                                    <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>
+                                    <td data-bind="text: ko.computed(function() {
+                                        var value = $data.value(), title;
+                                        if (value && value.toString().indexOf('invariants') != -1) title = value.properties['cm:title'];
+                                        return title || ($data.valueTitle() || $data.textValue())
+                                    })"></td>
                                 <!-- /ko -->
                             </#if>
 

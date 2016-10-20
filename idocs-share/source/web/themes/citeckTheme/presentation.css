@@ -1,5 +1,8 @@
 @import "/share/res/fonts/FontAwesome/css/font-awesome.css";
 
+/* mobile */
+@import "/share/res/themes/citeckTheme/custom-mobile.css";
+
 
  /* Site-wide Styles */
 
@@ -2215,9 +2218,9 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding-left: 5px;
 }
 
-#alf-hd .alf-header .right-widgets .horizontal-widget {
+/*#alf-hd .alf-header .right-widgets .horizontal-widget {
    float: right;
-}
+}*/
 
 #alf-hd .alf-header #HEADER_SEARCH_BOX {
    margin: 5px 10px;
@@ -2281,13 +2284,14 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 
 #alf-hd .path-nav {
-   padding: 0 40px 15px 40px;
-   margin: 0;
+  padding: 0 40px 15px 40px;
+  margin: 0;
 }
 
 #alf-hd .widgets > .left-and-right {
   height: 75px;
   padding: 0 30px 0 40px;
+  overflow: hidden;
 }
 
 @media screen and (max-width: 810px) {
@@ -2718,6 +2722,24 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   border-color: #ccc;
   background-color: white;
   cursor: default;
+}
+
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.sidebar-toggle {
+  display: none;
+}
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button {
+  background-image: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+}
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button:before {
+  font-family: FontAwesome;
+  font-size: 20px;
+  content: "\f0c9";
 }
 
 /*  end journal */

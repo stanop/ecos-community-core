@@ -1,0 +1,151 @@
+/* JOURNALS */
+
+.yui-skin-citeckTheme.mobile .yui-t1 #yui-main {
+    margin: 0 !important;
+    float: none;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content {
+    padding: 10px;
+    margin-left: 0 !important;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-table,
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-pagination {
+    width: 100%;
+    margin: 0;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-pagination {
+    margin: 15px 0 0 0;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content-pagination .rows-per-page-label {
+    margin-left: 20px;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .toolbar {
+    overflow: hidden;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .toolbar .align-right {
+    margin-top: 3px;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .toolbar.icon-buttons .yui-button.sidebar-toggle {
+    display: inline-block;
+    border-right: 1px solid #ccc;
+    padding-right: 11px;
+    margin-right: 5px;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-content .journal-content:before {
+    content: "";
+    border-top: 1px solid #ccc;
+    display: block;
+    margin: 10px -10px;
+    width: calc(100% + 20px);
+}
+
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters {
+    top: 50px !important;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .items-list,
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .toolbar {
+    margin: 0;
+    padding: 0;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .toolbar h2 {
+    padding: 10px 15px;
+    color: white;
+    background-color: #2d3541;
+}
+
+.yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .items-list li {
+    padding: 5px 15px;
+}
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.yui-button-selected.sidebar-toggle span.first-child button {
+    color: red;
+}
+
+/* DASHLETS */
+
+.yui-skin-citeckTheme.mobile #bd .grid {
+    padding: 20px 0 15px 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.yui-skin-citeckTheme.mobile .dashlet {
+    min-height: 0;
+    box-shadow: none;
+    border-top: 1px solid white;
+    border-bottom: 1px solid #2d3541;
+    margin: 0 0 10px 0;
+}
+
+.yui-skin-citeckTheme.mobile .yui-u.first > div:first-child .dashlet {
+    border-top: none;
+}
+
+.yui-skin-citeckTheme.mobile .dashlet .yui-resize-handle {
+    display: none !important;
+}
+
+/* HEADER */
+
+.yui-skin-citeckTheme.mobile #alf-hd .alf-header {
+    padding: 0;
+}
+
+.yui-skin-citeckTheme.mobile #alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem {
+    border-right: none;
+}
+
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right {
+    padding: 0 15px !important;
+    height: auto !important;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets,
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets {
+    width: 100% !important;
+    box-sizing: border-box;
+    height: auto !important;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .horizontal-widget {
+    transform: none !important;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .horizontal-widget:first-child {
+    width: 100%;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .horizontal-widget:nth-child(2) {
+    max-width: 70%;
+}
+
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .logo {
+    margin-bottom: 15px;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .left-widgets .logo img {
+    margin: 0 auto;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets .navigation-menu {
+    margin-left: -13px !important;
+}
+
+.yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets .navigation-menu .alf-menu-bar {
+    padding-bottom: 0;
+}

@@ -6,7 +6,7 @@
 
     <@markup id="js">
     <#-- JavaScript Dependencies -->
-        <@script src="${url.context}/res/components/node-details/node-header.js" group="node-header"/>
+        <@script src="${url.context}/res/citeck/components/node-details/node-header.js" group="node-header"/>
     </@>
 
     <@markup id="widgets">

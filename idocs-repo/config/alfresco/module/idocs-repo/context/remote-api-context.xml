@@ -189,6 +189,13 @@
         <property name="namespaceService" ref="namespaceService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.repository.dictionary.fullChildrenClasses.get"
+          class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
     <bean id="webscript.ru.citeck.print.stampdoc.get" parent="dbp.webscript.view">
         <property name="processors">
             <list>

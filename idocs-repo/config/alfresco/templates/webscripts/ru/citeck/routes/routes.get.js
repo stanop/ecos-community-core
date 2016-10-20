@@ -100,15 +100,21 @@
                 logger.debug("route.get.js - current rout: " + routes[rout].nodeRef);
                 logger.debug("route.get.js - routeScript: " + routScript);
 
-                var conditionFunction = new Function('document', routScript);
-                var condition = conditionFunction(document);
+                try {
+                    var conditionFunction = new Function('document', routScript);
+                    var condition = conditionFunction(document);
 
-                logger.debug("route.get.js - script result: " + condition);
+                    logger.debug("route.get.js - script result: " + condition);
 
-                if (condition == true) {
-                    result.push(routes[rout]);
-                    foundRoutWithValidScript = true;
-                    break;
+                    if (condition == true) {
+                        result.push(routes[rout]);
+                        foundRoutWithValidScript = true;
+                        break;
+                    }
+                } catch (e) {
+                    logger.error("Failed to execute script in route template: " + routes[route].properties["cm:name"] +
+                        "\n script: " + routScript);
+                    logger.error(e.message)
                 }
             }
         }

@@ -474,12 +474,12 @@
 		<property name="description" value="Document Type Categories" />
 		<property name="sinceVersion" value="2.3" />
 		<property name="appliesFromVersion" value="2.3" />
+		<property name="executeOnceOnly" value="false" />
 		<property name="bootstrapView">
 			<props>
 				<prop key="uuidBinding">UPDATE_EXISTING</prop>
 				<prop key="path">/cm:categoryRoot/cm:generalclassifiable</prop>
 				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/document-type-categories.xml</prop>
-				<prop key="messages">alfresco/module/idocs-repo/messages/document-type-categories</prop>
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
