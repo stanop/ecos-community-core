@@ -14,6 +14,10 @@
     width: auto;
 }
 
+.mobile #alfresco-journals #alf-content .journal-content .yui-dt .yui-dt-col-actions {
+    display: none;
+}
+
 .mobile #alfresco-journals #alf-content .journal-content-pagination {
     margin: 5px 10px;
 }
