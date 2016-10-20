@@ -56,7 +56,7 @@ function createOrUpdateLevels(models) {
 }
 
 function createPredicate(parent, assocType, data, defaultScope) {
-    var predicate, properties;
+    var predicate, properties = {};
 
     if(data.name) {
         logger.warn("\tTry to find predicate \""+data.name+"\"");
@@ -81,9 +81,7 @@ function createPredicate(parent, assocType, data, defaultScope) {
         switch (data.predicate) {
             case 'kind':
 
-                properties = {
-                    "pred:requiredType": data.requiredType
-                };
+                properties["pred:requiredType"] = data.requiredType;
                 if (data.requiredKind) {
                     properties["pred:requiredKind"] = data.requiredKind;
                 }
@@ -109,7 +107,6 @@ function createPredicate(parent, assocType, data, defaultScope) {
 
             case 'subcaseType':
 
-                properties = {};
                 if(data.subcaseType) properties["req:requiredSubcaseType"] = utils.longQName(data.subcaseType);
                 if(data.elementType) properties["req:requiredElementType"] = utils.longQName(data.elementType);
                 predicate = parent.createNode(null, "req:subcaseTypePredicate", properties, assocType);
@@ -170,6 +167,11 @@ function createPredicate(parent, assocType, data, defaultScope) {
             }
         }
         if (data.name) predicate.name = data.name;
+
+        for (var prop in properties) {
+            predicate.properties[prop] = properties[prop];
+        }
+
         predicate.save();
     }
 }
