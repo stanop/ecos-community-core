@@ -35,9 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NodeViewGet extends DeclarativeWebScript {
-
-    private static final Logger logger = Logger.getLogger(NodeViewGet.class);
-
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_VIEW_ID = "viewId";
     private static final String PARAM_MODE = "mode";
@@ -48,8 +45,7 @@ public class NodeViewGet extends DeclarativeWebScript {
     private NodeService nodeService;
     private NodeViewService nodeViewService;
     private NamespacePrefixResolver prefixResolver;
-    private AttributesPermissionService attributesPermissionService;
-    
+
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
     {
@@ -57,7 +53,6 @@ public class NodeViewGet extends DeclarativeWebScript {
         String viewId = req.getParameter(PARAM_VIEW_ID);
         String mode = req.getParameter(PARAM_MODE);
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
-        NodeRef nodeRef = null;
 
         NodeView.Builder builder = new NodeView.Builder(prefixResolver);
         
@@ -68,7 +63,7 @@ public class NodeViewGet extends DeclarativeWebScript {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            nodeRef = new NodeRef(nodeRefParam);
+            NodeRef nodeRef = new NodeRef(nodeRefParam);
             if(!nodeService.exists(nodeRef)) {
                 status.setCode(Status.STATUS_NOT_FOUND, "Node " + nodeRefParam + " does not exist");
                 return null;
@@ -92,12 +87,6 @@ public class NodeViewGet extends DeclarativeWebScript {
         }
 
         NodeView view = nodeViewService.getNodeView(query);
-
-        if (attributesPermissionService != null) {
-            attributesPermissionService.processNodeView(nodeRef, view);
-        } else {
-            logger.warn("AttributesPermissionService is null");
-        }
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_VIEW, view);
@@ -125,9 +114,5 @@ public class NodeViewGet extends DeclarativeWebScript {
 
     public void setPrefixResolver(NamespacePrefixResolver prefixResolver) {
         this.prefixResolver = prefixResolver;
-    }
-
-    public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {
-        this.attributesPermissionService = attributesPermissionService;
     }
 }

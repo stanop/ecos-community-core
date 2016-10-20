@@ -31,6 +31,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
+import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -38,10 +39,12 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.invariants.InvariantService;
+import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
 public class InvariantsGet extends DeclarativeWebScript {
+    private static final Logger logger = Logger.getLogger(NodeViewGet.class);
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_NODEREF = "nodeRef";
@@ -56,6 +59,7 @@ public class InvariantsGet extends DeclarativeWebScript {
     private ServiceRegistry serviceRegistry;
     private NodeService nodeService;
     private DictionaryService dictionaryService;
+    private AttributesPermissionService attributesPermissionService;
     
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -66,7 +70,8 @@ public class InvariantsGet extends DeclarativeWebScript {
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
         
         Set<QName> classNames = new LinkedHashSet<>();
-        
+        NodeRef nodeRef = null;
+
         if(typeParam != null && !typeParam.isEmpty()) {
             QName type = QName.createQName(typeParam, prefixResolver);
             classNames.add(type);
@@ -75,7 +80,7 @@ public class InvariantsGet extends DeclarativeWebScript {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            NodeRef nodeRef = new NodeRef(nodeRefParam);
+            nodeRef = new NodeRef(nodeRefParam);
             classNames.add(nodeService.getType(nodeRef));
             classNames.addAll(nodeService.getAspects(nodeRef));
         }
@@ -90,7 +95,13 @@ public class InvariantsGet extends DeclarativeWebScript {
         }
         
         List<InvariantDefinition> invariants = invariantService.getInvariants(classNames);
-        
+
+        if (attributesPermissionService != null && nodeRef != null) {
+            attributesPermissionService.processInvariants(nodeRef, invariants);
+        } else {
+            logger.warn("AttributesPermissionService is null");
+        }
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);
         model.put(MODEL_CLASS_NAMES, DictionaryUtils.expandClassNames(classNames, dictionaryService));
@@ -124,4 +135,7 @@ public class InvariantsGet extends DeclarativeWebScript {
         dictionaryService = serviceRegistry.getDictionaryService();
     }
 
+    public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {
+        this.attributesPermissionService = attributesPermissionService;
+    }
 }
