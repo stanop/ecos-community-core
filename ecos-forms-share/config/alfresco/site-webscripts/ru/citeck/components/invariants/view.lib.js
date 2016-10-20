@@ -10,6 +10,18 @@ function getAttributesRecursively(element, attributes) {
             getAttributesRecursively(element.elements[i], attributes);
         }
     } else if(element.type == "field") {
+        if(attributes.indexOf(element) == -1) {
+            attributes.push(element);
+        }
+    }
+}
+
+function getAttributeRegions(view, attribute) {
+    if(element.type == "view") {
+        for(var i in element.elements) {
+            getAttributesRecursively(element.elements[i], attributes);
+        }
+    } else if(element.type == "field") {
         if(attributes.indexOf(element.attribute) == -1) {
             attributes.push(element.attribute);
         }
@@ -61,12 +73,15 @@ function getView(args) {
             serviceURI += name + '=' + encodeURIComponent(page.url.args[name]) + '&';
         }
     } catch(e) {}
+
     for(var name in args) {
         if(name == 'htmlid') continue;
         serviceURI += name + '=' + encodeURIComponent(args[name]) + '&';
     }
+
     var response = remote.call(serviceURI);
     var view = eval('(' + response + ')');
+
     if(response.status == 404) {
         var formUrl = url.context + '/page/components/form?htmlid=' + encodeURIComponent(args.htmlid) + '&submitType=json&showCancelButton=true';
         if(args.type) formUrl += '&itemKind=type&itemId=' + encodeURIComponent(args.type);
@@ -80,8 +95,10 @@ function getView(args) {
         status.redirect = true;
         return null;
     }
+
     if(response.status != 200) {
         throw 'Can not get view from uri "' + serviceURI + '": ' + view.message;
     }
+    
     return view;
 }
