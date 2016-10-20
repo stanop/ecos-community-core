@@ -18,22 +18,25 @@
  */
 package ru.citeck.ecos.webscripts.invariants;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
+import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
+import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class NodeViewGet extends DeclarativeWebScript {
+
+    private static final Logger logger = Logger.getLogger(NodeViewGet.class);
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_VIEW_ID = "viewId";
@@ -45,6 +48,7 @@ public class NodeViewGet extends DeclarativeWebScript {
     private NodeService nodeService;
     private NodeViewService nodeViewService;
     private NamespacePrefixResolver prefixResolver;
+    private AttributesPermissionService attributesPermissionService;
     
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
@@ -53,7 +57,8 @@ public class NodeViewGet extends DeclarativeWebScript {
         String viewId = req.getParameter(PARAM_VIEW_ID);
         String mode = req.getParameter(PARAM_MODE);
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
-        
+        NodeRef nodeRef = null;
+
         NodeView.Builder builder = new NodeView.Builder(prefixResolver);
         
         if(typeParam != null && !typeParam.isEmpty()) {
@@ -63,7 +68,7 @@ public class NodeViewGet extends DeclarativeWebScript {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            NodeRef nodeRef = new NodeRef(nodeRefParam);
+            nodeRef = new NodeRef(nodeRefParam);
             if(!nodeService.exists(nodeRef)) {
                 status.setCode(Status.STATUS_NOT_FOUND, "Node " + nodeRefParam + " does not exist");
                 return null;
@@ -85,9 +90,15 @@ public class NodeViewGet extends DeclarativeWebScript {
             status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
             return null;
         }
-        
+
         NodeView view = nodeViewService.getNodeView(query);
-        
+
+        if (attributesPermissionService != null) {
+            attributesPermissionService.processNodeView(nodeRef, view);
+        } else {
+            logger.warn("AttributesPermissionService is null");
+        }
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_VIEW, view);
         return model;
@@ -116,4 +127,7 @@ public class NodeViewGet extends DeclarativeWebScript {
         this.prefixResolver = prefixResolver;
     }
 
+    public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {
+        this.attributesPermissionService = attributesPermissionService;
+    }
 }

@@ -177,6 +177,7 @@
 		<property name="nodeService" ref="nodeService" />
 		<property name="nodeViewService" ref="nodeViewService" />
 		<property name="prefixResolver" ref="namespaceService" />
+		<property name="attributesPermissionService" value="#{getObject('attributesPermissionService')}"/>
 	</bean>
 	
 	<bean id="webscript.ru.citeck.invariants.view.post" parent="webscript" class="ru.citeck.ecos.webscripts.invariants.NodeViewPost">
