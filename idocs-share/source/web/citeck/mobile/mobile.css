@@ -22,7 +22,7 @@
     margin: 5px 10px;
 }
 
-.mobile #alf-filters {
+.mobile #alfresco-journals #alf-filters {
     display: none;
     position: absolute;
     top: 32px;
