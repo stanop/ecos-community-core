@@ -40,18 +40,12 @@
   display: none;
   position: absolute;
   top: 40px;
-  left: 25%;
-  width: 270px;
-  height: 270px;
+  left: calc(50% - 125px);
   text-align: center;
 }
 
 .invariants-form.loading .loading-container {
   display: block;
-}
-
-.static .loading-container {
-  left: 45%;
 }
 
 /*.invariants-form.loading .loading-container {
@@ -74,10 +68,10 @@
 }
 
 .loading-container .loading-message {
-  width: 175px;
+  width: 180px;
   position: absolute;
-  left: 18%;
-  top: 43%;
+  left: calc(50% - 80px);
+  top: calc(50% - 16px);
 }
 
 @keyframes cssload-spin {
@@ -110,6 +104,7 @@
 .ecos-form .form-fields .form-field input[type="date"],
 .ecos-form .form-fields .form-field input[type="datetime-local"] {
     padding: 4px 5px;
+    border-width: 1px;
 }
 
 /* textarea, input text, number */
@@ -230,6 +225,29 @@
 .static .invariants-form .template-table {
   margin-left: -40px;
   width: 800px;
+}
+
+@media screen and (max-width: 800px) {
+  .static .invariants-form .template-table {
+    width: 100% !important;
+  } 
+}
+
+@media screen and (max-width: 825px) {
+  .yui-panel-container {
+    box-sizing: border-box;
+    width: 100% !important;
+    left: 0 !important;
+  }
+
+  .yui-panel-container .underlay {
+    display: none;
+  }
+
+  .yui-panel-container .yui-panel {
+    width: calc(100% - 20px) !important;
+    margin: 0 10px;
+  }
 }
 
 .invariants-form .template-table,
@@ -752,18 +770,18 @@
 .orgstruct-header .orgstruct-search input[type="text"].search-input {
   padding: 5px 10px 5px 30px;
   border-radius: 10px;
-  width: 335px;
 }
 
 .orgstruct-header .orgstruct-search .search-icon {
   background-image: url(images/search.png);
   position: absolute;
-  width: 25px;
-  height: 25px;
-  top: 3px;
+  width: 15px;
+  height: 15px;
+  top: 4px;
   background-position: center;
   background-repeat: no-repeat;
-  left: 3px;
+  left: 4px;
+  background-size: 15px;
 }
 
 .orgstruct-tree {
@@ -1223,6 +1241,10 @@
   padding: 7px 15px;
   text-align: center;
   border-top: 1px solid #ccc;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .journal-pagination span.page-label {
