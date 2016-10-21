@@ -12,5 +12,7 @@ import java.util.List;
  * @author Maxim Strizhov (maxim.strizhov@citeck.com)
  */
 public interface AttributesPermissionService {
-    public List<InvariantDefinition> processInvariants(NodeRef nodeRef, List<InvariantDefinition> invariants);
+    public boolean isFieldVisible(QName fieldQName);
+
+    public boolean isFieldEditable(QName fieldQName);
 }

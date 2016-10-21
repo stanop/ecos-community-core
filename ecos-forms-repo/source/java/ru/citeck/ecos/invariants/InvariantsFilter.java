@@ -34,12 +34,15 @@ import java.util.TreeMap;
 
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.invariants.InvariantScope.AttributeScopeKind;
+import ru.citeck.ecos.invariants.xml.Property;
+import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.utils.DictionaryUtils;
 
 class InvariantsFilter {
@@ -53,6 +56,8 @@ class InvariantsFilter {
     
     private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
+    private AttributesPermissionService attributesPermissionService;
+    private NamespaceService namespaceService;
     
     private Map<QName, InvariantAttributeType> attributeTypes;
     
@@ -156,7 +161,7 @@ class InvariantsFilter {
         List<ClassDefinition> allInvolvedClasses = DictionaryUtils.expandClassNamesToDefs(classNames, dictionaryService);
         
         Set<InvariantDefinition> invariants = new LinkedHashSet<InvariantDefinition>();
-        
+
         // search by class
         for(ClassDefinition classDef : allInvolvedClasses) {
             addInvariants(invariantsByClass.subMap(
@@ -182,6 +187,16 @@ class InvariantsFilter {
                 addInvariants(
                         attributeType.getDefaultInvariants(attributeName, allInvolvedClasses), 
                         invariants);
+                if (attributesPermissionService != null) {
+                    if (!attributesPermissionService.isFieldEditable(attributeName)) {
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                    }
+                    if (!attributesPermissionService.isFieldVisible(attributeName)) {
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.RELEVANT).explicit(false).buildFinal());
+                    }
+                }
             }
             
             QName attributeSubtype = nodeAttributeService.getAttributeSubtype(attributeName);
@@ -202,7 +217,7 @@ class InvariantsFilter {
                 addInvariants(invariantsByAttribute.get(new InvariantScope(scopeKind)), invariants);
             }
         }
-        
+
         // ordering
         return orderInvariants(allInvolvedClasses, invariants);
     }
@@ -244,6 +259,14 @@ class InvariantsFilter {
 
     public void setAttributeTypesRegistry(Map<QName, InvariantAttributeType> attributeTypes) {
         this.attributeTypes = attributeTypes;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
+    public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {
+        this.attributesPermissionService = attributesPermissionService;
     }
 
     // "highest priority first" comparator

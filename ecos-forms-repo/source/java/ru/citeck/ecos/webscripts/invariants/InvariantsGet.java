@@ -18,33 +18,24 @@
  */
 package ru.citeck.ecos.webscripts.invariants;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
-import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.invariants.InvariantService;
-import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.util.*;
+
 public class InvariantsGet extends DeclarativeWebScript {
-    private static final Logger logger = Logger.getLogger(NodeViewGet.class);
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_NODEREF = "nodeRef";
@@ -53,54 +44,45 @@ public class InvariantsGet extends DeclarativeWebScript {
     private static final String MODEL_INVARIANTS = "invariants";
     private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
-    
+
     private InvariantService invariantService;
     private NamespacePrefixResolver prefixResolver;
     private ServiceRegistry serviceRegistry;
     private NodeService nodeService;
     private DictionaryService dictionaryService;
-    private AttributesPermissionService attributesPermissionService;
-    
+
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
-    {
+    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String typeParam = req.getParameter(PARAM_TYPE);
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
         String aspectsParam = req.getParameter(PARAM_ASPECTS);
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
-        
-        Set<QName> classNames = new LinkedHashSet<>();
-        NodeRef nodeRef = null;
 
-        if(typeParam != null && !typeParam.isEmpty()) {
+        Set<QName> classNames = new LinkedHashSet<>();
+
+        if (typeParam != null && !typeParam.isEmpty()) {
             QName type = QName.createQName(typeParam, prefixResolver);
             classNames.add(type);
-        } else if(nodeRefParam != null && !nodeRefParam.isEmpty()) {
-            if(!NodeRef.isNodeRef(nodeRefParam)) {
+        } else if (nodeRefParam != null && !nodeRefParam.isEmpty()) {
+            if (!NodeRef.isNodeRef(nodeRefParam)) {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            nodeRef = new NodeRef(nodeRefParam);
+            NodeRef nodeRef = new NodeRef(nodeRefParam);
             classNames.add(nodeService.getType(nodeRef));
             classNames.addAll(nodeService.getAspects(nodeRef));
         }
-        
-        if(aspectsParam != null && !aspectsParam.isEmpty()) {
+
+        if (aspectsParam != null && !aspectsParam.isEmpty()) {
             classNames.addAll(splitQNames(aspectsParam));
         }
-        
-        if(attributesParam != null && !attributesParam.isEmpty()) {
+
+        if (attributesParam != null && !attributesParam.isEmpty()) {
             List<QName> attributeNames = splitQNames(attributesParam);
             classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
         }
-        
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames);
 
-        if (attributesPermissionService != null && nodeRef != null) {
-            attributesPermissionService.processInvariants(nodeRef, invariants);
-        } else {
-            logger.warn("AttributesPermissionService is null");
-        }
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);
@@ -111,10 +93,10 @@ public class InvariantsGet extends DeclarativeWebScript {
 
     private List<QName> splitQNames(String qnamesString) {
         List<QName> qnames = null;
-        if(qnamesString != null && !qnamesString.isEmpty()) {
+        if (qnamesString != null && !qnamesString.isEmpty()) {
             String[] qnamesArray = qnamesString.split(",");
             qnames = new ArrayList<>(qnamesArray.length);
-            for(String qname : qnamesArray) {
+            for (String qname : qnamesArray) {
                 qnames.add(QName.createQName(qname, prefixResolver));
             }
         }
@@ -133,9 +115,5 @@ public class InvariantsGet extends DeclarativeWebScript {
         this.serviceRegistry = serviceRegistry;
         nodeService = serviceRegistry.getNodeService();
         dictionaryService = serviceRegistry.getDictionaryService();
-    }
-
-    public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {
-        this.attributesPermissionService = attributesPermissionService;
     }
 }
