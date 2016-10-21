@@ -5,7 +5,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.domain.node.Node;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.model.Repository;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -74,7 +73,7 @@ public class CasePerformUtils {
         String userName = (String)nodeService.getProperty(person, ContentModel.PROP_USER_USERNAME);
         String resultName = "perform-result-" + userName;
 
-        Map<QName, Serializable> properties = new HashMap<>();
+        Map<QName, Serializable> properties = new TreeMap<>();
         properties.put(CasePerformModel.PROP_RESULT_OUTCOME, outcome);
         properties.put(CasePerformModel.PROP_RESULT_DATE, new Date());
         properties.put(ContentModel.PROP_NAME, resultName);
@@ -100,7 +99,7 @@ public class CasePerformUtils {
 
         Set<IdentityLink> candidates = task.getCandidates();
         String assigneeName = task.getAssignee();
-        Set<NodeRef> performers = new HashSet<>();
+        Set<NodeRef> performers = new TreeSet<>();
 
         if (assigneeName != null) {
             performers.add(authorityService.getAuthorityNodeRef(assigneeName));
@@ -164,7 +163,7 @@ public class CasePerformUtils {
     }
 
     <K,V> Map<K,V> getMap(VariableScope scope, String key) {
-        return getVariable(scope, key, Map.class, HashMap.class);
+        return getVariable(scope, key, Map.class, TreeMap.class);
     }
 
     <T,D> T getVariable(VariableScope scope, String key, Class<T> clazz, Class<D> defaultClass) {
@@ -214,7 +213,7 @@ public class CasePerformUtils {
         if (dictionaryService.isSubClass(containerType, ContentModel.TYPE_AUTHORITY_CONTAINER)) {
             String groupName = (String) nodeService.getProperty(container, ContentModel.PROP_AUTHORITY_NAME);
             Set<String> authorities = authorityService.getContainedAuthorities(type, groupName, !recurse);
-            Set<NodeRef> authoritiesRefs = new HashSet<>();
+            Set<NodeRef> authoritiesRefs = new TreeSet<>();
 
             for (String authority : authorities) {
                 authoritiesRefs.add(authorityService.getAuthorityNodeRef(authority));
