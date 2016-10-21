@@ -5,6 +5,7 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.domain.node.Node;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.model.Repository;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -57,14 +58,13 @@ public class CasePerformUtils {
 
     void saveTaskPerformers(ExecutionEntity execution, TaskEntity task) {
 
-        Map<String, Set<NodeRef>> tasksPerformers = getMap(execution, TASKS_PERFORMERS);
-        Set<NodeRef> performers = tasksPerformers.get(task.getId());
+        Map<String, Collection<NodeRef>> tasksPerformers = getMap(execution, TASKS_PERFORMERS);
+        Collection<NodeRef> performers = tasksPerformers.get(task.getId());
         if (performers == null) {
-            performers = new HashSet<>();
+            performers = new ArrayList<>();
             tasksPerformers.put(task.getId(), performers);
         }
-        performers.addAll(getTaskPerformers(task));
-
+        addAllIfNotContains(performers, getTaskPerformers(task));
     }
 
     void saveTaskResult(ExecutionEntity execution, TaskEntity task) {
@@ -88,8 +88,8 @@ public class CasePerformUtils {
 
         nodeService.createAssociation(result, person, CasePerformModel.ASSOC_RESULT_PERSON);
 
-        Map<String, Set<NodeRef>> performersByTask = getMap(execution, TASKS_PERFORMERS);
-        Set<NodeRef> performers = performersByTask.get(task.getId());
+        Map<String, Collection<NodeRef>> performersByTask = getMap(execution, TASKS_PERFORMERS);
+        Collection<NodeRef> performers = performersByTask.get(task.getId());
 
         for (NodeRef performer : performers) {
             nodeService.createAssociation(result, performer, CasePerformModel.ASSOC_RESULT_PERFORMER);
@@ -142,6 +142,20 @@ public class CasePerformUtils {
             }
         }
 
+        return false;
+    }
+
+    <T> void addAllIfNotContains(Collection<T> collection, Iterable<T> items) {
+        for (T item : items) {
+            addIfNotContains(collection, item);
+        }
+    }
+
+    <T> boolean addIfNotContains(Collection<T> collection, T item) {
+        if (!collection.contains(item)) {
+            collection.add(item);
+            return true;
+        }
         return false;
     }
 
