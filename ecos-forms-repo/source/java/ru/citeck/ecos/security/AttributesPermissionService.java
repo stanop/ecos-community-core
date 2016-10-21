@@ -12,7 +12,7 @@ import java.util.List;
  * @author Maxim Strizhov (maxim.strizhov@citeck.com)
  */
 public interface AttributesPermissionService {
-    public boolean isFieldVisible(QName fieldQName);
+    public boolean isFieldVisible(QName fieldQName, NodeRef caseRef);
 
-    public boolean isFieldEditable(QName fieldQName);
+    public boolean isFieldEditable(QName fieldQName, NodeRef caseRef);
 }

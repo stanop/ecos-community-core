@@ -60,6 +60,8 @@ public class InvariantsGet extends DeclarativeWebScript {
 
         Set<QName> classNames = new LinkedHashSet<>();
 
+        NodeRef nodeRef = null;
+
         if (typeParam != null && !typeParam.isEmpty()) {
             QName type = QName.createQName(typeParam, prefixResolver);
             classNames.add(type);
@@ -68,9 +70,9 @@ public class InvariantsGet extends DeclarativeWebScript {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            NodeRef nodeRef = new NodeRef(nodeRefParam);
-            classNames.add(nodeService.getType(nodeRef));
-            classNames.addAll(nodeService.getAspects(nodeRef));
+            nodeRef = new NodeRef(nodeRefParam);
+//            classNames.add(nodeService.getType(nodeRef));
+//            classNames.addAll(nodeService.getAspects(nodeRef));
         }
 
         if (aspectsParam != null && !aspectsParam.isEmpty()) {
@@ -82,7 +84,7 @@ public class InvariantsGet extends DeclarativeWebScript {
             classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
         }
 
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames);
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, nodeRef);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);

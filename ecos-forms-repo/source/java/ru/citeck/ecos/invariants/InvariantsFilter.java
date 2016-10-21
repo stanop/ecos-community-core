@@ -18,32 +18,19 @@
  */
 package ru.citeck.ecos.invariants;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.lang.builder.CompareToBuilder;
-
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.invariants.InvariantScope.AttributeScopeKind;
-import ru.citeck.ecos.invariants.xml.Property;
 import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.utils.DictionaryUtils;
+
+import java.util.*;
 
 class InvariantsFilter {
     
@@ -146,7 +133,11 @@ class InvariantsFilter {
     }
     
     public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames) {
-        return this.searchMatchingInvariants(classNames, true);
+        return this.searchMatchingInvariants(classNames, true, null);
+    }
+
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, NodeRef nodeRef) {
+        return this.searchMatchingInvariants(classNames, true, nodeRef);
     }
     
     /**
@@ -157,7 +148,7 @@ class InvariantsFilter {
      * @param addDefault set true to add default invariants to list, false - only custom invariants
      * @return ordered list of invariants
      */
-    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault) {
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault, NodeRef nodeRef) {
         List<ClassDefinition> allInvolvedClasses = DictionaryUtils.expandClassNamesToDefs(classNames, dictionaryService);
         
         Set<InvariantDefinition> invariants = new LinkedHashSet<InvariantDefinition>();
@@ -187,12 +178,14 @@ class InvariantsFilter {
                 addInvariants(
                         attributeType.getDefaultInvariants(attributeName, allInvolvedClasses), 
                         invariants);
+
+                // Check current user permissions for attribute
                 if (attributesPermissionService != null) {
-                    if (!attributesPermissionService.isFieldEditable(attributeName)) {
+                    if (!attributesPermissionService.isFieldEditable(attributeName, nodeRef)) {
                         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
                         invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
                     }
-                    if (!attributesPermissionService.isFieldVisible(attributeName)) {
+                    if (!attributesPermissionService.isFieldVisible(attributeName, nodeRef)) {
                         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
                         invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.RELEVANT).explicit(false).buildFinal());
                     }
