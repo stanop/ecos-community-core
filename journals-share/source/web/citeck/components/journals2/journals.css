@@ -10,10 +10,10 @@
 
 /* table styles */
 
-.content-table
-{
+.content-table {
 	width: 100%;
 	margin-top: 5px;
+	overflow: auto;
 }
 
 .content-table > table
@@ -156,9 +156,9 @@
 /* toolbar styles (journals-page, journals-dashlet) */
 
 .toolbar,
-.toolbar-menu
-{
+.toolbar-menu {
 	min-height: 26px;
+	overflow: hidden;
 }
 
 .toolbar h2
@@ -495,6 +495,10 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 }
 
 /* toggle sidebar */
+.toolbar.icon-buttons .yui-button.sidebar-toggle {
+	display: none;
+}
+
 .toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button {
 	background-image: url(/share/res/citeck/images/treeline-gray-20.png);
 }

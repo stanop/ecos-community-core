@@ -3,3 +3,19 @@ function isMobileDevice(ua) {
       return true;
   } else { return false; }
 };
+
+function findBy(elements, by, byValue) {
+    for (var e = 0; e < elements.length; e++) {
+        if (byValue instanceof Function) {
+            if (byValue(by ? elements[e][by] : elements[e])) return elements[e];
+        } else if (elements[e][by] == byValue) return elements[e];
+    }
+
+    return null;
+}
+
+function map(elements, callback) {
+    var result = [];
+    for (var e in elements) { result.push(callback(elements[e])); }
+    return result;
+}

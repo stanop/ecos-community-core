@@ -21,44 +21,20 @@ Citeck.mobile.isMobileDevice = function() {
 (function() {
 
     if (Citeck.mobile.isMobileDevice()) {       
-        
-        // share global handler
-        YAHOO.Bubbling.on("on-mobile-device", function(e, args) { 
-            if (args.fn) fn();
-        });
+        YAHOO.Bubbling.on("on-mobile-device", function(e, args) { if (args[1].fn) fn(); });
 
         $(document).ready(function() {
             // global mobile style
-            $("body").addClass("mobile");
+            mobileGlobalClassToggle(true)
 
             // viewport only for dashboard (while development process)
             // and for all pages in production after all tests
-            if (window.location.pathname.indexOf("dashboard") != -1) {
-                $("head").append(
-                    $("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" })
-                );
-                
-                $("#bd .grid").attr("class", "grid");
-
-                $.each($(".dashlet"), function(i, el) {
-                    $(el).find(".yui-resize-handle").remove();
-                    $(".title", el).click(function(event) {
-                        $(el).children().filter(":not(.title)").toggle();
-                    });
-                });
-            }
-
-            if (window.location.pathname.indexOf("journals2/list") != -1) {
-                $("#alfresco-journals #alf-filters").on("click", "li", function() {
-                    if ($("body").hasClass("mobile")) {
-                        $("#alfresco-journals #alf-filters").hide();
-                    }
-                });
-            }
+            transformDashboard(true);
+            transformJournalsSidebar(true);
+            transformForm(true);
         });
-    } else {
+    } else {       
         $(document).ready(function() {
-            // define mobile width for specified themes
             var mobileWidth = (function() {
                 var defaultMobileWidth = 525, themesMobileWidth = {
                         "yui-skin-citeckTheme": 585,
@@ -74,15 +50,14 @@ Citeck.mobile.isMobileDevice = function() {
             $("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
 
             $(window).resize(function(event) {
-                if (window.innerWidth <= mobileWidth) {
-                    $("body").addClass("mobile");
-                    transformDashboard(true);
-                    transformJournalsSidebar(true);
-                } else { 
-                    $("body").removeClass("mobile");
-                    transformDashboard(false);
-                    transformJournalsSidebar(false);
-                }
+                var functions = [ 
+                        mobileGlobalClassToggle, 
+                        transformJournalsSidebar, 
+                        transformDashboard,
+                        transformForm
+                    ],
+                    isMobile = window.innerWidth <= mobileWidth;
+                for (var f in functions) { functions[f](isMobile); }
             });
 
             $(window).resize();
@@ -90,8 +65,23 @@ Citeck.mobile.isMobileDevice = function() {
     }
 
 
+    function mobileGlobalClassToggle(isMobile) {
+        if (isMobile != !!$("body").hasClass("mobile")) {
+            YAHOO.Bubbling.fire("on-change-mobile-mode", { mobileMode: isMobile });
+        }
+        isMobile ? $("body").addClass("mobile") : $("body").removeClass("mobile");
+    }
+
+    function viewportToggle(isMobile) {
+        if (isMobile) {
+            $("head").append($("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
+        } else { $("meta[name='viweport']").remove(); }
+    }
+
+
     function transformJournalsSidebar(isMobile) {
         if (window.location.pathname.indexOf("journals2/list") != -1) {
+            viewportToggle(isMobile);
             if (isMobile) {
                 $("#alfresco-journals #alf-filters")
                     .hide()
@@ -113,10 +103,9 @@ Citeck.mobile.isMobileDevice = function() {
     function transformDashboard(isMobile) {
         if (window.location.pathname.indexOf("dashboard") != -1) {
             var gridContainer = $("#bd .grid");
+
             if (isMobile) {
-                $("head").append($("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
                 gridContainer.attr("class", "grid");
-                
                 if (!gridContainer.attr("data-dashlet-clickable")) {
                     $(".dashlet .title", gridContainer).bind("click.title-clickable", function(event) {
                         $($(event.target).parent()).children().filter(":not(.title)").toggle();
@@ -124,16 +113,21 @@ Citeck.mobile.isMobileDevice = function() {
                     gridContainer.attr("data-dashlet-clickable", "true");
                 }
             } else {
-                $("meta[name='viweport']").remove();
                 $(".dashlet").children().filter(":not(.title)").show();
-               
                 if (gridContainer.attr("data-dashlet-clickable")) {
                     $(".dashlet .title", gridContainer).unbind("click.title-clickable");
                     gridContainer.removeAttr("data-dashlet-clickable");
                 }
-
                 gridContainer.attr("class", gridContainer.attr("data-class-backup"));
             }
+
+            viewportToggle(isMobile);
+        }
+    };
+
+    function transformForm(isMobile) {
+        if (/node-(create|edit)-page/.test(window.location.pathname)) {
+            viewportToggle(isMobile);
         }
     };
 

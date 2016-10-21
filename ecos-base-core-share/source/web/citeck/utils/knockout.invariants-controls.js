@@ -477,6 +477,9 @@ ko.bindingHandlers.journalControl = {
         defaultHiddenByType = _.map(defaultHiddenByType.split(","), function(item) { return trim(item) });
     }
 
+    // maxItems
+    var maxItems = ko.observable($("body").hasClass("mobile") ? 5 : 10);
+
     //  initialize criteria
     var criteria = ko.observable([]);
     if (defaultCriteria) criteria(defaultCriteria);
@@ -485,10 +488,10 @@ ko.bindingHandlers.journalControl = {
         loading = ko.observable(true), criteriaListShow = ko.observable(false), 
         searchBar = params.searchBar ? params.searchBar == "true" : true,
         mode = params.mode ? params.mode : "collapse",
-        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
+        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
         additionalOptions = ko.observable([]), options = ko.computed(function(page) {
             var nudeOptions = data.filterOptions(criteria(), { 
-                    maxItems: 10, 
+                    maxItems: maxItems(), 
                     skipCount: skipCount(), 
                     searchScript: searchScript,
                     sortBy: sortBy
@@ -506,11 +509,11 @@ ko.bindingHandlers.journalControl = {
             additionalOptions(tempAdditionalOptions);
 
             if (additionalOptions().length > 0) {
-                if (nudeOptions.length < 10) {
+                if (nudeOptions.length < maxItems()) {
                     result = _.union(nudeOptions, additionalOptions());
 
-                    if (result.length > 10) result = result.slice(0, 10);
-                    if (10 - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                    if (result.length > maxItems()) result = result.slice(0, maxItems());
+                    if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
                     
                     result.pagination = config;
                     return result;
@@ -916,6 +919,16 @@ ko.bindingHandlers.journalControl = {
         
         panel.show();
     })
+
+    if (!Citeck.mobile.isMobileDevice()) {
+        YAHOO.Bubbling.on("on-change-mobile-mode", function(l, args) { 
+            var itemsCount = args[1].mobileMode ? 5 : 10;
+            if (itemsCount != maxItems()) { 
+                pageNumber(1);
+                maxItems(itemsCount);
+            };
+        });
+    }
 
     // reload filterOptions request if was created new object
     YAHOO.Bubbling.on("object-was-created", function(layer, args) {
