@@ -7,7 +7,6 @@ import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.model.Repository;
-import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -15,7 +14,6 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.model.CasePerformModel;
 
 import java.io.Serializable;
@@ -47,12 +45,12 @@ public class CasePerformUtils {
     private DictionaryService dictionaryService;
     private Repository repositoryHelper;
 
-    public boolean isCommentMandatory(ExecutionEntity execution, TaskEntity task) {
+    boolean isCommentMandatory(ExecutionEntity execution, TaskEntity task) {
         return isInSplitString(execution, CasePerformModel.PROP_OUTCOMES_WITH_MANDATORY_COMMENT,
                                   task, CasePerformModel.PROP_PERFORM_OUTCOME);
     }
 
-    public boolean isAbortOutcomeReceived(ExecutionEntity execution, TaskEntity task) {
+    boolean isAbortOutcomeReceived(ExecutionEntity execution, TaskEntity task) {
         return isInSplitString(execution, CasePerformModel.PROP_ABORT_OUTCOMES,
                                   task, CasePerformModel.PROP_PERFORM_OUTCOME);
     }
@@ -151,12 +149,8 @@ public class CasePerformUtils {
         return getVariable(scope, key, Collection.class, ArrayList.class);
     }
 
-    <K, V> Map<K, V> getMap(VariableScope scope, String key) {
+    <K,V> Map<K,V> getMap(VariableScope scope, String key) {
         return getVariable(scope, key, Map.class, HashMap.class);
-    }
-
-    <T> Set<T> getSet(VariableScope scope, String key) {
-        return getVariable(scope, key, Set.class, HashSet.class);
     }
 
     <T,D> T getVariable(VariableScope scope, String key, Class<T> clazz, Class<D> defaultClass) {

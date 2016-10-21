@@ -92,7 +92,10 @@ public class CasePerformWorkflowHandler implements Serializable {
 
         task.setVariableLocal(utils.toString(CiteckWorkflowModel.PROP_IS_OPTIONAL_TASK), isOptional);
         if (!isOptional) {
-            utils.getSet(execution, CasePerformUtils.MANDATORY_TASKS).add(task.getId());
+            Collection<String> mandatoryTasks = utils.getCollection(execution, CasePerformUtils.MANDATORY_TASKS);
+            if (!mandatoryTasks.contains(task.getId())) {
+                mandatoryTasks.add(task.getId());
+            }
         }
     }
 
@@ -112,7 +115,7 @@ public class CasePerformWorkflowHandler implements Serializable {
             }
         }
 
-        Set<String> mandatoryTasks = utils.getSet(execution, CasePerformUtils.MANDATORY_TASKS);
+        Collection<String> mandatoryTasks = utils.getCollection(execution, CasePerformUtils.MANDATORY_TASKS);
         mandatoryTasks.remove(task.getId());
         execution.setVariable(CasePerformUtils.ABORT_PERFORMING, mandatoryTasks.size() == 0
                                                                 || utils.isAbortOutcomeReceived(execution, task));
