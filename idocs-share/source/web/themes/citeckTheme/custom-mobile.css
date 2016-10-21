@@ -1,3 +1,27 @@
+/* ECOS FORMS */
+
+.yui-skin-citeckTheme.mobile .orgstruct-header .orgstruct-search .search-icon {
+    top: 8px;
+    left: 8px;
+}
+
+.yui-skin-citeckTheme.mobile .yui-panel .orgstruct-layout .selected-object:after {
+    top: 8px;
+}
+
+.yui-skin-citeckTheme.mobile .journal-container {
+    height: 216px;
+}
+
+.yui-skin-citeckTheme.mobile .journal-container.selected-elements {
+    height: 92px;
+}
+
+.yui-skin-citeckTheme.mobile .full .filter-page, 
+.yui-skin-citeckTheme.mobile .create-page {
+    height: auto;
+}
+
 /* JOURNALS */
 
 .yui-skin-citeckTheme.mobile .yui-t1 #yui-main {
