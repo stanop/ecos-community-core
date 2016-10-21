@@ -4,14 +4,12 @@
     <extensionElements>
       <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
         <activiti:field name="script">
-          <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onWorkflowStart();]]></activiti:string>
+          <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onWorkflowStart(execution);]]></activiti:string>
         </activiti:field>
       </activiti:executionListener>
       <activiti:executionListener event="end" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
         <activiti:field name="script">
-          <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onWorkflowEnd();]]></activiti:string>
+          <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onWorkflowEnd(execution);]]></activiti:string>
         </activiti:field>
       </activiti:executionListener>
     </extensionElements>
@@ -29,20 +27,17 @@ onWorkflowEnd();]]></activiti:string>
           </activiti:taskListener>
           <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
             <activiti:field name="script">
-              <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onPerformTaskCreated();]]></activiti:string>
+              <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onPerformTaskCreated(execution, task);]]></activiti:string>
             </activiti:field>
           </activiti:taskListener>
           <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
             <activiti:field name="script">
-              <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onPerformTaskCompleted();]]></activiti:string>
+              <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onPerformTaskCompleted(execution, task);]]></activiti:string>
             </activiti:field>
           </activiti:taskListener>
           <activiti:taskListener event="assignment" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
             <activiti:field name="script">
-              <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onPerformTaskAssigned();]]></activiti:string>
+              <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onPerformTaskAssigned(execution, task);]]></activiti:string>
             </activiti:field>
           </activiti:taskListener>
         </extensionElements>
@@ -57,8 +52,7 @@ onPerformTaskAssigned();]]></activiti:string>
       <extensionElements>
         <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
           <activiti:field name="script">
-            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onAfterPerformingFlowTake();]]></activiti:string>
+            <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onAfterPerformingFlowTake(execution);]]></activiti:string>
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
@@ -67,8 +61,7 @@ onAfterPerformingFlowTake();]]></activiti:string>
       <extensionElements>
         <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
           <activiti:field name="script">
-            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onBeforePerformingFlowTake();]]></activiti:string>
+            <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onBeforePerformingFlowTake(execution);]]></activiti:string>
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
@@ -77,8 +70,7 @@ onBeforePerformingFlowTake();]]></activiti:string>
       <extensionElements>
         <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
           <activiti:field name="script">
-            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onSkipPerformingGatewayStarted();]]></activiti:string>
+            <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onSkipPerformingGatewayStarted(execution);]]></activiti:string>
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
@@ -92,8 +84,7 @@ onSkipPerformingGatewayStarted();]]></activiti:string>
       <extensionElements>
         <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
           <activiti:field name="script">
-            <activiti:string><![CDATA[<import resource="classpath:/alfresco/module/idocs-repo/scripts/case-perform/case-perform-workflow.js">
-onSkipPerformingFlowTake();]]></activiti:string>
+            <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onSkipPerformingFlowTake(execution);]]></activiti:string>
           </activiti:field>
         </activiti:executionListener>
       </extensionElements>
