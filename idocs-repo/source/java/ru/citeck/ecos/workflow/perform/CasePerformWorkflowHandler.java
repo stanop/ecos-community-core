@@ -29,11 +29,12 @@ public class CasePerformWorkflowHandler implements Serializable {
 
         if (execution.hasVariable(CasePerformUtils.OPTIONAL_PERFORMERS)) {
             Collection<NodeRef> optionalPerformers = utils.getCollection(execution, CasePerformUtils.OPTIONAL_PERFORMERS);
-            Set<NodeRef> expandedPerformers = new HashSet<>();
+            Collection<NodeRef> expandedPerformers = new ArrayList<>();
 
             for (NodeRef performer : optionalPerformers) {
-                expandedPerformers.add(performer);
-                expandedPerformers.addAll(utils.getContainedAuthorities(performer, AuthorityType.USER, true));
+                utils.addIfNotContains(expandedPerformers, performer);
+                Set<NodeRef> authorities = utils.getContainedAuthorities(performer, AuthorityType.USER, true);
+                utils.addAllIfNotContains(expandedPerformers, authorities);
             }
 
             execution.setVariableLocal(CasePerformUtils.OPTIONAL_PERFORMERS, expandedPerformers);
@@ -93,9 +94,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         task.setVariableLocal(utils.toString(CiteckWorkflowModel.PROP_IS_OPTIONAL_TASK), isOptional);
         if (!isOptional) {
             Collection<String> mandatoryTasks = utils.getCollection(execution, CasePerformUtils.MANDATORY_TASKS);
-            if (!mandatoryTasks.contains(task.getId())) {
-                mandatoryTasks.add(task.getId());
-            }
+            utils.addIfNotContains(mandatoryTasks, task.getId());
         }
     }
 
