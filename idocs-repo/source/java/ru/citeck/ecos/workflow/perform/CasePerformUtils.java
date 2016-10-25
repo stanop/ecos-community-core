@@ -3,9 +3,9 @@ package ru.citeck.ecos.workflow.perform;
 import org.activiti.engine.delegate.VariableScope;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.domain.node.Node;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.model.Repository;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -18,6 +18,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.CasePerformModel;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,8 @@ public class CasePerformUtils {
     public static final String ABORT_PERFORMING = "abortPerforming";
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
+
+    private static final DummyComparator DUMMY_COMPARATOR = new DummyComparator();
 
     private static final List<String> VARIABLES_SHARING_IGNORED_PREFIXES = Arrays.asList("bpm", "cwf", "wfcf", "cm");
     private static final Pattern VARIABLES_PATTERN = Pattern.compile("^([^_]+)_(.+)");
@@ -100,7 +103,7 @@ public class CasePerformUtils {
 
         Set<IdentityLink> candidates = task.getCandidates();
         String assigneeName = task.getAssignee();
-        Set<NodeRef> performers = new HashSet<>();
+        Set<NodeRef> performers = new TreeSet<>(DUMMY_COMPARATOR);
 
         if (assigneeName != null) {
             performers.add(authorityService.getAuthorityNodeRef(assigneeName));
@@ -160,28 +163,27 @@ public class CasePerformUtils {
     }
 
     <T> Collection<T> getCollection(VariableScope scope, String key) {
-        return getVariable(scope, key, Collection.class, ArrayList.class);
+        if (scope.hasVariable(key)) {
+            Object var = scope.getVariable(key);
+            if (var instanceof Collection) {
+                return (Collection<T>) var;
+            }
+        }
+        Collection<T> varCollection = new ArrayList<>();
+        scope.setVariable(key, varCollection);
+        return varCollection;
     }
 
     <K,V> Map<K,V> getMap(VariableScope scope, String key) {
-        return getVariable(scope, key, Map.class, HashMap.class);
-    }
-
-    <T,D> T getVariable(VariableScope scope, String key, Class<T> clazz, Class<D> defaultClass) {
-        Object var;
         if (scope.hasVariable(key)) {
-            var = scope.getVariable(key);
-            if (clazz.isInstance(var)) {
-                return (T)var;
+            Object var = scope.getVariable(key);
+            if (var instanceof Map) {
+                return (Map<K,V>) var;
             }
         }
-        try {
-            T defaultVar = (T)defaultClass.newInstance();
-            scope.setVariable(key, defaultVar);
-            return defaultVar;
-        } catch (Exception e) {
-            return null;
-        }
+        Map<K,V> varMap = new TreeMap<>(DUMMY_COMPARATOR);
+        scope.setVariable(key, varMap);
+        return varMap;
     }
 
     String[] getSplitString(VariableScope scope, QName key) {
@@ -243,5 +245,12 @@ public class CasePerformUtils {
 
     public void setRepositoryHelper(Repository repositoryHelper) {
         this.repositoryHelper = repositoryHelper;
+    }
+
+    private static class DummyComparator implements Serializable, Comparator<Object> {
+        @Override
+        public int compare(Object o1, Object o2) {
+            return 0;
+        }
     }
 }
