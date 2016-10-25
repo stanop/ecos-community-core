@@ -250,6 +250,7 @@
   }
 }
 
+/* template-table */
 .invariants-form .template-table,
 .invariants-form .template-table .template-rowset {
   position: relative;
@@ -1367,7 +1368,6 @@
 
 
 /* date & time */
-
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].date-entry,
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].time-entry {
   width: 30%;
@@ -1413,9 +1413,6 @@
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .show-picker .yui-button button {
   line-height: 125%;
 }
-
-/* free-content */
-
 
 
 /* view */
@@ -1541,6 +1538,23 @@
 .invariants-form .template-table .template-view span.value-item .value-item-actions a.delete-value-item:hover,
 .invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
   background-image: url(images/remove-active.png);
+}
+
+
+/* template-tabs */
+.invariants-form .template-tabs .tabs-body {
+  overflow: hidden;
+  padding: 15px 0;
+}
+
+.invariants-form .template-tabs ul.tabs-title li.tab-title {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+}
+
+.invariants-form .template-tabs ul.tabs-title li.tab-title:not(.selected) {
+  cursor: pointer;  
 }
 
 

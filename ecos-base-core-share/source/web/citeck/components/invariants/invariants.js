@@ -228,8 +228,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     };
 
     var JournalService = koutils.koclass('journals.JournalsService')
-    	.property('journalTypes', [o])
-		.load('journalTypes', koutils.simpleLoad({
+        .property('journalTypes', [o])
+        .load('journalTypes', koutils.simpleLoad({
             url: Alfresco.constants.PROXY_URI + "api/journals/maptypes",
             resultsMap: function(response) {
                 return {
@@ -242,13 +242,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         }))
-		.method('getAllJournalTypes', function() {
+        .method('getAllJournalTypes', function() {
             var allJournalTypes = [];
             _.each(this.journalTypes(), function(value) {
                 allJournalTypes.push(value.journalType)
             });
-			return allJournalTypes;
-    		})
+            return allJournalTypes;
+            })
         .method('getJournalType', function(journalTypeId) {
             var journalType;
             _.each(this.journalTypes(), function(value) {
@@ -263,7 +263,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         });
 
-	var JournalServiceImpl = new JournalService();
+    var JournalServiceImpl = new JournalService();
 
     var UtilsImpl = {
 
@@ -1653,6 +1653,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
           }
 
           return false;
+        })
+
+        .method('selectTab', function(data, event) {
+            $(event.target)
+                .parent()
+                .children()
+                .removeClass("selected")
+                .end().end()
+                .addClass("selected");
+
+            var bodyId = $(event.target).attr("data-tab-id").replace("title", "body");
+            $(".tabs-body .tab-body[data-body-id=" + bodyId)
+                .parent()
+                .children()
+                .addClass("hidden")
+                .end().end()
+                .removeClass("hidden");
         })
 
         .method('submit', function() {
