@@ -85,8 +85,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     });
 
                     if (this.templateName == "journal") {
+                        this.fakeViewModel.cache.result.extend({ notify: 'always' });
+
                         this.fakeViewModel.journalType = this.journalType();
-                        this.fakeViewModel.filterOptions = function(criteria, pagination) {
+                        this.fakeViewModel.filterOptions = function(criteria, pagination) {                              
                             var query = {
                                 skipCount: 0,
                                 maxItems: 10,
@@ -105,8 +107,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 query['predicate_' + (index + 1)] = criterion.predicate;
                                 query['value_' + (index + 1)] = criterion.value;
                             });
+                           
 
-                            if(_.isUndefined(this.cache.result)) this.cache.result = ko.observable(null);
                             if(this.cache.query) {
                                 if(_.isEqual(query, this.cache.query)) return this.cache.result();
                             }
@@ -121,15 +123,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                     url: Alfresco.constants.PROXY_URI + "search/criteria-search",
                                     dataObj: query,
                                     successCallback: {
-                                        scope: self.fakeViewModel,
+                                        scope: this.cache,
                                         fn: function(response) {
                                             var result = _.map(response.json.results, function(node) {
                                                 return new Node(node);
                                             });
                                             result.pagination = response.json.paging;
                                             result.query = response.json.query;
-                                            
-                                            this.cache.result(result);
+                                            this.result(result);
                                         }
                                     }
                                 });
