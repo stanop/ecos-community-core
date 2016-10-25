@@ -99,7 +99,7 @@ public class SetProcessDefinitionVersionCmd implements Command<Void>, Serializab
             // throw new ActivitiObjectNotFoundException("No active process instance found for id = \'" + this.processInstanceId + "\'.", ProcessInstance.class);
 
         } else if (!processInstance.isProcessInstanceType()) {
-            throw new ActivitiIllegalArgumentException("A process instance id is required, but the provided id \'" + this.processInstanceId + "\' " + "points to a child execution of process instance " + "\'" + processInstance.getProcessInstanceId() + "\'. " + "Please invoke the " + this.getClass().getSimpleName() + " with a root execution id.");
+            throw new ActivitiIllegalArgumentException("A process instance id is required, but the provided id \'" + this.processInstanceId + "\' " + "points to a child execution of process instance " + "\'" + processInstance.getProcessInstanceId() + "\'. " + "Please getDeputyUsersAndMembers the " + this.getClass().getSimpleName() + " with a root execution id.");
         } else {
 
 

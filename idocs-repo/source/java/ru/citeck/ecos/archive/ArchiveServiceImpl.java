@@ -18,13 +18,6 @@
  */
 package ru.citeck.ecos.archive;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -32,22 +25,19 @@ import org.alfresco.repo.tenant.TenantService;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
-import org.alfresco.service.cmr.repository.InvalidNodeRefException;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.ResultSetRow;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import ru.citeck.ecos.model.ArchiveServiceConfigurationModel;
 import ru.citeck.ecos.archive.ArchiveServicePolicies.BeforeMovePolicy;
 import ru.citeck.ecos.archive.ArchiveServicePolicies.OnMovePolicy;
+import ru.citeck.ecos.model.ArchiveServiceConfigurationModel;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * The main goal of this service is a moving documents into the archive.
@@ -185,8 +175,8 @@ class ArchiveServiceImpl implements ArchiveService {
 		if (ignorePolicy(targetNodeRef)) {
 			return;
 		}
-		// get qnames to invoke against
-		Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
+        // get qnames to getDeputyUsersAndMembers against
+        Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
 		// execute policy for node type and aspects
 		ArchiveServicePolicies.BeforeMovePolicy policy = beforeMoveDelegate
 				.get(targetNodeRef, qnames);
@@ -210,8 +200,8 @@ class ArchiveServiceImpl implements ArchiveService {
 		if (ignorePolicy(targetNodeRef)) {
 			return;
 		}
-		// get qnames to invoke against
-		Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
+        // get qnames to getDeputyUsersAndMembers against
+        Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
 		// execute policy for node type and aspects
 		ArchiveServicePolicies.OnMovePolicy policy = onMoveDelegate.get(
 				targetNodeRef, qnames);

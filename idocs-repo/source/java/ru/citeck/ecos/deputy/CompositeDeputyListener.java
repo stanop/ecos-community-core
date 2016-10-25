@@ -97,4 +97,32 @@ public class CompositeDeputyListener implements DeputyListener
 		}
 	}
 
+    @Override
+    public void onAssistantAdded(String userName) {
+        for (DeputyListener listener : listeners) {
+            listener.onAssistantAdded(userName);
+        }
+    }
+
+    @Override
+    public void onAssistantRemoved(String userName) {
+        for (DeputyListener listener : listeners) {
+            listener.onAssistantRemoved(userName);
+        }
+    }
+
+    @Override
+    public void onRoleAssistantAdded(String roleFullName, String assistantName) {
+        for (DeputyListener listener : listeners) {
+            listener.onRoleAssistantAdded(roleFullName, assistantName);
+        }
+    }
+
+    @Override
+    public void onRoleAssistantRemoved(String roleFullName, String assistantName) {
+        for (DeputyListener listener : listeners) {
+            listener.onRoleAssistantRemoved(roleFullName, assistantName);
+        }
+    }
+
 }
