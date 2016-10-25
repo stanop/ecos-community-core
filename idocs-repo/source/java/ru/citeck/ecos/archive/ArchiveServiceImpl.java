@@ -175,8 +175,8 @@ class ArchiveServiceImpl implements ArchiveService {
 		if (ignorePolicy(targetNodeRef)) {
 			return;
 		}
-        // get qnames to getDeputyUsersAndMembers against
-        Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
+		// get qnames to invoke against
+		Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
 		// execute policy for node type and aspects
 		ArchiveServicePolicies.BeforeMovePolicy policy = beforeMoveDelegate
 				.get(targetNodeRef, qnames);
@@ -200,8 +200,8 @@ class ArchiveServiceImpl implements ArchiveService {
 		if (ignorePolicy(targetNodeRef)) {
 			return;
 		}
-        // get qnames to getDeputyUsersAndMembers against
-        Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
+		// get qnames to invoke against
+		Set<QName> qnames = getTypeAndAspectQNames(targetNodeRef);
 		// execute policy for node type and aspects
 		ArchiveServicePolicies.OnMovePolicy policy = onMoveDelegate.get(
 				targetNodeRef, qnames);
