@@ -27,6 +27,7 @@ import org.alfresco.util.Pair;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.invariants.InvariantScope.AttributeScopeKind;
+import ru.citeck.ecos.model.AttributeModel;
 import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.utils.DictionaryUtils;
 
@@ -45,7 +46,7 @@ class InvariantsFilter {
     private NodeAttributeService nodeAttributeService;
     private AttributesPermissionService attributesPermissionService;
     private NamespaceService namespaceService;
-    
+
     private Map<QName, InvariantAttributeType> attributeTypes;
     
     private NavigableMap<InvariantScope, List<InvariantDefinition>> invariantsByClass;
@@ -183,7 +184,15 @@ class InvariantsFilter {
                 if (attributesPermissionService != null) {
                     if (!attributesPermissionService.isFieldEditable(attributeName, nodeRef)) {
                         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
-                        invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        if (attributeTypeName.equals(AttributeModel.TYPE_PROPERTY)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_CHILD_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.CHILD_ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_TARGET_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_SOURCE_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        }
                     }
                     if (!attributesPermissionService.isFieldVisible(attributeName, nodeRef)) {
                         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
