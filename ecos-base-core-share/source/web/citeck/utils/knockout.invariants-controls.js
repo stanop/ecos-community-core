@@ -1154,7 +1154,6 @@ ko.components.register("autocomplete", {
         
         this.visibleOptions = ko.pureComputed(function() {
             if (self.options() && self.options().pagination) {
-                console.log("vo", self.options().pagination)
                 self.cache.options = self.cache.options.concat(self.options());
                 return self.cache.options;
             }
