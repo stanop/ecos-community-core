@@ -1086,6 +1086,7 @@ ko.components.register("autocomplete", {
         this.labels = {
             label: Alfresco.util.message("autocomplete.label"),
             help: Alfresco.util.message("autocomplete.help"),
+            empty: Alfresco.util.message("autocomplete.empty"),
             more: Alfresco.util.message("autocomplete.more")
         }
 
@@ -1132,7 +1133,7 @@ ko.components.register("autocomplete", {
                     self.searching(true);
                 }
             }
-        }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
+        });
 
         this.criteria = ko.pureComputed(function() {
             if (self.searchQuery()) {
@@ -1140,16 +1141,22 @@ ko.components.register("autocomplete", {
                     return _.defaults({ value: self.searchQuery() }, item);
                 });
             } else { return [] }
-        });
+        }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
         this.options = ko.pureComputed(function() {
-            return self.data.filterOptions(self.criteria(), { maxItems: 10, skipCount: self.skipCount(), searchScript: self.searchScript });
-        }).extend({ notify: 'always' });
+            var result = self.data.filterOptions(self.criteria(), { 
+                maxItems: 10, 
+                skipCount: self.skipCount(), 
+                searchScript: self.searchScript
+            });
+            if (result.pagination) return result;
+        });
         
-
-        this.visibleOptions = ko.computed(function() {
-            self.cache.options = self.cache.options.concat(self.options());
-            return self.cache.options;
+        this.visibleOptions = ko.pureComputed(function() {
+            if (self.options() && self.options().pagination) {
+                self.cache.options = self.cache.options.concat(self.options());
+                return self.cache.options;
+            }
         });
 
 
@@ -1166,12 +1173,13 @@ ko.components.register("autocomplete", {
         this.options.subscribe(function(newValue) {
             if (newValue && newValue.pagination) {
                 self.hasMore(newValue.pagination.hasMore);
+                self.searching(false);
 
-                if (newValue.length > 0 && self.skipCount() == 0) self.highlightedElement(newValue[0]);
-                if (newValue.length == 0) self.searching(false);        
+                if (newValue.length > 0 && self.skipCount() == 0) 
+                    self.highlightedElement(newValue[0]);
+                      
             }
         });
-
 
         // public methods
         this.clear = function(data, event) { if (event.which == 1) self.value(null) };
@@ -1290,14 +1298,19 @@ ko.components.register("autocomplete", {
                             hasFocus: searchFocused">\
                     <div class="loading-indicator" data-bind="css: { hidden: !searching() }"></div>\
                 </div>\
-                <!-- ko if: visibleOptions() && visibleOptions().length > 0 -->\
-                    <ul class="autocomplete-list" data-bind="foreach: { data: visibleOptions, afterRender: renderHandler }">\
-                        <li data-bind="\
-                            event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
-                            css: { selected: $parent.highlightedElement() == $data }">\
-                            <a data-bind="text: $parent.data.getValueTitle($data)"></a>\
-                        </li>\
-                    </ul>\
+                <!-- ko if: visibleOptions() && !searching() -->\
+                    <!-- ko if: visibleOptions().length > 0 -->\
+                        <ul class="autocomplete-list" data-bind="foreach: { data: visibleOptions, afterRender: renderHandler }">\
+                            <li data-bind="\
+                                event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
+                                css: { selected: $parent.highlightedElement() == $data }">\
+                                <a data-bind="text: $parent.data.getValueTitle($data)"></a>\
+                            </li>\
+                        </ul>\
+                    <!-- /ko -->\
+                    <!-- ko if: visibleOptions().length == 0 -->\
+                        <span class="autocomplete-message empty-message" data-bind="text: labels.empty"></span>\
+                    <!-- /ko -->\
                 <!-- /ko -->\
                 <!-- ko if: hasMore -->\
                     <div class="autocomplete-more">\

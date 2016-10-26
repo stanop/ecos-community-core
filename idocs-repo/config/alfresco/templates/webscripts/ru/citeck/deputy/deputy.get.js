@@ -43,7 +43,8 @@ model.deputy = {
 	"user": user,
 	"available": availability.getUserAvailability(userName),
 	"canDelete": true,
-	"deputy": true
+    "deputy": true,
+    "isAssistant": false
 };
 
 })();

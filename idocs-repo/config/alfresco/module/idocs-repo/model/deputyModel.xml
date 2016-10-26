@@ -18,6 +18,12 @@
 		<!-- deputation record: what is deputied and to whom -->
 		<type name="deputy:deputationRecord">
 			<parent>cm:cmobject</parent>
+            <properties>
+                <property name="deputy:isAssistant">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
 			<associations>
 				<association name="deputy:deputiedAuthority">
 					<source>

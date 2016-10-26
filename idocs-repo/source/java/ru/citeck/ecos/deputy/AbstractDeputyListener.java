@@ -18,67 +18,85 @@
  */
 package ru.citeck.ecos.deputy;
 
-public abstract class AbstractDeputyListener implements DeputyListener
-{
-	private int priority;
-	protected DeputyServiceImpl deputyService;
+public abstract class AbstractDeputyListener implements DeputyListener {
+    private int priority;
+    protected DeputyServiceImpl deputyService;
 
-	public void init() {
-		deputyService.addDeputyListener(this);
-	}
+    public void init() {
+        deputyService.addDeputyListener(this);
+    }
 
-	public void setDeputyService(DeputyServiceImpl deputyService) {
-		this.deputyService = deputyService;
-	}
+    public void setDeputyService(DeputyServiceImpl deputyService) {
+        this.deputyService = deputyService;
+    }
 
-	@Override
-	public int getPriority() {
-		return priority;
-	}
+    @Override
+    public int getPriority() {
+        return priority;
+    }
 
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
-	@Override
-	public void onRoleMemberAvailable(String roleFullName, String memberName) {
-		// do nothing by default
-	}
+    @Override
+    public void onRoleMemberAvailable(String roleFullName, String memberName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onRoleMemberUnavailable(String roleFullName, String memberName) {
-		// do nothing by default
-	}
+    @Override
+    public void onRoleMemberUnavailable(String roleFullName, String memberName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onRoleDeputyAvailable(String roleFullName, String deputyName) {
-		// do nothing by default
-	}
+    @Override
+    public void onRoleDeputyAvailable(String roleFullName, String deputyName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onRoleDeputyUnavailable(String roleFullName,
-			String deputyName) {
-		// do nothing by default
-	}
+    @Override
+    public void onRoleDeputyUnavailable(String roleFullName,
+                                        String deputyName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onUserDeputyAvailable(String userName, String deputyName) {
-		// do nothing by default
-	}
+    @Override
+    public void onUserDeputyAvailable(String userName, String deputyName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onUserDeputyUnavailable(String userName, String deputyName) {
-		// do nothing by default
-	}
+    @Override
+    public void onUserDeputyUnavailable(String userName, String deputyName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onUserAvailable(String userName) {
-		// do nothing by default
-	}
+    @Override
+    public void onUserAvailable(String userName) {
+        // do nothing by default
+    }
 
-	@Override
-	public void onUserUnavailable(String userName) {
-		// do nothing by default
-	}
+    @Override
+    public void onUserUnavailable(String userName) {
+        // do nothing by default
+    }
 
+    @Override
+    public void onAssistantAdded(String userName) {
+        // do nothing by default
+    }
+
+    @Override
+    public void onAssistantRemoved(String userName) {
+        // do nothing by default
+    }
+
+    @Override
+    public void onRoleAssistantAdded(String roleFullName, String assistantName) {
+        // do nothing by default
+    }
+
+    @Override
+    public void onRoleAssistantRemoved(String roleFullName, String assistantName) {
+        // do nothing by default
+    }
 }

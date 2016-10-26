@@ -166,9 +166,22 @@
 				methodMap = this.splitTemplatesByDots(templates, function(template, name, method) {
 					return {'key': name, 'value': method};
 				}),
+                templatesMethodMap = this.splitTemplatesByDots(templates, function (template, name, method) {
+                    return {'template': template, 'key': name, 'value': method};
+                }),
+                templatesMap = {};
+
+            if ((templatesMethodMap !== null || typeof templatesMethodMap !== "undefined") && !$.isEmptyObject(templatesMethodMap)) {
+                for (var templateName in templatesMethodMap) {
+                    var name = templatesMethodMap[templateName].key;
+                    var method = templatesMethodMap[templateName].value;
+                    templatesMap[templateName] = item[name][method].toString();
+                }
+            } else {
 				templatesMap = this.splitTemplatesByDots(templates, function(template, name, method) {
 					return {'key': template, 'value': '{' + name + '}'};
 				});
+            }
 			template = YAHOO.lang.substitute(template, templatesMap, function(key, value) {
 				return value;
 			}, false);
@@ -207,7 +220,11 @@
 							var name = template.substring(0, pos),
 								method = template.substring(pos + 1);
 								data = extractTemplateData(template, name, method);
-							result[data.key] = data.value;
+                            if (data.template !== 'undefined' || data.template !== null) {
+                                result[data.template] = {key: data.key, value: data.value};
+                            } else {
+                                result[data.key] = data.value;
+                            }
 						}
 					}
 				}

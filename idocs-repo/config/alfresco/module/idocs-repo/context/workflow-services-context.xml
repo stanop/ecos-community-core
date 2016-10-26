@@ -442,7 +442,7 @@
 
 	<bean id="taskOriginalOwner" class="ru.citeck.ecos.workflow.listeners.TaskOriginalOwnerListener">
 		<property name="availabilityService" ref="availabilityService"/>
-		<property name="delegateListenerName" value="delegateListener.taskManagement"/>
+		<property name="delegateListenerName" value="deputyListener.taskManagement"/>
 	</bean>
 	
 	<!--Set workflow initiator-->

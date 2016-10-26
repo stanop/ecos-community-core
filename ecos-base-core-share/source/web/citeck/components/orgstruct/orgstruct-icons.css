@@ -57,9 +57,20 @@
 	background-image: url(icons/user-deputy-16.png);
 }
 
+.ygtvcell.deputy-true.available-true.isAssistant-true.deputy-true-isAssistant-true {
+    background-image: url(icons/user-deputy-assistant-16.png);
+}
+
+.ygtvcell.deputy-false.available-true.deputy-false-isAssistant-true {
+    background-image: url(icons/user-deputy-assistant-16.png);
+}
 .ygtvcell.deputy-true.available-false
 {
 	background-image: url(icons/user-deputy-unavailable-16.png);
+}
+
+.ygtvcell.deputy-true.available-false.isAssistant-true {
+    background-image: url(icons/user-deputy-assistant-unavailable-16.png);
 }
 
 .ygtvcell.deputy-false.available-true
@@ -109,6 +120,10 @@ button.addGroup
 button.addUser
 {
    background-image: url(icons/user-add-16.png);
+}
+
+button.addAssistant {
+    background-image: url(icons/user-deputy-assistant-add-16.png);
 }
 
 button.addDeputy

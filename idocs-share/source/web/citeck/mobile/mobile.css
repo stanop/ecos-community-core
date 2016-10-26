@@ -239,6 +239,7 @@
 .mobile .ecos-form .form-fields .template-table .form-field .region-group .form-region {
     margin: 0 10px 0 0;
     float: left;
+    clear: right;
 }
 
 .mobile .ecos-form .form-fields .template-table .form-field .form-region.template-checkbox,
