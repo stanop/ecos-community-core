@@ -1663,8 +1663,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .addClass("selected");
 
-            var bodyId = $(event.target).attr("data-tab-id").replace("title", "body");
-            $(".tabs-body .tab-body[data-body-id=" + bodyId)
+            var tabId = $(event.target).attr("data-tab-id");
+            console.log(tabId)
+            $(".tabs-body .tab-body[data-tab-id=" + tabId)
                 .parent()
                 .children()
                 .addClass("hidden")

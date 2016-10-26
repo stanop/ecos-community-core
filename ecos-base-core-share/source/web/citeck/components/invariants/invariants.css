@@ -4,16 +4,16 @@
   background-color: #f0f0f0;
 }
 
-.ecos-form:not(.view-form) {
+.ecos-form:not(.view-form) .form-fields {
   padding: 15px 30px 15px 15px;
 }
 
-.static .ecos-form {
-  padding: 15px;
+.static .ecos-form .form-fields {
+  padding: 15px 40px 0 40px;
 }
 
-.static .ecos-form {
-    padding: 15px 40px;
+.static .ecos-form .form-buttons  {
+  padding: 5px 40px 15px 40px;
 }
 
 .ecos-form .form-fields .form-field {
@@ -352,6 +352,23 @@
   border-bottom: 0 !important;
 }
 
+
+/* tabs */
+.invariants-form:not(.view-form) .template-table .template-tabs {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  margin-left: 5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-tabs ul.tabs-title {
+  padding: 10px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-tabs .tabs-body {
+  width: 100%;
+  padding: 0 10px 10px 0;
+  box-sizing: border-box;
+}
 
 /* row field width */
 .invariants-form .template-table .template-row .template-select,
@@ -1542,6 +1559,10 @@
 
 
 /* template-tabs */
+.static .invariants-form .template-tabs .template-table {
+    margin-left: 0;
+}
+
 .invariants-form .template-tabs .tabs-body {
   overflow: hidden;
   padding: 15px 0;
