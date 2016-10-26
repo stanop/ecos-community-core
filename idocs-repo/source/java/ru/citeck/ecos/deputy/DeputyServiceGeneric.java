@@ -45,7 +45,23 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	public abstract UserList getUserDeputies(String userName);
 
 	/**
-	 * Add specified users to deputies of specified user.
+     * Get assistants (users) of specified user.
+     *
+     * @param userName - user, that have assistants
+     * @return list of users, that are assistants for specified user
+     */
+    public abstract UserList getUserAssistants(String userName);
+
+    /**
+     * Get deputies and assistants (users) of specified user.
+     *
+     * @param userName - user, that have assistants and deputies
+     * @return list of users, that are assistants and deputies for specified user
+     */
+    public abstract UserList getAllUserDeputies(String userName);
+
+    /**
+     * Add specified users to deputies of specified user.
 	 * 
 	 * @param userName - user, that is deputied
 	 * @param deputies - list of users, that deputy
@@ -53,6 +69,14 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	public abstract void addUserDeputies(String userName,
 			UserNameList deputies);
 
+    /**
+     * Add specified users to assistants of specified user.
+     *
+     * @param userName   - user, that is deputied
+     * @param assistants - list of assistant users
+     */
+    public abstract void addUserAssistants(String userName,
+                                           UserNameList assistants);
 	/**
 	 * Remove specified users from deputies of specified user.
 	 * 
@@ -60,7 +84,17 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	 * @param deputies - list of users, that deputy
 	 */
 	public abstract void removeUserDeputies(String userName,
-			UserNameList deputies);
+                                            UserNameList deputies);
+
+    /**
+     * Remove specified users from assistannts of specified user.
+     *
+     * @param userName - user, that is deputied
+     * @param deputies - list of users, that assistants
+     */
+    public abstract void removeUserAssistants(String userName,
+                                              UserNameList deputies);
+
 
 	/**
 	 * Get users who have specified user as deputy
@@ -78,6 +112,14 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	 */
 	public abstract UserList getRoleDeputies(String roleFullName);
 
+    /**
+     * Get assistants (users) of specified role.
+     *
+     * @param roleFullName - role, that is assistant
+     * @return list of users, that are assistants for specified role
+     */
+    public abstract UserList getRoleAssistants(String roleFullName);
+
 	/**
 	 * Add specified users to deputies of specified role.
 	 * 
@@ -85,6 +127,15 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	 * @param deputies - list of users, that deputy
 	 */
 	public abstract void addRoleDeputies(String roleFullName,
+                                         UserNameList deputies);
+
+    /**
+     * Add specified users to assistants of specified role.
+     *
+     * @param roleFullName - role, that is assistant
+     * @param deputies     - list of users, that assistant
+     */
+    public abstract void addRoleAssistants(String roleFullName,
 			UserNameList deputies);
 
 	/**
@@ -94,6 +145,15 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	 * @param deputies - list of users, that deputy
 	 */
 	public abstract void removeRoleDeputies(String roleFullName,
+                                            UserNameList deputies);
+
+    /**
+     * Remove specified users from assistants of specified role.
+     *
+     * @param roleFullName - role, that is assistants
+     * @param deputies     - list of users, that assistant
+     */
+    public abstract void removeRoleAssistants(String roleFullName,
 			UserNameList deputies);
 
 	/**
@@ -126,9 +186,12 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	 * @param roleFullName
 	 * @param userName
 	 * @return
-	 */
-	public abstract boolean isRoleDeputiedToUser(String roleFullName,
-			String userName);
+     */
+    public abstract boolean isRoleDeputiedToUser(String roleFullName,
+                                                 String userName);
+
+	public abstract boolean isRoleAssistedToUser(String roleFullName,
+                                                 String userName);
 
 	/**
 	 * Get own roles of user.
@@ -177,21 +240,44 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	/////////////////////////////////////////////////////////////////
 	//                  CURRENT USER INTERFACE                     //
 	/////////////////////////////////////////////////////////////////
-	
-	/**
-	 * @see #getUserDeputies(String)
-	 */
-	public abstract UserList getCurrentUserDeputies();
+
+    /**
+     * @see #getUserDeputies(String)
+     */
+    public abstract UserList getCurrentUserDeputies();
+
+    public abstract UserList getCurrentUserAssistants();
+
+	public abstract UserList getAllCurrentUserDeputies();
 
 	/**
 	 * @see #addUserDeputies(String, List)
-	 */
-	public abstract void addCurrentUserDeputies(UserNameList deputies);
+     */
+    public abstract void addCurrentUserDeputies(UserNameList deputies);
 
-	/**
-	 * @see #removeUserDeputies(String, List)
-	 */
-	public abstract void removeCurrentUserDeputies(UserNameList deputies);
+    /**
+     * @see #addUserAssistants(String, Object)
+     */
+    public abstract void addCurrentUserAssistants(UserNameList assistants);
+
+    /**
+     * Is user is assistant depute
+     *
+     * @param userName
+     * @param assistantUserName
+     * @return is user assistant depute
+     */
+    public abstract boolean isAssistantUserByUser(String userName, String assistantUserName);
+
+	public abstract boolean isAssistantToCurrentUser(String assistantUserName);
+
+
+    /**
+     * @see #removeUserDeputies(String, List)
+     */
+    public abstract void removeCurrentUserDeputies(UserNameList deputies);
+
+	public abstract void removeCurrentUserAssistants(UserNameList assistance);
 
 	/**
 	 * @see #isRoleDeputiedByUser(String, String)
@@ -218,9 +304,13 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
 	 */
 	public abstract RoleList getRolesDeputiedByCurrentUser();
 
-	/**
-	 * @see #getRolesDeputiedToUser(String)
-	 */
-	public abstract RoleList getRolesDeputiedToCurrentUser();
+    /**
+     * @see #getRolesDeputiedToUser(String)
+     */
+    public abstract RoleList getRolesDeputiedToCurrentUser();
+
+    public abstract boolean isUserAvailable(String userName);
+
+	public abstract boolean isCanDeleteDeputeOrAssistantFromRole(String roleFullName);
 
 }

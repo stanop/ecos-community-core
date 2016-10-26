@@ -23,7 +23,6 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.task.IdentityLinkType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import ru.citeck.ecos.deputy.AvailabilityServiceImpl;
 import ru.citeck.ecos.deputy.TaskDeputyListener;
 
@@ -36,20 +35,20 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
 
     private AvailabilityServiceImpl availabilityService;
     private ApplicationContext applicationContext;
-    
+
     // NOTE: we have to import delegate listener by name
     //  to resolve circular dependency
     private String delegateListenerName;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
-	public void setDelegateListenerName(String delegateListenerName) {
-		this.delegateListenerName = delegateListenerName;
-	}
-	
+    public void setDelegateListenerName(String delegateListenerName) {
+        this.delegateListenerName = delegateListenerName;
+    }
+
     public void setAvailabilityService(AvailabilityServiceImpl availabilityService) {
         this.availabilityService = availabilityService;
     }
@@ -63,14 +62,15 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
         }
 
         if (assignee != null) {
+            TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
+            ArrayList<String> actorsList = delegateListener.getActorsList(assignee, true);
             if (!availabilityService.getUserAvailability(assignee)) {
-                delegateTask.setAssignee(null);
-                TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
-                ArrayList<String> actorsList = delegateListener.getActorsList(assignee);
-                for (String actor : actorsList) {
-                    delegateTask.addUserIdentityLink(actor, IdentityLinkType.CANDIDATE);
-                }
+                actorsList.addAll(delegateListener.getActorsList(assignee, false));
             }
+            for (String actor : actorsList) {
+                delegateTask.addUserIdentityLink(actor, IdentityLinkType.CANDIDATE);
+            }
+            delegateTask.setAssignee(null);
         }
     }
 }

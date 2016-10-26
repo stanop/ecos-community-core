@@ -4,16 +4,16 @@
   background-color: #f0f0f0;
 }
 
-.ecos-form:not(.view-form) {
+.ecos-form:not(.view-form) .form-fields {
   padding: 15px 30px 15px 15px;
 }
 
-.static .ecos-form {
-  padding: 15px;
+.static .ecos-form .form-fields {
+  padding: 15px 40px 0 40px;
 }
 
-.static .ecos-form {
-    padding: 15px 40px;
+.static .ecos-form .form-buttons  {
+  padding: 5px 40px 15px 40px;
 }
 
 .ecos-form .form-fields .form-field {
@@ -250,6 +250,7 @@
   }
 }
 
+/* template-table */
 .invariants-form .template-table,
 .invariants-form .template-table .template-rowset {
   position: relative;
@@ -351,6 +352,23 @@
   border-bottom: 0 !important;
 }
 
+
+/* tabs */
+.invariants-form:not(.view-form) .template-table .template-tabs {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  margin-left: 5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-tabs ul.tabs-title {
+  padding: 10px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-tabs .tabs-body {
+  width: 100%;
+  padding: 10px 10px 0 0;
+  box-sizing: border-box;
+}
 
 /* row field width */
 .invariants-form .template-table .template-row .template-select,
@@ -1367,7 +1385,6 @@
 
 
 /* date & time */
-
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].date-entry,
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].time-entry {
   width: 30%;
@@ -1413,9 +1430,6 @@
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .show-picker .yui-button button {
   line-height: 125%;
 }
-
-/* free-content */
-
 
 
 /* view */
@@ -1541,6 +1555,27 @@
 .invariants-form .template-table .template-view span.value-item .value-item-actions a.delete-value-item:hover,
 .invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
   background-image: url(images/remove-active.png);
+}
+
+
+/* template-tabs */
+.static .invariants-form .template-tabs .template-table {
+    margin-left: 0;
+}
+
+.invariants-form .template-tabs .tabs-body {
+  overflow: hidden;
+  padding: 15px 0;
+}
+
+.invariants-form .template-tabs ul.tabs-title li.tab-title {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+}
+
+.invariants-form .template-tabs ul.tabs-title li.tab-title:not(.selected) {
+  cursor: pointer;  
 }
 
 

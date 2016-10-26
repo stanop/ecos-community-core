@@ -31,4 +31,12 @@ public interface DeputyListener {
 	public void onUserAvailable(String userName);
 	public void onUserUnavailable(String userName);
 
+    public void onAssistantAdded(String userName);
+
+    public void onAssistantRemoved(String userName);
+
+    public void onRoleAssistantAdded(String roleFullName, String assistantName);
+
+    public void onRoleAssistantRemoved(String roleFullName, String assistantName);
+
 }
