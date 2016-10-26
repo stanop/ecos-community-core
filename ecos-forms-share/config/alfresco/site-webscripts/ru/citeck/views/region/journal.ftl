@@ -81,5 +81,5 @@
 
     <button id="${controlId}-button" 
             class="journal-control-button" 
-            data-bind="disable: protected">${msg("button.select")}</button>
+            data-bind="disable: protected">${msg(params.buttonTitle!"button.select")}</button>
 </div>
