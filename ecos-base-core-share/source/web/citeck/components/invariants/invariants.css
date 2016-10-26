@@ -366,7 +366,7 @@
 
 .invariants-form:not(.view-form) .template-table .template-tabs .tabs-body {
   width: 100%;
-  padding: 0 10px 10px 0;
+  padding: 10px 10px 0 0;
   box-sizing: border-box;
 }
 
