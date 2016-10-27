@@ -1655,6 +1655,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
           return false;
         })
 
+        
         .method('selectTab', function(data, event) {
             $(event.target)
                 .parent()
@@ -1664,7 +1665,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .addClass("selected");
 
             var tabId = $(event.target).attr("data-tab-id");
-            console.log(tabId)
             $(".tabs-body .tab-body[data-tab-id=" + tabId)
                 .parent()
                 .children()
@@ -1672,6 +1672,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .removeClass("hidden");
         })
+
+        .method('scrollTabs', function(data, event) {
+            var scrollArrow = $(event.target),
+                direction = (function() {
+                    var matches = scrollArrow.attr("class").match(/scroll-(left|right)/);
+                    return matches.length > 0 ? matches[1] : undefined;
+                })();
+
+            if (direction) {
+                var list = $("ul", scrollArrow.parent());
+                if (direction == "right") 
+                    list.animate({ scrollLeft: list.scrollLeft() + 100 }, 300);
+                if (direction == "left") 
+                    list.animate({ scrollLeft: list.scrollLeft() - 100 }, 300);
+            }
+
+            return false;
+        })
+
 
         .method('submit', function() {
             if(this.node().impl().valid()) {
@@ -1782,6 +1801,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
+            if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
+                $(window).resize(function() {
+                   $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
+                        var ulWidth = parseInt($("ul", tabTitle).innerWidth()),
+                            lisWidth = 0;
+
+                        $.each($("li", tabTitle), function(il, li) {
+                            lisWidth += $(li).innerWidth() + (/left|right/.test($(li).css("float")) ? parseInt($(li).css("margin-right")) : 4);
+                        });
+
+                        if (lisWidth > ulWidth) {
+                            $("span.scroll-tabs", tabTitle).removeClass("hidden");
+                        } else { $("span.scroll-tabs", tabTitle).addClass("hidden"); }
+                    }); 
+                });
+
+                $(window).resize();
+            }
+
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));

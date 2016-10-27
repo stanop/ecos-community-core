@@ -28,16 +28,20 @@
 <#assign tabids = getIds(tabs) />
 <#assign bodyTemplate = viewScope.view.params.bodyTemplate!"template-table" />
 
-<ul class="tabs-title">
-	<#list tabids as tab>
-		<li class="tab-title <#if tab_index == 0>selected</#if>"
-			data-tab-id="${tab.id}"
-			data-bind="click: $root.selectTab, clickBubble: false"
-		>
-			<#if msg(tab.data.params.title)?has_content>${msg(tab.data.params.title)}<#else>${msg("tabs.tab.title")} ${tab_index}</#if>
-		</li>
-	</#list>
-</ul>
+<div class="tabs-title">
+	<span class="scroll-tabs scroll-left hidden" data-bind="click: $root.scrollTabs"> << </span>
+	<ul>
+		<#list tabids as tab>
+			<li class="tab-title <#if tab_index == 0>selected</#if>"
+				data-tab-id="${tab.id}"
+				data-bind="click: $root.selectTab, clickBubble: false"
+			>
+				<#if msg(tab.data.params.title)?has_content>${msg(tab.data.params.title)}<#else>${msg("tabs.tab.title")} ${tab_index}</#if>
+			</li>
+		</#list>
+	</ul>
+	<span class="scroll-tabs scroll-right hidden" data-bind="click: $root.scrollTabs"> >> </span>
+</div>
 
 <div class="tabs-body ${bodyTemplate}">
 	<#list tabids as tab>

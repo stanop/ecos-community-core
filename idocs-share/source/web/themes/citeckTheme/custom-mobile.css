@@ -1,5 +1,13 @@
 /* ECOS FORMS */
 
+.yui-skin-citeckTheme.mobile .static .ecos-form {
+    padding: 15px;
+}
+
+.yui-skin-citeckTheme.mobile .static .ecos-form .form-fields {
+    padding: 0;
+}
+
 .yui-skin-citeckTheme.mobile .orgstruct-header .orgstruct-search .search-icon {
     top: 8px;
     left: 8px;
@@ -20,6 +28,35 @@
 .yui-skin-citeckTheme.mobile .full .filter-page, 
 .yui-skin-citeckTheme.mobile .create-page {
     height: auto;
+}
+
+
+
+
+/* template-tabs */
+.yui-skin-citeckTheme.mobile .static .ecos-form.form-template-tabs {
+    padding: 0;
+}
+
+.yui-skin-citeckTheme.mobile .static .ecos-form.form-template-tabs .form-fields .template-tabs .tabs-body {
+    padding: 15px;
+}
+
+.yui-skin-citeckTheme.mobile .ecos-form:not(.view-form) .template-table .template-tabs.form-view.template-tabs {
+    margin: 0;
+}
+
+.yui-skin-citeckTheme.mobile .static .ecos-form .form-buttons {
+    padding: 0 40px 15px 40px;
+}
+
+
+.yui-skin-citeckTheme.mobile-device .invariants-form .template-tabs .tabs-title {
+    padding: 7px 15px 0 15px;
+}
+
+.yui-skin-citeckTheme.mobile-device .invariants-form .template-table .template-tabs .tabs-title {
+    padding: 7px 10px 0 10px;
 }
 
 
@@ -153,6 +190,10 @@
     border-right: none;
 }
 
+.yui-skin-citeckTheme.mobile #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
+    width: 100px !important;
+}
+
 
 .yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right {
     padding: 0 15px !important;
@@ -192,3 +233,5 @@
 .yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right .right-widgets .navigation-menu .alf-menu-bar {
     padding-bottom: 0;
 }
+
+

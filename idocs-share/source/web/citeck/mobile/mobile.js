@@ -24,6 +24,8 @@ Citeck.mobile.isMobileDevice = function() {
         YAHOO.Bubbling.on("on-mobile-device", function(e, args) { if (args[1].fn) fn(); });
 
         $(document).ready(function() {
+            $("body").addClass("mobile-device")
+
             // global mobile style
             mobileGlobalClassToggle(true)
 
@@ -67,7 +69,7 @@ Citeck.mobile.isMobileDevice = function() {
 
     function mobileGlobalClassToggle(isMobile) {
         if (isMobile != !!$("body").hasClass("mobile")) {
-            YAHOO.Bubbling.fire("on-change-mobile-mode", { mobileMode: isMobile });
+            YAHOO.Bubbling.fire("change-mobile-mode", { mobileMode: isMobile });
         }
         isMobile ? $("body").addClass("mobile") : $("body").removeClass("mobile");
     }
@@ -75,7 +77,7 @@ Citeck.mobile.isMobileDevice = function() {
     function viewportToggle(isMobile) {
         if (isMobile) {
             $("head").append($("<meta>", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
-        } else { $("meta[name='viweport']").remove(); }
+        } else { $("meta[name='viewport']").remove(); }
     }
 
 

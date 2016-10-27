@@ -4366,13 +4366,24 @@ div#HEADER_USER_STATUS {
   padding: 0;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-tabs ul.tabs-title {
-  padding: 10px 40px 0 30px;
+.yui-skin-citeckTheme .static .form-template-tabs .form-fields > .template-tabs {
+  border-top: none;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
+  padding: 7px 30px 0 30px;
   background-color: #2d3541;
   color: white;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-tabs ul.tabs-title li.tab-title {
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title span.scroll-tabs {
+    height: 34px;
+    width: 30px;
+    padding: 14px 0 0 0;
+    border: none;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title {
   border: none;
   padding: 5px 10px;
   border: 1px solid #f0f0f0;
@@ -4380,28 +4391,27 @@ div#HEADER_USER_STATUS {
   cursor: pointer;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-tabs ul.tabs-title li.tab-title.selected {
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title.selected {
   background-color: #f0f0f0;
   color: #333;
   cursor: default;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-tabs ul.tabs-title li.tab-title:not(.selected):hover {
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title:not(.selected):hover {
   font-weight: 900;
   color: white;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-table .template-tabs ul.tabs-title {
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title {
   padding-bottom: 0 !important;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-table .template-tabs ul.tabs-title li.tab-title {
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title li.tab-title {
   border-color: white;
 }
 
-.yui-skin-citeckTheme .invariants-form .template-table .template-tabs ul.tabs-title li.tab-title.selected {
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title li.tab-title.selected {
   background-color: white;
-
 }
 
 .yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-body {
