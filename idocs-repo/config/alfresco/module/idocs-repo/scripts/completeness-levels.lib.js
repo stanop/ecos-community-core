@@ -56,122 +56,191 @@ function createOrUpdateLevels(models) {
 }
 
 function createPredicate(parent, assocType, data, defaultScope) {
-    var predicate, properties = {};
+    var predicate, properties = {}, assocs = {}, type, children = [];
 
-    if(data.name) {
-        logger.warn("\tTry to find predicate \""+data.name+"\"");
-        predicate = parent.childByNamePath(data.name);
-        if(!predicate && data.consequent.predicate == "kind") {
-            var requiredKind = data.consequent.requiredKind;
-            var predicates = parent.childAssocs[assocType] || [];
-            for(var i in predicates) {
-                var candidate = predicates[i];
-                if(candidate.isSubType('pred:kindPredicate') && candidate.properties['pred:requiredKind'] == requiredKind) {
-                    predicate = candidate;
-                    break;
-                }
+    switch (data.predicate) {
+        case 'kind':
+
+            type = "pred:kindPredicate";
+
+            properties["pred:requiredType"] = data.requiredType;
+            properties["pred:requiredKind"] = data.requiredKind || null;
+
+            break;
+
+        case 'requiredLevels':
+
+            type = "req:requiredLevelsPredicate";
+
+            if(!data.level) {
+                throw "Error! 'level' is mandatory parameter in 'requiredLevels' predicate";
             }
-        }
-        logger.warn(predicate ? "\tFound." : "\tNot found.");
-    }
+            var levelsRoot = search.selectNodes("/app:company_home/app:dictionary/cm:case-completeness-levels")[0];
+            var level = levelsRoot.childByNamePath(data.level);
+            if(!level) {
+                throw "Error! Level '"+data.level+"' doesn't found";
+            }
+            if (!assocs["req:requiredLevels"]) assocs["req:requiredLevels"] = [];
+            assocs["req:requiredLevels"].push(level);
 
-    if(!predicate) {
-        logger.warn("\t + Creating...");
+            if(typeof data.levelRequired !== 'undefined') properties['req:levelRequired'] = data.levelRequired;
 
-        switch (data.predicate) {
-            case 'kind':
+            break;
 
-                properties["pred:requiredType"] = data.requiredType;
-                if (data.requiredKind) {
-                    properties["pred:requiredKind"] = data.requiredKind;
-                }
+        case 'subcaseType':
 
-                predicate = parent.createNode(null, "pred:kindPredicate", properties, assocType);
-                break;
+            type = "req:subcaseTypePredicate";
 
-            case 'requiredLevels':
-                predicate = parent.createNode(null, "req:requiredLevelsPredicate", null, assocType);
+            if(data.subcaseType) properties["req:requiredSubcaseType"] = utils.longQName(data.subcaseType);
+            if(data.elementType) properties["req:requiredElementType"] = utils.longQName(data.elementType);
 
-                if(!data.level) {
-                    throw "Error! 'level' is mandatory parameter in 'requiredLevels' predicate";
-                }
-                var levelsRoot = search.selectNodes("/app:company_home/app:dictionary/cm:case-completeness-levels")[0];
-                var level = levelsRoot.childByNamePath(data.level);
-                if(!level) {
-                    throw "Error! Level '"+data.level+"' doesn't found";
-                }
-                predicate.createAssociation(level, "req:requiredLevels");
+            break;
 
-                if(typeof data.levelRequired !== 'undefined') predicate.properties['req:levelRequired'] = data.levelRequired;
-                break;
+        case 'javascript':
 
-            case 'subcaseType':
+            type = "pred:javascriptPredicate";
+            properties["pred:javascriptExpression"] = data.expression;
 
-                if(data.subcaseType) properties["req:requiredSubcaseType"] = utils.longQName(data.subcaseType);
-                if(data.elementType) properties["req:requiredElementType"] = utils.longQName(data.elementType);
-                predicate = parent.createNode(null, "req:subcaseTypePredicate", properties, assocType);
-                break;
+            break;
 
-            case 'javascript':
+        case 'requirement':
 
-                predicate = parent.createNode(null, "pred:javascriptPredicate", {"pred:javascriptExpression": data.expression}, assocType);
-                break;
+            type = "req:requirement";
 
-            case 'requirement':
+            properties["cm:title"] = data.name;
+            properties["pred:quantifier"] = data.quantifier || "EXISTS";
 
-                predicate = parent.createNode(null, "req:requirement", {
-                    "cm:title": data.name,
-                    "cm:name": data.name,
-                    "pred:quantifier": data.quantifier || "EXISTS"
-                }, assocType);
+            if (!children["pred:antecedent"]) children["pred:antecedent"] = [];
 
-                if(data.antecedent) {
-                    if(data.antecedent.constructor === Array) {
-                        for(var i in data.antecedent) {
-                            createPredicate(predicate, "pred:antecedent", data.antecedent[i], defaultScope);
-                        }
-                    } else {
-                        createPredicate(predicate, "pred:antecedent", data.antecedent, defaultScope);
-                    }
-                }
-
-                if(!data.consequent) {
-                    throw "Consequent association is mandatory!";
-                }
-                if(data.consequent.constructor === Array) {
-                    for(var i in data.consequent) {
-                        createPredicate(predicate, "pred:consequent", data.consequent[i], defaultScope);
+            if(data.antecedent) {
+                if(data.antecedent.constructor === Array) {
+                    for(var i in data.antecedent) {
+                        children["pred:antecedent"].push(data.antecedent[i]);
                     }
                 } else {
-                    createPredicate(predicate, "pred:consequent", data.consequent, defaultScope);
+                    children["pred:antecedent"].push(data.antecedent);
                 }
+            }
 
-                if(data.scope) {
-                    var scope = search.selectNodes("/app:company_home/app:dictionary/cm:case-element-configs/cm:"+data.scope)[0];
-                    predicate.createAssociation(scope, "req:requirementScope");
-                } else if(typeof data.scope == "undefined") {
-                    predicate.createAssociation(defaultScope, "req:requirementScope");
+            if(!data.consequent) {
+                throw "Consequent association is mandatory!";
+            }
+
+            if (!children["pred:consequent"]) children["pred:consequent"] = [];
+
+            if(data.consequent.constructor === Array) {
+                for(var i in data.consequent) {
+                    children["pred:consequent"].push(data.consequent[i]);
                 }
+            } else {
+                children["pred:consequent"].push(data.consequent);
+            }
+
+            if (!assocs["req:requirementScope"]) assocs["req:requirementScope"] = [];
+
+            if(data.scope) {
+                var scope = search.selectNodes("/app:company_home/app:dictionary/cm:case-element-configs/cm:"+data.scope)[0];
+                assocs["req:requirementScope"].push(scope);
+            } else if(typeof data.scope == "undefined") {
+                assocs["req:requirementScope"].push(defaultScope);
+            }
+
+            break;
+    }
+
+    if (data.name) {
+        properties['cm:name'] = data.name;
+        predicate = parent.childByNamePath(data.name);
+    }
+
+    if (!predicate && data.predicate == "kind") {
+        var requiredType = data.requiredType ? search.findNode(data.requiredType) : null;
+        var requiredKind = data.requiredKind ? search.findNode(data.requiredKind) : null;
+        var predicates = parent.childAssocs[assocType] || [];
+
+        for (var i in predicates) {
+            var candidate = predicates[i];
+
+            if (candidate.isSubType('pred:kindPredicate')
+                && Packages.java.util.Objects.equals(candidate.properties['pred:requiredType'], requiredType)
+                && Packages.java.util.Objects.equals(candidate.properties['pred:requiredKind'], requiredKind)) {
+
+                predicate = candidate;
                 break;
+            }
         }
     }
 
-    if(predicate) {
-        if (data.titles) {
-            var titles = data.titles;
-            for(var ti in titles) {
-                utils.setLocale(titles[ti].locale);
-                predicate = search.findNode(predicate.nodeRef);
-                predicate.properties["cm:title"] = titles[ti].value;
-                predicate.save();
-            }
-        }
-        if (data.name) predicate.name = data.name;
-
+    if (!predicate) {
+        predicate = parent.createNode(null, type, properties, assocType);
+    } else {
         for (var prop in properties) {
             predicate.properties[prop] = properties[prop];
         }
+    }
 
-        predicate.save();
+    setTitles(predicate, data.titles);
+
+    for (var aType in assocs) {
+        setAssocs(predicate, aType, assocs[aType]);
+    }
+
+    for (var aType in children) {
+        var childNodes = [];
+        var data = children[aType];
+        for (var i in data) {
+            childNodes.push(createPredicate(predicate, aType, data[i], defaultScope));
+        }
+        var diff = getNodesDifference(predicate.childAssocs[aType] || [], childNodes);
+        for (var i in diff.removed) {
+            diff.removed[i].remove();
+        }
+    }
+
+    predicate.save();
+
+    return predicate;
+}
+
+function setAssocs(node, assocType, targets) {
+    var diff = getNodesDifference(node.assocs[assocType] || [], targets);
+    for (var i in diff.removed) {
+        node.removeAssociation(diff.removed[i], assocType);
+    }
+    for (var i in diff.added) {
+        node.createAssociation(diff.added[i], assocType);
+    }
+}
+
+function getNodesDifference(base, target) {
+    var added = [], removed = [];
+    for (var i = 0; i < base.length; i++) {
+        if (!containsNode(target, base[i])) {
+            removed.push(base[i]);
+        }
+    }
+    for (var i = 0; i < target.length; i++) {
+        if (!containsNode(base, target[i])) {
+            added.push(target[i]);
+        }
+    }
+    return {'added': added, 'removed': removed};
+}
+
+function containsNode(array, node) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].equals(node)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function setTitles(node, titles) {
+    if (!titles) return;
+    for (var ti in titles) {
+        utils.setLocale(titles[ti].locale);
+        node.properties["cm:title"] = titles[ti].value;
+        node.save();
     }
 }
