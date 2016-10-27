@@ -4366,8 +4366,13 @@ div#HEADER_USER_STATUS {
   padding: 0;
 }
 
+.yui-skin-citeckTheme .form-template-tabs .form-buttons {
+  padding-top: 15px !important;
+}
+
 .yui-skin-citeckTheme .static .form-template-tabs .form-fields > .template-tabs {
-  border-top: none;
+    border: none;
+    border-bottom: 1px solid #ccc;
 }
 
 .yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
@@ -4416,4 +4421,8 @@ div#HEADER_USER_STATUS {
 
 .yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-body {
   background-color: white;
+}
+
+.yui-skin-citeckTheme .form-template-tabs .template-tabs .tabs-body {
+    padding-bottom: 5px;
 }

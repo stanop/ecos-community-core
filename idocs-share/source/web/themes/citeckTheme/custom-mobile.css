@@ -32,7 +32,6 @@
 
 
 
-
 /* template-tabs */
 .yui-skin-citeckTheme.mobile .static .ecos-form.form-template-tabs {
     padding: 0;
@@ -50,6 +49,9 @@
     padding: 0 40px 15px 40px;
 }
 
+.yui-skin-citeckTheme.mobile .static .form-template-tabs .form-buttons {
+    padding-top: 15px; 
+}
 
 .yui-skin-citeckTheme.mobile-device .invariants-form .template-tabs .tabs-title {
     padding: 7px 15px 0 15px;
