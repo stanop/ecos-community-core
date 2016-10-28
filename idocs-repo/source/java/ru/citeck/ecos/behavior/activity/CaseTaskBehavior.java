@@ -35,7 +35,7 @@ import java.util.*;
 /**
  * @author Pavel Simonov
  */
-public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStartedPolicy,
+public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy,
                                          CaseActivityPolicies.OnCaseActivityResetPolicy {
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
@@ -54,9 +54,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
-                CaseActivityPolicies.OnCaseActivityStartedPolicy.QNAME,
+                CaseActivityPolicies.BeforeCaseActivityStartedPolicy.QNAME,
                 ICaseTaskModel.TYPE_TASK,
-                new ChainingJavaBehaviour(this, "onCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
+                new ChainingJavaBehaviour(this, "beforeCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
         this.policyComponent.bindClassBehaviour(
                 CaseActivityPolicies.OnCaseActivityResetPolicy.QNAME,
@@ -73,7 +73,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
     }
 
     @Override
-    public void onCaseActivityStarted(NodeRef taskRef) {
+    public void beforeCaseActivityStarted(NodeRef taskRef) {
 
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
 
@@ -133,7 +133,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.OnCaseActivityStar
         return workflowProperties;
     }
 
-    private void  setWorkflowPropertiesFromITask(Map<QName, Serializable> workflowProperties, NodeRef taskRef) {
+    private void setWorkflowPropertiesFromITask(Map<QName, Serializable> workflowProperties, NodeRef taskRef) {
         // get task properties
         String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
         Date workflowDueDate = getWorkflowDueDate(taskRef);
