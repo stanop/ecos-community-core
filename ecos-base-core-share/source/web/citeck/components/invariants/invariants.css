@@ -225,6 +225,7 @@
 .static .invariants-form .template-table {
   margin-left: -40px;
   width: 800px;
+  box-sizing: border-box;
 }
 
 @media screen and (max-width: 800px) {
@@ -438,10 +439,6 @@
 
 
 /* region select group */
-.invariants-form .template-table .template-row .region-select-group {
-  overflow: hidden;
-}
-
 .static .invariants-form .template-table .template-row .region-select-group {
   float: right;
   max-width: 25%;
@@ -1568,21 +1565,60 @@
     margin-left: 0;
 }
 
+.invariants-form .template-tabs {
+  border: 1px solid #ccc;
+}
+
 .invariants-form .template-tabs .tabs-body {
   overflow: hidden;
   padding: 15px 0;
 }
 
-.invariants-form .template-tabs ul.tabs-title li.tab-title {
+.invariants-form .template-tabs .tabs-title {
+  position: relative;
+  overflow: hidden;
+  height: 27px;
+  padding: 0px 30px;
+}
+
+.invariants-form .template-tabs .tabs-title ul {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title {
   display: inline-block;
   padding: 5px 10px;
   border: 1px solid #ccc;
+  height: 27px;
+  box-sizing: border-box;
 }
 
-.invariants-form .template-tabs ul.tabs-title li.tab-title:not(.selected) {
+.invariants-form .template-tabs .tabs-title li.tab-title:not(.selected) {
   cursor: pointer;  
 }
 
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs {
+  position: absolute;
+  height: 27px;
+  width: 30px;
+  padding: 7px 0 0px 0;
+  top: 0px;
+  border: 1px solid #ccc;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-left {
+  left: 0;
+  cursor: w-resize;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-right {
+  right: 0;
+  cursor: e-resize;
+}
 
 /* VALIDATION */
 
