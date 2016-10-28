@@ -1,39 +1,61 @@
 <#assign params = viewScope.region.params!{} />
 <#assign alwaysSingle = params.alwaysSingle!"false" />
 
-<#assign caption>
-	<#if params.caption??>
-		${params.caption}
+<#assign optionsCaption>
+	<#if params.optionsCaption??>
+		${params.optionsCaption}
 	<#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].select??>
-		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["caption"]??>
-			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["caption"]}
+		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsCaption"]??>
+			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsCaption"]}
+		</#if>
+	<#else>form.select.label</#if>
+</#assign>
+
+<#assign optionsText>
+	<#if params.optionsText??>
+		${params.optionsText}
+	<#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].select??>
+		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsText"]??>
+			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsText"]}
 		</#if>
 	<#else>
-		form.select.label
+		return getValueTitle(option);
 	</#if>
 </#assign>
 
-<!-- ko ifnot: multiple -->
-<select id="${fieldId}" data-bind="
-	options: options, 
-	optionsCaption: '${msg(caption?trim)}', 
-	optionsText: function(item) { return getValueTitle(item) }, 
-	value: value, 
-	<#-- use this to suppress initial value set -->
-	<#-- and thus support 'default' feature -->
-	valueAllowUnset: true, 
-	disable: protected">
-</select>
-<!-- /ko -->
+<#assign optionsValue>
+	<#if params.optionsValue??>
+		${params.optionsValue}
+	<#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].select??>
+		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsValue"]??>
+			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsValue"]}
+		</#if>
+	</#if>
+</#assign>
 
-<!-- ko if: multiple -->
-<select id="${fieldId}" <#if alwaysSingle != "true">multiple="true"</#if> data-bind="
-	options: options, 
-	optionsText: function(item) { return getValueTitle(item) }, 
-	selectedOptions: value, 
-	<#-- use this to suppress initial value set -->
-	<#-- and thus support 'default' feature -->
-	valueAllowUnset: true, 
-	disable: protected">
-</select>
-<!-- /ko -->
+<#assign optionsAfterRender>
+	<#if params.optionsAfterRender??>
+		${params.optionsAfterRender}
+	<#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].select??>
+		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsAfterRender"]??>
+			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsAfterRender"]}
+		</#if>
+	</#if>
+</#assign>
+
+<select data-bind='attr: { multiple: multiple, id: "${fieldId}" },
+    options: options,
+   
+    optionsCaption: "${msg(optionsCaption?trim)}",
+	<#if isFunctionContent(optionsText?trim)>optionsText: function(option) { ${optionsText?trim} },</#if>
+	<#if isFunctionContent(optionsValue?trim)>optionsValue: function(option) { ${optionsValue?trim} },</#if>
+	<#if isFunctionContent(optionsAfterRender?trim)>optionsAfterRender: function(option) { ${optionsAfterRender?trim} },</#if>
+
+    selectedOptions: multipleValues, disable: protected,
+    valueAllowUnset: true
+'></select>
+
+
+<#function isFunctionContent text>
+	<#return text?has_content && text?contains("return") >
+</#function>
