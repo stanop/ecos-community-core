@@ -921,7 +921,7 @@ ko.bindingHandlers.journalControl = {
     })
 
     if (!Citeck.mobile.isMobileDevice()) {
-        YAHOO.Bubbling.on("on-change-mobile-mode", function(l, args) { 
+        YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
             var itemsCount = args[1].mobileMode ? 5 : 10;
             if (itemsCount != maxItems()) { 
                 pageNumber(1);

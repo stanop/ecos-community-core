@@ -34,14 +34,18 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     private PolicyComponent policyComponent;
     private NodeService nodeService;
 
+    private ClassPolicyDelegate<CaseActivityPolicies.BeforeCaseActivityStartedPolicy> beforeActivityStartedDelegate;
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStartedPolicy> onActivityStartedDelegate;
+    private ClassPolicyDelegate<CaseActivityPolicies.BeforeCaseActivityStoppedPolicy> beforeActivityStoppedDelegate;
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStoppedPolicy> onActivityStoppedDelegate;
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityResetPolicy> onActivityResetDelegate;
 
     private Map<String, List<String>> allowedTransitions = new HashMap<>();
 
     public void init() {
+        beforeActivityStartedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.BeforeCaseActivityStartedPolicy.class);
         onActivityStartedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStartedPolicy.class);
+        beforeActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.BeforeCaseActivityStoppedPolicy.class);
         onActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStoppedPolicy.class);
         onActivityResetDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityResetPolicy.class);
 
@@ -58,7 +62,14 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, new Date());
 
         HashSet<QName> classes = new HashSet<QName>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
-        CaseActivityPolicies.OnCaseActivityStartedPolicy policy = onActivityStartedDelegate.get(classes);
+
+        CaseActivityPolicies.BeforeCaseActivityStartedPolicy beforePolicy;
+        CaseActivityPolicies.OnCaseActivityStartedPolicy policy;
+
+        beforePolicy = beforeActivityStartedDelegate.get(classes);
+        beforePolicy.beforeCaseActivityStarted(activityRef);
+
+        policy = onActivityStartedDelegate.get(classes);
         policy.onCaseActivityStarted(activityRef);
     }
 
@@ -71,7 +82,14 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, new Date());
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
-        CaseActivityPolicies.OnCaseActivityStoppedPolicy policy = onActivityStoppedDelegate.get(classes);
+
+        CaseActivityPolicies.BeforeCaseActivityStoppedPolicy beforePolicy;
+        CaseActivityPolicies.OnCaseActivityStoppedPolicy policy;
+
+        beforePolicy = beforeActivityStoppedDelegate.get(classes);
+        beforePolicy.beforeCaseActivityStopped(activityRef);
+
+        policy = onActivityStoppedDelegate.get(classes);
         policy.onCaseActivityStopped(activityRef);
     }
 
