@@ -25,5 +25,5 @@
 
     <button id="${controlId}-showVariantsButton" 
             class="orgstruct-control-show-variants" 
-            data-bind="disable: protected">${msg("form.select.label")}</button>
+            data-bind="disable: protected">${msg(params.buttonTitle!"form.select.label")}</button>
 </div>

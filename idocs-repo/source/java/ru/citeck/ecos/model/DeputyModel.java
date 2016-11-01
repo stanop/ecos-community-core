@@ -27,6 +27,7 @@ public interface DeputyModel {
 	QName TYPE_DEPUTATION_RECORD 	= QName.createQName(NAMESPACE, "deputationRecord");
 	QName ASSOC_DEPUTIED_AUTHORITY 	= QName.createQName(NAMESPACE, "deputiedAuthority");
 	QName ASSOC_DEPUTY 				= QName.createQName(NAMESPACE, "deputy");
+    QName PROP_IS_ASSISTANT = QName.createQName(NAMESPACE, "isAssistant");
 
 	QName ASPECT_AVAILABILITY 		= QName.createQName(NAMESPACE, "availability");
 	QName PROP_AVAILABLE 			= QName.createQName(NAMESPACE, "available");

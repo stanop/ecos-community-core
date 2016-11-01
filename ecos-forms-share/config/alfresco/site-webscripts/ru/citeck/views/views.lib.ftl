@@ -4,8 +4,8 @@
 	<#global viewScope = oldScope + { element.type : element } />
 	
 	<#if element.attribute??>
-	<!-- ko with: attribute("${element.attribute}") -->
-	<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
+		<!-- ko with: attribute("${element.attribute}") -->
+		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
 	</#if>
 	
 		<div class="form-${element.type} template-${template}" <#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>>
@@ -13,7 +13,7 @@
 		</div>
 	
 	<#if element.attribute??>
-	<!-- /ko -->
+		<!-- /ko -->
 	</#if>
 	
 	<#global viewScope = oldScope />
@@ -41,7 +41,7 @@
 </#macro>
 
 <#macro renderViewContainer view id>
-	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form loading"
+	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
 			 data-bind="css: { loading: !loaded() }">
 		<div class="loading-container">
 			<div class="loading-indicator"></div>

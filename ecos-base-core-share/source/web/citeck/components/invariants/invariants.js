@@ -228,8 +228,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     };
 
     var JournalService = koutils.koclass('journals.JournalsService')
-    	.property('journalTypes', [o])
-		.load('journalTypes', koutils.simpleLoad({
+        .property('journalTypes', [o])
+        .load('journalTypes', koutils.simpleLoad({
             url: Alfresco.constants.PROXY_URI + "api/journals/maptypes",
             resultsMap: function(response) {
                 return {
@@ -242,13 +242,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         }))
-		.method('getAllJournalTypes', function() {
+        .method('getAllJournalTypes', function() {
             var allJournalTypes = [];
             _.each(this.journalTypes(), function(value) {
                 allJournalTypes.push(value.journalType)
             });
-			return allJournalTypes;
-    		})
+            return allJournalTypes;
+            })
         .method('getJournalType', function(journalTypeId) {
             var journalType;
             _.each(this.journalTypes(), function(value) {
@@ -263,7 +263,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         });
 
-	var JournalServiceImpl = new JournalService();
+    var JournalServiceImpl = new JournalService();
 
     var UtilsImpl = {
 
@@ -1661,6 +1661,43 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
           return false;
         })
 
+        
+        .method('selectTab', function(data, event) {
+            $(event.target)
+                .parent()
+                .children()
+                .removeClass("selected")
+                .end().end()
+                .addClass("selected");
+
+            var tabId = $(event.target).attr("data-tab-id");
+            $(".tabs-body .tab-body[data-tab-id=" + tabId)
+                .parent()
+                .children()
+                .addClass("hidden")
+                .end().end()
+                .removeClass("hidden");
+        })
+
+        .method('scrollTabs', function(data, event) {
+            var scrollArrow = $(event.target),
+                direction = (function() {
+                    var matches = scrollArrow.attr("class").match(/scroll-(left|right)/);
+                    return matches.length > 0 ? matches[1] : undefined;
+                })();
+
+            if (direction) {
+                var list = $("ul", scrollArrow.parent());
+                if (direction == "right") 
+                    list.animate({ scrollLeft: list.scrollLeft() + 100 }, 300);
+                if (direction == "left") 
+                    list.animate({ scrollLeft: list.scrollLeft() - 100 }, 300);
+            }
+
+            return false;
+        })
+
+
         .method('submit', function() {
             if(this.node().impl().valid()) {
                 if (this.node().hasAspect("invariants:draftAspect")) {
@@ -1779,6 +1816,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
+            if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
+                $(window).resize(function() {
+                   $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
+                        var ulWidth = parseInt($("ul", tabTitle).innerWidth()),
+                            lisWidth = 0;
+
+                        $.each($("li", tabTitle), function(il, li) {
+                            lisWidth += $(li).innerWidth() + (/left|right/.test($(li).css("float")) ? parseInt($(li).css("margin-right")) : 4);
+                        });
+
+                        if (lisWidth > ulWidth) {
+                            $("span.scroll-tabs", tabTitle).removeClass("hidden");
+                        } else { $("span.scroll-tabs", tabTitle).addClass("hidden"); }
+                    }); 
+                });
+
+                $(window).resize();
+            }
+
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));

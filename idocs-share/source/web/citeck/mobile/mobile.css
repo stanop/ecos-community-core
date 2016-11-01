@@ -189,6 +189,7 @@
     padding: 0;
     border: none;
     width: 100%;
+    float: none;
 }
 
 .mobile .ecos-form .template-table .template-view,
@@ -273,6 +274,10 @@
 .mobile .ecos-form .form-fields .template-table .form-field .form-region.template-date input[type="date"] {
     width: 100%;
     box-sizing: border-box;
+}
+
+.mobile .ecos-form .form-fields .template-tabs .tabs-body {
+    padding: 15px !important;
 }
 
 

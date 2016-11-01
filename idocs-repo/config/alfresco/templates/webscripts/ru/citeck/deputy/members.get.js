@@ -1,7 +1,7 @@
 (function() {
 
 var status = args.status || "all";
-if(status == "all") status = "own,deputy";
+    if (status == "all") status = "own,deputy,assistants";
 var statuses = status.split(/,/);
 
 var roleName = url.templateArgs.roleName;
@@ -18,6 +18,8 @@ for(var i in statuses) {
 		}
 	} else if(status == "deputy") {
 		roleMembers = deputies.getRoleDeputies(roleName);
+    } else if (status == "assistants") {
+        roleMembers = deputies.getRoleAssistants(roleName);
 	}
 	
 	for(var i in roleMembers) {
@@ -25,12 +27,15 @@ for(var i in statuses) {
 		var available = availability.getUserAvailability(member.userName);
 		if(args.available == "true" && !available) continue;
 		if(args.available == "false" && available) continue;
-		
+        var manage = deputies.isRoleDeputiedByUser(roleName, member.userName);
+        var assistant = deputies.isRoleAssistedToUser(roleName, member.userName);
 		members.push({
 			"user": member,
-			"manage": deputies.isRoleDeputiedByUser(roleName, member.userName),
+            "manage": manage,
 			"deputy": deputies.isRoleDeputiedToUser(roleName, member.userName),
-			"available": available
+            "available": available,
+            "isAssistant": assistant,
+            "canDelete": deputies.isCanDeleteDeputeOrAssistantFromRole(roleName)
 		});
 	}
 }

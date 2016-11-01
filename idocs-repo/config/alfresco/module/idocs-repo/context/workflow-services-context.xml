@@ -307,6 +307,7 @@
 	<bean id="AbstractNotificationSender" class="ru.citeck.ecos.notification.AbstractNotificationSender"
 		  abstract="true">
 		<property name="asyncNotification" value="${notification.send.asyncronical}"/>
+		<property name="transactionService" ref="transactionService"/>
 	</bean>
 
 	<bean id="onAssignPoolTaskListener" class="ru.citeck.ecos.workflow.listeners.OnAssignPoolTaskListener">
@@ -442,7 +443,7 @@
 
 	<bean id="taskOriginalOwner" class="ru.citeck.ecos.workflow.listeners.TaskOriginalOwnerListener">
 		<property name="availabilityService" ref="availabilityService"/>
-		<property name="delegateListenerName" value="delegateListener.taskManagement"/>
+		<property name="delegateListenerName" value="deputyListener.taskManagement"/>
 	</bean>
 	
 	<!--Set workflow initiator-->

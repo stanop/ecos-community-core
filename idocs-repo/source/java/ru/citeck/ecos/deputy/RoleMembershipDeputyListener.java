@@ -18,11 +18,6 @@
  */
 package ru.citeck.ecos.deputy;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -30,9 +25,12 @@ import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.DeputyModel;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Deputy Listener, that processes role membership changes.
@@ -77,25 +75,61 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 	public void onRoleMemberUnavailable(String roleFullName, String memberName) {
 		onRoleMemberAvailabilityChanged(roleFullName, memberName, true);
 	}
-	
-	private void onRoleMemberAvailabilityChanged(String roleFullName, String memberName, boolean deputy) {
 
-		// get all current users in role
-		Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
-		
+	@Override
+	public void onRoleAssistantAdded(String roleFullName, String assistantName) {
+		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getAssistantsUsersAndMembers();
+		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
+		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
+		deputy(roleFullName, deputyUsers);
+	}
+
+	@Override
+	public void onRoleAssistantRemoved(String roleFullName, String assistantName) {
+		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getAssistantsUsersAndMembers();
+		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
+		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
+		undeputy(roleFullName, deputyUsers);
+	}
+
+	@Override
+	public void onAssistantAdded(String userName) {
+/*		Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, userName, false);
+
 		// get deputies of role
-		List<String> deputiesList = deputyService.getRoleDeputies(roleFullName);
-		
+		List<String> deputiesList = deputyService.getUserAssistants(userName);
+
 		Set<String> deputyUsers = new HashSet<String>(deputiesList.size());
 		deputyUsers.addAll(deputiesList);
-		
-		Set<String> memberUsers = new HashSet<String>(allUsers.size());
-		for(String user : allUsers) {
-			if(!deputyUsers.contains(user)) {
-				memberUsers.add(user);
-			}
-		}
-		
+
+		for(String deputy : deputyUsers) {
+			if(allUsers.contains(deputy)) continue;
+			authorityService.addAuthority(userName, deputy);
+		}*/
+	}
+
+	@Override
+	public void onAssistantRemoved(String userName) {
+	/*	Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, userName, false);
+
+		// get deputies of role
+		List<String> deputiesList = deputyService.getUserAssistants(userName);
+
+		Set<String> deputyUsers = new HashSet<String>(deputiesList.size());
+		deputyUsers.addAll(deputiesList);
+
+		for(String deputy : deputyUsers) {
+			if(!allUsers.contains(deputy)) continue;
+			authorityService.removeAuthority(userName, deputy);
+		}*/
+	}
+
+	private void onRoleMemberAvailabilityChanged(String roleFullName, String memberName, boolean deputy) {
+		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getDeputyUsersAndMembers();
+		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
+		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
+
+
 		if(deputy && isRoleDeputationNecessary(roleFullName, memberUsers, deputyUsers)) {
 			deputy(roleFullName, deputyUsers);
 		}
@@ -105,7 +139,7 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 		}
 		
 	}
-	
+
 	private void deputy(String roleFullName, Set<String> deputyUsers) {
 		Set<String> members = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
 		for(String deputy : deputyUsers) {
@@ -149,6 +183,62 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 			for (NodeRef nodeRef: getDeputyAbsenceEvent()) {
 				nodeService.setProperty(nodeRef, DeputyModel.PROP_END_ABSENCE, new Date());
 			}
+		}
+	}
+
+	private class RoleMembersContainer {
+		private String roleFullName;
+		private Set<String> deputyUsers;
+		private Set<String> memberUsers;
+
+		public RoleMembersContainer(String roleFullName) {
+			this.roleFullName = roleFullName;
+		}
+
+		public Set<String> getDeputyUsers() {
+			return deputyUsers;
+		}
+
+		public Set<String> getMemberUsers() {
+			return memberUsers;
+		}
+
+		public RoleMembersContainer getDeputyUsersAndMembers() {
+			// get all current users in role
+			Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
+
+			// get deputies of role
+			List<String> deputiesList = deputyService.getRoleDeputies(roleFullName);
+
+			deputyUsers = new HashSet<String>(deputiesList.size());
+			deputyUsers.addAll(deputiesList);
+
+			memberUsers = new HashSet<String>(allUsers.size());
+			for (String user : allUsers) {
+				if (!deputyUsers.contains(user)) {
+					memberUsers.add(user);
+				}
+			}
+			return this;
+		}
+
+		public RoleMembersContainer getAssistantsUsersAndMembers() {
+			// get all current users in role
+			Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, roleFullName, false);
+
+			// get deputies of role
+			List<String> deputiesList = deputyService.getRoleAssistants(roleFullName);
+
+			deputyUsers = new HashSet<String>(deputiesList.size());
+			deputyUsers.addAll(deputiesList);
+
+			memberUsers = new HashSet<String>(allUsers.size());
+			for (String user : allUsers) {
+				if (!deputyUsers.contains(user)) {
+					memberUsers.add(user);
+				}
+			}
+			return this;
 		}
 	}
 }

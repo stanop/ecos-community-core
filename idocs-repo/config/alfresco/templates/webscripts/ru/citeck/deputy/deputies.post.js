@@ -1,5 +1,6 @@
 (function() {
-
+    logger.log(args);
+    logger.log("addAssistants " + args.addAssistants);
 var fullName = url.templateArgs.fullName;
 var roleMode = fullName.match(/^GROUP_/);
 var currentUserMode = fullName == person.properties.userName;
@@ -9,8 +10,21 @@ if(args.users == null || args.users == "") {
 	return;
 }
 
-var users = args.users.split(/,/);
+    var addAssistants = args.addAssistants == 'true';
 
+var users = args.users.split(/,/);
+    if (addAssistants) {
+        if (roleMode) {
+            deputies.addRoleAssistants(fullName, users);
+        } else if (currentUserMode) {
+            deputies.addCurrentUserAssistants(users);
+        } else {
+            users = deputies.addUserAssistants(fullName, users);
+        }
+
+        model.success = true;
+        return;
+    }
 if(roleMode) {
 	deputies.addRoleDeputies(fullName, users);
 } else if(currentUserMode) {

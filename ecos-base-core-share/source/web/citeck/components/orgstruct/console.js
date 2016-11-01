@@ -156,6 +156,7 @@
 			$buttonSubscribe("addGroup", this.onAddGroup, this, ids);
 			$buttonSubscribe("addUser", this.onAddUser, this, ids);
 			$buttonSubscribe("addDeputy", this.onAddUser, this, ids);
+            $buttonSubscribe("addAssistant", this.onAddAssistant, this, ids);
 			$buttonSubscribe("editItem", this.onEditItem, this, ids);
 			$buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
 			$buttonSubscribe("search", this.onSearch, this, ids);
@@ -318,7 +319,8 @@
 				item = this.model.getItem(itemId),
 				htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
 			itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-			this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
+			// this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
+			this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {});
 			this.widgets.editItemDialog.setOptions(this.config.forms);
 			this.widgets.editItemDialog.show();
 			this.widgets.editItemDialog.subscribe("itemEdited", this.onItemEdited, this, true);
@@ -370,6 +372,18 @@
 		},
 
 		/**
+         * Event handler - add-assistant-user button was clicked.
+         * Show select-user dialog.
+         */
+        onAddAssistant: function (args) {
+            var itemId = args.item,
+                item = this.model.getItem(itemId);
+            item.isAssistant = true;
+            this.state.dialogParentItem = item;
+            this.widgets.selectUserDialog.show();
+        },
+
+        /**
 		 * Event handler - delete-item button was clicked.
 		 * Show confirm-delete dialog.
 		 */
@@ -446,6 +460,7 @@
 					shortName: childName,
 					fullName: childName,
 					userName: childName,
+                    isAssistant: parent.isAssistant == true,
 				};
 			this.widgets.selectUserDialog.hide();
 			this.model.addItem(child, parent);

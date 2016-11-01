@@ -4358,3 +4358,71 @@ div#HEADER_USER_STATUS {
 .yui-skin-citeckTheme .dynamic-tree-picker .dynamic-tree-list .item-buttons {
   right: -25px;
 }
+
+
+/* tab-template */
+
+.yui-skin-citeckTheme .static .form-template-tabs .form-fields {
+  padding: 0;
+}
+
+.yui-skin-citeckTheme .form-template-tabs .form-buttons {
+  padding-top: 15px !important;
+}
+
+.yui-skin-citeckTheme .static .form-template-tabs .form-fields > .template-tabs {
+    border: none;
+    border-bottom: 1px solid #ccc;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
+  padding: 7px 30px 0 30px;
+  background-color: #2d3541;
+  color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title span.scroll-tabs {
+    height: 34px;
+    width: 30px;
+    padding: 14px 0 0 0;
+    border: none;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title {
+  border: none;
+  padding: 5px 10px;
+  border: 1px solid #f0f0f0;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title.selected {
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: default;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title:not(.selected):hover {
+  font-weight: 900;
+  color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title {
+  padding-bottom: 0 !important;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title li.tab-title {
+  border-color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title li.tab-title.selected {
+  background-color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-body {
+  background-color: white;
+}
+
+.yui-skin-citeckTheme .form-template-tabs .template-tabs .tabs-body {
+    padding-bottom: 5px;
+}

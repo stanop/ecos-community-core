@@ -18,18 +18,17 @@
  */
 package ru.citeck.ecos.deputy;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.alfresco.repo.security.authority.script.ScriptGroup;
 import org.alfresco.repo.security.authority.script.ScriptUser;
 import org.alfresco.service.ServiceRegistry;
-
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
-import static ru.citeck.ecos.utils.JavaScriptImplUtils.wrapUsers;
+import java.util.Arrays;
+import java.util.Collections;
+
 import static ru.citeck.ecos.utils.JavaScriptImplUtils.wrapGroups;
+import static ru.citeck.ecos.utils.JavaScriptImplUtils.wrapUsers;
 
 public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension 
 	implements DeputyServiceGeneric<ScriptGroup[], ScriptUser[], String[]>
@@ -51,11 +50,26 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 	public ScriptUser[] getUserDeputies(String userName) {
 		return wrapUsers(deputyService.getUserDeputies(userName), this);
 	}
-	
+
 	@Override
-	public void addUserDeputies(String userName, String[] deputies) {
+    public ScriptUser[] getUserAssistants(String userName) {
+        return wrapUsers(deputyService.getUserAssistants(userName), this);
+    }
+
+    @Override
+    public ScriptUser[] getAllUserDeputies(String userName) {
+        return wrapUsers(deputyService.getAllUserDeputies(userName), this);
+    }
+
+    @Override
+    public void addUserDeputies(String userName, String[] deputies) {
 		deputyService.addUserDeputies(userName, Arrays.asList(deputies));
 	}
+
+    @Override
+    public void addUserAssistants(String userName, String[] assistants) {
+        deputyService.addUserAssistants(userName, Arrays.asList(assistants));
+    }
 
 	public void addUserDeputy(String userName, String deputyName) {
 		deputyService.addUserDeputies(userName, Collections.singletonList(deputyName));
@@ -67,7 +81,12 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 	}
 
 	@Override
-	public ScriptUser[] getUsersWhoHaveThisUserDeputy(String userName) {
+    public void removeUserAssistants(String userName, String[] assistants) {
+        deputyService.removeUserAssistants(userName, Arrays.asList(assistants));
+    }
+
+    @Override
+    public ScriptUser[] getUsersWhoHaveThisUserDeputy(String userName) {
 		return wrapUsers(deputyService.getUsersWhoHaveThisUserDeputy(userName), this);
 	}
 
@@ -79,11 +98,21 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 	public ScriptUser[] getRoleDeputies(String roleFullName) {
 		return wrapUsers(deputyService.getRoleDeputies(roleFullName), this);
 	}
-	
+
 	@Override
-	public void addRoleDeputies(String roleFullName, String[] deputies) {
+    public ScriptUser[] getRoleAssistants(String roleFullName) {
+        return wrapUsers(deputyService.getRoleAssistants(roleFullName), this);
+    }
+
+    @Override
+    public void addRoleDeputies(String roleFullName, String[] deputies) {
 		deputyService.addRoleDeputies(roleFullName, Arrays.asList(deputies));
 	}
+
+    @Override
+    public void addRoleAssistants(String roleFullName, String[] deputies) {
+        deputyService.addRoleAssistants(roleFullName, Arrays.asList(deputies));
+    }
 
 	public void addRoleDeputy(String roleFullName, String deputyName) {
 		deputyService.addRoleDeputies(roleFullName, Collections.singletonList(deputyName));
@@ -93,6 +122,11 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 	public void removeRoleDeputies(String roleFullName, String[] deputies) {
 		deputyService.removeRoleDeputies(roleFullName, Arrays.asList(deputies));
 	}
+
+    @Override
+    public void removeRoleAssistants(String roleFullName, String[] deputies) {
+        deputyService.removeRoleAssistants(roleFullName, Arrays.asList(deputies));
+    }
 
 	public void removeRoleDeputy(String roleFullName, String deputyName) {
 		deputyService.removeRoleDeputies(roleFullName, Collections.singletonList(deputyName));
@@ -112,9 +146,14 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 	public boolean isRoleDeputiedToUser(String roleFullName, String userName) {
 		return deputyService.isRoleDeputiedToUser(roleFullName, userName);
 	}
-	
+
 	@Override
-	public ScriptGroup[] getUserRoles(String userName) {
+    public boolean isRoleAssistedToUser(String roleFullName, String userName) {
+        return deputyService.isRoleAssistedToUser(roleFullName, userName);
+    }
+
+    @Override
+    public ScriptGroup[] getUserRoles(String userName) {
 		return wrapGroups(deputyService.getUserRoles(userName), this);
 	}
 
@@ -148,17 +187,47 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 	}
 
 	@Override
-	public void addCurrentUserDeputies(String[] deputies) {
+    public ScriptUser[] getCurrentUserAssistants() {
+        return wrapUsers(deputyService.getCurrentUserAssistants(), this);
+    }
+
+    @Override
+    public ScriptUser[] getAllCurrentUserDeputies() {
+        return wrapUsers(deputyService.getAllCurrentUserDeputies(), this);
+    }
+
+    @Override
+    public void addCurrentUserDeputies(String[] deputies) {
 		deputyService.addCurrentUserDeputies(Arrays.asList(deputies));
 	}
 
 	@Override
-	public void removeCurrentUserDeputies(String[] deputies) {
+    public void addCurrentUserAssistants(String[] assistants) {
+        deputyService.addCurrentUserAssistants(Arrays.asList(assistants));
+    }
+
+    @Override
+    public boolean isAssistantUserByUser(String userName, String assistantUserName) {
+        return deputyService.isAssistantUserByUser(userName, assistantUserName);
+    }
+
+    @Override
+    public boolean isAssistantToCurrentUser(String assistantUserName) {
+        return deputyService.isAssistantToCurrentUser(assistantUserName);
+    }
+
+    @Override
+    public void removeCurrentUserDeputies(String[] deputies) {
 		deputyService.removeCurrentUserDeputies(Arrays.asList(deputies));
 	}
 
 	@Override
-	public boolean isRoleDeputiedByCurrentUser(String roleFullName) {
+    public void removeCurrentUserAssistants(String[] assistance) {
+        deputyService.removeCurrentUserAssistants(Arrays.asList(assistance));
+    }
+
+    @Override
+    public boolean isRoleDeputiedByCurrentUser(String roleFullName) {
 		return deputyService.isRoleDeputiedByCurrentUser(roleFullName);
 	}
 
@@ -187,4 +256,13 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
 		return wrapGroups(deputyService.getRolesDeputiedToCurrentUser(), this);
 	}
 
+    @Override
+    public boolean isUserAvailable(String userName) {
+        return deputyService.isUserAvailable(userName);
+    }
+
+    @Override
+    public boolean isCanDeleteDeputeOrAssistantFromRole(String roleFullName) {
+        return deputyService.isCanDeleteDeputeOrAssistantFromRole(roleFullName);
+    }
 }
