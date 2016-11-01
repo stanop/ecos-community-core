@@ -32,6 +32,9 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
+import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -41,6 +44,7 @@ import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.alfresco.service.namespace.QName;
@@ -99,10 +103,12 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	private String notificationType;
 
 	private boolean asyncNotification = true;
+	private boolean afterCommit = false;
 
 	// dependencies:
 	protected ServiceRegistry services;
 	protected NodeService nodeService;
+	protected TransactionService transactionService;
 	protected SearchService searchService;
 	protected NamespaceService namespaceService;
 	protected WorkflowQNameConverter qNameConverter;
@@ -166,15 +172,42 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	}
 
 	@Override
-	public void sendNotification(ItemType item) {
-		sendNotification(
-            getNotificationProviderName(item),
-			getNotificationFrom(item),
-			getNotificationSubject(item),
-			getNotificationTemplate(item),
-			getNotificationArgs(item),
-			getNotificationRecipients(item)
-        );
+	public void sendNotification(final ItemType item) {
+		if (afterCommit) {
+			AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter()
+			{
+				@Override
+				public void afterCommit()
+				{
+					RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
+					helper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>()
+					{
+						@Override
+						public Void execute() throws Throwable
+						{
+							sendNotification(
+									getNotificationProviderName(item),
+									getNotificationFrom(item),
+									getNotificationSubject(item),
+									getNotificationTemplate(item),
+									getNotificationArgs(item),
+									getNotificationRecipients(item)
+							);
+							return null;
+						}
+					}, false, true);
+				}
+			});
+		} else {
+			sendNotification(
+					getNotificationProviderName(item),
+					getNotificationFrom(item),
+					getNotificationSubject(item),
+					getNotificationTemplate(item),
+					getNotificationArgs(item),
+					getNotificationRecipients(item)
+			);
+		}
 	}
 
 	protected boolean getAsyncNotification() {
@@ -494,4 +527,12 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	protected abstract void sendToInitiator(ItemType task, Set<String> authorities);
 	protected abstract void sendToSubscribers(ItemType task, Set<String> authorities, List<String> taskSubscribers);
 	protected abstract void sendToOwner(Set<String> authorities, NodeRef node);
+
+	public void setAfterCommit(boolean afterCommit) {
+		this.afterCommit = afterCommit;
+	}
+
+	public void setTransactionService(TransactionService transactionService) {
+		this.transactionService = transactionService;
+	}
 }

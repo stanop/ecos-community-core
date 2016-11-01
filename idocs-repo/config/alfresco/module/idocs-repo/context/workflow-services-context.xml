@@ -307,6 +307,7 @@
 	<bean id="AbstractNotificationSender" class="ru.citeck.ecos.notification.AbstractNotificationSender"
 		  abstract="true">
 		<property name="asyncNotification" value="${notification.send.asyncronical}"/>
+		<property name="transactionService" ref="transactionService"/>
 	</bean>
 
 	<bean id="onAssignPoolTaskListener" class="ru.citeck.ecos.workflow.listeners.OnAssignPoolTaskListener">
