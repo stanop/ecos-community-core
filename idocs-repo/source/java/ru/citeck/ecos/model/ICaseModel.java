@@ -85,4 +85,6 @@ public class ICaseModel {
 
 	public static final QName TYPE_CASE_STATUS = QName.createQName(NAMESPACE, "caseStatus");
 	public static final QName ASSOC_CASE_STATUS = QName.createQName(NAMESPACE, "caseStatusAssoc");
+
+	public static final QName ASSOC_DOCUMENTS = QName.createQName(NAMESPACE, "documents");
 }
