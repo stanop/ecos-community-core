@@ -694,13 +694,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
         return object ? object.toString().toLowerCase().indexOf("invariants") != -1 : null;
     }
 
-    return {
-        initializeParameters: initializeParameters,
-        defineTemplateByDatatype: defineTemplateByDatatype,
-        prepareHTMLByTemplate: prepareHTMLByTemplate,
-        isInvariantsObject: isInvariantsObject
-    };
-
 });
 
 

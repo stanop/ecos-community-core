@@ -376,7 +376,6 @@
 .invariants-form .template-table .template-row .template-date,
 .invariants-form .template-table .template-row .template-datetime,
 .invariants-form .template-table .template-row .template-text,
-.invariants-form .template-table .template-row .template-textarea,
 .invariants-form .template-table .template-row .template-auto-number,
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
@@ -388,15 +387,15 @@
 }
 
 /* row field with help */
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-select,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-date,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-datetime,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-text,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-auto-number,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-autocomplete,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-checkbox,
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-number,
-.invariants-form:not(.view-form) .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row.with-help .template-select,
+.invariants-form .template-table .template-row.with-help .template-date,
+.invariants-form .template-table .template-row.with-help .template-datetime,
+.invariants-form .template-table .template-row.with-help .template-text,
+.invariants-form .template-table .template-row.with-help .template-auto-number,
+.invariants-form .template-table .template-row.with-help .template-autocomplete,
+.invariants-form .template-table .template-row.with-help .template-checkbox,
+.invariants-form .template-table .template-row.with-help .template-number,
+.invariants-form .template-table .template-row .template-free-content {
   width: 53.5%;
 }
 
@@ -530,15 +529,14 @@
 
 
 /* textarea */
-.invariants-form:not(.view-form) .template-table .template-row .template-textarea {
+.invariants-form .template-table .template-row .template-textarea {
   width: 100%;
   clear: left;
   margin-top: 5px;
 }
 
-.invariants-form:not(.view-form) .template-table .template-row.with-help .template-textarea {
+.invariants-form .template-table .template-row.with-help .template-textarea {
   width: calc(100% + 15px);
-  margin-right: -15px;
 }
 
 /* select */
@@ -1487,10 +1485,6 @@
   box-sizing: border-box;
   overflow: auto;
   padding: 10px;
-}
-
-.invariants-form.view-form .template-table .template-view-table .view-table-container {
-    padding: 10px 0;
 }
 
 .invariants-form:not(.view-form) .template-table .template-view-table .view-table-container {

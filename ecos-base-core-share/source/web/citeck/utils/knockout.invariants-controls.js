@@ -33,26 +33,6 @@ var Event = YAHOO.util.Event,
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
 
-
-// ---------------
-// SELECT
-// ---------------
-
-ko.components.register("select", {
-    viewModel: function(params) {
-        kocomponents.initializeParameters.call(this, params);     
-        this.options.extend({ throttle: 500 });
-    },
-    template: 
-       '<select data-bind="attr: { id: id, multiple: multiple },\
-            options: options,\
-            optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
-            selectedOptions: selectedOptions,\
-            valueAllowUnset: true\
-        "></select>'
-});
-
-
 // ---------------
 // NUMBER-GENERATE
 // ---------------
