@@ -71,7 +71,7 @@ class InvariantsRuntime {
         RuntimeNode node = new RuntimeNode(nodeRef, attributes, model);
         Boolean isDraft = (Boolean) nodeAttributeService.getAttribute(nodeRef, InvariantsModel.PROP_IS_DRAFT);
         if (isDraft != null && isDraft) {
-            node.setInvariants(filterByFeatures(invariants, Feature.MANDATORY));
+            node.setInvariants(filterByFeatures(invariants, true, Feature.MANDATORY));
         } else {
             node.setInvariants(invariants);
         }
@@ -104,17 +104,18 @@ class InvariantsRuntime {
             RuntimeAttribute failedAttribute = node.getFailedAttribute();
             throw new InvariantValidationException(nodeRef, failedAttribute.getName(), failedAttribute.getFailedInvariant());
         }
-        
     }
 
-    private List<InvariantDefinition> filterByFeatures(List<InvariantDefinition> definitions, Feature... features) {
+    private List<InvariantDefinition> filterByFeatures(List<InvariantDefinition> definitions,
+                                                       boolean exclude, Feature... features) {
+
         List<InvariantDefinition> result = new ArrayList<>(definitions.size());
         for (InvariantDefinition def : definitions) {
             Feature invFeature = def.getFeature();
-            boolean allowed = true;
+            boolean allowed = exclude;
             for (Feature feature : features) {
                 if (feature.equals(invFeature)) {
-                    allowed = false;
+                    allowed = !allowed;
                     break;
                 }
             }
