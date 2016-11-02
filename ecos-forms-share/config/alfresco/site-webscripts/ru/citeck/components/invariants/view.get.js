@@ -5,8 +5,10 @@
 (function() {
     model.isMobile = isMobileDevice(context.headers["user-agent"]);
 
-    var view = getView(args);
-    if(view == null) return;
+    var viewData = getViewData(args);
+    if(viewData == null) return;
+
+    var view = viewData.view;
 
     var attributes = getAttributes(view);
     if (model.isMobile) {
@@ -32,6 +34,7 @@
     }
 
     model.view = view;
+    model.canBeDraft = view;
     model.attributes = attributes;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.classNames = invariantSet.classNames;

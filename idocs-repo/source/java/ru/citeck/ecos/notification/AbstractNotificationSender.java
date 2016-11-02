@@ -103,7 +103,6 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	private String notificationType;
 
 	private boolean asyncNotification = true;
-	private boolean afterCommit = false;
 
 	// dependencies:
 	protected ServiceRegistry services;
@@ -172,42 +171,28 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	}
 
 	@Override
-	public void sendNotification(final ItemType item) {
-		if (afterCommit) {
-			AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter()
-			{
-				@Override
-				public void afterCommit()
-				{
-					RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
-					helper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>()
-					{
-						@Override
-						public Void execute() throws Throwable
-						{
-							sendNotification(
-									getNotificationProviderName(item),
-									getNotificationFrom(item),
-									getNotificationSubject(item),
-									getNotificationTemplate(item),
-									getNotificationArgs(item),
-									getNotificationRecipients(item)
-							);
-							return null;
-						}
-					}, false, true);
-				}
-			});
-		} else {
-			sendNotification(
-					getNotificationProviderName(item),
-					getNotificationFrom(item),
-					getNotificationSubject(item),
-					getNotificationTemplate(item),
-					getNotificationArgs(item),
-					getNotificationRecipients(item)
-			);
-		}
+	public void sendNotification(ItemType item) {
+		sendNotification(
+				getNotificationProviderName(item),
+				getNotificationFrom(item),
+				getNotificationSubject(item),
+				getNotificationTemplate(item),
+				getNotificationArgs(item),
+				getNotificationRecipients(item),
+				false
+		);
+	}
+
+	public void sendNotification(final ItemType item, boolean afterCommit) {
+		sendNotification(
+				getNotificationProviderName(item),
+				getNotificationFrom(item),
+				getNotificationSubject(item),
+				getNotificationTemplate(item),
+				getNotificationArgs(item),
+				getNotificationRecipients(item),
+				afterCommit
+		);
 	}
 
 	protected boolean getAsyncNotification() {
@@ -340,7 +325,8 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
         NodeRef templateNodeRef = getTemplateNodeRef(template);
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("getNotificationTemplate(\"%s\", \"%s\"): template: %s", wfkey, tkey, templateNodeRef));
+            logger.debug(String.format("getNotificationTemplate(\"%s\", \"%s\"): template: %s", wfkey, tkey,
+						 templateNodeRef));
         }
         return templateNodeRef;
 	}
@@ -440,7 +426,9 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
 	// send notification
 	// subject can be null, then subject is taken from template's cm:title property
-	protected void sendNotification(final String notificationProviderName, String from, String subject, NodeRef template, Map<String,Serializable> args, Collection<String> recipients) {
+	protected void sendNotification(final String notificationProviderName, String from, String subject,
+									NodeRef template, Map<String,Serializable> args, Collection<String> recipients,
+									boolean afterCommit) {
 
 		if(template!=null)
 		{
@@ -463,18 +451,41 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 			}
 
 			// send
-			AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-				@Override
-				public Object doWork() throws Exception {
-					services.getNotificationService().sendNotification(
-							notificationProviderName,
-							notificationContext
-					);
-					return null;
-				}
-
-			});
+			if (afterCommit) {
+				AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter()
+				{
+					@Override
+					public void afterCommit()
+					{
+						RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
+						helper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>()
+						{
+							@Override
+							public Void execute() throws Throwable
+							{
+								sendNotificationContext(notificationProviderName, notificationContext);
+								return null;
+							}
+						}, false, true);
+					}
+				});
+			} else {
+				sendNotificationContext(notificationProviderName, notificationContext);
+			}
 		}
+	}
+
+	private void sendNotificationContext(final String notificationProviderName, final NotificationContext notificationContext) {
+		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
+			@Override
+			public Object doWork() throws Exception {
+				services.getNotificationService().sendNotification(
+						notificationProviderName,
+						notificationContext
+				);
+				return null;
+			}
+		});
 	}
     
     protected void setBodyTemplate(NotificationContext notificationContext,
@@ -488,27 +499,33 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     public Set<String> getRecipients(ItemType task, NodeRef template, NodeRef document)
 	{
 		Set<String> authorities = new HashSet<String>();
-		Boolean sendToAssigneeProp = (Boolean) nodeService.getProperty(template, qNameConverter.mapNameToQName("dms_sendToAssignee"));
+		Boolean sendToAssigneeProp = (Boolean) nodeService.getProperty(template,
+				qNameConverter.mapNameToQName("dms_sendToAssignee"));
         if(sendToAssigneeProp!=null && Boolean.TRUE.equals(sendToAssigneeProp))
         {
             sendToAssignee(task, authorities);
         }
-        Boolean sendToInitiatorProp = (Boolean) nodeService.getProperty(template, qNameConverter.mapNameToQName("dms_sendToInitiator"));
+        Boolean sendToInitiatorProp = (Boolean) nodeService.getProperty(template,
+				qNameConverter.mapNameToQName("dms_sendToInitiator"));
         if(sendToInitiatorProp!=null && Boolean.TRUE.equals(sendToInitiatorProp))
         {
             sendToInitiator(task, authorities);
         }
-        Boolean sendToOwnerProp = (Boolean) nodeService.getProperty(template, qNameConverter.mapNameToQName("dms_sendToOwner"));
-        if(sendToOwnerProp!=null && Boolean.TRUE.equals(sendToOwnerProp) && document!=null && nodeService.exists(document))
+        Boolean sendToOwnerProp = (Boolean) nodeService.getProperty(template,
+				qNameConverter.mapNameToQName("dms_sendToOwner"));
+        if(sendToOwnerProp!=null && Boolean.TRUE.equals(sendToOwnerProp)
+								 && document!=null && nodeService.exists(document))
         {
             sendToOwner(authorities, document);
         }
-        ArrayList<String> taskSubscribers = (ArrayList<String>) nodeService.getProperty(template, qNameConverter.mapNameToQName("dms_taskSubscribers"));
+        ArrayList<String> taskSubscribers = (ArrayList<String>) nodeService.getProperty(template,
+				qNameConverter.mapNameToQName("dms_taskSubscribers"));
         if(taskSubscribers!=null && taskSubscribers.size()>0)
         {
             sendToSubscribers(task, authorities, taskSubscribers);
         }
-        String additionRecipientsStr = (String) nodeService.getProperty(template, qNameConverter.mapNameToQName("dms_additionRecipients"));
+        String additionRecipientsStr = (String) nodeService.getProperty(template,
+				qNameConverter.mapNameToQName("dms_additionRecipients"));
         if(additionRecipientsStr!=null && !"".equals(additionRecipientsStr))
         {
             String[] additionRecipientsArr = additionRecipientsStr.split(",");
@@ -527,10 +544,6 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 	protected abstract void sendToInitiator(ItemType task, Set<String> authorities);
 	protected abstract void sendToSubscribers(ItemType task, Set<String> authorities, List<String> taskSubscribers);
 	protected abstract void sendToOwner(Set<String> authorities, NodeRef node);
-
-	public void setAfterCommit(boolean afterCommit) {
-		this.afterCommit = afterCommit;
-	}
 
 	public void setTransactionService(TransactionService transactionService) {
 		this.transactionService = transactionService;

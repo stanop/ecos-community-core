@@ -17,6 +17,9 @@
 			<properties>
 				<property name="invariants:isDraft">
 					<type>d:boolean</type>
+				</property>
+				<property name="invariants:canReturnToDraft">
+					<type>d:boolean</type>
 					<default>false</default>
 				</property>
 			</properties>

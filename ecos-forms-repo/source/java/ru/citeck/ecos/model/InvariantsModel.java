@@ -9,5 +9,6 @@ public interface InvariantsModel {
     QName ASPECT_DRAFT = QName.createQName(NAMESPACE, "draftAspect");
 
     QName PROP_IS_DRAFT = QName.createQName(NAMESPACE, "isDraft");
+    QName PROP_CAN_RETURN_TO_DRAFT = QName.createQName(NAMESPACE, "canReturnToDraft");
 
 }
