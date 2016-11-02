@@ -121,6 +121,9 @@ public class NodeViewGet extends DeclarativeWebScript {
     }
 
     private boolean canBeDraft(NodeRef nodeRef) {
+        if (!nodeService.hasAspect(nodeRef, InvariantsModel.ASPECT_DRAFT)) {
+            return false;
+        }
         Boolean isDraft = (Boolean) nodeService.getProperty(nodeRef, InvariantsModel.PROP_IS_DRAFT);
         if (isDraft == null || isDraft) {
             return true;
