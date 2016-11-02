@@ -34,6 +34,7 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 
 import ru.citeck.ecos.invariants.view.NodeViewService;
+import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 public class NodeViewPost extends DeclarativeWebScript {
@@ -44,7 +45,8 @@ public class NodeViewPost extends DeclarativeWebScript {
     private static final String REQ_VIEW_ID = "id";
     private static final String REQ_VIEW_PARAMS = "params";
     private static final String REQ_ATTRIBUTES = "attributes";
-    
+    private static final String REQ_IS_DRAFT = "isDraft";
+
     private static final String MODEL_NODE = "node";
     
     private NodeViewService nodeViewService;
@@ -55,7 +57,7 @@ public class NodeViewPost extends DeclarativeWebScript {
     {
         String typeParam = req.getParameter(PARAM_TYPE);
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
-        
+
         JSONObject requestBody;
         try {
             Object data = JSONValue.parseWithException(req.getContent().getReader());
@@ -79,7 +81,12 @@ public class NodeViewPost extends DeclarativeWebScript {
             return null;
         }
         Map<QName, Object> attributes = RepoUtils.convertStringMapToQNameMap(attributesModel, prefixResolver);
-        
+
+        Boolean isDraftParam = (Boolean) requestBody.get(REQ_IS_DRAFT);
+        if (isDraftParam != null) {
+            attributes.put(InvariantsModel.PROP_IS_DRAFT, isDraftParam);
+        }
+
         @SuppressWarnings("unchecked")
         Map<String, Object> viewModel = (Map<String, Object>) requestBody.get(REQ_VIEW);
         String viewId = viewModel != null ? (String) viewModel.get(REQ_VIEW_ID) : null;
