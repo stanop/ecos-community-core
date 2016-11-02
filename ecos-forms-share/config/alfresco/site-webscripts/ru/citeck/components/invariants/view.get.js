@@ -34,7 +34,7 @@
     }
 
     model.view = view;
-    model.canBeDraft = view;
+    model.canBeDraft = viewData.canBeDraft;
     model.attributes = attributes;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.classNames = invariantSet.classNames;

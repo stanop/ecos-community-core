@@ -59,7 +59,7 @@
 		<#if view.mode != 'view'>
 		<div class="form-buttons" data-bind="with: node().impl">
 
-			<#if classNames?? && classNames?seq_contains("invariants:draftAspect")>
+			<#if canBeDraft>
                 <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg("button.send")}"
                        data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 

@@ -121,7 +121,7 @@ public class NodeViewGet extends DeclarativeWebScript {
     }
 
     private boolean canBeDraft(NodeRef nodeRef) {
-        Boolean isDraft = (Boolean)nodeService.getProperty(nodeRef, InvariantsModel.PROP_IS_DRAFT);
+        Boolean isDraft = (Boolean) nodeService.getProperty(nodeRef, InvariantsModel.PROP_IS_DRAFT);
         if (isDraft == null || isDraft) {
             return true;
         }
