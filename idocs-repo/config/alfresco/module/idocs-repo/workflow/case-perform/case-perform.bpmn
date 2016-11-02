@@ -14,7 +14,7 @@
       </activiti:executionListener>
     </extensionElements>
     <startEvent id="startevent1" name="Submit Perform Task" activiti:formKey="wfcf:submitConfirmTask"></startEvent>
-    <subProcess id="subprocess2" name=" ">
+    <subProcess id="perform-sub-process" name=" ">
       <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${performers}" activiti:elementVariable="performer">
         <completionCondition>${abortPerforming}</completionCondition>
       </multiInstanceLoopCharacteristics>
@@ -48,7 +48,7 @@
       <sequenceFlow id="flow26" sourceRef="confirm" targetRef="endevent3"></sequenceFlow>
     </subProcess>
     <endEvent id="endevent4" name="completed"></endEvent>
-    <sequenceFlow id="flowAfterPerforming" sourceRef="subprocess2" targetRef="exclusivegateway2">
+    <sequenceFlow id="flowAfterPerforming" sourceRef="perform-sub-process" targetRef="exclusivegateway2">
       <extensionElements>
         <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
           <activiti:field name="script">
@@ -76,7 +76,7 @@
       </extensionElements>
     </exclusiveGateway>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow27" sourceRef="exclusivegateway1" targetRef="subprocess2">
+    <sequenceFlow id="flow27" sourceRef="exclusivegateway1" targetRef="perform-sub-process">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!skipPerforming}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow28" sourceRef="exclusivegateway2" targetRef="endevent4"></sequenceFlow>
@@ -96,7 +96,7 @@
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="129.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="subprocess2" id="BPMNShape_subprocess2">
+      <bpmndi:BPMNShape bpmnElement="perform-sub-process" id="BPMNShape_perform-sub-process">
         <omgdc:Bounds height="101.0" width="275.0" x="207.0" y="96.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="confirm" id="BPMNShape_confirm">

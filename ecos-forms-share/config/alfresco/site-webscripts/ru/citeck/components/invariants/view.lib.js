@@ -66,7 +66,7 @@ function getWritePermission(nodeRef) {
   return response;
 }
 
-function getView(args) {
+function getViewData(args) {
     var serviceURI = '/citeck/invariants/view?';
 
     // try-block is used to protect from absense of page object in model.
@@ -85,7 +85,7 @@ function getView(args) {
     }
 
     var response = remote.call(serviceURI);
-    var view = eval('(' + response + ')');
+    var viewData = eval('(' + response + ')');
 
     if(response.status == 404) {
         var formUrl = url.context + '/page/components/form?htmlid=' + encodeURIComponent(args.htmlid) + '&submitType=json&showCancelButton=true';
@@ -102,8 +102,8 @@ function getView(args) {
     }
 
     if(response.status != 200) {
-        throw 'Can not get view from uri "' + serviceURI + '": ' + view.message;
+        throw 'Can not get view from uri "' + serviceURI + '": ' + viewData.message;
     }
     
-    return view;
+    return viewData;
 }
