@@ -134,20 +134,25 @@
 <#macro renderModel model>
 <#escape x as jsonUtils.encodeJSONString(x)>{
 	<#list model?keys as key>
-		"${key}": 
-		<#if !model[key]??>
-			null
-		<#elseif model[key]?is_string>
-			"${model[key]}"
-		<#elseif model[key]?is_number>
-			${model[key]?c}
-		<#elseif model[key]?is_boolean>
-			${model[key]?string}
-		<#elseif model[key]?is_hash>
-			<@renderModel model[key] />
-		</#if><#if key_has_next>,</#if>
+		"${key}": <@views.renderValue model[key] /><#if key_has_next>,</#if>
 	</#list>
 }</#escape>
+</#macro>
+
+<#macro renderValue value="">
+	<#if !value??>
+		null
+	<#elseif value?is_hash>
+		<@views.renderModel value />
+	<#elseif value?is_string>
+		"${value}"
+	<#elseif value?is_number>
+		${value?c}
+	<#elseif value?is_boolean>
+		${value?string}
+	<#elseif value?is_enumerable>
+		[ <#list value as item><@views.renderValue item /><#if item_has_next>,</#if></#list> ]
+	</#if>
 </#macro>
 
 <#macro nodeViewStyles>
@@ -174,6 +179,18 @@
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
 			new InvariantsRuntime("${args.htmlid}-form", "${runtimeKey}").setOptions({
+				<#if view.template == "tabs">
+					tabsModel: {
+						lazyLoadingTabs: ${view.params.lazyLoadingTabs!"false"},
+						clickLoadingTabs: ${view.params.clickLoadingTabs!"false"},
+
+						tabs: <@views.renderValue tabs />
+						<#-- TODO:	hide 'elements' property -->
+					},
+				</#if>
+
+				formTemplate: "${view.template}",
+
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
@@ -185,7 +202,7 @@
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
 						forcedAttributes: <@views.renderQNames attributes />,
 						runtime: "${runtimeKey}",
-						defaultModel: <@views.renderModel defaultModel />,
+						defaultModel: <@views.renderValue defaultModel />,
 					},
 					invariantSet: {
 						key: "${runtimeKey}",

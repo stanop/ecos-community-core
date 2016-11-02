@@ -16,16 +16,21 @@ function getAttributesRecursively(element, attributes) {
     }
 }
 
-function getAttributeRegions(view, attribute) {
-    if(element.type == "view") {
-        for(var i in element.elements) {
-            getAttributesRecursively(element.elements[i], attributes);
-        }
-    } else if(element.type == "field") {
-        if(attributes.indexOf(element.attribute) == -1) {
-            attributes.push(element.attribute);
+function getTabs(view) {
+    var tabs = [];
+
+    for(var i in view.elements) {
+        if(view.elements[i].type == "view") {
+            var attributes = getAttributes(view.elements[i]),
+                namesOfAttributes = [];
+
+            for (var a in attributes) { namesOfAttributes.push(attributes[a].attribute) }
+            view.elements[i]["attributes"] = namesOfAttributes;
+            tabs.push(view.elements[i]);
         }
     }
+
+    return tabs;
 }
 
 function getInvariantSet(args, attributes) {

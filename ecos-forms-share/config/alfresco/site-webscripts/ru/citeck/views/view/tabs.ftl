@@ -45,7 +45,8 @@
 
 <div class="tabs-body ${bodyTemplate}">
 	<#list tabids as tab>
-		<div class="tab-body <#if tab_index != 0>hidden</#if>" <#if tab.data.id??>id="${tab.data.id}-body"</#if>
+		<div class="tab-body <#if tab_index != 0>hidden</#if>"
+			 id="${args.htmlid}-<#if tab.data.id??>${tab.data.id}<#else>tab-${tab_index}</#if>-body"
 			 data-tab-id="${tab.id}"
 		>
 			<#list tab.data.elements as element>

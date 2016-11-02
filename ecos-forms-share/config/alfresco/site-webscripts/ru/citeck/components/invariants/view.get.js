@@ -37,6 +37,10 @@
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
 
+    if (view.template == "tabs") {
+        model.tabs = getTabs(view);
+    }
+
     if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
 
 })()
