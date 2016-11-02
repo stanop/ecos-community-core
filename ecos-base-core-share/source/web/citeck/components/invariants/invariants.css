@@ -381,8 +381,7 @@
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number,
-.invariants-form .template-table .template-row .template-free-content,
-.invariants-form .template-table .template-row .region-select-group {
+.invariants-form .template-table .template-row .template-free-content {
   width: 54.5%;
   float: right;
 }
@@ -442,7 +441,7 @@
 /* region select group */
 .static .invariants-form .template-table .template-row .region-select-group {
   float: right;
-  max-width: 25%;
+  width: 24.5%;
   clear: right;
   margin-top: 0;
 }
@@ -470,12 +469,6 @@
 }
 
 .invariants-form .template-table .template-row .template-mandatory {
-  top: 2px;
-  left: 2px;
-  position: relative;
-}
-
-.static .invariants-form .template-table .template-row .template-mandatory {
   top: 8px;
 }
 
@@ -496,9 +489,8 @@
 }
 
 .invariants-form .template-table .template-row .template-label {
-  width: auto;
   float: left;
-  max-width: 45%;
+  width: 45.5%;
 }
 
 .invariants-form .template-table .template-half-width .template-label,
@@ -1437,11 +1429,6 @@
 
 
 /* view */
-.static .invariants-form .template-table .template-row .template-view {
-  position: absolute;
-  left: 45.5%;
-}
-
 .invariants-form:not(.view-form) .template-table .template-row .template-view {
   padding-top: 5px;
   width: 30%;
