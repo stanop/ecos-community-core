@@ -1495,7 +1495,8 @@
 						successCallback: {
 							fn: function(response) {
 								if (response.json && response.json.props) {
-									elCell.innerHTML = _.values(response.json.props).join(", ");
+									if (elCell.innerHTML) elCell.innerHTML += "<br>";
+									elCell.innerHTML += _.values(response.json.props).join(", ");
 								}
 							}
 						},
