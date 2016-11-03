@@ -16,9 +16,11 @@
 	multiple: multiple, disable: protected,
 	selectedOptions: multipleValues,
 
+	data: $data,
+
 	options: options,  
     optionsCaption: "${msg(optionsCaption?trim)}",
-	optionsText: function(option) { return <#if params.optionsText??>${params.optionsText?trim}<#else>getValueTitle(option)</#if>; },
+	optionsText: <#if params.optionsText??>function(option) { return ${params.optionsText?trim}; }<#else>null</#if>,
 	optionsValue: <#if params.optionsValue??>function(option) { return ${params.optionsValue?trim}; }<#else>null</#if>,
 	optionsAfterRender: <#if params.optionsAfterRender??>function(option) { return ${params.optionsAfterRender?trim}; }<#else>null</#if>
 }} --><!-- /ko -->

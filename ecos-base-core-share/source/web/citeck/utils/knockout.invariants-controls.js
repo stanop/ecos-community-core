@@ -42,6 +42,13 @@ ko.components.register("select", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);     
         this.options.extend({ throttle: 500 });
+
+        if (!this.optionsText) {
+            if (this.data.optionsText) { this.optionsText = this.data.optionsText; }
+            else { this.optionsText = function(option) { return this.getValueTitle(option); }.bind(this.data) };
+        }
+        if (!this.optionsValue && this.data.optionsValue) { this.optionsValue = this.data.optionsValue; }
+        if (!this.optionsAfterRender && this.data.optionsAfterRender) { this.optionsAfterRender = this.data.optionsAfterRender; }
     },
     template: 
        '<select data-bind="attr: { id: id, multiple: multiple },\
