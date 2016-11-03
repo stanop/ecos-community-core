@@ -41,7 +41,7 @@ var Event = YAHOO.util.Event,
 ko.components.register("select", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);     
-        this.options.extend({ throttle: 500 });
+        this.data.options.extend({ throttle: 500 });
 
         if (!this.optionsText) {
             if (this.data.optionsText) { this.optionsText = this.data.optionsText; }
@@ -51,12 +51,22 @@ ko.components.register("select", {
         if (!this.optionsAfterRender && this.data.optionsAfterRender) { this.optionsAfterRender = this.data.optionsAfterRender; }
     },
     template: 
-       '<select data-bind="attr: { id: id, multiple: multiple },\
-            options: options,\
-            optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
-            selectedOptions: selectedOptions,\
-            valueAllowUnset: true\
-        "></select>'
+       '<!--ko ifnot: data.multiple -->\
+            <select data-bind="attr: { id: id },\
+                options: data.options,\
+                optionsCaption: optionsCaption,\
+                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
+                value: data.value,\
+                valueAllowUnset: true"></select>\
+        <!-- /ko -->\
+        <!-- ko if: data.multiple -->\
+            <select data-bind="attr: { id: id, multiple: multiple },\
+                options: data.options,\
+                optionsCaption: optionsCaption,\
+                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
+                selectedOptions: data.multipleValues,\
+                valueAllowUnset: true"></select>\
+        <!-- /ko -->'
 });
 
 

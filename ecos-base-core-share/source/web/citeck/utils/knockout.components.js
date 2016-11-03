@@ -49,10 +49,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     "relevant": ko.observable(true),
 
                     "value": self.value,
-                    "multipleValues": ko.computed({
-                        read: function() { return _.isArray(self.value()) ? self.value() : [ self.value() ]; },
-                        write: function(newValue) { _.isArray(newValue) ? self.value(newValue) : self.value([ newValue ]); }
-                    }),
 
                     "title": ko.computed(function() {
                         return self._value() ? self._value().properties["cm:name"] : Alfresco.util.message("label.none");

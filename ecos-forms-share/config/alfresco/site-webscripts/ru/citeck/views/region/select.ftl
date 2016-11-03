@@ -1,5 +1,4 @@
 <#assign params = viewScope.region.params!{} />
-<#assign alwaysSingle = params.alwaysSingle!"false" />
 
 <#assign optionsCaption>
 	<#if params.optionsCaption??>
@@ -13,12 +12,9 @@
 
 <!-- ko component: { name: "select", params: {
 	id: "${fieldId}",
-	multiple: multiple, disable: protected,
-	selectedOptions: multipleValues,
 
 	data: $data,
 
-	options: options,  
     optionsCaption: "${msg(optionsCaption?trim)}",
 	optionsText: <#if params.optionsText??>function(option) { return ${params.optionsText?trim}; }<#else>null</#if>,
 	optionsValue: <#if params.optionsValue??>function(option) { return ${params.optionsValue?trim}; }<#else>null</#if>,
