@@ -33,6 +33,21 @@ var Event = YAHOO.util.Event,
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
 
+// ---------------
+// HELP
+// ---------------
+
+ko.components.register("help", {
+    viewModel: function(params) {
+        kocomponents.initializeParameters.call(this, params);
+
+        this.showTooltip = function(data, event) {
+
+        }
+    },
+    template:
+        '<span data-bind="event: { mouseover: showTooltip, mouseout: hideTooltip }">?</span>'
+});
 
 // ---------------
 // SELECT
@@ -52,7 +67,7 @@ ko.components.register("select", {
     },
     template: 
        '<!--ko ifnot: data.multiple -->\
-            <select data-bind="attr: { id: id },\
+            <select data-bind="attr: { id: id }, disable: data.protected,\
                 options: data.options,\
                 optionsCaption: optionsCaption,\
                 optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
@@ -60,7 +75,7 @@ ko.components.register("select", {
                 valueAllowUnset: true"></select>\
         <!-- /ko -->\
         <!-- ko if: data.multiple -->\
-            <select data-bind="attr: { id: id, multiple: multiple },\
+            <select data-bind="attr: { id: id, multiple: multiple}, disable: data.protected,\
                 options: data.options,\
                 optionsCaption: optionsCaption,\
                 optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
