@@ -123,6 +123,7 @@
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
                 <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
             </region>
         </field> -->
     </view>
