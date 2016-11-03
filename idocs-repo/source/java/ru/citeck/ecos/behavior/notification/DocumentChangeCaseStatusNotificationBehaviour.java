@@ -42,7 +42,8 @@ public class DocumentChangeCaseStatusNotificationBehaviour extends AbstractICase
 
     @Override
     public void onCreateAssociation(final AssociationRef associationRef) {
-        if (sender == null || !nodeService.exists(associationRef.getTargetRef()) || !enabled) {
+        if (sender == null || !nodeService.exists(associationRef.getTargetRef())
+                           || !nodeService.exists(associationRef.getSourceRef()) || !enabled) {
             return;
         }
 
