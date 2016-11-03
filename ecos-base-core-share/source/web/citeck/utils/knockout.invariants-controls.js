@@ -41,12 +41,26 @@ ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
 
-        this.showTooltip = function(data, event) {
+        this.text.subscribe(function(newValue) {
+            if (newValue) {
+                if (!this.tooltip) {
+                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                        showDelay: 500,
+                        hideDelay: 250,
+                        xyoffset: [0, 0],
+                        autodismissdelay: 10000
+                    });
 
-        }
+                    this.tooltip.body.setAttribute("style", "white-space: pre;");
+                }
+            
+                this.tooltip.cfg.setProperty("text", newValue);
+                this.tooltip.cfg.setProperty("context", this.id);
+            }
+        }, this);
     },
     template:
-        '<span data-bind="event: { mouseover: showTooltip, mouseout: hideTooltip }">?</span>'
+       '<span data-bind="attr: { id: id }, if: text">?</span>'
 });
 
 // ---------------
@@ -67,7 +81,7 @@ ko.components.register("select", {
     },
     template: 
        '<!--ko ifnot: data.multiple -->\
-            <select data-bind="attr: { id: id }, disable: data.protected,\
+            <select data-bind="attr: { id: id, disable: data.protected },\
                 options: data.options,\
                 optionsCaption: optionsCaption,\
                 optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
@@ -75,7 +89,7 @@ ko.components.register("select", {
                 valueAllowUnset: true"></select>\
         <!-- /ko -->\
         <!-- ko if: data.multiple -->\
-            <select data-bind="attr: { id: id, multiple: multiple}, disable: data.protected,\
+            <select data-bind="attr: { id: id, multiple: multiple, disable: data.protected },\
                 options: data.options,\
                 optionsCaption: optionsCaption,\
                 optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
