@@ -62,13 +62,16 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
                 List<ChildAssociationRef> iCaseRoles = nodeService.getChildAssocs(item,
                         ICaseRoleModel.ASSOC_ROLES, RegexQNamePattern.MATCH_ALL);
                 if (!iCaseRoles.isEmpty()) {
-                    NodeRef iCaseRole = getICaseRole(recipientFromICaseRole, iCaseRoles);
-                    if (nodeService.exists(iCaseRole)) {
+                    NodeRef iCaseRole = getICaseRoleOrNullNotFound(recipientFromICaseRole, iCaseRoles);
+                    if (iCaseRole != null && nodeService.exists(iCaseRole)) {
                         List<AssociationRef> recipientsRef = nodeService.getTargetAssocs(iCaseRole,
                                 ICaseRoleModel.ASSOC_ASSIGNEES);
                         if (!recipientsRef.isEmpty()) {
                             for (AssociationRef confirmerRef : recipientsRef) {
-                                confirmersName.add(getRecipientByNodeRef(confirmerRef.getTargetRef()));
+                                String recipient = getRecipientByNodeRef(confirmerRef.getTargetRef());
+                                if (recipient != null && !recipient.equals("")) {
+                                    confirmersName.add(recipient);
+                                }
                             }
                             finalRecipients.addAll(confirmersName);
                         } else {
@@ -132,7 +135,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         return args;
     }
 
-    private NodeRef getICaseRole(String roleName, List<ChildAssociationRef> iCaseRoles) {
+    private NodeRef getICaseRoleOrNullNotFound(String roleName, List<ChildAssociationRef> iCaseRoles) {
         for (ChildAssociationRef caseRole : iCaseRoles) {
             String foundRoleName = (String) nodeService.getProperty(caseRole.getChildRef(), ICaseRoleModel.PROP_VARNAME);
             if (foundRoleName.equals(roleName)) {
@@ -143,7 +146,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     }
 
     private String getRecipientByNodeRef(NodeRef nodeRef) {
-        String recipient = null;
+        String recipient = "";
         QName nodeType = nodeService.getType(nodeRef);
 
         if (nodeType.equals(ContentModel.TYPE_PERSON)) {
