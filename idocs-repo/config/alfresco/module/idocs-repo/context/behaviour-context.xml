@@ -713,5 +713,12 @@
         <property name="appendExtension" value="false" />
     </bean>
 
+    <bean id="idocs.totalDocumentsSumBehaviour"
+          class="ru.citeck.ecos.behavior.common.TotalDocumentsSumBehaviour"
+          init-method="init" abstract="true">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+    </bean>
+
 </beans>
 

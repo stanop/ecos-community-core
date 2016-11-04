@@ -142,9 +142,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 .setAssignee(userName)
                 .withoutGroupCandidates();
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        addPooledActors(workflowTasks, getActorsList(userName, true));
-        resetTaskOwner(workflowTasks);
-
+        addPooledActorsAndResetTaskOwner(workflowTasks, getActorsList(userName, true), null);
     }
 
     @Override
@@ -153,8 +151,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 .withoutGroupCandidates()
                 .setOriginalOwner(userName);
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        removePooledActors(workflowTasks, getActorsList(userName, true));
-        resetTaskOwner(workflowTasks, userName);
+        removePooledActorsAndResetTaskOwner(workflowTasks, getActorsList(userName, true), userName);
     }
 
     public ArrayList<String> getActorsList(String userName, boolean isAssistants) {
@@ -169,14 +166,31 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     }
 
     private void addPooledActors(List<WorkflowTask> tasks, List<String> actors) {
-        updatePooledActors(tasks, actors, true);
+        updatePooledActors(tasks, actors, true, null);
+    }
+
+    //Делаем в одно действие, чтобы не дергались листнеры лишний раз (повышает скорость работы)
+    private void addPooledActorsAndResetTaskOwner(List<WorkflowTask> tasks, List<String> actors, String owner) {
+        updatePooledActorsWithOwner(tasks, actors, true, owner);
     }
 
     private void removePooledActors(List<WorkflowTask> tasks, List<String> actors) {
-        updatePooledActors(tasks, actors, false);
+        updatePooledActors(tasks, actors, false, null);
     }
 
-    private void updatePooledActors(List<WorkflowTask> tasks, List<String> actors, final boolean add) {
+    private void removePooledActorsAndResetTaskOwner(List<WorkflowTask> tasks, List<String> actors, String owner) {
+        updatePooledActorsWithOwner(tasks, actors, false, owner);
+    }
+
+    private void updatePooledActorsWithOwner(List<WorkflowTask> tasks, List<String> actors, boolean add, String owner) {
+        Map<QName, Serializable> properties = new HashMap<>();
+        //RESET OWNER
+        properties.put(ContentModel.PROP_OWNER, (Serializable) owner);
+
+        updatePooledActors(tasks, actors, add, properties);
+    }
+
+    private void updatePooledActors(List<WorkflowTask> tasks, List<String> actors, final boolean add, final Map<QName, Serializable> additionalProperties) {
         for (final WorkflowTask task : tasks) {
             List<NodeRef> actorsList = new ArrayList<NodeRef>();
             for (String actor : actors) {
@@ -184,7 +198,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 actorsList.add(person);
             }
             final Map<QName, List<NodeRef>> assocs = Collections.singletonMap(WorkflowModel.ASSOC_POOLED_ACTORS, actorsList);
-            final Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+            final Map<QName, Serializable> properties = additionalProperties != null && !additionalProperties.isEmpty() ? additionalProperties : new HashMap<QName, Serializable>();
             AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
                 public Void doWork() throws Exception {
                     if (add) {

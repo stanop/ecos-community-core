@@ -52,6 +52,10 @@
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
             <invariant on="protected" language="explicit">true</invariant>
         </property>
+        <property name="deputy:endAbsence">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
     </type>
 
 </invariants>
