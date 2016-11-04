@@ -1,5 +1,6 @@
 package ru.citeck.ecos.action;
 
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 
@@ -10,7 +11,8 @@ import java.util.List;
  */
 public abstract class NodeActionsProvider {
 
-    private NodeService nodeService;
+    protected NodeService nodeService;
+    protected DictionaryService dictionaryService;
 
     public NodeActionsProvider() {
     }
@@ -22,11 +24,11 @@ public abstract class NodeActionsProvider {
 
     public abstract List<NodeActionDefinition> getNodeActions(NodeRef nodeRef);
 
-    public NodeService getNodeService() {
-        return nodeService;
-    }
-
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
     }
 }

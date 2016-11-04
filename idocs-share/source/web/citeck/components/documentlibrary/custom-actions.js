@@ -805,13 +805,7 @@ YAHOO.Bubbling.fire("registerAction", {
             var props = asset.actionParams[actionId].actionProperties;
 			var actionType = props.actionType;
 
-			// hardcode for lifecycle-actions
-            var sourceContext = props.context;
-            if (sourceContext === "service-context") {
-                sourceContext = Alfresco.constants.URL_SERVICECONTEXT;
-            } else if (sourceContext != "") sourceContext = "";
-
-            if (props.actionTitle == "Register" || props.actionTitle == "Зарегистрировать") {
+            if (props.title == "Register" || props.title == "Зарегистрировать") {
                 Citeck.forms.dialog(asset.node.nodeRef, "register", {
                     scope: this,
                     fn: function() {
@@ -838,10 +832,10 @@ YAHOO.Bubbling.fire("registerAction", {
                             }
                         });
                     }
-                }, { title : props.actionTitle });
-            } else if (actionType === "serverAction") {
+                }, { title : props.title });
+            } else if (actionType === "REQUEST") {
                 Alfresco.util.Ajax.jsonPost({
-                    url: (sourceContext === "" ? Alfresco.constants.PROXY_URI : sourceContext) + props.actionURL,
+                    url: Alfresco.constants[props.context] + props.actionURL,
                     successCallback: {
                         scope: this,
                         fn: function () {
@@ -863,9 +857,8 @@ YAHOO.Bubbling.fire("registerAction", {
                         }
                     }
                 });
-            } else if (actionType === "redirect") {
-                var context = (sourceContext === "" ? Alfresco.constants.URL_PAGECONTEXT : sourceContext);
-                window.open(context + props.actionURL, "_self");
+            } else if (actionType === "REDIRECT") {
+                window.open(Alfresco.constants[props.context] + props.actionURL, "_self");
             }
         }
     });

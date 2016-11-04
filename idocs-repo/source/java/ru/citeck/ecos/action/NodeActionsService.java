@@ -27,7 +27,7 @@ public class NodeActionsService {
         for (NodeActionsProvider provider : providerList) {
             List<NodeActionDefinition> list = provider.getNodeActions(nodeRef);
             for (NodeActionDefinition action : list) {
-                result.add(action.getFieldsMap());
+                result.add(action.getProperties());
             }
         }
         return result;

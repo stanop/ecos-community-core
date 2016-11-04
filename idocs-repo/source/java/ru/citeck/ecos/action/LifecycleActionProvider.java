@@ -3,6 +3,8 @@ package ru.citeck.ecos.action;
 import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.lifecycle.LifeCycleDefinition;
 import ru.citeck.ecos.lifecycle.LifeCycleService;
+import ru.citeck.ecos.action.NodeActionDefinition.NodeActionType;
+import ru.citeck.ecos.action.NodeActionDefinition.URLContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +41,12 @@ public class LifecycleActionProvider extends NodeActionsProvider {
                 String form = actionParams.get("formId");
                 form = form==null ? "" : "&formId=" + form;
                 url = String.format(URL_REDIRECT_TEMPLATE, nodeRef.toString(), actionParams.get("workflowId"), form);
-                action.setActionType(NodeActionDefinition.NODE_ACTION_TYPE_REDIRECT);
+                action.setActionType(NodeActionType.REDIRECT);
             } else if ("userTransition".equals(eventType)) {
                 if (actionParams.get("urlId") != null) {
                     url = actionParams.get("urlId").replace("{nodeRef}", nodeRef.toString());
-                    action.setContext("service-context");
-                    action.setActionType(NodeActionDefinition.NODE_ACTION_TYPE_REDIRECT);
+                    action.setContext(URLContext.URL_SERVICECONTEXT);
+                    action.setActionType(NodeActionType.REDIRECT);
                 } else {
                     url = String.format(URL_SERVER_ACTION_TEMPLATE, nodeRef.toString());
                 }
