@@ -179,6 +179,7 @@
 		<property name="nodeService" ref="nodeService" />
 		<property name="nodeViewService" ref="nodeViewService" />
 		<property name="prefixResolver" ref="namespaceService" />
+		<property name="dictionaryService" ref="dictionaryService" />
 	</bean>
 	
 	<bean id="webscript.ru.citeck.invariants.view.post" parent="webscript" class="ru.citeck.ecos.webscripts.invariants.NodeViewPost">

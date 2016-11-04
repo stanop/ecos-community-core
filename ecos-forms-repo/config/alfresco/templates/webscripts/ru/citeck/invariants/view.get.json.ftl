@@ -1,3 +1,7 @@
 <#import "views.lib.ftl" as views />
 
-<@views.renderView view />
+<#escape x as jsonUtils.encodeJSONString(x)>{
+"view": <@views.renderView view />,
+"canBeDraft": ${canBeDraft?string}
+}</#escape>
+

@@ -33,8 +33,9 @@
         mode: model.mode
     };
 
-    var view = getView(viewArgs);
-    if(view == null) return;
+    var viewData = getViewData(viewArgs);
+    if(viewData == null) return;
+    var view = viewData.view;
 
     var attributes = map(getAttributes(view), function(attr) { return attr.attribute; });
     var invariantSet = getInvariantSet(view['class'], attributes);
