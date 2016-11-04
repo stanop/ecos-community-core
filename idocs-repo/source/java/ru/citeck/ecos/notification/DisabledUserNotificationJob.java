@@ -33,6 +33,7 @@ public class DisabledUserNotificationJob implements Job {
     private static final String PARAM_PERSON_SERVICE = "personService";
     private static final String PARAM_NAMESPACE_SERVICE = "namespaceService";
     private static final String PARAM_NOTIFICATION_SENDER = "NotificationSender";
+    private static final String PARAM_DOCUMENT_TYPES = "documentTypes";
     private static final String PARAM_SUBJECT_TEMPLATE = "subjectTemplate";
     private static final String PARAM_RECIPIENTS = "recipients";
     private static final String PARAM_VERIFY_PERSON_ASSOC = "verifyPerson";
@@ -62,6 +63,7 @@ public class DisabledUserNotificationJob implements Job {
         final PersonService personService = (PersonService) jobData.get(PARAM_PERSON_SERVICE);
         final NamespaceService namespaceService = (NamespaceService) jobData.get(PARAM_NAMESPACE_SERVICE);
 
+        final List<String> documentTypes = (List<String>) jobData.get(PARAM_DOCUMENT_TYPES);
         final String subjectTemplate = (String) jobData.get(PARAM_SUBJECT_TEMPLATE);
         final String notificationType = (String) jobData.get(PARAM_NOTIFICATION_TYPE);
         final ICaseDocumentNotificationSender sender = (ICaseDocumentNotificationSender) jobData.get(PARAM_NOTIFICATION_SENDER);
@@ -70,58 +72,62 @@ public class DisabledUserNotificationJob implements Job {
         final String verifyPerson = (String) jobData.get(PARAM_VERIFY_PERSON_ASSOC);
         final Map<String, List<String>> recipients = (Map<String, List<String>>) jobData.get(PARAM_RECIPIENTS);
 
-        if (recipients.isEmpty() || verifyPerson == null || verifyPerson.equals("")) {
-            logger.error("Cannot start job, verified person or recipients is empty.");
+        if (recipients.isEmpty() || documentTypes.isEmpty() || verifyPerson == null || verifyPerson.equals("")) {
+            logger.error("Cannot start job, mandatory params is empty.");
             return;
         }
 
-        SearchParameters sp = new SearchParameters();
-        sp.addStore(storeRef);
-        sp.setLanguage(SearchService.LANGUAGE_LUCENE);
-        sp.setQuery("TYPE:\"urkk:contracts\"");
+        for (String documentType : documentTypes) {
+            SearchParameters sp = new SearchParameters();
+            sp.addStore(storeRef);
+            sp.setLanguage(SearchService.LANGUAGE_LUCENE);
+            sp.setQuery("TYPE:\"" + documentType + "\"");
 
-        ResultSet results = null;
+            ResultSet results = null;
 
-        try {
-            results = searchService.query(sp);
+            try {
+                results = searchService.query(sp);
 
-            for (ResultSetRow node : results) {
-                NodeRef verifyUserRef = null;
-                boolean sendNotification = false;
-                NodeRef documentRef = node.getNodeRef();
-                QName assocUserQName = QName.resolveToQName(namespaceService, verifyPerson);
-                List<AssociationRef> verifyUserRefs = nodeService.getTargetAssocs(documentRef, assocUserQName);
+                for (ResultSetRow node : results) {
+                    NodeRef verifyUserRef = null;
+                    boolean sendNotification = false;
+                    NodeRef documentRef = node.getNodeRef();
+                    QName assocUserQName = QName.resolveToQName(namespaceService, verifyPerson);
+                    List<AssociationRef> verifyUserRefs = nodeService.getTargetAssocs(documentRef, assocUserQName);
 
-                if (verifyUserRefs.isEmpty()) {
-                    sendNotification = true;
-                } else {
-                    verifyUserRef = verifyUserRefs.get(0).getTargetRef();
-
-                    if (!nodeService.exists(verifyUserRef) || !userEnabled(verifyUserRef, nodeService, personService)) {
+                    if (verifyUserRefs.isEmpty()) {
                         sendNotification = true;
+                    } else {
+                        verifyUserRef = verifyUserRefs.get(0).getTargetRef();
+
+                        if (!nodeService.exists(verifyUserRef) || !userEnabled(verifyUserRef, nodeService, personService)) {
+                            sendNotification = true;
+                        }
+                    }
+                    if (sendNotification) {
+                        if (logger.isDebugEnabled()) {
+                            String verifyUser = verifyUserRef != null ? verifyUserRef.toString() : "(user deleted or not found)";
+                            logger.debug("Found disabled user: " + verifyUser + " in document: " + documentRef);
+                        }
+                        sender.sendNotification(
+                                documentRef,
+                                verifyUserRef,
+                                recipients,
+                                notificationType,
+                                subjectTemplate);
                     }
                 }
-                if (sendNotification) {
-                    if (logger.isDebugEnabled()) {
-                        String verifyUser = verifyUserRef != null ? verifyUserRef.toString() : "(user deleted or not found)";
-                        logger.debug("Found disabled user: " + verifyUser + " in document: " + documentRef);
-                    }
-                    sender.sendNotification(
-                            documentRef,
-                            verifyUserRef,
-                            recipients,
-                            notificationType,
-                            subjectTemplate);
+            } catch (Exception ex) {
+                logger.error("Cannot execute job. Exception message: " + ex.getMessage());
+                ex.printStackTrace();
+            } finally {
+                if (results != null) {
+                    results.close();
                 }
-            }
-        } catch (Exception ex) {
-            logger.error("Cannot execute job. Exception message: " + ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            if (results != null) {
-                results.close();
             }
         }
+
+
     }
 
     private boolean userEnabled(NodeRef user, NodeService nodeService, PersonService personService) {
