@@ -81,7 +81,8 @@ ko.components.register("select", {
     },
     template: 
        '<!--ko ifnot: data.multiple -->\
-            <select data-bind="attr: { id: id, disable: data.protected },\
+            <select data-bind="attr: { id: id },\
+                disable: data.protected,\
                 options: data.options,\
                 optionsCaption: optionsCaption,\
                 optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
@@ -89,7 +90,8 @@ ko.components.register("select", {
                 valueAllowUnset: true"></select>\
         <!-- /ko -->\
         <!-- ko if: data.multiple -->\
-            <select data-bind="attr: { id: id, multiple: multiple, disable: data.protected },\
+            <select data-bind="attr: { id: id, multiple: multiple },\
+                disable: data.protected,\
                 options: data.options,\
                 optionsCaption: optionsCaption,\
                 optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
