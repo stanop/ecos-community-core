@@ -148,6 +148,7 @@
   border-color: #ccc;
   background-color: white;
   cursor: default;
+  display: none;
 }
 
 /* yui-button */
