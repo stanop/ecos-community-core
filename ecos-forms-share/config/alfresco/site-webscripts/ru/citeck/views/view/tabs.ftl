@@ -34,6 +34,7 @@
 		<#list tabids as tab>
 			<li class="tab-title <#if tab_index == 0>selected</#if>"
 				data-tab-id="${tab.id}"
+				data-tab-index="${tab_index}"
 				data-bind="click: $root.selectTab, clickBubble: false"
 			>
 				<#if msg(tab.data.params.title)?has_content>${msg(tab.data.params.title)}<#else>${msg("tabs.tab.title")} ${tab_index}</#if>

@@ -43,6 +43,7 @@
 <#macro renderViewContainer view id>
 	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
 			 data-bind="css: { loading: !loaded() }">
+
 		<div class="loading-container">
 			<div class="loading-indicator"></div>
 			<div class="loading-message">${msg('message.loading.form')}</div>
@@ -187,35 +188,39 @@
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
 			new InvariantsRuntime("${args.htmlid}-form", "${runtimeKey}").setOptions({
-				<#if view.template == "tabs">
-					tabsModel: {
-						lazyLoadingTabs: ${view.params.lazyLoadingTabs!"false"},
-						clickLoadingTabs: ${view.params.clickLoadingTabs!"false"},
-
-						tabs: <@views.renderValue tabs />
-						<#-- TODO:	hide 'elements' property -->
-					},
-				</#if>
-
-				formTemplate: "${view.template}",
-
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
+
+					formTemplate: "${view.template}",
+					
 					node: {
 						key: "${runtimeKey}",
 						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
-						forcedAttributes: <@views.renderQNames attributes />,
+
+						<#if !view.params.groupAttributes?? || view.params.groupAttributes == "true">
+							groupedAttributes: <@views.renderValue attributesByGroups />,
+							forcedAttributes: <@views.renderValue attributesByGroups[0] />,
+						</#if>
+
+						<#if !view.params.forceAttributes?? || view.params.forceAttributes == "true">
+							forcedAttributes: <@views.renderValue attributes />,
+						</#if>
+
+
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderValue defaultModel />,
 					},
-					invariantSet: {
-						key: "${runtimeKey}",
-						invariants: <@views.renderInvariants invariants />
-					}
+
+					<#if !view.params.forceInvariants?? || view.params.forceInvariants>
+						invariantSet: {
+							key: "${runtimeKey}",
+							invariants: <@views.renderInvariants invariants />
+						}
+					</#if>
 				}
 			});
 		});

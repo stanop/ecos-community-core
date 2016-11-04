@@ -18,6 +18,11 @@
     }
     attributes = map(attributes, function(attr) { return attr.attribute; });
 
+    var groups = get(view, "view"),
+        attributesByGroups = map(groups, function(group) {
+            return map(getAttributes(group), function(attribute) { return attribute.attribute; })
+        });
+
     var invariantSet = getInvariantSet(args, attributes);
     var viewScopedInvariants = getViewScopedInvariants(view);
     
@@ -34,15 +39,16 @@
     }
 
     model.view = view;
+
     model.canBeDraft = viewData.canBeDraft;
+
     model.attributes = attributes;
+    model.attributesByGroups = attributesByGroups;
+    
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
-
-    if (view.template == "tabs") {
-        model.tabs = getTabs(view);
-    }
+  
 
     if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
 

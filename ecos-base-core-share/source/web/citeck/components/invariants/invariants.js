@@ -23,7 +23,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         $isNodeRef = Citeck.utils.isNodeRef,
         $isFilename = Citeck.utils.isFilename;
 
-    var s = String,
+    var a = Array,
+        s = String,
         n = Number,
         b = Boolean,
         d = Date,
@@ -1123,8 +1124,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     attributes.push(new Attribute(node, name));
                 }
             };
-            _.each(this.definedAttributeNames(), processAttributeName);
+
+            // first load forced attributes
             _.each(this.forcedAttributes(), processAttributeName);
+
+            // second load defined attributes
+            if (_.isEqual(this.forcedAttributes(), _.flatten(this.groupedAttributes()))) {
+                _.each(this.definedAttributeNames(), processAttributeName);             
+            }
+
             return attributes;
         })
         .computed('invariantSet', function() {
@@ -1152,6 +1160,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var aspects = this.attribute('attr:aspects');
             return aspects ? aspects.multipleValues() : [];
         })
+
+        .property('groupedAttributes', [ a ])
+        .load('groupedAttributes', function(impl) { impl.groupedAttributes([]) })
 
         .property('forcedAttributes', [s])
         .load('forcedAttributes', function(impl) { impl.forcedAttributes([]) })
@@ -1218,9 +1229,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('data', function() {
             var attributes = {};
             _.each(this.attributes(), function(attr) {
-                //if(attr.relevant() && !attr['protected']()) {
+                // if(attr.relevant() && !attr['protected']()) {
                     attributes[attr.name()] = attr.jsonValue();
-                //}
+                // }
             });
             return {
                 nodeRef: this.nodeRef(),
@@ -1242,6 +1253,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .property('inSubmitProcess', b)
+
         .init(function() {
             this.inSubmitProcess(false);
         })
@@ -1643,7 +1655,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .property('_loading', b)
         .computed('loaded', function() {
-          if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
+            if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
               var attributes = this.resolve("node.impl.attributes");
               for (var a = 0; a < attributes.length; a++) {
                 for (var prop in attributes[a]) {
@@ -1656,9 +1668,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
               // delay while controls are loading (2 seconds enough)
               if (this._loading()) { setTimeout(function(scope) { scope._loading(false); }, 2000, this); }
               return !this._loading();
-          }
+            }
 
-          return false;
+            return false;
         })
 
         
@@ -1670,7 +1682,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .addClass("selected");
 
-            var tabId = $(event.target).attr("data-tab-id");
+            var tabId = $(event.target).attr("data-tab-id"),
+                tabIndex = $(event.target).attr("data-tab-index");
+
+            this.node().impl().forcedAttributes(
+                _.union(this.node().impl().forcedAttributes(), this.node().impl().groupedAttributes()[tabIndex])
+            );
+
             $(".tabs-body .tab-body[data-tab-id=" + tabId)
                 .parent()
                 .children()
@@ -1816,6 +1834,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
+            console.log(this)
+
             if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
                 $(window).resize(function() {
                    $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
