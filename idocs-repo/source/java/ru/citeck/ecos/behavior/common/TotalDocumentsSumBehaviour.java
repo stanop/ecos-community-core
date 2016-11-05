@@ -4,10 +4,15 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.currency.Currency;
+import ru.citeck.ecos.currency.CurrencyService;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -22,17 +27,22 @@ public class TotalDocumentsSumBehaviour implements
         NodeServicePolicies.OnUpdatePropertiesPolicy,
         NodeServicePolicies.OnCreateAssociationPolicy,
         NodeServicePolicies.OnDeleteAssociationPolicy {
+
     private static Log logger = LogFactory.getLog(FieldAutoFillBehaviour.class);
 
     // common properties
     private PolicyComponent policyComponent;
     private NodeService nodeService;
+    private CurrencyService currencyService;
 
     // distinct properties
     private QName className;
     private QName assocName;
     private QName sumField;
+    private QName sumCurrencyField;
     private QName totalSumField;
+    private QName totalSumCurrencyField;
+    private String totalSumCurrencyDefault;
 
     public void init() {
         JavaBehaviour updateBehaviour = new JavaBehaviour(this, "onUpdateProperties",
@@ -47,6 +57,10 @@ public class TotalDocumentsSumBehaviour implements
                 Behaviour.NotificationFrequency.TRANSACTION_COMMIT);
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
                 className, assocName, deleteAssocBehaviour);
+        JavaBehaviour createCurrencyBehaviour = new JavaBehaviour(this, "onCreateCurrency",
+                Behaviour.NotificationFrequency.TRANSACTION_COMMIT);
+        policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                className, sumCurrencyField, createCurrencyBehaviour);
     }
 
     @Override
@@ -55,69 +69,80 @@ public class TotalDocumentsSumBehaviour implements
                                    Map<QName, Serializable> after) {
         if (!nodeService.exists(nodeRef)) {return;}
         if (after.get(sumField).equals(before.get(sumField))) {return;}
-        BigDecimal sumBefore = (before.get(sumField) != null)
-                ? new BigDecimal((Double) before.get(sumField))
-                : BigDecimal.ZERO;
-        BigDecimal sumAfter = (after.get(sumField) != null)
-                ? new BigDecimal((Double) after.get(sumField))
-                : BigDecimal.ZERO;
-        BigDecimal sumDif = sumAfter.subtract(sumBefore);
-
-        updateTotalSum(nodeRef, sumDif);
+        recalculateBranch(nodeRef);
     }
 
     @Override
     public void onCreateAssociation(AssociationRef associationRef) {
         NodeRef nodeRef = associationRef.getTargetRef();
         if (!nodeService.exists(nodeRef)) {return;}
-        BigDecimal sumDif = (nodeService.getProperty(nodeRef, totalSumField) != null)
-                ? new BigDecimal((Double) nodeService.getProperty(nodeRef, totalSumField))
-                : null;
-        if (sumDif == null) {return;}
-        updateTotalSum(associationRef.getSourceRef(), sumDif);
+        recalculateBranch(nodeRef);
     }
 
     @Override
     public void onDeleteAssociation(AssociationRef associationRef) {
         NodeRef nodeRef = associationRef.getTargetRef();
         if (nodeService.exists(nodeRef)) {
-            BigDecimal sumDif = (nodeService.getProperty(nodeRef, totalSumField) != null)
-                    ? new BigDecimal((Double) nodeService.getProperty(nodeRef, totalSumField))
-                    : null;
-            if (sumDif == null) {
-                return;
-            }
-            updateTotalSum(associationRef.getSourceRef(), sumDif.negate());
+            recalculateBranch(nodeRef);
         } else {
             NodeRef archivedNode = new NodeRef(StoreRef.STORE_REF_ARCHIVE_SPACESSTORE, nodeRef.getId());
             if (!nodeService.exists(archivedNode)) {
                 logger.error("Document" + nodeRef + "is not in archive. We can't calculate total sum");
                 return;
             }
-            BigDecimal sumDif = (nodeService.getProperty(archivedNode, totalSumField) != null)
-                    ? new BigDecimal((Double) nodeService.getProperty(archivedNode, totalSumField))
-                    : null;
-            if (sumDif == null) {return;}
-            updateTotalSum(associationRef.getSourceRef(), sumDif.negate());
+            QName assocNameAdded = QName.createQName(assocName.toString() + "_added");
+            if(nodeService.getProperty(archivedNode, assocNameAdded) == null) {
+                return;
+            }
+            List<String> nodeRefs = (List<String>) nodeService.getProperty(archivedNode, assocNameAdded);
+            for (String ref : nodeRefs) {
+                recalculateBranch(new NodeRef(ref));
+            }
         }
     }
 
-    private void updateTotalSum(NodeRef nodeRef, BigDecimal sumDif) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Updating node " + nodeRef + " with total sum " + sumDif);
-        }
-        BigDecimal totalSumOld = (nodeService.getProperty(nodeRef, totalSumField) != null)
-                ? new BigDecimal((Double) nodeService.getProperty(nodeRef, totalSumField))
-                : BigDecimal.ZERO;
-        BigDecimal totalSumNew = totalSumOld.add(sumDif);
-        nodeService.setProperty(nodeRef, totalSumField, totalSumNew);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Node " + nodeRef + " is updated");
-        }
+    public void onCreateCurrency(AssociationRef associationRef) {
+        NodeRef nodeRef = associationRef.getSourceRef();
+        recalculateBranch(nodeRef);
+    }
+
+    private void recalculateBranch(NodeRef nodeRef) {
         List<AssociationRef> refs = nodeService.getSourceAssocs(nodeRef, assocName);
-        for (AssociationRef ref : refs) {
-            updateTotalSum(ref.getSourceRef(), sumDif);
+        BigDecimal total = BigDecimal.ZERO;
+        Currency currencyTo = getCurrencyByAssocName(nodeRef, totalSumCurrencyField);
+        if (currencyTo == null) {
+            currencyTo = currencyService.getCurrencyByCode(totalSumCurrencyDefault);
         }
+        for (AssociationRef ref : refs) {
+            if(nodeService.getProperty(ref.getSourceRef(), totalSumField) == null) {
+                continue;
+            }
+            Currency currencyFrom = getCurrencyByAssocName(ref.getSourceRef(), totalSumCurrencyField);
+            if (currencyFrom == null) {
+                currencyFrom = currencyService.getCurrencyByCode(totalSumCurrencyDefault);
+            }
+            BigDecimal sum = new BigDecimal((Double) nodeService.getProperty(ref.getSourceRef(), totalSumField));
+            total = total.add(currencyService.transferFromOneCurrencyToOther(currencyFrom, currencyTo, sum));
+        }
+        Currency currentCurrency = getCurrencyByAssocName(nodeRef, sumCurrencyField);
+        BigDecimal currentSum = (nodeService.getProperty(nodeRef, sumField) != null)
+                ? new BigDecimal((Double) nodeService.getProperty(nodeRef, sumField))
+                : BigDecimal.ZERO;
+        total = total.add(currencyService.transferFromOneCurrencyToOther(currentCurrency, currencyTo, currentSum));
+        total = total.setScale(2, BigDecimal.ROUND_CEILING);
+        nodeService.setProperty(nodeRef, totalSumField, total.doubleValue());
+        List<AssociationRef> targetRefs = nodeService.getTargetAssocs(nodeRef, assocName);
+        for (AssociationRef targetRef : targetRefs) {
+            recalculateBranch(targetRef.getTargetRef());
+        }
+    }
+
+    private Currency getCurrencyByAssocName(NodeRef nodeRef, QName assocName) {
+        List<AssociationRef> refs = nodeService.getTargetAssocs(nodeRef, assocName);
+        if(refs == null || refs.size() == 0) {
+            return null;
+        }
+        return currencyService.getCurrencyByNodeRef(refs.get(0).getTargetRef());
     }
 
     //spring
@@ -144,6 +169,22 @@ public class TotalDocumentsSumBehaviour implements
 
     public void setTotalSumField(QName totalSumField) {
         this.totalSumField = totalSumField;
+    }
+
+    public void setCurrencyService(CurrencyService currencyService) {
+        this.currencyService = currencyService;
+    }
+
+    public void setSumCurrencyField(QName sumCurrencyField) {
+        this.sumCurrencyField = sumCurrencyField;
+    }
+
+    public void setTotalSumCurrencyField(QName totalSumCurrencyField) {
+        this.totalSumCurrencyField = totalSumCurrencyField;
+    }
+
+    public void setTotalSumCurrencyDefault(String totalSumCurrencyDefault) {
+        this.totalSumCurrencyDefault = totalSumCurrencyDefault;
     }
 
 }
