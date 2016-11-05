@@ -86,7 +86,7 @@ public abstract class AbstractDeputyListener implements DeputyListener {
     }
 
     @Override
-    public void onAssistantRemoved(String userName) {
+    public void onAssistantRemoved(String userName, String deputyUser) {
         // do nothing by default
     }
 

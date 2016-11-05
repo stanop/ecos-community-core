@@ -92,38 +92,6 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 		undeputy(roleFullName, deputyUsers);
 	}
 
-	@Override
-	public void onAssistantAdded(String userName) {
-/*		Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, userName, false);
-
-		// get deputies of role
-		List<String> deputiesList = deputyService.getUserAssistants(userName);
-
-		Set<String> deputyUsers = new HashSet<String>(deputiesList.size());
-		deputyUsers.addAll(deputiesList);
-
-		for(String deputy : deputyUsers) {
-			if(allUsers.contains(deputy)) continue;
-			authorityService.addAuthority(userName, deputy);
-		}*/
-	}
-
-	@Override
-	public void onAssistantRemoved(String userName) {
-	/*	Set<String> allUsers = authorityService.getContainedAuthorities(AuthorityType.USER, userName, false);
-
-		// get deputies of role
-		List<String> deputiesList = deputyService.getUserAssistants(userName);
-
-		Set<String> deputyUsers = new HashSet<String>(deputiesList.size());
-		deputyUsers.addAll(deputiesList);
-
-		for(String deputy : deputyUsers) {
-			if(!allUsers.contains(deputy)) continue;
-			authorityService.removeAuthority(userName, deputy);
-		}*/
-	}
-
 	private void onRoleMemberAvailabilityChanged(String roleFullName, String memberName, boolean deputy) {
 		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getDeputyUsersAndMembers();
 		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
