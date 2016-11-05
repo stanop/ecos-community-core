@@ -718,6 +718,14 @@
           init-method="init" abstract="true">
         <property name="nodeService" ref="nodeService"/>
         <property name="policyComponent" ref="policyComponent"/>
+        <property name="currencyService" ref="currencyService"/>
+    </bean>
+
+    <bean id="idocs.currencyChangesBehaviour"
+          class="ru.citeck.ecos.behavior.currency.CurrencyChangesBehaviour"
+          init-method="init">
+        <property name="currencyService" ref="currencyService"/>
+        <property name="policyComponent" ref="policyComponent"/>
     </bean>
 
 </beans>
