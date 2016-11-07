@@ -41,6 +41,7 @@ public class InvariantsGet extends DeclarativeWebScript {
     private static final String PARAM_NODEREF = "nodeRef";
     private static final String PARAM_ASPECTS = "aspects";
     private static final String PARAM_ATTRIBUTES = "attributes";
+    private static final String PARAM_MODE = "mode";
     private static final String MODEL_INVARIANTS = "invariants";
     private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
@@ -57,6 +58,7 @@ public class InvariantsGet extends DeclarativeWebScript {
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
         String aspectsParam = req.getParameter(PARAM_ASPECTS);
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
+        String modeParam = req.getParameter(PARAM_MODE);
 
         Set<QName> classNames = new LinkedHashSet<>();
 
@@ -84,7 +86,7 @@ public class InvariantsGet extends DeclarativeWebScript {
             classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
         }
 
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, nodeRef);
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, nodeRef, modeParam);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);

@@ -29,8 +29,8 @@ function getAttributeRegions(view, attribute) {
 }
 
 function getInvariantSet(args, attributes) {
-    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
-        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : ''));
+    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
+        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : '') + (args.mode ? '&mode=' + args.mode : ''));
     return eval('(' + response + ')');
 }
 

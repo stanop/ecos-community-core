@@ -77,7 +77,16 @@ class InvariantServiceImpl implements InvariantService {
             classNames.add(nodeService.getType(nodeRef));
             classNames.addAll(nodeService.getAspects(nodeRef));
         }
-        return filter.searchMatchingInvariants(classNames, nodeRef);
+        return filter.searchMatchingInvariants(classNames, nodeRef, null);
+    }
+
+    @Override
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, NodeRef nodeRef, String mode) {
+        if (nodeRef != null && nodeService.exists(nodeRef)) {
+            classNames.add(nodeService.getType(nodeRef));
+            classNames.addAll(nodeService.getAspects(nodeRef));
+        }
+        return filter.searchMatchingInvariants(classNames, nodeRef, mode);
     }
 
     @Override

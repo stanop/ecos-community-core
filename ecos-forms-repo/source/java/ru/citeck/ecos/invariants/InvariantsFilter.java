@@ -134,11 +134,11 @@ class InvariantsFilter {
     }
     
     public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames) {
-        return this.searchMatchingInvariants(classNames, true, null);
+        return this.searchMatchingInvariants(classNames, true, null, null);
     }
 
-    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, NodeRef nodeRef) {
-        return this.searchMatchingInvariants(classNames, true, nodeRef);
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, NodeRef nodeRef, String mode) {
+        return this.searchMatchingInvariants(classNames, true, nodeRef, mode);
     }
     
     /**
@@ -149,7 +149,7 @@ class InvariantsFilter {
      * @param addDefault set true to add default invariants to list, false - only custom invariants
      * @return ordered list of invariants
      */
-    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault, NodeRef nodeRef) {
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault, NodeRef nodeRef, String mode) {
         List<ClassDefinition> allInvolvedClasses = DictionaryUtils.expandClassNamesToDefs(classNames, dictionaryService);
         
         Set<InvariantDefinition> invariants = new LinkedHashSet<InvariantDefinition>();
@@ -182,7 +182,7 @@ class InvariantsFilter {
 
                 // Check current user permissions for attribute
                 if (attributesPermissionService != null) {
-                    if (!attributesPermissionService.isFieldEditable(attributeName, nodeRef)) {
+                    if (!attributesPermissionService.isFieldEditable(attributeName, nodeRef, mode)) {
                         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
                         if (attributeTypeName.equals(AttributeModel.TYPE_PROPERTY)) {
                             invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
@@ -194,7 +194,7 @@ class InvariantsFilter {
                             invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
                         }
                     }
-                    if (!attributesPermissionService.isFieldVisible(attributeName, nodeRef)) {
+                    if (!attributesPermissionService.isFieldVisible(attributeName, nodeRef, mode)) {
                         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
                         invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.RELEVANT).explicit(false).buildFinal());
                     }
