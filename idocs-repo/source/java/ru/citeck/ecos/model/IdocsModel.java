@@ -37,6 +37,7 @@ public final class IdocsModel {
     public static final QName TYPE_INTERNAL = QName.createQName(IDOCS_NAMESPACE, "internal");
     public static final QName TYPE_ATTORNEY = QName.createQName(IDOCS_NAMESPACE, "powerOfAttorney");
     public static final QName TYPE_LEGAL_ENTITY = QName.createQName(IDOCS_NAMESPACE, "legalEntity");
+    public static final QName TYPE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "currency");
 
     // aspects
     public static final QName ASPECT_LIFECYCLE = QName.createQName(IDOCS_NAMESPACE, "lifeCycle");
@@ -64,6 +65,7 @@ public final class IdocsModel {
     public static final QName PROP_HOUSE = QName.createQName(IDOCS_NAMESPACE, "house");
     public static final QName PROP_ADDRESS_EXTRA_INFO = QName.createQName(IDOCS_NAMESPACE, "addressExtraInfo");
     public static final QName PROP_CURRENCY_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCode");
+    public static final QName PROP_CURRENCY_RATE = QName.createQName(IDOCS_NAMESPACE, "currencyRate");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");

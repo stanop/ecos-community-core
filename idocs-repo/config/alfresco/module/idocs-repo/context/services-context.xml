@@ -533,5 +533,19 @@
 		<property name="extensionName" value="businessCalendar" />
 		<property name="searchService" ref="searchService" />
 	</bean>
-	
+
+	<bean id="currencyService" class="ru.citeck.ecos.currency.CurrencyServiceImpl">
+		<property name="currencyDAO" ref="currencyDAO"/>
+	</bean>
+
+	<bean id="currencyServiceJS" class="ru.citeck.ecos.currency.CurrencyServiceJSImpl">
+		<property name="extensionName" value="currency"/>
+		<property name="currencyService" ref="currencyService"/>
+	</bean>
+
+	<bean id="currencyDAO" class="ru.citeck.ecos.currency.CurrencyDAO">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="searchService" ref="searchService"/>
+	</bean>
+
 </beans>
