@@ -27,6 +27,8 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.workflow.AdvancedWorkflowService;
+import ru.citeck.ecos.workflow.listeners.GrantWorkflowTaskPermissionExecutor;
+import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 import ru.citeck.ecos.workflow.tasks.AdvancedTaskQuery;
 
 import java.io.Serializable;
@@ -38,6 +40,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     private AdvancedWorkflowService advancedWorkflowService;
 
     private PersonServiceImpl personService;
+
+    private WorkflowMirrorService workflowMirrorService;
+
+    private GrantWorkflowTaskPermissionExecutor grantWorkflowTaskPermissionExecutor;
 
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
@@ -120,7 +126,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 .setOriginalOwner(userName);
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
         resetTaskOwner(workflowTasks, userName);
-        removePooledActors(workflowTasks, getActorsList(userName, false));
+        removePooledActors(workflowTasks, getActorsList(userName));
     }
 
     @Override
@@ -133,31 +139,49 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 .withoutGroupCandidates();
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
         resetTaskOwner(workflowTasks);
-        addPooledActors(workflowTasks, getActorsList(userName, false));
+        addPooledActors(workflowTasks, getActorsList(userName));
     }
 
     @Override
     public void onAssistantAdded(String userName) {
         AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
-                .setAssignee(userName)
+                .setOriginalOwner(userName)
                 .withoutGroupCandidates();
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        addPooledActors(workflowTasks, getActorsList(userName, true));
+        List<String> actors = getActorsList(userName);
+        addPooledActors(workflowTasks, actors);
         resetTaskOwner(workflowTasks);
-
+        List<WorkflowTask> updatedWorkflowTasks = advancedWorkflowService.queryTasks(taskQuery);
+        if (actors.size() > 2) {
+            for (WorkflowTask task : updatedWorkflowTasks) {
+                workflowMirrorService.mirrorTask(task);
+                grantWorkflowTaskPermissionExecutor.grantPermissions(task);
+            }
+        }
     }
 
     @Override
-    public void onAssistantRemoved(String userName) {
+    public void onAssistantRemoved(String userName, String deputyName) {
         AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
                 .withoutGroupCandidates()
                 .setOriginalOwner(userName);
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        removePooledActors(workflowTasks, getActorsList(userName, true));
-        resetTaskOwner(workflowTasks, userName);
+
+        List<String> actors = getActorsList(userName);
+        removePooledActors(workflowTasks, Collections.singletonList(deputyName));
+        if (actors.size() == 1) {
+            resetTaskOwner(workflowTasks, userName);
+        } else {
+            resetTaskOwner(workflowTasks);
+            List<WorkflowTask> updatedWorkflowTasks = advancedWorkflowService.queryTasks(taskQuery);
+            for (WorkflowTask task : updatedWorkflowTasks) {
+                workflowMirrorService.mirrorTask(task);
+                grantWorkflowTaskPermissionExecutor.grantPermissions(task);
+            }
+        }
     }
 
-    public ArrayList<String> getActorsList(String userName, boolean isAssistants) {
+    public ArrayList<String> getActorsList(String userName) {
         List<String> deputies = new ArrayList<>();
         deputies = this.deputyService.getUserAssistants(userName);
         if (!deputyService.isUserAvailable(userName)) {
@@ -211,5 +235,13 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 }
             });
         }
+    }
+
+    public void setWorkflowMirrorService(WorkflowMirrorService workflowMirrorService) {
+        this.workflowMirrorService = workflowMirrorService;
+    }
+
+    public void setGrantWorkflowTaskPermissionExecutor(GrantWorkflowTaskPermissionExecutor grantWorkflowTaskPermissionExecutor) {
+        this.grantWorkflowTaskPermissionExecutor = grantWorkflowTaskPermissionExecutor;
     }
 }

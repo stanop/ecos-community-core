@@ -26,8 +26,8 @@ import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
@@ -36,7 +36,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
@@ -170,14 +169,25 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 		ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
 		return mirrorRef.getChildRef();
 	}
-	
+
 	private LinkedList<NodeRef> getActors(WorkflowTask task) {
 		String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
 		LinkedList<NodeRef> results = new LinkedList<NodeRef>();
-		if(assigneeName == null) {
-			@SuppressWarnings({ "unchecked", "rawtypes" })
+		if (assigneeName == null) {
+			@SuppressWarnings({"unchecked", "rawtypes"})
 			List<NodeRef> pooledActors = (List) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
-			if(pooledActors != null) {
+			String originalOwner = (String) task.getProperties().get(QName.createQName("", "taskOriginalOwner"));
+			NodeRef originalOwnerNodeRef = null;
+			if (originalOwner != null) {
+				originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
+			}
+			if (pooledActors != null) {
+				if (originalOwnerNodeRef != null) {
+					if (pooledActors.contains(originalOwnerNodeRef)) {
+						pooledActors.set(0, originalOwnerNodeRef);
+					}
+				}
+
 				results.addAll(pooledActors);
 			}
 		} else {

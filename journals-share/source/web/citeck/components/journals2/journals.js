@@ -23,14 +23,11 @@ var logger = Alfresco.logger,
 		buttonsActionGroupId = "buttons",
 		defaultActionGroupId = "injournal",
 		DELETE_ACTION_ID = "onActionDelete",
-		HasButtons = Citeck.widget.HasButtons,
 		BulkLoader = Citeck.utils.BulkLoader,
-		$buttonSubscribe = HasButtons.subscribe,
 		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
 		koclass = koutils.koclass,
 		formatters = Citeck.format,
-		msg = Alfresco.util.message,
-		$isNodeRef = Citeck.utils.isNodeRef;
+		msg = Alfresco.util.message;
 
 var defaultFormatters = {
     "qname": formatters.qname(false),

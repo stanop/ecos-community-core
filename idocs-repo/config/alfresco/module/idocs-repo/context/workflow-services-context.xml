@@ -466,6 +466,12 @@
 		<property name="grantedPermission" value="${workflow-security.grant-permission}" />
 	</bean>
 
+	<bean id="grantWorkflowTaskPermissionExecutor"
+		  class="ru.citeck.ecos.workflow.listeners.GrantWorkflowTaskPermissionExecutor">
+		<property name="helper" ref="GrantWorkflowPackageHelper"/>
+		<property name="grantedPermission" value="${workflow-security.grant-permission}"/>
+	</bean>
+
 	<!-- task listener which revokes workflow package from task actors -->
 	<bean id="revokeWorkflowPackage" class="ru.citeck.ecos.workflow.listeners.RevokeWorkflowPackageListener">
 		<property name="helper" ref="GrantWorkflowPackageHelper" />
@@ -482,6 +488,7 @@
 	<!-- grant/revoke task-listeners helper -->
 	<bean id="GrantWorkflowPackageHelper" class="ru.citeck.ecos.workflow.listeners.GrantWorkflowPackageHelper">
 		<property name="grantPermissionService" ref="GrantPermissionService" />
+		<property name="authorityHelper" ref="authorityHelper"/>
 	</bean>
 
 	<!-- confiscate/return execute-listeners helper -->

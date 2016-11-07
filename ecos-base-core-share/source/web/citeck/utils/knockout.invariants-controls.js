@@ -34,6 +34,74 @@ var Event = YAHOO.util.Event,
 // - integrate the calendar into a single function for the date and datetime controls
 
 // ---------------
+// HELP
+// ---------------
+
+ko.components.register("help", {
+    viewModel: function(params) {
+        kocomponents.initializeParameters.call(this, params);
+
+        this.text.subscribe(function(newValue) {
+            if (newValue) {
+                if (!this.tooltip) {
+                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                        showDelay: 500,
+                        hideDelay: 250,
+                        xyoffset: [0, 0],
+                        autodismissdelay: 10000
+                    });
+
+                    this.tooltip.body.setAttribute("style", "white-space: pre;");
+                }
+            
+                this.tooltip.cfg.setProperty("text", newValue);
+                this.tooltip.cfg.setProperty("context", this.id);
+            }
+        }, this);
+    },
+    template:
+       '<span data-bind="attr: { id: id }, if: text">?</span>'
+});
+
+// ---------------
+// SELECT
+// ---------------
+
+ko.components.register("select", {
+    viewModel: function(params) {
+        kocomponents.initializeParameters.call(this, params);     
+        this.data.options.extend({ throttle: 500 });
+
+        if (!this.optionsText) {
+            if (this.data.optionsText) { this.optionsText = this.data.optionsText; }
+            else { this.optionsText = function(option) { return this.getValueTitle(option); }.bind(this.data) };
+        }
+        if (!this.optionsValue && this.data.optionsValue) { this.optionsValue = this.data.optionsValue; }
+        if (!this.optionsAfterRender && this.data.optionsAfterRender) { this.optionsAfterRender = this.data.optionsAfterRender; }
+    },
+    template: 
+       '<!--ko ifnot: data.multiple -->\
+            <select data-bind="attr: { id: id },\
+                disable: data.protected,\
+                options: data.options,\
+                optionsCaption: optionsCaption,\
+                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
+                value: data.value,\
+                valueAllowUnset: true"></select>\
+        <!-- /ko -->\
+        <!-- ko if: data.multiple -->\
+            <select data-bind="attr: { id: id, multiple: multiple },\
+                disable: data.protected,\
+                options: data.options,\
+                optionsCaption: optionsCaption,\
+                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
+                selectedOptions: data.multipleValues,\
+                valueAllowUnset: true"></select>\
+        <!-- /ko -->'
+});
+
+
+// ---------------
 // NUMBER-GENERATE
 // ---------------
 

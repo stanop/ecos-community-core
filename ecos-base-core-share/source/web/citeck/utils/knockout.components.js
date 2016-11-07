@@ -174,7 +174,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     this.templateName = "select";
                     this.fakeViewModel.options(_.pairs(this.labels));
                     this.fakeViewModel.optionsText = function(o) { return o[1]; }
-                    this.fakeViewModel.optionsValue = function(o) { return o[0]; }
+                    this.fakeViewModel.optionsValue = function(o) { return o[0]; } 
                 }
 
                 Alfresco.util.Ajax.request({

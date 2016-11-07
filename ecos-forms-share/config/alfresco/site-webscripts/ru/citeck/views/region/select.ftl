@@ -1,39 +1,22 @@
 <#assign params = viewScope.region.params!{} />
-<#assign alwaysSingle = params.alwaysSingle!"false" />
 
-<#assign caption>
-	<#if params.caption??>
-		${params.caption}
+<#assign optionsCaption>
+	<#if params.optionsCaption??>
+		${params.optionsCaption}
 	<#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].select??>
-		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["caption"]??>
-			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["caption"]}
+		<#if config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsCaption"]??>
+			${config.scoped["InvariantControlsConfiguration"]["select"].attributes["optionsCaption"]}
 		</#if>
-	<#else>
-		form.select.label
-	</#if>
+	<#else>form.select.label</#if>
 </#assign>
 
-<!-- ko ifnot: multiple -->
-<select id="${fieldId}" data-bind="
-	options: options, 
-	optionsCaption: '${msg(caption?trim)}', 
-	optionsText: function(item) { return getValueTitle(item) }, 
-	value: value, 
-	<#-- use this to suppress initial value set -->
-	<#-- and thus support 'default' feature -->
-	valueAllowUnset: true, 
-	disable: protected">
-</select>
-<!-- /ko -->
+<!-- ko component: { name: "select", params: {
+	id: "${fieldId}",
 
-<!-- ko if: multiple -->
-<select id="${fieldId}" <#if alwaysSingle != "true">multiple="true"</#if> data-bind="
-	options: options, 
-	optionsText: function(item) { return getValueTitle(item) }, 
-	selectedOptions: value, 
-	<#-- use this to suppress initial value set -->
-	<#-- and thus support 'default' feature -->
-	valueAllowUnset: true, 
-	disable: protected">
-</select>
-<!-- /ko -->
+	data: $data,
+
+    optionsCaption: "${msg(optionsCaption?trim)}",
+	optionsText: <#if params.optionsText??>function(option) { return ${params.optionsText?trim}; }<#else>null</#if>,
+	optionsValue: <#if params.optionsValue??>function(option) { return ${params.optionsValue?trim}; }<#else>null</#if>,
+	optionsAfterRender: <#if params.optionsAfterRender??>function(option) { return ${params.optionsAfterRender?trim}; }<#else>null</#if>
+}} --><!-- /ko -->

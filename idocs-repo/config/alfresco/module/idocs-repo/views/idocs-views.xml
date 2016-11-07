@@ -123,13 +123,14 @@
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
                 <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
             </region>
         </field> -->
     </view>
 
     <view class="idocs:legalForm">
-        <field prop="idocs:nameLegalForm" />
-        <field prop="idocs:descriptionLegalForm" />
+        <field prop="idocs:legalFormName" />
+        <field prop="idocs:legalFormDescription" />
     </view>
 
     <view class="idocs:baseAttorneys">
