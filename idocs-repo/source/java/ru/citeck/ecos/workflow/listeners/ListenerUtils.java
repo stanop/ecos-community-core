@@ -18,12 +18,6 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.VariableScope;
 import org.activiti.engine.task.IdentityLink;
@@ -36,9 +30,12 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
-
+import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.utils.ReflectionUtils;
+
+import java.util.*;
 
 public class ListenerUtils {
 
@@ -48,6 +45,10 @@ public class ListenerUtils {
     // get workflow package
     public static NodeRef getWorkflowPackage(VariableScope execution) {
         return ((ScriptNode) execution.getVariable(VAR_PACKAGE)).getNodeRef();
+    }
+
+    public static NodeRef getWorkflowPackage(WorkflowTask task) {
+        return (NodeRef) task.getProperties().get(BpmModel.TYPE_BPM_PACKAGE);
     }
 
     public static NodeRef getDocument(VariableScope execution, NodeService nodeService) {

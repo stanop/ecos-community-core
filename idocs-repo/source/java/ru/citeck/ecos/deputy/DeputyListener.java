@@ -33,7 +33,7 @@ public interface DeputyListener {
 
     public void onAssistantAdded(String userName);
 
-    public void onAssistantRemoved(String userName);
+	public void onAssistantRemoved(String userName, String deputyName);
 
     public void onRoleAssistantAdded(String roleFullName, String assistantName);
 

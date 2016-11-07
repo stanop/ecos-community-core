@@ -1218,9 +1218,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('data', function() {
             var attributes = {};
             _.each(this.attributes(), function(attr) {
-                //if(attr.relevant() && !attr['protected']()) {
+                if (attr.relevant()) {
                     attributes[attr.name()] = attr.jsonValue();
-                //}
+                }
             });
             return {
                 nodeRef: this.nodeRef(),

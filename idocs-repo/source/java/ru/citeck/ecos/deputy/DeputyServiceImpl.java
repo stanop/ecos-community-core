@@ -656,7 +656,7 @@ public class DeputyServiceImpl implements DeputyService
 			if (deputiedRole) {
 				deputyListener.onRoleAssistantRemoved(authorityName, deputyName);
 			} else {
-				deputyListener.onAssistantRemoved(authorityName);
+				deputyListener.onAssistantRemoved(authorityName, deputyName);
 			}
 		}
 		// otherwise perform deletion

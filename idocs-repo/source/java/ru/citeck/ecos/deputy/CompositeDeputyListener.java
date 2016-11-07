@@ -105,10 +105,10 @@ public class CompositeDeputyListener implements DeputyListener
     }
 
     @Override
-    public void onAssistantRemoved(String userName) {
-        for (DeputyListener listener : listeners) {
-            listener.onAssistantRemoved(userName);
-        }
+	public void onAssistantRemoved(String userName, String deputyName) {
+		for (DeputyListener listener : listeners) {
+			listener.onAssistantRemoved(userName, deputyName);
+		}
     }
 
     @Override
