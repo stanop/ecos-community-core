@@ -148,7 +148,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                             for (var p in properties) {
                                 attributes.push(new QName(properties[p]));
                             }
-                            //console.log('attributes1 = ' + attributes);
                             this.model({
                                 properties: attributes
                             });
@@ -1129,9 +1128,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             _.each(this.forcedAttributes(), processAttributeName);
 
             // second load defined attributes
-            if (_.isEqual(this.forcedAttributes(), _.flatten(this.groupedAttributes()))) {
-                _.each(this.definedAttributeNames(), processAttributeName);             
+            if (!this.runtime() || this.runtime().loadAttributesMethod() == "default") {
+                _.each(this.definedAttributeNames(), processAttributeName);
             }
+
+            // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
+            //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
+            //       return this.forcedAttributes().indexOf(attribute) != - 1;  
+            //     }, this)) { 
+            //         var remainingAttributes = _.difference(this.forcedAttributes(), this.definedAttributeNames());
+            //         console.log(remainingAttributes);
+            //         _.each(remainingAttributes, processAttributeName); 
+            //     }
+            // }           
 
             return attributes;
         })
@@ -1653,6 +1662,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('invariantSet', ExplicitInvariantSet)
         .constant('rootObjects', rootObjects)
 
+        .property('loadAttributesMethod', s)
+        .load('loadAttributesMethod', function() { return "default"; })
+
         .property('_loading', b)
         .computed('loaded', function() {
             if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
@@ -1675,6 +1687,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         
         .method('selectTab', function(data, event) {
+            var tabId = $(event.target).attr("data-tab-id"),
+                tabIndex = $(event.target).attr("data-tab-index");
+
             $(event.target)
                 .parent()
                 .children()
@@ -1682,20 +1697,35 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .addClass("selected");
 
-            var tabId = $(event.target).attr("data-tab-id"),
-                tabIndex = $(event.target).attr("data-tab-index");
-
-            this.node().impl().forcedAttributes(
-                _.union(this.node().impl().forcedAttributes(), this.node().impl().groupedAttributes()[tabIndex])
-            );
-
             $(".tabs-body .tab-body[data-tab-id=" + tabId)
                 .parent()
                 .children()
                 .addClass("hidden")
                 .end().end()
                 .removeClass("hidden");
+
+            if (this.runtime().loadAttributesMethod() == "clickOnGroup") 
+                this.runtime().loadGroup(tabIndex);
+
+            // TODO:
+            // - loading indicator
         })
+
+
+        .method('loadGroup', function(index) {
+            if (!this.checkGroup(index)) {
+                this.node().impl().forcedAttributes(
+                    _.union(this.resolve("node.impl.forcedAttributes"), this.resolve("node.impl.groupedAttributes")[index])
+                );
+            }
+        })
+
+        .method('checkGroup', function(index) {
+            return _.every(this.resolve("node.impl.groupedAttributes")[index], function(attribute) { 
+                return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1; 
+            }, this);
+        })
+
 
         .method('scrollTabs', function(data, event) {
             var scrollArrow = $(event.target),
@@ -1742,7 +1772,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .init(function() {
-          this._loading(true);
+            this._loading(true);
         })
         ;
 
@@ -1834,8 +1864,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
-            console.log(this)
-
             if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
                 $(window).resize(function() {
                    $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
@@ -1854,6 +1882,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 $(window).resize();
             }
+
+
+            // remove groups whose attributes is forced
+            // var forcedGroupsIds = [];
+            // _.each(this.options.model.groupedAttributes, function(group, index) {
+            //     if(_.every(group, function(attribute) {
+            //         return this.forcedAttributes.indexOf(attribute) != -1;
+            //     }, this)) { forcedGroupsIds.push(index); }
+            // }, this.options.model);
+
+            // if (forcedGroupsIds.length > 0) {
+            //     _.each(forcedGroupsIds, function(index) {
+            //         this.groupedAttributes.splice(index, 1);
+            //     }, this.options.model);
+            // }
+            
+            // define attributes from first group as forced
+            if (this.options.model.loadAttributesMethod == "clickOnGroup") { 
+                this.options.model.node.forcedAttributes = this.options.model.node.groupedAttributes[0];
+            }
+            
 
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);

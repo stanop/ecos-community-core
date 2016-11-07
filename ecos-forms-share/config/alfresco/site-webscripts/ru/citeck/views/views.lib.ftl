@@ -44,10 +44,10 @@
 	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
 			 data-bind="css: { loading: !loaded() }">
 
-		<div class="loading-container">
-			<div class="loading-indicator"></div>
-			<div class="loading-message">${msg('message.loading.form')}</div>
-		</div>
+			<div class="loading-container">
+				<div class="loading-indicator"></div>
+				<div class="loading-message">${msg('message.loading.form')}</div>
+			</div>
 		
 		<!-- ko API: rootObjects -->
 		<div class="form-fields" data-bind="with: node().impl">
@@ -193,6 +193,10 @@
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 
 					formTemplate: "${view.template}",
+
+					<#if view.params.loadAttributesMethod??>
+						loadAttributesMethod: "${view.params.loadAttributesMethod}",
+					</#if>
 					
 					node: {
 						key: "${runtimeKey}",
@@ -201,26 +205,17 @@
 						<#if type?has_content>type: "${type}",</#if>
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
 
-						<#if !view.params.groupAttributes?? || view.params.groupAttributes == "true">
-							groupedAttributes: <@views.renderValue attributesByGroups />,
-							forcedAttributes: <@views.renderValue attributesByGroups[0] />,
-						</#if>
-
-						<#if !view.params.forceAttributes?? || view.params.forceAttributes == "true">
-							forcedAttributes: <@views.renderValue attributes />,
-						</#if>
-
+						groupedAttributes: <@views.renderValue attributesByGroups />,
+						forcedAttributes: <@views.renderValue attributes />,
 
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderValue defaultModel />,
 					},
 
-					<#if !view.params.forceInvariants?? || view.params.forceInvariants>
-						invariantSet: {
-							key: "${runtimeKey}",
-							invariants: <@views.renderInvariants invariants />
-						}
-					</#if>
+					invariantSet: {
+						key: "${runtimeKey}",
+						invariants: <@views.renderInvariants invariants />
+					}
 				}
 			});
 		});
