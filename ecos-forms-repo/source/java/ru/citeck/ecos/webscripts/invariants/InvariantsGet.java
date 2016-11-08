@@ -18,12 +18,7 @@
  */
 package ru.citeck.ecos.webscripts.invariants;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -83,13 +78,13 @@ public class InvariantsGet extends DeclarativeWebScript {
         if(aspectsParam != null && !aspectsParam.isEmpty()) {
             classNames.addAll(splitQNames(aspectsParam));
         }
-        
-        if(attributesParam != null && !attributesParam.isEmpty()) {
-            List<QName> attributeNames = splitQNames(attributesParam);
-            classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
+
+        List<QName> attributeNames = null;
+        if(attributesParam != null) {
+            attributeNames = attributesParam.isEmpty() ? Collections.<QName>emptyList() : splitQNames(attributesParam);
         }
         
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames);
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames);
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);
