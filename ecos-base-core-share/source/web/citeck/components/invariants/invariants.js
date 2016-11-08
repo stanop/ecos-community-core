@@ -33,6 +33,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
         ExplicitInvariantSet = koclass('invariants.ExplicitInvariantSet', InvariantSet),
+        ExplicitAttributesInvariantSet = koclass('invariants.ExplicitAttributesInvariantSet', InvariantSet),
         ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
         MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
@@ -479,6 +480,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     ExplicitInvariantSet
         .key('key', s)
         .property('invariants', [Invariant])
+        ;
+
+    ExplicitAttributesInvariantSet
+        .key('key', s)
+
+        .computed('invariants', function() {
+            var invariants = [],
+                processInvariant = function(invariant) {
+                   if (invariants.indexOf(invariant) == -1) invariants.push(invariant); 
+                };
+
+            _.each(this.forcedInvariants(), processInvariant);
+
+            return invariants;
+        })
+
+        .property('forcedInvariants', [ Invariant ])
+        .property('groupedInvariants', [ a ])
         ;
 
     ClassInvariantSet
@@ -1238,9 +1257,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('data', function() {
             var attributes = {};
             _.each(this.attributes(), function(attr) {
-                // if(attr.relevant() && !attr['protected']()) {
+                if(attr.relevant()) {
                     attributes[attr.name()] = attr.jsonValue();
-                // }
+                }
             });
             return {
                 nodeRef: this.nodeRef(),
@@ -1659,7 +1678,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .key('key', s)
         .property('node', Node)
         .property('parent', Runtime)
-        .property('invariantSet', ExplicitInvariantSet)
+        .property('invariantSet', ExplicitAttributesInvariantSet)
         .constant('rootObjects', rootObjects)
 
         .property('loadAttributesMethod', s)
@@ -1704,25 +1723,39 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .removeClass("hidden");
 
-            if (this.runtime().loadAttributesMethod() == "clickOnGroup") 
-                this.runtime().loadGroup(tabIndex);
+            if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
+                this.runtime().loadGroupInvariants(tabIndex);
+                this.runtime().loadGroupAttributes(tabIndex);
+            }
 
             // TODO:
             // - loading indicator
         })
 
 
-        .method('loadGroup', function(index) {
-            if (!this.checkGroup(index)) {
+        .method('loadGroupAttributes', function(index) {
+            if (!this.checkGroupAttributes(index)) {
                 this.node().impl().forcedAttributes(
                     _.union(this.resolve("node.impl.forcedAttributes"), this.resolve("node.impl.groupedAttributes")[index])
                 );
             }
         })
+        .method('loadGroupInvariants', function(index) {
+            if (!this.checkGroupInvariants(index)) {
+                this.invariantSet().forcedInvariants(
+                    _.union(this.resolve("invariantSet.forcedInvariants"), this.resolve("invariantSet.groupedInvariants")[index])
+                );
+            }
+        })
 
-        .method('checkGroup', function(index) {
+        .method('checkGroupAttributes', function(index) {
             return _.every(this.resolve("node.impl.groupedAttributes")[index], function(attribute) { 
                 return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1; 
+            }, this);
+        })
+        .method('checkGroupInvariants', function(index) {
+            return _.every(this.resolve("invariantSet.groupedInvariants")[index], function(invariant) { 
+                return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1; 
             }, this);
         })
 
@@ -1901,6 +1934,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             // define attributes from first group as forced
             if (this.options.model.loadAttributesMethod == "clickOnGroup") { 
                 this.options.model.node.forcedAttributes = this.options.model.node.groupedAttributes[0];
+                this.options.model.invariantSet.forcedInvariants = this.options.model.invariantSet.groupedInvariants[0];
             }
             
 

@@ -214,7 +214,12 @@
 
 					invariantSet: {
 						key: "${runtimeKey}",
-						invariants: <@views.renderInvariants invariants />
+						forcedInvariants: <@views.renderInvariants invariants />,
+						groupedInvariants: [
+							<#list invariantsByGroups as invariantsGroup>
+								<@views.renderInvariants invariantsGroup /><#if invariantsGroup_has_next>,</#if>
+							</#list>
+						]
 					}
 				}
 			});
@@ -222,3 +227,4 @@
 		</#escape>
 	</@>
 </#macro>
+
