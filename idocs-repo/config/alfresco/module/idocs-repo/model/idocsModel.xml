@@ -426,6 +426,10 @@
                     <type>d:text</type>
                     <mandatory>true</mandatory>
                 </property>
+                <property name="idocs:currencyRate">
+                    <title>Курс валюты</title>
+                    <type>d:double</type>
+                </property>
             </properties>
         </type>
         

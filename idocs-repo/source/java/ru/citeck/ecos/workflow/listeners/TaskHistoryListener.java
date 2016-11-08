@@ -18,11 +18,6 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
@@ -36,10 +31,15 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import ru.citeck.ecos.deputy.DeputyService;
+import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.history.HistoryService;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TaskHistoryListener extends AbstractTaskListener {
 
@@ -60,6 +60,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 	private HistoryService historyService;
 	private NamespaceService namespaceService;
 	private AuthorityService authorityService;
+	private DeputyService deputyService;
 
 	private WorkflowQNameConverter qNameConverter;
 	private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
@@ -76,7 +77,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 			logger.warn("Unsupported activiti task event: " + task.getEventName());
 			return;
 		}
-		
+		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>();
 		// task type
 		QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY), namespaceService);
 		
@@ -95,7 +96,15 @@ public class TaskHistoryListener extends AbstractTaskListener {
         
 		// task assignee
 		String assignee = task.getAssignee();
-		
+
+		String originalOwner = (String) task.getVariableLocal("taskOriginalOwner");
+
+		if (assignee != null && !assignee.equals(originalOwner)) {
+			if (originalOwner != null && deputyService.isAssistantUserByUser(originalOwner, assignee)) {
+				eventProperties.put(QName.createQName("", "taskOriginalOwner"), authorityService.getAuthorityNodeRef(originalOwner));
+			}
+		}
+
 		// pooled actors
 		ArrayList<NodeRef> pooledActors = ListenerUtils.getPooledActors(task, authorityService);
 
@@ -106,7 +115,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		Map<QName, Serializable> additionalProperties = getAdditionalProperties(task.getExecution());
 		
 		// persist it
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>();
+
         if(additionalProperties != null) {
             eventProperties.putAll(additionalProperties);
         }
@@ -162,6 +171,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		nodeService = serviceRegistry.getNodeService();
 		namespaceService = serviceRegistry.getNamespaceService();
 		authorityService = serviceRegistry.getAuthorityService();
+		deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
 		
 		qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);

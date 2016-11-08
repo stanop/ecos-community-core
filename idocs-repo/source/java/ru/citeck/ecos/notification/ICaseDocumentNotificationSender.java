@@ -78,7 +78,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
                             logger.error("Cannot find recipients in case : " + iCaseRole);
                         }
                     } else {
-                        logger.error("Cannot find needed iCase role: " + recipientFromICaseRole + "in document: " + item);
+                        logger.error("Cannot find needed iCase role: " + recipientFromICaseRole + " in document: " + item);
                     }
 
                 } else {
@@ -138,7 +138,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     private NodeRef getICaseRoleOrNullNotFound(String roleName, List<ChildAssociationRef> iCaseRoles) {
         for (ChildAssociationRef caseRole : iCaseRoles) {
             String foundRoleName = (String) nodeService.getProperty(caseRole.getChildRef(), ICaseRoleModel.PROP_VARNAME);
-            if (foundRoleName.equals(roleName)) {
+            if (Objects.equals(foundRoleName, roleName)) {
                 return caseRole.getChildRef();
             }
         }

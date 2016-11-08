@@ -83,6 +83,7 @@
 			<header key="idocs:currencyCode" default="true" />
 			<header key="idocs:currencyName" />
 			<header key="cm:title" default="true" />
+			<header key="idocs:currencyRate" default="true" />
 		</headers>
 	</journal>
 	<journal id="bank-accounts">
