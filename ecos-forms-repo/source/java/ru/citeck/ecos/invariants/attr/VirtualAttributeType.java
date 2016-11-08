@@ -18,10 +18,9 @@
  */
 package ru.citeck.ecos.invariants.attr;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
+import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.namespace.QName;
@@ -58,22 +57,27 @@ public class VirtualAttributeType extends AbstractInvariantAttributeType {
                 .pushScope(propDef)
                 .priority(InvariantPriority.COMMON);
         List<InvariantDefinition> invariants = PropertiesAttributeType.getDefaultInvariants(propDef, builder, messageLookup);
-        
-        if(attributeName.equals(AttributeModel.ATTR_TYPES)) {
+
+        if (attributeName.equals(AttributeModel.ATTR_TYPES)) {
             List<String> typeNames = new LinkedList<>();
             for(ClassDefinition classDef : classes) {
-                if(!classDef.isAspect()) 
+                if (!classDef.isAspect())
                     typeNames.add(classDef.getName().toPrefixString(prefixResolver));
             }
             Collections.reverse(typeNames);
             invariants.add(builder.feature(Feature.DEFAULT).explicit(typeNames).build());
         } else if(attributeName.equals(AttributeModel.ATTR_ASPECTS)) {
-            List<String> aspectNames = new LinkedList<>();
+            Set<String> aspectNames = new HashSet<>();
             for(ClassDefinition classDef : classes) {
-                if(classDef.isAspect()) 
+                if (classDef.isAspect()) {
                     aspectNames.add(classDef.getName().toPrefixString(prefixResolver));
+                }
+                List<AspectDefinition> defaultAspects = classDef.getDefaultAspects();
+                for (AspectDefinition def : defaultAspects) {
+                    aspectNames.add(def.getName().toPrefixString(prefixResolver));
+                }
             }
-            invariants.add(builder.feature(Feature.DEFAULT).explicit(aspectNames).build());
+            invariants.add(builder.feature(Feature.DEFAULT).explicit(new LinkedList<>(aspectNames)).build());
         }
         
         return invariants;
