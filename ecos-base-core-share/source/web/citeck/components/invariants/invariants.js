@@ -486,9 +486,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .key('key', s)
 
         .computed('invariants', function() {
-            var invariants = [],
+            var invariants = [], createdInvariants = [],
                 processInvariant = function(invariant) {
-                   if (invariants.indexOf(invariant) == -1) invariants.push(invariant); 
+                    if (createdInvariants.indexOf(invariant) == -1) {
+                        invariants.push(new Invariant(invariant));
+                        createdInvariants.push(invariant);
+                    } 
                 };
 
             _.each(this.forcedInvariants(), processInvariant);
@@ -496,8 +499,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return invariants;
         })
 
-        .property('forcedInvariants', [ Invariant ])
-        .property('groupedInvariants', [ a ])
+        .computed('invariantsBykeyGroups', function() {
+            return _.groupBy(this.invariants(), this.getInvariantKey, this);
+        })
+
+        .property('forcedInvariants', o)
+        .property('groupedInvariants', o)
+
+        .method('getInvariantKey', function(invariant) {
+            return this.getKey(
+                    invariant.scope().attributeKind(),
+                    invariant.scope().attribute(),
+                    invariant.feature(),
+                    invariant.isFinal());
+        })
+        .method('getKey', function(kind, name, feature, isFinal) {
+            var sep = "::";
+            return kind + (name ? sep + name : '') + sep + feature + (isFinal ? sep + 'final' : '');
+        })
         ;
 
     ClassInvariantSet
@@ -545,7 +564,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var invariantSet = this.invariantSet();
             if(!invariantSet) return [];
 
-            var groupedInvariants = invariantSet.groupedInvariants();
+            var invariantsBykeyGroups = invariantSet.invariantsBykeyGroups();
 
             var info = this.info(),
                 name = info.name(),
@@ -562,7 +581,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             ];
 
             return _.union.apply(_, _.map(keys, function(key) {
-                return groupedInvariants[key] || [];
+                return invariantsBykeyGroups[key] || [];
             }, this));
         };
     };
@@ -1936,7 +1955,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.options.model.node.forcedAttributes = this.options.model.node.groupedAttributes[0];
                 this.options.model.invariantSet.forcedInvariants = this.options.model.invariantSet.groupedInvariants[0];
             }
-            
 
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
