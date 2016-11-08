@@ -77,7 +77,7 @@ public class VirtualAttributeType extends AbstractInvariantAttributeType {
                     aspectNames.add(def.getName().toPrefixString(prefixResolver));
                 }
             }
-            invariants.add(builder.feature(Feature.DEFAULT).explicit(aspectNames).build());
+            invariants.add(builder.feature(Feature.DEFAULT).explicit(new LinkedList<>(aspectNames)).build());
         }
         
         return invariants;
