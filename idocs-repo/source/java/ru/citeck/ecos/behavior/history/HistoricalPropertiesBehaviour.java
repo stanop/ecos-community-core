@@ -193,7 +193,7 @@ public class HistoricalPropertiesBehaviour implements
 		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 		NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		NodeRef nodeTarget = nodeAssocRef.getTargetRef();
-		if(enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
+		if(!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
 		{
 			if(assoc!=null) {
 				Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
@@ -201,6 +201,10 @@ public class HistoricalPropertiesBehaviour implements
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
 				eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, nodeTarget.toString());
+				String comment = getAssocKeyValue(assoc.getName())
+						+ ": "
+						+ nodeService.getProperty(nodeAssocRef.getTargetRef(), ContentModel.PROP_TITLE);
+				eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
 		}
@@ -211,13 +215,17 @@ public class HistoricalPropertiesBehaviour implements
 		logger.debug("onDeleteAssociation event");
 		NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
-		if(enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
+		if(!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
 		{
 			if(assoc!=null) {
 				Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
 				eventProperties.put(HistoryModel.PROP_NAME, ASSOC_REMOVED);
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
+				String comment = getAssocKeyValue(assoc.getName())
+						+ ": "
+						+ nodeService.getProperty(nodeAssocRef.getTargetRef(), ContentModel.PROP_TITLE);
+				eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
 		}
@@ -267,19 +275,25 @@ public class HistoricalPropertiesBehaviour implements
 		}
 	}
 	
-	private String getKeyValue(QName qname) {
-		String modelName = dictionaryService.getProperty(qname).getModel().getName().getPrefixString().replace(":", "_");
-		String propName = dictionaryService.getProperty(qname).getName().getPrefixString().replace(":", "_");
+	private String getKeyValue(QName qName) {
+		String modelName = dictionaryService.getProperty(qName).getModel().getName().getPrefixString().replace(":", "_");
+		String propName = dictionaryService.getProperty(qName).getName().getPrefixString().replace(":", "_");
 		return I18NUtil.getMessage(modelName + ".property." + propName + ".title");
 	}
 
-	private Object getKeyValue(QName qname, Object constraint) {
-		if (dictionaryService.getProperty(qname).getConstraints().size() > 0) {
-			String localName = dictionaryService.getProperty(qname).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
+	private Object getKeyValue(QName qName, Object constraint) {
+		if (dictionaryService.getProperty(qName).getConstraints().size() > 0) {
+			String localName = dictionaryService.getProperty(qName).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
 			return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
 		} else {
 			return constraint;
 		}
+	}
+
+	private String getAssocKeyValue(QName qName) {
+		String modelName = dictionaryService.getAssociation(qName).getModel().getName().getPrefixString().replace(":", "_");
+		String propName = dictionaryService.getAssociation(qName).getName().getPrefixString().replace(":", "_");
+		return I18NUtil.getMessage(modelName + ".association." + propName + ".title");
 	}
 
 	public void setAllowedProperties(List<QName> allowedProperties) {
