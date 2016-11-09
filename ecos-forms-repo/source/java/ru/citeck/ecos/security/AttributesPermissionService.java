@@ -15,4 +15,6 @@ public interface AttributesPermissionService {
     public boolean isFieldVisible(QName fieldQName, NodeRef caseRef, String mode);
 
     public boolean isFieldEditable(QName fieldQName, NodeRef caseRef, String mode);
+
+    public void reloadDefinition(NodeRef matrixDefinitionRef);
 }

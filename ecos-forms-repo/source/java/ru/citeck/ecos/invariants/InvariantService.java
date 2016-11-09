@@ -96,7 +96,19 @@ public interface InvariantService {
      * @return ordered list of invariants
      */
     public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames);
-    
+
+    /**
+     * Get invariants for specified class (type or aspect) and attributes (properties and/or associations).
+     * Invariants should be ordered by priority (highest priority first).
+     *
+     * @param className name of class (type or aspect)
+     * @param attributeNames names of attributes (properties and/or associations)
+     * @param nodeRef
+     * @param mode
+     * @return ordered list of invariants
+     */
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames, NodeRef nodeRef, String mode);
+
     /**
      * Get invariants for specified classes (types or aspects).
      * Invariants should be ordered by priority (highest priority first).
