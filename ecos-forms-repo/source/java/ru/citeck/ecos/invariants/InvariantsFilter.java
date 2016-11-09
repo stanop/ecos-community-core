@@ -149,6 +149,10 @@ class InvariantsFilter {
         return this.searchMatchingInvariants(classNames, null, true, null, null);
     }
 
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, Collection<QName> attributeNames, boolean addDefault) {
+        return this.searchMatchingInvariants(classNames, attributeNames, addDefault, null, null);
+    }
+
     /**
      * Search invariants, matching specified classes and attributes.
      * If attributeNames is null, then invariants for all attributes defined in specified classes returns
