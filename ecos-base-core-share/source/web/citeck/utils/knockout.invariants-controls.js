@@ -51,7 +51,7 @@ ko.components.register("help", {
                         autodismissdelay: 10000
                     });
 
-                    this.tooltip.body.setAttribute("style", "white-space: pre;");
+                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
                 }
             
                 this.tooltip.cfg.setProperty("text", newValue);
