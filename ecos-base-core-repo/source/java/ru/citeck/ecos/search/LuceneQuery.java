@@ -285,6 +285,9 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private void buildEqualsTerm(String field, String value) {
+            if ("".equals(value)) {
+                value = WILD;
+            }
             query.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
         }
 
