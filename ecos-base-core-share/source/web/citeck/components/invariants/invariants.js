@@ -33,7 +33,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
         ExplicitInvariantSet = koclass('invariants.ExplicitInvariantSet', InvariantSet),
-        ExplicitAttributesInvariantSet = koclass('invariants.ExplicitAttributesInvariantSet', InvariantSet),
+        GroupedInvariantSet = koclass('invariants.GroupedInvariantSet', InvariantSet),
         ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
         MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
@@ -479,24 +479,28 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     ExplicitInvariantSet
         .key('key', s)
-        .property('invariants', [Invariant])
+        .property('invariants', [ Invariant ])
         ;
 
-    ExplicitAttributesInvariantSet
+    GroupedInvariantSet
         .key('key', s)
 
-        .computed('invariants', function() {
-            var invariants = [], createdInvariants = [],
-                processInvariant = function(invariant) {
-                    if (createdInvariants.indexOf(invariant) == -1) {
-                        invariants.push(new Invariant(invariant));
-                        createdInvariants.push(invariant);
-                    } 
-                };
+        .computed('invariants', {
+            read: function() {
+                var invariants = [], createdInvariants = [],
+                    processInvariant = function(invariant) {
+                        if (createdInvariants.indexOf(invariant) == -1) {
+                            invariants.push(new Invariant(invariant));
+                            createdInvariants.push(invariant);
+                        } 
+                    };
 
-            _.each(this.forcedInvariants(), processInvariant);
+                _.each(this.forcedInvariants(), processInvariant);
 
-            return invariants;
+                return invariants;
+            },
+            pure: true,
+            deferEvaluation: false
         })
 
         .computed('invariantsBykeyGroups', function() {
@@ -1133,54 +1137,58 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('classNames', [s])
 
         .property('_attributes', o)
-        .computed('attributes', function() {
-            var node = this.node(),
-                attributes = [],
-                createdNames = {};
+        .computed('attributes', {
+            read: function() {
+                var node = this.node(),
+                    attributes = [],
+                    createdNames = {};
 
-            if(this.isPersisted()) {
-                _.each(this._attributes(), function(value, name) {
-                    createdNames[name] = true;
-                    attributes.push(new Attribute(node, name, true, value));
-                });
-                // little optimization trick:
-                // if node is persisted and its persisted attributes are not loaded,
-                // first wait for them and then add all other attributes
-                if (!this._attributes.loaded()) {
-                    // preload defined attribute names:
-                    this.definedAttributeNames();
-                    return attributes;
+                if(this.isPersisted()) {
+                    _.each(this._attributes(), function(value, name) {
+                        createdNames[name] = true;
+                        attributes.push(new Attribute(node, name, true, value));
+                    });
+                    // little optimization trick:
+                    // if node is persisted and its persisted attributes are not loaded,
+                    // first wait for them and then add all other attributes
+                    if (!this._attributes.loaded()) {
+                        // preload defined attribute names:
+                        this.definedAttributeNames();
+                        return attributes;
+                    }
                 }
-            }
 
-            var processAttributeName = function(name) {
-                if(!createdNames[name]) {
-                    createdNames[name] = true;
-                    // we can't be sure, whether this this attribute is persisted or not
-                    // because not all persisted attributes are in the default attributes list
-                    attributes.push(new Attribute(node, name));
+                var processAttributeName = function(name) {
+                    if(!createdNames[name]) {
+                        createdNames[name] = true;
+                        // we can't be sure, whether this this attribute is persisted or not
+                        // because not all persisted attributes are in the default attributes list
+                        attributes.push(new Attribute(node, name));
+                    }
+                };
+
+                // first load forced attributes
+                _.each(this.forcedAttributes(), processAttributeName);
+
+                // second load defined attributes
+                if (!this.runtime() || this.runtime().loadAttributesMethod() == "default") {
+                    _.each(this.definedAttributeNames(), processAttributeName);
                 }
-            };
 
-            // first load forced attributes
-            _.each(this.forcedAttributes(), processAttributeName);
+                // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
+                //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
+                //       return this.forcedAttributes().indexOf(attribute) != - 1;  
+                //     }, this)) { 
+                //         var remainingAttributes = _.difference(this.forcedAttributes(), this.definedAttributeNames());
+                //         console.log(remainingAttributes);
+                //         _.each(remainingAttributes, processAttributeName); 
+                //     }
+                // }           
 
-            // second load defined attributes
-            if (!this.runtime() || this.runtime().loadAttributesMethod() == "default") {
-                _.each(this.definedAttributeNames(), processAttributeName);
-            }
-
-            // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
-            //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
-            //       return this.forcedAttributes().indexOf(attribute) != - 1;  
-            //     }, this)) { 
-            //         var remainingAttributes = _.difference(this.forcedAttributes(), this.definedAttributeNames());
-            //         console.log(remainingAttributes);
-            //         _.each(remainingAttributes, processAttributeName); 
-            //     }
-            // }           
-
-            return attributes;
+                return attributes;
+            },
+            pure: true,
+            // deferEvaluation: false
         })
         .computed('invariantSet', function() {
             return this.resolve('runtime.invariantSet')
@@ -1697,7 +1705,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .key('key', s)
         .property('node', Node)
         .property('parent', Runtime)
-        .property('invariantSet', ExplicitAttributesInvariantSet)
+        .property('invariantSet', GroupedInvariantSet)
         .constant('rootObjects', rootObjects)
 
         .property('loadAttributesMethod', s)
@@ -1831,15 +1839,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     // performance tuning
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
-//    var rateLimit = { rateLimit: { timeout: 0 } };
-//    var rateLimit = { deferred: true };
+    
     Attribute.extend('*', rateLimit);
     AttributeInfo.extend('*', rateLimit);
     DDClass.extend('attributes', rateLimit);
     NodeImpl.extend('type', rateLimit);
     NodeImpl.extend('_attributes', rateLimit);
-//    NodeImpl.extend('attributes', rateLimit);
-//    InvariantSet.extend('*', rateLimit);
+
+    GroupedInvariantSet.extend('invariants', rateLimit);
+    NodeImpl.extend('attributes', rateLimit);
 
     // create common attributes statically:
     _.each({
@@ -1952,8 +1960,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             
             // define attributes from first group as forced
             if (this.options.model.loadAttributesMethod == "clickOnGroup") { 
-                this.options.model.node.forcedAttributes = this.options.model.node.groupedAttributes[0];
                 this.options.model.invariantSet.forcedInvariants = this.options.model.invariantSet.groupedInvariants[0];
+                this.options.model.node.forcedAttributes = this.options.model.node.groupedAttributes[0];
             }
 
             koutils.enableUserPrompts();

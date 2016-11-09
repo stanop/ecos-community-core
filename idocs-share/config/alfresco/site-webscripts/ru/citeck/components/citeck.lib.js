@@ -16,12 +16,12 @@ function findBy(elements, by, byValue) {
 
 function map(elements, callback) {
   var result = [];
-  for (var e in elements) { result.push(callback(elements[e])); }
+  for (var e = 0; e < elements.length; e++) { result.push(callback(elements[e])); }
   return result;
 }
 
 function each(elements, callback) {
-  for (var e in elements) { callback(elements[e], e); }
+  for (var e = 0; e < elements.length; e++) { callback(elements[e], e); }
 }
 
 function uniq(elements) {

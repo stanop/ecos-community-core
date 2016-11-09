@@ -24,6 +24,11 @@
             return map(getAttributes(group), function(attribute) { return attribute.attribute; })
         });
 
+    // generate id
+    each(groups, function(group, index) {
+        group["genId"] = view["class"].replace(":", "_") + "-group-" + index;
+    });
+
     var invariantSet = getInvariantSet(args, attributes),
         invariantSetByGroups = map(attributesByGroups, function(group) { return getInvariantSet(args, group) });
 
@@ -50,11 +55,11 @@
 
 
     model.view = view;
+    model.groups = groups;
     model.canBeDraft = viewData.canBeDraft;
 
     model.attributes = attributes;
     model.attributesByGroups = attributesByGroups;
-    
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.invariantsByGroups = invariantsByGroups;
 
