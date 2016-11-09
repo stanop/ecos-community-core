@@ -3,6 +3,7 @@ package ru.citeck.ecos.action;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import ru.citeck.ecos.action.node.NodeActionDefinition;
 
 import java.util.List;
 
