@@ -23,8 +23,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         $isNodeRef = Citeck.utils.isNodeRef,
         $isFilename = Citeck.utils.isFilename;
 
-    var a = Array,
-        s = String,
+    var s = String,
         n = Number,
         b = Boolean,
         d = Date,
@@ -503,24 +502,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             deferEvaluation: false
         })
 
-        .computed('invariantsBykeyGroups', function() {
-            return _.groupBy(this.invariants(), this.getInvariantKey, this);
-        })
-
         .property('forcedInvariants', o)
-        .property('groupedInvariants', o)
-
-        .method('getInvariantKey', function(invariant) {
-            return this.getKey(
-                    invariant.scope().attributeKind(),
-                    invariant.scope().attribute(),
-                    invariant.feature(),
-                    invariant.isFinal());
-        })
-        .method('getKey', function(kind, name, feature, isFinal) {
-            var sep = "::";
-            return kind + (name ? sep + name : '') + sep + feature + (isFinal ? sep + 'final' : '');
-        })
+        .property('_groupedInvariants', o)
         ;
 
     ClassInvariantSet
@@ -568,7 +551,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var invariantSet = this.invariantSet();
             if(!invariantSet) return [];
 
-            var invariantsBykeyGroups = invariantSet.invariantsBykeyGroups();
+            var groupedInvariants = invariantSet.groupedInvariants();
 
             var info = this.info(),
                 name = info.name(),
@@ -585,7 +568,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             ];
 
             return _.union.apply(_, _.map(keys, function(key) {
-                return invariantsBykeyGroups[key] || [];
+                return groupedInvariants[key] || [];
             }, this));
         };
     };
@@ -980,9 +963,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('optionsInvariants', function() {
             return featureInvariants('options').call(this);
         })
-        .computed('options', function() {
-            var options = this.invariantOptions();
-            return options ? this.convertValue(options, true) : [];
+        .computed('options', {
+            read: function() {
+                var options = this.invariantOptions();
+                return options ? this.convertValue(options, true) : [];
+            },
+            pure: true
         })
 
         .method('filterOptions', function(criteria, pagination) {
@@ -1187,8 +1173,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 return attributes;
             },
-            pure: true,
-            // deferEvaluation: false
+            pure: true
         })
         .computed('invariantSet', function() {
             return this.resolve('runtime.invariantSet')
@@ -1216,8 +1201,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return aspects ? aspects.multipleValues() : [];
         })
 
-        .property('groupedAttributes', [ a ])
-        .load('groupedAttributes', function(impl) { impl.groupedAttributes([]) })
+        .property('_groupedAttributes', o)
+        .load('_groupedAttributes', function(impl) { impl.groupedAttributes([]) })
 
         .property('forcedAttributes', [s])
         .load('forcedAttributes', function(impl) { impl.forcedAttributes([]) })
@@ -1614,7 +1599,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('size', n)
 
         .constant('jsonValue', null)
-
         ;
 
     Content
@@ -1732,7 +1716,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         
-        .method('selectTab', function(data, event) {
+        .method('selectGroup', function(data, event) {
             var tabId = $(event.target).attr("data-tab-id"),
                 tabIndex = $(event.target).attr("data-tab-index");
 
@@ -1756,38 +1740,39 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             // TODO:
-            // - loading indicator
+            // - loading indicator for tab
+            // - remember tabs which was loaded
         })
 
 
         .method('loadGroupAttributes', function(index) {
             if (!this.checkGroupAttributes(index)) {
                 this.node().impl().forcedAttributes(
-                    _.union(this.resolve("node.impl.forcedAttributes"), this.resolve("node.impl.groupedAttributes")[index])
+                    _.union(this.resolve("node.impl.forcedAttributes"), this.resolve("node.impl._groupedAttributes")[index])
                 );
             }
         })
         .method('loadGroupInvariants', function(index) {
             if (!this.checkGroupInvariants(index)) {
                 this.invariantSet().forcedInvariants(
-                    _.union(this.resolve("invariantSet.forcedInvariants"), this.resolve("invariantSet.groupedInvariants")[index])
+                    _.union(this.resolve("invariantSet.forcedInvariants"), this.resolve("invariantSet._groupedInvariants")[index])
                 );
             }
         })
 
         .method('checkGroupAttributes', function(index) {
-            return _.every(this.resolve("node.impl.groupedAttributes")[index], function(attribute) { 
+            return _.every(this.resolve("node.impl._groupedAttributes")[index], function(attribute) { 
                 return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1; 
             }, this);
         })
         .method('checkGroupInvariants', function(index) {
-            return _.every(this.resolve("invariantSet.groupedInvariants")[index], function(invariant) { 
+            return _.every(this.resolve("invariantSet._groupedInvariants")[index], function(invariant) { 
                 return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1; 
             }, this);
         })
 
 
-        .method('scrollTabs', function(data, event) {
+        .method('scrollGroups', function(data, event) {
             var scrollArrow = $(event.target),
                 direction = (function() {
                     var matches = scrollArrow.attr("class").match(/scroll-(left|right)/);
@@ -1924,6 +1909,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
+            console.log(this)
+
             if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
                 $(window).resize(function() {
                    $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
@@ -1960,8 +1947,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             
             // define attributes from first group as forced
             if (this.options.model.loadAttributesMethod == "clickOnGroup") { 
-                this.options.model.invariantSet.forcedInvariants = this.options.model.invariantSet.groupedInvariants[0];
-                this.options.model.node.forcedAttributes = this.options.model.node.groupedAttributes[0];
+                this.options.model.invariantSet.forcedInvariants = this.options.model.invariantSet._groupedInvariants[0];
+                this.options.model.node.forcedAttributes = this.options.model.node._groupedAttributes[0];
             }
 
             koutils.enableUserPrompts();
