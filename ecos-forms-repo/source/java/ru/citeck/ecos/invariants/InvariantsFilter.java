@@ -156,7 +156,17 @@ class InvariantsFilter {
      */
     public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, Collection<QName> attributeNames, boolean addDefault) {
 
-        Collection<QName> attributes = attributeNames != null ? attributeNames : getDefinedAttributeNames(classNames);
+        Set<QName> attributes;
+        if (attributeNames != null) {
+            attributes = new HashSet<>(attributeNames);
+            attributes.add(AttributeModel.ATTR_NODEREF);
+            attributes.add(AttributeModel.ATTR_ASPECTS);
+            attributes.add(AttributeModel.ATTR_PARENT);
+            attributes.add(AttributeModel.ATTR_PARENT_ASSOC);
+            attributes.add(AttributeModel.ATTR_TYPES);
+        } else {
+            attributes = getDefinedAttributeNames(classNames);
+        }
 
         List<ClassDefinition> allInvolvedClasses = DictionaryUtils.getClasses(classNames, dictionaryService);
         List<ClassDefinition> classes = new ArrayList<>(getDefiningClassNames(allInvolvedClasses, attributes));
@@ -205,16 +215,6 @@ class InvariantsFilter {
             }
         }
 
-        if (addDefault) {
-            QName attributeName = nodeAttributeService.getAttributeType(AttributeModel.ATTR_ASPECTS);
-            InvariantAttributeType attributeType = attributeTypes.get(attributeName);
-            addInvariants(attributeType.getDefaultInvariants(AttributeModel.ATTR_ASPECTS, allInvolvedClasses), invariants);
-
-            attributeName = nodeAttributeService.getAttributeType(AttributeModel.ATTR_TYPES);
-            attributeType = attributeTypes.get(attributeName);
-            addInvariants(attributeType.getDefaultInvariants(AttributeModel.ATTR_TYPES, allInvolvedClasses), invariants);
-        }
-        
         // search by pure attributes
         for(AttributeScopeKind scopeKind : AttributeScopeKind.values()) {
             if(!scopeKind.isConcrete()) {
