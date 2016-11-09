@@ -64,6 +64,7 @@
 			<field prop="tk:kind">
 				<region name="input" template="select" />
 			</field>
+			<field prop="tk:type" template="none"/>
 			<field prop="letters:deliveryMethod" />
 		</view>
 		<view>
@@ -118,6 +119,7 @@
 	
 	<view class="letters:income" id="doclib-simple-metadata">
 		<field prop="tk:kind" />
+		<field prop="tk:type" template="none"/>
 		<field prop="letters:deliveryMethod" />
 
 		<field assoc="letters:outcome">
@@ -161,6 +163,7 @@
 			<field prop="tk:kind">
 				<region name="input" template="select" />
 			</field>
+			<field prop="tk:type" template="none"/>
 			<field prop="letters:deliveryMethod" />
 		</view>
 		
@@ -209,6 +212,7 @@
 		<views mode="edit" kind="2-column" />
 		
 		<field prop="tk:kind" />
+		<field prop="tk:type" template="none"/>
 		<field prop="letters:deliveryMethod" />
 
 		<field assoc="letters:income">

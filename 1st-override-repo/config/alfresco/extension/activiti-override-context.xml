@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="activitiProcessEngineConfiguration"
+          class="org.alfresco.repo.workflow.activiti.AlfrescoProcessEngineConfiguration">
+        <property name="dataSource" ref="wrappedDataSource" />
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="databaseSchemaUpdate" value="none" />
+        <property name="history" value="audit" />
+
+
+        <property name="jobExecutorActivate" value="false" />
+
+        <property name="beans" ref="activitiBeanRegistry" />
+
+        <property name="customTypes">
+            <list>
+                <ref bean="activitiScriptNodeType" />
+                <ref bean="activitiScriptNodeListType" />
+            </list>
+        </property>
+        <property name="postBpmnParseHandlers">
+            <list>
+                <ref bean="activitiProcessParseHandler" />
+                <ref bean="activitiCallActivityParseHandler" />
+                <ref bean="activitiUserTaskParseHandler" />
+            </list>
+        </property>
+        <property name="unprotectedNodeService" ref="nodeService" />
+        <property name="idBlockSize" value="${system.workflow.engine.activiti.idblocksize}"></property>
+
+        <property name="customSessionFactories">
+            <list>
+                <bean class="org.activiti.CustomHistoryManagerFactory"/>
+            </list>
+        </property>
+
+        <property name="idGeneratorDataSource">
+            <ref bean="activitiIdGeneratorDataSource" />
+        </property>
+    </bean>
+
+</beans>

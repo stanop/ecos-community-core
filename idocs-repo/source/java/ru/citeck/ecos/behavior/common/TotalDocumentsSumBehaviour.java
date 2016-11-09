@@ -103,7 +103,9 @@ public class TotalDocumentsSumBehaviour implements
 
     public void onCreateCurrency(AssociationRef associationRef) {
         NodeRef nodeRef = associationRef.getSourceRef();
-        recalculateBranch(nodeRef);
+        if(nodeService.exists(nodeRef)) {
+            recalculateBranch(nodeRef);
+        }
     }
 
     private void recalculateBranch(NodeRef nodeRef) {
