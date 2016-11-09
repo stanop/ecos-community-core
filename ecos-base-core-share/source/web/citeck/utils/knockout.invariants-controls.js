@@ -520,6 +520,24 @@ ko.bindingHandlers.journalControl = {
     // sorting
     var sortBy  = params.sortBy;
 
+    // localization
+    var localization = {
+        title: Alfresco.util.message("form.select.label"),
+        search: Alfresco.util.message("journal.search"),
+        elementsTab: Alfresco.util.message("journal.elements"),
+        filterTab: Alfresco.util.message("journal.filter"),
+        createTab: Alfresco.util.message("journal.create"),
+        selectedElements: Alfresco.util.message("journal.selected-elements"),
+        applyCriteria: Alfresco.util.message("journal.apply-criteria"),
+        addFilterCriterion: Alfresco.util.message("journal.add-filter-criterion"),
+        submitButton: Alfresco.util.message("button.ok"),
+        cancelButton: Alfresco.util.message("button.cancel"),
+        nextPageLabel: Alfresco.util.message("journal.pagination.next-page-label"),
+        nextPageTitle: Alfresco.util.message("journal.pagination.next-page-title"),
+        previousPageLabel: Alfresco.util.message("journal.pagination.previous-page-label"),
+        previousPageTitle: Alfresco.util.message("journal.pagination.previous-page-title")
+    };
+
     // params
     var defaultVisibleAttributes    = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
@@ -529,9 +547,7 @@ ko.bindingHandlers.journalControl = {
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
         searchCriteria              = params.searchCriteria,
 
-        defaultCriteria             = params.defaultCriteria,
-        
-        localization                = params.localization;
+        defaultCriteria             = params.defaultCriteria;
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -685,9 +701,10 @@ ko.bindingHandlers.journalControl = {
                     <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
                     <!-- ko component: { name: "createObjectButton", params: {\
                         scope: scope,\
-                        source: \"create-views\",\
+                        source: createVariantsSource,\
                         callback: callback,\
-                        buttonTitle: buttonTitle\
+                        buttonTitle: buttonTitle,\
+                        virtualParent: virtualParent\
                     }} --><!-- /ko -->\
                     ' + (searchBar ? '<div class="journal-search"><input type="search" placeholder="' + localization.search + '" class="journal-search-input" id="' + searchId + '" /></div>' : '') + '\
                 </div>\
@@ -979,7 +996,9 @@ ko.bindingHandlers.journalControl = {
                         fieldId: data.name()
                     });
 
-                }
+                },
+                virtualParent: params.virtualParent,
+                createVariantsSource: params.createVariantsSource
             }, Dom.get(journalPickerHeaderId));
 
             if (value()) selectedElements(multiple() ? value() : [ value() ]);
