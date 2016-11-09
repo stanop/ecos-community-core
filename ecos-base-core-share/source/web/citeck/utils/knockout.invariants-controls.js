@@ -997,8 +997,8 @@ ko.bindingHandlers.journalControl = {
                     });
 
                 },
-                virtualParent: !!settings.virtualParent,
-                createVariantsSource: settings.createVariantsSource
+                virtualParent: params.virtualParent,
+                createVariantsSource: params.createVariantsSource
             }, Dom.get(journalPickerHeaderId));
 
             if (value()) selectedElements(multiple() ? value() : [ value() ]);
