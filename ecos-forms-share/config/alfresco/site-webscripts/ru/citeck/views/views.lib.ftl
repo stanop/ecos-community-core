@@ -215,7 +215,7 @@
 						<#if type?has_content>type: "${type}",</#if>
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
 
-						groupedAttributes: <@views.renderValue attributesByGroups />,
+						_groupedAttributes: <@views.renderValue attributesByGroups />,
 						forcedAttributes: <@views.renderValue attributes />,
 
 						runtime: "${runtimeKey}",
@@ -226,7 +226,7 @@
 					invariantSet: {
 						key: "${runtimeKey}",
 						forcedInvariants: <@views.renderInvariants invariants />,
-						groupedInvariants: [
+						_groupedInvariants: [
 							<#list invariantsByGroups as invariantsGroup>
 								<@views.renderInvariants invariantsGroup /><#if invariantsGroup_has_next>,</#if>
 							</#list>
