@@ -143,21 +143,28 @@
 	]
 </#macro>
 
-<#macro renderModel model>
-<#escape x as jsonUtils.encodeJSONString(x)>{
-	<#list model?keys as key>
-		"${key}": <@views.renderValue model[key] /><#if key_has_next>,</#if>
-	</#list>
-}</#escape>
+<#macro renderDefaultModel model>
+	<#escape x as jsonUtils.encodeJSONString(x)>
+	{
+		"companyhome": <@views.renderValue model["companyhome"]!"" />,
+		"userhome": <@views.renderValue model["userhome"]!"" />,
+		"person": <@views.renderValue model["person"]!"" />,
+		"view": <@views.renderValue model["view"]!"" />
+	}
+	</#escape>
 </#macro>
 
 <#macro renderValue value="">
 	<#if !value??>
 		null
 	<#elseif value?is_hash>
-		<@views.renderModel value />
+		{
+		<#list value?keys as key>
+			"${key}": <@views.renderValue value[key] /><#if key_has_next>,</#if>
+		</#list>
+		}
 	<#elseif value?is_string>
-		"${value}"
+		"${value?js_string}"
 	<#elseif value?is_number>
 		${value?c}
 	<#elseif value?is_boolean>
@@ -212,7 +219,8 @@
 						forcedAttributes: <@views.renderValue attributes />,
 
 						runtime: "${runtimeKey}",
-						defaultModel: <@views.renderValue defaultModel />,
+						defaultModel: <@views.renderDefaultModel defaultModel />,
+						
 					},
 
 					invariantSet: {
