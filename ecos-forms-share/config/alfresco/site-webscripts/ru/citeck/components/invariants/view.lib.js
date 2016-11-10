@@ -16,14 +16,16 @@ function getAttributesRecursively(element, attributes) {
     }
 }
 
-function get(view, type) {
-    var objects = [];
-    for(var i in view.elements) {
-        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) { 
-            objects.push(view.elements[i]); 
+function getAttributeRegions(view, attribute) {
+    if(element.type == "view") {
+        for(var i in element.elements) {
+            getAttributesRecursively(element.elements[i], attributes);
+        }
+    } else if(element.type == "field") {
+        if(attributes.indexOf(element.attribute) == -1) {
+            attributes.push(element.attribute);
         }
     }
-    return objects;
 }
 
 function getInvariantSet(args, attributes) {

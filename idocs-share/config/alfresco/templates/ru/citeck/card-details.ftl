@@ -1,7 +1,5 @@
 <#include "/org/alfresco/include/alfresco-template.ftl" />
 <@templateHeader>
-	<meta http-equiv="Cache-Control" content="private" >
-
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/card/card-details.css" />
 
    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js"></@script>

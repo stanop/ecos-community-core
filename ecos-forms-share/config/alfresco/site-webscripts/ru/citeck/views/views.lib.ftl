@@ -43,11 +43,10 @@
 <#macro renderViewContainer view id>
 	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
 			 data-bind="css: { loading: !loaded() }">
-
-			<div class="loading-container">
-				<div class="loading-indicator"></div>
-				<div class="loading-message">${msg('message.loading.form')}</div>
-			</div>
+		<div class="loading-container">
+			<div class="loading-indicator"></div>
+			<div class="loading-message">${msg('message.loading.form')}</div>
+		</div>
 		
 		<!-- ko API: rootObjects -->
 		<div class="form-fields" data-bind="with: node().impl">
@@ -143,25 +142,20 @@
 <#macro renderModel model>
 <#escape x as jsonUtils.encodeJSONString(x)>{
 	<#list model?keys as key>
-		"${key}": <@views.renderValue model[key] /><#if key_has_next>,</#if>
+		"${key}": 
+		<#if !model[key]??>
+			null
+		<#elseif model[key]?is_string>
+			"${model[key]}"
+		<#elseif model[key]?is_number>
+			${model[key]?c}
+		<#elseif model[key]?is_boolean>
+			${model[key]?string}
+		<#elseif model[key]?is_hash>
+			<@renderModel model[key] />
+		</#if><#if key_has_next>,</#if>
 	</#list>
 }</#escape>
-</#macro>
-
-<#macro renderValue value="">
-	<#if !value??>
-		null
-	<#elseif value?is_hash>
-		<@views.renderModel value />
-	<#elseif value?is_string>
-		"${value}"
-	<#elseif value?is_number>
-		${value?c}
-	<#elseif value?is_boolean>
-		${value?string}
-	<#elseif value?is_enumerable>
-		[ <#list value as item><@views.renderValue item /><#if item_has_next>,</#if></#list> ]
-	</#if>
 </#macro>
 
 <#macro nodeViewStyles>
@@ -191,35 +185,19 @@
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
-
-					formTemplate: "${view.template}",
-
-					<#if view.params.loadAttributesMethod??>
-						loadAttributesMethod: "${view.params.loadAttributesMethod}",
-					</#if>
-					
 					node: {
 						key: "${runtimeKey}",
 						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
-
-						groupedAttributes: <@views.renderValue attributesByGroups />,
-						forcedAttributes: <@views.renderValue attributes />,
-
+						forcedAttributes: <@views.renderQNames attributes />,
 						runtime: "${runtimeKey}",
-						defaultModel: <@views.renderValue defaultModel />,
+						defaultModel: <@views.renderModel defaultModel />,
 					},
-
 					invariantSet: {
 						key: "${runtimeKey}",
-						forcedInvariants: <@views.renderInvariants invariants />,
-						groupedInvariants: [
-							<#list invariantsByGroups as invariantsGroup>
-								<@views.renderInvariants invariantsGroup /><#if invariantsGroup_has_next>,</#if>
-							</#list>
-						]
+						invariants: <@views.renderInvariants invariants />
 					}
 				}
 			});
@@ -227,4 +205,3 @@
 		</#escape>
 	</@>
 </#macro>
-

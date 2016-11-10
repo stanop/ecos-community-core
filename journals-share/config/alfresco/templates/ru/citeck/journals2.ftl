@@ -1,7 +1,7 @@
 <#include "/org/alfresco/include/alfresco-template.ftl" />
 
 <@templateHeader>
-    <meta http-equiv="Cache-Control" content="private" >
+	<!-- CSS and JavaScript files are linked in here -->
 </@>
 
 <@templateBody>
