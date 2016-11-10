@@ -26,15 +26,16 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
+import org.apache.log4j.Logger;
 import org.alfresco.service.namespace.QName;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
 import ru.citeck.ecos.model.InvariantsModel;
+import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
 
 public class NodeViewGet extends DeclarativeWebScript {
@@ -51,7 +52,7 @@ public class NodeViewGet extends DeclarativeWebScript {
     private NodeViewService nodeViewService;
     private NamespacePrefixResolver prefixResolver;
     private DictionaryService dictionaryService;
-    
+
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
     {
@@ -61,7 +62,7 @@ public class NodeViewGet extends DeclarativeWebScript {
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
 
         boolean canBeDraft;
-        
+
         NodeView.Builder builder = new NodeView.Builder(prefixResolver);
         
         if(typeParam != null && !typeParam.isEmpty()) {
@@ -95,10 +96,10 @@ public class NodeViewGet extends DeclarativeWebScript {
             status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
             return null;
         }
-        
+
         NodeView view = nodeViewService.getNodeView(query);
-        
-        Map<String, Object> model = new HashMap<>();
+
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_VIEW, view);
         model.put(MODEL_CAN_BE_DRAFT, canBeDraft);
         return model;

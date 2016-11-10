@@ -42,6 +42,7 @@ public class InvariantsGet extends DeclarativeWebScript {
     private static final String PARAM_NODEREF = "nodeRef";
     private static final String PARAM_ASPECTS = "aspects";
     private static final String PARAM_ATTRIBUTES = "attributes";
+    private static final String PARAM_MODE = "mode";
     private static final String MODEL_INVARIANTS = "invariants";
     private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
@@ -59,9 +60,12 @@ public class InvariantsGet extends DeclarativeWebScript {
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
         String aspectsParam = req.getParameter(PARAM_ASPECTS);
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
-        
+        String modeParam = req.getParameter(PARAM_MODE);
+
         Set<QName> classNames = new LinkedHashSet<>();
         
+        NodeRef nodeRef = null;
+
         if(typeParam != null && !typeParam.isEmpty()) {
             QName type = QName.createQName(typeParam, prefixResolver);
             classNames.add(type);
@@ -70,7 +74,7 @@ public class InvariantsGet extends DeclarativeWebScript {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            NodeRef nodeRef = new NodeRef(nodeRefParam);
+            nodeRef = new NodeRef(nodeRefParam);
             classNames.add(nodeService.getType(nodeRef));
             classNames.addAll(nodeService.getAspects(nodeRef));
         }
@@ -84,7 +88,7 @@ public class InvariantsGet extends DeclarativeWebScript {
             attributeNames = attributesParam.isEmpty() ? Collections.<QName>emptyList() : splitQNames(attributesParam);
         }
         
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames);
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames, nodeRef, modeParam);
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);
