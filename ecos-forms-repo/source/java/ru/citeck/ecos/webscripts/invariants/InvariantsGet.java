@@ -83,12 +83,12 @@ public class InvariantsGet extends DeclarativeWebScript {
             classNames.addAll(splitQNames(aspectsParam));
         }
 
-        List<QName> attributeNames = null;
-        if(attributesParam != null) {
-            attributeNames = attributesParam.isEmpty() ? Collections.<QName>emptyList() : splitQNames(attributesParam);
+        if(attributesParam != null && !attributesParam.isEmpty()) {
+            List<QName> attributeNames = splitQNames(attributesParam);
+            classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
         }
         
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames, nodeRef, modeParam);
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, nodeRef, modeParam);
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);
