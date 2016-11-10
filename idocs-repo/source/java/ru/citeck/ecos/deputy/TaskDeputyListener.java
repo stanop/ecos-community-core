@@ -121,54 +121,17 @@ public class TaskDeputyListener extends AbstractDeputyListener {
         // user is available (new or old)
         // reset owner for all tasks, that not assigned to any role
         // where original owner is user
-        AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
-                .withoutGroupCandidates()
-                .setOriginalOwner(userName);
-        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        resetTaskOwner(workflowTasks, userName);
-        removePooledActors(workflowTasks, getActorsList(userName));
+        removeDeputiesFromTasks(userName, deputyService.getUserDeputies(userName));
     }
 
-    @Override
-    public void onUserUnavailable(String userName) {
-        // user is unavailable (new or old)
-        // reset owner for all tasks, that are owned to him, but not assigned to any role
-        // and set pooled actors of user and his deputies
-        AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
-                .setAssignee(userName)
-                .withoutGroupCandidates();
-        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        resetTaskOwner(workflowTasks);
-        addPooledActors(workflowTasks, getActorsList(userName));
-    }
-
-    @Override
-    public void onAssistantAdded(String userName) {
-        AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
-                .setOriginalOwner(userName)
-                .withoutGroupCandidates();
-        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        List<String> actors = getActorsList(userName);
-        addPooledActors(workflowTasks, actors);
-        resetTaskOwner(workflowTasks);
-        List<WorkflowTask> updatedWorkflowTasks = advancedWorkflowService.queryTasks(taskQuery);
-        if (actors.size() > 2) {
-            for (WorkflowTask task : updatedWorkflowTasks) {
-                workflowMirrorService.mirrorTask(task);
-                grantWorkflowTaskPermissionExecutor.grantPermissions(task);
-            }
-        }
-    }
-
-    @Override
-    public void onAssistantRemoved(String userName, String deputyName) {
+    private void removeDeputiesFromTasks(String userName, List<String> userDeputies) {
         AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
                 .withoutGroupCandidates()
                 .setOriginalOwner(userName);
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
 
         List<String> actors = getActorsList(userName);
-        removePooledActors(workflowTasks, Collections.singletonList(deputyName));
+        removePooledActors(workflowTasks, userDeputies);
         if (actors.size() == 1) {
             resetTaskOwner(workflowTasks, userName);
         } else {
@@ -181,15 +144,49 @@ public class TaskDeputyListener extends AbstractDeputyListener {
         }
     }
 
-    public ArrayList<String> getActorsList(String userName) {
-        List<String> deputies = new ArrayList<>();
-        deputies = this.deputyService.getUserAssistants(userName);
-        if (!deputyService.isUserAvailable(userName)) {
-            deputies.addAll(this.deputyService.getUserDeputies(userName));
+    @Override
+    public void onUserUnavailable(String userName) {
+        // user is unavailable (new or old)
+        // reset owner for all tasks, that are owned to him, but not assigned to any role
+        // and set pooled actors of user and his deputies
+        addDeputiesToTasks(userName);
+    }
+
+    @Override
+    public void onAssistantAdded(String userName) {
+        addDeputiesToTasks(userName);
+    }
+
+    private void addDeputiesToTasks(String userName) {
+        AdvancedTaskQuery taskQuery = new AdvancedTaskQuery()
+                .setOriginalOwner(userName)
+                .withoutGroupCandidates();
+        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
+        List<String> actors = getActorsList(userName);
+        addPooledActors(workflowTasks, actors);
+        resetTaskOwner(workflowTasks);
+        if (actors.size() > 2) {
+            List<WorkflowTask> updatedWorkflowTasks = advancedWorkflowService.queryTasks(taskQuery);
+            for (WorkflowTask task : updatedWorkflowTasks) {
+                workflowMirrorService.mirrorTask(task);
+                grantWorkflowTaskPermissionExecutor.grantPermissions(task);
+            }
         }
-        ArrayList<String> actors = new ArrayList<String>(deputies);
-        actors.add(userName);
-        return actors;
+    }
+
+    @Override
+    public void onAssistantRemoved(String userName, String deputyName) {
+        removeDeputiesFromTasks(userName, Collections.singletonList(deputyName));
+    }
+
+    public ArrayList<String> getActorsList(String userName) {
+        Set<String> deputies = new HashSet<>();
+        deputies.addAll(deputyService.getUserAssistants(userName));
+        if (!deputyService.isUserAvailable(userName)) {
+            deputies.addAll(deputyService.getUserDeputies(userName));
+        }
+        deputies.add(userName);
+        return new ArrayList<String>(deputies);
     }
 
     private void addPooledActors(List<WorkflowTask> tasks, List<String> actors) {

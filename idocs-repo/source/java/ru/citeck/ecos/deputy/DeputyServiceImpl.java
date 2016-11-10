@@ -652,6 +652,8 @@ public class DeputyServiceImpl implements DeputyService
 		}
 		String authorityName = authorityHelper.getAuthorityName(deputiedAuthority);
 		String deputyName = authorityHelper.getAuthorityName(deputy);
+		// otherwise perform deletion
+		nodeService.deleteNode(deputationRecord);
 		if (isAssistant) {
 			if (deputiedRole) {
 				deputyListener.onRoleAssistantRemoved(authorityName, deputyName);
@@ -659,8 +661,6 @@ public class DeputyServiceImpl implements DeputyService
 				deputyListener.onAssistantRemoved(authorityName, deputyName);
 			}
 		}
-		// otherwise perform deletion
-		nodeService.deleteNode(deputationRecord);
 
 		// and call listener
 
