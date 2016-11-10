@@ -103,12 +103,16 @@ public class LuceneQuery implements SearchQueryBuilder {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             while (iterator.hasNext()) {
                 CriteriaTriplet criteriaTriplet = iterator.next();
-                buildSearchTerm(criteriaTriplet);
-                if (iterator.hasNext()) {
-                    query.append(AND);
+                boolean ignore = ignoreIfValueEmpty(criteriaTriplet);
+                if (!ignore) {
+                    buildSearchTerm(criteriaTriplet);
+                    if (iterator.hasNext()) {
+                        query.append(AND);
+                    }
                 }
             }
-            return query.toString();
+            String queryStr = query.toString();
+            return toCorrectQuery(queryStr);
         }
         
         private void buildSearchTerm(CriteriaTriplet triplet) {
@@ -284,10 +288,41 @@ public class LuceneQuery implements SearchQueryBuilder {
                     string;
         }
 
-        private void buildEqualsTerm(String field, String value) {
+        private boolean ignoreIfValueEmpty(CriteriaTriplet triplet) {
+            boolean ignore = false;
+            SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
+            String value = triplet.getValue();
+
             if ("".equals(value)) {
-                value = WILD;
+                switch (criterion) {
+                    case STRING_EQUALS:
+                    case NUMBER_EQUALS:
+                    case DATE_EQUALS:
+                    case TYPE_EQUALS:
+                    case ASPECT_EQUALS:
+                    case PARENT_EQUALS:
+                    case PATH_EQUALS:
+                    case LIST_EQUALS:
+                    case STRING_STARTS_WITH:
+                    case STRING_ENDS_WITH:
+                    case NODEREF_CONTAINS:
+                    case ASSOC_CONTAINS:
+                    case QNAME_CONTAINS:
+                    case STRING_CONTAINS:
+                        ignore = true;
+                }
             }
+            return ignore;
+        }
+
+        private String toCorrectQuery(String query) {
+            if (query.endsWith(AND)) {
+                query = query.substring(0, query.length() - AND.length());
+            }
+            return query;
+        }
+
+        private void buildEqualsTerm(String field, String value) {
             query.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
         }
 
