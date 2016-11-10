@@ -1693,7 +1693,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .constant('rootObjects', rootObjects)
 
         .property('loadAttributesMethod', s)
-        .load('loadAttributesMethod', function() { return "default"; })
+        .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
 
         .property('_loading', b)
         .computed('loaded', function() {
