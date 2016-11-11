@@ -133,7 +133,9 @@ define(['lib/knockout'], function(ko) {
 			if(typeof config == "string") {
 				config = { url: config };
 			}
+
 			assert(config.url != null, "url is required in simpleLoad", true);
+			
 			return function(viewModel) {
                 try {
                     var url = _.isFunction(config.url) 
@@ -144,17 +146,23 @@ define(['lib/knockout'], function(ko) {
                 }
 				
 				var callback = function(response) {
-						var model = response.json,
-							resultsPath = config.resultsPath,
-							resultsMap = config.resultsMap;
-						if(resultsPath) {
-							model = Citeck.utils.resolvePath(model, config.resultsPath);
-						}
-						if(resultsMap) {
-							model = Citeck.utils.mapObject(model, resultsMap);
-						}
-						viewModel.model(model);
-					};
+					var model = response.json;
+
+					if (config.resultsPath) {
+						model = Citeck.utils.resolvePath(model, config.resultsPath);
+					}
+
+					if (config.resultsMap) {
+						model = Citeck.utils.mapObject(model, config.resultsMap);
+					}
+
+					if (config.postprocessing && typeof config.postprocessing == "function") {
+						config.postprocessing.call(viewModel, model);
+					}
+
+					viewModel.model(model);
+				};
+
 				if(simpleLoadCache[url]) {
 					simpleLoadCache[url].push(callback);
 					return;

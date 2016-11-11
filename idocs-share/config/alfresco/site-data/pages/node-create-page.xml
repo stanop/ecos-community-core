@@ -25,7 +25,7 @@
 			<url>/citeck/components/node-view-mgr</url>
 			<properties>
 				<runtimeKey>node-create</runtimeKey>
-				<onsubmit>card</onsubmit>
+				<onsubmit>back</onsubmit>
 				<oncancel>back</oncancel>
 				<redirect>{redirect}</redirect>
 			</properties>
