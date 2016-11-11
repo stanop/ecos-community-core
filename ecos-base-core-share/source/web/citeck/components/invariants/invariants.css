@@ -1092,6 +1092,7 @@
     text-align: center;
     border-top: 1px solid #ccc;
     margin-bottom: -7px;
+    margin-top: 7px;
 }
 
 .autocomplete-container .autocomplete-more a {
@@ -1100,7 +1101,6 @@
     margin-left: -7px;
     padding: 0 0 7px 0;
     letter-spacing: 5px;
-    margin-top: 7px;
 }
 
 .autocomplete-container span.autocomplete-message.empty-message {

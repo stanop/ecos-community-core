@@ -744,11 +744,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .shortcut('default', 'defaultValue', null)
         .computed('rawValue', function() {
-            var invariantValue = this.invariantValue();
+            var invariantValue = this.invariantValue(),
+                isDraft = this.node().properties["invariants:isDraft"],
+                isView = this.node().impl().inViewMode();
+            
             if(invariantValue != null) return invariantValue;
-            if(this.newValue.loaded()) return this.newValue();
-            if(this.persisted()) return this.persistedValue();
-            return this.node().impl().inViewMode() ? null : this.invariantDefault();
+            if(this.changed()) return this.newValue();
+            
+            if(this.persisted()) { 
+                return !this.persistedValue() && isDraft ? this.invariantDefault() : this.persistedValue();
+            }
+
+            return isView ? null : this.invariantDefault();    
         })
 
         .property('persisted', b)
