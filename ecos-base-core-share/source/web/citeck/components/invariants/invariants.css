@@ -23,7 +23,8 @@
 
 
 /* loading-indicator */
-.invariants-form.loading {
+.invariants-form.loading,
+.invariants-form.submit-process {
   position: relative;
 }
 
@@ -34,18 +35,42 @@
 .invariants-form.loading .form-fields,
 .invariants-form.loading .form-buttons {
   visibility: hidden;
+  overflow: hidden;
 }
+
+.invariants-form.submit-process .loading-overlay,
+.invariants-form.loading .loading-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.invariants-form.submit-process .loading-overlay {
+  background-color: rgba(0,0,0,0.3);
+}
+
+.static .invariants-form.loading .loading-overlay {
+  background-color: white;
+}
+
 
 .invariants-form .loading-container {
   display: none;
   position: absolute;
-  top: 40px;
-  left: calc(50% - 125px);
+  top: calc(50% - 135px);
+  left: calc(50% - 135px);
   text-align: center;
+  z-index: 1010;
 }
 
-.invariants-form.loading .loading-container {
+.invariants-form.loading .loading-container,
+.invariants-form.submit-process .loading-container {
   display: block;
+}
+
+.invariants-form.submit-process .loading-container {
+  position: fixed;
 }
 
 /*.invariants-form.loading .loading-container {
@@ -67,11 +92,18 @@
     -moz-animation: cssload-spin 1100ms infinite linear;
 }
 
-.loading-container .loading-message {
+.loading-container .loading-message,
+.loading-container .submit-process-message {
+  visibility: hidden;
+}
+
+.invariants-form.loading .loading-container .loading-message,
+.invariants-form.submit-process .loading-container .submit-process-message {
   width: 180px;
   position: absolute;
   left: calc(50% - 80px);
   top: calc(50% - 16px);
+  visibility: visible;
 }
 
 @keyframes cssload-spin {

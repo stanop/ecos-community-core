@@ -1663,6 +1663,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
           return false;
         })
 
+        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
+
         
         .method('selectTab', function(data, event) {
             $(event.target)
