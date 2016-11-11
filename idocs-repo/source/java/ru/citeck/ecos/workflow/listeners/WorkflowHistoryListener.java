@@ -88,7 +88,7 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 		// initiator
 		String initiator = null;
 		ScriptNode initiatorRef = (ScriptNode) execution.getVariable(WorkflowConstants.PROP_INITIATOR);
-		if(initiatorRef != null) {
+		if(initiatorRef != null && nodeService.exists(initiatorRef.getNodeRef())) {
 			initiator = (String) nodeService.getProperty(initiatorRef.getNodeRef(), ContentModel.PROP_USERNAME);
 		}
 		
