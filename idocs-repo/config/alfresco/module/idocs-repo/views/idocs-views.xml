@@ -128,6 +128,27 @@
         </field> -->
     </view>
 
+    <view class="deputy:absenceEvent" id="currentUserAbsence">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:comment"/>
+        <field assoc="deputy:user">
+            <invariant on="default" language="javascript">
+                person
+            </invariant>
+            <invariant on="relevant" language="javascript">
+                false
+            </invariant>
+        </field>
+        <!-- <field assoc="deputy:reasonOfAbsence">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
+            </region>
+        </field> -->
+    </view>
+
     <view class="idocs:legalForm">
         <field prop="idocs:legalFormName" />
         <field prop="idocs:legalFormDescription" />
