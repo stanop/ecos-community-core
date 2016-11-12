@@ -81,14 +81,14 @@
                     <journalId>workspace://SpacesStore/journal-meta-j-active-tasks</journalId>
                 </properties>
             </component>
+            <!-- contracts site journal -->
             <component>
                 <scope>page</scope>
                 <region-id>component-2-2</region-id>
                 <source-id>user/${userid}/dashboard</source-id>
                 <url>/components/journals2/dashlet</url>
                 <properties>
-                    <journalsListId>global-tasks</journalsListId>
-                    <journalId>workspace://SpacesStore/journal-meta-j-subordinate-tasks</journalId>
+                    <journalsListId>site-contracts-main</journalsListId>
                 </properties>
             </component>
         </components>
