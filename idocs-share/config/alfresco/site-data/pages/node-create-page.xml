@@ -7,7 +7,6 @@
 	<template-instance>node-view</template-instance>
 	<authentication>user</authentication>
 	<components>
-
 		<component>
 			<region-id>node-view</region-id>
 			<url>/citeck/components/node-view</url>
@@ -19,17 +18,15 @@
 				<runtimeKey>node-create</runtimeKey>
 			</properties>
 		</component>
-
 		<component>
 			<region-id>node-view-mgr</region-id>
 			<url>/citeck/components/node-view-mgr</url>
 			<properties>
 				<runtimeKey>node-create</runtimeKey>
-				<onsubmit>back</onsubmit>
+				<onsubmit>card</onsubmit>
 				<oncancel>back</oncancel>
 				<redirect>{redirect}</redirect>
 			</properties>
 		</component>
-
 	</components>
 </page>

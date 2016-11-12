@@ -145,8 +145,8 @@ CreateVariant
 				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
 		// redirect back after submit
-		var redirectionMethod = this.resolve("journal.type.options")["createVariantRedirectionMethod"];
-		if (redirectionMethod) urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
+		var redirectionMethod = this.resolve("journal.type.options")["createVariantRedirectionMethod"] || "back";
+		urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
 
 		// TODO: 
 		// - support parameter from xml
