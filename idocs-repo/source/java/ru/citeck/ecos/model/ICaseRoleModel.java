@@ -42,6 +42,7 @@ public class ICaseRoleModel {
     // association
     public static final QName ASSOC_ASSIGNEES = QName.createQName(NAMESPACE, "assignees");
     public static final QName ASSOC_ROLES = QName.createQName(NAMESPACE, "roles");
+    public static final QName ASSOC_REFERENCE_ROLE = QName.createQName(NAMESPACE, "referenceRoleAssoc");
 
     // constraint
 }

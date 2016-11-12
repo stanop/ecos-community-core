@@ -18,29 +18,20 @@
  */
 package ru.citeck.ecos.invariants;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.lang.builder.CompareToBuilder;
-
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.invariants.InvariantScope.AttributeScopeKind;
+import ru.citeck.ecos.model.AttributeModel;
+import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.utils.DictionaryUtils;
+
+import java.util.*;
 
 class InvariantsFilter {
     
@@ -53,7 +44,9 @@ class InvariantsFilter {
     
     private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
-    
+    private AttributesPermissionService attributesPermissionService;
+    private NamespaceService namespaceService;
+
     private Map<QName, InvariantAttributeType> attributeTypes;
     
     private NavigableMap<InvariantScope, List<InvariantDefinition>> invariantsByClass;
@@ -141,9 +134,17 @@ class InvariantsFilter {
     }
     
     public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames) {
-        return this.searchMatchingInvariants(classNames, true);
+        return this.searchMatchingInvariants(classNames, true, null, null);
     }
-    
+
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, NodeRef nodeRef, String mode) {
+        return this.searchMatchingInvariants(classNames, true, nodeRef, mode);
+    }
+
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault) {
+        return this.searchMatchingInvariants(classNames, addDefault, null, null);
+    }
+
     /**
      * Search invariants, matching specified classes.
      * The invariants list is ordered by priority - the highest priority first.
@@ -152,11 +153,11 @@ class InvariantsFilter {
      * @param addDefault set true to add default invariants to list, false - only custom invariants
      * @return ordered list of invariants
      */
-    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault) {
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, boolean addDefault, NodeRef nodeRef, String mode) {
         List<ClassDefinition> allInvolvedClasses = DictionaryUtils.expandClassNamesToDefs(classNames, dictionaryService);
         
         Set<InvariantDefinition> invariants = new LinkedHashSet<InvariantDefinition>();
-        
+
         // search by class
         for(ClassDefinition classDef : allInvolvedClasses) {
             addInvariants(invariantsByClass.subMap(
@@ -171,10 +172,10 @@ class InvariantsFilter {
         
         for(QName attributeName : attributeNames) {
             QName attributeTypeName = nodeAttributeService.getAttributeType(attributeName);
-            
+
             InvariantAttributeType attributeType = attributeTypes.get(attributeTypeName);
             if(attributeType == null) continue; // unsupported
-            
+
             addInvariants(
                     invariantsByAttribute.get(attributeType.getAttributeScope(attributeName)), 
                     invariants);
@@ -182,8 +183,28 @@ class InvariantsFilter {
                 addInvariants(
                         attributeType.getDefaultInvariants(attributeName, allInvolvedClasses), 
                         invariants);
+
+                // Check current user permissions for attribute
+                if (attributesPermissionService != null) {
+                    if (!attributesPermissionService.isFieldEditable(attributeName, nodeRef, mode)) {
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        if (attributeTypeName.equals(AttributeModel.TYPE_PROPERTY)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_CHILD_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.CHILD_ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_TARGET_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_SOURCE_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        }
+                    }
+                    if (!attributesPermissionService.isFieldVisible(attributeName, nodeRef, mode)) {
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.RELEVANT).explicit(false).buildFinal());
+                    }
+                }
             }
-            
+
             QName attributeSubtype = nodeAttributeService.getAttributeSubtype(attributeName);
             if(!addedAttributeTypes.contains(new Pair<>(attributeTypeName, attributeSubtype))) {
                 InvariantScope attributeTypeScope = attributeType.getAttributeTypeScope(attributeSubtype);
@@ -195,14 +216,14 @@ class InvariantsFilter {
                 addedAttributeTypes.add(new Pair<>(attributeTypeName, attributeSubtype));
             }
         }
-        
+
         // search by pure attributes
         for(AttributeScopeKind scopeKind : AttributeScopeKind.values()) {
             if(!scopeKind.isConcrete()) {
                 addInvariants(invariantsByAttribute.get(new InvariantScope(scopeKind)), invariants);
             }
         }
-        
+
         // ordering
         return orderInvariants(allInvolvedClasses, invariants);
     }
@@ -244,6 +265,14 @@ class InvariantsFilter {
 
     public void setAttributeTypesRegistry(Map<QName, InvariantAttributeType> attributeTypes) {
         this.attributeTypes = attributeTypes;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
+    public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {
+        this.attributesPermissionService = attributesPermissionService;
     }
 
     // "highest priority first" comparator

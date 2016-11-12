@@ -84,6 +84,7 @@
                     <param name="key">agreement.form.tk_kind.title</param>
                 </region>
             </field>
+            <field prop="tk:type" template="none"/>
         </view>
         <view>
             <field prop="contracts:agreementNumber">
@@ -519,6 +520,7 @@
                     <param name="key">closing-document.form.prop_tk_kind.title</param>
                 </region>
             </field>
+            <field prop="tk:type" template="none"/>
             <field prop="contracts:closingDocumentDate">
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.property.contracts_closingDocumentDate.title</param>
@@ -605,6 +607,7 @@
                     <param name="key">sup-agreement.form.tk_kind.title</param>
                 </region>
             </field>
+            <field prop="tk:type" template="none"/>
         </view>
         <view>
             <field prop="contracts:agreementNumber">

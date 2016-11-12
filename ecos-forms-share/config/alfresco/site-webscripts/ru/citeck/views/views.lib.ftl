@@ -42,10 +42,14 @@
 
 <#macro renderViewContainer view id>
 	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
-			 data-bind="css: { loading: !loaded() }">
-		<div class="loading-container">
-			<div class="loading-indicator"></div>
-			<div class="loading-message">${msg('message.loading.form')}</div>
+			 data-bind="css: { 'loading': !loaded(), 'submit-process': inSubmitProcess }">
+		
+		<div class="loading-overlay">
+			<div class="loading-container">
+				<div class="loading-indicator"></div>
+				<div class="loading-message">${msg('message.loading.form')}</div>
+				<div class="submit-process-message">${msg('message.submit-process.form')}</div>
+			</div>			
 		</div>
 		
 		<!-- ko API: rootObjects -->

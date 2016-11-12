@@ -131,26 +131,28 @@ CreateVariant
         }
       );
     })
+
 	.property('title', s)
 	.property('destination', s)
 	.property('type', s)
 	.property('formId', s)
 	.property('canCreate', b)
 	.property('isDefault', b)
+	.property('journal', Journal)
+
 	.computed('link', function() {
 		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
 				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
 		// redirect back after submit
-		urlTemplate += "&onsubmit=back";
+		var redirectionMethod = this.resolve("journal.type.options")["createVariantRedirectionMethod"] || "back";
+		urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
 
 		// TODO: 
 		// - support parameter from xml
 
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
-			if(typeof value == "function") {
-				return value();
-			}
+			if(typeof value == "function") { return value(); }
 			return value;
 		}));
 	})
@@ -158,9 +160,13 @@ CreateVariant
 
 JournalType
 	.key('id', s)
+	.property('journal', Journal)
 	.property('options', o)
 	.property('formInfo', FormInfo)
 	.property('attributes', [ Attribute ])
+	.property('filters', [ Filter ])
+	.property('settings', [ Settings ])
+
 	.computed('visibleAttributes', function() {
 		return _.invoke(_.filter(this.attributes(), function(attr) {
 			return attr.visible();
@@ -213,8 +219,7 @@ JournalType
 			visibleAttributes: _.invoke(this.defaultAttributes(), 'name')
 		});
 	})
-	.property('filters', [ Filter ])
-	.property('settings', [ Settings ])
+
 	.method('attribute', function(name) {
 		return _.find(this.attributes(), function(attr) {
 			return attr.name() == name;
@@ -1059,7 +1064,7 @@ JournalsList
 JournalType
 	.load('filters', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/filters?journalType={id}",
-		resultsMap: { filters: 'filters' }
+		resultsMap: { filters: 'filters' },
 	}))
 	.load('settings', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/settings?journalType={id}",
@@ -1076,13 +1081,17 @@ JournalType
 					formId: data.settings.formId
 				},
 			}
-		}
+		},
+		postprocessing: function(model) { model["journal"] = this; }
 	}))
 	;
 
 Journal
 	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}"
+		url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
+		postprocessing: function(model) {
+			for (var c in model.createVariants) { model.createVariants[c]["journal"] = this; }
+		}
 	}))
 	;
 

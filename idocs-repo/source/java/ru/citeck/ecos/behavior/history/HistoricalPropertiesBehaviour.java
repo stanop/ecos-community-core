@@ -18,34 +18,29 @@
  */
 package ru.citeck.ecos.behavior.history;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
+import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.repo.policy.PolicyScope;
-import org.alfresco.repo.version.VersionServicePolicies;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-
-import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.model.ClassificationModel;
-import ru.citeck.ecos.history.HistoryService;
-import ru.citeck.ecos.model.ICaseModel;
-import org.alfresco.repo.policy.OrderedBehaviour;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.history.HistoryService;
+import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.model.HistoryModel;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HistoricalPropertiesBehaviour implements 
 	NodeServicePolicies.OnCreateNodePolicy,
@@ -177,15 +172,20 @@ public class HistoricalPropertiesBehaviour implements
 							eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 							eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, entry.getKey());
 							eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, propAfter.toString());
+							String comment = getKeyValue(entry.getKey())
+									+ ": "
+									+ getKeyValue(entry.getKey(), propBefore)
+									+ " -> "
+									+ getKeyValue(entry.getKey(), propAfter);
+							eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 							historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
-
 						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public void onCreateAssociation(AssociationRef nodeAssocRef) {
 		logger.debug("HistoricalPropertiesBehaviour onCreateAssociation="+this);
@@ -193,7 +193,7 @@ public class HistoricalPropertiesBehaviour implements
 		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 		NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		NodeRef nodeTarget = nodeAssocRef.getTargetRef();
-		if(enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
+		if(!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
 		{
 			if(assoc!=null) {
 				Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
@@ -201,6 +201,11 @@ public class HistoricalPropertiesBehaviour implements
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
 				eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, nodeTarget.toString());
+
+				String comment = getAssocKeyValue(assoc.getName())
+						+ ": "
+						+ getChangeValue(nodeAssocRef.getTargetRef());
+				eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
 		}
@@ -211,13 +216,17 @@ public class HistoricalPropertiesBehaviour implements
 		logger.debug("onDeleteAssociation event");
 		NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
-		if(enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
+		if(!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName()))
 		{
 			if(assoc!=null) {
 				Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
 				eventProperties.put(HistoryModel.PROP_NAME, ASSOC_REMOVED);
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
+				String comment = getAssocKeyValue(assoc.getName())
+						+ ": "
+						+ getChangeValue(nodeAssocRef.getTargetRef());
+				eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
 		}
@@ -265,6 +274,38 @@ public class HistoricalPropertiesBehaviour implements
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
 		}
+	}
+	
+	private String getKeyValue(QName qName) {
+		String modelName = dictionaryService.getProperty(qName).getModel().getName().getPrefixString().replace(":", "_");
+		String propName = dictionaryService.getProperty(qName).getName().getPrefixString().replace(":", "_");
+		return I18NUtil.getMessage(modelName + ".property." + propName + ".title");
+	}
+
+	private Object getKeyValue(QName qName, Object constraint) {
+		if (dictionaryService.getProperty(qName).getConstraints().size() > 0) {
+			String localName = dictionaryService.getProperty(qName).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
+			return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
+		} else {
+			return constraint;
+		}
+	}
+
+	private String getChangeValue(NodeRef nodeRef) {
+		if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
+			return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
+					+ " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
+		} else {
+			return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
+					? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
+					: nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
+		}
+	}
+
+	private String getAssocKeyValue(QName qName) {
+		String modelName = dictionaryService.getAssociation(qName).getModel().getName().getPrefixString().replace(":", "_");
+		String propName = dictionaryService.getAssociation(qName).getName().getPrefixString().replace(":", "_");
+		return I18NUtil.getMessage(modelName + ".association." + propName + ".title");
 	}
 
 	public void setAllowedProperties(List<QName> allowedProperties) {
