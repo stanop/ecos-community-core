@@ -201,9 +201,10 @@ public class HistoricalPropertiesBehaviour implements
 				eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeSource);
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
 				eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, nodeTarget.toString());
+
 				String comment = getAssocKeyValue(assoc.getName())
 						+ ": "
-						+ nodeService.getProperty(nodeAssocRef.getTargetRef(), ContentModel.PROP_TITLE);
+						+ getChangeValue(nodeAssocRef.getTargetRef());
 				eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
@@ -224,7 +225,7 @@ public class HistoricalPropertiesBehaviour implements
 				eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, assoc.getName());
 				String comment = getAssocKeyValue(assoc.getName())
 						+ ": "
-						+ nodeService.getProperty(nodeAssocRef.getTargetRef(), ContentModel.PROP_TITLE);
+						+ getChangeValue(nodeAssocRef.getTargetRef());
 				eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 			}
@@ -287,6 +288,17 @@ public class HistoricalPropertiesBehaviour implements
 			return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
 		} else {
 			return constraint;
+		}
+	}
+
+	private String getChangeValue(NodeRef nodeRef) {
+		if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
+			return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
+					+ " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
+		} else {
+			return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
+					? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
+					: nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
 		}
 	}
 
