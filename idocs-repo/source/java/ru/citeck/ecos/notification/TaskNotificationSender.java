@@ -18,19 +18,11 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
@@ -38,8 +30,10 @@ import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import ru.citeck.ecos.security.NodeOwnerDAO;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Notification sender for tasks (ItemType = WorkflowTask).
@@ -176,6 +170,9 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 		NodeRef wfPackage = workflow.getWorkflowPackage();
 		ArrayList<Object> docsInfo = new ArrayList<Object>();
 		workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, docsInfo);
+		if (wfPackage == null) {
+			return workflowInfo;
+		}
 		if(nodeService.exists(wfPackage))
 		{
 			List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(wfPackage);

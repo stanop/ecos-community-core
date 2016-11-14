@@ -64,10 +64,12 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
         if (assignee != null) {
             TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
             ArrayList<String> actorsList = delegateListener.getActorsList(assignee);
-            for (String actor : actorsList) {
-                delegateTask.addUserIdentityLink(actor, IdentityLinkType.CANDIDATE);
+            if (actorsList.size() > 1) {
+                for (String actor : actorsList) {
+                    delegateTask.addUserIdentityLink(actor, IdentityLinkType.CANDIDATE);
+                }
+                delegateTask.setAssignee(null);
             }
-            delegateTask.setAssignee(null);
         }
     }
 }

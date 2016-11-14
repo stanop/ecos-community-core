@@ -24,6 +24,7 @@
                 <invariant on="default" language="explicit">true</invariant>
             </field>
         </view>
+        <field prop="org:preset" />
     </view>
 
     <views class="cm:person" mode="view">

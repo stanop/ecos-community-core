@@ -72,13 +72,16 @@ class InvariantServiceImpl implements InvariantService {
     }
 
     @Override
-    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames) {
-        return filter.searchMatchingInvariants(classNames, attributeNames, true);
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, NodeRef nodeRef, String mode) {
+        return filter.searchMatchingInvariants(classNames, true, nodeRef, mode);
     }
 
     @Override
     public List<InvariantDefinition> getInvariants(QName className, Collection<QName> attributeNames) {
-        return filter.searchMatchingInvariants(Collections.singleton(className), attributeNames, true);
+        Collection<QName> classNames = new LinkedHashSet<>();
+        classNames.add(className);
+        classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
+        return filter.searchMatchingInvariants(classNames);
     }
 
     @Override
