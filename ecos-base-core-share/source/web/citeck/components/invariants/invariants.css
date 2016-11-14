@@ -1253,6 +1253,11 @@
   border-collapse: collapse;
 }
 
+.journal-container .journal tr.journal-element.selected,
+.journal-container .journal tr.journal-element.selected td:hover {
+  background-color: #f0fceb;
+}
+
 .journal-container .journal th,
 .journal-container .journal tr.journal-element td {
   padding: 7px 0 7px 15px;
@@ -1360,6 +1365,11 @@
 
 .full .filter-page,
 .create-page {
+  height: 371px;
+}
+
+.full.dock .filter-page,
+.dock.create-page {
   height: 501px;
   overflow: auto;
 }

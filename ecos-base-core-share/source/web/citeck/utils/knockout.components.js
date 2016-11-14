@@ -369,6 +369,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             }
 
             // methods
+            this.selected = function(data) {
+                return ko.computed(function() {
+                    return params.targetElements().indexOf(data) != -1;
+                });
+            }
+
             this.selectElement = function(data, event) {
                 if (self.targetElements) {
                     if (self.options.multiple && (ko.isObservable(self.options.multiple) ? self.options.multiple() : self.options.multiple)) {
@@ -444,7 +450,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     <!-- ko if: $component.columns ? true : false -->\
                         <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                foreach: $component.columns,\
-                                                               click: $component.selectElement, clickBubble: false">\
+                                                               click: $component.selectElement, clickBubble: false,\
+                                                               css: { selected: $component.selected($data) }">\
                            <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
                                 <!-- ko with: $component.journalType.attribute($data) -->\
                                     <!-- ko if: $parents[1].properties[$data.name()] -->\
@@ -462,7 +469,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     <!-- ko ifnot: $component.columns ? true : false -->\
                         <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                foreach: $component.journalType.defaultAttributes,\
-                                                               click: $component.selectElement, clickBubble: false">\
+                                                               click: $component.selectElement, clickBubble: false,\
+                                                               css: { selected: $component.selected($data) }">\
                             <!-- ko if: $parent.properties[$data.name()] -->\
                                 <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
                             <!-- /ko -->\
