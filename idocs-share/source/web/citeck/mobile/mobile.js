@@ -34,19 +34,27 @@ Citeck.mobile.isMobileDevice = function() {
             transformDashboard(true);
             transformJournalsSidebar(true);
             transformForm(true);
+            trasformCard(true);
         });
     } else {       
         $(document).ready(function() {
             var mobileWidth = (function() {
-                var defaultMobileWidth = 525, themesMobileWidth = {
-                        "yui-skin-citeckTheme": 585,
-                        "yui-skin-uedmsTheme": 543
+                var defaultMobileWidth = { default: 525, card: 700 }, 
+                    themesMobileWidth = {
+                        "yui-skin-citeckTheme": { default: 585, card: 670 },
+                        "yui-skin-uedmsTheme": { default: 543 }
                     };
 
                 var bodyThemeClass = document.getElementById("Share").className.match(/yui-skin-\w+Theme/),
-                    yuiThemeName = bodyThemeClass ? bodyThemeClass[0] : "";
+                    yuiThemeName = bodyThemeClass ? bodyThemeClass[0] : "",
+                    page = "default";
 
-                return themesMobileWidth[yuiThemeName] || defaultMobileWidth;
+                if (/card-details/.test(window.location.pathname)) { page = "card"; }
+
+                if (themesMobileWidth[yuiThemeName] && themesMobileWidth[yuiThemeName][page]) {
+                    return themesMobileWidth[yuiThemeName][page];
+                }
+                return defaultMobileWidth[page];
             })();
 
             $("#bd .grid").attr("data-class-backup", $("#bd .grid").attr("class"));
@@ -56,7 +64,8 @@ Citeck.mobile.isMobileDevice = function() {
                         mobileGlobalClassToggle, 
                         transformJournalsSidebar, 
                         transformDashboard,
-                        transformForm
+                        transformForm,
+                        trasformCard
                     ],
                     isMobile = window.innerWidth <= mobileWidth;
                 for (var f in functions) { functions[f](isMobile); }
@@ -132,5 +141,11 @@ Citeck.mobile.isMobileDevice = function() {
             viewportToggle(isMobile);
         }
     };
+
+    function trasformCard(isModile) {
+        if (/card-details/.test(window.location.pathname)) {
+            viewportToggle(isMobile);
+        }
+    }
 
 })()
