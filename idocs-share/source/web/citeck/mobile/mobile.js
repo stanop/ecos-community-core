@@ -51,8 +51,8 @@ Citeck.mobile.isMobileDevice = function() {
 
                 if (/card-details/.test(window.location.pathname)) { page = "card"; }
 
-                if (themesMobileWidth[yuiThemeName]) {
-                    return themesMobileWidth[yuiThemeName][page] || themesMobileWidth[yuiThemeName]["default"];
+                if (themesMobileWidth[yuiThemeName] && themesMobileWidth[yuiThemeName][page]) {
+                    return themesMobileWidth[yuiThemeName][page];
                 }
                 return defaultMobileWidth[page];
             })();

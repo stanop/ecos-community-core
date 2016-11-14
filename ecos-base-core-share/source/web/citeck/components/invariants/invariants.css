@@ -1611,6 +1611,11 @@
   .invariants-form.view-form .template-table [class*="template-row"] .template-free-content {
     width: 100%;
     float: none;
+    max-width: 100%;
+  }
+
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label {
+    margin-bottom: 10px;
   }
 }
 
