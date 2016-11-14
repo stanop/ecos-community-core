@@ -39,10 +39,10 @@ Citeck.mobile.isMobileDevice = function() {
     } else {       
         $(document).ready(function() {
             var mobileWidth = (function() {
-                var defaultMobileWidth = { default: 525, card: 700 }, 
+                var defaultMobileWidth = { "default": 525, "card": 700 }, 
                     themesMobileWidth = {
-                        "yui-skin-citeckTheme": { default: 585, card: 670 },
-                        "yui-skin-uedmsTheme": { default: 543 }
+                        "yui-skin-citeckTheme": { "default": 585, "card": 670 },
+                        "yui-skin-uedmsTheme": { "default": 543 }
                     };
 
                 var bodyThemeClass = document.getElementById("Share").className.match(/yui-skin-\w+Theme/),
