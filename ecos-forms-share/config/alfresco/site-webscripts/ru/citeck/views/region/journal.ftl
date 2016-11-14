@@ -7,30 +7,30 @@
 <#assign hightlightSelection>
     <#if params.hightlightSelection??>
         ${params.hightlightSelection}
-    <#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].journal??>
-        <#if config.scoped["InvariantControlsConfiguration"]["journal"].attributes["hightlightSelection"]??>
-            ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["hightlightSelection"]}
-        </#if>
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? && 
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["hightlightSelection"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["hightlightSelection"]}
     <#else>false</#if>
 </#assign>
 
 <#assign dock>
     <#if params.dock??>
         ${params.dock}
-    <#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].journal??>
-        <#if config.scoped["InvariantControlsConfiguration"]["journal"].attributes["dock"]??>
-            ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["dock"]}
-        </#if>
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["dock"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["dock"]}
     <#else>true</#if>
 </#assign>
 
 <#assign mode>
     <#if params.mode??>
         ${params.mode}
-    <#elseif config.scoped["InvariantControlsConfiguration"]?? && config.scoped["InvariantControlsConfiguration"].journal??>
-        <#if config.scoped["InvariantControlsConfiguration"]["journal"].attributes["mode"]??>
-            ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["mode"]}
-        </#if>
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? && 
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["mode"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["mode"]}
     <#else>collapse</#if>
 </#assign>
 
