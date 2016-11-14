@@ -370,10 +370,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             // methods
             this.selected = function(data) {
-                return ko.computed(function() {
+                return  self.hightlightSelection ? ko.computed(function() {
                     return params.targetElements().indexOf(data) != -1;
-                });
-            }
+                }) : false;
+            };
 
             this.selectElement = function(data, event) {
                 if (self.targetElements) {
