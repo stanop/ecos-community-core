@@ -1596,6 +1596,26 @@
 }
 
 
+@media screen and (max-width: 1000px) {
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-view,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-select,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-date,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-datetime,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-text,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-textarea,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-auto-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-autocomplete,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-checkbox,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-free-content {
+    width: 100%;
+    float: none;
+  }
+}
+
+
+
 /* template-tabs */
 .static .invariants-form .template-tabs .template-table {
     margin-left: 0;
