@@ -142,7 +142,7 @@ Citeck.mobile.isMobileDevice = function() {
         }
     };
 
-    function trasformCard(isModile) {
+    function trasformCard(isMobile) {
         if (/card-details/.test(window.location.pathname)) {
             viewportToggle(isMobile);
         }
