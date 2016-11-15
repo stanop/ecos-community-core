@@ -835,8 +835,8 @@ YAHOO.Bubbling.fire("registerAction", {
                 }, { title : props.title });
             } else if (actionType === "REQUEST") {
                 Alfresco.util.Ajax.request({
-                    url: Alfresco.constants[props.context] + props.actionURL,
-                    method: props.method,
+                    url: Alfresco.constants[props.context] + props.url,
+                    method: props.requestMethod,
                     successCallback: {
                         scope: this,
                         fn: function () {
@@ -859,9 +859,11 @@ YAHOO.Bubbling.fire("registerAction", {
                     }
                 });
             } else if (actionType === "REDIRECT") {
-                window.open(Alfresco.constants[props.context] + props.actionURL, "_self");
+                window.open(Alfresco.constants[props.context] + props.url, "_self");
             } else if (actionType === "CREATE_NODE") {
-                Citeck.forms.dialog(props.nodeType, props.formId, null, {
+                Citeck.forms.dialog(props.nodeType, props.formId, function() {
+					YAHOO.Bubbling.fire("metadataRefresh");
+				}, {
                     "destination": props.destination,
                     "destinationAssoc": props.destinationAssoc,
                     "title": props.title
