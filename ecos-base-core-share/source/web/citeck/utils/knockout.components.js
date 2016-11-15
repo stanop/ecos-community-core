@@ -384,7 +384,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }
                 };
 
-                if (self.callback) self.callback(data, event);
+                if (self.afterSelectionCallback) self.afterSelectionCallback(data, event);
             };
 
             this.nextPage = function(data, event) {
@@ -451,6 +451,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                foreach: $component.columns,\
                                                                click: $component.selectElement, clickBubble: false,\
+                                                               event: { dblclick: $component.selectElement },\
                                                                css: { selected: $component.selected($data) }">\
                            <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
                                 <!-- ko with: $component.journalType.attribute($data) -->\
@@ -470,6 +471,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                foreach: $component.journalType.defaultAttributes,\
                                                                click: $component.selectElement, clickBubble: false,\
+                                                               event: { dblclick: $component.selectElement },\
                                                                css: { selected: $component.selected($data) }">\
                             <!-- ko if: $parent.properties[$data.name()] -->\
                                 <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\

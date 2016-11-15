@@ -751,6 +751,7 @@ ko.bindingHandlers.journalControl = {
                                     page: page,\
                                     loading: loading,\
                                     hightlightSelection: hightlightSelection,\
+                                    afterSelectionCallback: afterSelectionCallback,\
                                     options: {\
                                         multiple: multiple,\
                                         pagination: true,\
@@ -900,7 +901,10 @@ ko.bindingHandlers.journalControl = {
                 columns: defaultVisibleAttributes,
                 hidden: defaultHiddenByType,
                 dock: params.dock,
-                hightlightSelection: params.hightlightSelection
+                hightlightSelection: params.hightlightSelection,
+                afterSelectionCallback: function(data, event) {
+                    if (event.type == "dblclick") { value(data); panel.hide(); }
+                }
             }, Dom.get(elementsPageId));
 
             // say knockout that we have something on search page
