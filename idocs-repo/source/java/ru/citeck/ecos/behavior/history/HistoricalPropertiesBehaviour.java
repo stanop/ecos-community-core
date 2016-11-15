@@ -38,6 +38,8 @@ import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -283,11 +285,18 @@ public class HistoricalPropertiesBehaviour implements
 	}
 
 	private Object getKeyValue(QName qName, Object constraint) {
+		if (constraint != null && "date".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
+			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+			return format.format(constraint);
+		}
+		if (constraint != null && ClassificationModel.PROP_DOCUMENT_KIND.equals(qName)) {
+			return nodeService.getProperty((NodeRef) constraint, ContentModel.PROP_NAME);
+		}
 		if (dictionaryService.getProperty(qName).getConstraints().size() > 0) {
 			String localName = dictionaryService.getProperty(qName).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
 			return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
 		} else {
-			return constraint;
+			return constraint == null ? "" : constraint;
 		}
 	}
 
