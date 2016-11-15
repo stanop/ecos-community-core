@@ -46,7 +46,6 @@ version: 2.6.0
 	height: 500px;
 }
 
-.yui-skin-citeckTheme .yui-overlay-hidden,
 .yui-skin-citeckTheme .yui-overlay-hidden > .yui-overlay > * {
   	display: none;
 }
