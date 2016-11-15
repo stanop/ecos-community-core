@@ -42,7 +42,7 @@
 
 <#macro renderViewContainer view id>
 	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
-			 data-bind="css: { 'loading': !loaded(), 'submit-process': inSubmitProcess }">
+			 data-bind="css: { 'loading': !loaded() }">
 		
 		<div class="loading-overlay">
 			<div class="loading-container">
