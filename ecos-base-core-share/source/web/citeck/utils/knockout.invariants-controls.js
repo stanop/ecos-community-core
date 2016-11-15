@@ -545,8 +545,8 @@ ko.bindingHandlers.journalControl = {
         
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
-        searchCriteria              = params.searchCriteria,
 
+        searchCriteria              = params.searchCriteria,
         defaultCriteria             = params.defaultCriteria;
 
     if (defaultVisibleAttributes) {
@@ -571,7 +571,7 @@ ko.bindingHandlers.journalControl = {
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
         loading = ko.observable(true), criteriaListShow = ko.observable(false), 
         searchBar = params.searchBar ? params.searchBar == "true" : true,
-        mode = params.mode ? params.mode : "collapse",
+        mode = params.mode, dockMode = params.dock ? "dock" : "",
         pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
         additionalOptions = ko.observable([]), options = ko.computed(function(page) {
             var nudeOptions = data.filterOptions(criteria(), { 
@@ -696,7 +696,7 @@ ko.bindingHandlers.journalControl = {
 
             panel.setHeader(localization.title || 'Journal Picker');
             panel.setBody('\
-                <div class="journal-picker-header ' + mode + '" id="' + journalPickerHeaderId + '">\
+                <div class="journal-picker-header ' + mode + ' ' + dockMode + '" id="' + journalPickerHeaderId + '">\
                     <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
                     <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
                     <!-- ko component: { name: "createObjectButton", params: {\
@@ -750,6 +750,7 @@ ko.bindingHandlers.journalControl = {
                                     hidden: hidden,\
                                     page: page,\
                                     loading: loading,\
+                                    hightlightSelection: hightlightSelection,\
                                     options: {\
                                         multiple: multiple,\
                                         pagination: true,\
@@ -763,16 +764,18 @@ ko.bindingHandlers.journalControl = {
                                 }\
                             } --><!-- /ko -->\
                         </div>\
-                        <div class="journal-capture">' + localization.selectedElements + '</div>\
-                        <div class="journal-container selected-elements" id="' + selectedJournalId + '">\
-                            <!-- ko component: { name: \'journal\',\
-                                params: {\
-                                    sourceElements: selectedElements,\
-                                    journalType: journalType,\
-                                    columns: columns\
-                                }\
-                            } --><!-- /ko -->\
-                        </div>\
+                        <!-- ko if: dock -->\
+                            <div class="journal-capture">' + localization.selectedElements + '</div>\
+                            <div class="journal-container selected-elements" id="' + selectedJournalId + '">\
+                                <!-- ko component: { name: \'journal\',\
+                                    params: {\
+                                        sourceElements: selectedElements,\
+                                        journalType: journalType,\
+                                        columns: columns\
+                                    }\
+                                } --><!-- /ko -->\
+                            </div>\
+                        <!-- /ko -->\
                     </div>\
                     <div class="create-page hidden" id="' + createPageId + '"></div>\
                 </div>\
@@ -895,7 +898,9 @@ ko.bindingHandlers.journalControl = {
                 page: pageNumber,
                 loading: loading,
                 columns: defaultVisibleAttributes,
-                hidden: defaultHiddenByType
+                hidden: defaultHiddenByType,
+                dock: params.dock,
+                hightlightSelection: params.hightlightSelection
             }, Dom.get(elementsPageId));
 
             // say knockout that we have something on search page

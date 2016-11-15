@@ -2118,6 +2118,7 @@ table td.thumbnail img
 #alf-hd {
     border-bottom: 1px solid #ccc;
     background-color: white;
+    width: 100% !important;
 }
 
 #alf-full-width {
