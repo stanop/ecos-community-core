@@ -26,7 +26,6 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.action.ParameterDefinitionImpl;
 import org.alfresco.repo.action.evaluator.ActionConditionEvaluatorAbstractBase;
 import org.alfresco.repo.admin.SysAdminParams;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.ActionCondition;
 import org.alfresco.service.cmr.action.ParameterDefinition;
@@ -35,7 +34,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.util.UrlUtil;
-import ru.citeck.ecos.action.ActionConstants;
+import ru.citeck.ecos.action.ActionConditionUtils;
 
 public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
 {
@@ -109,8 +108,7 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
 
         // add context variables
-        Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-        if(variables != null)
+        Map<String, Object> variables = ActionConditionUtils.getTransactionVariables();
         for(Map.Entry<String, Object> variable : variables.entrySet()) {
             if(!model.containsKey(variable.getKey())) {
                 model.put(variable.getKey(), variable.getValue());

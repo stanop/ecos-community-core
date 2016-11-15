@@ -19,19 +19,16 @@
 package ru.citeck.ecos.workflow.listeners;
 
 import org.activiti.engine.delegate.DelegateExecution;
-import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.action.ActionConstants;
+import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.workflow.utils.ActivitiVariableScopeMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,30 +69,9 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
         List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 
         if(packageAssocs != null && packageAssocs.size() > 0) {
-            getTransactionProcessVariables().putAll(delegateExecution.getVariables());
+            ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
             caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
         }
-    }
-
-    private Map<String, Object> getTransactionProcessVariables() {
-
-        Map<String, Object> actionConditionVariables =
-                AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-
-        if(actionConditionVariables == null) {
-            actionConditionVariables = new HashMap<>();
-            AlfrescoTransactionSupport.bindResource(ActionConstants.ACTION_CONDITION_VARIABLES, actionConditionVariables);
-        }
-
-        Object processVariablesObj = actionConditionVariables.get(ActionConstants.PROCESS_VARIABLES);
-        Map<String, Object> result = castOrNull(processVariablesObj, Map.class);
-
-        if (result == null) {
-            result = new HashMap<>();
-            actionConditionVariables.put(ActionConstants.PROCESS_VARIABLES, result);
-        }
-
-        return result;
     }
 
     private static <T> T castOrNull(Object obj, Class<T> clazz) {
