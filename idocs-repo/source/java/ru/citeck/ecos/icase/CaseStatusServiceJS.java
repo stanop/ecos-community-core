@@ -6,20 +6,27 @@ import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 /**
- * @author Roman.Makarskiy on 11/14/2016.
+ * @author Roman Makarskiy
  */
 public class CaseStatusServiceJS extends AlfrescoScopableProcessorExtension {
 
     private CaseStatusService caseStatusService;
 
-    public void setCaseStatus(Object documentRef, Object caseStatusRef) {
+    public void setStatus(Object documentRef, Object caseStatusRef) {
+        NodeRef statusRef;
+
+        if (caseStatusRef instanceof String && !NodeRef.isNodeRef(caseStatusRef.toString())) {
+            statusRef = caseStatusService.getStatusByName(caseStatusRef.toString());
+        } else {
+            statusRef = JavaScriptImplUtils.getNodeRef(caseStatusRef);
+        }
+
         NodeRef docRef = JavaScriptImplUtils.getNodeRef(documentRef);
-        NodeRef statusRef = JavaScriptImplUtils.getNodeRef(caseStatusRef);
-        caseStatusService.setCaseStatus(docRef, statusRef);
+        caseStatusService.setStatus(docRef, statusRef);
     }
 
-    public ScriptNode getCaseStatusByName(String statusName) {
-        NodeRef caseStatusRef = caseStatusService.getCaseStatusByName(statusName);
+    public ScriptNode getStatusByName(String statusName) {
+        NodeRef caseStatusRef = caseStatusService.getStatusByName(statusName);
         return JavaScriptImplUtils.wrapNode(caseStatusRef, this);
     }
 

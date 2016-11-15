@@ -6,7 +6,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.service.CiteckServices;
 
 /**
- * @author Roman.Makarskiy on 11/14/2016.
+ * @author Roman Makarskiy
  */
 public interface CaseStatusPolicies {
 
@@ -15,8 +15,12 @@ public interface CaseStatusPolicies {
         // if it is removed, this behaviours will be registered with
         // default namespace and will not be matched
         public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-
         public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseStatusChanged");
+
+        //without this fields TransactionBehaviourQueue takes invocations
+        //with a same first argument as totally equals and processes only one
+        static Arg ARG_0 = Arg.KEY;
+        static Arg ARG_2 = Arg.KEY;
 
         /**
          * Called when case status changed.

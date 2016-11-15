@@ -3,7 +3,7 @@ package ru.citeck.ecos.icase;
 import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
- * @author Roman.Makarskiy on 11/14/2016.
+ * @author Roman Makarskiy
  */
 public interface CaseStatusService {
 
@@ -13,7 +13,7 @@ public interface CaseStatusService {
      * @param document - document nodeRef
      * @param caseStatus - case status nodeRef
      */
-    public void setCaseStatus(NodeRef document, NodeRef caseStatus);
+    public void setStatus(NodeRef document, NodeRef caseStatus);
 
 
     /**
@@ -22,6 +22,6 @@ public interface CaseStatusService {
      * @param statusName - case status name
      * @return case status nodeRef
      */
-    public NodeRef getCaseStatusByName(String statusName);
+    public NodeRef getStatusByName(String statusName);
 
 }

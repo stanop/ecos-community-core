@@ -14,9 +14,9 @@ import ru.citeck.ecos.model.ICaseModel;
 import java.util.Objects;
 
 /**
- * @author Roman.Makarskiy on 10/19/2016.
+ * @author Roman Makarskiy
  */
-public class DocumentChangeCaseStatusNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
+public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
         implements CaseStatusPolicies.OnCaseStatusChangedPolicy {
 
     private NodeService nodeService;
@@ -29,7 +29,7 @@ public class DocumentChangeCaseStatusNotificationBehaviour extends AbstractICase
     private final static String ALL_STATUS_KEY = "AllStatus";
 
     public void init() {
-        OrderedBehaviour statChangeBehaviour = new OrderedBehaviour(
+        OrderedBehaviour statusChangeBehaviour = new OrderedBehaviour(
                 this, "onCaseStatusChanged",
                 Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order
         );
@@ -37,7 +37,7 @@ public class DocumentChangeCaseStatusNotificationBehaviour extends AbstractICase
         this.policyComponent.bindClassBehaviour(
                 CaseStatusPolicies.OnCaseStatusChangedPolicy.QNAME,
                 ICaseModel.TYPE_CASE_STATUS,
-                statChangeBehaviour
+                statusChangeBehaviour
         );
     }
 
