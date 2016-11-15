@@ -286,8 +286,7 @@ public class HistoricalPropertiesBehaviour implements
 
 	private Object getKeyValue(QName qName, Object constraint) {
 		if (constraint != null && "date".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
-			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-			return format.format(constraint);
+			return new SimpleDateFormat("dd/MM/yyyy").format(constraint);
 		}
 		if (constraint != null && ClassificationModel.PROP_DOCUMENT_KIND.equals(qName)) {
 			return nodeService.getProperty((NodeRef) constraint, ContentModel.PROP_NAME);
