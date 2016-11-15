@@ -834,30 +834,57 @@ YAHOO.Bubbling.fire("registerAction", {
                     }
                 }, { title : props.title });
             } else if (actionType === "REQUEST") {
-                Alfresco.util.Ajax.request({
-                    url: Alfresco.constants[props.context] + props.url,
-                    method: props.requestMethod,
-                    successCallback: {
-                        scope: this,
-                        fn: function () {
-                            Alfresco.util.PopupManager.displayMessage({
-                                text: this.msg("message.transitionSuccess")
-                            });
-                            _.delay(function () {
-                                window.location.reload();
-                            }, 3000);
+                var makeRequest = function() {
+                    Alfresco.util.Ajax.request({
+                        url: Alfresco.constants[props.context] + props.url,
+                        method: props.requestMethod,
+                        successCallback: {
+                            scope: this,
+                            fn: function () {
+                                Alfresco.util.PopupManager.displayMessage({
+                                    text: Alfresco.util.message("message.transitionSuccess")
+                                });
+                                _.delay(function () {
+                                    window.location.reload();
+                                }, 3000);
+                            }
+                        },
+                        failureCallback: {
+                            scope: this,
+                            fn: function (response) {
+                                var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+                                Alfresco.util.PopupManager.displayMessage({
+                                    text: json.message
+                                });
+                            }
                         }
-                    },
-                    failureCallback: {
-                        scope: this,
-                        fn: function (response) {
-                            var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
-                            Alfresco.util.PopupManager.displayMessage({
-                                text: json.message
-                            });
-                        }
-                    }
-                });
+                    });
+                };
+
+                if (props.confirmationMessage) {
+                    Alfresco.util.PopupManager.displayPrompt({
+                        title: props.title,
+                        text: props.confirmationMessage,
+                        noEscape: true,
+                        buttons: [
+                            {
+                                text: this.msg("button.yes"),
+                                handler: function dlA_onActionDelete_ok() {
+                                    this.destroy();
+                                    makeRequest();
+                                }
+                            },
+                            {
+                                text: this.msg("button.cancel"),
+                                handler: function dlA_onActionDelete_cancel() {
+                                    this.destroy();
+                                },
+                                isDefault: true
+                            }]
+                    });
+                } else {
+                    makeRequest();
+                }
             } else if (actionType === "REDIRECT") {
                 window.open(Alfresco.constants[props.context] + props.url, "_self");
             } else if (actionType === "CREATE_NODE") {
