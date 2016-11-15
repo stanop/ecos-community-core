@@ -68,6 +68,23 @@
 		<property name="caseElementService" ref="caseElementService"/>
 	</bean>
 
+	<!-- ..................... -->
+	<!-- Case Status Services  -->
+	<!-- ..................... -->
+	<bean id="caseStatusService" name="CaseStatusService" class="ru.citeck.ecos.icase.CaseStatusServiceImpl"
+		  init-method="init" depends-on="idocs.dictionaryBootstrap">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="caseStatusesPath" value="app:company_home/app:dictionary/cm:dataLists/cm:case-status"/>
+	</bean>
+
+	<bean id="caseStatusServiceJS" name="CaseStatusServiceJS" class="ru.citeck.ecos.icase.CaseStatusServiceJS"
+		  parent="baseJavaScriptExtension">
+		<property name="extensionName" value="caseStatusService" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="caseStatusService" ref="caseStatusService"/>
+	</bean>
+
 	<!-- .............. -->
 	<!-- Case behaviors -->
 	<!-- .............. -->

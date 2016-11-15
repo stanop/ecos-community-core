@@ -2,20 +2,22 @@ package ru.citeck.ecos.behavior.notification;
 
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
 
+import java.util.Objects;
+
 /**
- * @author Roman.Makarskiy on 10/19/2016.
+ * @author Roman Makarskiy
  */
-public class DocumentChangeCaseStatusNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
-        implements NodeServicePolicies.OnCreateAssociationPolicy {
+public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
+        implements CaseStatusPolicies.OnCaseStatusChangedPolicy {
 
     private NodeService nodeService;
     private String documentNamespace;
@@ -26,35 +28,41 @@ public class DocumentChangeCaseStatusNotificationBehaviour extends AbstractICase
 
     private final static String ALL_STATUS_KEY = "AllStatus";
 
-
     public void init() {
-        OrderedBehaviour createBehaviour = new OrderedBehaviour(
-                this, "onCreateAssociation",
+        OrderedBehaviour statusChangeBehaviour = new OrderedBehaviour(
+                this, "onCaseStatusChanged",
                 Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order
         );
-        this.policyComponent.bindAssociationBehaviour(
-                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
-                QName.createQName(documentNamespace, documentType),
-                ICaseModel.ASSOC_CASE_STATUS,
-                createBehaviour
+
+        this.policyComponent.bindClassBehaviour(
+                CaseStatusPolicies.OnCaseStatusChangedPolicy.QNAME,
+                ICaseModel.TYPE_CASE_STATUS,
+                statusChangeBehaviour
         );
     }
 
     @Override
-    public void onCreateAssociation(final AssociationRef associationRef) {
-        if (sender == null || !nodeService.exists(associationRef.getTargetRef())
-                           || !nodeService.exists(associationRef.getSourceRef()) || !enabled) {
+    public void onCaseStatusChanged(NodeRef documentRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
+
+        if (!enabled || sender == null || !nodeService.exists(documentRef) || !nodeService.exists(caseStatusAfter)) {
+            return;
+        }
+
+        QName documentQName = nodeService.getType(documentRef);
+        QName requiredQName = QName.createQName(documentNamespace, documentType);
+
+        if (!Objects.equals(documentQName, requiredQName)) {
             return;
         }
 
         if (caseStatus.equals(ALL_STATUS_KEY)) {
-            sender.sendNotification(associationRef.getSourceRef(), associationRef.getTargetRef(), recipients,
+            sender.sendNotification(documentRef, caseStatusAfter, recipients,
                     notificationType, subjectTemplate);
         } else {
-            String currentStatus = (String) nodeService.getProperty(associationRef.getTargetRef(),
+            String currentStatus = (String) nodeService.getProperty(caseStatusAfter,
                     ContentModel.PROP_NAME);
             if (currentStatus.equals(caseStatus)) {
-                sender.sendNotification(associationRef.getSourceRef(), associationRef.getTargetRef(), recipients,
+                sender.sendNotification(documentRef, caseStatusAfter, recipients,
                         notificationType, subjectTemplate);
             }
         }
