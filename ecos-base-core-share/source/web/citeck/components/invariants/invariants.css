@@ -524,6 +524,8 @@
 .invariants-form .template-table .template-row .template-label {
   float: left;
   width: 45.5%;
+  padding-right: 10px;
+  box-sizing: border-box;
 }
 
 .invariants-form .template-table .template-half-width .template-label,
@@ -1366,12 +1368,12 @@
 .full .filter-page,
 .create-page {
   height: 371px;
+  overflow: auto;
 }
 
 .full.dock .filter-page,
-.dock.create-page {
+.dock .create-page {
   height: 501px;
-  overflow: auto;
 }
 
 .selected-filter-criteria-container table.filter-criteria-table {
