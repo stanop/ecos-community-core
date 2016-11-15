@@ -1366,12 +1366,12 @@
 .full .filter-page,
 .create-page {
   height: 371px;
+  overflow: auto;
 }
 
 .full.dock .filter-page,
-.dock.create-page {
+.dock .create-page {
   height: 501px;
-  overflow: auto;
 }
 
 .selected-filter-criteria-container table.filter-criteria-table {
