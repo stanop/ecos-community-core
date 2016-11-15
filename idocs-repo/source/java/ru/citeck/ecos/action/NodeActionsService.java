@@ -1,11 +1,9 @@
 package ru.citeck.ecos.action;
 
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
-import ru.citeck.ecos.icase.CaseCompletenessService;
 
 import java.util.ArrayList;
 import java.util.List;
