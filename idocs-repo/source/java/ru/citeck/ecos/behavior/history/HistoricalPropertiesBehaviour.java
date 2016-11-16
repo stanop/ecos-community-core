@@ -288,6 +288,13 @@ public class HistoricalPropertiesBehaviour implements
 	}
 
 	private Object getKeyValue(QName qName, Object constraint) {
+		if ("boolean".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
+			if (constraint == null || constraint.equals(false)) {
+				return "Нет";
+			} else {
+				return  "Да";
+			}
+		}
 		if (constraint != null && "date".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
 			return new SimpleDateFormat("dd/MM/yyyy").format(constraint);
 		}
