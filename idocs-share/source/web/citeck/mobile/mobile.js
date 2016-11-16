@@ -144,8 +144,32 @@ Citeck.mobile.isMobileDevice = function() {
 
     function trasformCard(isMobile) {
         if (/card-details/.test(window.location.pathname)) {
-            viewportToggle(isMobile);
+            var cardlets = [
+                "case-status",
+                "node-view",
+                "actions",
+                "comments",
+                "document-tasks"
+            ];
+
+            if (isMobile) {
+                $(".web-preview").hide();
+                $(".document-details-panel").hide();
+                $.each($(".document-details-panel"), function(index, cardlet) {
+                    for (var c in cardlets) { 
+                        if (cardlet.id.indexOf(cardlets[c]) != -1) { 
+                            $(cardlet).show();
+                            return;
+                        } 
+                    }
+                });
+            } else {
+                $(".web-preview").show();
+                $(".document-details-panel").show();
+            }
         }
+
+        viewportToggle(isMobile);
     }
 
 })()
