@@ -8,7 +8,7 @@
             <url>/citeck/components/document-children</url>
             <properties>
                 <header>dochist.header</header>
-                <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/history/document?nodeRef={nodeRef}&amp;events=node.created,node.updated,assoc.added,assoc.removed,task.complete"
+                <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/history/document?nodeRef={nodeRef}&amp;events=node.created,node.updated,assoc.removed,assoc.added,task.complete"
                 </childrenUrl>
                 <columns>[{key: 'attributes["event:date"]', label: Alfresco.util.message("dochist.header.date"), formatter: Citeck.format.datetime()},
                     {key: 'attributes["event:name"]', label: Alfresco.util.message("dochist.header.name"), formatter: Citeck.format.message('dochist.')},

@@ -179,6 +179,9 @@ public class HistoricalPropertiesBehaviour implements
 									+ getKeyValue(entry.getKey(), propBefore)
 									+ " -> "
 									+ getKeyValue(entry.getKey(), propAfter);
+							if ("content".equals(entry.getKey().getLocalName())) {
+								comment = getKeyValue(entry.getKey());
+							}
 							eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 							historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 						}
