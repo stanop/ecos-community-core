@@ -3,7 +3,6 @@ package ru.citeck.ecos.workflow.perform;
 import org.activiti.engine.delegate.VariableScope;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
@@ -18,7 +17,6 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.CasePerformModel;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +36,7 @@ public class CasePerformUtils {
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
 
-    private static final DummyComparator DUMMY_COMPARATOR = new DummyComparator();
+    private static final KeysComparator KEYS_COMPARATOR = new KeysComparator();
 
     private static final List<String> VARIABLES_SHARING_IGNORED_PREFIXES = Arrays.asList("bpm", "cwf", "wfcf", "cm");
     private static final Pattern VARIABLES_PATTERN = Pattern.compile("^([^_]+)_(.+)");
@@ -103,7 +101,7 @@ public class CasePerformUtils {
 
         Set<IdentityLink> candidates = task.getCandidates();
         String assigneeName = task.getAssignee();
-        Set<NodeRef> performers = new TreeSet<>(DUMMY_COMPARATOR);
+        Set<NodeRef> performers = new TreeSet<>(KEYS_COMPARATOR);
 
         if (assigneeName != null) {
             performers.add(authorityService.getAuthorityNodeRef(assigneeName));
@@ -181,7 +179,7 @@ public class CasePerformUtils {
                 return (Map<K,V>) var;
             }
         }
-        Map<K,V> varMap = new TreeMap<>(DUMMY_COMPARATOR);
+        Map<K,V> varMap = new TreeMap<>(KEYS_COMPARATOR);
         scope.setVariable(key, varMap);
         return varMap;
     }
@@ -247,10 +245,28 @@ public class CasePerformUtils {
         this.repositoryHelper = repositoryHelper;
     }
 
-    private static class DummyComparator implements Serializable, Comparator<Object> {
+    private static class KeysComparator implements Serializable, Comparator<Object> {
         @Override
         public int compare(Object o1, Object o2) {
-            return 0;
+            if (Objects.equals(o1, o2)) {
+                return 0;
+            }
+            if (o1 == null) {
+                return -1;
+            }
+            if (o2 == null) {
+                return 1;
+            }
+            if (!o1.getClass().equals(o2.getClass())) {
+                return o1.getClass().toString().compareTo(o2.getClass().toString());
+            }
+            if (o1 instanceof Comparable) {
+                return ((Comparable) o1).compareTo(o2);
+            }
+            return o1.toString().compareTo(o2.toString());
         }
     }
+
+    //TODO: remove it
+    private static class DummyComparator extends KeysComparator {}
 }
