@@ -36,7 +36,7 @@ public class CasePerformUtils {
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
 
-    private static final KeysComparator KEYS_COMPARATOR = new KeysComparator();
+    private static final DummyComparator KEYS_COMPARATOR = new DummyComparator();
 
     private static final List<String> VARIABLES_SHARING_IGNORED_PREFIXES = Arrays.asList("bpm", "cwf", "wfcf", "cm");
     private static final Pattern VARIABLES_PATTERN = Pattern.compile("^([^_]+)_(.+)");
@@ -245,7 +245,8 @@ public class CasePerformUtils {
         this.repositoryHelper = repositoryHelper;
     }
 
-    private static class KeysComparator implements Serializable, Comparator<Object> {
+    private static class DummyComparator implements Serializable, Comparator<Object> {
+        private static final long serialVersionUID = 2252429774415071539L;
         @Override
         public int compare(Object o1, Object o2) {
             if (Objects.equals(o1, o2)) {
@@ -267,6 +268,4 @@ public class CasePerformUtils {
         }
     }
 
-    //TODO: remove it
-    private static class DummyComparator extends KeysComparator {}
 }
