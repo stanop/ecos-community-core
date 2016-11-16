@@ -31,6 +31,12 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         caseActivityService.stopActivity(ref);
     }
 
+    public ScriptNode[] getStartedActivities(Object nodeRef) {
+        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
+        List<NodeRef> activities = caseActivityService.getStartedActivities(nRef);
+        return JavaScriptImplUtils.wrapNodes(activities, this);
+    }
+
     public ScriptNode[] getActivities(Object nodeRef) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
         List<NodeRef> activities = caseActivityService.getActivities(nRef);

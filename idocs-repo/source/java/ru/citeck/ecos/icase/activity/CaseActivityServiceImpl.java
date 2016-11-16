@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity;
 
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -159,6 +160,27 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             result.add(child.getFirst());
         }
         return result;
+    }
+
+    public List<NodeRef> getStartedActivities(NodeRef nodeRef) {
+        List<NodeRef> startedActivities = new ArrayList<>();
+        for (NodeRef activiti : getActivities(nodeRef)) {
+            String status = (String) nodeService.getProperty(activiti, LifeCycleModel.PROP_STATE);
+            if (status != null && status.equals(STATE_STARTED)) {
+                startedActivities.add(activiti);
+            }
+        }
+        return startedActivities;
+    }
+
+    public NodeRef getActivityByTitle(NodeRef nodeRef, String title) {
+        for (NodeRef activiti : getActivities(nodeRef)) {
+            String actTitle = (String) nodeService.getProperty(activiti, ContentModel.PROP_TITLE);
+            if (actTitle.equals(title)) {
+                return activiti;
+            }
+        }
+        return null;
     }
 
     @Override

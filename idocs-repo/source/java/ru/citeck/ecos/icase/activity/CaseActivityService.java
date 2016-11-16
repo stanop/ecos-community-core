@@ -48,6 +48,20 @@ public interface CaseActivityService {
     List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type);
 
     /**
+     * Get all started activities of node
+     *@param nodeRef  node with activities in children
+     */
+    List<NodeRef> getStartedActivities(NodeRef nodeRef);
+
+    /**
+     * Get activity by title
+     *
+     * @param nodeRef node with activities in children
+     * @param title   title of activity
+     */
+    NodeRef getActivityByTitle(NodeRef nodeRef, String title);
+
+    /**
      * @param activityRef activity node reference
      * @return document which is owner of activity
      */
