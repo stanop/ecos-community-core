@@ -170,30 +170,28 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 		logger.debug("setAsyncNotification_asyncNotification: " + asyncNotification + " instance = " + toString());
 	}
 
-	@Override
-	public void sendNotification(ItemType item) {
-		sendNotification(
-				getNotificationProviderName(item),
-				getNotificationFrom(item),
-				getNotificationSubject(item),
-				getNotificationTemplate(item),
-				getNotificationArgs(item),
-				getNotificationRecipients(item),
-				false
-		);
-	}
+    @Override
+    public void sendNotification(ItemType item) {
+        sendNotification(item, false);
+    }
 
-	public void sendNotification(final ItemType item, boolean afterCommit) {
-		sendNotification(
-				getNotificationProviderName(item),
-				getNotificationFrom(item),
-				getNotificationSubject(item),
-				getNotificationTemplate(item),
-				getNotificationArgs(item),
-				getNotificationRecipients(item),
-				afterCommit
-		);
-	}
+    public void sendNotification(final ItemType item, final boolean afterCommit) {
+        AuthenticationUtil.runAsSystem(new RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                sendNotification(
+                        getNotificationProviderName(item),
+                        getNotificationFrom(item),
+                        getNotificationSubject(item),
+                        getNotificationTemplate(item),
+                        getNotificationArgs(item),
+                        getNotificationRecipients(item),
+                        afterCommit
+                );
+                return null;
+            }
+        });
+    }
 
 	protected boolean getAsyncNotification() {
 		logger.debug("getAsyncNotification_asyncNotification: " + asyncNotification + " instance = " + toString());
