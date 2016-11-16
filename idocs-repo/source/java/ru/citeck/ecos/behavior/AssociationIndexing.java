@@ -31,6 +31,7 @@ import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.lock.LockService;
 import org.alfresco.service.cmr.lock.LockStatus;
 import org.alfresco.service.cmr.lock.LockType;
@@ -47,7 +48,7 @@ import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociationPolicy,
 		NodeServicePolicies.OnDeleteAssociationPolicy {
 	private static Log logger = LogFactory.getLog(AssociationIndexing.class);
-	
+
 	private NodeService nodeService;
 	private LockService lockService;
 	private PolicyComponent policyComponent;
@@ -78,22 +79,22 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
     }
-    
+
     public void setBehaviourFilter(BehaviourFilter behaviourFilter) {
         this.behaviourFilter = behaviourFilter;
     }
-    
+
 	public void setRegistry(AssociationIndexPropertyRegistry registry) {
 	    this.registry = registry;
 	}
-	
+
     @Override
     public void onDeleteAssociation(AssociationRef nodeAssocRef) {
         NodeRef node = nodeAssocRef.getSourceRef();
         if (!nodeService.exists(node)) {
             return;
         }
-        updateAssociationMirrorProperty(node, nodeAssocRef.getTypeQName());
+        update(node, nodeAssocRef.getTypeQName());
     }
 
     @Override
@@ -102,19 +103,28 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
         if (!nodeService.exists(node)) {
             return;
         }
-        updateAssociationMirrorProperty(node, nodeAssocRef.getTypeQName());
+        update(node, nodeAssocRef.getTypeQName());
+    }
+
+    private void update(final NodeRef node, final QName assocQName) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            public Void doWork() throws Exception {
+                updateAssociationMirrorProperty(node, assocQName);
+                return null;
+            }
+        });
     }
 
     private void updateAssociationMirrorProperty(NodeRef node, QName assocQName) {
         // get nodeRefs
-        ArrayList<NodeRef> nodeRefs = new ArrayList<NodeRef>();
+        ArrayList<NodeRef> nodeRefs = new ArrayList<>();
         List<AssociationRef> assocs = nodeService.getTargetAssocs(node, assocQName);
         for(AssociationRef assoc : assocs) {
             nodeRefs.add(assoc.getTargetRef());
         }
 
         QName propQName = registry.getAssociationIndexProperty(assocQName);
-        
+
         try {
             behaviourFilter.disableBehaviour(node);
 
