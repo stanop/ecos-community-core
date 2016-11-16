@@ -371,7 +371,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             // methods
             this.selected = function(data) {
                 return  self.hightlightSelection ? ko.computed(function() {
-                    return params.targetElements().indexOf(data) != -1;
+                    return params.targetElements() ? params.targetElements().indexOf(data) != -1 : null;
                 }) : false;
             };
 
