@@ -2748,6 +2748,25 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   content: "\f0c9";
 }
 
+
+.yui-skin-citeckTheme .journal-container {
+    height: 385px;
+}
+
+.yui-skin-citeckTheme .journal-container .journal {
+    height: calc(100% - 31px);
+}
+
+.yui-skin-citeckTheme .journal-pagination {
+    border-top: none;
+}
+
+.yui-skin-citeckTheme .journal-picker-page-container .full .filter-page,
+.yui-skin-citeckTheme .journal-picker-page-container .create-page {
+  height: 385px;
+  overflow: auto;
+}
+
 /*  end journal */
 
 

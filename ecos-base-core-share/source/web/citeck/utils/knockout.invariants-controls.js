@@ -903,7 +903,7 @@ ko.bindingHandlers.journalControl = {
                 dock: params.dock,
                 hightlightSelection: params.hightlightSelection,
                 afterSelectionCallback: function(data, event) {
-                    if (event.type == "dblclick") { value(data); panel.hide(); }
+                    if (!multiple() && event.type == "dblclick") { value(data); panel.hide(); }
                 }
             }, Dom.get(elementsPageId));
 

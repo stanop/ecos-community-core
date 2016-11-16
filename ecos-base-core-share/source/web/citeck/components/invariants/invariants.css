@@ -1251,6 +1251,11 @@
 }
 
 .journal-container .journal {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.journal-container .journal table {
   width: 100%;
   border-collapse: collapse;
 }

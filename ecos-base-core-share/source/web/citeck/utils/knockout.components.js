@@ -429,62 +429,64 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<!-- ko if: loading -->\
                 <div class="loading"></div>\
             <!-- /ko -->\
-            <table class="journal">\
-                <thead>\
-                    <!-- ko if: columns ? true : false -->\
-                        <tr data-bind="foreach: columns">\
-                            <!-- ko if: $component.journalType.attribute($data) -->\
-                                <!-- ko with: $component.journalType.attribute($data) -->\
-                                    <th data-bind="text: displayName"></th>\
-                                <!-- /ko -->\
-                            <!-- /ko -->\
-                        </tr>\
-                    <!-- /ko -->\
-                    <!-- ko ifnot: columns ? true : false -->\
-                        <tr data-bind="foreach: $component.journalType.defaultAttributes">\
-                            <th data-bind="text: displayName"></th>\
-                        </tr>\
-                    <!-- /ko -->\
-                </thead>\
-                <tbody data-bind="foreach: sourceElements">\
-                    <!-- ko if: $component.columns ? true : false -->\
-                        <tr class="journal-element" data-bind="attr: { id: nodeRef },\
-                                                               foreach: $component.columns,\
-                                                               click: $component.selectElement, clickBubble: false,\
-                                                               event: { dblclick: $component.selectElement },\
-                                                               css: { selected: $component.selected($data) }">\
-                           <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
-                                <!-- ko with: $component.journalType.attribute($data) -->\
-                                    <!-- ko if: $parents[1].properties[$data.name()] -->\
-                                        <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+            <div class="journal">\
+                <table>\
+                    <thead>\
+                        <!-- ko if: columns ? true : false -->\
+                            <tr data-bind="foreach: columns">\
+                                <!-- ko if: $component.journalType.attribute($data) -->\
+                                    <!-- ko with: $component.journalType.attribute($data) -->\
+                                        <th data-bind="text: displayName"></th>\
                                     <!-- /ko -->\
-                                    <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
-                                        <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
-                                            <td data-bind="text: $component.getTitle($data)"></td>\
+                                <!-- /ko -->\
+                            </tr>\
+                        <!-- /ko -->\
+                        <!-- ko ifnot: columns ? true : false -->\
+                            <tr data-bind="foreach: $component.journalType.defaultAttributes">\
+                                <th data-bind="text: displayName"></th>\
+                            </tr>\
+                        <!-- /ko -->\
+                    </thead>\
+                    <tbody data-bind="foreach: sourceElements">\
+                        <!-- ko if: $component.columns ? true : false -->\
+                            <tr class="journal-element" data-bind="attr: { id: nodeRef },\
+                                                                   foreach: $component.columns,\
+                                                                   click: $component.selectElement, clickBubble: false,\
+                                                                   event: { dblclick: $component.selectElement },\
+                                                                   css: { selected: $component.selected($data) }">\
+                               <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
+                                    <!-- ko with: $component.journalType.attribute($data) -->\
+                                        <!-- ko if: $parents[1].properties[$data.name()] -->\
+                                            <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                        <!-- /ko -->\
+                                        <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
+                                            <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
+                                                <td data-bind="text: $component.getTitle($data)"></td>\
+                                            <!-- /ko -->\
                                         <!-- /ko -->\
                                     <!-- /ko -->\
                                 <!-- /ko -->\
-                            <!-- /ko -->\
-                        </tr>\
-                    <!-- /ko -->\
-                    <!-- ko ifnot: $component.columns ? true : false -->\
-                        <tr class="journal-element" data-bind="attr: { id: nodeRef },\
-                                                               foreach: $component.journalType.defaultAttributes,\
-                                                               click: $component.selectElement, clickBubble: false,\
-                                                               event: { dblclick: $component.selectElement },\
-                                                               css: { selected: $component.selected($data) }">\
-                            <!-- ko if: $parent.properties[$data.name()] -->\
-                                <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
-                            <!-- /ko -->\
-                            <!-- ko ifnot: $parent.properties[$data.name()] -->\
-                                <!-- ko with: $parent.impl().attribute($data.name()) -->\
-                                    <td data-bind="text: $component.getTitle($data)"></td>\
+                            </tr>\
+                        <!-- /ko -->\
+                        <!-- ko ifnot: $component.columns ? true : false -->\
+                            <tr class="journal-element" data-bind="attr: { id: nodeRef },\
+                                                                   foreach: $component.journalType.defaultAttributes,\
+                                                                   click: $component.selectElement, clickBubble: false,\
+                                                                   event: { dblclick: $component.selectElement },\
+                                                                   css: { selected: $component.selected($data) }">\
+                                <!-- ko if: $parent.properties[$data.name()] -->\
+                                    <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
                                 <!-- /ko -->\
-                            <!-- /ko -->\
-                        </tr>\
-                    <!-- /ko -->\
-                </tbody>\
-            </table>\
+                                <!-- ko ifnot: $parent.properties[$data.name()] -->\
+                                    <!-- ko with: $parent.impl().attribute($data.name()) -->\
+                                        <td data-bind="text: $component.getTitle($data)"></td>\
+                                    <!-- /ko -->\
+                                <!-- /ko -->\
+                            </tr>\
+                        <!-- /ko -->\
+                    </tbody>\
+                </table>\
+            </div>\
             <!-- ko if: options.pagination && sourceElements -->\
                 <!-- ko with: sourceElements().pagination -->\
                     <!-- ko if: ($component.page() - 1 > 0) || hasMore -->\
