@@ -18,8 +18,6 @@
  */
 package ru.citeck.ecos.icase;
 
-import java.util.*;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.admin.RepositoryState;
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -30,15 +28,17 @@ import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.ScriptService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.ScriptService;
-
+import org.springframework.util.StopWatch;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.search.*;
+
+import java.util.*;
 
 public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
     private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
@@ -76,11 +76,17 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
     @Override
     public void onAddAspect(NodeRef caseNode, QName aspectTypeQName) {
-        if(!nodeService.exists(caseNode) ||
+        StopWatch stopWatch = new StopWatch("CaseTemplateBehavior");
+        stopWatch.start("onAddAspect" + caseNode.toString());
+
+        if (!nodeService.exists(caseNode) ||
                 !ICaseModel.ASPECT_CASE.equals(aspectTypeQName)) {
             return;
         }
         copyFromTemplate(caseNode);
+
+        stopWatch.stop();
+        logger.info(stopWatch.prettyPrint());
     }
 
     @Override
@@ -108,7 +114,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Case elements are successfully copied from template. nodeRef="
-                                                        + caseNode + "; template=" + template);
+                        + caseNode + "; template=" + template);
             }
         }
     }
@@ -117,8 +123,8 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
         Set<NodeRef> resultTemplates = new HashSet<>();
 
-        NodeRef caseType = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_TYPE);
-        NodeRef caseKind = (NodeRef)nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_KIND);
+        NodeRef caseType = (NodeRef) nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_TYPE);
+        NodeRef caseKind = (NodeRef) nodeService.getProperty(caseNode, ClassificationModel.PROP_DOCUMENT_KIND);
 
         List<NodeRef> templates = getCaseTemplatesByEcosTypeKind(caseType, caseKind);
         if (templates.size() == 0) {
@@ -136,7 +142,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
     private boolean isApplicableTemplate(NodeRef node, NodeRef template) {
 
-        String condition = (String)nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
+        String condition = (String) nodeService.getProperty(template, ICaseModel.PROP_CONDITION);
 
         if (condition == null || condition.trim().isEmpty()) {
             return true;

@@ -523,6 +523,8 @@
 .invariants-form .template-table .template-row .template-label {
   float: left;
   width: 45.5%;
+  padding-right: 10px;
+  box-sizing: border-box;
 }
 
 .invariants-form .template-table .template-half-width .template-label,
@@ -1247,8 +1249,18 @@
 }
 
 .journal-container .journal {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.journal-container .journal table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.journal-container .journal tr.journal-element.selected,
+.journal-container .journal tr.journal-element.selected td:hover {
+  background-color: #f0fceb;
 }
 
 .journal-container .journal th,
@@ -1358,8 +1370,13 @@
 
 .full .filter-page,
 .create-page {
-  height: 501px;
+  height: 371px;
   overflow: auto;
+}
+
+.full.dock .filter-page,
+.dock .create-page {
+  height: 501px;
 }
 
 .selected-filter-criteria-container table.filter-criteria-table {
@@ -1578,6 +1595,31 @@
 .invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
   background-image: url(images/remove-active.png);
 }
+
+
+@media screen and (max-width: 1000px) {
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-view,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-select,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-date,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-datetime,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-text,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-textarea,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-auto-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-autocomplete,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-checkbox,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-free-content {
+    width: 100%;
+    float: none;
+    max-width: 100%;
+  }
+
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label {
+    margin-bottom: 10px;
+  }
+}
+
 
 
 /* template-tabs */

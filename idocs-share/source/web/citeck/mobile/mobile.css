@@ -1,5 +1,23 @@
 /* JOURNALS */
 
+.mobile #alfresco-journals .toolbar.icon-buttons .yui-button,
+.mobile #alfresco-journals .toolbar-menu .icon-buttons .yui-button {
+    margin-right: 0;
+}
+
+.mobile #alfresco-journals .toolbar.icon-buttons .yui-button.yui-menu-button span.first-child,
+.mobile #alfresco-journals .toolbar-menu .icon-buttons .yui-button.yui-menu-button span.first-child {
+    background-image: none !important;
+    padding: 5px;
+}
+
+.mobile #alfresco-journals .toolbar.icon-buttons .yui-button span.first-child button:not(:empty),
+.mobile #alfresco-journals .toolbar-menu .icon-buttons .yui-button span.first-child button:not(:empty) {
+  background-position: center;
+  font-size: 0;
+  height: 19px;
+}
+
 .mobile #alfresco-journals {
     position: relative;
 }
@@ -369,73 +387,11 @@
 }
 
 
-/* JOURNAL */
+/* CARD */
 
-.mobile #alfresco-journals .toolbar.icon-buttons .yui-button,
-.mobile #alfresco-journals .toolbar-menu .icon-buttons .yui-button {
-    margin-right: 0;
-}
-
-.mobile #alfresco-journals .toolbar.icon-buttons .yui-button.yui-menu-button span.first-child,
-.mobile #alfresco-journals .toolbar-menu .icon-buttons .yui-button.yui-menu-button span.first-child {
-    background-image: none !important;
-    padding: 5px;
-}
-
-.mobile #alfresco-journals .toolbar.icon-buttons .yui-button span.first-child button:not(:empty),
-.mobile #alfresco-journals .toolbar-menu .icon-buttons .yui-button span.first-child button:not(:empty) {
-  background-position: center;
-  font-size: 0;
-  height: 19px;
-}
-
-.mobile #alfresco-journals {
-    position: relative;
-}
-
-.mobile #alfresco-journals #alf-content {
-    margin-left: 0 !important;
-}
-
-.mobile #alfresco-journals #alf-content .toolbar.icon-buttons .yui-button.sidebar-toggle {
-    display: inline-block;
-}
-
-.mobile #alfresco-journals #alf-content .journal-content-table {
-    margin: 5px 10px 5px 10px;
-    box-sizing: border-box !important;
-    width: auto;
-}
-
-.mobile #alfresco-journals #alf-content .journal-content .yui-dt .yui-dt-col-actions {
-    display: none;
-}
-
-.mobile #alfresco-journals #alf-content .journal-content-pagination {
-    margin: 5px 10px;
-}
-
-.mobile #alfresco-journals #alf-filters {
-    display: none;
-    position: absolute;
-    top: 32px;
-    background-color: white;
+.mobile #bd > .yui-gc > .yui-u {
     width: 100% !important;
-    border: 1px solid #ccc;
+    margin: 0;
+    float: none;
 }
 
-.mobile #alfresco-journals #alf-filters .yui-resize-handle {
-    display: none;
-}
-
-.mobile #alfresco-journals #alf-filters .toolbar {
-    padding: 0 10px;
-}
-
-.mobile #alfresco-journals #alf-filters .items-list {
-    padding: 10px;
-}
-
-.mobile #alfresco-journals #alf-filters .items-list li {
-    padding: 3px 10px;
-}

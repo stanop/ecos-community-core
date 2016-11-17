@@ -206,19 +206,13 @@
                             var self = this;
 
                             for (var i = 0; i < response.json.length; i++) {
-                                var type = (response.json[i].actionType) ? response.json[i].actionType : "serverAction";
-                                var params = {
-                                    "actionTitle": response.json[i].title,
-                                    "actionURL": response.json[i].url,
-                                    "actionType": type
-                                };
                                 this.options.documentDetails.item.actions.push({
                                     id: "server-node-action-" + i,
                                     label: response.json[i].title,
                                     icon: "task",
                                     type: "javascript",
                                     index: 65535 + i,
-                                    params: {"function": "onServerAction", actionProperties: params}
+                                    params: {"function": "onServerAction", actionProperties: response.json[i]}
                                 });
                             }
 

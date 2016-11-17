@@ -5,7 +5,6 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -20,7 +19,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.action.ActionConstants;
+import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
@@ -115,22 +114,21 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
         if (transmittedParameters != null && transmittedParameters.size() > 0) {
-            Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-            if (variables != null) {
-                Object processVariablesObj = variables.get(ActionConstants.PROCESS_VARIABLES);
-                if (processVariablesObj != null && processVariablesObj instanceof Map) {
-                    Map<String, Serializable> processVariables = (Map) processVariablesObj;
-                    for (String parameter : transmittedParameters) {
-                        Serializable value = valueConverter.convertValueForRepo(processVariables.get(parameter));
-                        if (value != null) {
-                            workflowProperties.put(QName.createQName(parameter), value);
-                        }
-                    }
+            Map<String, Object> processVariables = ActionConditionUtils.getProcessVariables();
+            for (String parameter : transmittedParameters) {
+                Serializable value = convertForRepo(processVariables.get(parameter));
+                if (value != null) {
+                    workflowProperties.put(QName.createQName(parameter), value);
                 }
             }
         }
 
         return workflowProperties;
+    }
+
+    private Serializable convertForRepo(Object value) {
+        return value != null && value instanceof Serializable ?
+                valueConverter.convertValueForRepo((Serializable)value) : null;
     }
 
     private void setWorkflowPropertiesFromITask(Map<QName, Serializable> workflowProperties, NodeRef taskRef) {

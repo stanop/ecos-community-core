@@ -131,7 +131,7 @@ public class TotalDocumentsSumBehaviour implements
                 ? new BigDecimal((Double) nodeService.getProperty(nodeRef, sumField))
                 : BigDecimal.ZERO;
         total = total.add(currencyService.transferFromOneCurrencyToOther(currentCurrency, currencyTo, currentSum));
-        total = total.setScale(2, BigDecimal.ROUND_CEILING);
+        total = total.setScale(2, BigDecimal.ROUND_HALF_UP);
         nodeService.setProperty(nodeRef, totalSumField, total.doubleValue());
         List<AssociationRef> targetRefs = nodeService.getTargetAssocs(nodeRef, assocName);
         for (AssociationRef targetRef : targetRefs) {

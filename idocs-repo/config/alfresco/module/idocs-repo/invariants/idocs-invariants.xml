@@ -55,6 +55,7 @@
         <property name="deputy:endAbsence">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript" description="Дата начала не может быть больше даты окончания">node.properties['deputy:endAbsence'] >= node.properties['deputy:startAbsence']</invariant>
         </property>
     </type>
 

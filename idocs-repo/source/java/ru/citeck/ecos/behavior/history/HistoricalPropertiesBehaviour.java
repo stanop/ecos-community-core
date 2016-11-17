@@ -38,6 +38,8 @@ import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,6 +179,9 @@ public class HistoricalPropertiesBehaviour implements
 									+ getKeyValue(entry.getKey(), propBefore)
 									+ " -> "
 									+ getKeyValue(entry.getKey(), propAfter);
+							if ("content".equals(entry.getKey().getLocalName())) {
+								comment = getKeyValue(entry.getKey());
+							}
 							eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
 							historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 						}
@@ -283,11 +288,24 @@ public class HistoricalPropertiesBehaviour implements
 	}
 
 	private Object getKeyValue(QName qName, Object constraint) {
+		if ("boolean".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
+			if (constraint == null || constraint.equals(false)) {
+				return "Нет";
+			} else {
+				return  "Да";
+			}
+		}
+		if (constraint != null && "date".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
+			return new SimpleDateFormat("dd/MM/yyyy").format(constraint);
+		}
+		if (constraint != null && ClassificationModel.PROP_DOCUMENT_KIND.equals(qName)) {
+			return nodeService.getProperty((NodeRef) constraint, ContentModel.PROP_NAME);
+		}
 		if (dictionaryService.getProperty(qName).getConstraints().size() > 0) {
 			String localName = dictionaryService.getProperty(qName).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
 			return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
 		} else {
-			return constraint;
+			return constraint == null ? "" : constraint;
 		}
 	}
 
