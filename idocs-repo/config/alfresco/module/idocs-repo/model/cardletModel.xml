@@ -30,6 +30,21 @@
 		<type name="cardlet:cardlet">
 			<parent>dl:dataListItem</parent>
 			<properties>
+
+				<!-- parameters for mobile version -->
+				<property name="cardlet:availableInMobile">
+					<title>Available in mobile version</title>
+					<type>d:boolean</type>
+					<default>true</default>
+					<mandatory>true</mandatory>
+				</property>
+
+				<property name="cardlet:positionIndexInMobile">
+					<title>Position Index for mobile version</title>
+					<type>d:int</type>
+				</property>
+				<!-- end of parameters for mobile version -->
+
 			
 				<property name="cardlet:cardMode">
 					<title>Card mode</title>
