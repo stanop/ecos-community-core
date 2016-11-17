@@ -42,13 +42,13 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
     }
 
     @Override
-    public void onCaseStatusChanged(NodeRef documentRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
+    public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
 
-        if (!enabled || sender == null || !nodeService.exists(documentRef) || !nodeService.exists(caseStatusAfter)) {
+        if (!enabled || sender == null || !nodeService.exists(caseRef) || !nodeService.exists(caseStatusAfter)) {
             return;
         }
 
-        QName documentQName = nodeService.getType(documentRef);
+        QName documentQName = nodeService.getType(caseRef);
         QName requiredQName = QName.createQName(documentNamespace, documentType);
 
         if (!Objects.equals(documentQName, requiredQName)) {
@@ -56,13 +56,13 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
         }
 
         if (caseStatus.equals(ALL_STATUS_KEY)) {
-            sender.sendNotification(documentRef, caseStatusAfter, recipients,
+            sender.sendNotification(caseRef, caseStatusAfter, recipients,
                     notificationType, subjectTemplate);
         } else {
             String currentStatus = (String) nodeService.getProperty(caseStatusAfter,
                     ContentModel.PROP_NAME);
             if (currentStatus.equals(caseStatus)) {
-                sender.sendNotification(documentRef, caseStatusAfter, recipients,
+                sender.sendNotification(caseRef, caseStatusAfter, recipients,
                         notificationType, subjectTemplate);
             }
         }

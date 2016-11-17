@@ -25,10 +25,10 @@ public interface CaseStatusPolicies {
         /**
          * Called when case status changed.
          *
-         * @param documentRef document nodeRef which changed case status
+         * @param caseRef document case which changed case status
          * @param caseStatusBefore case status nodeRef before changed
          * @param caseStatusAfter case status nodeRef after changed
          */
-        public void onCaseStatusChanged(NodeRef documentRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter);
+        public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter);
     }
 }

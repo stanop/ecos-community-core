@@ -31,26 +31,26 @@ public class CaseStatusServiceImpl implements CaseStatusService {
     }
 
     @Override
-    public void setStatus(NodeRef documentRef, NodeRef caseStatusRef) {
-        if (!nodeService.exists(documentRef)) {
-            throw new AlfrescoRuntimeException("Document with nodeRef: " + documentRef + " doesn't exist");
+    public void setStatus(NodeRef caseRef, NodeRef caseStatusRef) {
+        if (!nodeService.exists(caseRef)) {
+            throw new AlfrescoRuntimeException("Case with nodeRef: " + caseRef + " doesn't exist");
         }
 
         if (!nodeService.exists(caseStatusRef)) {
             throw new AlfrescoRuntimeException("Case status with nodeRef: " + caseStatusRef + " doesn't exist");
         }
 
-        List<NodeRef> caseStatusRefs = RepoUtils.getTargetNodeRefs(documentRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
+        List<NodeRef> caseStatusRefs = RepoUtils.getTargetNodeRefs(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
         NodeRef beforeCaseStatus = caseStatusRefs.size() > 0 ? caseStatusRefs.get(0) : null;
         for (NodeRef ref : caseStatusRefs) {
-            nodeService.removeAssociation(documentRef, ref, ICaseModel.ASSOC_CASE_STATUS);
+            nodeService.removeAssociation(caseRef, ref, ICaseModel.ASSOC_CASE_STATUS);
         }
-        nodeService.createAssociation(documentRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);
+        nodeService.createAssociation(caseRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(caseStatusRef, nodeService));
         CaseStatusPolicies.OnCaseStatusChangedPolicy changedPolicy;
         changedPolicy = onCaseStatusChangedPolicyDelegate.get(caseStatusRef, classes);
-        changedPolicy.onCaseStatusChanged(documentRef, beforeCaseStatus, caseStatusRef);
+        changedPolicy.onCaseStatusChanged(caseRef, beforeCaseStatus, caseStatusRef);
     }
 
     @Override
