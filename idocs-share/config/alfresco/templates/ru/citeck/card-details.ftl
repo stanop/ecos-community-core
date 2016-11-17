@@ -1,4 +1,5 @@
 <#include "/org/alfresco/include/alfresco-template.ftl" />
+
 <@templateHeader>
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/card/card-details.css" />
 
@@ -10,7 +11,10 @@
 
 <#macro renderRegions regions>
 	<#list regions as regionObj>
-		<@region id="${regionObj.regionId}" scope="page"/>
+		<div class="cardlet"
+			data-available-in-mobile="${regionObj.availableInMobile?string}" 
+			data-position-index-in-mobile="${regionObj.positionIndexInMobile?c}"
+		><@region id="${regionObj.regionId}" scope="page"/></div>
 	</#list>
 </#macro>
 

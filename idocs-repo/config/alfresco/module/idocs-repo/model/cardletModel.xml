@@ -36,12 +36,12 @@
 					<title>Available in mobile version</title>
 					<type>d:boolean</type>
 					<default>true</default>
-					<mandatory>true</mandatory>
 				</property>
 
 				<property name="cardlet:positionIndexInMobile">
 					<title>Position Index for mobile version</title>
 					<type>d:int</type>
+					<default>-1</default>
 				</property>
 				<!-- end of parameters for mobile version -->
 
