@@ -51,7 +51,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     "value": self.value,
 
                     "title": ko.computed(function() {
-                        return self._value() ? self._value().properties["cm:name"] : Alfresco.util.message("label.none");
+                        var displayName = function () {
+                            return self._value().properties["cm:title"] ? self._value().properties["cm:title"]
+                                : self._value().properties["cm:name"];
+                        };
+                        return self._value() ? displayName() : Alfresco.util.message("label.none");
+
                     }),
 
                     "nodetype": ko.observable(self.nodetype),
@@ -63,7 +68,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     "cache": {
                         result: ko.observable([])
                     }
-                }
+                };
 
                 this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype());
 

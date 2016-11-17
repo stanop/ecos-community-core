@@ -2,6 +2,7 @@
 <@templateHeader>
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/card/card-details.css" />
 
+   <@script type="text/javascript" src="${url.context}/res/citeck/modules/node-denied/node-denied.js"></@script>
    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js"></@script>
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/folder-details/folder-details-panel.css" />
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/document-details/document-details-panel.css" />
