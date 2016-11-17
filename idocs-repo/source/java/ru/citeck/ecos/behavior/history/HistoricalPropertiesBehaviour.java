@@ -173,7 +173,7 @@ public class HistoricalPropertiesBehaviour implements
 							eventProperties.put(HistoryModel.PROP_NAME, NODE_UPDATED);
 							eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 							eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, entry.getKey());
-							eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, propAfter.toString());
+							eventProperties.put(HistoryModel.PROP_PROPERTY_VALUE, String.valueOf(propAfter));
 							String comment = getKeyValue(entry.getKey())
 									+ ": "
 									+ getKeyValue(entry.getKey(), propBefore)
