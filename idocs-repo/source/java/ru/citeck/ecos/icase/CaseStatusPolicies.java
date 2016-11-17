@@ -25,7 +25,7 @@ public interface CaseStatusPolicies {
         /**
          * Called when case status changed.
          *
-         * @param caseRef document case which changed case status
+         * @param caseRef case nodeRef which changed case status
          * @param caseStatusBefore case status nodeRef before changed
          * @param caseStatusAfter case status nodeRef after changed
          */
