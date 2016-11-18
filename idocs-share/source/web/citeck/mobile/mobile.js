@@ -70,14 +70,16 @@ Citeck.mobile.isMobileDevice = function() {
 
             $(window).resize(function(event) {
                 var functions = [ 
-                        mobileGlobalClassToggle, 
                         transformJournalsSidebar, 
                         transformDashboard,
                         transformForm,
                         trasformCard
                     ],
                     isMobile = window.innerWidth <= mobileWidth;
-                for (var f in functions) { functions[f](isMobile); }
+
+                if (mobileGlobalClassToggle(isMobile)) {
+                    for (var f in functions) { functions[f](isMobile); }
+                }
             });
 
             $(window).resize();
@@ -86,10 +88,10 @@ Citeck.mobile.isMobileDevice = function() {
 
 
     function mobileGlobalClassToggle(isMobile) {
-        if (isMobile != !!$("body").hasClass("mobile")) {
-            YAHOO.Bubbling.fire("change-mobile-mode", { mobileMode: isMobile });
-        }
+        var isDifferentState = isMobile != !!$("body").hasClass("mobile");
+        if (isDifferentState) YAHOO.Bubbling.fire("change-mobile-mode", { mobileMode: isMobile });
         isMobile ? $("body").addClass("mobile") : $("body").removeClass("mobile");
+        return isDifferentState;
     }
 
     function viewportToggle(isMobile) {
@@ -155,29 +157,31 @@ Citeck.mobile.isMobileDevice = function() {
         if (/card-details/.test(window.location.pathname)) {
             var moveCardlets = function(flag) {
                 if (flag) {
+                    // move all cardlets with negative position index
+                    $("#bd .yui-gc .cardlet[data-position-index-in-mobile=-1]").appendTo($("#bd .yui-gc > .yui-u:not(.first)"));
+
                     // move all cardlets with positive position index
                     $("#bd .yui-gc .cardlet[data-position-index-in-mobile!=-1]").sort(function(a, b) { 
-                        return +a.getAttribute("data-position-index-in-mobile") > 
-                               +b.getAttribute("data-position-index-in-mobile"); 
-                    }).appendTo($("#bd .yui-gc > .yui-u.first"));
-
-                    // move all cardlets with negative position index
-                    $("#bd .yui-gc .cardlet[data-position-index-in-mobile!=-1]").appendTo($("#bd .yui-gc > .yui-u:not(.first)"));
+                        var ap = parseInt(a.getAttribute("data-position-index-in-mobile")),
+                            bp = parseInt(b.getAttribute("data-position-index-in-mobile"));
+                        return ap > bp ? 1 : -1; 
+                    }).prependTo($("#bd .yui-gc > .yui-u.first"));
                 } else {
                     for (var i = 0; i <= 1; i++) {
                         $("#bd .yui-gc .cardlet[data-location^=" + i + "]").sort(function(a, b) {
-                            return +(a.getAttribute("data-location").split("-")[1]) > 
-                                   +(b.getAttribute("data-location").split("-")[1]); 
-                        }).appendTo($("#bd .yui-gc > .yui-u:nth-child(" + i + ")"));
+                            var al = parseInt(a.getAttribute("data-location").split("-")[1]),
+                                bl = parseInt(b.getAttribute("data-location").split("-")[1]);
+                            return al > bl ? 1 : -1; 
+                        }).appendTo($("#bd .yui-gc > .yui-u:nth-child(" + (i + 1) + ")"));
                     }
                 }
             };
 
             if (isMobile) {
                 $("#bd .yui-gc .cardlet[data-available-in-mobile=false]").hide(500);
-                // moveCardlets(isMobile);
+                moveCardlets(isMobile);
             } else {
-                // moveCardlets(isMobile);
+                moveCardlets(isMobile);
                 $("#bd .yui-gc .cardlet:hidden").show(500);
             }
         }
