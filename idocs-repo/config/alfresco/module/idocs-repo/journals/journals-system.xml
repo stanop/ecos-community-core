@@ -17,6 +17,10 @@
 			<header key="cardlet:regionId" default="true" />
 			<header key="cardlet:regionColumn" default="true" />
 			<header key="cardlet:regionPosition" default="true" />
+
+			<header key="cardlet:availableInMobile" default="true" />
+			<header key="cardlet:positionIndexInMobile" default="true" />
+
 			<header key="cardlet:allowedType" default="true" />
 			<header key="cardlet:allowedAuthorities" default="true" />
 			<header key="cardlet:condition" />

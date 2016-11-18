@@ -19,3 +19,10 @@ cardlet.allowedAuthority=
 
 # condition in javascript (empty condition allows)
 cardlet.condition=
+
+
+# visibility in mobile version (empty condition allows. 'true' by default)
+cardlet.availableInMobile=true
+
+# position in mobile version (empty condition allows)
+cardlet.positionIndexInMobile=
