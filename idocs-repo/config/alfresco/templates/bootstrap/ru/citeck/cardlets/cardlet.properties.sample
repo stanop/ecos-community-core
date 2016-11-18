@@ -25,4 +25,4 @@ cardlet.condition=
 cardlet.availableInMobile=true
 
 # position in mobile version (empty condition allows)
-cardlet.positionIndexInMobile=
+cardlet.positionIndexInMobile=-1
