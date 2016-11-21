@@ -11,6 +11,10 @@
             <cardlet:regionPosition>${cardlet.regionPosition}</cardlet:regionPosition>
             <cardlet:allowedType>${cardlet.allowedType}</cardlet:allowedType>
             <cardlet:condition>${cardlet.condition}</cardlet:condition>
+
+            <!-- mobile parameters -->
+            <cardlet:availableInMobile>${cardlet.availableInMobile}</cardlet:availableInMobile>
+            <cardlet:positionIndexInMobile>${cardlet.positionIndexInMobile}</cardlet:positionIndexInMobile>
         </view:properties>
     </cardlet:cardlet>
 </view:view>

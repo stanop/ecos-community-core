@@ -68,7 +68,7 @@
                        data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 
                 <input id="${args.htmlid}-form-submit" type="submit" value="${msg("button.save")}"
-                       data-bind="enable: !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
+                       data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
 			<#else>
                 <input id="${id}-form-submit" type="submit"
                        value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>"

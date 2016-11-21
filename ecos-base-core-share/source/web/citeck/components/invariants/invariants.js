@@ -1025,10 +1025,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('valid', function() {
             // irrelevant is always valid
             if(this.irrelevant()) return true;
+
             // empty values: valid, if optional or protected
             if(this.empty()) {
                 return this.optional() || this['protected']();
             }
+
+            // non-empty values: valid invariants should all be valid
+            return this.invariantValid();
+        })
+        .computed('validDraft', function() {
+            // irrelevant or empty is always valid
+            if(this.irrelevant() || this.empty()) return true;
+
             // non-empty values: valid invariants should all be valid
             return this.invariantValid();
         })
@@ -1208,6 +1217,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr.valid();
             });
         })
+        .computed('validDraft', function() {
+            return _.all(this.attributes(), function(attr) {
+                return attr.validDraft();
+            });
+        })
+
         .computed('changed', function() {
             return _.any(this.attributes(), function(attr) {
                 return attr.changed();
@@ -1671,8 +1686,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
-
-        
+       
         .method('selectTab', function(data, event) {
             $(event.target)
                 .parent()
