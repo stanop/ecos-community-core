@@ -24,6 +24,7 @@ import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -38,7 +39,6 @@ import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -288,24 +288,27 @@ public class HistoricalPropertiesBehaviour implements
 	}
 
 	private Object getKeyValue(QName qName, Object constraint) {
-		if ("boolean".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
+		if (DataTypeDefinition.BOOLEAN.equals(dictionaryService.getProperty(qName).getDataType().getName())) {
 			if (constraint == null || constraint.equals(false)) {
 				return "Нет";
 			} else {
 				return  "Да";
 			}
 		}
-		if (constraint != null && "date".equals(dictionaryService.getProperty(qName).getDataType().getName().getLocalName())) {
+		if (constraint == null) {
+			return "";
+		}
+		if (DataTypeDefinition.DATE.equals(dictionaryService.getProperty(qName).getDataType().getName())) {
 			return new SimpleDateFormat("dd/MM/yyyy").format(constraint);
 		}
-		if (constraint != null && ClassificationModel.PROP_DOCUMENT_KIND.equals(qName)) {
+		if (ClassificationModel.PROP_DOCUMENT_KIND.equals(qName)) {
 			return nodeService.getProperty((NodeRef) constraint, ContentModel.PROP_NAME);
 		}
 		if (dictionaryService.getProperty(qName).getConstraints().size() > 0) {
 			String localName = dictionaryService.getProperty(qName).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
 			return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
 		} else {
-			return constraint == null ? "" : constraint;
+			return constraint;
 		}
 	}
 
