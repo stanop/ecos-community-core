@@ -309,6 +309,13 @@ public class LuceneQuery implements SearchQueryBuilder {
                     case ASSOC_CONTAINS:
                     case QNAME_CONTAINS:
                     case STRING_CONTAINS:
+                    case DATE_GREATER_OR_EQUAL:
+                    case DATE_LESS_OR_EQUAL:
+                    case DATE_LESS_THAN:
+                    case NUMBER_GREATER_THAN:
+                    case NUMBER_GREATER_OR_EQUAL:
+                    case NUMBER_LESS_THAN:
+                    case NUMBER_LESS_OR_EQUAL:
                         ignore = true;
                 }
             }
