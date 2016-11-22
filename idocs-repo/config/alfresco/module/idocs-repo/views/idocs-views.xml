@@ -149,6 +149,17 @@
         </field> -->
     </view>
 
+    <view class="deputy:selfAbsenceEvent">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:autoAnswer"/>
+        <field assoc="deputy:user">
+            <invariant on="value" language="javascript">
+                person
+            </invariant>
+        </field>
+    </view>
+
     <view class="idocs:legalForm">
         <field prop="idocs:legalFormName" />
         <field prop="idocs:legalFormDescription" />

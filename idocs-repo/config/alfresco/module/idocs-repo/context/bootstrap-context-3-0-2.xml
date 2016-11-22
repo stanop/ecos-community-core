@@ -23,4 +23,27 @@
         <property name="utils" ref="ecos.workflow.case-perform-utils" />
     </bean>
 
+    <bean id="idocs.module-component.users-absence-events-journal" parent="idocs.import-spaces.3-0-2"
+          depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="users-absence-events-journal"/>
+        <property name="description" value="User Absence Events Journals"/>
+        <property name="sinceVersion" value="2.3"/>
+        <property name="appliesFromVersion" value="2.3"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/users-absence-events-journal.xml
+                </prop>
+                <prop key="messages">alfresco/module/idocs-repo/messages/journals-absence-events</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
 </beans>

@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <model name="deputy:deputyModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 	<description>Deputation Model</description>
+	<author>Citeck</author>
 	<version>1.0</version>
 
 	<imports>
@@ -62,6 +63,9 @@
                 <property name="deputy:comment">
                     <type>d:text</type>
                 </property>
+				<property name="deputy:autoAnswer">
+					<type>d:text</type>
+				</property>
             </properties>
             <associations>
                 <association name="deputy:user">
@@ -88,6 +92,10 @@
                 </association>
             </associations>
         </type>
+
+		<type name="deputy:selfAbsenceEvent">
+			<parent>deputy:absenceEvent</parent>
+		</type>
 
         <type name="deputy:absenceReason">
             <parent>dl:dataListItem</parent>
