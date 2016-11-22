@@ -14,6 +14,7 @@
         - rewrite control on knockout.component
 -->
 
+
 <!-- ko ifnot: empty -->
     <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
         <table>
@@ -69,8 +70,12 @@
                                     <!-- ko foreach: defaultAttributes -->
                                         <!-- ko with: $parents[1].attribute($data.name()) -->
                                             <td data-bind="text: ko.computed(function() {
+                                                <@column_formatter column 3 />
+                                                
                                                 var value = $data.value(), title;
-                                                if (value && value.toString().indexOf('invariants.Node') != -1) title = value.properties['cm:title'];
+                                                if (value && value.toString().indexOf('invariants.Node') != -1) {
+                                                    title = value.properties['cm:title'];
+                                                }
                                                 return title || ($data.valueTitle() || $data.textValue())
                                             })"></td>
                                         <!-- /ko -->
@@ -80,6 +85,8 @@
                                 <#list params.columns?split(",") as column>
                                     <!-- ko with: attribute("${column}") -->
                                         <td data-bind="text: ko.computed(function() {
+                                            <@column_formatter column 1 />
+
                                             var value = $data.value(), title;
                                             if (value && value.toString().indexOf('invariants.Node') != -1) {
                                                 title = value.properties['cm:title'];
@@ -91,8 +98,12 @@
                             <#else>
                                 <!-- ko foreach: attributes -->
                                     <td data-bind="text: ko.computed(function() {
+                                        <@column_formatter column 1 />
+
                                         var value = $data.value(), title;
-                                        if (value && value.toString().indexOf('invariants.Node') != -1) title = value.properties['cm:title'];
+                                        if (value && value.toString().indexOf('invariants.Node') != -1) {
+                                            title = value.properties['cm:title'];
+                                        }
                                         return title || ($data.valueTitle() || $data.textValue())
                                     })"></td>
                                 <!-- /ko -->
@@ -125,3 +136,8 @@
         ${params.style?string}
     </style>
 </#if>
+
+<#macro column_formatter columnName step>
+    <#assign column_formatter = params['formatter_' + columnName?replace(':', '_')]>
+    <#if column_formatter??>return (function(value) { ${column_formatter} })($parents[${step}]);</#if>
+</#macro>
