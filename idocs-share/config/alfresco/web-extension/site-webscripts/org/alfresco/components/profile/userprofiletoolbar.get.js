@@ -71,6 +71,7 @@ function main()
             addLink("user-cloud-auth-link", "user-cloud-auth", "link.cloud-auth");
         }
         addLink("deputy-link", "deputy", "link.deputy");
+        addLink("user-absence-events-link", "user-absence-events", "link.user-absence-events");
     }
     else
     {
