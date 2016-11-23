@@ -5,6 +5,7 @@ import org.alfresco.repo.admin.RepositoryState;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
+import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -13,7 +14,6 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -31,14 +31,14 @@ import java.util.List;
  *
  * @author Pavel Simonov
  */
-public class ChangeStatusByDate implements Job {
+public class ChangeStatusByDate extends AbstractScheduledLockedJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeStatusByDate.class);
 
     private static final String SEARCH_QUERY = "TYPE:\"%s\" AND @%s:[MIN TO NOW] AND @icase\\:caseStatusAssoc_added:\"%s\"";
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void executeJob(JobExecutionContext context) throws JobExecutionException {
         final JobDataMap data = context.getJobDetail().getJobDataMap();
         AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
             @Override

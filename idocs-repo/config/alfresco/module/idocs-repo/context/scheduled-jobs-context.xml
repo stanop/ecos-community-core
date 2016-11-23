@@ -14,6 +14,9 @@
 						<entry key="WorkflowService" value-ref="WorkflowService" />
 						<entry key="NotificationSender" value-ref="OverdueNotificationSender" />
 						<entry key="ServiceRegistry" value-ref="ServiceRegistry" />
+                        <entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
 					</map>
 				</property>
             </bean>
@@ -35,6 +38,9 @@
 						<entry key="WorkflowService" value-ref="WorkflowService" />
 						<entry key="NotificationSender" value-ref="OverdueWorkflowNotificationSender" />
 						<entry key="ServiceRegistry" value-ref="ServiceRegistry" />
+                        <entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
 					</map>
 				</property>
             </bean>
@@ -57,6 +63,9 @@
 						<entry key="NodeService" value-ref="NodeService" />	
 						<entry key="searchService" value-ref="searchService" />
 						<entry key="minusDays" value="${workflow.remove.orphaned.minusDays}" />
+						<entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
 					</map>
 				</property>
             </bean>

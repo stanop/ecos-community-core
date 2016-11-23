@@ -2,6 +2,7 @@ package ru.citeck.ecos.notification;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -15,7 +16,6 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @author Roman.Makarskiy on 10/25/2016.
  */
-public class DisabledUserNotificationJob implements Job {
+public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
 
     private static final String PARAM_NODE_SERVICE = "nodeService";
     private static final String PARAM_SEARCH_SERVICE = "searchService";
@@ -42,7 +42,7 @@ public class DisabledUserNotificationJob implements Job {
     private static final Log logger = LogFactory.getLog(DisabledUserNotificationJob.class);
 
     @Override
-    public void execute(final JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void executeJob(final JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
         final Integer doWork = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Integer>() {
             @Override
