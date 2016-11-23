@@ -18,27 +18,25 @@
  */
 package ru.citeck.ecos.workflow.utils;
 
-import java.util.Date;
-import java.util.List;
-
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
-import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
-import org.alfresco.service.cmr.workflow.WorkflowTaskState;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
+import org.alfresco.service.cmr.workflow.WorkflowTaskState;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
 import ru.citeck.ecos.notification.NotificationSender;
 
-public class OverdueWorkflowNotificationJob implements Job 
+import java.util.Date;
+import java.util.List;
+
+public class OverdueWorkflowNotificationJob extends AbstractScheduledLockedJob
 {
 	private static Log logger = LogFactory.getLog(OverdueWorkflowNotificationJob.class);
 
@@ -46,7 +44,7 @@ public class OverdueWorkflowNotificationJob implements Job
 	private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
 
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
+	public void executeJob(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getJobDetail().getJobDataMap();
 
 		final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);

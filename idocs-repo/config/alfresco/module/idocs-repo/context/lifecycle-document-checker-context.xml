@@ -11,6 +11,9 @@
                 <property name="jobDataAsMap">
                     <map>
                         <entry key="lifeCycleService" value-ref="lifeCycleService" />
+                        <entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
                     </map>
                 </property>
             </bean>
