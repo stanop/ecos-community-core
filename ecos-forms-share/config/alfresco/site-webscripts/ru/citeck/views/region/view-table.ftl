@@ -138,6 +138,6 @@
 </#if>
 
 <#macro column_formatter columnName step>
-    <#assign column_formatter = params['formatter_' + columnName?replace(':', '_')]!''>
-    <#if column_formatter?has_content>return (function(value) { ${column_formatter} })($parents[${step}]);</#if>
+    <#assign formatter = params['formatter_' + columnName?replace(':', '_')]!''>
+    <#if formatter?has_content>return (function(value) { ${formatter} })($parents[${step}]);</#if>
 </#macro>
