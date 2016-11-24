@@ -162,7 +162,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                         return authNode.properties["cm:name"];
                                         break;
                                 }
-                            } else { return Alfresco.util.message("label.none"); };
+                            } else { return Alfresco.util.message("label.none"); }
                         });
 
                         switch (this.nodetype()) {
@@ -174,23 +174,89 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 this.fakeViewModel.allowedAuthorityType = ko.observable("USER, GROUP");
                                 break;
                         }
-                    };
+                    }
                 } else if (this.labels) {
                     this.templateName = "select";
                     this.fakeViewModel.options(_.pairs(this.labels));
-                    this.fakeViewModel.optionsText = function(o) { return o[1]; }
+                    this.fakeViewModel.optionsText = function(o) { return o[1]; };
                     this.fakeViewModel.optionsValue = function(o) { return o[0]; } 
+                } else if (this.datatype == "category" && this.journalType() && this.attributeName() == "tk:kind") {
+                    var docType = this.journalOptionsType();
+                    if (!docType) return;
+
+                    Alfresco.util.Ajax.jsonGet({
+                        url: Alfresco.constants.PROXY_URI
+                        + "/citeck/search/get-property-default-value?nodeType="
+                        + docType + "&property=tk:type",
+                        successCallback: {
+                            fn: function(response) {
+                                if (response.json.defaultValue != null) {
+                                    fillSelectControl(response.json.defaultValue);
+                                }
+                            }
+                        }
+                    });
+                }
+                drawFilterCriterionValueComponent();
+
+                function fillSelectControl(documentType) {
+                    var query = {
+                        skipCount: 0,
+                        maxItems: 50,
+                        field_1: "type",
+                        predicate_1: "type-equals",
+                        value_1: "cm:category",
+                        field_2: "parent",
+                        predicate_2: "parent-equals",
+                        value_2: documentType
+                    };
+
+                    Alfresco.util.Ajax.jsonPost({
+                        url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                        dataObj: query,
+                        successCallback: {
+                            fn: function(response) {
+                                var result = _.map(response.json.results, function(node) {
+                                    return new Node(node);
+                                });
+                                var temporaryArray = [];
+
+                                for (var i = 0; i < result.length; i ++) {
+                                    var currentObj = result[i];
+                                    var displayName = currentObj.properties['cm:title']
+                                        ? currentObj.properties['cm:title'] : currentObj.properties['cm:name'];
+                                    var nodeRef = currentObj.nodeRef;
+                                    temporaryArray.push([nodeRef, displayName]);
+                                }
+                                if (temporaryArray.length > 0) {
+                                    selectData(temporaryArray);
+                                }
+                            }
+                        }
+                    });
+
+                    var selectData = ko.observable([]);
+                    selectData.subscribe(function() {
+                        self.templateName = "select";
+                        self.fakeViewModel.options(selectData());
+                        self.fakeViewModel.optionsText = function(o) { return o[1]; };
+                        self.fakeViewModel.optionsValue = function(o) { return o[0]; };
+                        drawFilterCriterionValueComponent();
+                    });
                 }
 
-                Alfresco.util.Ajax.request({
-                    url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId=" + this.fieldId + "&template=" + this.templateName,
-                    successCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            this.html(prepareHTMLByTemplate(response.serverResponse.responseText));
+                function drawFilterCriterionValueComponent() {
+                    Alfresco.util.Ajax.request({
+                        url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
+                                                                + self.fieldId + "&template=" + self.templateName,
+                        successCallback: {
+                            scope: this,
+                            fn: function(response) {
+                                self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             this.valueContainerId = this.fieldId + "-value";
@@ -243,14 +309,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     var attribute = self.journalType.attribute(data.name());
                     return attribute ? attribute.nodetype() : null;
                 });
-            }
+            };
 
             this.getJournalType = function(data) {
                 return ko.computed(function() {
                     var attribute = self.journalType.attribute(data.name());
                     return attribute ? attribute.journalType() : null;
                 });
-            }
+            };
+
+            this.getAttributeName = function (data) {
+                return ko.computed(function() {
+                    var attribute = self.journalType.attribute(data.name());
+                    return attribute ? attribute.name() : null;
+                });
+            };
+            this.getJournalOptionsType = function (data) {
+                return ko.computed(function () {
+                    var options = self.journalType.options();
+                    return options ? options.type : null;
+                })
+            };
         },
         template: 
            '<table class="filter-criteria-table">\
@@ -272,7 +351,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                     datatype: resolve(\'datatype.name\', null),\
                                     nodetype: $component.getNodeType($data),\
                                     journalType: $component.getJournalType($data),\
-                                    value: value\
+                                    value: value,\
+                                    attributeName: $component.getAttributeName($data),\
+                                    journalOptionsType: $component.getJournalOptionsType($data)\
                                 }} --><!-- /ko -->\
                             </td>\
                         </tr>\
@@ -288,20 +369,33 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
       
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
-            }
+            };
 
             this.getNodeType = function(data) {
                 return ko.computed(function() {
                     var attribute = self.journalType.attribute(data.resolve("field.name", null));
                     return attribute ? attribute.nodetype() : null;
                 });
-            }
+            };
 
             this.getJournalType = function(data) {
                 return ko.computed(function() {
                     var attribute = self.journalType.attribute(data.resolve("field.name", null));
                     return attribute ? attribute.journalType() : null;
                 });
+            };
+
+            this.getAttributeName = function (data) {
+                return ko.computed(function() {
+                    var attribute = self.journalType.attribute(data.resolve("field.name", null));
+                    return attribute ? attribute.name() : null;
+                });
+            };
+            this.getJournalOptionsType = function (data) {
+                return ko.computed(function () {
+                    var options = self.journalType.options();
+                    return options ? options.type : null;
+                })
             }
         },
         template: 
@@ -338,7 +432,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         labels: resolve(\'field.labels\', null),\
                         nodetype: $component.getNodeType($data),\
                         journalType: $component.getJournalType($data),\
-                        value: value\
+                        value: value,\
+                        attributeName: $component.getAttributeName($data),\
+                        journalOptionsType: $component.getJournalOptionsType($data)\
                     }} --><!-- /ko -->\
                 </div>\
             </div>'
