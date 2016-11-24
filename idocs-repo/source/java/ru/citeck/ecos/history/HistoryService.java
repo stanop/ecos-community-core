@@ -96,10 +96,10 @@ public class HistoryService {
         this.historyRoot = historyRoot;
     }
 
-    public void persistEvent(final QName type, final Map<QName, Serializable> properties) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
+    public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
+        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<NodeRef>() {
             @Override
-            public Object doWork() throws Exception {
+            public NodeRef doWork() throws Exception {
                 NodeRef initiator = getInitiator(properties);
                 properties.remove(HistoryModel.ASSOC_INITIATOR);
                 if (initiator == null) {
@@ -147,7 +147,7 @@ public class HistoryService {
 						}
 					}
                 }
-                return null;
+                return historyEvent;
             }
         });
     }
