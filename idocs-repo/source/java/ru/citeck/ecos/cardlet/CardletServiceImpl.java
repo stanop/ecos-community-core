@@ -18,16 +18,6 @@
  */
 package ru.citeck.ecos.cardlet;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.alfresco.repo.model.Repository;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -42,318 +32,321 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.model.CardletModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
 
+import java.io.Serializable;
+import java.util.*;
+
 /*default*/ class CardletServiceImpl implements CardletService {
-	private static final Log logger = LogFactory.getLog(CardletServiceImpl.class);
+    private static final Log logger = LogFactory.getLog(CardletServiceImpl.class);
 
-	private NodeService nodeService;
-	private DictionaryService dictionaryService;
-	private AuthorityService authorityService;
-	private SearchService searchService;
-	private ScriptService scriptService;
-	private Repository repositoryHelper;
+    private NodeService nodeService;
+    private DictionaryService dictionaryService;
+    private AuthorityService authorityService;
+    private SearchService searchService;
+    private ScriptService scriptService;
+    private Repository repositoryHelper;
 
-	private String scriptEngine;
+    private String scriptEngine;
 
-	@Override
-	public List<NodeRef> queryCardlets(NodeRef nodeRef) {
-		return queryCardlets(nodeRef, DEFAULT_MODE);
-	}
-	
-	@Override
-	public List<NodeRef> queryCardlets(NodeRef nodeRef, String cardMode) {
-		List<QName> types = getAllNodeTypes(nodeRef);
-		Collection<String> authorities = getAllUserAuthorities();
-		Comparator<NodeRef> precedenceComparator = new ScopedObjectsPrecedenceComparator(types);
-		Map<String, Object> conditionModel = buildConditionModel(nodeRef);
-		
-		if(cardMode == null) cardMode = DEFAULT_MODE;
-		
-		// query
-		List<NodeRef> cardlets = queryCardlets(cardMode, types, authorities);
+    @Override
+    public List<NodeRef> queryCardlets(NodeRef nodeRef) {
+        return queryCardlets(nodeRef, DEFAULT_MODE);
+    }
 
-		// group by regionId
-		Map<Object, List<NodeRef>> cardletsByRegion = groupBy(cardlets, CardletModel.PROP_REGION_ID);
-		
-		// get resulting cardlets for each region
-		List<NodeRef> resultCardlets = new LinkedList<>();
-		for(List<NodeRef> regionCardlets : cardletsByRegion.values()) {
-			NodeRef mostSuitableCardlet = findMostSuitable(regionCardlets, precedenceComparator,
-					conditionModel);
-			if(mostSuitableCardlet != null) {
-				resultCardlets.add(mostSuitableCardlet);
-			}
-		}
-		Collections.sort(resultCardlets, new PropertyValueComparator(nodeService, CardletModel.PROP_REGION_POSITION));
-		return resultCardlets;
-	}
-	
-	@Override
-	public List<NodeRef> queryCardModes(NodeRef nodeRef) {
-		List<QName> types = getAllNodeTypes(nodeRef);
-		Collection<String> authorities = getAllUserAuthorities();
-		Comparator<NodeRef> precedenceComparator = new ScopedObjectsPrecedenceComparator(types);
-		Map<String, Object> conditionModel = buildConditionModel(nodeRef);
+    @Override
+    public List<NodeRef> queryCardlets(NodeRef nodeRef, String cardMode) {
+        List<QName> types = getAllNodeTypes(nodeRef);
+        Collection<String> authorities = getAllUserAuthorities();
+        Comparator<NodeRef> precedenceComparator = new ScopedObjectsPrecedenceComparator(types);
+        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
 
-		// get all card modes
-		List<NodeRef> cardModes = queryCardModes(types, authorities);
+        if (cardMode == null) cardMode = DEFAULT_MODE;
 
-		// group by card mode id
-		Map<Object, List<NodeRef>> cardModesById = groupBy(cardModes, CardletModel.PROP_CARD_MODE_ID);
-		
-		// get resulting card modes
-		List<NodeRef> resultCardModes = new LinkedList<>();
-		for(List<NodeRef> regionCardModes : cardModesById.values()) {
-			NodeRef mostSuitableCardMode = findMostSuitable(regionCardModes, precedenceComparator,
-					conditionModel);
-			if(mostSuitableCardMode != null) {
-				resultCardModes.add(mostSuitableCardMode);
-			}
-		}
-		Collections.sort(resultCardModes, new PropertyValueComparator(nodeService, CardletModel.PROP_CARD_MODE_ORDER));
-		return resultCardModes;
-	}
-	
-	private List<NodeRef> queryCardlets(String cardMode, List<QName> types, Collection<String> authorities) {
-		
-		String modeClause;
-		if(ALL_MODES.equals(cardMode)) {
-			modeClause = "TRUE";
-		} else {
-			Collection<String> modes = new ArrayList<String>(2);
-			modes.add(cardMode);
-			modes.add(CardletService.ALL_MODES);
-			modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, CardletService.DEFAULT_MODE.equals(cardMode));
-		}
-		
-		String typeClause = "TYPE:\"" + CardletModel.TYPE_CARDLET + "\"";
-		String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true);
-		String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true);
-		String query = typeClause + " AND " + modeClause + " AND " + documentClause + " AND " + authorityClause;
-		if(logger.isDebugEnabled()) {
-			logger.debug("Quering cardlets: " + query);
-		}
-		ResultSet results = null;
-		List<NodeRef> cardlets = null;
-		try {
-			results = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, 
-					SearchService.LANGUAGE_FTS_ALFRESCO, query);
-			cardlets = results.getNodeRefs();
-		} finally {
-			if(results != null) {
-				results.close();
-			}
-		}
-		if(logger.isDebugEnabled()) {
-			logger.debug("Found cardlets: " + cardlets.size());
-		}
-//		return cardlets;
-		return filterCardletsByAllowedType(cardlets, types);
-	}
+        // query
+        List<NodeRef> cardlets = queryCardlets(cardMode, types, authorities);
 
-	/**
-	 * This method fix wrong search results by property cardlet:allowedType in Lucene and Solr searches
-	 *
-	 * @param cardlets
-	 * @param types
-     * @return
+        // group by regionId
+        Map<Object, List<NodeRef>> cardletsByRegion = groupBy(cardlets, CardletModel.PROP_REGION_ID);
+
+        // get resulting cardlets for each region
+        List<NodeRef> resultCardlets = new LinkedList<>();
+        for (List<NodeRef> regionCardlets : cardletsByRegion.values()) {
+            NodeRef mostSuitableCardlet = findMostSuitable(regionCardlets, precedenceComparator,
+                    conditionModel);
+            if (mostSuitableCardlet != null) {
+                resultCardlets.add(mostSuitableCardlet);
+            }
+        }
+        Collections.sort(resultCardlets, new PropertyValueComparator(nodeService, CardletModel.PROP_REGION_POSITION));
+        return resultCardlets;
+    }
+
+    @Override
+    public List<NodeRef> queryCardModes(NodeRef nodeRef) {
+        List<QName> types = getAllNodeTypes(nodeRef);
+        Collection<String> authorities = getAllUserAuthorities();
+        Comparator<NodeRef> precedenceComparator = new ScopedObjectsPrecedenceComparator(types);
+        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
+
+        // get all card modes
+        List<NodeRef> cardModes = queryCardModes(types, authorities);
+
+        // group by card mode id
+        Map<Object, List<NodeRef>> cardModesById = groupBy(cardModes, CardletModel.PROP_CARD_MODE_ID);
+
+        // get resulting card modes
+        List<NodeRef> resultCardModes = new LinkedList<>();
+        for (List<NodeRef> regionCardModes : cardModesById.values()) {
+            NodeRef mostSuitableCardMode = findMostSuitable(regionCardModes, precedenceComparator,
+                    conditionModel);
+            if (mostSuitableCardMode != null) {
+                resultCardModes.add(mostSuitableCardMode);
+            }
+        }
+        Collections.sort(resultCardModes, new PropertyValueComparator(nodeService, CardletModel.PROP_CARD_MODE_ORDER));
+        return resultCardModes;
+    }
+
+    private List<NodeRef> queryCardlets(String cardMode, List<QName> types, Collection<String> authorities) {
+
+        String modeClause;
+        if (ALL_MODES.equals(cardMode)) {
+            modeClause = "TRUE";
+        } else {
+            Collection<String> modes = new ArrayList<>(2);
+            modes.add(cardMode);
+            modes.add(CardletService.ALL_MODES);
+            modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, CardletService.DEFAULT_MODE.equals(cardMode));
+        }
+
+        String typeClause = "TYPE:\"" + CardletModel.TYPE_CARDLET + "\"";
+        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true);
+        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true);
+        String query = typeClause + " AND " + modeClause + " AND " + documentClause + " AND " + authorityClause;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Quering cardlets: " + query);
+        }
+
+        List<NodeRef> cardlets;
+        cardlets = getCardItemsRefs(query);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found cardlets: " + cardlets.size());
+        }
+
+        return filterCardletsByAllowedType(cardlets, types);
+    }
+
+    /**
+     * This method fix wrong search results by property cardlet:allowedType in Lucene and Solr searches
      */
-	private List<NodeRef> filterCardletsByAllowedType(List<NodeRef> cardlets, List<QName> types) {
-		List<NodeRef> filteredCardlets = new ArrayList<>(cardlets.size());
-		for (NodeRef cardletRef : cardlets) {
-			QName allowedType = (QName) nodeService.getProperty(cardletRef, CardletModel.PROP_ALLOWED_TYPE);
-			if (types.contains(allowedType)) {
-				filteredCardlets.add(cardletRef);
-			} else {
-				logger.warn("Search returns wrong cardlet with allowedType = " + allowedType.toString());
-			}
-		}
-		return filteredCardlets;
-	}
+    private List<NodeRef> filterCardletsByAllowedType(List<NodeRef> cardlets, List<QName> types) {
+        List<NodeRef> filteredCardlets = new ArrayList<>(cardlets.size());
+        for (NodeRef cardletRef : cardlets) {
+            QName allowedType = (QName) nodeService.getProperty(cardletRef, CardletModel.PROP_ALLOWED_TYPE);
+            if (types.contains(allowedType)) {
+                filteredCardlets.add(cardletRef);
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Search returns wrong cardlet with allowedType = " + allowedType.toString());
+                }
+            }
+        }
+        return filteredCardlets;
+    }
 
-	private List<NodeRef> queryCardModes(List<QName> types, Collection<String> authorities) {
-		String typeClause = "TYPE:\"" + CardletModel.TYPE_CARD_MODE + "\"";
-		String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true);
-		String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true);
-		String query = typeClause + " AND " + documentClause + " AND " + authorityClause;
-		if(logger.isDebugEnabled()) {
-			logger.debug("Quering card modes: " + query);
-		}
-		ResultSet results = null;
-		List<NodeRef> cardModes = null;
-		try {
-			results = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, 
-					SearchService.LANGUAGE_FTS_ALFRESCO, query);
-			cardModes = results.getNodeRefs();
-		} finally {
-			if(results != null) {
-				results.close();
-			}
-		}
-		if(logger.isDebugEnabled()) {
-			logger.debug("Found card modes: " + cardModes.size());
-		}
-		return cardModes;
-	}
+    private List<NodeRef> queryCardModes(List<QName> types, Collection<String> authorities) {
+        String typeClause = "TYPE:\"" + CardletModel.TYPE_CARD_MODE + "\"";
+        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true);
+        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true);
+        String query = typeClause + " AND " + documentClause + " AND " + authorityClause;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Quering card modes: " + query);
+        }
 
-	private String disjunction(QName property, Collection<?> objects, boolean allowNull) {
-		List<String> clauses = new LinkedList<String>();
-		for(Object object : objects) {
-			if(object == null) continue;
-			clauses.add("@" + property + ":\"" + object.toString().replaceAll("[\"]", "\\\"") + "\"");
-		}
-		if(allowNull) {
-			clauses.add("ISNULL:\"" + property + "\"");
-		}
-		return "(" + StringUtils.join(clauses, " OR ") + ")";
-	}
+        List<NodeRef> cardModes;
+        cardModes = getCardItemsRefs(query);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found card modes: " + cardModes.size());
+        }
+        return cardModes;
+    }
 
-	private List<QName> getAllNodeTypes(NodeRef nodeRef) {
-		return DictionaryUtils.getAllNodeClassNames(nodeRef, nodeService, dictionaryService);
-	}
-	
-	private Collection<String> getAllUserAuthorities() {
-		Collection<String> groups = authorityService.getAuthorities();
-		Collection<String> result = new ArrayList<>(groups.size() + 1);
-		result.addAll(groups);
-		result.add(AuthenticationUtil.getFullyAuthenticatedUser());
-		return result;
-	}
+    private List<NodeRef> getCardItemsRefs(String query) {
+        ResultSet results = null;
+        List<NodeRef> cardModes;
+        try {
+            results = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+                    SearchService.LANGUAGE_FTS_ALFRESCO, query);
+            cardModes = results.getNodeRefs();
+        } finally {
+            if (results != null) {
+                results.close();
+            }
+        }
+        return cardModes;
+    }
 
-	private Map<String, Object> buildConditionModel(NodeRef document) {
-		return scriptService.buildDefaultModel(
-				repositoryHelper.getPerson(), 
-				repositoryHelper.getCompanyHome(), 
-				repositoryHelper.getUserHome(repositoryHelper.getPerson()), 
-				null, // script
-				document, // document
-				nodeService.getPrimaryParent(document).getParentRef() // space
-			);
-	}
+    private String disjunction(QName property, Collection<?> objects, boolean allowNull) {
+        List<String> clauses = new LinkedList<>();
+        for (Object object : objects) {
+            if (object == null) continue;
+            clauses.add("@" + property + ":\"" + object.toString().replaceAll("[\"]", "\\\"") + "\"");
+        }
+        if (allowNull) {
+            clauses.add("ISNULL:\"" + property + "\"");
+        }
+        return "(" + StringUtils.join(clauses, " OR ") + ")";
+    }
 
-	private boolean conditionAllows(NodeRef nodeRef, Map<String, Object> scriptModel) {
-		String condition = (String) nodeService.getProperty(nodeRef, CardletModel.PROP_CONDITION);
-		if(condition == null || condition.isEmpty()) {
-			return true;
-		}
-		Object conditionResult = scriptService.executeScriptString(scriptEngine, condition, scriptModel); 
-		if(conditionResult instanceof Boolean) {
-			return (Boolean) conditionResult;
-		} else {
-			return false;
-		}
-	}
+    private List<QName> getAllNodeTypes(NodeRef nodeRef) {
+        return DictionaryUtils.getAllNodeClassNames(nodeRef, nodeService, dictionaryService);
+    }
 
-	private NodeRef findMostSuitable(List<NodeRef> objects, Comparator<NodeRef> precedenceComparator, Map<String, Object> conditionModel) {
-		List<NodeRef> objectsToEvaluate = new LinkedList<NodeRef>();
-		objectsToEvaluate.addAll(objects);
-		while(objectsToEvaluate.size() > 0) {
-			NodeRef mostSuitable = Collections.min(objectsToEvaluate, precedenceComparator);
-			if(conditionAllows(mostSuitable, conditionModel)) {
-				return mostSuitable;
-			} else {
-				objectsToEvaluate.remove(mostSuitable);
-			}
-		}
-		return null;
-	}
+    private Collection<String> getAllUserAuthorities() {
+        Collection<String> groups = authorityService.getAuthorities();
+        Collection<String> result = new ArrayList<>(groups.size() + 1);
+        result.addAll(groups);
+        result.add(AuthenticationUtil.getFullyAuthenticatedUser());
+        return result;
+    }
 
-	private Map<Object, List<NodeRef>> groupBy(List<NodeRef> objects, QName property) {
-		Map<Object, List<NodeRef>> result = new HashMap<Object, List<NodeRef>>();
-		for(NodeRef object : objects) {
-			Object value = (String) nodeService.getProperty(object, property);
-			if(value == null) {
-				logger.warn("Found object without " + property + ": " + object);
-				continue;
-			}
-			List<NodeRef> objectsGroup = result.get(value);
-			if(objectsGroup == null) {
-				objectsGroup = new ArrayList<NodeRef>();
-				result.put(value, objectsGroup);
-			}
-			
-			objectsGroup.add(object);
-		}
-		return result;
-	}
+    private Map<String, Object> buildConditionModel(NodeRef document) {
+        return scriptService.buildDefaultModel(
+                repositoryHelper.getPerson(),
+                repositoryHelper.getCompanyHome(),
+                repositoryHelper.getUserHome(repositoryHelper.getPerson()),
+                null, // script
+                document, // document
+                nodeService.getPrimaryParent(document).getParentRef() // space
+        );
+    }
 
-	private class ScopedObjectsPrecedenceComparator implements Comparator<NodeRef> {
-		
-		private final Map<QName, Integer> typeDepths;
-		private final int infiniteTypeDepth;
-		
-		public ScopedObjectsPrecedenceComparator(List<QName> types) {
-			this.typeDepths = calculateDepthMap(types);
-			infiniteTypeDepth = types.size() + 1;
-		}
-		
-		@Override
-		public int compare(NodeRef object1, NodeRef object2) {
-			// first - by type depth
-			int typeDepth1 = getTypeDepth((QName) nodeService.getProperty(object1, CardletModel.PROP_ALLOWED_TYPE));
-			int typeDepth2 = getTypeDepth((QName) nodeService.getProperty(object2, CardletModel.PROP_ALLOWED_TYPE));
-			if(typeDepth1 > typeDepth2) return -1;
-			if(typeDepth1 < typeDepth2) return +1;
-			
-			// next - by group
-			boolean groups1empty = groupsAreEmpty(nodeService.getProperty(object1, CardletModel.PROP_ALLOWED_AUTHORITIES));
-			boolean groups2empty = groupsAreEmpty(nodeService.getProperty(object2, CardletModel.PROP_ALLOWED_AUTHORITIES));
-			if(!groups1empty && groups2empty) return -1;
-			if(groups1empty && !groups2empty) return +1;
-			
-			// finally - by condition
-			boolean condition1empty = stringIsEmpty((String) nodeService.getProperty(object1, CardletModel.PROP_CONDITION));
-			boolean condition2empty = stringIsEmpty((String) nodeService.getProperty(object2, CardletModel.PROP_CONDITION));
-			if(!condition1empty && condition2empty) return -1;
-			if(condition1empty && !condition2empty) return +1;
-			
-			return 0;
-		}
+    private boolean conditionAllows(NodeRef nodeRef, Map<String, Object> scriptModel) {
+        String condition = (String) nodeService.getProperty(nodeRef, CardletModel.PROP_CONDITION);
+        if (condition == null || condition.isEmpty()) {
+            return true;
+        }
+        Object conditionResult = scriptService.executeScriptString(scriptEngine, condition, scriptModel);
+        if (conditionResult instanceof Boolean) {
+            return (Boolean) conditionResult;
+        } else {
+            return false;
+        }
+    }
 
-		private boolean stringIsEmpty(String condition1) {
-			return condition1 == null || condition1.isEmpty();
-		}
-		private int getTypeDepth(QName type) {
-			return type != null ? typeDepths.get(type) : infiniteTypeDepth;
-		}
-		private boolean groupsAreEmpty(Object groups1) {
-			return groups1 == null || groups1 instanceof Collection && ((Collection<?>)groups1).size() == 0;
-		}
+    private NodeRef findMostSuitable(List<NodeRef> objects, Comparator<NodeRef> precedenceComparator, Map<String, Object> conditionModel) {
+        List<NodeRef> objectsToEvaluate = new LinkedList<>();
+        objectsToEvaluate.addAll(objects);
+        while (objectsToEvaluate.size() > 0) {
+            NodeRef mostSuitable = Collections.min(objectsToEvaluate, precedenceComparator);
+            if (conditionAllows(mostSuitable, conditionModel)) {
+                return mostSuitable;
+            } else {
+                objectsToEvaluate.remove(mostSuitable);
+            }
+        }
+        return null;
+    }
 
-		private Map<QName, Integer> calculateDepthMap(List<QName> types) {
-			final Map<QName, Integer> typeDepths = new HashMap<QName, Integer>();
-			int typeDepth = 0;
-			for(QName type : types) {
-				typeDepths.put(type, typeDepth);
-				typeDepth++;
-			}
-			return typeDepths;
-		}
-	}
-	
-	private class PropertyValueComparator implements Comparator<NodeRef> {
+    private Map<Object, List<NodeRef>> groupBy(List<NodeRef> objects, QName property) {
+        Map<Object, List<NodeRef>> result = new HashMap<>();
+        for (NodeRef object : objects) {
+            Object value = nodeService.getProperty(object, property);
+            if (value == null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found object without " + property + ": " + object);
+                }
+                continue;
+            }
+            List<NodeRef> objectsGroup = result.get(value);
+            if (objectsGroup == null) {
+                objectsGroup = new ArrayList<>();
+                result.put(value, objectsGroup);
+            }
+
+            objectsGroup.add(object);
+        }
+        return result;
+    }
+
+    private class ScopedObjectsPrecedenceComparator implements Comparator<NodeRef> {
+
+        private final Map<QName, Integer> typeDepths;
+        private final int infiniteTypeDepth;
+
+        ScopedObjectsPrecedenceComparator(List<QName> types) {
+            this.typeDepths = calculateDepthMap(types);
+            infiniteTypeDepth = types.size() + 1;
+        }
+
+        @Override
+        public int compare(NodeRef object1, NodeRef object2) {
+            // first - by type depth
+            int typeDepth1 = getTypeDepth((QName) nodeService.getProperty(object1, CardletModel.PROP_ALLOWED_TYPE));
+            int typeDepth2 = getTypeDepth((QName) nodeService.getProperty(object2, CardletModel.PROP_ALLOWED_TYPE));
+            if (typeDepth1 > typeDepth2) return -1;
+            if (typeDepth1 < typeDepth2) return +1;
+
+            // next - by group
+            boolean groups1empty = groupsAreEmpty(nodeService.getProperty(object1, CardletModel.PROP_ALLOWED_AUTHORITIES));
+            boolean groups2empty = groupsAreEmpty(nodeService.getProperty(object2, CardletModel.PROP_ALLOWED_AUTHORITIES));
+            if (!groups1empty && groups2empty) return -1;
+            if (groups1empty && !groups2empty) return +1;
+
+            // finally - by condition
+            boolean condition1empty = stringIsEmpty((String) nodeService.getProperty(object1, CardletModel.PROP_CONDITION));
+            boolean condition2empty = stringIsEmpty((String) nodeService.getProperty(object2, CardletModel.PROP_CONDITION));
+            if (!condition1empty && condition2empty) return -1;
+            if (condition1empty && !condition2empty) return +1;
+
+            return 0;
+        }
+
+        private boolean stringIsEmpty(String condition1) {
+            return condition1 == null || condition1.isEmpty();
+        }
+
+        private int getTypeDepth(QName type) {
+            return type != null ? typeDepths.get(type) : infiniteTypeDepth;
+        }
+
+        private boolean groupsAreEmpty(Object groups1) {
+            return groups1 == null || groups1 instanceof Collection && ((Collection<?>) groups1).size() == 0;
+        }
+
+        private Map<QName, Integer> calculateDepthMap(List<QName> types) {
+            final Map<QName, Integer> typeDepths = new HashMap<>();
+            int typeDepth = 0;
+            for (QName type : types) {
+                typeDepths.put(type, typeDepth);
+                typeDepth++;
+            }
+            return typeDepths;
+        }
+    }
+
+    private class PropertyValueComparator implements Comparator<NodeRef> {
 
         private final Map<NodeRef, Serializable> cachedValues = new HashMap<>();
         private final NodeService nodeService;
         private final QName propertyName;
         private final Comparator<Serializable> valueComparator;
-        
-        public PropertyValueComparator(NodeService nodeService, QName propertyName) {
+
+        PropertyValueComparator(NodeService nodeService, QName propertyName) {
             this.nodeService = nodeService;
             this.propertyName = propertyName;
             this.valueComparator = null;
         }
-        
+
         @SuppressWarnings("unused")
         public PropertyValueComparator(NodeService nodeService, QName propertyName, Comparator<Serializable> valueComparator) {
             this.nodeService = nodeService;
             this.propertyName = propertyName;
             this.valueComparator = valueComparator;
         }
-        
+
         @Override
         public int compare(NodeRef node1, NodeRef node2) {
             Serializable value1 = getValue(node1);
@@ -361,23 +354,29 @@ import ru.citeck.ecos.utils.DictionaryUtils;
             return compare(value1, value2);
         }
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings({"rawtypes", "unchecked"})
         private int compare(Serializable value1, Serializable value2) {
-            if(valueComparator != null)
+            if (valueComparator != null)
                 return valueComparator.compare(value1, value2);
-            
-            if(value1 == null && value2 != null) return -1;
-            if(value1 == null && value2 == null) return 0;
-            if(value1 != null && value2 == null) return 1;
-            
-            if(value1 instanceof Comparable) return ((Comparable) value1).compareTo(value2);
-            if(value1 instanceof Comparable) return -((Comparable) value2).compareTo(value1);
-            
+
+            if (value1 == null && value2 != null) {
+                return -1;
+            }
+            if (value1 == null) {
+                return 0;
+            }
+            if (value2 == null) {
+                return 1;
+            }
+            if (value1 instanceof Comparable) {
+                return ((Comparable) value1).compareTo(value2);
+            }
+
             throw new IllegalArgumentException("Neither value1, nor value2 are comparable");
         }
-        
+
         private Serializable getValue(NodeRef nodeRef) {
-            if(cachedValues.containsKey(nodeRef)) {
+            if (cachedValues.containsKey(nodeRef)) {
                 return cachedValues.get(nodeRef);
             } else {
                 Serializable value = nodeService.getProperty(nodeRef, propertyName);
@@ -385,34 +384,34 @@ import ru.citeck.ecos.utils.DictionaryUtils;
                 return value;
             }
         }
-	}
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
 
-	public void setAuthorityService(AuthorityService authorityService) {
-		this.authorityService = authorityService;
-	}
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
 
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-	}
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
-	public void setScriptService(ScriptService scriptService) {
-		this.scriptService = scriptService;
-	}
+    public void setScriptService(ScriptService scriptService) {
+        this.scriptService = scriptService;
+    }
 
-	public void setScriptEngine(String scriptEngine) {
-		this.scriptEngine = scriptEngine;
-	}
+    public void setScriptEngine(String scriptEngine) {
+        this.scriptEngine = scriptEngine;
+    }
 
-	public void setRepositoryHelper(Repository repoHelper) {
-		this.repositoryHelper = repoHelper;
-	}
+    public void setRepositoryHelper(Repository repoHelper) {
+        this.repositoryHelper = repoHelper;
+    }
 
 }
