@@ -96,6 +96,9 @@
         <property name="wfcp:formKey">
             <invariant on="options" language="javascript">dictionary.getSubTypes("wfcp:performTask")</invariant>
         </property>
+        <property name="wfcp:performOutcomes">
+            <invariant on="mandatory" language="javascript">node.properties['wfcp:formKey'] == 'wfcp:performTask'</invariant>
+        </property>
     </aspect>
 
 </invariants>
