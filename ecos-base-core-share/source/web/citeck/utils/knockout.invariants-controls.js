@@ -1070,6 +1070,7 @@ CreateVariantsByView
  
 CreateObjectButton
     .key('id', String)
+
     .property('scope', Object)
     .property('constraint', Function)
     .property('constraintMessage', String)
@@ -1078,6 +1079,9 @@ CreateObjectButton
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
     .property('callback', Function)
+
+    .shortcut('protected', 'scope.protected')
+
     .computed('createVariants', function() {
         if(!this.scope().nodetype()) return [];
         var list = this.source() == 'create-views' 
@@ -1139,13 +1143,13 @@ CreateObjectButton
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
     template: 
-        '<!-- ko if: createVariants().length == 0 --> \
+        '<!-- ko if: protected() || createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
-        <!-- ko if: createVariants().length == 1 --> \
+        <!-- ko if: !protected() && createVariants().length == 1 --> \
             <button class="create-object-button" data-bind="text: buttonTitle, attr: { title: createVariants()[0].title() }, click: execute.bind($data, createVariants()[0])"></button> \
         <!-- /ko --> \
-        <!-- ko if: createVariants().length > 1 --> \
+        <!-- ko if: !protected() && createVariants().length > 1 --> \
             <div class="yui-overlay yuimenu button-menu" data-bind="attr: { id: id() + \'-create-menu\' }"> \
                 <div class="bd"> \
                     <ul data-bind="foreach: createVariants" class="first-of-type"> \
