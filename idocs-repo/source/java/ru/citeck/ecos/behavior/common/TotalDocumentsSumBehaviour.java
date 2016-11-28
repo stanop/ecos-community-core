@@ -137,7 +137,7 @@ public class TotalDocumentsSumBehaviour implements
     private void recalculateBranch(NodeRef nodeRef) {
         List<AssociationRef> refs = nodeService.getSourceAssocs(nodeRef, assocName);
         BigDecimal total = BigDecimal.ZERO;
-        if (!statusesForFiltering.contains(getNodeCaseStatus(nodeRef))) {
+        if (statusesForFiltering == null || !statusesForFiltering.contains(getNodeCaseStatus(nodeRef))) {
             Currency currencyTo = getCurrencyByAssocName(nodeRef, totalSumCurrencyField);
             if (currencyTo == null) {
                 currencyTo = currencyService.getCurrencyByCode(totalSumCurrencyDefault);
