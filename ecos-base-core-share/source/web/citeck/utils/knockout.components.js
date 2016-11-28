@@ -184,6 +184,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     var docType = this.journalOptionsType();
                     if (!docType) return;
 
+                    self.templateName = "select";
+                    self.fakeViewModel.options([["1", Alfresco.util.message('form.select.loading')]]);
+                    self.fakeViewModel.optionsText = function(o) { return o[1]; };
+                    self.fakeViewModel.optionsValue = function(o) { return o[0]; };
+
                     Alfresco.util.Ajax.jsonGet({
                         url: Alfresco.constants.PROXY_URI
                         + "/citeck/search/get-property-default-value?nodeType="
@@ -197,6 +202,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         }
                     });
                 }
+
                 drawFilterCriterionValueComponent();
 
                 function fillSelectControl(documentType) {
@@ -237,10 +243,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                     var selectData = ko.observable([]);
                     selectData.subscribe(function() {
-                        self.templateName = "select";
                         self.fakeViewModel.options(selectData());
-                        self.fakeViewModel.optionsText = function(o) { return o[1]; };
-                        self.fakeViewModel.optionsValue = function(o) { return o[0]; };
                         drawFilterCriterionValueComponent();
                     });
                 }
