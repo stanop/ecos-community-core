@@ -111,17 +111,15 @@
                                 <!-- /ko -->
                             </#if>
 
-                            <!-- ko with: $parents[1] -->
-                                <!-- ko ifnot: protected() || resolve("node.impl.inViewMode") -->
-                                    <td class="value-item-actions">
-                                        <a class="edit-value-item" title="${msg('button.edit')}" 
-                                            data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $parent.nodeRef, null, function() { $data.reset(true) }), clickBubble: false"></a>
-                                        <a class="delete-value-item" title="${msg('button.delete')}" 
-                                            data-bind="click: function() { 
-                                                Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
-                                            }, clickBubble: false"></a>
-                                    </td>
-                                <!-- /ko -->
+                            <!-- ko ifnot: $parents[1].protected() || $parents[1].resolve("node.impl.inViewMode") -->
+                                <td class="value-item-actions">
+                                    <a class="edit-value-item" title="${msg('button.edit')}" 
+                                        data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) }), clickBubble: false"></a>
+                                    <a class="delete-value-item" title="${msg('button.delete')}" 
+                                        data-bind="click: function() { 
+                                            Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
+                                        }, clickBubble: false"></a>
+                                </td>
                             <!-- /ko -->
                         </tr>
                     <!-- /ko -->
