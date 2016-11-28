@@ -1070,6 +1070,7 @@ CreateVariantsByView
  
 CreateObjectButton
     .key('id', String)
+
     .property('scope', Object)
     .property('constraint', Function)
     .property('constraintMessage', String)
@@ -1078,11 +1079,15 @@ CreateObjectButton
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
     .property('callback', Function)
+
+    .shortcut('protected', 'scope.protected')
+    .shortcut('nodetype', 'scope.nodetype')
+
     .computed('createVariants', function() {
-        if(!this.scope().nodetype()) return [];
+        if(!this.nodetype()) return [];
         var list = this.source() == 'create-views' 
-            ? new CreateVariantsByView(this.scope().nodetype())
-            : new CreateVariantsByType(this.scope().nodetype());
+            ? new CreateVariantsByView(this.nodetype())
+            : new CreateVariantsByType(this.nodetype());
         return list.createVariants();
     })
     .method('execute', function(createVariant) {
@@ -1135,17 +1140,16 @@ CreateObjectButton
     ;
 
 
-
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
     template: 
-        '<!-- ko if: createVariants().length == 0 --> \
+       '<!-- ko if: protected() || createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
-        <!-- ko if: createVariants().length == 1 --> \
+        <!-- ko if: !protected() && createVariants().length == 1 --> \
             <button class="create-object-button" data-bind="text: buttonTitle, attr: { title: createVariants()[0].title() }, click: execute.bind($data, createVariants()[0])"></button> \
         <!-- /ko --> \
-        <!-- ko if: createVariants().length > 1 --> \
+        <!-- ko if: !protected() && createVariants().length > 1 --> \
             <div class="yui-overlay yuimenu button-menu" data-bind="attr: { id: id() + \'-create-menu\' }"> \
                 <div class="bd"> \
                     <ul data-bind="foreach: createVariants" class="first-of-type"> \
@@ -1161,7 +1165,6 @@ ko.components.register('createObjectButton', {
                 </span> \
             </span> \
         <!-- /ko -->'
-
 });
 
 
