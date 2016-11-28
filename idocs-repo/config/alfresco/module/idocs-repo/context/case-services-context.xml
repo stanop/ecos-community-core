@@ -88,21 +88,6 @@
 	<!-- .............. -->
 	<!-- Case behaviors -->
 	<!-- .............. -->
-	<bean id="caseTemplateBehavior" class="ru.citeck.ecos.icase.CaseTemplateBehavior" init-method="init">
-		<property name="policyComponent" ref="policyComponent" />
-		<property name="nodeService" ref="nodeService" />
-		<!--property name="searchService" ref="searchService" /-->
-		<property name="namespaceService" ref="NamespaceService" />
-		<property name="caseElementService" ref="caseElementService" />
-		<property name="order" value="${behavior.order.case.template}" />
-		<property name="searchService" ref="criteriaSearchService"/>
-		<property name="criteriaFactory" ref="searchCriteriaFactory"/>
-		<property name="language" value="lucene"/>
-		<property name="scriptService" ref="ScriptService"/>
-		<property name="scriptEngine" value="javascript"/>
-		<property name="repositoryState" ref="repositoryState"/>
-	</bean>
-
 	<bean id="subcaseBehavior" class="ru.citeck.ecos.icase.CaseSubcaseBehavior" init-method="init">
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="nodeService" ref="nodeService" />
