@@ -24,20 +24,20 @@ if (typeof Citeck == "undefined" || !Citeck)
 Citeck.utils   = Citeck.utils || {};
 Citeck.HTML5   = Citeck.HTML5 || {};
 Citeck.Browser = Citeck.Browser || {};
+Citeck.UI      = Citeck.UI || {};
 
 Citeck.namespace = function(namespace) {
-	var names = namespace.split('.'),
-		scope = this;
-	for(var i = 0, ii = names.length; i < ii; i++) {
-		var name = names[i];
-		if(typeof scope[name] == "undefined") {
-			scope[name] = {};
-		}
-		scope = scope[name];
-	}
-	return scope;
+    var names = namespace.split('.'),
+        scope = this;
+    for(var i = 0, ii = names.length; i < ii; i++) {
+        var name = names[i];
+        if(typeof scope[name] == "undefined") {
+            scope[name] = {};
+        }
+        scope = scope[name];
+    }
+    return scope;
 };
-
 
 // HTML5
 // -----
@@ -105,19 +105,19 @@ Citeck.utils.concatOptions = function(defaultOptions, newOptions) {
  */
 Citeck.utils.formatUserName = function(user, plain_text)
 {
-	var name = Alfresco.util.message("label.none");
-	if(user) {
-		if(user.firstName) {
-			name = user.firstName;
-			if(user.lastName) name += " " + user.lastName;
-		} else if(user.userName) {
-			name = user.userName;
-		}
-		if(!plain_text) {
-			name = Alfresco.util.userProfileLink(user.userName, name);
-		}
-	}
-	return name;
+    var name = Alfresco.util.message("label.none");
+    if(user) {
+        if(user.firstName) {
+            name = user.firstName;
+            if(user.lastName) name += " " + user.lastName;
+        } else if(user.userName) {
+            name = user.userName;
+        }
+        if(!plain_text) {
+            name = Alfresco.util.userProfileLink(user.userName, name);
+        }
+    }
+    return name;
 };
 
 /**
@@ -131,124 +131,124 @@ Citeck.utils.formatUserName = function(user, plain_text)
  */
 Citeck.utils.formatDocumentName = function(doc, plain_text)
 {
-	if(!doc) {
-		return Alfresco.util.message("label.none");
-	} else if(!plain_text) {
-		return '<a href="' + Alfresco.util.siteURL('card-details?nodeRef=' + doc.nodeRef) + '">' + doc.name + '</a>';
-	} else {
-		return doc.name;
-	}
+    if(!doc) {
+        return Alfresco.util.message("label.none");
+    } else if(!plain_text) {
+        return '<a href="' + Alfresco.util.siteURL('card-details?nodeRef=' + doc.nodeRef) + '">' + doc.name + '</a>';
+    } else {
+        return doc.name;
+    }
 };
 
 Citeck.utils.onFieldAvailable = function(object, field, func, scope) {
-	var waitFunc = function() {
-		if(object[field]) {
-			func.call(scope, object[field]);
-		} else {
-			YAHOO.lang.later(100, this, waitFunc);
-		}
-	};
-	waitFunc.call(this);
+    var waitFunc = function() {
+        if(object[field]) {
+            func.call(scope, object[field]);
+        } else {
+            YAHOO.lang.later(100, this, waitFunc);
+        }
+    };
+    waitFunc.call(this);
 };
 
 Citeck.utils.resolvePath = function(object, keys) {
-	switch(typeof keys) {
-	case "string": 
-		keys = keys.split(/\./);
-		break;
-	case "undefined":
-		keys = [];
-		break;
-	}
-	var result = object;
-	for(var i = 0, ii = keys.length; i < ii; i++) {
-		result = result[keys[i]];
-		if(!result) break;
-	}
-	return result;
+    switch(typeof keys) {
+    case "string": 
+        keys = keys.split(/\./);
+        break;
+    case "undefined":
+        keys = [];
+        break;
+    }
+    var result = object;
+    for(var i = 0, ii = keys.length; i < ii; i++) {
+        result = result[keys[i]];
+        if(!result) break;
+    }
+    return result;
 };
 
 Citeck.utils.mapObject = function(object, mapping) {
-	if(typeof mapping == "function") {
-		return mapping(object);
-	}
-	var result = {};
-	_.each(mapping, function(value, key) {
-		switch(typeof value) {
-		case "string":
-			result[key] = Citeck.utils.resolvePath(object, value);
-			break;
-		case "object":
-			result[key] = Citeck.utils.mapObject(object[key], value);
-			break;
-		default:
-			throw "Unsupported value type in mapping: " + (typeof value);
-		}
-	});
-	return result;
+    if(typeof mapping == "function") {
+        return mapping(object);
+    }
+    var result = {};
+    _.each(mapping, function(value, key) {
+        switch(typeof value) {
+        case "string":
+            result[key] = Citeck.utils.resolvePath(object, value);
+            break;
+        case "object":
+            result[key] = Citeck.utils.mapObject(object[key], value);
+            break;
+        default:
+            throw "Unsupported value type in mapping: " + (typeof value);
+        }
+    });
+    return result;
 };
 
 Citeck.utils.lazyLoad = function(collection, itemKey, urlTemplate, callback, resultPath, keyField) {
-	var multipleKeys = YAHOO.lang.isArray(itemKey),
-		itemKeys = multipleKeys ? itemKey : [ itemKey ],
-		missingKeys = [];
-	
-	// returning function:
-	var getResult = function() {
-		if(!multipleKeys) {
-			return collection[itemKey];
-		}
-		var result = [];
-		for(var i = 0, ii = itemKeys.length; i < ii; i++) {
-			result.push(collection[itemKeys[i]]);
-		}
-		return result;
-	};
-	
-	// fill missing keys
-	for(var i = 0, ii = itemKeys.length; i < ii; i++) {
-		var key = itemKeys[i];
-		if(typeof collection[key] == "undefined" || collection[key] === null) {
-			missingKeys.push(key);
-		}
-	}
-	
-	// if there is no missing keys - return result immediately
-	if(missingKeys.length == 0) {
-		YAHOO.lang.later(0, callback.scope, callback.fn, [ getResult() ]);
-		return;
-	}
-	
-	Alfresco.util.Ajax.jsonGet({
-		url: YAHOO.lang.substitute(urlTemplate, {
-			key: itemKey,
-			keys: missingKeys.join(",")
-		}),
-		successCallback: { 
-			fn: function(response) {
-				var result = response.json;
-				if(resultPath) {
-					result = Citeck.utils.resolvePath(result, resultPath);
-				}
-				if(multipleKeys) {
-					if(keyField) {
-						for(var i in result) {
-							if(!result.hasOwnProperty(i)) continue;
-							collection[result[i][keyField]] = result[i];
-						}
-					} else {
-						for(var i in result) {
-							if(!result.hasOwnProperty(i)) continue;
-							collection[i] = result[i];
-						}
-					}
-				} else {
-					collection[itemKey] = result;
-				}
-				callback.fn.call(callback.scope, getResult());
-			}
-		}
-	});
+    var multipleKeys = YAHOO.lang.isArray(itemKey),
+        itemKeys = multipleKeys ? itemKey : [ itemKey ],
+        missingKeys = [];
+    
+    // returning function:
+    var getResult = function() {
+        if(!multipleKeys) {
+            return collection[itemKey];
+        }
+        var result = [];
+        for(var i = 0, ii = itemKeys.length; i < ii; i++) {
+            result.push(collection[itemKeys[i]]);
+        }
+        return result;
+    };
+    
+    // fill missing keys
+    for(var i = 0, ii = itemKeys.length; i < ii; i++) {
+        var key = itemKeys[i];
+        if(typeof collection[key] == "undefined" || collection[key] === null) {
+            missingKeys.push(key);
+        }
+    }
+    
+    // if there is no missing keys - return result immediately
+    if(missingKeys.length == 0) {
+        YAHOO.lang.later(0, callback.scope, callback.fn, [ getResult() ]);
+        return;
+    }
+    
+    Alfresco.util.Ajax.jsonGet({
+        url: YAHOO.lang.substitute(urlTemplate, {
+            key: itemKey,
+            keys: missingKeys.join(",")
+        }),
+        successCallback: { 
+            fn: function(response) {
+                var result = response.json;
+                if(resultPath) {
+                    result = Citeck.utils.resolvePath(result, resultPath);
+                }
+                if(multipleKeys) {
+                    if(keyField) {
+                        for(var i in result) {
+                            if(!result.hasOwnProperty(i)) continue;
+                            collection[result[i][keyField]] = result[i];
+                        }
+                    } else {
+                        for(var i in result) {
+                            if(!result.hasOwnProperty(i)) continue;
+                            collection[i] = result[i];
+                        }
+                    }
+                } else {
+                    collection[itemKey] = result;
+                }
+                callback.fn.call(callback.scope, getResult());
+            }
+        }
+    });
 };
 
 /**
@@ -481,26 +481,26 @@ Citeck.utils.nsURILoader = new Citeck.utils.BulkLoader({
 });
 
 Citeck.utils.DoclibRecordLoader = function(view) {
-	var url = Alfresco.constants.URL_SERVICECONTEXT
-		+ "citeck/components/documentlibrary/data/explicit/type/node/alfresco/user/home?filter=all"
-		+ (view ? "&view=" + view : "");
-	Citeck.utils.DoclibRecordLoader.superclass.constructor.call(this, {
-		url: url,
-		method: "POST",
-		emptyFn: function() { return { nodeRefs: "" }; },
-		addFn: function(query, id) {
-			if(id) {
-				query.nodeRefs += id + ","; 
-				return true;
-			} else {
-				return false;
-			}
-		},
-		getFn: function(response) {
-			var records = response.json.items;
-			return _.object(_.pluck(records, 'nodeRef'), records);
-		}
-	});
+    var url = Alfresco.constants.URL_SERVICECONTEXT
+        + "citeck/components/documentlibrary/data/explicit/type/node/alfresco/user/home?filter=all"
+        + (view ? "&view=" + view : "");
+    Citeck.utils.DoclibRecordLoader.superclass.constructor.call(this, {
+        url: url,
+        method: "POST",
+        emptyFn: function() { return { nodeRefs: "" }; },
+        addFn: function(query, id) {
+            if(id) {
+                query.nodeRefs += id + ","; 
+                return true;
+            } else {
+                return false;
+            }
+        },
+        getFn: function(response) {
+            var records = response.json.items;
+            return _.object(_.pluck(records, 'nodeRef'), records);
+        }
+    });
 };
 YAHOO.extend(Citeck.utils.DoclibRecordLoader, Citeck.utils.BulkLoader);
 
@@ -581,6 +581,132 @@ Citeck.utils.getURLParameterByName = function(name) {
   return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+
+// BROWSER
+// -------
+
+Citeck.Browser.isIE = function(version) {
+    var ua = window.navigator.userAgent, 
+        msie = ua.indexOf("MSIE "), trident = ua.indexOf('Trident/'), edge = ua.indexOf('Edge/'),
+        ieVersion = false;
+
+    // IE 10 or older 
+    if (msie > 0) {
+        ieVersion = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+
+    // IE 11
+    } else if (trident > 0) {
+        var rv = ua.indexOf('rv:');
+        ieVersion = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+
+    // Edge (IE 12+)
+    } else if (edge > 0) {
+        ieVersion = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    return ieVersion ? (version ? +ieVersion == +version : true) : false;
+}
+
+
+// UI
+// --
+
+Citeck.UI.waitIndicator = function(id, params) {
+    this.id = id;
+    var self = this;
+
+    this.options = { 
+        modal: true, 
+        context: null, 
+        spinners: "two", 
+        size: 200, 
+        message: Alfresco.util.message("label.loading")
+    };
+    for (var p in params) { this.options[p] = params[p]; }
+
+
+    // build DOM
+    this._envelope = $("<div>", { "id": this.id + "-envelope", "class": "wait-indicator-envelope", "style": "visibility: hidden;"  });
+    this._container = $("<div>", { "id": this.id + "-container", "class": "wait-indicator-container" });
+    this._indicator = $("<div>", { "id": this.id + "-indicator", "class": "wait-indicator-indicator" });
+    this._message = $("<div>", { "id": this.id + "-message", "class": "wait-indicator-message", "text": this.options.message });
+
+    // custom color of spinner
+    if (this.options.color) {
+        this._indicator.css("border-color", this.options.color);
+        this._message.css("color", this.options.color);
+    }
+
+    this._envelope.append(
+        this._container
+            .append(this._indicator)
+            .append(this._message)
+    );
+
+    // public functions
+    this.getEl = function() { return this._envelope[0]; }
+
+    this.hide = function() { self._envelope.css("visibility", "hidden"); }
+    this.show = function() { self._envelope.css("visibility", "visible"); }
+
+    this.render = function() {
+        // dispose if indicator exists
+        if ($("#" + self.options.context).length) self.dispose();
+
+        if (self.options.context) {
+            if (self.options.context instanceof HTMLElement) { $(self.options.context).append(self._envelope) }
+            else if (typeof self.options.context == "string") { $("#" + self.options.context).append(self._envelope) }
+        } else {
+            // fixed indicator for sticky-wrapper
+            $(".sticky-wrapper").append(self._envelope);
+            self._container.css("position", "fixed");
+        }
+    
+        // location envelope
+        if (self._envelope.parent().css("position") != "relative") {
+            var parent = self._envelope.parent(),
+                offset = parent.offset();
+            
+            self._envelope
+                .css("height", parent.height())
+                .css("width", parent.width())
+                .css("top", offset.top)
+                .css("left", offset.left);
+        }
+
+        // location container
+        self._container.css("top", "calc(50% - " + self.options.size / 2 + "px)");
+        self._container.css("left", "calc(50% - " + self.options.size / 2 + "px)");
+
+        // resize and mode indicator
+        self._indicator
+            .css("width", self.options.size)
+            .css("height", self.options.size)
+            .addClass(self.options.spinners + "-spinner");
+
+        // location message
+        self._message
+            .css("left", "calc(50% - " + self._message.width() / 2 + "px)")
+            .css("top", "calc(50% - " + self._message.height() / 2 + "px)");
+    }
+
+    this.dispose = function() {
+        $(self._message).unbind().remove();
+        $(self._indicator).unbind().remove();
+        $(self._container).unbind().remove();
+        $(self._envelope).unbind().remove();
+    }
+
+    this.setMessage = function(newMessage) {
+        self.options.message = newMessage;
+        self._message.text(self.options.message);
+    }
+}
+
+
+// OVERWRITE
+// ---------
+
 /**
  * Online edit url override: generate correct address even in absense of site information.
  */
@@ -656,28 +782,3 @@ Alfresco.thirdparty.toISO8601 = function() {
 
   return toISOString.apply(arguments.callee, arguments);
 };
-
-
-// BROWSER
-
-Citeck.Browser.isIE = function(version) {
-    var ua = window.navigator.userAgent, 
-        msie = ua.indexOf("MSIE "), trident = ua.indexOf('Trident/'), edge = ua.indexOf('Edge/'),
-        ieVersion = false;
-
-    // IE 10 or older 
-    if (msie > 0) {
-        ieVersion = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-
-    // IE 11
-    } else if (trident > 0) {
-        var rv = ua.indexOf('rv:');
-        ieVersion = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-
-    // Edge (IE 12+)
-    } else if (edge > 0) {
-        ieVersion = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-    }
-
-    return ieVersion ? (version ? +ieVersion == +version : true) : false;
-}
