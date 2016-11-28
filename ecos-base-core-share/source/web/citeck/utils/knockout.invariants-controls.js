@@ -1081,12 +1081,13 @@ CreateObjectButton
     .property('callback', Function)
 
     .shortcut('protected', 'scope.protected')
+    .shortcut('nodetype', 'scope.nodetype')
 
     .computed('createVariants', function() {
-        if(!this.scope().nodetype()) return [];
+        if(!this.nodetype()) return [];
         var list = this.source() == 'create-views' 
-            ? new CreateVariantsByView(this.scope().nodetype())
-            : new CreateVariantsByType(this.scope().nodetype());
+            ? new CreateVariantsByView(this.nodetype())
+            : new CreateVariantsByType(this.nodetype());
         return list.createVariants();
     })
     .method('execute', function(createVariant) {
@@ -1139,11 +1140,10 @@ CreateObjectButton
     ;
 
 
-
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
     template: 
-        '<!-- ko if: protected() || createVariants().length == 0 --> \
+       '<!-- ko if: protected() || createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
         <!-- ko if: !protected() && createVariants().length == 1 --> \
@@ -1165,7 +1165,6 @@ ko.components.register('createObjectButton', {
                 </span> \
             </span> \
         <!-- /ko -->'
-
 });
 
 
