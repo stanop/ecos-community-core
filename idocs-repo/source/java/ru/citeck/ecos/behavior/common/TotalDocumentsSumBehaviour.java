@@ -5,6 +5,7 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -134,7 +135,7 @@ public class TotalDocumentsSumBehaviour implements
         return (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
     }
 
-    private void recalculateBranch(NodeRef nodeRef) {
+    private void recalculateBranch(final NodeRef nodeRef) {
         List<AssociationRef> refs = nodeService.getSourceAssocs(nodeRef, assocName);
         BigDecimal total = BigDecimal.ZERO;
         if (statusesForFiltering == null || !statusesForFiltering.contains(getNodeCaseStatus(nodeRef))) {
@@ -160,7 +161,14 @@ public class TotalDocumentsSumBehaviour implements
             total = total.add(currencyService.transferFromOneCurrencyToOther(currentCurrency, currencyTo, currentSum));
             total = total.setScale(2, BigDecimal.ROUND_HALF_UP);
         }
-        nodeService.setProperty(nodeRef, totalSumField, total.doubleValue());
+        final BigDecimal finalTotal = total;
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                nodeService.setProperty(nodeRef, totalSumField, finalTotal.doubleValue());
+                return null;
+            }
+        });
         List<AssociationRef> targetRefs = nodeService.getTargetAssocs(nodeRef, assocName);
         for (AssociationRef targetRef : targetRefs) {
             recalculateBranch(targetRef.getTargetRef());
