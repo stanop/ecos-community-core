@@ -6,39 +6,66 @@
     model.isMobile = isMobileDevice(context.headers["user-agent"]);
 
     var viewData = getViewData(args);
-    if(viewData == null) return;
+    if(!viewData) return;
 
-    var view = viewData.view;
+    var view = viewData.view,
+        attributes = getAttributes(view);
 
-    var attributes = getAttributes(view);
     if (model.isMobile) {
         for (var a = 0; a < attributes.length; a++) {
             prepareAttributeForMobileVersion(attributes[a]);
         }
     }
+
     attributes = map(attributes, function(attr) { return attr.attribute; });
 
-    var invariantSet = getInvariantSet(args, attributes);
-    var viewScopedInvariants = getViewScopedInvariants(view);
+    var groups = get(view, "view"),
+        attributesByGroups = map(groups, function(group) {
+            return map(getAttributes(group), function(attribute) { return attribute.attribute; })
+        });
+
+    // generate id
+    each(groups, function(group, index) {
+        group["genId"] = view["class"].replace(":", "_") + "-group-" + index;
+    });
+
+    var invariantSet = getInvariantSet(args, attributes),
+        invariantSetByGroups = map(attributesByGroups, function(group) { return getInvariantSet(args, group) });
+
+    var viewScopedInvariants = getViewScopedInvariants(view),
+        viewScopedInvariantsByGroups = map(groups, function(group) { return getViewScopedInvariants(group) });
+
+    var invariantsByGroups = [];
+    for (var fi = 0; fi < groups.length; fi++) {
+        invariantsByGroups.push(viewScopedInvariantsByGroups[fi].concat(invariantSetByGroups[fi].invariants));
+    }    
     
-    var defaultModel = {};
-    for(var name in invariantSet.model) {
-        defaultModel[name] = invariantSet.model[name];
-    }
-    var publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
+
     // ATTENTION: this view model should comply to repository NodeView interface!
+    var defaultModel = {},
+        publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
+
+    for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }  
+    
     defaultModel.view = {};
     for(var i in publicViewProperties) {
         var name = publicViewProperties[i];
         defaultModel.view[name] = view[name];
     }
 
+
     model.view = view;
+    model.groups = groups;
     model.canBeDraft = viewData.canBeDraft;
+
     model.attributes = attributes;
+    model.attributesByGroups = attributesByGroups;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
+    model.invariantsByGroups = invariantsByGroups;
+
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
+  
 
     if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
 
