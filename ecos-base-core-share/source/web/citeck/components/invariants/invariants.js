@@ -821,6 +821,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        .method('href', function(data) {
+            if (data && data.toString().indexOf("invariants.Node") != -1) {
+                if (data.typeShort == "cm:person") {
+                    if (Alfresco.constants.URI_TEMPLATES["userprofilepage"]) {
+                        return Alfresco.util.uriTemplate("userprofilepage", { userid: data.properties.userName });
+                    }
+                } 
+                return Alfresco.util.siteURL('card-details?nodeRef=' + data.nodeRef);
+            }
+            return null;
+        })
+
         .computed('changed', function() {
             return this.newValue.loaded();
         })
