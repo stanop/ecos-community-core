@@ -120,8 +120,9 @@ public abstract class SingleAttributeProvider<T> extends AbstractAttributeProvid
         return true;
     }
 
+
     protected boolean isDefined(QName typeName, boolean inherit) {
-        return inherit;
+        return true;
     }
 
     protected boolean isDefault() {
