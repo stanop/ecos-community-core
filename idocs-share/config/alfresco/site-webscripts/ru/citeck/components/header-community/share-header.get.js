@@ -98,11 +98,10 @@ if (!context.externalAuthentication) {
       id: "HEADER_USER_MENU_LOGOUT",
       label: "header.logout.label",
       iconImage: "/share/res/components/images/header/logout.png",
-      targetUrl: "dologout"
+      publishTopic: "ALF_DOLOGOUT"
     }
   });
 }
-
 
 // USER MENU
 userMenu.config.widgets = [{
