@@ -4,7 +4,21 @@
 <#assign viewMargins = args.viewMargins!'10,10,10,10' />
 <#assign printMargins = args.printMargins!'10,10,10,10' />
 <#assign viewFormat = args.viewFormat!'png' />
-<#assign barcodeURL = "${url.context}/proxy/alfresco/citeck/print/barcode?nodeRef=${args.nodeRef}&property=${args.property}&barcodeType=${args.barcodeType!'code-128'}" />
+<#assign barcodeType = args.barcodeType!'code-128' />
+<#assign rnd = args.rnd!'0' />
+<#assign barcodeURL = "${url.context}/proxy/alfresco/citeck/print/barcode?nodeRef=${args.nodeRef}&property=${args.property}&barcodeType=${barcodeType}" />
+
+<script type="text/javascript">
+    new Citeck.widget.Barcode("${id}-panel").setOptions({
+        nodeRef: "${args.nodeRef}",
+		property: "${args.property}",
+		barcodeType: "${barcodeType}",
+		header: "${args.header}",
+        printScale: "${printScale}",
+        printMargins: "${printMargins}",
+		rnd: Math.random()
+	});
+</script>
 
 <div id="${id}-panel" class="child-forms document-details-panel">
 	<h2 id="${id}-heading" class="thin dark">
@@ -15,9 +29,9 @@
 	</h2>
 	<div class="panel-body">
 		<#if viewFormat == 'pdf'>
-			<embed src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}"></embed>
+			<embed src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}&rnd=${rnd}"></embed>
 		<#else>
-			<img src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}" />
+			<img src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}&rnd=${rnd}" />
 		</#if>
 	</div>
 	<script type="text/javascript">//<![CDATA[
