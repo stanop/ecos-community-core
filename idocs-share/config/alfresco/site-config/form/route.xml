@@ -81,6 +81,7 @@
                 <field-visibility>
                     <show id="cm:name"/>
                     <show id="tk:appliesToType"/>
+                    <show id="tk:appliesToKind"/>
                     <show id="route:scriptCondition" force="true"/>
                     <show id="route:stages"/>
                     <show id="cm:taggable"/>
@@ -120,6 +121,7 @@
                 <field-visibility>
                     <show id="cm:name"/>
                     <show id="tk:appliesToType"/>
+                    <show id="tk:appliesToKind"/>
                     <show id="route:scriptCondition" force="true"/>
                     <show id="route:stages"/>
                     <show id="cm:taggable"/>
