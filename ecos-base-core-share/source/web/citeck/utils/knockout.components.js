@@ -335,7 +335,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             };
 
             this.valueVisibility = function(predicate) {
-                return ["string-empty", "string-not-empty"].indexOf(predicate.id()) == -1;
+                return ["string-empty", "string-not-empty"].indexOf(predicate) == -1;
             }
         },
         template: 
@@ -352,7 +352,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                                    value: $parent.predicateValue"></select>\
                             </td>\
                             <td class="criterion-value-selector">\
-                                <!-- ko if: $component.valueVisibility($data.predicate()) -->\
+                                <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
                                     <!-- ko component: { name: "filter-criterion-value", params: {\
                                         fieldId: $component.htmlId + "-criterion-" + $index(),\
                                         labels: labels(),\
