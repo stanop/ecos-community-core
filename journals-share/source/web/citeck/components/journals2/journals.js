@@ -267,8 +267,10 @@ Filter
 		};
 	})
 	.computed('usableCriteria', function() {
-		return _.filter(this.criteria(), function(criterion) { 
-			return criterion.value() ? true : false; 
+		return _.filter(this.criteria(), function(criterion) {
+			var predicateWhitelist = ["string-empty", "string-not-empty"];
+			if (criterion.value() || predicateWhitelist.indexOf(criterion.predicate().id()) != -1) return true;
+			return false;
 		});
 	})
 	.init(function() {

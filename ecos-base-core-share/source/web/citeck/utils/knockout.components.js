@@ -333,6 +333,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     return options ? options.type : null;
                 })
             };
+
+            this.valueVisibility = function(predicate) {
+                return ["string-empty", "string-not-empty"].indexOf(predicate.id()) == -1;
+            }
         },
         template: 
            '<table class="filter-criteria-table">\
@@ -348,16 +352,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                                    value: $parent.predicateValue"></select>\
                             </td>\
                             <td class="criterion-value-selector">\
-                                <!-- ko component: { name: "filter-criterion-value", params: {\
-                                    fieldId: $component.htmlId + "-criterion-" + $index(),\
-                                    labels: labels(),\
-                                    datatype: resolve(\'datatype.name\', null),\
-                                    nodetype: $component.getNodeType($data),\
-                                    journalType: $component.getJournalType($data),\
-                                    value: value,\
-                                    attributeName: $component.getAttributeName($data),\
-                                    journalOptionsType: $component.getJournalOptionsType($data)\
-                                }} --><!-- /ko -->\
+                                <!-- ko if: $component.valueVisibility($data.predicate()) -->\
+                                    <!-- ko component: { name: "filter-criterion-value", params: {\
+                                        fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                        labels: labels(),\
+                                        datatype: resolve(\'datatype.name\', null),\
+                                        nodetype: $component.getNodeType($data),\
+                                        journalType: $component.getJournalType($data),\
+                                        value: value,\
+                                        attributeName: $component.getAttributeName($data),\
+                                        journalOptionsType: $component.getJournalOptionsType($data)\
+                                    }} --><!-- /ko -->\
+                                <!-- /ko -->\
                             </td>\
                         </tr>\
                     <!-- /ko -->\
@@ -369,7 +375,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
         viewModel: function(params) {
             var self = this;
             initializeParameters.call(this, params);
-      
+     
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
             };
@@ -400,6 +406,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     return options ? options.type : null;
                 })
             }
+
+            this.valueVisibility = function(predicate) {
+                console.log(predicate)
+                return ["string-empty", "string-not-empty"].indexOf(predicate.id()) == -1;
+            }
         },
         template: 
            '<div class="filter-criteria" data-bind="\
@@ -429,16 +440,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             "></select>\
                         <!-- /ko -->\
                     </div>\
-                    <!-- ko component: { name: "filter-criterion-value", params: {\
-                        fieldId: $component.id + "-criterion-" + id(),\
-                        datatype: resolve(\'field.datatype.name\', null),\
-                        labels: resolve(\'field.labels\', null),\
-                        nodetype: $component.getNodeType($data),\
-                        journalType: $component.getJournalType($data),\
-                        value: value,\
-                        attributeName: $component.getAttributeName($data),\
-                        journalOptionsType: $component.getJournalOptionsType($data)\
-                    }} --><!-- /ko -->\
+                    <!-- ko if: $component.valueVisibility($data.predicate()) -->\
+                        <!-- ko component: { name: "filter-criterion-value", params: {\
+                            fieldId: $component.id + "-criterion-" + id(),\
+                            datatype: resolve(\'field.datatype.name\', null),\
+                            labels: resolve(\'field.labels\', null),\
+                            nodetype: $component.getNodeType($data),\
+                            journalType: $component.getJournalType($data),\
+                            value: value,\
+                            attributeName: $component.getAttributeName($data),\
+                            journalOptionsType: $component.getJournalOptionsType($data)\
+                        }} --><!-- /ko -->\
+                    <!-- /ko -->\
                 </div>\
             </div>'
     });
