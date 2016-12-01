@@ -28,6 +28,16 @@ var PopupManager = Alfresco.util.PopupManager,
 	JournalsDashlet = koclass('JournalsDashlet', JournalsWidget),
 	DashletConfig = koclass('DashletConfig');
 
+JournalsList
+  	.constructor([String], function(id) {
+	    return new JournalsList(id);
+	}, true)
+
+	.load('journals', koutils.simpleLoad({
+		url: Alfresco.constants.PROXY_URI + "api/journals/list?journalsList={id}"
+	}))
+	;
+
 DashletConfig
 	.property('journalsList', JournalsList)
 	.property('journal', Journal)
