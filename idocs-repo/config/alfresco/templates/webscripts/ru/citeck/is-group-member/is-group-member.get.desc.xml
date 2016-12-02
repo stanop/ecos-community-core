@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>is-group-member</shortname>
+    <description>Checks if a user is in specified group</description>
+    <url>/citeck/is-group-member?userName={userName}&amp;groupName={groupName}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
