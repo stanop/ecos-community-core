@@ -17,11 +17,19 @@
   allJournals = [],
       defaultJournals = [];
 
-  for(var i in journalLists) {
-    journalListTitle = journalListTitle || journalLists[i].properties.title;
-    allJournals = allJournals.concat(journalLists[i].assocs["journal:journals"] || []);
-    defaultJournals = defaultJournals.concat(journalLists[i].assocs["journal:default"] || []);
-  }
+    for (var i in journalLists) {
+        if (journalLists[i].hasPermission("Read")) {
+            journalListTitle = journalListTitle || journalLists[i].properties.title;
+            allJournals = allJournals.concat(journalLists[i].assocs["journal:journals"] || []);
+            defaultJournals = defaultJournals.concat(journalLists[i].assocs["journal:default"] || []);
+            defaultJournals = defaultJournals.filter(function (node) {
+                return node.hasPermission("Read");
+            });
+            allJournals = allJournals.filter(function (node) {
+                return node.hasPermission("Read");
+            });
+        }
+    }
 
   if (nodeRef) {
     // java services
