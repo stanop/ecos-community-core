@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -268,8 +268,7 @@ Filter
 	})
 	.computed('usableCriteria', function() {
 		return _.filter(this.criteria(), function(criterion) {
-			var predicateWhitelist = ["string-empty", "string-not-empty"];
-			if (criterion.value() || predicateWhitelist.indexOf(criterion.predicate().id()) != -1) return true;
+			if (criterion.value() || criterion.predicate().id().indexOf("empty") != -1) return true;
 			return false;
 		});
 	})
@@ -1256,9 +1255,12 @@ Record
 	;
 
 
-	/*********************************************************/
-	/*              KNOCKOUT PERFORMANCE TUNING              */
-	/*********************************************************/
+/*********************************************************/
+/*              KNOCKOUT PERFORMANCE TUNING              */
+/*********************************************************/
+
+
+var rateLimit = { rateLimit: { timeout: 5, method: "notifyWhenChangesStop" } };
 
 JournalsWidget
 //	.extend('*', { logChange: true })
@@ -1266,8 +1268,6 @@ JournalsWidget
 //	.extend('records', { rateLimit: 0 })
 //	.extend('*', { rateLimit: 0 })
 	;
-
-var rateLimit = { rateLimit: { timeout: 5, method: "notifyWhenChangesStop" } };
 
 AttributeInfo
 	.extend('*', rateLimit)
