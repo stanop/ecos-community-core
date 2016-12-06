@@ -28,6 +28,12 @@ var PopupManager = Alfresco.util.PopupManager,
 	JournalsDashlet = koclass('JournalsDashlet', JournalsWidget),
 	DashletConfig = koclass('DashletConfig');
 
+JournalsList
+	.load('journals', koutils.simpleLoad({
+		url: Alfresco.constants.PROXY_URI + "api/journals/list?journalsList={id}"
+	}))
+	;
+
 DashletConfig
 	.property('journalsList', JournalsList)
 	.property('journal', Journal)
@@ -49,6 +55,8 @@ JournalsDashlet
 	.computed('actionGroupId', _.constant("none"))
 
 	.init(function() {
+		console.log(this)
+
 		this.dashletConfig.subscribe(function() {
 			var config = this.resolve('dashletConfig.clone');
 			this._dashletConfig(config);

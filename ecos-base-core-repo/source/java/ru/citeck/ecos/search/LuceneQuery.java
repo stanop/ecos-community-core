@@ -58,6 +58,10 @@ public class LuceneQuery implements SearchQueryBuilder {
 
     private static final String NOT = "NOT ";
 
+    private static final String OPENING_ROUND_BRACKET = "(";
+
+    private static final String CLOSING_ROUND_BRACKET = ")";
+
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private SearchService searchService;
@@ -68,7 +72,7 @@ public class LuceneQuery implements SearchQueryBuilder {
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
     }
-    
+
     public void setAssociationIndexPropertyRegistry(AssociationIndexPropertyRegistry registry) {
         this.associationIndexPropertyRegistry = registry;
     }
@@ -94,27 +98,52 @@ public class LuceneQuery implements SearchQueryBuilder {
     public boolean supports(String language) {
         return SearchService.LANGUAGE_LUCENE.equals(language);
     }
-    
+
     private class QueryBuilder {
-        
-        private final StringBuilder query = new StringBuilder();
-        
+
+        private StringBuilder query = new StringBuilder();
+        private List<QueryElement> queryElementList = new ArrayList<>();
+        Boolean shouldAppendQuery;
+        QueryElement queryElement;
+
         public String buildQuery(SearchCriteria criteria) {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             while (iterator.hasNext()) {
                 CriteriaTriplet criteriaTriplet = iterator.next();
                 boolean ignore = ignoreIfValueEmpty(criteriaTriplet);
                 if (!ignore) {
+                    shouldAppendQuery = true;
+                    queryElement = new QueryElement(criteriaTriplet);
+
+                    if (queryElementList.contains(queryElement) && logicOrEnabled(criteriaTriplet)) {
+                        shouldAppendQuery = false;
+                    }
+
                     buildSearchTerm(criteriaTriplet);
-                    if (iterator.hasNext()) {
+
+                    if (!shouldAppendQuery) {
+                        query = appendOrLogic(query);
+                    }
+
+                    queryElementList.add(queryElement);
+
+                    if (iterator.hasNext() && shouldAppendQuery) {
                         query.append(AND);
                     }
                 }
             }
-            String queryStr = query.toString();
-            return toCorrectQuery(queryStr);
+            String finalQuery = toCorrectQuery(query.toString());
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("FINAL QUERY: " + finalQuery);
+                for (QueryElement queryElement : queryElementList) {
+                    logger.debug(queryElement);
+                }
+            }
+
+            return finalQuery;
         }
-        
+
         private void buildSearchTerm(CriteriaTriplet triplet) {
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
 
@@ -128,7 +157,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                         value = buildAssocValue(triplet.getField(), triplet.getValue());
                     } catch (Exception e) {
                         logger.warn(String.format("Association value building failed! field is '%s' and value is '%s'",
-                                                                            triplet.getField(), triplet.getValue()), e);
+                                triplet.getField(), triplet.getValue()), e);
                     }
                 case ASSOC_NOT_EMPTY:
                 case ASSOC_EMPTY:
@@ -147,10 +176,14 @@ public class LuceneQuery implements SearchQueryBuilder {
                 case DATE_NOT_EQUALS:
                 case TYPE_NOT_EQUALS:
                 case ASPECT_NOT_EQUALS:
-                    query.append(NOT);
+                    if (shouldAppendQuery) {
+                        query.append(NOT);
+                    }
                 case STRING_EQUALS:
                 case NUMBER_EQUALS:
                 case DATE_EQUALS:
+                    buildEqualsTermWithRoundBracket(field, value);
+                    break;
                 case TYPE_EQUALS:
                 case ASPECT_EQUALS:
                 case PARENT_EQUALS:
@@ -210,7 +243,9 @@ public class LuceneQuery implements SearchQueryBuilder {
                 case NODEREF_NOT_CONTAINS:
                 case ASSOC_NOT_CONTAINS:
                 case QNAME_NOT_CONTAINS:
-                    query.append(NOT);
+                    if (shouldAppendQuery) {
+                        query.append(NOT);
+                    }
                 case NODEREF_CONTAINS:
                 case ASSOC_CONTAINS:
                 case QNAME_CONTAINS:
@@ -267,8 +302,8 @@ public class LuceneQuery implements SearchQueryBuilder {
 
         private List<NodeRef> expandAssocValue(NodeRef valueRef, QName valueType) {
             Path path = nodeService.getPath(valueRef);
-            String query = "PATH:\""+path.toPrefixString(namespaceService)+"//.\" " +
-                           "AND TYPE:\""+valueType.toPrefixString(namespaceService)+"\"";
+            String query = "PATH:\"" + path.toPrefixString(namespaceService) + "//.\" " +
+                    "AND TYPE:\"" + valueType.toPrefixString(namespaceService) + "\"";
             ResultSet queryResults =
                     searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "fts-alfresco", query);
             return queryResults.getNodeRefs();
@@ -322,15 +357,48 @@ public class LuceneQuery implements SearchQueryBuilder {
             return ignore;
         }
 
-        private String toCorrectQuery(String query) {
-            if (query.endsWith(AND)) {
-                query = query.substring(0, query.length() - AND.length());
+        private boolean logicOrEnabled(CriteriaTriplet criteriaTriplet) {
+            SearchPredicate criterion = SearchPredicate.forName(criteriaTriplet.getPredicate());
+            String field = criteriaTriplet.getField();
+            QName fieldQName = QName.resolveToQName(namespaceService, field);
+
+            switch (criterion) {
+                case ASSOC_CONTAINS:
+                    if (!dictionaryService.getAssociation(fieldQName).isTargetMany()) {
+                        return true;
+                    }
+                case NODEREF_CONTAINS:
+                    if (!dictionaryService.getProperty(fieldQName).isMultiValued()) {
+                        return true;
+                    }
+                case STRING_EQUALS:
+                    return true;
+                case NUMBER_EQUALS:
+                    return true;
+                case DATE_EQUALS:
+                    return true;
+                default:
+                    return false;
             }
-            return query;
         }
 
         private void buildEqualsTerm(String field, String value) {
-            query.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
+            StringBuilder term = new StringBuilder();
+            term.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
+            queryElement.setQueryPart(term.toString());
+            if (shouldAppendQuery) {
+                query.append(term);
+            }
+        }
+
+        private void buildEqualsTermWithRoundBracket(String field, String value) {
+            if (shouldAppendQuery) {
+                query.append(OPENING_ROUND_BRACKET);
+            }
+            buildEqualsTerm(field, value);
+            if (shouldAppendQuery) {
+                query.append(CLOSING_ROUND_BRACKET);
+            }
         }
 
         private void buildRangeTerm(String field, String value, boolean inclusive, boolean lessThan) {
@@ -344,7 +412,13 @@ public class LuceneQuery implements SearchQueryBuilder {
                 range.append(TO_MAX);
             }
             range.append(inclusive ? "]" : "}");
-            query.append(field).append(SEPARATOR).append(range);
+
+            StringBuilder term = new StringBuilder();
+            term.append(field).append(SEPARATOR).append(range);
+            queryElement.setQueryPart(term.toString());
+            if (shouldAppendQuery) {
+                query.append(term);
+            }
         }
 
         private void buildLessThanTerm(String field, String value, boolean inclusive) {
@@ -360,14 +434,29 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private void buildEmptyCheckTerm(String field, boolean isEmpty) {
-            query.append("(");
+            if (shouldAppendQuery) {
+                query.append(OPENING_ROUND_BRACKET);
+            }
+            queryElement.setQueryPart(queryElement.getQueryPart() + OPENING_ROUND_BRACKET);
             buildNullCheckTerm(field, isEmpty);
-            if (isEmpty) query.append(OR);
-            else query.append(AND).append(NOT);
+            if (isEmpty) {
+                if (shouldAppendQuery) {
+                    query.append(OR);
+                }
+                queryElement.setQueryPart(queryElement.getQueryPart() + OR);
+            } else {
+                if (shouldAppendQuery) {
+                    query.append(AND).append(NOT);
+                }
+                queryElement.setQueryPart(queryElement.getQueryPart() + AND + NOT);
+            }
             buildEqualsTerm(field, "");
-            query.append(")");
+            if (shouldAppendQuery) {
+                query.append(CLOSING_ROUND_BRACKET);
+            }
+            queryElement.setQueryPart(queryElement.getQueryPart() + CLOSING_ROUND_BRACKET);
         }
-        
+
         protected String getAssocIndexProp(String assocName) {
             return associationIndexPropertyRegistry.getAssociationIndexProperty(assocName, namespaceService);
         }
@@ -375,16 +464,23 @@ public class LuceneQuery implements SearchQueryBuilder {
         private void buildListContainsTerm(String field, String value) {
             List<String> listItems = Arrays.asList(value.split("\\,"));
             if (!listItems.isEmpty()) {
-                query.append("(");
+                if (shouldAppendQuery) {
+                    query.append(OPENING_ROUND_BRACKET);
+                }
                 Iterator<String> iterator = listItems.iterator();
                 while (iterator.hasNext()) {
                     String item = iterator.next();
                     buildEqualsTerm(field, item.trim());
                     if (iterator.hasNext()) {
-                        query.append(OR);
+                        if (shouldAppendQuery) {
+                            query.append(OR);
+                        }
+                        queryElement.setQueryPart(queryElement.getQueryPart() + OR);
                     }
                 }
-                query.append(")");
+                if (shouldAppendQuery) {
+                    query.append(CLOSING_ROUND_BRACKET);
+                }
             }
         }
 
@@ -392,6 +488,70 @@ public class LuceneQuery implements SearchQueryBuilder {
             return field.replace("@", "").replace("\\", "");
         }
 
+        private StringBuilder appendOrLogic(StringBuilder query) {
+            int indexOfField = query.indexOf(queryElement.field);
+            int firsIndex = query.indexOf("\"", indexOfField);
+            int secondIndex = query.indexOf("\"", firsIndex + 1);
+
+            query.insert(secondIndex + 1, " " + OR + " " + queryElement.queryPart);
+
+            return query;
+        }
+
+        private String toCorrectQuery(String query) {
+            if (query.endsWith(AND)) {
+                query = query.substring(0, query.length() - AND.length());
+            }
+            return query;
+        }
+
+        private class QueryElement {
+            SearchPredicate criterion;
+            String field;
+            String value;
+            String queryPart;
+
+            QueryElement(CriteriaTriplet criteriaTriplet) {
+                this.criterion = SearchPredicate.forName(criteriaTriplet.getPredicate());
+                this.field = buildField(criteriaTriplet.getField());
+                this.value = criteriaTriplet.getValue();
+            }
+
+            @Override
+            public String toString() {
+                return "Part: "
+                        + "\ncriterion - " + this.criterion
+                        + "\nfield - " + this.field
+                        + "\nvalue - " + this.value
+                        + "\nqueryPart - " + this.queryPart;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                QueryElement queryElement = (QueryElement) o;
+
+                if (criterion != queryElement.criterion) return false;
+                return field != null ? field.equals(queryElement.field) : queryElement.field == null;
+            }
+
+            @Override
+            public int hashCode() {
+                int result = criterion != null ? criterion.hashCode() : 0;
+                result = 31 * result + (field != null ? field.hashCode() : 0);
+                return result;
+            }
+
+            void setQueryPart(String queryPart) {
+                this.queryPart = queryPart;
+            }
+
+            String getQueryPart() {
+                return queryPart;
+            }
+        }
     }
 
 }

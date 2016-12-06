@@ -536,11 +536,11 @@
 						} else if (msgs[globalKey] != globalKey) {
 							elCell.innerHTML = msgs[globalKey];
 						} else {
-							elCell.innerHTML = keyByType;
+							elCell.innerHTML = outcome;
 						}
 					},
 					function (msgs) {
-						elCell.innerHTML = keyByType;
+						elCell.innerHTML = outcome;
 					});
 			};
 		},

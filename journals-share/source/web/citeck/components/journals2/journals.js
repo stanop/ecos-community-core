@@ -144,12 +144,12 @@ CreateVariant
 		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
 				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
-		// redirect back after submit
-		var redirectionMethod = this.resolve("journal.type.options")["createVariantRedirectionMethod"] || "back";
-		urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
-
-		// TODO: 
-		// - support parameter from xml
+		// redirect back after submit from journal page only
+		var options = this.resolve("journal.type.options");
+		if (window.location.pathname.indexOf("journals2") != -1 && options) {
+			var redirectionMethod = options["createVariantRedirectionMethod"] || "back";
+			urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
+		}
 
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") { return value(); }

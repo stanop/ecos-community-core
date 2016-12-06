@@ -9,7 +9,7 @@ public abstract class URLAction extends NodeActionDefinition {
     private static final String PROP_CONTEXT = "context";
 
     public enum URLContext {
-        URL_SERVICECONTEXT, PROXY_URI
+        URL_SERVICECONTEXT, PROXY_URI, PAGECONTEXT
     }
 
     public URLAction() {

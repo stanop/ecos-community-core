@@ -20,7 +20,9 @@ package ru.citeck.ecos.exception;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,15 +37,19 @@ class ExceptionTranslatorImpl implements ExceptionTranslator {
 	private final Collection<ExceptionMessageConfig> configs;
 
 	public ExceptionTranslatorImpl(String config) {
-		String[] lines = config.split(ExceptionService.ERROR_CONFIG_LINE_DELIMITER);
-		configs = new ArrayList<ExceptionMessageConfig>(lines.length);
-		for(int i = 0; i < lines.length; i++) {
-			try {
-				ExceptionMessageConfig m = new ExceptionMessageConfig(lines[i]);
-				configs.add(m);
-			} catch(Throwable e) {
-				if (log.isErrorEnabled())
-					log.error("Skipping wrong error config line: " + lines[i], e);
+		if (StringUtils.isBlank(config)) {
+			configs = Collections.emptyList();
+		} else {
+			String[] lines = config.split(ExceptionService.ERROR_CONFIG_LINE_DELIMITER);
+			configs = new ArrayList<>(lines.length);
+			for(int i = 0; i < lines.length; i++) {
+				try {
+					ExceptionMessageConfig m = new ExceptionMessageConfig(lines[i]);
+					configs.add(m);
+				} catch(Throwable e) {
+					if (log.isErrorEnabled())
+						log.error("Skipping wrong error config line: " + lines[i], e);
+				}
 			}
 		}
 		if (configs.size() == 0 && log.isWarnEnabled())

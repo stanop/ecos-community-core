@@ -17,6 +17,7 @@ public class RedirectAction extends URLAction {
     }
 
     public RedirectAction() {
+        setContext(URLContext.PAGECONTEXT);
         setProperty(PROP_TARGET, TargetType.SELF.value);
     }
 

@@ -1,6 +1,7 @@
 package ru.citeck.ecos.action;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.RedirectAction;
 import ru.citeck.ecos.action.node.RequestAction;
@@ -56,11 +57,17 @@ public class LifecycleActionProvider extends NodeActionsProvider {
             } else {
                 throw new RuntimeException("Unsupported lifecycle event type: " + eventType);
             }
-            action.setTitle("lifecycle.action." + actionParams.get("actionName"));
+            action.setTitle(getTitle(actionParams.get("actionName")));
             action.setUrl(url);
             actionDefinitionList.add(action);
         }
         return actionDefinitionList;
+    }
+
+    private String getTitle(String actionName) {
+        String key = "lifecycle.action." + actionName;
+        String title = I18NUtil.getMessage(key);
+        return title != null ? title : actionName;
     }
 
     public void setLifecycleService(LifeCycleService lifecycleService) {
