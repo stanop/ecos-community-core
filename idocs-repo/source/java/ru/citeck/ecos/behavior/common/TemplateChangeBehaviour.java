@@ -18,20 +18,23 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.TreeMap;
-
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-
 import ru.citeck.ecos.model.DmsModel;
+import ru.citeck.ecos.template.GenerateContentActionExecuter;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * This is a behavior class. It adds or removes aspect corresponded to
@@ -47,6 +50,7 @@ public class TemplateChangeBehaviour implements NodeServicePolicies.OnCreateAsso
 
 	private NodeService nodeService;
 	private PolicyComponent policyComponent;
+	private ServiceRegistry serviceRegistry;
 
 	public void init() {
 		this.policyComponent.bindAssociationBehaviour(
@@ -93,8 +97,14 @@ public class TemplateChangeBehaviour implements NodeServicePolicies.OnCreateAsso
 	public void onCreateAssociation(AssociationRef nodeAssocRef) {
 		NodeRef sourceRef = nodeAssocRef.getSourceRef();
 		NodeRef templateRef = nodeAssocRef.getTargetRef();
-		if (sourceRef != null && nodeService.exists(sourceRef) && nodeService.exists(templateRef))
+		if (sourceRef != null && nodeService.exists(sourceRef) && nodeService.exists(templateRef)) {
 			addTemplateTypeAspect(sourceRef, templateRef);
+			if (Boolean.TRUE.equals(nodeService.getProperty(sourceRef, DmsModel.PROP_UPDATE_CONTENT))) {
+				ActionService actionService = serviceRegistry.getActionService();
+				Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
+				actionService.executeAction(actionGenerateContent, sourceRef);
+			}
+		}
 	}
 
 	@Override
@@ -145,4 +155,7 @@ public class TemplateChangeBehaviour implements NodeServicePolicies.OnCreateAsso
 		this.policyComponent = policyComponent;
 	}
 
+	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+		this.serviceRegistry = serviceRegistry;
+	}
 }

@@ -548,4 +548,6 @@
 		<property name="searchService" ref="searchService"/>
 	</bean>
 
+	<bean id="ecos.itemsUpdateState" class="ru.citeck.ecos.state.ItemsUpdateState" />
+
 </beans>

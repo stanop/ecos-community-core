@@ -33,13 +33,21 @@ public interface ConfiscateService
 	 * 
 	 * @param nodeRef
 	 */
-	public void confiscateNode(NodeRef nodeRef);
-	
+	void confiscateNode(NodeRef nodeRef);
+
+	/**
+	 * Confiscate node from its normal users.
+	 *
+	 * @param nodeRef
+	 * @param restrictInheritance
+	 */
+	void confiscateNode(NodeRef nodeRef, boolean restrictInheritance);
+
 	/**
 	 * Return previously confiscated node to its normal users.
 	 * 
 	 * @param nodeRef
 	 */
-	public void returnNode(NodeRef nodeRef);
+	void returnNode(NodeRef nodeRef);
 
 }

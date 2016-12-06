@@ -84,7 +84,12 @@ public class ConfiscateServiceImpl implements ConfiscateService
 	public void confiscateNode(NodeRef nodeRef) {
 		this.confiscateNodeImpl(nodeRef, true);
 	}
-	
+
+	@Override
+	public void confiscateNode(NodeRef nodeRef, boolean restrictInheritance) {
+		this.confiscateNodeImpl(nodeRef, restrictInheritance);
+	}
+
 	@Override
 	public void returnNode(NodeRef nodeRef) {
 		this.returnNodeImpl(nodeRef, true);

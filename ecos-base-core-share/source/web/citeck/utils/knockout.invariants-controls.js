@@ -1487,62 +1487,41 @@ ko.bindingHandlers.fileUploadControl = {
                 (function(file){
                     // loading started
                     request.addEventListener("loadstart", function(event) {
-                        // set fake data for content class
-                        if (data.datatype() == "d:content") {
-                            var fileObject = {
-                                filename: file.name,
-                                mimetype: file.type,
-                                size:     file.size
-                            };
-
-                            if (multiple()) {
-                                var values = updateList(value(), function(option) { 
-                                    return { 
-                                        filename: option.filename, 
-                                        mimetype: option.mimetype, 
-                                        size: option.size
-                                    };
-                                });
-
-                                values.push(fileObject)
-                                value(values);
-                            } else {
-                                value(fileObject)
-                            }
-                        }
-
                         $(element).addClass("loading");
                         $(openFileUploadDialogButton).attr("disabled", "disabled");  
                     }, false);
-                })(files[i])
 
-                // loading progress
-                // request.addEventListener("progress", function(event) {
-                //     var percent = Math.round((event.loaded * 100) / event.total);
-                //     console.log("progress", percent);
-                // }, false);
+                    // loading progress
+                    // request.addEventListener("progress", function(event) {
+                    //     var percent = Math.round((event.loaded * 100) / event.total);
+                    //     console.log("progress", percent);
+                    // }, false);
 
-                // loading failure.
-                request.addEventListener("error", function(event) {
-                    console.log("loaded failure")
-                }, false);
-                
-                // request finished
-                request.addEventListener("readystatechange", function(event) {
-                    var target = event.target;
-                    if (target.status == 200 && target.readyState == 4) {
-                        var result = JSON.parse(target.responseText || "{}");
+                    // loading failure.
+                    request.addEventListener("error", function(event) {
+                        console.log("loaded failure")
+                    }, false);
+                    
+                    // request finished
+                    request.addEventListener("readystatechange", function(event) {
+                        var target = event.target;
+                        if (target.readyState == 4) {
+                            var result = JSON.parse(target.responseText || "{}");
+                            
+                            if (target.status == 200) {
+                                // push new file to uploaded files library
+                                uploadedFiles.push(result.nodeRef);
+                            }
 
-                        // instance for invariant.node
-                        new Node(result);
-
-                        // push new file to uploaded files library
-                        uploadedFiles.push(result.nodeRef);
+                            if (target.status == 500) {
+                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: result.message });
+                            }
+                        }
 
                         $(element).removeClass("loading");
-                        $(openFileUploadDialogButton).removeAttr("disabled"); 
-                    }
-                }, false)
+                        $(openFileUploadDialogButton).removeAttr("disabled");
+                    }, false)
+                })(files[i])
 
                 var formData = new FormData;
                 formData.append("filedata", files[i]);

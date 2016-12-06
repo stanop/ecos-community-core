@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -144,13 +144,12 @@ CreateVariant
 		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
 				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
-		// redirect back after submit
+		// redirect back after submit from journal page only
 		var options = this.resolve("journal.type.options");
-		var redirectionMethod = options ? options["createVariantRedirectionMethod"] || "back" : "back";
-		urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
-
-		// TODO: 
-		// - support parameter from xml
+		if (window.location.pathname.indexOf("journals2") != -1 && options) {
+			var redirectionMethod = options["createVariantRedirectionMethod"] || "back";
+			urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
+		}
 
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
 			if(typeof value == "function") { return value(); }
@@ -268,8 +267,9 @@ Filter
 		};
 	})
 	.computed('usableCriteria', function() {
-		return _.filter(this.criteria(), function(criterion) { 
-			return criterion.value() ? true : false; 
+		return _.filter(this.criteria(), function(criterion) {
+			if (criterion.value() || criterion.predicate().id().indexOf("empty") != -1) return true;
+			return false;
 		});
 	})
 	.init(function() {
@@ -1255,9 +1255,12 @@ Record
 	;
 
 
-	/*********************************************************/
-	/*              KNOCKOUT PERFORMANCE TUNING              */
-	/*********************************************************/
+/*********************************************************/
+/*              KNOCKOUT PERFORMANCE TUNING              */
+/*********************************************************/
+
+
+var rateLimit = { rateLimit: { timeout: 5, method: "notifyWhenChangesStop" } };
 
 JournalsWidget
 //	.extend('*', { logChange: true })
@@ -1265,8 +1268,6 @@ JournalsWidget
 //	.extend('records', { rateLimit: 0 })
 //	.extend('*', { rateLimit: 0 })
 	;
-
-var rateLimit = { rateLimit: { timeout: 5, method: "notifyWhenChangesStop" } };
 
 AttributeInfo
 	.extend('*', rateLimit)

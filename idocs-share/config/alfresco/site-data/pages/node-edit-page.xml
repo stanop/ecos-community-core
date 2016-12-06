@@ -24,7 +24,7 @@
 			<url>/citeck/components/node-view-mgr</url>
 			<properties>
 				<runtimeKey>node-edit</runtimeKey>
-				<onsubmit>back</onsubmit>
+				<onsubmit>card</onsubmit>
 				<oncancel>back</oncancel>
 			</properties>
 		</component>

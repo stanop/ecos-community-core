@@ -179,6 +179,7 @@
     <bean id="templateChange" class="ru.citeck.ecos.behavior.common.TemplateChangeBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
     <bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
@@ -726,6 +727,20 @@
           init-method="init">
         <property name="currencyService" ref="currencyService"/>
         <property name="policyComponent" ref="policyComponent"/>
+    </bean>
+
+    <bean id="ecos.caseStatusHistoryBehaviour" class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour" abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="historyService" ref="historyService" />
+        <property name="scriptService" ref="scriptService" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="messageScript">
+            <value><![CDATA[(function() {
+                var beforeTitle = statusBefore? statusBefore.properties['cm:title'] : "—";
+                var afterTitle = statusAfter? statusAfter.properties['cm:title'] : "—";
+                return beforeTitle + " -> " + afterTitle;
+            })()]]></value>
+        </property>
     </bean>
 
 </beans>
