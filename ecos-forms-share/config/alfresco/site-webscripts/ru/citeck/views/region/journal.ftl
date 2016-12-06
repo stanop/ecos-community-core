@@ -1,6 +1,8 @@
 <#assign controlId = fieldId + "-journalControl">
 <#assign params = viewScope.region.params!{} />
 
+<#assign createVariantsVisibility = params.createVariantsVisibility!"true" />
+
 <#assign createVariantsSource = params.createVariantsSource!"create-views" />
 <#assign virtualParent = params.virtualParent!"false" />
 
@@ -53,8 +55,9 @@
         <#if params.searchMinQueryLength??>searchMinQueryLength: '${params.searchMinQueryLength}',</#if>
         <#if params.searchScript??>searchScript: '${params.searchScript}',</#if>
         <#if params.searchCriteria??>searchCriteria: ${params.searchCriteria},</#if>
-
         <#if params.defaultCriteria??>defaultCriteria: ${params.defaultCriteria},</#if>
+
+        createVariantsVisibility: ${createVariantsVisibility},
 
         <#-- Create Object Transition -->
         createVariantsSource: '${createVariantsSource}',

@@ -547,7 +547,9 @@ ko.bindingHandlers.journalControl = {
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
 
         searchCriteria              = params.searchCriteria,
-        defaultCriteria             = params.defaultCriteria;
+        defaultCriteria             = params.defaultCriteria,
+
+        createVariantsVisibility    = params.createVariantsVisibility;
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -699,13 +701,15 @@ ko.bindingHandlers.journalControl = {
                 <div class="journal-picker-header ' + mode + ' ' + dockMode + '" id="' + journalPickerHeaderId + '">\
                     <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
                     <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
-                    <!-- ko component: { name: "createObjectButton", params: {\
-                        scope: scope,\
-                        source: createVariantsSource,\
-                        callback: callback,\
-                        buttonTitle: buttonTitle,\
-                        virtualParent: virtualParent\
-                    }} --><!-- /ko -->\
+                    <!-- ko if: createVariantsVisibility -->\
+                        <!-- ko component: { name: "createObjectButton", params: {\
+                            scope: scope,\
+                            source: createVariantsSource,\
+                            callback: callback,\
+                            buttonTitle: buttonTitle,\
+                            virtualParent: virtualParent\
+                        }} --><!-- /ko -->\
+                    <!-- /ko -->\
                     ' + (searchBar ? '<div class="journal-search"><input type="search" placeholder="' + localization.search + '" class="journal-search-input" id="' + searchId + '" /></div>' : '') + '\
                 </div>\
                 <div class="journal-picker-page-container ' + mode + '">\
@@ -954,6 +958,7 @@ ko.bindingHandlers.journalControl = {
             ko.applyBindings({
                 scope: data,
                 buttonTitle: localization.createTab,
+                createVariantsVisibility: createVariantsVisibility,
                 callback: function(variant) {
                     var scCallback = function(node) {
                         if (mode == "collapse") {
