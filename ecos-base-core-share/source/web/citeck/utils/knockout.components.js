@@ -335,7 +335,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             };
 
             this.valueVisibility = function(predicate) {
-                return predicate.indexOf("empty") == -1;
+                return predicate && predicate.indexOf("empty") == -1;
             }
         },
         template: 
@@ -408,7 +408,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             }
 
             this.valueVisibility = function(predicate) {
-                return predicate.id().indexOf("empty") == -1;
+                return predicate && predicate.id().indexOf("empty") == -1;
             }
         },
         template: 
