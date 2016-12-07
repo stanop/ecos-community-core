@@ -1945,8 +1945,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
-            console.log(this)
-
             if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
                 $(window).resize(function() {
                    $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
