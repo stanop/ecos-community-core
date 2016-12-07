@@ -12,8 +12,13 @@
 
       new JournalsPage("${id}").setOptions({
         model: {
-          documentNodeRef: Citeck.utils.getURLParameterByName("nodeRef"),
-          <@journals.renderCurrentIds />
+          journalsList: { 
+            id: <#if journalsListId??>"${journalsListId}"<#else>null</#if>,
+            documentNodeRef: <#if documentNodeRef??>"${documentNodeRef}"<#else>null</#if>
+          },
+          journal: <#if journalId??>"${journalId}"<#else>null</#if>,
+          filter: <#if filterId??>"${filterId}"<#else>null</#if>,
+          settings: <#if settingsId??>"${settingsId}"<#else>null</#if>,
           multiActions: <@journals.renderMultiActionsJSON />,
         },
         cache: <@journals.renderCacheJSON />,
