@@ -21,8 +21,7 @@
                         <view:properties>
                             <journal:fieldQName>type</journal:fieldQName>
                             <journal:predicate>type-equals</journal:predicate>
-                            <journal:criterionValue>{http://www.citeck.ru/model/deputy/1.0}selfAbsenceEvent
-                            </journal:criterionValue>
+                            <journal:criterionValue>{http://www.citeck.ru/model/deputy/1.0}selfAbsenceEvent</journal:criterionValue>
                         </view:properties>
                     </journal:criterion>
                     <journal:criterion view:childName="journal:criterion-user">
