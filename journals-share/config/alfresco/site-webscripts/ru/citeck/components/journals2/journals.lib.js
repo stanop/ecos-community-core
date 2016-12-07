@@ -39,12 +39,14 @@ function loadObject(url, urlArgs) {
 	}
 }
 
-function loadJournalsList() {
+function loadJournalsLists() {
 	return loadObject("/api/journals/lists");
 }
 
-function loadJournalsList(journalsListId) {
-	return loadObject("/api/journals/list", { journalsList: journalsListId });
+function loadJournalsList(journalsListId, nodeRef) {
+	var requestURIObject = { journalsList: journalsListId };
+	if (nodeRef) requestURIObject["nodeRef"] = nodeRef;
+	return loadObject("/api/journals/list", requestURIObject);
 }
 
 function loadJournal(journalId) {
