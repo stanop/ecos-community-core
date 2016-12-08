@@ -44,6 +44,8 @@ import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.service.cmr.repository.TemplateService;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.notification.utils.RecipientsUtils;
 import ru.citeck.ecos.security.NodeOwnerDAO;
 /**
@@ -108,6 +110,8 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 	private TemplateService templateService;
 	private String nodeVariable;
 	private String templateEngine = "freemarker";
+
+	private static Log logger = LogFactory.getLog(StartDelegateTaskNotificationSender.class);
 
 	@Override
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
@@ -213,6 +217,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
 
 	private void send (DelegateTask task) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Method send start..."
+					+ "\ntask: " + task
+					+ "\ninstance: " + toString());
+		}
 		Set<String> authorities = authorityService.getAuthorities();
 		boolean sendBasedOnUser = true;
 		String subject = null;
@@ -247,6 +256,10 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 		{
 			workflowPackage = scriptNode.getNodeRef();
 		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("workflowPackage: " + workflowPackage
+			                +"\nsendBasedOnUser:" + sendBasedOnUser);
+		}
 		if(workflowPackage!=null && sendBasedOnUser)
 		{
 			List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
@@ -270,6 +283,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 					}
 				}
 			}
+			if (logger.isDebugEnabled()) {
+			    logger.debug("docsInfo: " + docsInfo);
+            }
 			if(docsInfo!=null && nodeService.exists(docsInfo))
 			{
 				NotificationContext notificationContext = new NotificationContext();
@@ -301,6 +317,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 				NodeRef template = getNotificationTemplate(task);
 				String from = null;
 				String notificationProviderName = EMailNotificationProvider.NAME;
+
+				if(logger.isDebugEnabled()) {
+				    logger.debug("template: " + template);
+                }
+
 				if(template!=null && nodeService.exists(template))
 				{
 					subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
@@ -329,6 +350,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 				}
 				notificationContext.setTemplateArgs(getNotificationArgs(task));
 				notificationContext.setAsyncNotification(getAsyncNotification());
+
+				if (logger.isDebugEnabled()) {
+				    logger.debug("recipients:" + recipients);
+                }
+
 				if (!recipients.isEmpty()) {
 					for (String rec : recipients) {
 						notificationContext.addTo(rec);
@@ -338,8 +364,15 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 					notificationContext.setFrom(from);
 				}
 				// send
-				if(mandatoryFieldsFilled)
+				if (mandatoryFieldsFilled) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Notification send"
+								+ "\nmandatoryFieldsFilled" + mandatoryFieldsFilled
+								+ "\nnotificationContext: " + notificationContext
+						);
+					}
 					services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
+				}
 			}
 		}
 	}
