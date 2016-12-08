@@ -34,6 +34,7 @@ import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileInfo;
@@ -51,8 +52,12 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class RepoUtils {
+
+	private static final Log LOGGER = LogFactory.getLog(RepoUtils.class);
 
 	/**
 	 * It returns a property value or throws an exception.
@@ -828,8 +833,12 @@ public class RepoUtils {
     
     public static boolean isSubClass(NodeRef nodeRef, QName className,
             NodeService nodeService, DictionaryService dictionaryService) {
-        return dictionaryService.getClass(className).isAspect() ?
-                nodeService.hasAspect(nodeRef, className) :
+		ClassDefinition clazz = dictionaryService.getClass(className);
+		if (clazz == null) {
+			LOGGER.warn("Class '" + className + "' is not registered in data dictionary! Checked nodeRef: " + nodeRef);
+			return false;
+		}
+		return clazz.isAspect() ? nodeService.hasAspect(nodeRef, className) :
                 dictionaryService.isSubClass(nodeService.getType(nodeRef), className);
     }
 
