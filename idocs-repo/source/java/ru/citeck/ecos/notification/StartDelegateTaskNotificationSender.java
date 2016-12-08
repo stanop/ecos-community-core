@@ -290,6 +290,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 			{
 				NotificationContext notificationContext = new NotificationContext();
 				Set<String> recipients = new HashSet<>();
+
+				if (logger.isDebugEnabled()) {
+					logger.debug("additionRecipients: " + additionRecipients);
+				}
+
 				if(additionRecipients!=null)
 				{
 					List<String> addition = additionRecipients.get(task.getName());
@@ -367,7 +372,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 				if (mandatoryFieldsFilled) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Notification send"
-								+ "\nmandatoryFieldsFilled" + mandatoryFieldsFilled
+								+ "\nmandatoryFieldsFilled: " + mandatoryFieldsFilled
 								+ "\nnotificationContext: " + notificationContext
 						);
 					}
