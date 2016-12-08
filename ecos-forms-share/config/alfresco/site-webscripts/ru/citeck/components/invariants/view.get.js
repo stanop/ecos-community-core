@@ -55,7 +55,6 @@
 
 
     model.view = view;
-    model.groups = groups;
     model.canBeDraft = viewData.canBeDraft;
 
     model.attributes = attributes;
