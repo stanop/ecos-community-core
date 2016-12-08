@@ -27,7 +27,7 @@
                     <journal:criterion view:childName="journal:criterion-user">
                         <view:properties>
                             <journal:fieldQName>{http://www.citeck.ru/model/deputy/1.0}user</journal:fieldQName>
-                            <journal:predicate>noderef-contains</journal:predicate>
+                            <journal:predicate>assoc-contains</journal:predicate>
                             <journal:criterionValue><![CDATA[#{person.nodeRef}]]></journal:criterionValue>
                         </view:properties>
                     </journal:criterion>
