@@ -1763,7 +1763,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .addClass("selected");
 
-            $(".tabs-body .tab-body[data-tab-id=" + tabId)
+            $(".tabs-body .tab-body[data-tab-id=" + tabId + "]")
                 .parent()
                 .children()
                 .addClass("hidden")
