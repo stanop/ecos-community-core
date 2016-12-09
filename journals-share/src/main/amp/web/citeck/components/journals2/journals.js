@@ -918,6 +918,16 @@ JournalsWidget
 			return true;
 	})
 
+	.method('selectAllRecords', function() {
+		_.each(this.records(), function(record) {
+			record.selected(true);
+		});
+	})
+	.method('selectInvertRecords', function() {
+		_.each(this.records(), function(record) {
+			record.selected(!record.selected());
+		});
+	})
 	.method('deselectAllRecords', function() {
 		_.each(this.records(), function(record) {
 			record.selected(false);

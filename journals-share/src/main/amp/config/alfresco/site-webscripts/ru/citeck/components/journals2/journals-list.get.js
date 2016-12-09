@@ -5,3 +5,4 @@ fillModel();
 model.outputPredicates = true;
 model.settingsControlMode = args.settingsControlMode;
 
+model.additionalMenuItem = getScopedConfig("Journals", "additionalMenu", "item", function(a) {return a.attributes.name;});

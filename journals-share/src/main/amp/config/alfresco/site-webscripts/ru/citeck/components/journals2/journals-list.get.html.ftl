@@ -100,6 +100,36 @@
                 <div class="yui-b" id="alf-content">
                     <div id="${toolbarId}" class="toolbar flat-button icon-buttons" data-bind="css: { hidden: journal() == null }">
 
+                        <#if additionalMenuItem?seq_contains("showSelectMenuItem")>
+                            <span class="selected-menu" data-bind="yuiButton: { type: 'menu', menu: '${toolbarId}-fileSelect-menu' }">
+                                <span class="first-child">
+                                    <button>${msg("menu.select")}</button>
+                                </span>
+                            </span>
+
+                            <div id="${toolbarId}-fileSelect-menu" class="yui-overlay yuimenu button-menu">
+                                <div class="bd file-select">
+                                    <ul>
+                                        <li class="yuimenuitem">
+                                            <a class="yuimenuitemlabel" data-bind="click: selectAllRecords">
+                                                <span class="selectAll">${msg("menu.select.all")}</span>
+                                            </a>
+                                        </li>
+                                        <li class="yuimenuitem">
+                                            <a class="yuimenuitemlabel" data-bind="click: selectInvertRecords">
+                                                <span class="selectInvert">${msg("menu.select.invert")}</span>
+                                            </a>
+                                        </li>
+                                        <li class="yuimenuitem">
+                                            <a class="yuimenuitemlabel" data-bind="click: deselectAllRecords">
+                                                <span class="selectNone">${msg("menu.selected-items.deselect-all")}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </#if>
+
                         <@journals.renderCreateVariantsMenu id />
 
                         <span class="filter" title="${msg("button.filter.tip")}" data-bind="yuiButton: { type: 'checkbox', checked: currentMenu() == 'filter' }">
