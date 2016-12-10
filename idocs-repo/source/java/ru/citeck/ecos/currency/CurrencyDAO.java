@@ -44,7 +44,7 @@ public class CurrencyDAO {
             currency.setCode((String) nodeService.getProperty(node,
                     IdocsModel.PROP_CURRENCY_CODE));
             BigDecimal rate = (nodeService.getProperty(node, IdocsModel.PROP_CURRENCY_RATE) != null)
-                    ? new BigDecimal((Double) nodeService.getProperty(node, IdocsModel.PROP_CURRENCY_RATE))
+                    ? new BigDecimal(String.valueOf(nodeService.getProperty(node, IdocsModel.PROP_CURRENCY_RATE)))
                     : BigDecimal.ONE;
             currency.setRate(rate);
             result.put(currency.getCode(), currency);

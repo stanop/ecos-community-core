@@ -18,6 +18,8 @@
  */
 package ru.citeck.ecos.deputy;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+
 public interface AvailabilityService {
 
 	/**
@@ -30,13 +32,21 @@ public interface AvailabilityService {
 
 	/**
 	 * Set specified user availability.
-	 * 
+	 *
 	 * @param userName - user to set availability
 	 * @param availability - true if user is available, false if user is not available
 	 */
 	public abstract void setUserAvailability(String userName,
-			boolean availability);
+											 boolean availability);
 
+	/**
+	 * Set specified user availability.
+	 *
+	 * @param user - user to set availability
+	 * @param availability - true if user is available, false if user is not available
+	 */
+	public abstract void setUserAvailability(NodeRef user,
+											 boolean availability);
 	/**
 	 * @see #getUserAvailability(String)
 	 */

@@ -51,6 +51,32 @@
             <value>${workflow.notification.overdue.cronExpression}</value>
         </property>
     </bean>
+    <bean id="AvailabilityChangeJob" class="org.alfresco.util.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailBean">
+                <property name="jobClass">
+                    <value>ru.citeck.ecos.job.AvailabilityChangeJob</value>
+                </property>
+                <property name="jobDataAsMap">
+
+                    <map>
+                        <entry key="searchService" value-ref="searchService"/>
+                        <entry key="nodeService" value-ref="nodeService"/>
+                        <entry key="availabilityService" value-ref="availabilityService"/>
+                        <entry key="serviceRegistry" value-ref="ServiceRegistry"/>
+                        <entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="scheduler" ref="schedulerFactory"/>
+        <property name="cronExpression">
+            <value>${job.availability-change.cronExpression}</value>
+        </property>
+        <property name="enabled" value="${job.availability-change.enabled}"/>
+    </bean>
     <!-- not tested -->
 	<!--bean id="RemoveDetachedJob" class="org.alfresco.util.CronTriggerBean">
         <property name="jobDetail">

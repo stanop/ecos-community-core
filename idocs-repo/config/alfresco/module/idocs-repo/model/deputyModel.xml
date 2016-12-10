@@ -66,6 +66,10 @@
 				<property name="deputy:autoAnswer">
 					<type>d:text</type>
 				</property>
+				<property name="deputy:eventFinished">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
             </properties>
             <associations>
                 <association name="deputy:user">

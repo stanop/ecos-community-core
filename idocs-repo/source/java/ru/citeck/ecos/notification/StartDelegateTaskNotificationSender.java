@@ -19,13 +19,9 @@
 package ru.citeck.ecos.notification;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Set;
+import java.util.*;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 
@@ -48,14 +44,17 @@ import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.service.cmr.repository.TemplateService;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.notification.utils.RecipientsUtils;
 import ru.citeck.ecos.security.NodeOwnerDAO;
 /**
  * Notification sender for tasks (ItemType = DelegateTask).
- * 
+ *
  * The following implementation is used:
  * - subject line: default
  * - template: retrieved by key = process-definition
- * - template args: 
+ * - template args:
  *   {
  *     "task": {
  *       "id": "task id",
@@ -91,6 +90,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 	public static final String ARG_WORKFLOW_ID = "id";
 	public static final String ARG_WORKFLOW_PROPERTIES = "properties";
 	public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
+	private static final String ARG_RECIPIENTS_FROM_ROLE = "iCase_Role";
 	private Map<String, Map<String,List<String>>> taskSubscribers;
 	protected WorkflowQNameConverter qNameConverter;
 	protected PersonService personService;
@@ -111,6 +111,8 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 	private String nodeVariable;
 	private String templateEngine = "freemarker";
 
+	private static Log logger = LogFactory.getLog(StartDelegateTaskNotificationSender.class);
+
 	@Override
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
     	super.setServiceRegistry(serviceRegistry);
@@ -118,8 +120,8 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 		this.authenticationService = serviceRegistry.getAuthenticationService();
 		this.personService = serviceRegistry.getPersonService();
 		this.authorityService = serviceRegistry.getAuthorityService();
-	}	
-	
+	}
+
 	/**
 	* Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
 	* @param task subscribers
@@ -130,18 +132,18 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
   // get notification template arguments for the task
 	protected Map<String, Serializable> getNotificationArgs(DelegateTask task) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		args.put(ARG_TASK, getTaskInfo(task));
-		args.put(ARG_WORKFLOW, getWorkflowInfo(task));
+		args.put(ARG_WORKFLOW, getWorkflowInfo(task, docsInfo));
 		return args;
 	}
-	
+
 	private Serializable getTaskInfo(DelegateTask task) {
-		HashMap<String, Object> taskInfo = new HashMap<String, Object>();
+		HashMap<String, Object> taskInfo = new HashMap<>();
 		taskInfo.put(ARG_TASK_ID, task.getId());
 		taskInfo.put(ARG_TASK_NAME, task.getName());
 		taskInfo.put(ARG_TASK_DESCRIPTION, task.getDescription());
-		HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+		HashMap<String, Serializable> properties = new HashMap<>();
 		taskInfo.put(ARG_TASK_PROPERTIES, properties);
 		ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
 		for(Map.Entry<String, Object> entry : executionEntity.getVariables().entrySet()) {
@@ -182,9 +184,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 		}
 		return taskInfo;
 	}
-	
-	private Serializable getWorkflowInfo(DelegateTask task) {
-		HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
+
+	private Serializable getWorkflowInfo(DelegateTask task, NodeRef docsInfo) {
+		HashMap<String, Object> workflowInfo = new HashMap<>();
 		WorkflowTask wfTask = services.getWorkflowService().getTaskById("activiti$"+task.getId());
 		if(wfTask!=null) {
 			WorkflowInstance workflow = wfTask.getPath().getInstance();
@@ -198,20 +200,36 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
 	/**
 	* Method send notificatiion about start task to notification recipients.
-	* Mail sends to each document to subscriber because task can containls a lot of different documents 
+	* Mail sends to each document to subscriber because task can containls a lot of different documents
 	* and these documents can contains different subscriber.
-	* @param Delegate Task
+	* @param task DelegateTask
 	*/
 	@Override
-	public void sendNotification(DelegateTask task)
-	{
-		Set<String> authtorities = authorityService.getAuthorities();
+	public void sendNotification(final DelegateTask task) {
+		AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+			@Override
+			public Void doWork() throws Exception {
+				send(task);
+				return null;
+			}
+		});
+	}
+
+
+	private void send (DelegateTask task) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Method send start..."
+					+ "\ntask: " + task
+					+ "\ninstance: " + toString());
+		}
+		Set<String> authorities = authorityService.getAuthorities();
 		boolean sendBasedOnUser = true;
 		String subject = null;
+		docsInfo = null;
 		if(checkAssignee!=null && checkAssignee.containsKey(task.getName()) && checkAssignee.get(task.getName()))
 		{
 			sendBasedOnUser = false;
-			if(authtorities!=null && authtorities.size()>0)
+			if(authorities!=null && authorities.size()>0)
 			{
 				if(supervisors!=null && supervisors.size()>0)
 				{
@@ -220,7 +238,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 					{
 						for(String supervisor : taskSupervisors)
 						{
-							if(authtorities.contains(supervisor))
+							if(authorities.contains(supervisor))
 							{
 								sendBasedOnUser = true;
 								break;
@@ -231,12 +249,16 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 			}
 		}
 		NodeRef workflowPackage = null;
-		Vector<String> recipient = new Vector<String>();
+		Vector<String> recipient = new Vector<>();
 		ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
 		ActivitiScriptNode scriptNode = (ActivitiScriptNode)executionEntity.getVariable("bpm_package");
 		if (scriptNode != null)
 		{
 			workflowPackage = scriptNode.getNodeRef();
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("workflowPackage: " + workflowPackage
+			                +"\nsendBasedOnUser:" + sendBasedOnUser);
 		}
 		if(workflowPackage!=null && sendBasedOnUser)
 		{
@@ -261,62 +283,105 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 					}
 				}
 			}
-				if(docsInfo!=null && nodeService.exists(docsInfo))
-				{
-						NotificationContext notificationContext = new NotificationContext();
-						if(additionRecipients!=null)
-						{
-							List<String> addition = additionRecipients.get(task.getName());
-							if(addition!=null && addition.size()>0)
-							{
-								for(String add : addition)
-								{
-									notificationContext.addTo(add);
-								}
-							}
-						}
-						NodeRef template = getNotificationTemplate(task);
-						String from = null;
-						String notificationProviderName = EMailNotificationProvider.NAME;
-						if(template!=null && nodeService.exists(template))
-						{
-							subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
-							if (subject == null) {
-								String taskFormKey = (String) task.getVariableLocal("taskFormKey");
-								if (subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
-									Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
-									if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(docsInfo)))) {
-										HashMap<String, Object> model = new HashMap<>(1);
-										model.put(nodeVariable, docsInfo);
-										subject = services.getTemplateService().processTemplateString(templateEngine,
-												taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))),
-												model);
-									}
-								}
-								if (subject == null) {
-									subject = task.getName();
-								}
-							}
-							recipient.addAll(getRecipients(task, template, docsInfo));
-							setBodyTemplate(notificationContext, template);
-						}
-						notificationContext.setSubject(subject);
-						for(String to : recipient) {
-							notificationContext.addTo(to);
-						}
-						notificationContext.setTemplateArgs(getNotificationArgs(task));
-						notificationContext.setAsyncNotification(getAsyncNotification());
-						if (null != from) {
-							notificationContext.setFrom(from);
-						}
-						// send
-						if(mandatoryFieldsFilled)
-							services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
-				}
-		}
+			if (logger.isDebugEnabled()) {
+			    logger.debug("docsInfo: " + docsInfo);
+            }
+			if(docsInfo!=null && nodeService.exists(docsInfo))
+			{
+				NotificationContext notificationContext = new NotificationContext();
+				Set<String> recipients = new HashSet<>();
 
+				if (logger.isDebugEnabled()) {
+					logger.debug("additionRecipients: " + additionRecipients);
+				}
+
+				if(additionRecipients!=null)
+				{
+					List<String> addition = additionRecipients.get(task.getName());
+					if(addition!=null && addition.size()>0)
+					{
+						for(String add : addition)
+						{
+							recipients.add(add);
+						}
+					}
+
+					List<String> recipientsFromRole = additionRecipients.get(ARG_RECIPIENTS_FROM_ROLE);
+					if (recipientsFromRole != null && recipientsFromRole.size() > 0) {
+						Set<String> roleRecipients = RecipientsUtils.getRecipientsFromRole(recipientsFromRole,
+								docsInfo, nodeService);
+						if (!roleRecipients.isEmpty()) {
+							for (String roleRecipient : roleRecipients) {
+								recipients.add(roleRecipient);
+							}
+						}
+					}
+
+
+				}
+				NodeRef template = getNotificationTemplate(task);
+				String from = null;
+				String notificationProviderName = EMailNotificationProvider.NAME;
+
+				if(logger.isDebugEnabled()) {
+				    logger.debug("template: " + template);
+                }
+
+				if(template!=null && nodeService.exists(template))
+				{
+					subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
+					if (subject == null) {
+						String taskFormKey = (String) task.getVariableLocal("taskFormKey");
+						if (subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
+							Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
+							if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(docsInfo)))) {
+								HashMap<String, Object> model = new HashMap<>(1);
+								model.put(nodeVariable, docsInfo);
+								subject = services.getTemplateService().processTemplateString(templateEngine,
+										taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))),
+										model);
+							}
+						}
+						if (subject == null) {
+							subject = task.getName();
+						}
+					}
+					recipient.addAll(getRecipients(task, template, docsInfo));
+					setBodyTemplate(notificationContext, template);
+				}
+				notificationContext.setSubject(subject);
+				for(String to : recipient) {
+					recipients.add(to);
+				}
+				notificationContext.setTemplateArgs(getNotificationArgs(task));
+				notificationContext.setAsyncNotification(getAsyncNotification());
+
+				if (logger.isDebugEnabled()) {
+				    logger.debug("recipients:" + recipients);
+                }
+
+				if (!recipients.isEmpty()) {
+					for (String rec : recipients) {
+						notificationContext.addTo(rec);
+					}
+				}
+				if (null != from) {
+					notificationContext.setFrom(from);
+				}
+				// send
+				if (mandatoryFieldsFilled) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Notification send"
+								+ "\nmandatoryFieldsFilled: " + mandatoryFieldsFilled
+								+ "\nnotificationContext: " + notificationContext
+						);
+					}
+					services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
+				}
+			}
+		}
 	}
-	
+
 	public NodeRef getNotificationTemplate(DelegateTask task)
 	{
 		String processDef = task.getProcessDefinitionId();
@@ -332,31 +397,31 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 	public void setSendToOwner(Boolean sendToOwner) {
     	this.sendToOwner = sendToOwner.booleanValue();
     }
-	
+
 	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
 		this.nodeOwnerDAO = nodeOwnerDAO;
 	}
-	
+
 	public void setTaskProperties(Map<String, Map<String,String>> taskProperties) {
 		this.taskProperties = taskProperties;
 	}
-	
+
 	public void setAdditionRecipients(Map<String, List<String>> additionRecipients) {
 		this.additionRecipients = additionRecipients;
 	}
-	
+
 	public void setSupervisors(Map<String, List<String>> supervisors) {
 		this.supervisors = supervisors;
 	}
-	
+
 	public void setMandatoryFields(Map<String, List<String>> mandatoryFields) {
 		this.mandatoryFields = mandatoryFields;
 	}
-	
+
 	public void setCheckAssignee(Map<String, Boolean> checkAssignee) {
 		this.checkAssignee = checkAssignee;
 	}
-    
+
 	protected void sendToAssignee(DelegateTask task, Set<String> authorities)
 	{
 		if (task.getAssignee() == null)
@@ -389,18 +454,18 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 		String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
 		authorities.add(initiator_name);
 	}
-	
+
 	protected void sendToOwner(Set<String> authorities, NodeRef node)
 	{
 		String owner = nodeOwnerDAO.getOwner(node);
 		authorities.add(owner);
 	}
-	
+
 	public void setAllowDocList(List<String> allowDocList) {
 		this.allowDocList = allowDocList;
 	}
 
-	
+
 	protected void sendToSubscribers(DelegateTask task, Set<String> authorities, List<String> taskSubscribers)
 	{
 		for(String subscriber : taskSubscribers)
@@ -416,11 +481,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 			if(workflowPackage!=null)
 			{
 				List<ChildAssociationRef> children = nodeService.getChildAssocs(workflowPackage);
-				for(ChildAssociationRef child : children) 
+				for(ChildAssociationRef child : children)
 				{
 					NodeRef node = child.getChildRef();
 					Collection<AssociationRef> assocs = nodeService.getTargetAssocs(node, sub);
-					for (AssociationRef assoc : assocs) 
+					for (AssociationRef assoc : assocs)
 					{
 						NodeRef ref = assoc.getTargetRef();
 						if(nodeService.exists(ref))
@@ -433,11 +498,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 			}
 		}
 	}
-	
+
 	public void setSubjectTemplates(Map<String, Map<String,String>> subjectTemplates) {
 		this.subjectTemplates = subjectTemplates;
 	}
-	
+
 	public void setTemplateService(TemplateService templateService) {
 		this.templateService = templateService;
 	}

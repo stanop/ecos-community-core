@@ -199,17 +199,17 @@
 }
 
 .ecos-form .form-field .yui-button.yui-menu-button > .first-child {
-   background-image: url(yui/assets/arrow-down-blue.png);
+   background-image: url(images/arrow-down-blue.png);
    background-repeat: no-repeat;
    background-position: right center;
 }
 
 .ecos-form .form-field .yui-button.yui-menu-button.yui-button-hover > .first-child {
-   background-image: url(yui/assets/arrow-down-white.png);
+   background-image: url(images/arrow-down-white.png);
 }
 
 .ecos-form .form-field .yui-button.yui-menu-button.yui-button-focus > .first-child {
-   background-image: url(yui/assets/arrow-up-white.png);
+   background-image: url(images/arrow-up-white.png);
 }
 
 .ecos-form .form-field .yui-button-hover,

@@ -49,30 +49,34 @@ var userMenuItems = [
   }
 ];
 
-var availability = "make-" + (user.properties.available === false ? "" : "not") + "available",
-    clickEvent = function(event, element) {
-      Citeck.forms.dialog("deputy:absenceEvent", "currentUserAbsence", {
-        scope: this, 
-        fn: function(node) { 
-          this.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: this.targetUrl, type: this.targetUrlType, target: this.targetUrlLocation});
-        }
-      }, {
-        title: "",
-        destination: "workspace://SpacesStore/absence-events"
-      })
+var currentUser = user.getUser(user.id);
+var availability = "make-" + (currentUser.properties.available === false ? "" : "not") + "available",
+    clickEvent = function (event, element) {
+        Citeck.forms.dialog("deputy:absenceEvent", "currentUserAbsence", {
+            scope: this,
+            fn: function (node) {
+                this.alfPublish("ALF_NAVIGATE_TO_PAGE", {
+                    url: this.targetUrl,
+                    type: this.targetUrlType,
+                    target: this.targetUrlLocation
+                });
+            }
+        }, {
+            title: "",
+            destination: "workspace://SpacesStore/absence-events"
+        })
     };
 
 userMenuItems.push({
-  id: "HEADER_USER_MENU_AVAILABILITY",
-  name: "alfresco/header/AlfMenuItem",
-  config:
-  {
     id: "HEADER_USER_MENU_AVAILABILITY",
-    label: "header." + availability + ".label",
-    iconImage: "/share/res/components/images/header/" + availability + ".png",
-    targetUrl: "/components/deputy/make-available?available=" + (user.properties.available === false ? "true" : "false"),
-    clickEvent: "" + (user.properties.available === false ? "" : clickEvent.toString())
-  }
+    name: "alfresco/header/AlfMenuItem",
+    config: {
+        id: "HEADER_USER_MENU_AVAILABILITY",
+        label: "header." + availability + ".label",
+        iconImage: "/share/res/components/images/header/" + availability + ".png",
+        targetUrl: "/components/deputy/make-available?available=" + (currentUser.properties.available === false ? "true" : "false"),
+        clickEvent: "" + (currentUser.properties.available === false ? "" : clickEvent.toString())
+    }
 });
 
 if (user.capabilities.isMutable) {

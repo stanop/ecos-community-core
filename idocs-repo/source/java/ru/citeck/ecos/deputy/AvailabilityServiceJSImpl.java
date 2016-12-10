@@ -19,7 +19,7 @@
 package ru.citeck.ecos.deputy;
 
 import org.alfresco.service.ServiceRegistry;
-
+import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
@@ -43,7 +43,12 @@ public class AvailabilityServiceJSImpl extends AlfrescoScopableProcessorExtensio
 	public void setUserAvailability(String userName, boolean availability) {
 		availabilityService.setUserAvailability(userName, availability);
 	}
-	
+
+	@Override
+	public void setUserAvailability(NodeRef user, boolean availability) {
+		availabilityService.setUserAvailability(user, availability);
+	}
+
 	@Override
 	public boolean getCurrentUserAvailability() {
 		return availabilityService.getCurrentUserAvailability();
