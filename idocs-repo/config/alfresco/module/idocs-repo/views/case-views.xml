@@ -12,8 +12,8 @@
         </fields>
         <field prop="cm:name" />
         <field prop="icase:caseEcosType" />
-        <field prop="icase:caseEcosKind" />
-        <field prop="icase:caseType" />
+        <!--<field prop="icase:caseEcosKind" />-->
+        <!--<field prop="icase:caseType" />-->
         <field prop="icase:condition">
             <region name="input" template="textarea">
                 <param name="height">120px</param>
