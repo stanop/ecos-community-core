@@ -20,11 +20,7 @@ package ru.citeck.ecos.processor.report;
 
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.service.cmr.dictionary.Constraint;
-import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.namespace.NamespaceService;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
@@ -119,6 +115,13 @@ public class ReportProducer extends AbstractDataBundleLine {
                             } else {
                                 QName colAttrQName = QName.resolveToQName(namespaceService, colAttribute);
                                 Object value = nodeAttributeService.getAttribute(node, colAttrQName);
+
+                                if (colAttrQName.equals(DataTypeDefinition.DOUBLE)) {
+                                    data.put(DATA_TYPE_ATTR, "Double");
+                                } else if (colAttrQName.equals(DataTypeDefinition.INT)) {
+                                    data.put(DATA_TYPE_ATTR, "Integer");
+                                }
+
                                 data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat, ""));
                             }
                         }
