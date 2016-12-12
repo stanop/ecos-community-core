@@ -118,7 +118,9 @@
         <field prop="deputy:startAbsence"/>
         <field prop="deputy:endAbsence"/>
         <field prop="deputy:comment"/>
-        <field assoc="deputy:user" />
+        <field assoc="deputy:user">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
         <!-- <field assoc="deputy:reasonOfAbsence">
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
@@ -133,11 +135,8 @@
         <field prop="deputy:endAbsence"/>
         <field prop="deputy:comment"/>
         <field assoc="deputy:user">
-            <invariant on="default" language="javascript">
+            <invariant on="value" language="javascript">
                 person
-            </invariant>
-            <invariant on="relevant" language="javascript">
-                false
             </invariant>
         </field>
         <!-- <field assoc="deputy:reasonOfAbsence">

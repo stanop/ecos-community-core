@@ -21,7 +21,6 @@ package ru.citeck.ecos.deputy;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthenticationService;
-
 import ru.citeck.ecos.model.DeputyModel;
 
 public class AvailabilityServiceImpl implements AvailabilityService
@@ -65,8 +64,13 @@ public class AvailabilityServiceImpl implements AvailabilityService
 	@Override
 	public void setUserAvailability(String userName, boolean availability) {
 		NodeRef person = authorityHelper.needUser(userName);
-		nodeService.setProperty(person, DeputyModel.PROP_AVAILABLE, availability);
+		setUserAvailability(person, availability);
 		// note: deputy listener, related to availability change, should be called via behaviour mechanism
+	}
+
+	@Override
+	public void setUserAvailability(NodeRef user, boolean availability) {
+		nodeService.setProperty(user, DeputyModel.PROP_AVAILABLE, availability);
 	}
 
 	/////////////////////////////////////////////////////////////////

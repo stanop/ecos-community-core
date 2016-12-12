@@ -108,9 +108,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             }
 
                             _.each(criteria, function(criterion, index) {
-                                query['field_' + (index + 1)] = criterion.attribute;
-                                query['predicate_' + (index + 1)] = criterion.predicate;
-                                query['value_' + (index + 1)] = criterion.value;
+                                query['field_' + (index + 2)] = criterion.attribute;
+                                query['predicate_' + (index + 2)] = criterion.predicate;
+                                query['value_' + (index + 2)] = criterion.value;
                             });
                            
 
@@ -335,7 +335,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             };
 
             this.valueVisibility = function(predicate) {
-                return predicate.indexOf("empty") == -1;
+                return predicate && predicate.indexOf("empty") == -1;
             }
         },
         template: 
@@ -408,7 +408,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             }
 
             this.valueVisibility = function(predicate) {
-                return predicate.id().indexOf("empty") == -1;
+                return predicate && predicate.id().indexOf("empty") == -1;
             }
         },
         template: 
