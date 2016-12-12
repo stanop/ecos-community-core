@@ -235,12 +235,12 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         NodeRef elementTypesConfig = needConfig(CaseConstants.ELEMENT_TYPES);
         CaseElementDAO elementTypesStrategy = getStrategy(elementTypesConfig);
         List<NodeRef> elementConfigs = elementTypesStrategy.get(caseNodeRef, elementTypesConfig);
-        
+
         for(NodeRef config : elementConfigs) {
             if(elementTypesConfig.equals(config))
                 continue;
             NodeRef elementType = getOrCreateElementType(templateRef, config);
-            
+
             if(shouldCopyElements(config)) {
                 CaseElementDAO strategy = getStrategy(config);
                 strategy.copyElementsToTemplate(caseNodeRef, elementType, config);
@@ -250,6 +250,12 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         registerElementCopy(caseNodeRef, templateRef);
 
         adjustCopies();
+
+        turnOffSavedTemplate(templateRef);
+    }
+
+    private void turnOffSavedTemplate(NodeRef templateRef) {
+        nodeService.setProperty(templateRef, ICaseModel.PROP_CONDITION, "false");
     }
 
     @Override
