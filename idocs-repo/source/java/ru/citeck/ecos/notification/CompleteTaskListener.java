@@ -18,8 +18,6 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.util.Map;
-
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
@@ -31,11 +29,13 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 
+import java.util.Map;
+
 public class CompleteTaskListener
 	implements TaskListener
 {
 		// NotificationSender
-	private StartDelegateTaskNotificationSender sender;
+	private AbstractNotificationSender<DelegateTask> sender;
 	protected ServiceRegistry serviceRegistry;
     private PersonService personService;
     private AuthenticationService authenticationService;
@@ -88,7 +88,7 @@ public class CompleteTaskListener
 	 * Set NotificationSender.
 	 * @param sender
 	 */
-	public void setSender(StartDelegateTaskNotificationSender sender) {
+	public void setSender(AbstractNotificationSender<DelegateTask> sender) {
 		this.sender = sender;
 	}
 	

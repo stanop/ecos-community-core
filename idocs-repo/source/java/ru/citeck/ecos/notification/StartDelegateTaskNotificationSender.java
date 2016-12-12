@@ -18,17 +18,14 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.*;
-
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.workflow.WorkflowInstance;
-import org.alfresco.service.cmr.workflow.WorkflowTask;
-
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.notification.EMailNotificationProvider;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -36,18 +33,20 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PersonService;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.alfresco.service.cmr.repository.TemplateService;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.notification.utils.RecipientsUtils;
 import ru.citeck.ecos.security.NodeOwnerDAO;
+
+import java.io.Serializable;
+import java.util.*;
 /**
  * Notification sender for tasks (ItemType = DelegateTask).
  *
@@ -149,7 +148,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 		for(Map.Entry<String, Object> entry : executionEntity.getVariables().entrySet()) {
 			if(entry.getValue()!=null)
 			{
-				properties.put(entry.getKey(), entry.getValue().toString());
+				if (entry.getValue() instanceof ScriptNode) {
+					properties.put(entry.getKey(), (ScriptNode) entry.getValue());
+				} else {
+					properties.put(entry.getKey(), entry.getValue().toString());
+				}
 			}
 			else
 			{
@@ -157,8 +160,10 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 			}
 		}
 		WorkflowTask wfTask = services.getWorkflowService().getTaskById("activiti$"+task.getId());
-		for(Map.Entry<QName, Serializable> entry : wfTask.getProperties().entrySet()) {
-			properties.put(qNameConverter.mapQNameToName(entry.getKey()), entry.getValue());
+		if (wfTask != null && wfTask.getProperties() != null) {
+			for (Map.Entry<QName, Serializable> entry : wfTask.getProperties().entrySet()) {
+				properties.put(qNameConverter.mapQNameToName(entry.getKey()), entry.getValue());
+			}
 		}
 		if(mandatoryFields!=null)
 		{
@@ -329,23 +334,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
 				if(template!=null && nodeService.exists(template))
 				{
-					subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
-					if (subject == null) {
-						String taskFormKey = (String) task.getVariableLocal("taskFormKey");
-						if (subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
-							Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
-							if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(docsInfo)))) {
-								HashMap<String, Object> model = new HashMap<>(1);
-								model.put(nodeVariable, docsInfo);
-								subject = services.getTemplateService().processTemplateString(templateEngine,
-										taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))),
-										model);
-							}
-						}
-						if (subject == null) {
-							subject = task.getName();
-						}
-					}
+					subject = getSubject(task, template);
 					recipient.addAll(getRecipients(task, template, docsInfo));
 					setBodyTemplate(notificationContext, template);
 				}
@@ -380,6 +369,28 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 				}
 			}
 		}
+	}
+
+	protected String getSubject(DelegateTask task, NodeRef template) {
+		String subject;
+		subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
+		if (subject == null) {
+            String taskFormKey = (String) task.getVariableLocal("taskFormKey");
+            if (subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
+                Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
+                if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(docsInfo)))) {
+                    HashMap<String, Object> model = new HashMap<>(1);
+                    model.put(nodeVariable, docsInfo);
+                    subject = services.getTemplateService().processTemplateString(templateEngine,
+                            taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))),
+                            model);
+                }
+            }
+            if (subject == null) {
+                subject = task.getName();
+            }
+        }
+		return subject;
 	}
 
 	public NodeRef getNotificationTemplate(DelegateTask task)
@@ -424,36 +435,45 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
 	protected void sendToAssignee(DelegateTask task, Set<String> authorities)
 	{
-		if (task.getAssignee() == null)
-		{
-			List<IdentityLinkEntity> identities = ((TaskEntity)task).getIdentityLinks();
-			for (IdentityLinkEntity item : identities)
-			{
-				String group = item.getGroupId();
-				if (group != null)
-				{
-					authorities.add(group);
-				}
-				String user = item.getUserId();
-				if (user != null)
-				{
-					authorities.add(user);
-				}
-			}
-		}
-		else
-		{
-			authorities.add(task.getAssignee());
-		}
+       authorities.addAll(getAssignee(task));
+    }
+
+    protected Set<String> getAssignee(DelegateTask task) {
+        Set<String> authorities = new HashSet<>();
+        if (task.getAssignee() == null)
+        {
+            List<IdentityLinkEntity> identities = ((TaskEntity)task).getIdentityLinks();
+            for (IdentityLinkEntity item : identities)
+            {
+                String group = item.getGroupId();
+                if (group != null)
+                {
+                    authorities.add(group);
+                }
+                String user = item.getUserId();
+                if (user != null)
+                {
+                    authorities.add(user);
+                }
+            }
+        }
+        else
+        {
+            authorities.add(task.getAssignee());
+        }
+        return authorities;
+    }
+
+    protected void sendToInitiator(DelegateTask task, Set<String> authorities)
+	{
+		authorities.add(getInitiator(task));
 	}
 
-	protected void sendToInitiator(DelegateTask task, Set<String> authorities)
-	{
-		ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
-		NodeRef initiator = ((ActivitiScriptNode)executionEntity.getVariable("initiator")).getNodeRef();
-		String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-		authorities.add(initiator_name);
-	}
+    protected String getInitiator(DelegateTask task) {
+        ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
+        NodeRef initiator = ((ActivitiScriptNode)executionEntity.getVariable("initiator")).getNodeRef();
+        return (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+    }
 
 	protected void sendToOwner(Set<String> authorities, NodeRef node)
 	{
