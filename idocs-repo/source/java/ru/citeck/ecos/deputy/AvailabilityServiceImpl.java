@@ -18,8 +18,13 @@
  */
 package ru.citeck.ecos.deputy;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import ru.citeck.ecos.model.DeputyModel;
 
@@ -29,6 +34,7 @@ public class AvailabilityServiceImpl implements AvailabilityService
 	private AuthenticationService authenticationService;
 	private NodeService nodeService;
 	private AuthorityHelper authorityHelper;
+	private SearchService searchService;
 	
 	/////////////////////////////////////////////////////////////////
 	//                      SPRING INTERFACE                       //
@@ -45,6 +51,10 @@ public class AvailabilityServiceImpl implements AvailabilityService
 	public void setAuthorityHelper(AuthorityHelper authorityHelper) {
 		this.authorityHelper = authorityHelper;
 	}
+
+	public void setSearchService(SearchService searchService) {
+		this.searchService = searchService;
+	}
 	
 	/////////////////////////////////////////////////////////////////
 	//                       ADMIN INTERFACE                       //
@@ -60,6 +70,41 @@ public class AvailabilityServiceImpl implements AvailabilityService
 		// user is available by default
 		return !Boolean.FALSE.equals(available);
 	}
+
+	public String getUserUnavailableAutoAnswer(String userName) {
+		if (!getUserAvailability(userName)) {
+			ResultSet userAbsenceEventsResultSet = getUserAbsenceEvents(userName);
+			for (NodeRef event: userAbsenceEventsResultSet.getNodeRefs()) {
+				String autoAnswer = (String) nodeService.getProperty(event, DeputyModel.PROP_AUTO_ANSWER);
+				return autoAnswer != null ? autoAnswer : "";
+			}
+		}
+		return null;
+	}
+
+	private ResultSet getUserAbsenceEvents(String userName) {
+		NodeRef person = authorityHelper.needUser(userName);
+		if(person == null) {
+			throw new IllegalArgumentException("No such user: " + userName);
+		}
+		String query = "TYPE:\"deputy:selfAbsenceEvent\"" +
+				" AND (@deputy\\:endAbsence:{NOW TO MAX} OR ISNULL:\"deputy:endAbsence\")" +
+				" AND @deputy\\:eventFinished:false" +
+				" AND @deputy\\:user_added:\"" + person.toString() +
+				"\"";
+		final SearchParameters searchParameters = new SearchParameters();
+		searchParameters.setLanguage(SearchService.LANGUAGE_LUCENE);
+		searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+		searchParameters.addSort(new SearchParameters.SortDefinition(SearchParameters.SortDefinition.SortType.FIELD, "startAbsence", false));
+		searchParameters.setQuery(query);
+		return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<ResultSet>() {
+			@Override
+			public ResultSet doWork() throws Exception {
+				return searchService.query(searchParameters);
+			}});
+	}
+
+
 
 	@Override
 	public void setUserAvailability(String userName, boolean availability) {

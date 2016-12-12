@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
 <model name="dms:dms" xmlns="http://www.alfresco.org/model/dictionary/1.0"
-	xmlns:xi="http://www.w3.org/2001/XInclude">
+>
 	<!-- Definition of the model -->
 	<description>Document Management System</description>
 	<author>Citeck</author>
@@ -626,6 +626,12 @@
                     <type>d:qname</type>
                     <mandatory>false</mandatory>
                 </property>
+				<property name="dms:notSearchable">
+					<title>Searchable</title>
+					<description>Allow to not search template in notification senders</description>
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
             </properties>
         </type>
         <type name="dms:applicationFile">
