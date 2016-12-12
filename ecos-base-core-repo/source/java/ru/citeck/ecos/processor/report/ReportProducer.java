@@ -115,11 +115,13 @@ public class ReportProducer extends AbstractDataBundleLine {
                             } else {
                                 QName colAttrQName = QName.resolveToQName(namespaceService, colAttribute);
                                 Object value = nodeAttributeService.getAttribute(node, colAttrQName);
-
-                                if (colAttrQName.equals(DataTypeDefinition.DOUBLE)) {
-                                    data.put(DATA_TYPE_ATTR, "Double");
-                                } else if (colAttrQName.equals(DataTypeDefinition.INT)) {
-                                    data.put(DATA_TYPE_ATTR, "Integer");
+                                QName typeQName = getAttributeTypeName(colAttrQName);
+                                if (typeQName != null) {
+                                    if (typeQName.equals(DataTypeDefinition.DOUBLE)) {
+                                        data.put(DATA_TYPE_ATTR, "Double");
+                                    } else if (typeQName.equals(DataTypeDefinition.INT)) {
+                                        data.put(DATA_TYPE_ATTR, "Integer");
+                                    }
                                 }
 
                                 data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat, ""));
@@ -228,6 +230,14 @@ public class ReportProducer extends AbstractDataBundleLine {
         }
 
         return result;
+    }
+
+    private QName getAttributeTypeName(QName qName) {
+        PropertyDefinition property = serviceRegistry.getDictionaryService().getProperty(qName);
+        if (property != null) {
+            return property.getDataType().getName();
+        }
+        return null;
     }
 
     private String shortQName(String s) {
