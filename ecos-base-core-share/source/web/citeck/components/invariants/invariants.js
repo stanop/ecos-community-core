@@ -1729,6 +1729,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('loadAttributesMethod', s)
         .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
 
+        .property('loadGroupIndicator', b)
+        .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
+
         .property('_loading', b)
         .computed('loaded', function() {
             if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
@@ -1771,6 +1774,40 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .removeClass("hidden");
 
             if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
+                if (this.runtime().loadGroupIndicator()) {
+                    var self = this,
+                        indicatorId = tabId + "-loadGroupIndicator", bodyId = $(".tabs-body .tab-body[data-tab-id=" + tabId + "]").attr("id"),
+                        buttons = $(".invariants-form .form-buttons");
+
+                    if (!window[indicatorId]) {
+                        buttons.hide();
+
+                        window[indicatorId] = new Citeck.UI.waitIndicator(indicatorId, { 
+                            context: bodyId, 
+                            backgroundColor: "#f0f0f0"
+                        });
+
+                        window[indicatorId].handler = ko.computed(function() {
+                            var impl = self.resolve("node.impl"), groupAttributes = impl._groupedAttributes()[tabIndex];
+                            return _.every(groupAttributes, function(attribute) { return !!impl.attribute(attribute);  });
+                        });
+
+                        window[indicatorId].handler.subscribe(function(newValue) {
+                            if (newValue) {
+                                window[indicatorId].hide();
+                                window[indicatorId].handler.dispose();
+
+                                // indicator was finished
+                                window[indicatorId] = true;
+
+                                buttons.show();
+                            }
+                        });
+
+                        window[indicatorId].show();
+                    }
+                }
+                
                 this.runtime().loadGroupInvariants(tabIndex);
                 this.runtime().loadGroupAttributes(tabIndex);
             }

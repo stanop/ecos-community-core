@@ -212,7 +212,7 @@
 					formTemplate: "${view.template}",				
 
 					<#if view.params.loadAttributesMethod??>loadAttributesMethod: "${view.params.loadAttributesMethod}",</#if>
-					<#if view.params.loadGroupsIndicator??>loadGroupsIndicator: ${view.params.loadGroupsIndicator},</#if>
+					<#if view.params.loadGroupIndicator??>loadGroupIndicator: ${view.params.loadGroupIndicator},</#if>
 					
 					node: {
 						key: "${runtimeKey}",
