@@ -548,6 +548,7 @@ ko.bindingHandlers.journalControl = {
 
         searchCriteria              = params.searchCriteria,
         defaultCriteria             = params.defaultCriteria,
+        hiddenCriteria              = params.hiddenCriteria || [],
 
         createVariantsVisibility    = params.createVariantsVisibility;
 
@@ -576,7 +577,15 @@ ko.bindingHandlers.journalControl = {
         mode = params.mode, dockMode = params.dock ? "dock" : "",
         pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
         additionalOptions = ko.observable([]), options = ko.computed(function(page) {
-            var nudeOptions = data.filterOptions(criteria(), { 
+            var actualCriteria = criteria();
+            if (hiddenCriteria) {
+                for (var hc in hiddenCriteria) {
+                    if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
+                        actualCriteria.push(hiddenCriteria[hc]);
+                }
+            }
+
+            var nudeOptions = data.filterOptions(actualCriteria, {
                     maxItems: maxItems(), 
                     skipCount: skipCount(), 
                     searchScript: searchScript,
@@ -584,7 +593,7 @@ ko.bindingHandlers.journalControl = {
                 }),
                 config = nudeOptions.pagination,
                 result;
-          
+      
             var tempAdditionalOptions = additionalOptions();
             _.each(additionalOptions(), function(o) {
                 if (_.contains(nudeOptions, o)) {
@@ -609,30 +618,20 @@ ko.bindingHandlers.journalControl = {
                 }
             }
 
-            return nudeOptions ;
+            loading(_.isUndefined(nudeOptions.pagination));
+            return nudeOptions;
         });
 
     // reset page after new search
-    criteria.subscribe(function(newValue) {
-        pageNumber(1);
-    });
+    criteria.subscribe(function(newValue) { pageNumber(1); });
 
     // show loading indicator if page was changed
-    pageNumber.subscribe(function(newValue) {
-        loading(true);
-    })
-
-    // hide loading indicator if options got elements
-    options.subscribe(function(newValue) {
-        loading(_.isUndefined(newValue.pagination));
-        
-        // TODO: disable loading if options is empty
-    });
+    pageNumber.subscribe(function(newValue) { loading(true); })
 
     // extend notify
-    criteria.extend({ notify: 'always' });
+    criteria.extend({ notify: 'notifyWhenChangesStop' });
     pageNumber.extend({ notify: 'always' });
-    options.extend({ notify: 'always' });
+    options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
 
     var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
     if (!journalType) { /* so, it is fail */ }
