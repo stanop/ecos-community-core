@@ -137,7 +137,7 @@ public class HistoryService {
 							nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
 						}
 					}
-					List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);;
+					List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
 					for(AssociationRef source : sources)
 					{
 						NodeRef sourceCase = source.getSourceRef();
