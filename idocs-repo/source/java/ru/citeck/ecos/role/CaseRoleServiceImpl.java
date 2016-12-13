@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.role.CaseRolePolicies.OnRoleAssigneesChangedPolicy;
+import ru.citeck.ecos.role.CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.dao.RoleDAO;
 import ru.citeck.ecos.utils.DictionaryUtils;
@@ -27,9 +28,11 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     private Map<QName, RoleDAO> rolesDAOByType = new HashMap<>();
 
     private ClassPolicyDelegate<OnRoleAssigneesChangedPolicy> onRoleAssigneesChangedDelegate;
+    private ClassPolicyDelegate<OnCaseRolesAssigneesChangedPolicy> onCaseRolesAssigneesChangedDelegate;
 
     public void init() {
         onRoleAssigneesChangedDelegate = policyComponent.registerClassPolicy(OnRoleAssigneesChangedPolicy.class);
+        onCaseRolesAssigneesChangedDelegate = policyComponent.registerClassPolicy(OnCaseRolesAssigneesChangedPolicy.class);
     }
 
     @Override
@@ -144,10 +147,16 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         if (added.isEmpty() && removed.isEmpty()) {
             return;
         }
-        Set<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(roleRef, nodeService));
-        OnRoleAssigneesChangedPolicy changedPolicy;
-        changedPolicy = onRoleAssigneesChangedDelegate.get(roleRef, classes);
+        Set<QName> classes;
+
+        classes = new HashSet<>(DictionaryUtils.getNodeClassNames(roleRef, nodeService));
+        OnRoleAssigneesChangedPolicy changedPolicy = onRoleAssigneesChangedDelegate.get(roleRef, classes);
         changedPolicy.onRoleAssigneesChanged(roleRef, added, removed);
+
+        NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
+        classes = new HashSet<>(DictionaryUtils.getNodeClassNames(caseRef, nodeService));
+        OnCaseRolesAssigneesChangedPolicy rolesChangedPolicy = onCaseRolesAssigneesChangedDelegate.get(caseRef, classes);
+        rolesChangedPolicy.onCaseRolesAssigneesChanged(caseRef);
     }
 
     private Set<NodeRef> getTargets(NodeRef nodeRef, QName assocType) {

@@ -12,6 +12,7 @@ import ru.citeck.ecos.utils.JavaScriptImplUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Maxim Strizhov
@@ -61,6 +62,18 @@ public class CaseRoleServiceJS extends AlfrescoScopableProcessorExtension {
             }
             caseRoleService.setAssignees(roleRef, assigneeRefs);
         }
+    }
+
+    public ScriptNode[] getAssignees(Object document, Object role) {
+        NodeRef roleRef = getRoleRef(document, role);
+        Set<NodeRef> assignees = caseRoleService.getAssignees(roleRef);
+        return JavaScriptImplUtils.wrapNodes(assignees, this);
+    }
+
+    public ScriptNode[] getAssignees(Object role) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        Set<NodeRef> assignees = caseRoleService.getAssignees(roleRef);
+        return JavaScriptImplUtils.wrapNodes(assignees, this);
     }
 
     public void updateRoles(Object document) {
