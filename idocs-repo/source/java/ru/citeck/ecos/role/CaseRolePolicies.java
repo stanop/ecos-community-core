@@ -33,4 +33,21 @@ public interface CaseRolePolicies {
          */
         void onRoleAssigneesChanged(NodeRef roleRef, Set<NodeRef> added, Set<NodeRef> removed);
     }
+
+    interface OnCaseRolesAssigneesChangedPolicy extends ClassPolicy {
+        // NOTE: this is important, that this field is here
+        // if it is removed, this behaviours will be registered with
+        // default namespace and will not be matched
+        String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+
+        QName QNAME = QName.createQName(NAMESPACE, "onCaseRolesAssigneesChanged");
+
+        Arg ARG_0 = Arg.KEY;
+
+        /**
+         * Called when assignees was changed in any role of case
+         * @param caseRef case node reference
+         */
+        void onCaseRolesAssigneesChanged(NodeRef caseRef);
+    }
 }
