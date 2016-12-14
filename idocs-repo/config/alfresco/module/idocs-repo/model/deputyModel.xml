@@ -70,6 +70,10 @@
 					<type>d:boolean</type>
 					<default>false</default>
 				</property>
+				<property name="deputy:eventStarted">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
             </properties>
             <associations>
                 <association name="deputy:user">

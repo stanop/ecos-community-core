@@ -2,7 +2,7 @@
 
 (function() {
 
-    var PARENT_REF = "workspace://SpaceStore/absenceEvents";
+    var PARENT_REF = "workspace://SpacesStore/absence-events";
 
     var url = "/api/availability/absence-event?user=" + user.id;
     var connector = remote.connect("alfresco");
@@ -17,7 +17,7 @@
     if(nodeRef && nodeRef != "") {
         targetUrl = "/share/page/edit-metadata?nodeRef=" + nodeRef;
     } else {
-        targetUrl = "/share/page/create-content?destination=" + PARENT_REF + "&itemId=deputy:absenceEvent" ;
+        targetUrl = "/share/page/create-content?destination=" + PARENT_REF + "&itemId=deputy:selfAbsenceEvent" ;
     }
 
     model.targetUrl = targetUrl;
