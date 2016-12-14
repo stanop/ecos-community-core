@@ -52,7 +52,7 @@ var userMenuItems = [
 var currentUser = user.getUser(user.id);
 var availability = "make-" + (currentUser.properties.available === false ? "" : "not") + "available",
     clickEvent = function (event, element) {
-        Citeck.forms.dialog("deputy:absenceEvent", "currentUserAbsence", {
+        Citeck.forms.dialog("deputy:selfAbsenceEvent", "", {
             scope: this,
             fn: function (node) {
                 this.alfPublish("ALF_NAVIGATE_TO_PAGE", {
