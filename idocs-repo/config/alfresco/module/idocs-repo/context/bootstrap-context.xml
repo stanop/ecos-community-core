@@ -639,4 +639,26 @@
 		</property>
 	</bean>
 
+	<bean id="idocs.module-component.unavailable-complete-notification-template" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="unavailable-complete-notification-template" />
+		<property name="description" value="Template for notification" />
+		<property name="sinceVersion" value="2.8" />
+		<property name="appliesFromVersion" value="2.8" />
+		<property name="executeOnceOnly" value="false" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.idocs-root" />
+			</list>
+		</property>
+		<property name="bootstrapView">
+			<props>
+				<prop key="uuidBinding">UPDATE_EXISTING</prop>
+				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.workflowemailnotification.childname}</prop>
+				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/config_email_templates_additional.xml</prop>
+				<prop key="messages">alfresco/module/idocs-repo/messages/notification-templates</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+
 </beans>

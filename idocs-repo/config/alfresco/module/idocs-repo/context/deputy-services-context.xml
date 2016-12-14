@@ -14,6 +14,7 @@
 		<property name="authenticationService" ref="authenticationService" />
 		<property name="nodeService" ref="dbNodeService" />
 		<property name="authorityHelper" ref="authorityHelper" />
+		<property name="searchService" ref="searchService" />
 	</bean>
 
 	<bean id="AvailabilityService" class="org.springframework.aop.framework.ProxyFactoryBean">

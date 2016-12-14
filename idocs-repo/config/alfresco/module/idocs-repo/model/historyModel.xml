@@ -134,6 +134,9 @@
                     <type>d:noderef</type>
                     <multiple>true</multiple>
                 </property>
+                <property name="event:taskRole">
+                    <type>d:text</type>
+                </property>
             </properties>
         </aspect>
         

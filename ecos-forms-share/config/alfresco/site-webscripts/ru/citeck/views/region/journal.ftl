@@ -56,6 +56,7 @@
         <#if params.searchScript??>searchScript: '${params.searchScript}',</#if>
         <#if params.searchCriteria??>searchCriteria: ${params.searchCriteria},</#if>
         <#if params.defaultCriteria??>defaultCriteria: ${params.defaultCriteria},</#if>
+        <#if params.hiddenCriteria??>hiddenCriteria: ${params.hiddenCriteria},</#if>
 
         createVariantsVisibility: ${createVariantsVisibility},
 

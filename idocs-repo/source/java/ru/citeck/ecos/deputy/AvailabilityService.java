@@ -31,6 +31,14 @@ public interface AvailabilityService {
 	public abstract boolean getUserAvailability(String userName);
 
 	/**
+	 * Get specified user autoAnswer.
+	 *
+	 * @param userName - user to query autoAnswer
+	 * @return empty string is message is null
+	 */
+	public abstract String getUserUnavailableAutoAnswer(String userName);
+
+	/**
 	 * Set specified user availability.
 	 *
 	 * @param userName - user to set availability

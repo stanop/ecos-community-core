@@ -108,7 +108,8 @@ public final class DmsModel {
 	public static final QName PROP_TITLE_FOR_RESENDING = QName.createQName(DMS_NAMESPACE, "titleForResending");
 	public static final QName PROP_SUBJECT_TEMPLATE = QName.createQName(DMS_NAMESPACE, "subjectTemplate");
 	public static final QName PROP_DOC_TYPE = QName.createQName(DMS_NAMESPACE, "documentType");
-	
+	public static final QName PROP_NOT_SEARCHABLE = QName.createQName(DMS_NAMESPACE, "notSearchable");
+
 	// aspect hasApplicationFiles
 	public static final QName ASPECT_HAS_APPLICATION_FILES = QName.createQName(DMS_NAMESPACE, "hasApplicationFiles");
 	public static final QName ASSOC_APPLICATION_FILES = QName.createQName(DMS_NAMESPACE, "applicationFiles");

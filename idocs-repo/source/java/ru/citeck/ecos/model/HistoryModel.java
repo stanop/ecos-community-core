@@ -57,13 +57,14 @@ public final class HistoryModel {
     public static final QName PROP_TASK_COMMENT = QName.createQName(EVENT_NAMESPACE, "taskComment");
     public static final QName PROP_TASK_POOLED_ACTORS = QName.createQName(EVENT_NAMESPACE, "taskPooledActors");
     public static final QName PROP_TASK_ATTACHMENTS = QName.createQName(EVENT_NAMESPACE, "taskAttachments");
+    public static final QName PROP_TASK_ROLE = QName.createQName(EVENT_NAMESPACE, "taskRole");
 
     public static final QName PROP_WORKFLOW_INSTANCE_ID = QName.createQName(EVENT_NAMESPACE, "workflowInstanceId");
     public static final QName PROP_WORKFLOW_TYPE = QName.createQName(EVENT_NAMESPACE, "workflowType");
     public static final QName PROP_WORKFLOW_DESCRIPTION = QName.createQName(EVENT_NAMESPACE, "workflowDescription");
 
     public static final QName PROP_ADDITIONAL_PROPERTIES = QName.createQName(EVENT_NAMESPACE, "additionalProperties");
-    
+
     // associations
     public static final QName ASSOC_INITIATOR = QName.createQName(EVENT_NAMESPACE, "initiator");
     public static final QName ASSOC_DOCUMENT = QName.createQName(EVENT_NAMESPACE, "document");
