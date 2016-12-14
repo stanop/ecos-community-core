@@ -26,6 +26,7 @@ import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
@@ -49,6 +50,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     private NamespaceService namespaceService;
     private WorkflowService workflowService;
     private PolicyComponent policyComponent;
+    private CaseRoleService caseRoleService;
     private NodeService nodeService;
 
     public void init() {
@@ -202,8 +204,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             NodeRef targetRef = assocRef.getTargetRef();
             QName targetType = nodeService.getType(targetRef);
 
-            if (targetType.equals(ICaseRoleModel.TYPE_ROLE)) {
-                result.addAll(getAssociations(targetRef, ICaseRoleModel.ASSOC_ASSIGNEES));
+            if (dictionaryService.isSubClass(targetType, ICaseRoleModel.TYPE_ROLE)) {
+                caseRoleService.updateRole(targetRef);
+                result.addAll(caseRoleService.getAssignees(targetRef));
             } else {
                 result.add(targetRef);
             }
@@ -266,6 +269,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    public void setCaseRoleService(CaseRoleService caseRoleService) {
+        this.caseRoleService = caseRoleService;
     }
 
     /**

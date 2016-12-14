@@ -46,6 +46,14 @@
             </mandatory-aspects>
         </type>
 
+        <type name="icaseRole:scriptRole">
+            <parent>icaseRole:role</parent>
+            <properties>
+                <property name="icaseRole:script">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
     </types>
 
     <aspects>
