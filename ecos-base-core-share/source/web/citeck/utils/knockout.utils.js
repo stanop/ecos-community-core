@@ -18,6 +18,10 @@
  */
 define(['lib/knockout'], function(ko) {
 
+	// locale for all yui requests
+	var customLocale = YAHOO.util.Cookie.get("alf_share_locale");
+	if (customLocale) YAHOO.util.Connect.initHeader("Accept-Language", customLocale, true);
+
 	var logger = Alfresco.logger,
 		fail = function(message, silent) {
 			logger.error(message);
@@ -40,6 +44,7 @@ define(['lib/knockout'], function(ko) {
 	koclasses.ViewModel = function(model) {
 		return this;
 	};
+
 	koclasses.ViewModel.prototype = {
 		constructor: koclasses.ViewModel,
 		toString: function() {
