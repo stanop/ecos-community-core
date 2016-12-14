@@ -21,9 +21,12 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -33,12 +36,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.history.HistoryService;
+import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.service.CiteckServices;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TaskHistoryListener extends AbstractTaskListener {
@@ -119,6 +125,19 @@ public class TaskHistoryListener extends AbstractTaskListener {
         if(additionalProperties != null) {
             eventProperties.putAll(additionalProperties);
         }
+		NodeRef bpmPackage = ListenerUtils.getWorkflowPackage(task);
+		List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+		String roleName = "";
+		if (packageAssocs.size() > 0) {
+			NodeRef currentTask = packageAssocs.get(0).getSourceRef();
+			ChildAssociationRef childAssociationRef = nodeService.getChildAssocs(currentTask).get(0);
+			List<AssociationRef> performerRoles = nodeService.getTargetAssocs(childAssociationRef.getParentRef(), CasePerformModel.ASSOC_PERFORMERS_ROLES);
+			roleName = (String) nodeService.getProperty(performerRoles.get(0).getTargetRef(), ContentModel.PROP_NAME);
+		}
+		if (roleName.isEmpty()) {
+			roleName = assignee;
+		}
+        logger.error(packageAssocs);
 		eventProperties.put(HistoryModel.PROP_NAME, eventName);
 		eventProperties.put(HistoryModel.PROP_TASK_INSTANCE_ID, ACTIVITI_PREFIX + task.getId());
 		eventProperties.put(HistoryModel.PROP_TASK_TYPE, taskType);
@@ -126,6 +145,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		eventProperties.put(HistoryModel.PROP_TASK_COMMENT, taskComment);
 		eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
 		eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
+		eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
 		
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(VAR_DESCRIPTION));

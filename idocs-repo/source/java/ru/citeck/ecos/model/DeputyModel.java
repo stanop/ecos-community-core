@@ -39,6 +39,7 @@ public interface DeputyModel {
 	QName PROP_START_ABSENCE 		= QName.createQName(NAMESPACE, "startAbsence");
 	QName PROP_END_ABSENCE 			= QName.createQName(NAMESPACE, "endAbsence");
 	QName PROP_COMMENT 				= QName.createQName(NAMESPACE, "comment");
+	QName PROP_AUTO_ANSWER 			= QName.createQName(NAMESPACE, "autoAnswer");
 	QName ASSOC_USER 				= QName.createQName(NAMESPACE, "user");
 	QName ASSOC_REASON_OF_ABSENCE	= QName.createQName(NAMESPACE, "reasonOfAbsence");
 	QName PROP_EVENT_FINISHED	= QName.createQName(NAMESPACE, "eventFinished");
