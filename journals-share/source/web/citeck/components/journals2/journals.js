@@ -235,11 +235,15 @@ Journal
 	.property('type', JournalType)
 	.property('criteria', [ Criterion ])
 	.property('createVariants', [ CreateVariant ])
+	
 	.computed('availableCreateVariants', function() {
 		return _.filter(this.createVariants(), function(variant) {
 			return variant.canCreate();
 		});
 	})
+
+	.shortcut('options', 'type.options')
+
 	.init(function() {
 		this.criteria.extend({ rateLimit: 0 });
 	})
@@ -464,19 +468,21 @@ SortBy
 	;
 
 JournalsWidget
-  .property('documentNodeRef', s)
+  	.property('documentNodeRef', s)
 	.property('journalsLists', [JournalsList])
 	.property('journals', [Journal])
 	.property('journalsList', JournalsList)
-	.shortcut('filters', 'journal.type.filters', [])
-	.shortcut('settingsList', 'journal.type.settings', [])
 	.property('journal', Journal)
 	.property('filter', Filter)
 	.property('settings', Settings)
 	.property('_filter', Filter)
 	.property('_settings', Settings)
+
+	.shortcut('filters', 'journal.type.filters', [])
+	.shortcut('settingsList', 'journal.type.settings', [])
 	.shortcut('currentFilter', 'filter', 'journal.type.defaultFilter', null)
 	.shortcut('currentSettings', 'settings', 'journal.type.defaultSettings', null)
+	
 	.computed('journalsListId', {
 		read: function() {
 			return this.resolve('journalsList.id', '');
@@ -541,7 +547,6 @@ JournalsWidget
 			}
 		}
 	})
-
 
 	// paging
 	.property('skipCount', n)

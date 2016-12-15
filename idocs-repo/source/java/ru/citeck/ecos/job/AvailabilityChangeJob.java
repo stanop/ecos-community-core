@@ -1,6 +1,5 @@
 package ru.citeck.ecos.job;
 
-import org.alfresco.repo.search.impl.lucene.LuceneUtils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.schedule.AbstractScheduledLockedJob;
@@ -13,7 +12,6 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -28,7 +26,7 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
     private TransactionService transactionService;
 
     @Override
-    public void executeJob(JobExecutionContext jobContext) throws JobExecutionException {
+    public void executeJob(final JobExecutionContext jobContext) throws JobExecutionException {
         final JobDataMap data = jobContext.getJobDetail().getJobDataMap();
         AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
             @Override
@@ -57,12 +55,11 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
     }
 
     private void makeUsersAvailable() {
-        DateTime timeFromSearch = new DateTime().minusHours(4);
         //events to start
         String eventsToStopQuery = "TYPE:\"deputy:absenceEvent\"" +
-                " AND @deputy\\:startAbsence:{MIN TO NOW}" +
-                " AND @deputy\\:endAbsence:[" + timeFromSearch + " TO NOW]" +
-                " AND @deputy\\:eventFinished:false";
+                " AND @deputy\\:endAbsence:[MIN TO NOW]" +
+                " AND @deputy\\:eventFinished:false"+
+                " AND @deputy\\:eventStarted:true";
         if (logger.isDebugEnabled()) {
             logger.debug("eventsToStopQuery.query = " + eventsToStopQuery);
         }
@@ -78,12 +75,12 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
     }
 
     private void makeUsersUnavailable() {
-        DateTime timeFromSearch = new DateTime().minusHours(4);
         //events to start
         String eventsToStartQuery = "TYPE:\"deputy:absenceEvent\"" +
-                " AND @deputy\\:startAbsence:[" + LuceneUtils.getLuceneDateString(timeFromSearch.toDate()) + " TO NOW]" +
+                " AND @deputy\\:startAbsence:[MIN TO NOW]" +
                 " AND (@deputy\\:endAbsence:{NOW TO MAX} OR ISNULL:\"deputy:endAbsence\")" +
-                " AND @deputy\\:eventFinished:false";
+                " AND @deputy\\:eventFinished:false" +
+                " AND @deputy\\:eventStarted:false";
         if (logger.isDebugEnabled()) {
             logger.debug("eventsToStartQuery.query = " + eventsToStartQuery);
         }
@@ -111,6 +108,8 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
             public Void execute() throws Throwable {
                 if (availability) {
                     nodeService.setProperty(event, DeputyModel.PROP_EVENT_FINISHED, true);
+                } else {
+                    nodeService.setProperty(event, DeputyModel.PROP_EVENT_STARTED, true);
                 }
                 availabilityService.setUserAvailability(personToChangeAvailability, availability);
                 return null;

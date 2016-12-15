@@ -21,7 +21,10 @@ package ru.citeck.ecos.search;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.Path;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -166,10 +169,11 @@ public class LuceneQuery implements SearchQueryBuilder {
                 default:
                     break;
             }
+//kill wildcards
 
             switch (criterion) {
                 case STRING_CONTAINS:
-                    buildEqualsTerm(field, WILD + value + WILD);
+                    buildEqualsTerm(field, value);
                     break;
                 case STRING_NOT_EQUALS:
                 case NUMBER_NOT_EQUALS:

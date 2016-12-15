@@ -43,6 +43,7 @@ public interface DeputyModel {
 	QName ASSOC_USER 				= QName.createQName(NAMESPACE, "user");
 	QName ASSOC_REASON_OF_ABSENCE	= QName.createQName(NAMESPACE, "reasonOfAbsence");
 	QName PROP_EVENT_FINISHED	= QName.createQName(NAMESPACE, "eventFinished");
+	QName PROP_EVENT_STARTED	= QName.createQName(NAMESPACE, "eventStarted");
 
 
 }

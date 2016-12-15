@@ -743,5 +743,10 @@
         </property>
     </bean>
 
+    <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
+        <property name="caseRoleService" ref="caseRoleService" />
+        <property name="policyComponent" ref="policyComponent" />
+    </bean>
+
 </beans>
 

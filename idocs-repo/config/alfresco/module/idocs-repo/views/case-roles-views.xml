@@ -22,6 +22,20 @@
         </field>
     </view>
 
+    <view class="icaseRole:scriptRole" id="case">
+        <field prop="icaseRole:varName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:script">
+            <region name="input" template="textarea">
+                <param name="height">120px</param>
+            </region>
+        </field>
+    </view>
+
     <!--<view class="icaseRole:role" mode="create" id="case">-->
         <!--<field prop="cm:name">-->
             <!--<invariant on="mandatory" language="explicit">true</invariant>-->

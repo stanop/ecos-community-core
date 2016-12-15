@@ -33,8 +33,6 @@
     <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="journals-list" />
 
     <@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js" group="journals-list" />
-
-
 </@>
 
 <@markup id="widgets">
@@ -47,6 +45,10 @@
 
             new JournalsPage("${id}").setOptions({
                 model: {
+                    <#if loadFilterMethod??>
+                        loadFilterMethod: "${loadFilterMethod}",
+                    </#if>
+
                     <@journals.renderCurrentIds />
                     multiActions: <@journals.renderMultiActionsJSON />,
                 },
@@ -170,53 +172,58 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div id="${id}-search" class="form-container">
                         <form id="${id}-search-form" data-bind="submit: applyCriteria">
                             <!-- search criteria -->
                             <div id="${toolbarId}-filter" class="toolbar-menu" data-bind="if: journal() && _filter(), visible: currentMenu() == 'filter'">
-                                <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
+                                
+                                <!-- ko if: filterVisibility -->
+                                    <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
 
-                                    <span class="apply" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
-                                        <span class="first-child">
-                                            <button data-bind="click: applyCriteria"></button>
+                                        <span class="apply" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
+                                            <span class="first-child">
+                                                <button data-bind="click: applyCriteria"></button>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <span class="reset" title="${msg("button.reset-criteria")}" data-bind="yuiButton: { type: 'push' }">
-                                        <span class="first-child">
-                                            <button data-bind="click: clearCriteria"></button>
+                                        <span class="reset" title="${msg("button.reset-criteria")}" data-bind="yuiButton: { type: 'push' }">
+                                            <span class="first-child">
+                                                <button data-bind="click: clearCriteria"></button>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <span class="save" title="${msg("button.save-filter")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
-                                        <span class="first-child">
-                                            <button data-bind="click: saveFilter"></button>
+                                        <span class="save" title="${msg("button.save-filter")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
+                                            <span class="first-child">
+                                                <button data-bind="click: saveFilter"></button>
+                                            </span>
                                         </span>
-                                    </span>
 
-                                    <span class="add" data-bind="yuiButton: { type: 'menu', menu: '${id}-add-criterion-menu' }, css: { hidden: resolve('journal.type.searchableAttributes.length', 0) == 0 }">
-                                        <span class="first-child">
-                                            <button>${msg("button.add-criterion")}</button>
+                                        <span class="add" data-bind="yuiButton: { type: 'menu', menu: '${id}-add-criterion-menu' }, css: { hidden: resolve('journal.type.searchableAttributes.length', 0) == 0 }">
+                                            <span class="first-child">
+                                                <button>${msg("button.add-criterion")}</button>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <div id="${id}-add-criterion-menu" class="yui-overlay yuimenu button-menu">
-                                        <div class="bd">
-                                            <ul data-bind="foreach: resolve('journal.type.searchableAttributes', [])" class="first-of-type">
-                                                <li class="yuimenuitem">
-                                                    <span class="yuimenuitemlabel" data-bind="text: displayName, click: $root.addCriterion.bind($root,name(),'','')"></span>
-                                                </li>
-                                            </ul>
+                                        <div id="${id}-add-criterion-menu" class="yui-overlay yuimenu button-menu">
+                                            <div class="bd">
+                                                <ul data-bind="foreach: resolve('journal.type.searchableAttributes', [])" class="first-of-type">
+                                                    <li class="yuimenuitem">
+                                                        <span class="yuimenuitemlabel" data-bind="text: displayName, click: $root.addCriterion.bind($root,name(),'','')"></span>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- ko component: { name: "filter-criteria", params: {
-                                    journalType: $root.resolve("journal.type", null),
-                                    filter: _filter,
-                                    id: "${id}"
-                                }} --><!-- /ko -->                               
                                 
+                                    <!-- ko component: { name: "filter-criteria", params: {
+                                        journalType: resolve("journal.type", null),
+                                        filter: _filter,
+                                        id: "${id}"
+                                    }} --><!-- /ko -->                               
+                                <!-- /ko -->
                             </div>
                         </form>
                     </div>
+                    
                     <!-- other settings -->
                     <div id="${toolbarId}-settings" class="toolbar-menu" data-bind="if: journal() && _settings(), visible: currentMenu() == 'settings'">
 
