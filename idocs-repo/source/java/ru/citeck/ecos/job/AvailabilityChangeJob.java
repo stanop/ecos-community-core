@@ -18,6 +18,8 @@ import org.quartz.JobExecutionException;
 import ru.citeck.ecos.deputy.AvailabilityService;
 import ru.citeck.ecos.model.DeputyModel;
 
+import java.util.List;
+
 public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
     private static final Log logger = LogFactory.getLog(AvailabilityChangeJob.class);
     private NodeService nodeService;
@@ -45,27 +47,25 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
                     final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
                     transactionService = serviceRegistry.getTransactionService();
                 }
+                ResultSet eventsToStartResultSet = getEventsToStart();
+                ResultSet eventsToStopResultSet = getEventsToStop();
 
-                makeUsersUnavailable();
-                makeUsersAvailable();
+                makeUsersUnavailable(eventsToStartResultSet.getNodeRefs());
+                makeUsersAvailable(eventsToStopResultSet.getNodeRefs());
                 logger.info("AvailabilityChangeJob is finished");
                 return null;
             }
         });
     }
 
-    private void makeUsersAvailable() {
+    private void makeUsersAvailable(List<NodeRef> eventsToStop) {
         //events to start
-        String eventsToStopQuery = "TYPE:\"deputy:absenceEvent\"" +
-                " AND @deputy\\:endAbsence:[MIN TO NOW]" +
-                " AND @deputy\\:eventFinished:false"+
-                " AND @deputy\\:eventStarted:true";
-        if (logger.isDebugEnabled()) {
-            logger.debug("eventsToStopQuery.query = " + eventsToStopQuery);
-        }
-        ResultSet eventsToStopResultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, eventsToStopQuery);
 
-        for (NodeRef event : eventsToStopResultSet.getNodeRefs()) {
+        if (eventsToStop == null) {
+            return;
+        }
+
+        for (NodeRef event : eventsToStop) {
             try {
                 processEvent(event, true);
             } catch (Exception e) {
@@ -74,25 +74,41 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
         }
     }
 
-    private void makeUsersUnavailable() {
-        //events to start
-        String eventsToStartQuery = "TYPE:\"deputy:absenceEvent\"" +
-                " AND @deputy\\:startAbsence:[MIN TO NOW]" +
-                " AND (@deputy\\:endAbsence:{NOW TO MAX} OR ISNULL:\"deputy:endAbsence\")" +
+    private ResultSet getEventsToStop() {
+        String eventsToStopQuery = "TYPE:\"deputy:absenceEvent\"" +
+                " AND @deputy\\:endAbsence:[MIN TO NOW]" +
                 " AND @deputy\\:eventFinished:false" +
-                " AND @deputy\\:eventStarted:false";
+                " AND @deputy\\:eventStarted:true";
         if (logger.isDebugEnabled()) {
-            logger.debug("eventsToStartQuery.query = " + eventsToStartQuery);
+            logger.debug("eventsToStopQuery.query = " + eventsToStopQuery);
         }
-        ResultSet eventsToStartResultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, eventsToStartQuery);
+        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, eventsToStopQuery);
+    }
 
-        for (NodeRef event : eventsToStartResultSet.getNodeRefs()) {
+    private void makeUsersUnavailable(List<NodeRef> eventsToStart) {
+        if (eventsToStart == null) {
+            return;
+        }
+        for (NodeRef event : eventsToStart) {
             try {
                 processEvent(event, false);
             } catch (Exception e) {
                 logger.error("Event " + event + " cant be started", e);
             }
         }
+    }
+
+    private ResultSet getEventsToStart() {
+        //events to start
+        String eventsToStartQuery = "TYPE:\"deputy:absenceEvent\"" +
+                " AND @deputy\\:startAbsence:[MIN TO NOW]" +
+                " AND (@deputy\\:endAbsence:<NOW TO MAX> OR ISNULL:\"deputy:endAbsence\")" +
+                " AND @deputy\\:eventFinished:false" +
+                " AND @deputy\\:eventStarted:false";
+        if (logger.isDebugEnabled()) {
+            logger.debug("eventsToStartQuery.query = " + eventsToStartQuery);
+        }
+        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, eventsToStartQuery);
     }
 
     private void processEvent(final NodeRef event, final boolean availability) {
