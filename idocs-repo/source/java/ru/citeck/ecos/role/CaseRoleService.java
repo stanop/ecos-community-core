@@ -32,7 +32,7 @@ import java.util.Set;
 public interface CaseRoleService {
 
     /**
-     * Get all roles nodeRefs in specified case
+     * Get all roles in specified case
      * @return list of roles
      */
     List<NodeRef> getRoles(NodeRef caseRef);
@@ -90,6 +90,7 @@ public interface CaseRoleService {
 
     /**
      * Search role by name and recalculate assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
      */
     void updateRole(NodeRef caseRef, String roleName);
 
