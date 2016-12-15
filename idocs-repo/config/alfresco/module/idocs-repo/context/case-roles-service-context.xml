@@ -22,6 +22,7 @@
 
     <bean id="ecos.case-role-dao.script" class="ru.citeck.ecos.role.dao.ScriptRoleDAO" parent="ecos.case-role-dao.abstract">
         <property name="scriptService" ref="scriptService" />
+        <property name="authorityService" ref="authorityService" />
     </bean>
 
 </beans>

@@ -2,6 +2,7 @@ package ru.citeck.ecos.role.dao;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.ScriptService;
+import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -18,6 +19,7 @@ public class ScriptRoleDAO extends AbstractRoleDAO {
     private static final Log LOGGER = LogFactory.getLog(ScriptRoleDAO.class);
 
     private ScriptService scriptService;
+    private AuthorityService authorityService;
 
     @Override
     public QName getRoleType() {
@@ -39,12 +41,7 @@ public class ScriptRoleDAO extends AbstractRoleDAO {
 
         try {
             Object result = scriptService.executeScriptString(script, model);
-            if (result instanceof Collection) {
-                return new HashSet<>((Collection<NodeRef>) result);
-            }
-            if (result instanceof NodeRef) {
-                return Collections.singleton((NodeRef) result);
-            }
+            return fillRoles(new HashSet<NodeRef>(), result);
         } catch (Exception e) {
             LOGGER.warn(e);
         }
@@ -52,7 +49,31 @@ public class ScriptRoleDAO extends AbstractRoleDAO {
         return Collections.emptySet();
     }
 
+    private Set<NodeRef> fillRoles(Set<NodeRef> roles, Object value) {
+        if (value == null) {
+            return roles;
+        } else if (value instanceof NodeRef) {
+            roles.add((NodeRef) value);
+        } else if (value instanceof String) {
+            NodeRef nodeRef = authorityService.getAuthorityNodeRef((String) value);
+            if (nodeRef != null) {
+                roles.add(nodeRef);
+            } else {
+                LOGGER.warn("Authority with name '" + value + "' not found!");
+            }
+        } else if (value instanceof Collection) {
+            for (Object item : (Collection) value) {
+                fillRoles(roles, item);
+            }
+        }
+        return roles;
+    }
+
     public void setScriptService(ScriptService scriptService) {
         this.scriptService = scriptService;
+    }
+
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
     }
 }

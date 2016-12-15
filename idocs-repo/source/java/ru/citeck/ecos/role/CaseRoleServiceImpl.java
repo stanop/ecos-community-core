@@ -182,7 +182,7 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     private NodeRef needRole(NodeRef caseRef, String name) {
         NodeRef roleRef = getRole(caseRef, name);
         if (roleRef == null) {
-            throw new IllegalArgumentException("Role with name '" + name + "' not found!");
+            throw new IllegalArgumentException("Role with name '" + name + "' not found in case " + caseRef);
         }
         return roleRef;
     }
