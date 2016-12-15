@@ -28,8 +28,8 @@ public interface CaseRolePolicies {
         /**
          * Called when role assignees was changed
          * @param roleRef role node reference
-         * @param added removed assignees
-         * @param removed added assignees
+         * @param added added assignees
+         * @param removed removed assignees
          */
         void onRoleAssigneesChanged(NodeRef roleRef, Set<NodeRef> added, Set<NodeRef> removed);
     }
