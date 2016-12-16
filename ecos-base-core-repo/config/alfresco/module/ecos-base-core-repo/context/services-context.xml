@@ -252,4 +252,13 @@
 
     <bean id="duplicatorFilterRegistry" class="org.alfresco.repo.forms.processor.FilterRegistry" />
 
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="ru.citeck.ecos.utils.TransactionUtils.setServiceRegistry"/>
+        <property name="arguments">
+            <list>
+                <ref bean="ServiceRegistry"/>
+            </list>
+        </property>
+    </bean>
+
 </beans>
