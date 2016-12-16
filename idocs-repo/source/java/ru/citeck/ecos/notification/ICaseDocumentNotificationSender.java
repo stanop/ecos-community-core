@@ -26,11 +26,14 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     private String notificationType;
     private NodeRef targetRef;
     private Map<String, List<String>> recipients;
+    private Map<String, List<String>> iCaseAspectConditions;
 
     private static final String ARG_TARGET_REF = "targetRef";
     private static final String ARG_NOTIFICATION_TYPE = "notificationType";
     private static final String ASSOC_RECIPIENTS_KEY = "assocRecipients";
     private static final String RECIPIENTS_FROM_ROLE_KEY = "recipientsFromRole";
+    private static final String INCLUDE_KEY = "include";
+    private static final String EXCLUDE_KEY = "exclude";
 
     private static Log logger = LogFactory.getLog(ICaseDocumentNotificationSender.class);
 
@@ -72,6 +75,10 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
 
     public void sendNotification(NodeRef sourceRef, NodeRef targetRef, Map<String, List<String>> recipients,
                                  String notificationType, String subjectTemplate, boolean afterCommit) {
+        if (!aspectConditionIsFulfilled(sourceRef)) {
+            return;
+        }
+
         this.targetRef = targetRef;
         this.recipients = recipients;
         this.notificationType = notificationType;
@@ -79,7 +86,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         super.sendNotification(sourceRef, afterCommit);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Send notification - "
+            logger.debug("\nSend notification - "
                     + "\nsource nodeRef: " + sourceRef
                     + "\ntarget nodeRef: " + targetRef
                     + "\nrecipients: " + recipients
@@ -114,6 +121,44 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         return qNameList;
     }
 
+    private boolean aspectConditionIsFulfilled(NodeRef iCase) {
+        if (iCaseAspectConditions == null || iCaseAspectConditions.isEmpty()) {
+            return true;
+        }
+        if (!nodeService.exists(iCase)) {
+            logger.error("Cannot check aspect condition, because node: " + iCase + " doesn't exists");
+            return false;
+        }
+
+        List<QName> includeAspects = convertStringToQNameList(iCaseAspectConditions.get(INCLUDE_KEY));
+        List<QName> excludeAspects = convertStringToQNameList(iCaseAspectConditions.get(EXCLUDE_KEY));
+
+        if (includeAspects != null && !includeAspects.isEmpty()) {
+            for (QName aspect : includeAspects) {
+                if (!nodeService.hasAspect(iCase, aspect)) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Aspect condition failed. iCase: " + iCase + " don`t have aspect: " + aspect);
+                    }
+                    return false;
+                }
+
+            }
+        }
+
+        if (excludeAspects != null && !excludeAspects.isEmpty()) {
+            for (QName aspect : excludeAspects) {
+                if (nodeService.hasAspect(iCase, aspect)) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Aspect condition failed. iCase: " + iCase + " have aspect: " + aspect);
+                    }
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public void setNodeVariable(String nodeVariable) {
         this.nodeVariable = nodeVariable;
     }
@@ -136,5 +181,9 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setiCaseAspectConditions(Map<String, List<String>> iCaseAspectConditions) {
+        this.iCaseAspectConditions = iCaseAspectConditions;
     }
 }
