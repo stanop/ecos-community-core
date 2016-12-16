@@ -36,6 +36,9 @@ public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
     private static final String PARAM_DOCUMENT_TYPES = "documentTypes";
     private static final String PARAM_SUBJECT_TEMPLATE = "subjectTemplate";
     private static final String PARAM_RECIPIENTS = "recipients";
+    private static final String INCLUDE_KEY = "include";
+    private static final String EXCLUDE_KEY = "exclude";
+    private static final String PARAM_ASPECT_CONDITION = "aspectCondition";
     private static final String PARAM_VERIFY_PERSON_ASSOC = "verifyPerson";
     private static final String PARAM_NOTIFICATION_TYPE = "notificationType";
 
@@ -47,7 +50,13 @@ public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
         final Integer doWork = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Integer>() {
             @Override
             public Integer doWork() throws Exception {
+                if (logger.isInfoEnabled()) {
+                    logger.info("Job start");
+                }
                 doJob(jobExecutionContext);
+                if (logger.isInfoEnabled()) {
+                    logger.info("Job end");
+                }
                 return null;
             }
         });
@@ -71,17 +80,29 @@ public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
 
         final String verifyPerson = (String) jobData.get(PARAM_VERIFY_PERSON_ASSOC);
         final Map<String, List<String>> recipients = (Map<String, List<String>>) jobData.get(PARAM_RECIPIENTS);
+        final Map<String, List<String>> aspectCondition = (Map<String, List<String>>) jobData.get(PARAM_ASPECT_CONDITION);
 
-        if (recipients.isEmpty() || documentTypes.isEmpty() || verifyPerson == null || verifyPerson.equals("")) {
+        if (recipients == null || documentTypes == null || recipients.isEmpty() || documentTypes.isEmpty()
+                || verifyPerson == null || verifyPerson.equals("")) {
             logger.error("Cannot start job, mandatory params is empty.");
             return;
         }
 
         for (String documentType : documentTypes) {
+            int notificationDocCountSend = 0;
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append("TYPE:\"").append(documentType).append("\"");
+            sbQuery = fillAspectCondition(aspectCondition, sbQuery);
+            String query = sbQuery.toString();
+
+            if (logger.isInfoEnabled()) {
+                logger.info("Query: " + query);
+            }
+
             SearchParameters sp = new SearchParameters();
             sp.addStore(storeRef);
             sp.setLanguage(SearchService.LANGUAGE_LUCENE);
-            sp.setQuery("TYPE:\"" + documentType + "\"");
+            sp.setQuery(query);
 
             ResultSet results = null;
 
@@ -106,7 +127,8 @@ public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
                     }
                     if (sendNotification) {
                         if (logger.isDebugEnabled()) {
-                            String verifyUser = verifyUserRef != null ? verifyUserRef.toString() : "(user deleted or not found)";
+                            String verifyUser = verifyUserRef != null ? verifyUserRef.toString()
+                                    : "(user deleted or not found)";
                             logger.debug("Found disabled user: " + verifyUser + " in document: " + documentRef);
                         }
                         sender.sendNotification(
@@ -115,7 +137,12 @@ public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
                                 recipients,
                                 notificationType,
                                 subjectTemplate);
+                        notificationDocCountSend++;
                     }
+                }
+                if (logger.isInfoEnabled()) {
+                    logger.info("Sent notifications for document type: " + documentType + " count: "
+                            + notificationDocCountSend);
                 }
             } catch (Exception ex) {
                 logger.error("Cannot execute job. Exception message: " + ex.getMessage());
@@ -128,6 +155,26 @@ public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
         }
 
 
+    }
+
+    private StringBuilder fillAspectCondition(Map<String, List<String>> aspectCondition, StringBuilder sbQuery) {
+        if (aspectCondition != null && !aspectCondition.isEmpty()) {
+            List<String> includeAspects = aspectCondition.get(INCLUDE_KEY);
+            List<String> excludeAspects = aspectCondition.get(EXCLUDE_KEY);
+
+            if (includeAspects != null && !includeAspects.isEmpty()) {
+                for (String aspect : includeAspects) {
+                    sbQuery.append(" AND ASPECT:\"").append(aspect).append("\"");
+                }
+            }
+
+            if (excludeAspects != null && !excludeAspects.isEmpty()) {
+                for (String aspect : excludeAspects) {
+                    sbQuery.append(" AND NOT ASPECT:\"").append(aspect).append("\"");
+                }
+            }
+        }
+        return sbQuery;
     }
 
     private boolean userEnabled(NodeRef user, NodeService nodeService, PersonService personService) {
