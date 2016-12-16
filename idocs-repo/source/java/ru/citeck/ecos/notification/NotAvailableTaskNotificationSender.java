@@ -24,6 +24,7 @@ import org.alfresco.repo.notification.EMailNotificationProvider;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.security.AuthorityType;
 import ru.citeck.ecos.deputy.AvailabilityService;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
@@ -87,11 +88,14 @@ class NotAvailableTaskNotificationSender extends DelegateTaskNotificationSender 
         if (isSendToInitiator(template)) {
             Set<String> assignees = getAssignee(task);
             for (String assignee : assignees) {
-                String answer = availabilityService.getUserUnavailableAutoAnswer(assignee);
-                if (answer != null) {
-                    answerByUnavailableUser.put(assignee, answer);
-                    assigneesNodesByName.put(assignee, new ScriptNode(services.getPersonService().getPerson(assignee), services));
-                    argsMap.put("assignees", (Serializable) assigneesNodesByName);
+                AuthorityType type = AuthorityType.getAuthorityType(assignee);
+                if (AuthorityType.USER.equals(type)) {
+                    String answer = availabilityService.getUserUnavailableAutoAnswer(assignee);
+                    if (answer != null) {
+                        answerByUnavailableUser.put(assignee, answer);
+                        assigneesNodesByName.put(assignee, new ScriptNode(services.getPersonService().getPerson(assignee), services));
+                        argsMap.put("assignees", (Serializable) assigneesNodesByName);
+                    }
                 }
             }
             recipients.addAll(assigneesNodesByName.keySet());
