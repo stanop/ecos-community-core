@@ -48,6 +48,9 @@
                     <#if loadFilterMethod??>
                         loadFilterMethod: "${loadFilterMethod}",
                     </#if>
+                    <#if loadSettingsMethod??>
+                        loadSettingsMethod: "${loadSettingsMethod}",
+                    </#if>
 
                     <@journals.renderCurrentIds />
                     multiActions: <@journals.renderMultiActionsJSON />,
@@ -226,42 +229,42 @@
                     
                     <!-- other settings -->
                     <div id="${toolbarId}-settings" class="toolbar-menu" data-bind="if: journal() && _settings(), visible: currentMenu() == 'settings'">
-
-                        <div id="${id}-settings-buttons" class="settings-buttons flat-button icon-buttons">
-                            <span class="apply" title="${msg("button.apply-settings")}" data-bind="yuiButton: { type: 'push', disabled: !_settings().valid() }">
-                                <span class="first-child">
-                                    <button data-bind="click: applySettings"></button>
+                        <!-- ko if: settingsVisibility -->
+                            <div id="${id}-settings-buttons" class="settings-buttons flat-button icon-buttons">
+                                <span class="apply" title="${msg("button.apply-settings")}" data-bind="yuiButton: { type: 'push', disabled: !_settings().valid() }">
+                                    <span class="first-child">
+                                        <button data-bind="click: applySettings"></button>
+                                    </span>
                                 </span>
-                            </span>
-                            <span class="reset" title="${msg("button.reset-settings")}" data-bind="yuiButton: { type: 'push' }">
-                                <span class="first-child">
-                                    <button data-bind="click: resetSettings"></button>
+                                <span class="reset" title="${msg("button.reset-settings")}" data-bind="yuiButton: { type: 'push' }">
+                                    <span class="first-child">
+                                        <button data-bind="click: resetSettings"></button>
+                                    </span>
                                 </span>
-                            </span>
-                            <span class="save" title="${msg("button.save-settings")}" data-bind="yuiButton: { type: 'push', disabled: !_settings().valid() }">
-                                <span class="first-child">
-                                    <button data-bind="click: saveSettings"></button>
+                                <span class="save" title="${msg("button.save-settings")}" data-bind="yuiButton: { type: 'push', disabled: !_settings().valid() }">
+                                    <span class="first-child">
+                                        <button data-bind="click: saveSettings"></button>
+                                    </span>
                                 </span>
-                            </span>
-                        </div>
+                            </div>
 
-                        <!-- ko if: resolve('journal.type.visibleAttributes.length', 0) > 0 -->
-                            <label for="${id}-columns-select" class="columns-select">${msg("label.columns-select")}</label>
+                            <!-- ko if: resolve('journal.type.visibleAttributes.length', 0) > 0 -->
+                                <label for="${id}-columns-select" class="columns-select">${msg("label.columns-select")}</label>
 
-                            <#if settingsControlMode??>
-                                <#if settingsControlMode == "checkbox">
-                                    <!-- ko component: { name: "checkbox-radio", params: {
-                                        options: journal().type().visibleAttributes,
-                                        value: _settings().visibleAttributes,
-                                        optionText: function(option) { return option.displayName },
-                                        multiple: true
-                                    }} --><!-- /ko -->
+                                <#if settingsControlMode??>
+                                    <#if settingsControlMode == "checkbox">
+                                        <!-- ko component: { name: "checkbox-radio", params: {
+                                            options: journal().type().visibleAttributes,
+                                            value: _settings().visibleAttributes,
+                                            optionText: function(option) { return option.displayName },
+                                            multiple: true
+                                        }} --><!-- /ko -->
+                                    </#if>
+                                <#elseif !settingsControlMode?? || settingsControlMode == "select">
+                                    <select id="${id}-columns-select" class="columns-select" multiple="true" data-bind="options: journal().type().visibleAttributes, selectedOptions: _settings().visibleAttributes, optionsText: 'displayName'" size="10"></select>
                                 </#if>
-                            <#elseif !settingsControlMode?? || settingsControlMode == "select">
-                                <select id="${id}-columns-select" class="columns-select" multiple="true" data-bind="options: journal().type().visibleAttributes, selectedOptions: _settings().visibleAttributes, optionsText: 'displayName'" size="10"></select>
-                            </#if>
+                            <!-- /ko -->
                         <!-- /ko -->
-
                     </div>
 
                     <!-- ko if: journal() != null -->

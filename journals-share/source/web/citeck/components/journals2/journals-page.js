@@ -41,10 +41,26 @@ JournalsPage
 		};
 	})
 
+	// load filter method
+	.property('loadSettingsMethod', String)
+	.load('loadSettingsMethod', function() { this.loadSettingsMethod("onclick") })
+	.computed('settingsVisibility', function() {
+		switch (this.loadSettingsMethod()) {
+			case "onstart":
+			case "loaded":
+				return true;
+
+			case "onclick":
+			default:
+				return false;
+		};
+	})
+
 	// menu
 	.property('currentMenu', String)
 	.method('toggleToolbarMenu', function(menu) {
 		if (menu == "filter") this.loadFilterMethod("loaded");
+		if (menu == "settings") this.loadSettingsMethod("loaded");
 
 		if(this.currentMenu() == menu) {
 			this.currentMenu('');

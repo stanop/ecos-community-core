@@ -137,7 +137,6 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		if (roleName.isEmpty()) {
 			roleName = assignee;
 		}
-        logger.error(packageAssocs);
 		eventProperties.put(HistoryModel.PROP_NAME, eventName);
 		eventProperties.put(HistoryModel.PROP_TASK_INSTANCE_ID, ACTIVITI_PREFIX + task.getId());
 		eventProperties.put(HistoryModel.PROP_TASK_TYPE, taskType);
