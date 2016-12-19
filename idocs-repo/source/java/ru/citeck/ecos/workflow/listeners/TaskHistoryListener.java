@@ -130,9 +130,11 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		String roleName = "";
 		if (packageAssocs.size() > 0) {
 			NodeRef currentTask = packageAssocs.get(0).getSourceRef();
-			ChildAssociationRef childAssociationRef = nodeService.getChildAssocs(currentTask).get(0);
-			List<AssociationRef> performerRoles = nodeService.getTargetAssocs(childAssociationRef.getParentRef(), CasePerformModel.ASSOC_PERFORMERS_ROLES);
-			roleName = (String) nodeService.getProperty(performerRoles.get(0).getTargetRef(), ContentModel.PROP_NAME);
+			List<AssociationRef> performerRoles = nodeService.getTargetAssocs(currentTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
+			if (performerRoles != null && !performerRoles.isEmpty()) {
+				NodeRef firstRole = performerRoles.get(0).getTargetRef();
+				roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
+			}
 		}
 		if (roleName.isEmpty()) {
 			roleName = assignee;
