@@ -10,6 +10,7 @@
 	
 	<views any="true" template="table" />
 	
+
 	<!-- transmitting view mode -->
 	
 	<views mode="create">
@@ -24,6 +25,21 @@
 		<views any="true" mode="view" />
 	</views>
 	
+
+	<!-- default settings for wide template -->
+
+	<views template="wide">
+		<views any="true" template="blockset" />
+		<fields datatype="d:boolean" template="block-checkbox" />
+		<fields any="true" template="block" />
+	</views>
+
+	<views template="blockset">
+		<views any="true" template="blockset" />
+		<fields datatype="d:boolean" template="block-checkbox" />
+		<fields any="true" template="block" />
+	</views>
+
 	<!-- default settings for table template -->
 	
 	<views template="table">
@@ -31,7 +47,7 @@
 		<fields datatype="d:boolean" template="row-checkbox" />
 		<fields any="true" template="row" />
 	</views>
-	
+
 	<views template="rowset">
 		<views any="true" template="rowset" />
 		<fields datatype="d:boolean" template="row-checkbox" />
@@ -50,6 +66,7 @@
 		<fields any="true" template="third-width" />
 	</views>
 	
+
 	<!-- view-mode to region-template mapping -->
 	
 	<views any="true">
@@ -70,6 +87,7 @@
 			<region name="input" template="view" />
 		</fields>
 	</views>
+	
 	
 	<!-- field-type to region-template mapping -->
 	
