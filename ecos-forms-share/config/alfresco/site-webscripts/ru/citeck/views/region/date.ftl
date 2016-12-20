@@ -36,8 +36,14 @@
                data-bind="value: textValue, disable: protected" 
         />
     </#if>
+    
+    <!-- ko ifnot: protected -->
+        <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
+            <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">
+        </a>
+    <!-- /ko -->
 
-    <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
+    <!-- ko if: protected -->
         <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">
-    </a>
+    <!-- /ko -->
 </div>
