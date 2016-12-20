@@ -41,43 +41,51 @@
 </#macro>
 
 <#macro renderViewContainer view id>
-	<div id="${id}-form" class="ecos-form ${view.mode}-form invariants-form form-template-${view.template} loading"
-			 data-bind="css: { 'loading': !loaded(), 'submit-process': inSubmitProcess }">
+	<#assign loadIndicator = view.params.loadIndicator!"true">
+	<#assign loadIndicator = loadIndicator == "true">
 		
-		<div class="loading-overlay">
-			<div class="loading-container">
-				<div class="loading-indicator"></div>
-				<div class="loading-message">${msg('message.loading.form')}</div>
-				<div class="submit-process-message">${msg('message.submit-process.form')}</div>
-			</div>			
-		</div>
-		
+	<#assign formMode = view.mode?string + "-form">
+	<#assign formTemplate = "form-template-" + view.template?string>
+
+	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if>"
+		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess }">
+
+		<#if loadIndicator>
+			<div class="loading-overlay">
+				<div class="loading-container">
+					<div class="loading-indicator"></div>
+					<div class="loading-message">${msg('message.loading.form')}</div>
+					<div class="submit-process-message">${msg('message.submit-process.form')}</div>
+				</div>			
+			</div>
+		</#if>
+
 		<!-- ko API: rootObjects -->
-		<div class="form-fields" data-bind="with: node().impl">
-			<!-- ko if: attributes().length != 0 -->
-			<@views.renderElement view />
-			<!-- /ko -->
-		</div>
+			<div class="form-fields" data-bind="with: node().impl">
+				<!-- ko if: attributes().length != 0 -->
+					<@views.renderElement view />
+				<!-- /ko -->
+			</div>
 		<!-- /ko -->
 		
 		<#if view.mode != 'view'>
-		<div class="form-buttons" data-bind="with: node().impl">
+			<div class="form-buttons" data-bind="with: node().impl">
 
-			<#if canBeDraft!false>
-                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg("button.send")}"
-                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+				<#if canBeDraft!false>
+	                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg("button.send")}"
+	                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 
-                <input id="${args.htmlid}-form-submit" type="submit" value="${msg("button.save")}"
-                       data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
-			<#else>
-                <input id="${id}-form-submit" type="submit"
-                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>"
-                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
-			</#if>
+	                <input id="${args.htmlid}-form-submit" type="submit" value="${msg("button.save")}"
+	                       data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
+				<#else>
+	                <input id="${id}-form-submit" type="submit"
+	                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>"
+	                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+				</#if>
 
-			<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
-			<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
-		</div>
+				<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
+				<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
+			</div>
 		</#if>
 	
 	</div>
@@ -143,23 +151,35 @@
 	]
 </#macro>
 
-<#macro renderModel model>
-<#escape x as jsonUtils.encodeJSONString(x)>{
-	<#list model?keys as key>
-		"${key}": 
-		<#if !model[key]??>
-			null
-		<#elseif model[key]?is_string>
-			"${model[key]}"
-		<#elseif model[key]?is_number>
-			${model[key]?c}
-		<#elseif model[key]?is_boolean>
-			${model[key]?string}
-		<#elseif model[key]?is_hash>
-			<@renderModel model[key] />
-		</#if><#if key_has_next>,</#if>
-	</#list>
-}</#escape>
+<#macro renderDefaultModel model>
+	<#escape x as jsonUtils.encodeJSONString(x)>
+	{
+		"companyhome": <@views.renderValue model["companyhome"]!"" />,
+		"userhome": <@views.renderValue model["userhome"]!"" />,
+		"person": <@views.renderValue model["person"]!"" />,
+		"view": <@views.renderValue model["view"]!"" />
+	}
+	</#escape>
+</#macro>
+
+<#macro renderValue value="">
+	<#if !value??>
+		null
+	<#elseif value?is_hash>
+		{
+		<#list value?keys as key>
+			"${key}": <@views.renderValue value[key] /><#if key_has_next>,</#if>
+		</#list>
+		}
+	<#elseif value?is_string>
+		"${value?js_string}"
+	<#elseif value?is_number>
+		${value?c}
+	<#elseif value?is_boolean>
+		${value?string}
+	<#elseif value?is_enumerable>
+		[ <#list value as item><@views.renderValue item /><#if item_has_next>,</#if></#list> ]
+	</#if>
 </#macro>
 
 <#macro nodeViewStyles>
@@ -189,19 +209,42 @@
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
+					formTemplate: "${view.template}",				
+
+					<#if view.params.loadAttributesMethod??>loadAttributesMethod: "${view.params.loadAttributesMethod}",</#if>
+					<#if view.params.loadGroupIndicator??>loadGroupIndicator: ${view.params.loadGroupIndicator},</#if>
+					
 					node: {
 						key: "${runtimeKey}",
 						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
-						forcedAttributes: <@views.renderQNames attributes />,
+
+						_groupedAttributes: [
+							<#if attributesByGroups?? && attributesByGroups?has_content>
+								<#list attributesByGroups as attributesGroup>
+									<@views.renderValue attributesGroup /><#if attributesGroup_has_next>,</#if>
+								</#list>
+							</#if>
+						],
+						forcedAttributes: <@views.renderValue attributes />,
+
 						runtime: "${runtimeKey}",
-						defaultModel: <@views.renderModel defaultModel />,
+						defaultModel: <@views.renderDefaultModel defaultModel />,
+						
 					},
+
 					invariantSet: {
 						key: "${runtimeKey}",
-						invariants: <@views.renderInvariants invariants />
+						forcedInvariants: <@views.renderInvariants invariants />,
+						_groupedInvariants: [
+							<#if invariantsByGroups?? && invariantsByGroups?has_content>
+								<#list invariantsByGroups as invariantsGroup>
+									<@views.renderInvariants invariantsGroup /><#if invariantsGroup_has_next>,</#if>
+								</#list>
+							</#if>
+						]
 					}
 				}
 			});
@@ -209,3 +252,4 @@
 		</#escape>
 	</@>
 </#macro>
+
