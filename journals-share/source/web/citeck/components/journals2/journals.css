@@ -125,6 +125,11 @@
 	padding: 3px 5px;
 }
 
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime input,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date input {
+	width: auto;
+}
+
 .filter-criteria .criterion .criterion-value .criterion-value-field-input select {
     background-color: white;
     
@@ -150,7 +155,7 @@
 .filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date img.datepicker-icon,
 .filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime img.datepicker-icon {
   	position: relative;
-  	top: 3px;
+  	top: -1px;
 }
 
 /* toolbar styles (journals-page, journals-dashlet) */

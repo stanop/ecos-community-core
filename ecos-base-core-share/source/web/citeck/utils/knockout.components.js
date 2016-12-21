@@ -17,7 +17,7 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'citeck/components/invariants/invariants'], function(ko, koutils, journals, invariants) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'citeck/components/invariants/invariants', 'lib/moment'], function(ko, koutils, journals, invariants, moment) {
 
 
     var koValue = function(value) {
@@ -201,6 +201,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             }
                         }
                     });
+                } else if (this.datatype == "datetime") {
+                    this.fakeViewModel.value = ko.computed({
+                        read: function() { return  new Date(self.value()); },
+                        write: function(newValue) { self.value(moment(newValue).format()); }
+                    })
                 }
 
                 drawFilterCriterionValueComponent();
