@@ -49,9 +49,12 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
                 }
                 ResultSet eventsToStartResultSet = getEventsToStart();
                 ResultSet eventsToStopResultSet = getEventsToStop();
-
-                makeUsersUnavailable(eventsToStartResultSet.getNodeRefs());
-                makeUsersAvailable(eventsToStopResultSet.getNodeRefs());
+                if (eventsToStartResultSet != null && eventsToStartResultSet.getNodeRefs() != null) {
+                    makeUsersUnavailable(eventsToStartResultSet.getNodeRefs());
+                }
+                if (eventsToStopResultSet != null && eventsToStopResultSet.getNodeRefs() != null) {
+                    makeUsersAvailable(eventsToStopResultSet.getNodeRefs());
+                }
                 logger.info("AvailabilityChangeJob is finished");
                 return null;
             }
