@@ -16,7 +16,7 @@ function findBy(elements, by, byValue) {
 
 function map(elements, callback) {
   var result = [];
-  for (var e = 0; e < elements.length; e++) { result.push(callback(elements[e])); }
+  for (var e = 0; e < elements.length; e++) { result.push(callback(elements[e], e)); }
   return result;
 }
 

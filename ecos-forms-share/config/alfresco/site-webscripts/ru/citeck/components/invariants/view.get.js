@@ -40,7 +40,6 @@
         invariantsByGroups.push(viewScopedInvariantsByGroups[fi].concat(invariantSetByGroups[fi].invariants));
     }    
     
-
     // ATTENTION: this view model should comply to repository NodeView interface!
     var defaultModel = {},
         publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
@@ -65,6 +64,14 @@
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
   
+    model.groups = map(groups, function(group, index) {
+        return {
+            "id": group.id || group.genId,
+            "index": index,
+            "attributes": attributesByGroups[index],
+            "invariants": invariantsByGroups[index]
+        }
+    });
 
     if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
 

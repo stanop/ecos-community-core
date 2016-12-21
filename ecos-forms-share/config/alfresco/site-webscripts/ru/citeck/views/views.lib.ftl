@@ -203,6 +203,9 @@
 <#macro nodeViewWidget nodeRef="" type="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
+		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
+		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
+
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
 			new InvariantsRuntime("${args.htmlid}-form", "${runtimeKey}").setOptions({
@@ -211,8 +214,8 @@
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					formTemplate: "${view.template}",				
 
-					<#if view.params.loadAttributesMethod??>loadAttributesMethod: "${view.params.loadAttributesMethod}",</#if>
-					<#if view.params.loadGroupIndicator??>loadGroupIndicator: ${view.params.loadGroupIndicator},</#if>
+					loadAttributesMethod: "${loadAttributesMethod}",
+					loadGroupIndicator: ${loadGroupIndicator},
 					
 					node: {
 						key: "${runtimeKey}",
@@ -221,30 +224,33 @@
 						<#if type?has_content>type: "${type}",</#if>
 						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
 
-						_groupedAttributes: [
-							<#if attributesByGroups?? && attributesByGroups?has_content>
-								<#list attributesByGroups as attributesGroup>
-									<@views.renderValue attributesGroup /><#if attributesGroup_has_next>,</#if>
+						groups: [
+							<#if groups?? && groups?has_content>
+								<#list groups as group>
+								{
+									"id": <@views.renderValue group.id />,
+									"index": <@views.renderValue group.index />,
+									"attributes": <@views.renderValue group.attributes />,
+									"invariants": <@views.renderInvariants group.invariants />
+								}<#if group_has_next>,</#if>
 								</#list>
 							</#if>
 						],
-						forcedAttributes: <@views.renderValue attributes />,
+
+						<#if loadAttributesMethod != "clickOnGroup">
+							forcedAttributes: <@views.renderValue attributes />,
+						</#if>
 
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderDefaultModel defaultModel />,
-						
 					},
 
 					invariantSet: {
 						key: "${runtimeKey}",
-						forcedInvariants: <@views.renderInvariants invariants />,
-						_groupedInvariants: [
-							<#if invariantsByGroups?? && invariantsByGroups?has_content>
-								<#list invariantsByGroups as invariantsGroup>
-									<@views.renderInvariants invariantsGroup /><#if invariantsGroup_has_next>,</#if>
-								</#list>
-							</#if>
-						]
+
+						<#if loadAttributesMethod != "clickOnGroup">
+							forcedInvariants: <@views.renderInvariants invariants />
+						</#if>
 					}
 				}
 			});

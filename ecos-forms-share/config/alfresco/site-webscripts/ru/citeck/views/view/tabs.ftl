@@ -16,7 +16,7 @@
 	<span class="scroll-tabs scroll-left hidden" data-bind="click: $root.scrollTabs"> << </span>
 	<ul>
 		<#list tabs as tab>
-			<#assign tabId = tab.id!tab.genId + "-" + tab_index />
+			<#assign tabId = tab.id!tab.genId />
 			<li class="tab-title <#if tab_index == 0>selected</#if>"
 				data-tab-id="${tabId}"
 				data-tab-index="${tab_index}"
@@ -31,7 +31,7 @@
 
 <div class="tabs-body ${bodyTemplate}">
 	<#list tabs as tab>
-		<#assign tabId = tab.id!tab.genId + "-" + tab_index />
+		<#assign tabId = tab.id!tab.genId />
 		<div class="tab-body <#if tab_index != 0>hidden</#if>"
 			 id="${args.htmlid}-${tabId}"
 			 data-tab-id="${tabId}"
