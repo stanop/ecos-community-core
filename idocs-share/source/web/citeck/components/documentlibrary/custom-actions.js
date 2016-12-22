@@ -498,7 +498,15 @@ YAHOO.Bubbling.fire("registerAction", {
                                     window.location = Alfresco.util.siteURL("card-details?nodeRef=" + response.json.template);
                                 }
                             },
-                            failureMessage: self.msg("message.failure")
+                            failureCallback: {
+                                scope: this,
+                                fn: function (response) {
+                                    var msg = response.json.message.substr(0, response.json.message.indexOf('('));
+                                    Alfresco.util.PopupManager.displayPrompt({
+                                        text: msg
+                                    });
+                                }
+                            }
                         });
                         this.destroy();
                     }
