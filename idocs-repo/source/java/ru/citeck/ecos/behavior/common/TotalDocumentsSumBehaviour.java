@@ -76,7 +76,7 @@ public class TotalDocumentsSumBehaviour implements
                                    Map<QName, Serializable> before,
                                    Map<QName, Serializable> after) {
         if (!nodeService.exists(nodeRef)) {return;}
-        if (after.get(sumField).equals(before.get(sumField))) {return;}
+        if (after.get(sumField) == null || after.get(sumField).equals(before.get(sumField))) {return;}
         recalculateBranch(nodeRef);
     }
 
