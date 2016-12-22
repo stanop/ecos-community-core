@@ -5,7 +5,19 @@
         status.setCode(status.STATUS_NOT_FOUND, "Could not find case " + args.nodeRef);
         return;
     }
-    
+
+    /*TODO*/
+    var assocs = proto.associations;
+    if (proto.associations['wfm:mirrorTask'] != null) {
+        throw "Сurrently not available the ability to save templates with running processes. Please stop the processes to save the template";
+    } else {
+        for (var i in assocs) {
+            if(assocs[i][0].typeShort == 'bpm:package') {
+                throw "Сurrently not available the ability to save templates with running processes. Please stop the processes to save the template";
+            }
+        }
+    }
+
     if(!proto.hasAspect("icase:case")) {
         status.setCode(status.STATUS_BAD_REQUEST, "Node " + args.nodeRef + " is not a case");
         return;
