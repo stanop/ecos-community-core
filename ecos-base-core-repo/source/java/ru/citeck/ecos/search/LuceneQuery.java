@@ -173,7 +173,7 @@ public class LuceneQuery implements SearchQueryBuilder {
 
             switch (criterion) {
                 case STRING_CONTAINS:
-                    buildEqualsTerm(field, value);
+                    buildEqualsTerm(field, WILD + value + WILD);
                     break;
                 case STRING_NOT_EQUALS:
                 case NUMBER_NOT_EQUALS:
