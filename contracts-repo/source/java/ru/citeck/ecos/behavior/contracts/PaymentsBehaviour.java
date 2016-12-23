@@ -115,7 +115,7 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.ASSOC_PAYMENT_CURRENCY, nodeService);
 
-        if (nodeService.exists(currencyRef)) {
+        if (currencyRef != null && nodeService.exists(currencyRef)) {
             currencyCode = (String) nodeService.getProperty(currencyRef, IdocsModel.PROP_CURRENCY_CODE);
         }
 
