@@ -546,7 +546,7 @@ ko.bindingHandlers.journalControl = {
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
 
-        searchCriteria              = params.searchCriteria,
+        searchCriteria              = params.searchCriteria || data.searchCriteria,
         defaultCriteria             = params.defaultCriteria,
         hiddenCriteria              = params.hiddenCriteria || [],
 

@@ -38,6 +38,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.html = ko.observable("");
             this._value = ko.observable(null);
 
+            this.nodetype = this.attribute().nodetype();
+            this.journalType = this.attribute().journalType();
+            this.settings = this.attribute().settings();            
+
             if (this.datatype) {
                 // prepare fake viewModel
                 this.fakeViewModel = {
@@ -70,9 +74,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }
                 };
 
-                this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype());
+                this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype);
 
-                if (this.datatype == "association" && this.nodetype() && this.journalType()) {
+                if (this.datatype == "association" && this.nodetype && this.journalType) {
                     if (this.value() && Citeck.utils.isNodeRef(this.value().toString())) {
                         this._value(new Node(this.value()));
                     }
@@ -92,14 +96,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     if (this.templateName == "journal") {
                         this.fakeViewModel.cache.result.extend({ notify: 'always' });
 
-                        this.fakeViewModel.journalType = this.journalType();
+                        this.fakeViewModel.journalType = this.journalType;
+                        this.fakeViewModel.searchCriteria = eval("(" + this.settings.searchCriteria + ")");
                         this.fakeViewModel.filterOptions = function(criteria, pagination) {                              
                             var query = {
                                 skipCount: 0,
                                 maxItems: 10,
                                 field_1: "type",
                                 predicate_1: "type-equals",
-                                value_1: self.nodetype()
+                                value_1: self.nodetype
                             };
 
                             if (pagination) {
@@ -165,7 +170,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             } else { return Alfresco.util.message("label.none"); }
                         });
 
-                        switch (this.nodetype()) {
+                        switch (this.nodetype) {
                             case "{http://www.alfresco.org/model/content/1.0}authorityContainer":
                                 this.fakeViewModel.allowedAuthorityType = ko.observable("USER");
                                 break;
@@ -180,7 +185,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     this.fakeViewModel.options(_.pairs(this.labels));
                     this.fakeViewModel.optionsText = function(o) { return o[1]; };
                     this.fakeViewModel.optionsValue = function(o) { return o[0]; } 
-                } else if (this.datatype == "category" && this.journalType() && this.attributeName() == "tk:kind") {
+                } else if (this.datatype == "category" && this.journalType && this.attribute().name() == "tk:kind") {
                     var docType = this.journalOptionsType();
                     if (!docType) return;
 
@@ -312,24 +317,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 self.selectedFilterCriteria.remove(data);
             };
 
-            this.getNodeType = function(data) {
+            this.getAttribute = function (data) {
                 return ko.computed(function() {
-                    var attribute = self.journalType.attribute(data.name());
-                    return attribute ? attribute.nodetype() : null;
-                });
-            };
-
-            this.getJournalType = function(data) {
-                return ko.computed(function() {
-                    var attribute = self.journalType.attribute(data.name());
-                    return attribute ? attribute.journalType() : null;
-                });
-            };
-
-            this.getAttributeName = function (data) {
-                return ko.computed(function() {
-                    var attribute = self.journalType.attribute(data.name());
-                    return attribute ? attribute.name() : null;
+                    return self.journalType.attribute(data.name());
                 });
             };
             this.getJournalOptionsType = function (data) {
@@ -362,10 +352,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                         fieldId: $component.htmlId + "-criterion-" + $index(),\
                                         labels: labels(),\
                                         datatype: resolve(\'datatype.name\', null),\
-                                        nodetype: $component.getNodeType($data),\
-                                        journalType: $component.getJournalType($data),\
                                         value: value,\
-                                        attributeName: $component.getAttributeName($data),\
+                                        attribute: $component.getAttribute($data),\
                                         journalOptionsType: $component.getJournalOptionsType($data)\
                                     }} --><!-- /ko -->\
                                 <!-- /ko -->\
@@ -385,24 +373,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 self.filter().criteria.remove(data);
             };
 
-            this.getNodeType = function(data) {
+            this.getAttribute = function (data) {
                 return ko.computed(function() {
-                    var attribute = self.journalType.attribute(data.resolve("field.name", null));
-                    return attribute ? attribute.nodetype() : null;
-                });
-            };
-
-            this.getJournalType = function(data) {
-                return ko.computed(function() {
-                    var attribute = self.journalType.attribute(data.resolve("field.name", null));
-                    return attribute ? attribute.journalType() : null;
-                });
-            };
-
-            this.getAttributeName = function (data) {
-                return ko.computed(function() {
-                    var attribute = self.journalType.attribute(data.resolve("field.name", null));
-                    return attribute ? attribute.name() : null;
+                    return self.journalType.attribute(data.resolve("field.name", null));
                 });
             };
             this.getJournalOptionsType = function (data) {
@@ -449,10 +422,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             fieldId: $component.id + "-criterion-" + id(),\
                             datatype: resolve(\'field.datatype.name\', null),\
                             labels: resolve(\'field.labels\', null),\
-                            nodetype: $component.getNodeType($data),\
-                            journalType: $component.getJournalType($data),\
                             value: value,\
-                            attributeName: $component.getAttributeName($data),\
+                            attribute: $component.getAttribute($data),\
                             journalOptionsType: $component.getJournalOptionsType($data)\
                         }} --><!-- /ko -->\
                     <!-- /ko -->\
