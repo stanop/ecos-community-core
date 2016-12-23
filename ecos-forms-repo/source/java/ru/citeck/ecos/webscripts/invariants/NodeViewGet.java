@@ -18,15 +18,10 @@
  */
 package ru.citeck.ecos.webscripts.invariants;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
-import org.apache.log4j.Logger;
 import org.alfresco.service.namespace.QName;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
@@ -35,8 +30,11 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
 import ru.citeck.ecos.model.InvariantsModel;
-import ru.citeck.ecos.security.AttributesPermissionService;
 import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class NodeViewGet extends DeclarativeWebScript {
 
@@ -99,7 +97,7 @@ public class NodeViewGet extends DeclarativeWebScript {
 
         NodeView view = nodeViewService.getNodeView(query);
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put(MODEL_VIEW, view);
         model.put(MODEL_CAN_BE_DRAFT, canBeDraft);
         return model;
