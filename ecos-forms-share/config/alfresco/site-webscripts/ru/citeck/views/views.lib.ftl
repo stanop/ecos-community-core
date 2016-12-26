@@ -2,13 +2,20 @@
 	<#assign template = element.template!"default" />
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
-	
+
 	<#if element.attribute??>
 		<!-- ko with: attribute("${element.attribute}") -->
 		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
 	</#if>
 	
-		<div class="form-${element.type} template-${template}" <#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>>
+		<div class="form-${element.type} template-${template}"
+			<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
+
+			<#-- custom width for field -->
+			<#if element.type == "field" && element.params?has_content>
+				style="<#if element.params.width??>width: ${element.params.width?string}</#if>"
+			</#if>
+		>
 			<@renderContent element />
 		</div>
 	
