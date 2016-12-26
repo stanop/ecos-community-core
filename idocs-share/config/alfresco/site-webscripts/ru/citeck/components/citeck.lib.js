@@ -5,17 +5,32 @@ function isMobileDevice(ua) {
 };
 
 function findBy(elements, by, byValue) {
-    for (var e = 0; e < elements.length; e++) {
-        if (byValue instanceof Function) {
-            if (byValue(by ? elements[e][by] : elements[e])) return elements[e];
-        } else if (elements[e][by] == byValue) return elements[e];
-    }
+  for (var e = 0; e < elements.length; e++) {
+      if (byValue instanceof Function) {
+          if (byValue(by ? elements[e][by] : elements[e])) return elements[e];
+      } else if (elements[e][by] == byValue) return elements[e];
+  }
 
-    return null;
+  return null;
 }
 
 function map(elements, callback) {
-    var result = [];
-    for (var e in elements) { result.push(callback(elements[e])); }
-    return result;
+  var result = [];
+  for (var e = 0; e < elements.length; e++) { result.push(callback(elements[e], e)); }
+  return result;
+}
+
+function each(elements, callback) {
+  for (var e = 0; e < elements.length; e++) { callback(elements[e], e); }
+}
+
+function uniq(elements) {
+  var uniqElements = elements.concat();
+  for(var i = 0; i < uniqElements.length; ++i) {
+    for(var j = i + 1; j < uniqElements.length; ++j) {
+      if(uniqElements[i] === uniqElements[j])
+        uniqElements.splice(j--, 1);
+    }
+  }
+  return uniqElements;
 }

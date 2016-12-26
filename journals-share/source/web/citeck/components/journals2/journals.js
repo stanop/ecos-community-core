@@ -307,21 +307,24 @@ Settings
 Attribute
 	.property('name', s)
 	.property('_info', AttributeInfo)
-	.init(function() {
-		this.model({ _info: this.name() });
-	})
-	.shortcut('type', '_info.type')
-	.shortcut('displayName', '_info.displayName')
-	.shortcut('datatype', '_info.datatype')
-	.shortcut('nodetype', '_info.nodetype')
-	.shortcut('journalType', '_info.journalType')
-	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
 	.property('sortable', b)
 	.property('groupable', b)
 	.property('isDefault', b)
 	.property('settings', o)
+
+	.shortcut('type', '_info.type')
+	.shortcut('displayName', '_info.displayName')
+	.shortcut('datatype', '_info.datatype')
+	.shortcut('nodetype', '_info.nodetype')
+	.shortcut('journalType', '_info.journalType')
+	.shortcut('labels', '_info.labels', {})
+
+	
+	.init(function() {
+		this.model({ _info: this.name() });
+	})
 	;
 
 AttributeInfo

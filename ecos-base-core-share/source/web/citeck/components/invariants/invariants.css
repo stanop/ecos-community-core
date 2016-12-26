@@ -1734,6 +1734,12 @@
   cursor: pointer;  
 }
 
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false],
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false]:hover {
+  cursor: default;
+  opacity: 0.5;
+  font-weight: normal !important;
+}
 
 .invariants-form .template-tabs .tabs-title span.scroll-tabs {
   position: absolute;

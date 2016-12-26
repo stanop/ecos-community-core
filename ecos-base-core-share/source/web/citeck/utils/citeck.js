@@ -646,32 +646,36 @@ Citeck.UI.waitIndicator = function(id, params) {
     // public functions
     this.getEl = function() { return this._envelope[0]; }
 
-    this.hide = function() { self._envelope.css("visibility", "hidden"); }
-    this.show = function() { self._envelope.css("visibility", "visible"); }
+    this.hide = function() {
+        var parent = self._envelope.parent();
 
-    this.render = function() {
-        // dispose if indicator exists
-        if ($("#" + self.options.context).length) self.dispose();
-
-        if (self.options.context) {
-            if (self.options.context instanceof HTMLElement) { $(self.options.context).append(self._envelope) }
-            else if (typeof self.options.context == "string") { $("#" + self.options.context).append(self._envelope) }
-        } else {
-            // fixed indicator for sticky-wrapper
-            $(".sticky-wrapper").append(self._envelope);
-            self._container.css("position", "fixed");
+        if (parent.attr("data-height-was-modified")) {
+            parent.height("");
         }
-    
+
+        self._envelope.css("visibility", "hidden"); 
+    }
+
+    this.show = function() { 
+        var parent = self._envelope.parent(),
+            offset = parent.offset();
+
+        if (parent.css("position") == "static") {
+            parent.css("position", "relative").css("overflow", "hidden");
+
+            if (parent.height() <= self.options.size) {
+                parent.height(self.options.size + self.options.size / 2).attr("data-height-was-modified", "true");
+            }
+        }
+
         // location envelope
-        if (self._envelope.parent().css("position") != "relative") {
-            var parent = self._envelope.parent(),
-                offset = parent.offset();
-            
-            self._envelope
-                .css("height", parent.height())
-                .css("width", parent.width())
-                .css("top", offset.top)
-                .css("left", offset.left);
+        if (parent.css("position") != "relative") {           
+            self._envelope.css("height", parent.height()).css("width", parent.width()).css("top", offset.top).css("left", offset.left);
+        }
+
+        // options for envelope
+        if (self.options.backgroundColor) {
+            self._envelope.css("background-color", self.options.backgroundColor);
         }
 
         // location container
@@ -688,19 +692,42 @@ Citeck.UI.waitIndicator = function(id, params) {
         self._message
             .css("left", "calc(50% - " + self._message.width() / 2 + "px)")
             .css("top", "calc(50% - " + self._message.height() / 2 + "px)");
-    }
 
-    this.dispose = function() {
-        $(self._message).unbind().remove();
-        $(self._indicator).unbind().remove();
-        $(self._container).unbind().remove();
-        $(self._envelope).unbind().remove();
+        self._envelope.css("visibility", "visible"); 
     }
 
     this.setMessage = function(newMessage) {
         self.options.message = newMessage;
         self._message.text(self.options.message);
     }
+
+    // private functions
+    this._dispose = function() {
+        $(self._message).unbind().remove();
+        $(self._indicator).unbind().remove();
+        $(self._container).unbind().remove();
+        $(self._envelope).unbind().remove();
+    }
+
+    this._render = function() {
+        if (self.options.context) {
+            if (self.options.context instanceof HTMLElement) {
+                if ($(self.options.context).has(self._envelope).length) self._dispose();
+                $(self.options.context).append(self._envelope);
+            } else if (typeof self.options.context == "string") {
+                if ($("#" + self.options.context).has(self._envelope).length) self._dispose();
+                $("#" + self.options.context).append(self._envelope);
+            }
+
+
+        } else {
+            if ($(".sticky-wrapper").has(self._envelope).length) self._dispose();
+            $(".sticky-wrapper").append(self._envelope);
+            self._container.css("position", "fixed");
+        }
+    }
+
+    this._render();
 }
 
 

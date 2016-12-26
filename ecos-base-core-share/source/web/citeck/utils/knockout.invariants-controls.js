@@ -283,7 +283,7 @@ ko.components.register("datetime", {
 
         this.calendar = function() {
             if (!calendarDialog) {
-                var formContainer = $(element).closest(".yui-panel-container"),
+                var formContainer = $("#" + this.fieldId).closest(".yui-panel-container"),
                     zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
 
                 calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
@@ -546,7 +546,7 @@ ko.bindingHandlers.journalControl = {
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
 
-        searchCriteria              = params.searchCriteria,
+        searchCriteria              = params.searchCriteria || data.searchCriteria,
         defaultCriteria             = params.defaultCriteria,
         hiddenCriteria              = params.hiddenCriteria || [],
 

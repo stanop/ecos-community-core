@@ -7,9 +7,11 @@ import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
+import org.springframework.extensions.surf.util.I18NUtil;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class TransactionUtils {
 
@@ -28,11 +30,15 @@ public class TransactionUtils {
     public static void doAfterCommit(final Runnable job) {
 
         final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+        final Locale locale = I18NUtil.getLocale();
 
         final Thread thread = new Thread(new Runnable() {
 
             public void run() {
+
                 AuthenticationUtil.setRunAsUser(currentUser);
+                I18NUtil.setLocale(locale);
+
                 AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
                     public Void doWork() throws Exception {
                         transactionService.getRetryingTransactionHelper().doInTransaction(
