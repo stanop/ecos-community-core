@@ -12,8 +12,9 @@
   padding: 15px 40px 0 40px;
 }
 
-.static .ecos-form .form-buttons  {
-  padding: 5px 40px 15px 40px;
+.static .ecos-form .form-buttons {
+  padding: 15px 40px 15px 40px;
+  border-top: 1px solid #ccc;
 }
 
 .ecos-form .form-fields .form-field {
@@ -298,39 +299,24 @@
 
 }
 
-
-.invariants-form .template-wide .template-block {
-  min-width: 200px;
-  width: 400px;
-  display: inline-block;
-  position: relative;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-.invariants-form .template-wide .template-block.with-help {
-  padding-right: 15px;
-}
-
-.invariants-form .template-wide .template-block .block-region .form-region {
-  display: inline-block;
-  margin: 0 10px 10px 0;
-}
-
-.invariants-form .template-wide .template-block .block-region .form-region.template-none, 
-.invariants-form .template-wide .template-block .block-region .form-region.template-default {
-    display: none;
-}
-
-.invariants-form .template-wide .template-block .block-region-input .form-region {
-  display: block;
+/* fields */
+.invariants-form .template-wide .template-none,
+.invariants-form .template-wide .template-default {
+  margin: 0;
+  display: none;
 }
 
 .invariants-form .template-wide .template-blockset {
   border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   padding-top: 15px;
   margin-bottom: 15px;
   clear: both;
+}
+
+.invariants-form .template-wide .template-blockset + .template-blockset {
+  border-top: none;
+  padding-top: 0;
 }
 
 .invariants-form .template-wide .template-blockset:after,
@@ -338,6 +324,61 @@
   content: "";
   clear: both;
   display: block;
+}
+
+.invariants-form .template-wide .template-block {
+  min-width: 200px;
+  width: 250px;
+  display: inline-block;
+  position: relative;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.invariants-form .template-wide .template-block.with-help {
+  padding-right: 15px;
+}
+
+.invariants-form .template-wide .template-block-checkbox .block-region {
+  display: inline-block;
+}
+
+.invariants-form .template-wide .template-block-checkbox .template-checkbox input {
+  position: relative;
+  top: 2px;
+}
+
+/* regions */
+.invariants-form .template-wide .template-block .block-region .form-region {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region-select .form-region  {
+  margin-right: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region .form-region.template-none, 
+.invariants-form .template-wide .template-block .block-region .form-region.template-default {
+  display: none;
+}
+
+.invariants-form .template-wide .template-block .block-region-input .form-region {
+  display: block;
+}
+
+
+/* specified regions */
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
+  width: calc(100% - 10px);
+}
+
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-mandatory {
+  float: right;
+  width: 10px;
+  text-align: right;
 }
 
 .invariants-form .template-wide .template-block .template-help {
