@@ -991,13 +991,13 @@
 					<show id="idocs:fax"/>
 					<show id="idocs:email"/>
 					<show id="idocs:CEOname"/>
-					<show id="idocs:contacts"/>
+					<!--<show id="idocs:contacts"/>-->
 					<show id="idocs:nameInGenitiveCase" force="true"/>
 				</field-visibility>
 				<appearance>
 					<set id=""
 						 template="/ru/citeck/components/form/2-column-set.ftl"/>
-					<field id="idocs:contacts">
+					<!--<field id="idocs:contacts">
 						<control
 								template="/ru/citeck/components/form/controls/association_search.ftl">
 							<control-param name="flatButtonMode">true
@@ -1005,7 +1005,7 @@
 							<control-param name="searchWholeRepo">true
 							</control-param>
 						</control>
-					</field>
+					</field>-->
 					<field id="idocs:nameInGenitiveCase" help="Например, Ивановой Марии Петровны" />
 					<field id="idocs:fullOrganizationName">
 						<constraint-handlers>
@@ -1031,13 +1031,13 @@
 					<show id="idocs:fax"/>
 					<show id="idocs:email"/>
 					<show id="idocs:CEOname"/>
-					<show id="idocs:contacts"/>
+					<!--<show id="idocs:contacts"/>-->
 					<show id="idocs:nameInGenitiveCase" force="true"/>
 				</field-visibility>
 				<appearance>
 					<set id=""
 						 template="/ru/citeck/components/form/2-column-set.ftl"/>
-					<field id="idocs:contacts">
+					<!--<field id="idocs:contacts">
 						<control
 								template="/ru/citeck/components/form/controls/association_search.ftl">
 							<control-param name="flatButtonMode">true
@@ -1045,7 +1045,7 @@
 							<control-param name="searchWholeRepo">true
 							</control-param>
 						</control>
-					</field>
+					</field>-->
 					<field id="idocs:nameInGenitiveCase" help="Например, Ивановой Марии Петровны" />
 					<field id="idocs:fullOrganizationName">
 						<constraint-handlers>
@@ -1066,7 +1066,7 @@
 					<show id="idocs:fax"/>
 					<show id="idocs:email"/>
 					<show id="idocs:CEOname"/>
-					<show id="idocs:contacts"/>
+					<!--<show id="idocs:contacts"/>-->
 				</field-visibility>
 				<appearance>
 					<field id="idocs:fullOrganizationName">
@@ -1109,7 +1109,7 @@
 						<control
 								template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
 					</field>
-					<field id="idocs:contacts">
+					<!--<field id="idocs:contacts">
 						<control
 								template="/ru/citeck/components/form/controls/association_search.ftl">
 							<control-param name="flatButtonMode">true
@@ -1117,7 +1117,7 @@
 							<control-param name="searchWholeRepo">true
 							</control-param>
 						</control>
-					</field>
+					</field>-->
 				</appearance>
 			</form>
 		</forms>

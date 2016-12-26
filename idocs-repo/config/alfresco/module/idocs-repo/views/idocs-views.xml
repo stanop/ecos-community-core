@@ -50,10 +50,11 @@
             <field prop="idocs:CEOname"/>
         </view>
         <view>
-            <field assoc="idocs:contacts">
+            <!-- Temporarily hidden field (no controls exists for it yet) -->
+            <!--<field assoc="idocs:contacts">
                 <region name="input" template="view" />
                 <region name="select" template="select-orgstruct" />
-            </field>
+            </field>-->
             <field prop="idocs:nameInGenitiveCase" />
         </view>
     </view>
