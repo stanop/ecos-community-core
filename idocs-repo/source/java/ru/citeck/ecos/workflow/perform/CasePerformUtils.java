@@ -72,8 +72,8 @@ public class CasePerformUtils {
 
         String outcome = (String)task.getVariableLocal(toString(CasePerformModel.PROP_PERFORM_OUTCOME));
         NodeRef person = repositoryHelper.getPerson();
-        String userName = (String)nodeService.getProperty(person, ContentModel.PROP_USER_USERNAME);
-        String resultName = "perform-result-" + userName;
+        String userName = (String)nodeService.getProperty(person, ContentModel.PROP_USERNAME);
+        String resultName = "perform-result-" + userName + "-" + outcome;
 
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(CasePerformModel.PROP_RESULT_OUTCOME, outcome);
