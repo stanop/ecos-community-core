@@ -7,17 +7,34 @@
 		<!-- ko with: attribute("${element.attribute}") -->
 		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
 	</#if>
-	
-		<div class="form-${element.type} template-${template}"
-			<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
 
-			<#-- custom width for field -->
-			<#if element.type == "field" && element.params?has_content>
-				style="<#if element.params.width??>width: ${element.params.width?string}</#if>"
+	<#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
+		<#assign wideBlockWidth>
+			<#-- field level -->
+			<#if element.params.width?has_content>
+				${element.params.width}
+
+			<#-- view level -->
+			<#elseif viewScope.view.params.width?has_content>
+				${viewScope.view.params.width}
+
+			<#-- root view level -->
+			<#elseif view.params.width?has_content>
+				${view.params.width}
 			</#if>
-		>
-			<@renderContent element />
-		</div>
+		</#assign>
+	</#if>
+	
+	<div class="form-${element.type} template-${template}"
+		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
+
+		<#-- custom width for field -->
+		<#if element.type == "field" && wideBlockWidth?has_content>
+			style="width: ${wideBlockWidth?trim};"
+		</#if>
+	>
+		<@renderContent element />
+	</div>
 	
 	<#if element.attribute??>
 		<!-- /ko -->
