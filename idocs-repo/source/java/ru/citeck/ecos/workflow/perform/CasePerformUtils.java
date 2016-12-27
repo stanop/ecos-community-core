@@ -203,7 +203,7 @@ public class CasePerformUtils {
     NodeRef toNodeRef(IdentityLink identityLink) {
         String id = identityLink.getGroupId();
         if (id == null) {
-            id = identityLink.getTaskId();
+            id = identityLink.getUserId();
         }
         return id != null ? authorityService.getAuthorityNodeRef(id) : null;
     }
