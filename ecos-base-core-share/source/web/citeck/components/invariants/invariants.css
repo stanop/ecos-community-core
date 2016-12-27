@@ -638,6 +638,10 @@
   box-sizing: border-box;
 }
 
+.invariants-form .template-table .template-row.with-help .template-label {
+  width: 46.5%;
+}
+
 .invariants-form .template-table .template-half-width .template-label,
 .invariants-form .template-table .template-third-width .template-label {
   margin-bottom: 10px;
