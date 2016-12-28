@@ -314,7 +314,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 					List<String> recipientsFromRole = additionRecipients.get(ARG_RECIPIENTS_FROM_ROLE);
 					if (recipientsFromRole != null && recipientsFromRole.size() > 0) {
 						Set<String> roleRecipients = RecipientsUtils.getRecipientsFromRole(recipientsFromRole,
-								docsInfo, nodeService);
+								docsInfo, nodeService, dictionaryService);
 						if (!roleRecipients.isEmpty()) {
 							for (String roleRecipient : roleRecipients) {
 								recipients.add(roleRecipient);

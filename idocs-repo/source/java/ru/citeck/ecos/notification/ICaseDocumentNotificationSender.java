@@ -45,7 +45,8 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         finalRecipients.addAll(super.getNotificationRecipients(item));
 
         if (assocRecipients != null) {
-            Set<String> assocRecipient = RecipientsUtils.getRecipientFromNodeAssoc(assocRecipients, item, nodeService);
+            Set<String> assocRecipient = RecipientsUtils.getRecipientFromNodeAssoc(assocRecipients, item,
+                                                                                   nodeService, dictionaryService);
             if (!assocRecipient.isEmpty()) {
                 finalRecipients.addAll(assocRecipient);
             }
@@ -53,7 +54,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
 
         if (assocRecipientsFromICaseRole != null) {
             Set<String> roleRecipients = RecipientsUtils.getRecipientsFromRole(assocRecipientsFromICaseRole, item,
-                    nodeService);
+                                                                               nodeService, dictionaryService);
             if (!roleRecipients.isEmpty()) {
                 finalRecipients.addAll(roleRecipients);
             }

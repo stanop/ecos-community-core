@@ -13,10 +13,12 @@ import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Roman Makarskiy
+ * @author Pavel Simonov
  */
 public class CaseStatusServiceImpl implements CaseStatusService {
 
@@ -32,25 +34,23 @@ public class CaseStatusServiceImpl implements CaseStatusService {
 
     @Override
     public void setStatus(NodeRef caseRef, NodeRef caseStatusRef) {
-        if (!nodeService.exists(caseRef)) {
-            throw new AlfrescoRuntimeException("Case with nodeRef: " + caseRef + " doesn't exist");
-        }
 
-        if (!nodeService.exists(caseStatusRef)) {
-            throw new AlfrescoRuntimeException("Case status with nodeRef: " + caseStatusRef + " doesn't exist");
-        }
+        mandatoryNodeRef("Case", caseRef);
+        mandatoryNodeRef("Case status", caseStatusRef);
 
-        List<NodeRef> caseStatusRefs = RepoUtils.getTargetNodeRefs(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
-        NodeRef beforeCaseStatus = caseStatusRefs.size() > 0 ? caseStatusRefs.get(0) : null;
-        for (NodeRef ref : caseStatusRefs) {
-            nodeService.removeAssociation(caseRef, ref, ICaseModel.ASSOC_CASE_STATUS);
-        }
-        nodeService.createAssociation(caseRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);
+        NodeRef beforeCaseStatus = RepoUtils.getFirstTargetAssoc(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
 
-        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(caseStatusRef, nodeService));
-        CaseStatusPolicies.OnCaseStatusChangedPolicy changedPolicy;
-        changedPolicy = onCaseStatusChangedPolicyDelegate.get(caseStatusRef, classes);
-        changedPolicy.onCaseStatusChanged(caseRef, beforeCaseStatus, caseStatusRef);
+        if (!Objects.equals(beforeCaseStatus, caseStatusRef)) {
+            if (beforeCaseStatus != null) {
+                nodeService.removeAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_CASE_STATUS);
+            }
+            nodeService.createAssociation(caseRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);
+
+            Set<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(caseStatusRef, nodeService));
+            CaseStatusPolicies.OnCaseStatusChangedPolicy changedPolicy;
+            changedPolicy = onCaseStatusChangedPolicyDelegate.get(caseStatusRef, classes);
+            changedPolicy.onCaseStatusChanged(caseRef, beforeCaseStatus, caseStatusRef);
+        }
     }
 
     @Override
@@ -63,6 +63,35 @@ public class CaseStatusServiceImpl implements CaseStatusService {
             return null;
         }
         return nodeService.getChildByName(root, ContentModel.ASSOC_CONTAINS, statusName);
+    }
+
+    @Override
+    public void setStatus(NodeRef document, String status) {
+        NodeRef statusRef = getStatusByName(status);
+        if (statusRef == null) {
+            throw new IllegalArgumentException("Status " + status + " not found!");
+        }
+        setStatus(document, statusRef);
+    }
+
+    @Override
+    public String getStatus(NodeRef caseRef) {
+        NodeRef statusRef = getStatusRef(caseRef);
+        return statusRef != null ? (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME) : null;
+    }
+
+    @Override
+    public NodeRef getStatusRef(NodeRef caseRef) {
+        return RepoUtils.getFirstTargetAssoc(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
+    }
+
+    private void mandatoryNodeRef(String strParamName, NodeRef nodeRef) {
+        if (nodeRef == null) {
+            throw new IllegalArgumentException(strParamName + " is a mandatory parameter");
+        }
+        if (!nodeService.exists(nodeRef)) {
+            throw new IllegalArgumentException(strParamName + " with nodeRef: " + nodeRef + " doesn't exist");
+        }
     }
 
     public void setNodeService(NodeService nodeService) {
