@@ -58,7 +58,7 @@ public class CaseRoleServiceJS extends AlfrescoScopableProcessorExtension {
         } else {
             List<NodeRef> assigneeRefs = new ArrayList<>();
             for (Object assignee : assigneeObjects) {
-                assigneeRefs.add(getAssigneeRef(assignee));
+                assigneeRefs.add(getAuthorityRef(assignee));
             }
             caseRoleService.setAssignees(roleRef, assigneeRefs);
         }
@@ -99,6 +99,30 @@ public class CaseRoleServiceJS extends AlfrescoScopableProcessorExtension {
         caseRoleService.removeAssignees(JavaScriptImplUtils.getNodeRef(role));
     }
 
+    public boolean isRoleMember(Object role, Object authority) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        NodeRef authorityRef = getAuthorityRef(authority);
+        return caseRoleService.isRoleMember(roleRef, authorityRef);
+    }
+
+    public boolean isRoleMember(Object document, Object role, Object authority) {
+        NodeRef roleRef = getRoleRef(document, role);
+        NodeRef authorityRef = getAuthorityRef(authority);
+        return caseRoleService.isRoleMember(roleRef, authorityRef);
+    }
+
+    public boolean isRoleMember(Object role, Object authority, boolean immediate) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        NodeRef authorityRef = getAuthorityRef(authority);
+        return caseRoleService.isRoleMember(roleRef, authorityRef, immediate);
+    }
+
+    public boolean isRoleMember(Object document, Object role, Object authority, boolean immediate) {
+        NodeRef roleRef = getRoleRef(document, role);
+        NodeRef authorityRef = getAuthorityRef(authority);
+        return caseRoleService.isRoleMember(roleRef, authorityRef, immediate);
+    }
+
     private NodeRef getRoleRef(Object document, Object role) {
         if (role instanceof String) {
             String roleStr = (String) role;
@@ -111,7 +135,7 @@ public class CaseRoleServiceJS extends AlfrescoScopableProcessorExtension {
         return JavaScriptImplUtils.getNodeRef(role);
     }
 
-    private NodeRef getAssigneeRef(Object assignee) {
+    private NodeRef getAuthorityRef(Object assignee) {
         if (assignee instanceof String) {
             String assigneeStr = (String) assignee;
             if (NodeRef.isNodeRef(assigneeStr)) {

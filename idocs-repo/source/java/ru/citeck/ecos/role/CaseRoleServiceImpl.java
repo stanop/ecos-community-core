@@ -1,11 +1,15 @@
 package ru.citeck.ecos.role;
 
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.role.CaseRolePolicies.OnRoleAssigneesChangedPolicy;
@@ -13,6 +17,7 @@ import ru.citeck.ecos.role.CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.dao.RoleDAO;
 import ru.citeck.ecos.utils.DictionaryUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
 
@@ -24,6 +29,8 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     private NodeService nodeService;
     private PolicyComponent policyComponent;
+    private AuthorityService authorityService;
+    private DictionaryService dictionaryService;
 
     private Map<QName, RoleDAO> rolesDAOByType = new HashMap<>();
 
@@ -103,6 +110,46 @@ public class CaseRoleServiceImpl implements CaseRoleService {
             nodeService.removeAssociation(roleRef, ref, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
         fireAssigneesChangedEvent(roleRef, null, assignees);
+    }
+
+    @Override
+    public boolean isRoleMember(NodeRef caseRef, String roleName, NodeRef authorityRef) {
+        return isRoleMember(needRole(caseRef, roleName), authorityRef);
+    }
+
+    @Override
+    public boolean isRoleMember(NodeRef caseRef, String roleName, NodeRef authorityRef, boolean immediate) {
+        return isRoleMember(needRole(caseRef, roleName), authorityRef, immediate);
+    }
+
+    @Override
+    public boolean isRoleMember(NodeRef roleRef, NodeRef authorityRef) {
+        return isRoleMember(roleRef, authorityRef, false);
+    }
+
+    @Override
+    public boolean isRoleMember(NodeRef roleRef, NodeRef authorityRef, boolean immediate) {
+
+        Set<NodeRef> assignees = getAssignees(roleRef);
+
+        if (assignees.contains(authorityRef)) {
+            return true;
+        } else if (immediate) {
+            return false;
+        }
+
+        String authorityName = RepoUtils.getAuthorityName(authorityRef, nodeService, dictionaryService);
+        AuthorityType authorityType = AuthorityType.getAuthorityType(authorityName);
+
+        for (NodeRef assigneeRef : assignees) {
+            String assigneeName = RepoUtils.getAuthorityName(assigneeRef, nodeService, dictionaryService);
+            Set<String> authorities = authorityService.getContainedAuthorities(authorityType, assigneeName, false);
+            if (authorities.contains(authorityName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -193,5 +240,13 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
+    }
+
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
     }
 }
