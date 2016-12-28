@@ -27,6 +27,7 @@ import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -102,6 +103,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     protected TransactionService transactionService;
     protected SearchService searchService;
     protected NamespaceService namespaceService;
+    protected DictionaryService dictionaryService;
     protected WorkflowQNameConverter qNameConverter;
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
@@ -109,6 +111,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         this.nodeService = services.getNodeService();
         this.searchService = services.getSearchService();
         this.namespaceService = services.getNamespaceService();
+        this.dictionaryService = services.getDictionaryService();
         this.qNameConverter = new WorkflowQNameConverter(namespaceService);
     }
 

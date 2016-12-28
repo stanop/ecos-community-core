@@ -1,15 +1,17 @@
 package ru.citeck.ecos.notification.utils;
 
-import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ICaseRoleModel;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +25,8 @@ public class RecipientsUtils {
 
     private static Log logger = LogFactory.getLog(RecipientsUtils.class);
 
-    public static Set<String> getRecipientsFromRole(List<String> roles, NodeRef iCase, NodeService nodeService) {
+    public static Set<String> getRecipientsFromRole(List<String> roles, NodeRef iCase, NodeService nodeService,
+                                                                        DictionaryService dictionaryService) {
         Set<String> recipients = new HashSet<>();
         for (String recipientFromICaseRole : roles) {
             List<ChildAssociationRef> iCaseRoles = nodeService.getChildAssocs(iCase,
@@ -35,11 +38,7 @@ public class RecipientsUtils {
                             ICaseRoleModel.ASSOC_ASSIGNEES);
                     if (!recipientsRef.isEmpty()) {
                         for (AssociationRef recipientRef : recipientsRef) {
-                            String recipient = getRecipientNameByPersonOrAuthority(recipientRef.getTargetRef(),
-                                    nodeService);
-                            if (recipient != null && !recipient.equals("")) {
-                                recipients.add(recipient);
-                            }
+                            addRecipient(recipients, recipientRef.getTargetRef(), nodeService, dictionaryService);
                         }
                     } else {
                         if (logger.isDebugEnabled()) {
@@ -62,13 +61,13 @@ public class RecipientsUtils {
         return recipients;
     }
 
-    public static Set<String> getRecipientFromNodeAssoc(List<QName> assocs, NodeRef node, NodeService nodeService) {
+    public static Set<String> getRecipientFromNodeAssoc(List<QName> assocs, NodeRef node, NodeService nodeService,
+                                                                            DictionaryService dictionaryService) {
         Set<String> assocRecipientsNames = new HashSet<>();
         for (QName recipient : assocs) {
             List<AssociationRef> recipientList = nodeService.getTargetAssocs(node, recipient);
             if (!recipientList.isEmpty()) {
-                assocRecipientsNames.add(RecipientsUtils.getRecipientNameByPersonOrAuthority(recipientList.get(0).getTargetRef(),
-                        nodeService));
+                addRecipient(assocRecipientsNames, recipientList.get(0).getTargetRef(), nodeService, dictionaryService);
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Cannot find recipient: " + recipient + " for document: " + node);
@@ -78,16 +77,15 @@ public class RecipientsUtils {
         return assocRecipientsNames;
     }
 
-    public static String getRecipientNameByPersonOrAuthority(NodeRef nodeRef, NodeService nodeService) {
-        String recipient = "";
-        QName nodeType = nodeService.getType(nodeRef);
 
-        if (nodeType.equals(ContentModel.TYPE_PERSON)) {
-            recipient = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
-        } else if (nodeType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
-            recipient = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_AUTHORITY_NAME);
+
+    private static void addRecipient(Set<String> recipients, NodeRef recipientRef, NodeService nodeService,
+                                                                                   DictionaryService dictionaryService) {
+
+        String authorityName = RepoUtils.getAuthorityName(recipientRef, nodeService, dictionaryService);
+        if (StringUtils.isNotBlank(authorityName)) {
+            recipients.add(authorityName);
         }
-        return recipient;
     }
 
     private static NodeRef getICaseRoleOrNullNotFound(String roleName, List<ChildAssociationRef> iCaseRoles,

@@ -4,6 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author Roman Makarskiy
+ * @author Pavel Simonov
  */
 public interface CaseStatusService {
 
@@ -11,10 +12,15 @@ public interface CaseStatusService {
      * Set case status to document.
      *
      * @param document - document nodeRef
-     * @param caseStatus - case status nodeRef
+     * @param status - case status nodeRef
      */
-    public void setStatus(NodeRef document, NodeRef caseStatus);
+    void setStatus(NodeRef document, NodeRef status);
 
+    /**
+     * Set case status to document
+     * @throws IllegalArgumentException if status not found in system
+     */
+    void setStatus(NodeRef document, String status);
 
     /**
      * Get case status by name.
@@ -22,6 +28,17 @@ public interface CaseStatusService {
      * @param statusName - case status name
      * @return case status nodeRef
      */
-    public NodeRef getStatusByName(String statusName);
+    NodeRef getStatusByName(String statusName);
 
+    /**
+     * Get case status
+     * @return case status name or null if status doesn't exists in this case
+     */
+    String getStatus(NodeRef caseRef);
+
+    /**
+     * Get case status reference
+     * @return case status nodeRef or null if status doesn't exists in this case
+     */
+    NodeRef getStatusRef(NodeRef caseRef);
 }

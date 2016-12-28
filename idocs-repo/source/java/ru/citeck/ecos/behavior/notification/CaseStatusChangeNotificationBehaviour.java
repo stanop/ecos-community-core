@@ -6,7 +6,6 @@ import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
@@ -19,12 +18,9 @@ import java.util.Objects;
 public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
         implements CaseStatusPolicies.OnCaseStatusChangedPolicy {
 
-    private NodeService nodeService;
     private String documentNamespace;
     private String documentType;
     private String caseStatus;
-
-    private boolean enabled;
 
     private final static String ALL_STATUS_KEY = "AllStatus";
 
@@ -44,7 +40,7 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
     @Override
     public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
 
-        if (!enabled || sender == null || !nodeService.exists(caseRef) || !nodeService.exists(caseStatusAfter)) {
+        if (!isEnabled() || sender == null || !nodeService.exists(caseRef) || !nodeService.exists(caseStatusAfter)) {
             return;
         }
 
@@ -84,11 +80,4 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
         this.caseStatus = caseStatus;
     }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 }

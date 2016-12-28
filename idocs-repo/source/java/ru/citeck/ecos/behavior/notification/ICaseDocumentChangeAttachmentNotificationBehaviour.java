@@ -3,18 +3,15 @@ package ru.citeck.ecos.behavior.notification;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.*;
-import org.alfresco.repo.version.VersionServicePolicies;;
-import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.repo.version.VersionServicePolicies;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Roman.Makarskiy on 10/21/2016.
@@ -25,16 +22,11 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
         VersionServicePolicies.AfterCreateVersionPolicy {
 
     private PolicyComponent policyComponent;
-    private NodeService nodeService;
     private String documentNamespace;
-
-    private boolean enabled;
 
     private String documentType;
     private QName documentQName;
     private HashMap<String, Object> addition;
-
-    private List exceptStatuses = null;
 
     private final static String PARAM_TYPE = "type";
     private final static String PARAM_KIND = "kind";
@@ -71,14 +63,13 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
     @Override
     public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean b) {
         NodeRef childRef = childAssociationRef.getChildRef();
-        NodeRef parentRef = null;
+        NodeRef caseRef = null;
 
         if (nodeService.getParentAssocs(childRef) != null) {
-            parentRef = nodeService.getParentAssocs(childRef).get(0).getParentRef();
+            caseRef = nodeService.getParentAssocs(childRef).get(0).getParentRef();
         }
 
-
-        if (sender == null || !nodeService.exists(childRef) || !enabled || exceptStatuses.contains(getNodeCaseStatus(parentRef))) {
+        if (sender == null || !nodeService.exists(childRef) || !isActive(caseRef)) {
             return;
         }
 
@@ -92,7 +83,7 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
 
     @Override
     public void beforeDeleteNode(NodeRef nodeRef) {
-        if (!nodeService.exists(nodeRef) || nodeService.hasAspect(nodeRef, ContentModel.ASPECT_WORKING_COPY) || !enabled) {
+        if (!nodeService.exists(nodeRef) || nodeService.hasAspect(nodeRef, ContentModel.ASPECT_WORKING_COPY) || !isEnabled()) {
             return;
         }
 
@@ -116,7 +107,7 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
 
     @Override
     public void afterCreateVersion(NodeRef nodeRef, Version version) {
-        if (!nodeService.exists(nodeRef) || !enabled) {
+        if (!nodeService.exists(nodeRef) || !isEnabled()) {
             return;
         }
 
@@ -150,18 +141,6 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
         return addition;
     }
 
-    private String getNodeCaseStatus(NodeRef nodeRef) {
-        List<AssociationRef> caseAssocs = nodeService.getTargetAssocs(nodeRef, ICaseModel.ASSOC_CASE_STATUS);
-        if (caseAssocs == null || caseAssocs.size() != 1) {
-            return null;
-        }
-        NodeRef statusRef = caseAssocs.get(0).getTargetRef();
-        if(!nodeService.exists(statusRef)) {
-            return null;
-        }
-        return (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
-    }
-
     public void setDocumentNamespace(String documentNamespace) {
         this.documentNamespace = documentNamespace;
     }
@@ -174,15 +153,4 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
         this.policyComponent = policyComponent;
     }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setExceptStatuses(List exceptStatuses) {
-        this.exceptStatuses = exceptStatuses;
-    }
 }

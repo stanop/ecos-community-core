@@ -21,13 +21,10 @@ import java.util.List;
 public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
         implements NodeServicePolicies.OnCreateChildAssociationPolicy {
 
-    private NodeService nodeService;
     private PersonService personService;
     private ContentService contentService;
     private String documentNamespace;
     private String documentType;
-
-    private boolean enabled;
 
     private final static String PARAM_COMMENT_CREATOR_NAME = "commentCreatorName";
     private final static String PARAM_COMMENT = "comment";
@@ -53,7 +50,7 @@ public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNot
         NodeRef documentRef = getDocumentByTopicRef(childAssociationRef.getParentRef());
         QName expectedDocumentType = QName.createQName(documentNamespace, documentType);
 
-        if (!enabled) {
+        if (!isActive(documentRef)) {
             return;
         }
 
@@ -132,10 +129,6 @@ public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNot
         this.documentType = documentType;
     }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
     public void setPersonService(PersonService personService) {
         this.personService = personService;
     }
@@ -144,7 +137,4 @@ public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNot
         this.contentService = contentService;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 }
