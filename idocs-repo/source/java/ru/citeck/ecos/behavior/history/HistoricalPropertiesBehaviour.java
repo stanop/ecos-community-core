@@ -40,6 +40,7 @@ import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.history.HistoryUtils;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
@@ -206,7 +207,7 @@ public class HistoricalPropertiesBehaviour implements
 		final NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		final NodeRef nodeTarget = nodeAssocRef.getTargetRef();
 		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
-			if (assoc != null) {
+			if (assoc != null && ICaseModel.ASSOC_CASE_STATUS.equals(assoc.getName())) {
 				String comment = HistoryUtils.getAssocKeyValue(assoc.getName(), dictionaryService)
 						+ ": "
 						+ HistoryUtils.getChangeValue(nodeAssocRef.getTargetRef(), nodeService);
@@ -258,7 +259,7 @@ public class HistoricalPropertiesBehaviour implements
 		final NodeRef nodeTarget = nodeAssocRef.getTargetRef();
 		final AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
-			if  (assoc != null) {
+			if  (assoc != null && ICaseModel.ASSOC_CASE_STATUS.equals(assoc.getName())) {
 				String comment = HistoryUtils.getAssocKeyValue(assoc.getName(), dictionaryService)
 						+ ": "
 						+ HistoryUtils.getChangeValue(nodeAssocRef.getTargetRef(), nodeService);

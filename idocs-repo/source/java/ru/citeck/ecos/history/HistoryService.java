@@ -113,6 +113,10 @@ public class HistoryService {
                 if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
                     now.setTime(now.getTime() + 1000);
                 }
+                if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
+                        || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
+                    now.setTime(now.getTime() - 5000);
+                }
                 properties.put(HistoryModel.PROP_DATE, now);
                 QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
                 NodeRef historyEvent = nodeService.createNode(getHistoryRoot(), ContentModel.ASSOC_CONTAINS, assocName, type, properties).getChildRef();
