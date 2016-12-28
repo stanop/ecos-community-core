@@ -469,8 +469,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.selectElement = function(data, event) {
                 if (self.targetElements) {
-                    if (self.options.multiple && (ko.isObservable(self.options.multiple) ? self.options.multiple() : self.options.multiple)) {
-                        if (self.targetElements.indexOf(data) == -1) self.targetElements.push(data);
+                    if (ko.isObservable(self.options.multiple) ? self.options.multiple() : self.options.multiple) {
+                        if (self.targetElements.indexOf(data) == -1) { self.targetElements.push(data); }
+                        else { self.targetElements.remove(data); }
                     } else {
                         self.targetElements([data]);
                     }
