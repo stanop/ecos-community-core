@@ -5,6 +5,8 @@
     <bean id="caseRoleService" class="ru.citeck.ecos.role.CaseRoleServiceImpl" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="NodeService"/>
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="authorityService" ref="authorityService"/>
     </bean>
 
     <bean id="caseRoleServiceJS" name="CaseRoleServiceJS" class="ru.citeck.ecos.role.CaseRoleServiceJS"

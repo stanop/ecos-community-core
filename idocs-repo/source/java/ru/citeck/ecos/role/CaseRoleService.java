@@ -57,6 +57,30 @@ public interface CaseRoleService {
     Set<NodeRef> getAssignees(NodeRef roleRef);
 
     /**
+     * Check authority belongs to the role or not
+     */
+    boolean isRoleMember(NodeRef roleRef, NodeRef authorityRef);
+
+    /**
+     * Check authority belongs to the role or not
+     * @param immediate if true, limit the depth to just immediate child, if false find authorities at any depth
+     */
+    boolean isRoleMember(NodeRef roleRef, NodeRef authorityRef, boolean immediate);
+
+    /**
+     * Check authority belongs to the role or not.
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    boolean isRoleMember(NodeRef caseRef, String roleName, NodeRef authorityRef);
+
+    /**
+     * Check authority belongs to the role or not
+     * @param immediate if true, limit the depth to just immediate child, if false find authorities at any depth
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    boolean isRoleMember(NodeRef caseRef, String roleName, NodeRef authorityRef, boolean immediate);
+
+    /**
      * Search role by name and set assignees
      * @throws IllegalArgumentException if role with specified name not found in case
      */
