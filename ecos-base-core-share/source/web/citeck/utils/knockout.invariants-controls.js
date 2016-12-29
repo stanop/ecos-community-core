@@ -1433,7 +1433,9 @@ ko.bindingHandlers.fileUploadControl = {
     init: function(element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
-            multiple = settings.multiple;
+            
+            type = settings.type,
+            properties = settings.properties;
 
         // Invariants global object
         var Node = koutils.koclass('invariants.Node');
@@ -1538,7 +1540,16 @@ ko.bindingHandlers.fileUploadControl = {
                 formData.append("overwrite", false);
                 formData.append("thumbnails", null);
 
-                request.open("POST",  Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true", true);
+                if (properties) {
+                    for (var p in properties) {
+                        formData.append("property_" + p, properties[p]);
+                    }
+                }
+
+                var href = Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true";
+                if (type) href += "&contenttype=" + type;
+
+                request.open("POST", href, true);
                 request.send(formData);
             }
         });
