@@ -500,12 +500,11 @@ ko.bindingHandlers.dateControl = {
 // JOURNAL
 // -------------
 
+var JournalType = koclass('JournalType');
+
 ko.bindingHandlers.journalControl = {
   init: function(element, valueAccessor, allBindings, data, context) {
     var self = this;
-
-    //  Citeck global objects
-    var JournalType = koclass('JournalType');
 
     // html elements
     var button  = Dom.get(element.id + "-button"),
@@ -706,7 +705,8 @@ ko.bindingHandlers.journalControl = {
                             source: createVariantsSource,\
                             callback: callback,\
                             buttonTitle: buttonTitle,\
-                            virtualParent: virtualParent\
+                            virtualParent: virtualParent,\
+                            journalType: journalType\
                         }} --><!-- /ko -->\
                     <!-- /ko -->\
                     ' + (searchBar ? '<div class="journal-search"><input type="search" placeholder="' + localization.search + '" class="journal-search-input" id="' + searchId + '" /></div>' : '') + '\
@@ -957,6 +957,7 @@ ko.bindingHandlers.journalControl = {
             ko.applyBindings({
                 scope: data,
                 buttonTitle: localization.createTab,
+                journalType: journalType,
                 createVariantsVisibility: createVariantsVisibility,
                 callback: function(variant) {
                     var scCallback = function(node) {
@@ -1049,10 +1050,20 @@ ko.bindingHandlers.journalControl = {
 // -------------
 
 var CreateVariant = koclass('CreateVariant'),
+    CreateVariantsByJournal = koclass('controls.CreateVariantsByJournal'),
     CreateVariantsByType = koclass('controls.CreateVariantsByType'),
     CreateVariantsByView = koclass('controls.CreateVariantsByView'),
     CreateObjectButton = koclass('controls.CreateObjectButton'),
     CreateObjectLink = koclass('controls.CreateObjectLink');
+
+CreateVariantsByJournal
+    .key('journal', String)
+    .property('createVariants', [CreateVariant])
+    .load('createVariants', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/journal/{journal}",
+        resultsMap: { createVariants: 'createVariants' }
+    }))
+    ;
 
 CreateVariantsByType
     .key('type', String)
@@ -1080,6 +1091,7 @@ CreateObjectButton
     .property('constraintMessage', String)
     .property('source', String)
     .property('buttonTitle', String)
+    .property('journalType', JournalType)
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
     .property('callback', Function)
@@ -1088,11 +1100,17 @@ CreateObjectButton
     .shortcut('nodetype', 'scope.nodetype')
 
     .computed('createVariants', function() {
-        if(!this.nodetype()) return [];
-        var list = this.source() == 'create-views' 
-            ? new CreateVariantsByView(this.nodetype())
-            : new CreateVariantsByType(this.nodetype());
-        return list.createVariants();
+
+        var list = null;
+
+        if (this.source() == 'create-views' && this.nodetype()) {
+            list = new CreateVariantsByView(this.nodetype());
+        } else if (this.source() == 'type-create-variants' && this.nodetype()) {
+            list = new CreateVariantsByType(this.nodetype());
+        } else if (this.source() == 'journal-create-variants' && this.journalType()) {
+            list = new CreateVariantsByJournal(this.journalType().id());
+        }
+        return list ? list.createVariants() : [];
     })
     .method('execute', function(createVariant) {
         if (this.callback() && _.isFunction(this.callback())) {
