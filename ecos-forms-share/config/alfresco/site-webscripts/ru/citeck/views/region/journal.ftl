@@ -3,7 +3,14 @@
 
 <#assign createVariantsVisibility = params.createVariantsVisibility!"true" />
 
-<#assign createVariantsSource = params.createVariantsSource!"create-views" />
+<#if params.createVariantsSource??>
+    <#assign createVariantsSource = params.createVariantsSource />
+<#elseif params.journalType??>
+    <#assign createVariantsSource = "journal-create-variants" />
+<#else>
+    <#assign createVariantsSource = "create-views" />
+</#if>
+
 <#assign virtualParent = params.virtualParent!"false" />
 
 <#assign hightlightSelection>
