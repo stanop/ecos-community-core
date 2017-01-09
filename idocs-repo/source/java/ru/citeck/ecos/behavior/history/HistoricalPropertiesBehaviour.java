@@ -202,12 +202,14 @@ public class HistoricalPropertiesBehaviour implements
 	public void onCreateAssociation(AssociationRef nodeAssocRef) {
 		logger.debug("HistoricalPropertiesBehaviour onCreateAssociation="+this);
 		logger.debug("onCreateAssociation event");
-		AlfrescoTransactionSupport.bindResource(ASSOC_ADDED, nodeAssocRef);
+		if (!ICaseModel.ASSOC_CASE_STATUS.equals(nodeAssocRef.getTypeQName())) {
+			AlfrescoTransactionSupport.bindResource(ASSOC_ADDED, nodeAssocRef);
+		}
 		final AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 		final NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		final NodeRef nodeTarget = nodeAssocRef.getTargetRef();
 		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
-			if (assoc != null && ICaseModel.ASSOC_CASE_STATUS.equals(assoc.getName())) {
+			if (assoc != null) {
 				String comment = HistoryUtils.getAssocKeyValue(assoc.getName(), dictionaryService)
 						+ ": "
 						+ HistoryUtils.getChangeValue(nodeAssocRef.getTargetRef(), nodeService);
@@ -254,12 +256,14 @@ public class HistoricalPropertiesBehaviour implements
 	@Override
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
 		logger.debug("onDeleteAssociation event");
-		AlfrescoTransactionSupport.bindResource(ASSOC_REMOVED, nodeAssocRef);
+		if (!ICaseModel.ASSOC_CASE_STATUS.equals(nodeAssocRef.getTypeQName())) {
+			AlfrescoTransactionSupport.bindResource(ASSOC_REMOVED, nodeAssocRef);
+		}
 		final NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		final NodeRef nodeTarget = nodeAssocRef.getTargetRef();
 		final AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
-			if  (assoc != null && ICaseModel.ASSOC_CASE_STATUS.equals(assoc.getName())) {
+			if  (assoc != null) {
 				String comment = HistoryUtils.getAssocKeyValue(assoc.getName(), dictionaryService)
 						+ ": "
 						+ HistoryUtils.getChangeValue(nodeAssocRef.getTargetRef(), nodeService);
