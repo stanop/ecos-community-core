@@ -943,6 +943,7 @@ JournalsWidget
 		},
 
 		applyCriteria: function() {
+			this.skipCount(0);
 			this.filter(this._filter().clone());
 		},
 
