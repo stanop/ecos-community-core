@@ -1,5 +1,3 @@
-<#assign bodyTemplate = viewScope.view.params.bodyTemplate!"template-table" />
-
 <#function getTabs view>
 	<#assign tabs = [] />
 	<#list view.elements as element>
@@ -29,16 +27,14 @@
 	<span class="scroll-tabs scroll-right hidden" data-bind="click: $root.scrollGroups"> >> </span>
 </div>
 
-<div class="tabs-body ${bodyTemplate}">
+<div class="tabs-body ">
 	<#list tabs as tab>
 		<#assign tabId = tab.id!tab.genId />
 		<div class="tab-body <#if tab_index != 0>hidden</#if>"
 			 id="${args.htmlid}-${tabId}"
 			 data-tab-id="${tabId}"
 		>
-			<#list tab.elements as element>
-				<@views.renderElement element />
-			</#list>
+			<@views.renderElement tab />
 		</div>
 	</#list>
 </div>

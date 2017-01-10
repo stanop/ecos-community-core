@@ -299,6 +299,10 @@
 
 }
 
+.invariants-form .tab-body .template-wide {
+  padding: 0 40px;
+}
+
 /* fields */
 .invariants-form .template-wide .template-none,
 .invariants-form .template-wide .template-default {
@@ -575,11 +579,11 @@
 
 
 /* general */
-.invariants-form .template-table .template-textarea textarea,
-.invariants-form .template-table .template-text input[type="text"],
-.invariants-form .template-table .template-number input[type="number"],
-.invariants-form .template-table .template-datetime input[type="datetime-local"],
-.invariants-form .template-table .template-select select {
+.invariants-form .template-textarea textarea,
+.invariants-form .template-text input[type="text"],
+.invariants-form .template-number input[type="number"],
+.invariants-form .template-datetime input[type="datetime-local"],
+.invariants-form .template-select select {
   width: 100%;
   box-sizing: border-box;
 }
