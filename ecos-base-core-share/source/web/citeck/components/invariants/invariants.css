@@ -375,6 +375,7 @@
 
 
 /* specified regions */
+.invariants-form .template-wide .template-block.with-help .block-region-label,
 .invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
   width: calc(100% - 10px);
 }
@@ -398,6 +399,10 @@
 
 .invariants-form .template-wide .template-block.invalid .template-message span.validation-message {
   color: red;
+}
+
+.invariants-form .template-wide .template-block .template-view {
+  position: relative;
 }
 
 
@@ -1626,7 +1631,7 @@
   width: 54.5%;
 }
 
-.invariants-form .template-table .template-view span.value-item .value-item-actions {
+.invariants-form .template-view span.value-item .value-item-actions {
   position: absolute;
   top: 2px;
   right: 0px;
@@ -1688,8 +1693,8 @@
 
 
 /* view-actions */
-.invariants-form .template-table .template-view span.value-item .value-item-actions a,
-.invariants-form .template-table .template-view-table tr.value-item td.value-item-actions a {
+.invariants-form .template-view span.value-item .value-item-actions a,
+.invariants-form .template-view-table tr.value-item td.value-item-actions a {
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -1699,24 +1704,24 @@
   background-size: 100% 100%;
 }
 
-.invariants-form .template-table .template-view span.value-item .value-item-actions a.edit-value-item,
-.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.edit-value-item {
+.invariants-form .template-view span.value-item .value-item-actions a.edit-value-item,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.edit-value-item {
   background-image: url(images/edit.png);
 }
 
-.invariants-form .template-table .template-view span.value-item .value-item-actions a.edit-value-item:hover,
-.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.edit-value-item:hover {
+.invariants-form .template-view span.value-item .value-item-actions a.edit-value-item:hover,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.edit-value-item:hover {
   background-image: url(images/edit-active.png);
 }
 
-.invariants-form .template-table .template-view span.value-item .value-item-actions a.delete-value-item,
-.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item {
+.invariants-form .template-view span.value-item .value-item-actions a.delete-value-item,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item {
   background-image: url(images/remove.png);
   background-size: 10px;
 }
 
-.invariants-form .template-table .template-view span.value-item .value-item-actions a.delete-value-item:hover,
-.invariants-form .template-table .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
+.invariants-form .template-view span.value-item .value-item-actions a.delete-value-item:hover,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
   background-image: url(images/remove-active.png);
 }
 
