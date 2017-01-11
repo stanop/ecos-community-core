@@ -23,14 +23,12 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,10 +37,11 @@ import ru.citeck.ecos.history.HistoryUtils;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
-import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HistoricalPropertiesBehaviour implements
 		NodeServicePolicies.OnCreateNodePolicy,
@@ -53,15 +52,9 @@ public class HistoricalPropertiesBehaviour implements
 		NodeServicePolicies.OnDeleteChildAssociationPolicy
 {
 
-	private static final Serializable NODE_CREATED = "node.created";
-	private static final Serializable NODE_UPDATED = "node.updated";
-	private static final Serializable ASSOC_ADDED = "assoc.added";
-	private static final Serializable ASSOC_REMOVED = "assoc.removed";
-	private static final Serializable ASSOC_UPDATED = "assoc.updated";
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
 	private HistoryService historyService;
-	private SearchService searchService;
 
 	private QName className;
 	private List<QName> allowedProperties;
@@ -117,10 +110,6 @@ public class HistoricalPropertiesBehaviour implements
 
 	public void setDictionaryService(DictionaryService dictionaryService) {
 		this.dictionaryService = dictionaryService;
-	}
-
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
 	}
 
 	@Override
@@ -184,7 +173,7 @@ public class HistoricalPropertiesBehaviour implements
 								comment = HistoryUtils.getKeyValue(entry.getKey(), dictionaryService);
 							}
 							historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
-									NODE_UPDATED, nodeRef, entry.getKey(), String.valueOf(propAfter), comment, null, null
+									HistoryUtils.NODE_UPDATED, nodeRef, entry.getKey(), String.valueOf(propAfter), comment, null, null
 							));
 						}
 					}
@@ -198,22 +187,19 @@ public class HistoricalPropertiesBehaviour implements
 		logger.debug("HistoricalPropertiesBehaviour onCreateAssociation="+this);
 		logger.debug("onCreateAssociation event");
 		if (!ICaseModel.ASSOC_CASE_STATUS.equals(nodeAssocRef.getTypeQName())) {
-			addResourceTransaction(ASSOC_ADDED, nodeAssocRef);
+			HistoryUtils.addResourceTransaction(HistoryUtils.ASSOC_ADDED, nodeAssocRef);
 		}
-		final AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
-		final NodeRef nodeSource = nodeAssocRef.getSourceRef();
-		final NodeRef nodeTarget = nodeAssocRef.getTargetRef();
+		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
+		NodeRef nodeSource = nodeAssocRef.getSourceRef();
+		NodeRef nodeTarget = nodeAssocRef.getTargetRef();
 		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
 			if (assoc != null) {
-				String comment = HistoryUtils.getAssocKeyValue(assoc.getName(), dictionaryService)
-						+ ": "
-						+ HistoryUtils.getChangeValue(nodeAssocRef.getTargetRef(), nodeService);
 				historyService.persistEvent(
 						HistoryModel.TYPE_BASIC_EVENT,
 						HistoryUtils.eventProperties(
-								ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), comment, null, null
+								HistoryUtils.ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), HistoryUtils.getAssocComment(nodeAssocRef, null, dictionaryService, nodeService), null, null
 						));
-				addUpdateResourseToTransaction(ASSOC_ADDED);
+				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_ADDED, historyService, dictionaryService, nodeService);
 			}
 		}
 	}
@@ -222,122 +208,20 @@ public class HistoricalPropertiesBehaviour implements
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
 		logger.debug("onDeleteAssociation event");
 		if (!ICaseModel.ASSOC_CASE_STATUS.equals(nodeAssocRef.getTypeQName())) {
-			addResourceTransaction(ASSOC_REMOVED, nodeAssocRef);
+			HistoryUtils.addResourceTransaction(HistoryUtils.ASSOC_REMOVED, nodeAssocRef);
 		}
-		final NodeRef nodeSource = nodeAssocRef.getSourceRef();
-		final AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
+		NodeRef nodeSource = nodeAssocRef.getSourceRef();
+		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
 			if  (assoc != null) {
-				String comment = HistoryUtils.getAssocKeyValue(assoc.getName(), dictionaryService)
-						+ ": "
-						+ HistoryUtils.getChangeValue(nodeAssocRef.getTargetRef(), nodeService);
 				historyService.persistEvent(
 						HistoryModel.TYPE_BASIC_EVENT,
 						HistoryUtils.eventProperties(
-								ASSOC_REMOVED, nodeSource, assoc.getName(), null, comment, null, null
+								HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, HistoryUtils.getAssocComment(null, nodeAssocRef, dictionaryService, nodeService), null, null
 						));
-				addUpdateResourseToTransaction(ASSOC_REMOVED);
+				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService);
 			}
 		}
-	}
-
-	private void addResourceTransaction(Serializable resourceKey, AssociationRef nodeAssocRef) {
-		List<Serializable> listAssocRef = new ArrayList<>();
-		listAssocRef.add(nodeAssocRef);
-		if (AlfrescoTransactionSupport.getResource(resourceKey) != null) {
-			List<AssociationRef> associationRefList = AlfrescoTransactionSupport.getResource(resourceKey);
-			listAssocRef.addAll(associationRefList);
-		}
-		AlfrescoTransactionSupport.bindResource(resourceKey, listAssocRef);
-	}
-
-	private void addUpdateResourseToTransaction(final Serializable resourceKey) {
-		TransactionUtils.doBeforeCommit(new Runnable() {
-			@Override
-			public void run() {
-				List<AssociationRef> added = new ArrayList<AssociationRef>();
-				List<AssociationRef> removed =  new ArrayList<AssociationRef>();
-
-				if (AlfrescoTransactionSupport.getResource(ASSOC_ADDED) != null) {
-					added.addAll((Collection<AssociationRef>) AlfrescoTransactionSupport.getResource(ASSOC_ADDED));
-				}
-				if (AlfrescoTransactionSupport.getResource(ASSOC_REMOVED) != null) {
-					removed.addAll((Collection<AssociationRef>) AlfrescoTransactionSupport.getResource(ASSOC_REMOVED));
-				}
-				if (added.size() > 0 && removed.size() > 0) {
-					for (AssociationRef associationRefAdded: added) {
-						for (AssociationRef associationRefRemoved: removed) {
-							if (associationRefAdded.getTypeQName().equals(associationRefRemoved.getTypeQName())) {
-								historyService.persistEvent(
-										HistoryModel.TYPE_BASIC_EVENT,
-										HistoryUtils.eventProperties(
-												ASSOC_UPDATED, associationRefAdded.getSourceRef(), associationRefAdded.getTypeQName(), associationRefAdded.getTargetRef().toString(), getAssocComment(associationRefAdded, associationRefRemoved), null, null
-										)
-								);
-								rebindResource(ASSOC_ADDED, added, associationRefAdded);
-								rebindResource(ASSOC_REMOVED, removed, associationRefRemoved);
-							}
-						}
-					}
-
-					if (resourceKey.equals(ASSOC_ADDED)) {
-						AlfrescoTransactionSupport.unbindResource(ASSOC_ADDED);
-					} else {
-						AlfrescoTransactionSupport.unbindResource(ASSOC_REMOVED);
-					}
-				} else if (added.size() > 0 || removed.size() > 0){
-					if (resourceKey.equals(ASSOC_ADDED)) {
-						for (AssociationRef associationRefAdded: added) {
-							historyService.persistEvent(
-									HistoryModel.TYPE_BASIC_EVENT,
-									HistoryUtils.eventProperties(
-											ASSOC_UPDATED, associationRefAdded.getSourceRef(), associationRefAdded.getTypeQName(), associationRefAdded.getTargetRef().toString(), getAssocComment(associationRefAdded, null), null, null
-									)
-							);
-							rebindResource(ASSOC_ADDED, added, associationRefAdded);
-						}
-					} else {
-						for (AssociationRef associationRefRemoved: removed) {
-							historyService.persistEvent(
-									HistoryModel.TYPE_BASIC_EVENT,
-									HistoryUtils.eventProperties(
-											ASSOC_UPDATED, associationRefRemoved.getSourceRef(), associationRefRemoved.getTypeQName(), null, getAssocComment(null, associationRefRemoved), null, null
-									)
-							);
-							rebindResource(ASSOC_REMOVED, removed, associationRefRemoved);
-						}
-					}
-				}
-			}
-		});
-	}
-
-	private String getAssocComment(AssociationRef added, AssociationRef removed) {
-		if (added != null && removed != null) {
-			return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
-					+ ": "
-					+ HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService)
-					+ " -> "
-					+ HistoryUtils.getChangeValue(added.getTargetRef(), nodeService);
-		} else if (added != null) {
-			return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
-					+ ": -> "
-					+ HistoryUtils.getChangeValue(added.getTargetRef(), nodeService);
-		} else if (removed != null) {
-			return HistoryUtils.getAssocKeyValue(removed.getTypeQName(), dictionaryService)
-					+ ": "
-					+ HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService)
-					+ " -> ";
-		} else {
-			return "Something went wrong... Contact the administrator.";
-		}
-	}
-
-	private void rebindResource(Serializable resourceKey, List list, AssociationRef associationRef) {
-		List<AssociationRef> newList = new ArrayList<AssociationRef>();
-		newList.addAll(list);
-		newList.remove(newList.indexOf(associationRef));
-		AlfrescoTransactionSupport.bindResource(resourceKey, newList);
 	}
 
 	@Override
@@ -351,7 +235,7 @@ public class HistoricalPropertiesBehaviour implements
 		{
 			if(assoc!=null && (ignoreAssocsWithTypes==null || ignoreAssocsWithTypes!=null && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
-						ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), null,
+						HistoryUtils.ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
@@ -369,7 +253,7 @@ public class HistoricalPropertiesBehaviour implements
 		{
 			if(assoc!=null && (ignoreAssocsWithTypes==null || ignoreAssocsWithTypes!=null && nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
-						ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
+						HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
