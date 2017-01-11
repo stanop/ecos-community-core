@@ -163,7 +163,7 @@
 .toolbar,
 .toolbar-menu {
 	min-height: 26px;
-	overflow: hidden;
+	overflow-x: auto;
 }
 
 .toolbar h2
