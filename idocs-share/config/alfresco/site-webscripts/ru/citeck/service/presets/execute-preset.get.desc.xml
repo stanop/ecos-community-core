@@ -1,6 +1,0 @@
-<webscript>
-    <shortname>Execute Surf Preset</shortname>
-    <description>Execute specified preset with specified options</description>
-    <url>/citeck/presets/{presetId}/execute</url>
-    <format default="json"/>
-</webscript>

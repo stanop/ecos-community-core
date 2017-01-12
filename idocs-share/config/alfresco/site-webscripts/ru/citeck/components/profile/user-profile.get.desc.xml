@@ -1,5 +1,0 @@
-<webscript>
-    <shortname>user-profile</shortname>
-    <description>manage user data</description>
-    <url>/citeck/components/profile/user-profile</url>
-</webscript>

@@ -41,9 +41,11 @@
         <!--<ecos.module.release>-SNAPSHOT</ecos.module.release>-->
         <ecos.build.classifier>common</ecos.build.classifier>
 
+        <st-override.version>3.1.a.0-SNAPSHOT</st-override.version>
         <ecos-base-core.version>2.0.0.0-SNAPSHOT</ecos-base-core.version>
         <ecos-journals.version>2.0.0.0-SNAPSHOT</ecos-journals.version>
         <ecos-forms.version>2.0.0.0-SNAPSHOT</ecos-forms.version>
+        <idocs.version>3.1.a.0-SNAPSHOT</idocs.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yy.MM.dd.HH.mm</maven.build.timestamp.format>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
@@ -106,6 +108,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
     <!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
@@ -140,6 +147,33 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>1st-override-repo</artifactId>
+                <version>${st-override.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>1st-override-repo</artifactId>
+                <version>${st-override.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>1st-override-share</artifactId>
+                <version>${st-override.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>1st-override-share</artifactId>
+                <version>${st-override.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-base-core-repo</artifactId>
                 <version>${ecos-base-core.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
@@ -194,54 +228,54 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-tmp-test-repo</artifactId>
-                <version>${project.version}</version>
+                <artifactId>ecos-forms-repo</artifactId>
+                <version>${ecos-forms.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-tmp-test-repo</artifactId>
-                <version>${project.version}</version>
+                <artifactId>ecos-forms-repo</artifactId>
+                <version>${ecos-forms.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
                 <type>amp</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-tmp-test-share</artifactId>
-                <version>${project.version}</version>
+                <artifactId>ecos-forms-share</artifactId>
+                <version>${ecos-forms.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-tmp-test-share</artifactId>
-                <version>${project.version}</version>
+                <artifactId>ecos-forms-share</artifactId>
+                <version>${ecos-forms.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
                 <type>amp</type>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-repo</artifactId>
-                <version>${ecos-forms.version}</version>
+                <artifactId>idocs-repo</artifactId>
+                <version>${idocs.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-repo</artifactId>
-                <version>${ecos-forms.version}</version>
+                <artifactId>idocs-repo</artifactId>
+                <version>${idocs.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
                 <type>amp</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-share</artifactId>
-                <version>${ecos-forms.version}</version>
+                <artifactId>idocs-share</artifactId>
+                <version>${idocs.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-forms-share</artifactId>
-                <version>${ecos-forms.version}</version>
+                <artifactId>idocs-share</artifactId>
+                <version>${idocs.version}</version>
                 <classifier>${ecos.build.classifier}</classifier>
                 <type>amp</type>
             </dependency>
@@ -365,15 +399,17 @@
         </profile>
     </profiles>
     <modules>
+        <module>1st-override-repo</module>
+        <module>1st-override-share</module>
         <module>ecos-citeckTheme-share</module>
         <module>ecos-base-core-repo</module>
         <module>ecos-base-core-share</module>
         <module>journals-repo</module>
         <module>journals-share</module>
-        <module>ecos-forms-tmp-test-repo</module>
-        <module>ecos-forms-tmp-test-share</module>
         <module>ecos-forms-repo</module>
         <module>ecos-forms-share</module>
+        <module>idocs-repo</module>
+        <module>idocs-share</module>
         <module>repo</module>
         <module>solr-config</module>
         <module>share</module>

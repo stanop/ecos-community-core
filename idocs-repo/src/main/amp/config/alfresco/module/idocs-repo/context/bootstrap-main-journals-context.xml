@@ -1,0 +1,412 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="idocs.module-component.main-journals-list" parent="idocs.import-spaces">
+		<property name="name" value="main-journals-list" />
+		<property name="description" value="Main Journals List" />
+		<property name="sinceVersion" value="1.0.0" />
+		<property name="appliesFromVersion" value="1.0.0" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/journal-list</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.bank-accounts" parent="idocs.import-spaces">
+		<property name="name" value="bank-accounts-journal" />
+		<property name="description" value="Bank Accounts Journal" />
+		<property name="sinceVersion" value="1.0.0" />
+		<property name="appliesFromVersion" value="1.0.0" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/bank-accounts</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/bank-accounts</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:bank-accounts</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/bank-accounts</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:bank-accounts</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/bank-accounts</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/bank-accounts</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.budget-items" parent="idocs.import-spaces">
+		<property name="name" value="budget-items-journal" />
+		<property name="description" value="Budget Items Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/budget-items</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/budget-items</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:budget-items</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/budget-items</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:budget-items</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/budget-items</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/budget-items</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.currency" parent="idocs.import-spaces">
+		<property name="name" value="currency-journal" />
+		<property name="description" value="Currency Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:currency</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:currency</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.legal-entities" parent="idocs.import-spaces">
+		<property name="name" value="legal-entities-journal" />
+		<property name="description" value="Legal Entities Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/legal-entities</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/legal-entities</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:legal-entities</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/legal-entities</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:legal-entities</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/legal-entities</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/legal-entities</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.contractors" parent="idocs.import-spaces">
+		<property name="name" value="contractors-journal" />
+		<property name="description" value="Contractors Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/contractors</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/contractors</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contractors</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/contractors</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contractors</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/contractors</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/contractors</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.passports" parent="idocs.import-spaces">
+		<property name="name" value="passports-journal" />
+		<property name="description" value="Passports Journal" />
+		<property name="sinceVersion" value="2.4" />
+		<property name="appliesFromVersion" value="2.4" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/passports</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/passports</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:passports</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/passports</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:passports</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/passports</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/passports</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.units" parent="idocs.import-spaces">
+		<property name="name" value="units" />
+		<property name="description" value="Units Journal" />
+		<property name="sinceVersion" value="2.12" />
+		<property name="appliesFromVersion" value="2.12" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/units</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/units</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:units</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/units</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:units</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/units</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/units</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.main-journals.products-and-services" parent="idocs.import-spaces">
+		<property name="name" value="products-and-services" />
+		<property name="description" value="Products and Services Journal" />
+		<property name="sinceVersion" value="2.12" />
+		<property name="appliesFromVersion" value="2.12" />
+		<!-- property name="executeOnceOnly" value="false" / -->
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.main-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/products-and-services</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/products-and-services</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:products-and-services</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/products-and-services</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:products-and-services</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/products-and-services</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/products-and-services</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+</beans>

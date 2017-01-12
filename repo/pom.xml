@@ -62,13 +62,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ecos-forms-tmp-test-repo</artifactId>
+            <artifactId>ecos-forms-repo</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ecos-forms-repo</artifactId>
+            <artifactId>idocs-repo</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>
@@ -134,13 +134,13 @@
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-forms-tmp-test-repo</artifactId>
+                            <artifactId>ecos-forms-repo</artifactId>
                             <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-forms-repo</artifactId>
+                            <artifactId>idocs-repo</artifactId>
                             <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>

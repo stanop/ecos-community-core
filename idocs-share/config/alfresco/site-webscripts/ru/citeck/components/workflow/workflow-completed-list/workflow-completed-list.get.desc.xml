@@ -1,5 +1,0 @@
-<webscript>
-    <shortname>Workflow List</shortname>
-    <description>Component for displaying the user's workflows</description>
-    <url>/ru/citeck/components/workflow/workflow-completed-list</url>
-</webscript>

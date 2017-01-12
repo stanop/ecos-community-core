@@ -1,0 +1,679 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING/DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <!-- behaviors -->
+    <bean id="associationIndexing" class="ru.citeck.ecos.behavior.AssociationIndexing"
+          init-method="init">
+        <property name="nodeService">
+            <ref bean="nodeService"/>
+        </property>
+        <property name="lockService">
+            <ref bean="LockService"/>
+        </property>
+        <property name="policyComponent">
+            <ref bean="policyComponent"/>
+        </property>
+        <property name="behaviourFilter">
+            <ref bean="policyBehaviourFilter"/>
+        </property>
+        <property name="registry" ref="AssociationIndexPropertyRegistry" />
+    </bean>
+
+    <bean id="CountChildAssociations" class="ru.citeck.ecos.behavior.common.CountChildAssociations"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="duplicateNameResolver" class="ru.citeck.ecos.behavior.common.PropResolver">
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
+    <bean id="HasBigNumbersBehaviour" class="ru.citeck.ecos.behavior.numeric.HasBigNumbers"
+          init-method="init">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+    </bean>
+
+    <bean id="GrantedAspectBehaviour" class="ru.citeck.ecos.security.GrantedBehaviour" init-method="init">
+        <property name="walker" ref="GrantPermissionServiceWalker"/>
+        <property name="grantPermissionService" ref="GrantPermissionService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}granted"/>
+    </bean>
+
+    <!-- The undeletable aspect override -->
+    <!-- it allows to delete working copies -->
+    <bean id="undeletableAspect" class="ru.citeck.ecos.security.UndeletableAspect" init-method="init">
+        <property name="nodeService" ref="NodeService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+    </bean>
+
+    <!-- ===================== -->
+    <!-- aspects for orgstruct -->
+    <!-- ===================== -->
+
+    <!-- custom aspect support -->
+    <bean id="SubGroupAspect" class="ru.citeck.ecos.behavior.orgstruct.SubGroupBehaviour" abstract="true"
+          init-method="init">
+        <property name="nodeService" ref="NodeService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="orgMetaService" ref="OrgMetaService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="aspectRemovalDepth" value="${orgstruct.custom-fields.aspect-removal-depth}"/>
+    </bean>
+
+    <bean id="SubGroupAspect.branch" parent="SubGroupAspect">
+        <property name="className" value="{http://www.citeck.ru/model/orgstruct/1.0}branch"/>
+        <property name="groupType" value="branch"/>
+        <property name="subGroupType" value="{http://www.citeck.ru/model/orgstruct/1.0}branchType"/>
+    </bean>
+
+    <bean id="SubGroupAspect.role" parent="SubGroupAspect">
+        <property name="className" value="{http://www.citeck.ru/model/orgstruct/1.0}role"/>
+        <property name="groupType" value="role"/>
+        <property name="subGroupType" value="{http://www.citeck.ru/model/orgstruct/1.0}roleType"/>
+    </bean>
+
+
+    <bean id="MapParentPropsAssocsBehaviour"
+          class="ru.citeck.ecos.behavior.common.MapParentPropsAssocsBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <!-- <property name="className" value="..." /> -->
+        <!--
+        <property name="mapping">
+            <map>
+                <entry key="parent:property" value="child:property" />
+                ...
+            </map>
+        </property>
+        -->
+    </bean>
+
+    <bean id="AutoNameBehaviour" class="ru.citeck.ecos.behavior.common.AutoNameBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="mimetypeService" ref="mimetypeService"/>
+        <property name="templateService" ref="templateService"/>
+        <property name="templateEngine" value="freemarker"/>
+        <property name="nodeVariable" value="node"/>
+        <property name="restrictedPatterns">
+            <!-- cm:filename constraint -->
+            <!-- (.*[\"\*\\\>\<\?\/\:\|]+.*)|(.*[\.]?.*[\.]+$)|(.*[ ]+$) -->
+            <map>
+                <!-- restricted symbols -->
+                <entry key="[\&quot;\*\\\&gt;\&lt;\?\/\:\|]" value="_"/>
+                <!-- dots in the end -->
+                <entry key="[\.]+$" value=""/>
+                <!-- spaces in the end -->
+                <entry key="\s+$" value=""/>
+                <!-- newlines and tabs -->
+                <entry key="[\n\t]+" value=" "/>
+                <!-- several spaces -->
+                <entry key="\s\s+" value=" "/>
+            </map>
+        </property>
+        <property name="order" value="${behavior.order.autoname}"/>
+    </bean>
+
+    <bean id="TitleGenerationBehaviour" class="ru.citeck.ecos.behavior.common.TitleGenerationBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="templateService" ref="templateService"/>
+        <property name="templateEngine" value="freemarker"/>
+        <property name="nodeVariable" value="node"/>
+    </bean>
+
+    <bean id="FieldAutoFillBehaviour" class="ru.citeck.ecos.behavior.common.FieldAutoFillBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="templateService" ref="templateService"/>
+        <property name="templateEngine" value="freemarker"/>
+        <property name="nodeVariable" value="node"/>
+    </bean>
+
+    <bean id="EnumerationBehaviour" class="ru.citeck.ecos.behavior.common.EnumerationBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="nodeInfoFactory" ref="NodeInfoFactory"/>
+        <property name="order" value="${behavior.order.enumeration}"/>
+    </bean>
+
+    <bean id="CacheAssocsBehaviour" class="ru.citeck.ecos.behavior.common.CacheAssocsBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="NodeService"/>
+    </bean>
+
+    <bean id="templateChange" class="ru.citeck.ecos.behavior.common.TemplateChangeBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
+    <bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
+          init-method="init">
+        <property name="walker" ref="ConfiscateServiceWalker"/>
+        <property name="confiscateService" ref="ConfiscateService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}confiscated" />
+    </bean>
+
+	<bean id="DynamicClassificationBehaviour" class="ru.citeck.ecos.behavior.tk.DynamicClassificationBehaviour" init-method="init">
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="dictionaryService" ref="DictionaryService" />
+		<property name="order" value="${behavior.order.classification}" />
+	</bean>
+
+    <bean id="fileAssociationBehaviour" class="ru.citeck.ecos.behavior.common.FileAssociationBehaviour"
+          init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="className" value="dms:agreement"/>
+        <property name="assocName" value="dms:agreement_to_files"/>
+    </bean>
+
+    <bean id="fillUtilityNumberField" class="ru.citeck.ecos.behavior.common.FillUtilityNumberField"
+          init-method="init" abstract="true">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+    </bean>
+
+    <bean id="packageAssociationBehaviour" class="ru.citeck.ecos.behavior.common.PackageAssociationBehaviour"
+          init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="className" value="cwf:attachedDocument"/>
+    </bean>
+    <bean id="DocumentChangeBehaviour"
+          class="ru.citeck.ecos.behavior.common.DocumentChangeSendNotificationBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="helper" ref="DataBundleProcessorHelper"/>
+        <property name="enabled" value="${notification.document.change.enabled}"/>
+        <property name="sendOnCreate" value="${notification.document.create.enabled}"/>
+        <property name="subscriberAssoc" value="dms_document_change_subscribers"/>
+        <property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+        <property name="defaultSubscribe" value="${notification.document.change.subscribe}"/>
+    </bean>
+
+    <bean id="AdditionalFieldBehaviour" class="ru.citeck.ecos.behavior.common.AdditionalFieldBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
+    <bean id="CopyDocumentIgnoreFieldBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.CopyDocumentIgnoreFieldBehaviour"
+			abstract="true" init-method="init">
+		<property name="namespaceService" ref="NamespaceService" />
+		<property name="nodeService" ref="NodeService" />
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="ignorePropertiesOnWorkingCopy">
+            <list>
+                <value>cm_content</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean parent="CopyDocumentIgnoreFieldBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.CopyDocumentIgnoreFieldBehaviour">
+        <property name="className" value="idocs:hasDocumentStatus" />
+        <property name="ignoredFields">
+            <list>
+                <value>idocs_documentStatus</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--<bean id="idocs.doc.EnumerationBehaviour"-->
+    <!--parent="EnumerationBehaviour">-->
+    <!--<property name="className" value="idocs:doc" />-->
+    <!--<property name="numberField" value="idocs:registrationNumber" />-->
+    <!--<property name="enabledState" value="-" />-->
+    <!--<property name="templateName" value="doc-number-template" />-->
+    <!--</bean>-->
+
+
+    <!-- route elements naming behaviours -->
+
+    <bean id="idocs.RouteParticipantNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="route:participant" />
+        <property name="nameTemplate">
+            <value><![CDATA[<#assign authorities = node.assocs['route:authority']![]/><#if authorities[0]??>#{'$'}{authorities[0].properties['cm:userName']!authorities[0].properties['cm:authorityName']}<#else>none</#if>]]></value>
+        </property>
+    </bean>
+
+    <bean id="idocs.RouteStageNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="route:stage" />
+        <property name="nameTemplate">
+            <value><![CDATA[<#assign participants = node.childAssocs['route:participants']![]/><#if participants?size != 0><#list participants as participant>#{'$'}{participant.name}<#if participant_has_next>, </#if></#list><#else>none</#if>]]></value>
+        </property>
+    </bean>
+
+    <bean id="idocs.route.ChildAssocsFormRegistrar" parent="ChildAssocsFormRegistrar">
+        <property name="associations">
+            <list>
+                <value>route:stages</value>
+                <value>route:participants</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="idocs.ActivityDirectionNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:activityDirection"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:activityDirectionCode']!} (#{'$'}{node.properties['idocs:activityDirectionName']!})" />
+    </bean>
+
+    <bean id="idocs.invoice.Invoice" parent="AutoNameBehaviour">
+        <property name="className" value="inv:invoice"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['invoice:name']!} №#{'$'}{node.properties['invoice:number']!} &lt;#if node.properties['invoice:date']??&gt; (&lt;#assign oc = &quot;freemarker.template.utility.ObjectConstructor&quot;?new()&gt;&lt;#assign usrdate = oc(&quot;freemarker.template.SimpleDate&quot;, oc(&quot;java.util.Date&quot;, node.properties['invoice:date']?long + 3600*1000*9)?date, 3) /&gt;#{'$'}{usrdate?datetime?string('dd.MM.yyyy')})  &lt;/#if&gt;"/>
+    </bean>
+
+    <bean id="idocs.invoice.Account" parent="AutoNameBehaviour">
+        <property name="className" value="inv:bill"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['invoice:name']!} №#{'$'}{node.properties['invoice:number']!} &lt;#if node.properties['invoice:date']??&gt; (&lt;#assign oc = &quot;freemarker.template.utility.ObjectConstructor&quot;?new()&gt;&lt;#assign usrdate = oc(&quot;freemarker.template.SimpleDate&quot;, oc(&quot;java.util.Date&quot;, node.properties['invoice:date']?long + 3600*1000*9)?date, 3) /&gt;#{'$'}{usrdate?datetime?string('dd.MM.yyyy')})  &lt;/#if&gt;"/>
+    </bean>
+
+    <bean id="idocs.invoice.acceptanceAct" parent="AutoNameBehaviour">
+        <property name="className" value="inv:acceptanceAct"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['invoice:name']!} №#{'$'}{node.properties['invoice:number']!} &lt;#if node.properties['invoice:date']??&gt; (&lt;#assign oc = &quot;freemarker.template.utility.ObjectConstructor&quot;?new()&gt;&lt;#assign usrdate = oc(&quot;freemarker.template.SimpleDate&quot;, oc(&quot;java.util.Date&quot;, node.properties['invoice:date']?long + 3600*1000*9)?date, 3) /&gt;#{'$'}{usrdate?datetime?string('dd.MM.yyyy')})  &lt;/#if&gt;"/>
+    </bean>
+
+
+    <bean id="idocs.IncomeProtectionDocument" parent="AutoNameBehaviour">
+        <property name="className" value="arc:protectionDoc"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['arc:protectionDocName']!} №#{'$'}{node.properties['arc:protectionDocNumber']!} &lt;#if node.properties['arc:protectionDocDate']??&gt; (&lt;#assign oc = &quot;freemarker.template.utility.ObjectConstructor&quot;?new()&gt;&lt;#assign usrdate = oc(&quot;freemarker.template.SimpleDate&quot;, oc(&quot;java.util.Date&quot;, node.properties['arc:protectionDocDate']?long + 3600*1000*9)?date, 3) /&gt;#{'$'}{usrdate?datetime?string('dd.MM.yyyy')})  &lt;/#if&gt;"/>
+    </bean>
+
+    <bean id="idocs.ActsOfAcceptance" parent="AutoNameBehaviour">
+        <property name="className" value="acts:actOfAcceptance"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['acts:name']!} №#{'$'}{node.properties['acts:number']!} &lt;#if node.properties['acts:date']??&gt; (&lt;#assign oc = &quot;freemarker.template.utility.ObjectConstructor&quot;?new()&gt;&lt;#assign usrdate = oc(&quot;freemarker.template.SimpleDate&quot;, oc(&quot;java.util.Date&quot;, node.properties['acts:date']?long + 3600*1000*9)?date, 3) /&gt;#{'$'}{usrdate?datetime?string('dd.MM.yyyy')})  &lt;/#if&gt;"/>
+    </bean>
+
+    <bean id="idocs.IncomeRSTA" parent="AutoNameBehaviour">
+        <property name="className" value="arc:rsta"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['arc:rstaObjectView']!} &quot;#{'$'}{node.properties['arc:rstaName']!}&quot; &lt;#if node.properties['cm:created']??&gt; (&lt;#assign oc = &quot;freemarker.template.utility.ObjectConstructor&quot;?new()&gt;&lt;#assign usrdate = oc(&quot;freemarker.template.SimpleDate&quot;, oc(&quot;java.util.Date&quot;, node.properties['cm:created']?long)?date, 3) /&gt;#{'$'}{usrdate?datetime?string('dd.MM.yyyy')})  &lt;/#if&gt;"/>
+    </bean>
+
+    <bean id="idocs.AttorneyNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:powerOfAttorney"/>
+        <property name="nameTemplate" value="Доверенность: #{'$'}{node.properties['idocs:summary']!}"/>
+    </bean>
+
+    <bean id="idocs.LegalEntityNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:legalEntity"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fullOrganizationName']}"/>
+    </bean>
+
+    <!--<bean id="idocs.DocumentTypeNamingBehaviour" parent="AutoNameBehaviour">-->
+    <!--<property name="className" value="idocs:documentType" />-->
+    <!--<property name="nameTemplate" value="#{'$'}{node.properties['idocs:typeName']}" />-->
+    <!--</bean>-->
+
+    <bean id="idocs.ContactNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:contact"/>
+        <property name="nameTemplate"
+                  value="#{'$'}{node.properties['idocs:firstName']} #{'$'}{node.properties['idocs:lastName']}"/>
+    </bean>
+
+    <bean id="idocs.FilesNomenclatureNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:filesNomenclature"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fileName']}"/>
+    </bean>
+
+    <bean id="DocumentCreateBasedOnFolderBehaviour"
+          class="ru.citeck.ecos.behavior.common.DocumentCreateBasedOnFolderBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="CreateSupplementaryFilesAssocBehaviour"
+          class="ru.citeck.ecos.behavior.common.CreateSupplementaryFilesAssocBehaviour"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="templateService" ref="TemplateService"/>
+        <property name="templateEngine" value="freemarker"/>
+        <property name="nodeVariable" value="node"/>
+        <property name="supplFilesDAO" ref="supplementaryFilesDAO"/>
+    </bean>
+
+    <bean id="idocs.AddDocumentStateBehaviour"
+          class="ru.citeck.ecos.behavior.lifecycle.AddDocumentStateBehaviour"
+          init-method="init">
+        <property name="className" value="idocs:lifeCycle"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="lifeCycleService" ref="lifeCycleService"/>
+    </bean>
+
+    <bean id="idocs.AutomaticTransitionBehaviour"
+          class="ru.citeck.ecos.behavior.lifecycle.AutomaticTransitionBehaviour"
+          init-method="init">
+        <property name="className" value="idocs:lifeCycle"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="lifeCycleService" ref="lifeCycleService"/>
+    </bean>
+
+    <bean id="UpdateLifecycleDefinitionBehaviour"
+          class="ru.citeck.ecos.behavior.lifecycle.UpdateLifecycleDefinitionBehaviour"
+          init-method="init">
+        <property name="className" value="lc:lifecycleDefinition"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="lifeCycleService" ref="lifeCycleService"/>
+    </bean>
+
+    <bean id="idocs.PersonFullNameBehaviour" class="ru.citeck.ecos.behavior.common.FullNameBehaviour"
+          init-method="init" depends-on="idocs.dictionaryBootstrap">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+        <property name="fullNameProperty" value="org:fullName"/>
+        <property name="firstNameProperty" value="org:firstName"/>
+        <property name="lastNameProperty" value="org:lastName"/>
+        <property name="middleNameProperty" value="org:middleName"/>
+        <property name="updateAlways" value="${full-name-behaviour.update-always}"/>
+        <property name="separator" value=" "/>
+    </bean>
+
+    <bean id="idocs.clearAuthorityCachesBehaviour"
+        class="ru.citeck.ecos.behavior.authority.ClearAuthorityCachesBehaviour"
+        init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="caches">
+            <map>
+                <entry key="authorityLookupCache" value="clear" />
+                <entry key="userAuthorityCache" value="clear" />
+                <entry key="authorityBridgeTableCache" value="refresh" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="CopyDocumentIgnoreAspectBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.CopyDocumentIgnoreAspectBehaviour"
+           abstract="true"  init-method="init" depends-on="idocs.dictionaryBootstrap" >
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="NodeService" />
+        <!-- should be set in descendant beans -->
+        <!--
+            <property name="ignoreAspects">
+                <list>
+                    <value>...</value>
+                    <value>...</value>
+                </list>
+            </property>
+        -->
+    </bean>
+
+    <bean id="idocs.AlwaysCopyDocumentIgnoreAspectBehaviour" parent="CopyDocumentIgnoreAspectBehaviour">
+        <property name="ignoreAspects">
+            <list>
+                <value>wfcf:confirmed</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.AddCurrentUserToObjectBehaviour"
+          class="ru.citeck.ecos.behavior.common.AddCurrentUserBehaviour" abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="idocs.BranchAssignBehavior" class="ru.citeck.ecos.behavior.common.BranchAssignBehavior"
+          abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="orgStructService" ref="orgStructService"/>
+        <property name="authorityService" ref="authorityService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="idocs.createFromTemplate" class="ru.citeck.ecos.behavior.common.CreateFromTemplateBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="className" value="dms:templateable"/>
+        <property name="enabled" value="true"/>
+    </bean>
+
+    <bean id="idocs.budgetItemNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="budget:item"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['budget:itemName']!}"/>
+    </bean>
+
+    <bean id="idocs.currencyNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:currency"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:currencyName']!node.properties['idocs:currencyCode']!}"/>
+    </bean>
+
+    <bean id="idocs.bankAccountNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:bankAccount"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:accountNumber']} (#{'$'}{node.properties['idocs:bankTitle']})"/>
+    </bean>
+
+    <bean id="idocs.passportNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="pass:passport"/>
+        <property name="nameTemplate">
+        	<value><![CDATA[
+        		<#assign person = node.assocs['pass:person'][0] />
+        		#{'$'}{node.properties['tk:kind'].name} #{'$'}{node.properties['pass:series']!} #{'$'}{node.properties['pass:number']!} (#{'$'}{person.properties['cm:lastName']} #{'$'}{person.properties['cm:firstName']})
+        	]]></value>
+        </property>
+    </bean>
+
+    <bean id="idocs.passportBehaviour" class="ru.citeck.ecos.behavior.idocs.PassportBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="permissionService" ref="permissionService"/>
+    </bean>
+
+    <bean id="history.documentEvent" class="ru.citeck.ecos.behavior.history.DocumentEvent" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
+    <bean id="history.historicalAspectBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="historyService" ref="historyService"/>
+    </bean>
+
+    <bean id="history.historicalPropertiesBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalPropertiesBehaviour" init-method="init" abstract="true">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="historyService" ref="historyService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+	<bean id="idocs.ContentNodeBehavior" class="ru.citeck.ecos.behavior.content.ContentNodeBehaviorImpl" >
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+    <bean id="idocs.contractorNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:contractor"/>
+        <property name="nameTemplate">
+            <value><![CDATA[<#if node.properties['idocs:fullOrganizationName']??>#{'$'}{node.properties['idocs:fullOrganizationName']!'n/a'}<#else>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+        </property>
+    </bean>
+
+    <bean id="ecos.documentNumberBehaviour" parent="EnumerationBehaviour">
+        <property name="className" value="ecos:document" />
+        <property name="numberField" value="ecos:documentNumber" />
+        <property name="enabledState" value="-" />
+        <property name="templateName" value="ecos-document-number-template" />
+    </bean>
+
+    <bean id="idocs.AddJournalBehaviour" class="ru.citeck.ecos.behavior.common.AddJournalBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+        <!--property name="serviceRegistry" ref="ServiceRegistry"/-->
+        <property name="typeQname" value="{http://www.citeck.ru/model/content/ecos/1.0}document" />
+        <property name="typeQnameShort" value="ecos:document" />
+        <property name="typeNamePlural" value="ecos-documents" />
+        <property name="typeTitlePlural" value="Документы" />
+        <property name="typeTitleSingular" value="Документ" />
+        <!--property name="className" value="ecos:document" /-->
+        <property name="checkTypeSite" value="true" />
+    </bean>
+
+    <bean id="SiteDocumentTypesBehaviour" class="ru.citeck.ecos.behavior.tk.SiteDocumentTypesBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="NodeService"/>
+        <property name="siteService" ref="SiteService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+    </bean>
+
+
+	<bean id="idocs.EventTitleGenerationBehaviour" parent="TitleGenerationBehaviour">
+		<property name="className" value="history:basicEvent"/>
+		<property name="titleTemplate">
+			<value><![CDATA[
+				<#if node.properties['event:workflowInstanceId']?? && nodeService.getWofrkflowName(node.properties['event:workflowInstanceId'])??>
+					<#assign wofrkflowName = nodeService.getWofrkflowName(node.properties['event:workflowInstanceId']) />
+					${wofrkflowName}
+				<#elseif node.properties['event:propertyName']??>
+					<#assign propName = node.properties['event:propertyName'] />
+					<#if nodeService.getPropertyTitle(propName)??>
+						<#assign propTitle = nodeService.getPropertyTitle(propName) />
+						${propTitle}
+					<#elseif nodeService.getAssocTitle(propName)??>
+						<#if shortQName(propName)!='cm:contains'>
+							<#assign assocTitle = nodeService.getAssocTitle(propName) />
+							${assocTitle}
+						<#else>
+							<#if node.properties['event:targetNodeKind']??>
+								${node.properties['event:targetNodeKind'].name}
+							<#elseif node.properties['event:targetNodeType']??>
+								${node.properties['event:targetNodeType'].name}
+							<#else>
+								Документ
+							</#if>
+						</#if>
+					</#if>
+				</#if>
+			]]></value>
+		</property>
+	</bean>
+
+    <bean id="idocs.applicationFileNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="dms:applicationFile"/>
+        <property name="nameTemplate" value="${node.properties['dms:applicationFileName']}"/>
+    </bean>
+
+    <bean id="idocs.SendNotificationForLoggingItemBehaviour"
+          class="ru.citeck.ecos.behavior.common.SendNotificationForLoggingItemBehaviour"
+          init-method="init" abstract="true">
+        <property name="className" value="notlog:notificationLogItem"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="enabled" value="${notification.for.log.item.enabled}"/>
+        <property name="sender" ref="NotificationForLoggingItemSender"/>
+    </bean>
+
+    <bean id="GrantPermissionBehaviour" class="ru.citeck.ecos.behavior.common.GrantPermissionBehavior"
+            init-method="init" abstract="true">
+        <property name="grantPermissionService" ref="GrantPermissionService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="dictionaryService" ref="dictionaryService" />
+    </bean>
+
+    <bean id="supervisorsPermissionBehaviour" parent="GrantPermissionBehaviour">
+        <property name="associationType" value="ds:supervisors" />
+        <property name="permission" value="Read" />
+        <property name="className" value="ds:hasSupervisors" />
+    </bean>
+
+    <bean id="documentChangedNotificationSender"
+          class="ru.citeck.ecos.notification.DocumentNotificationSender">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/app:notify_email_templates" />
+        <property name="defaultTemplate" value="cm:default-doc-changed-notification.html.ftl"/>
+        <property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+    </bean>
+
+    <bean id="supervisorsDocumentChangeBehaviour" parent="DocumentChangeBehaviour">
+        <property name="className" value="ds:hasSupervisors" />
+        <property name="sender" ref="documentChangedNotificationSender" />
+        <property name="includeOwnerToSubs" value="true"/>
+        <property name="enabled" value="true"/>
+        <property name="propertiesMode" value="EXCLUDE" />
+        <property name="allowedProperties">
+            <list>
+                <value>rn_rendition</value>
+                <value>cm_content</value>
+                <value>grant_permissions</value>
+                <value>cm_modified</value>
+            </list>
+        </property>
+        <property name="subscribers">
+            <map>
+                <entry key="edit">
+                    <list>
+                        <value>ds_supervisors</value>
+                    </list>
+                </entry>
+                <entry key="edit_assoc">
+                    <list>
+                        <value>ds_supervisors</value>
+                    </list>
+                </entry>
+                <entry key="create">
+                    <list>
+                        <value>ds_supervisors</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="idocs.unitNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="pas:unit"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['pas:unitShortName']!}"/>
+    </bean>
+
+
+    <bean id="productsAndServicesBehaviour" class="ru.citeck.ecos.behavior.idocs.ProductsAndServicesBehavior" init-method="init">
+        <property name="nodeService" ref="nodeService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="namespace" value="http://www.citeck.ru/model/products-and-services/1.0"/>
+        <property name="type" value="pasEntityCopied"/>
+    </bean>
+
+    <bean id="idocs.addressByPartsNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="idocs:addressByParts"/>
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:regionName']!''} #{'$'}{node.properties['idocs:cityName']!''} #{'$'}{node.properties['idocs:streetName']!''} #{'$'}{node.properties['idocs:house']!''}" />
+    </bean>
+
+    <bean id="idocs.systemJournals.businessCalendar" parent="AutoNameBehaviour">
+        <property name="className" value="bcal:calendar" />
+        <property name="nameTemplate"
+            value="Period #{'$'}{node.properties['bcal:dateFrom']?string('dd.MM.yyyy')}-#{'$'}{node.properties['bcal:dateTo']?string('dd.MM.yyyy')}" />
+    </bean>
+
+    <bean id="idocs.updateToUploadedFilesBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.ChangeNodeTypeFileSiteDocumentLibraryBehaviour" init-method="init">
+        <property name="nodeService" ref="nodeService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="siteService" ref="siteService" />
+    </bean>
+
+</beans>
+

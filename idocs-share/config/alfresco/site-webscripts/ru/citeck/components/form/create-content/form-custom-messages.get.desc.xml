@@ -1,6 +1,0 @@
-<webscript>
-    <shortname>Form change header</shortname>
-    <url>/citeck/form/custom/messages</url>
-    <format default="html"/>
-    <authentication>user</authentication>
-</webscript>

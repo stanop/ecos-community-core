@@ -21,7 +21,7 @@ package ru.citeck.ecos.journals;
 import java.io.InputStream;
 import java.util.Collection;
 
-interface JournalService {
+public interface JournalService {
     
     public static final String JOURNALS_CONTAINER = "journals";
 
