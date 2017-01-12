@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+	<scope>page</scope>
+	<source-id>card-details</source-id>
+    <region-id>inactive-document-workflows</region-id>
+    <url>/components/document-details/inactive-workflows</url>
+    <properties>
+        <nodeRef>{nodeRef}</nodeRef>
+        <active>false</active>
+        <sortBy>startDate</sortBy>
+    </properties>
+</component>

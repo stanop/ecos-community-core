@@ -1,0 +1,10 @@
+.yui-button {
+    vertical-align: baseline;
+}
+
+.document-clipboard-capture-property {
+    background: transparent;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    margin-left: -3px;
+}

@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>make available</shortname>
+    <description>Make user available or not available now</description>
+    <url>/components/delegate/make-available?available={available}</url>
+</webscript>

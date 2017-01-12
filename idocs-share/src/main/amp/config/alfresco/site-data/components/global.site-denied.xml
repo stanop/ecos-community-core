@@ -1,0 +1,6 @@
+<component>
+	<region-id>site-denied</region-id>
+	<source-id>global</source-id>
+	<scope>global</scope>
+	<uri>/components/site/denied</uri>
+</component>
