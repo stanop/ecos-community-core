@@ -61,11 +61,11 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnUpdatePro
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_CURRENCY, nodeService);
         NodeRef agreementRef = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_AGREEMENT, nodeService);
 
-        if (nodeService.exists(agreementRef)) {
+        if (agreementRef != null && nodeService.exists(agreementRef)) {
             currencyRef = RepoUtils.getFirstTargetAssoc(agreementRef, ContractsModel.ASSOC_AGREEMENT_CURRENCY, nodeService);
         }
 
-        if (nodeService.exists(currencyRef)) {
+        if (currencyRef != null && nodeService.exists(currencyRef)) {
             currencyCode = (String) nodeService.getProperty(currencyRef, IdocsModel.PROP_CURRENCY_CODE);
         }
 

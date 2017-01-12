@@ -5,5 +5,4 @@ fillModel();
 model.outputPredicates = true;
 model.settingsControlMode = args.settingsControlMode;
 model.loadFilterMethod = args.loadFilterMethod;
-model.loadSettingsMethod = args.loadSettingsMethod;
 
