@@ -894,6 +894,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
+        .method('destroy', function(index, nodeRef) {
+            this.resolve('node.impl.runtime').deleteNode(nodeRef, {
+                success: function(oResponse) {
+                    var result = YAHOO.lang.JSON.parse(oResponse.responseText)
+                    if (result.success) this.remove(index);
+                },
+                scope: this
+            })
+        })
+        .method('push', function(data) {
+            // TODO:
+            // - push object to multipleValue
+        })
         .method('getValueJSON', function(value) {
             if(value == null) return null;
             if(_.isArray(value)) return _.map(value, this.getValueJSON, this);
@@ -1755,8 +1768,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')      
         
-        .method('findGroup', function(id) {
-
+        .method('deleteNode', function(nodeRef, callback) {
+            YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
         })
 
         .method('selectGroup', function(data, event) {
@@ -1786,9 +1799,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 var group = this.node().impl().group(tabId);
 
                 if (this.runtime().loadGroupIndicator() && tabIndex > 0) {
-                    // TODO:
-                    // - bug. infinity loading in first group
-
                     var self = this,
                         indicatorId = tabId + "-loadGroupIndicator", bodyId = $(".tabs-body .tab-body[data-tab-id=" + tabId + "]").attr("id"),
                         buttons = $(".invariants-form .form-buttons");
