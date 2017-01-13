@@ -19,11 +19,7 @@
 package ru.citeck.ecos.utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ValueConverter;
@@ -35,9 +31,13 @@ import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ScriptableObject;
 
 public class JavaScriptImplUtils {
+
+    private static final Log LOGGER = LogFactory.getLog(JavaScriptImplUtils.class);
 
     public static ScriptNode wrapNode(String nodeRef,
             AlfrescoScopableProcessorExtension scopeProvider) {
@@ -213,5 +213,64 @@ public class JavaScriptImplUtils {
             return ((ScriptNode) object).getNodeRef();
         }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to NodeRef");
+    }
+
+    public static NodeRef getAuthorityRef(Object authority, AuthorityService authorityService) {
+        if (authority instanceof String) {
+            String strAuthority = (String) authority;
+            if (NodeRef.isNodeRef(strAuthority)) {
+                return new NodeRef(strAuthority);
+            }
+            NodeRef authorityRef = authorityService.getAuthorityNodeRef(strAuthority);
+            if (authorityRef == null) {
+                throw new IllegalArgumentException("Authority with name '" + strAuthority + "' not found!");
+            }
+        }
+        return getNodeRef(authority);
+    }
+
+    public static List<NodeRef> getAuthoritiesList(Object object, AuthorityService authorityService) {
+        List<NodeRef> authorities = new ArrayList<>();
+        fillAuthorities(authorities, object, authorityService);
+        return authorities;
+    }
+
+    public static Set<NodeRef> getAuthoritiesSet(Object object, AuthorityService authorityService) {
+        Set<NodeRef> authorities = new HashSet<>();
+        fillAuthorities(authorities, object, authorityService);
+        return authorities;
+    }
+
+    private static void fillAuthorities(Collection<NodeRef> collection, Object value, AuthorityService authorityService) {
+        if (value == null) return;
+
+        if (value instanceof NodeRef) {
+
+            collection.add((NodeRef) value);
+
+        } else if (value instanceof ScriptNode) {
+
+            collection.add(((ScriptNode) value).getNodeRef());
+
+        } else if (value instanceof String) {
+
+            String strValue = (String) value;
+            if (NodeRef.isNodeRef(strValue)) {
+                collection.add(new NodeRef(strValue));
+            } else {
+                NodeRef nodeRef = authorityService.getAuthorityNodeRef(strValue);
+                if (nodeRef != null) {
+                    collection.add(nodeRef);
+                } else {
+                    LOGGER.warn("Authority with name '" + value + "' not found!");
+                }
+            }
+
+        } else if (value instanceof Collection) {
+
+            for (Object item : (Collection) value) {
+                fillAuthorities(collection, item, authorityService);
+            }
+        }
     }
 }
