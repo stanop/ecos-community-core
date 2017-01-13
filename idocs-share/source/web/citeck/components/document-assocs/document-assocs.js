@@ -354,21 +354,25 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
         _buildCell: function QB_generateCell(attributeName, isLink) {
             return function (elCell, oRecord, oColumn, oData) {
                 var openId = Alfresco.util.generateDomId(),
-                    html = '<span>' + oRecord._oData.attributes[attributeName] + '</span>',
-                    page = "";
-                
-                if (oRecord._oData.isFolder == "true") { page = "folder"; } 
-                else if (oRecord._oData.isContent == "true") { page = "document"; }
+                    label = oRecord._oData.attributes[attributeName] || "";
 
-                if (isLink) {
-                    var linkTemplate = '<a id="' + openId + 
-                            '" href="/share/page/' + page +  '-details?nodeRef=' + oRecord._oData.nodeRef + 
-                            '" class="open-link">{cell_title}</a>';
+                if (label) {
+                    var html = '<span>' + label + '</span>',
+                        page = "";
 
-                    html = linkTemplate.replace("{cell_title}", html);
+                    if (oRecord._oData.isFolder == "true") { page = "folder"; } 
+                    else if (oRecord._oData.isContent == "true") { page = "document"; }
+
+                    if (isLink) {
+                        var linkTemplate = '<a id="' + openId + 
+                                '" href="/share/page/' + page +  '-details?nodeRef=' + oRecord._oData.nodeRef + 
+                                '" class="open-link">{cell_title}</a>';
+
+                        html = linkTemplate.replace("{cell_title}", html);
+                    }
+
+                    elCell.innerHTML = html;
                 }
-
-                elCell.innerHTML = html;
             }
         },
 
@@ -380,17 +384,19 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             for (var c in me.options.cells) {
                 var cellName = me.options.cells[c],
                     isLink = me.options.linkCells.indexOf(cellName) != -1;
-                    
-                columnDefinitions.push({
-                    key: cellName.replace(/\w+:/, ""), 
-                    sortable: false, 
-                    formatter: me._buildCell(cellName, isLink)
-                });
+
+                if (cellName) {
+                    columnDefinitions.push({
+                        key: cellName.replace(/\w+:/, ""),
+                        sortable: false, 
+                        formatter: me._buildCell(cellName, isLink)
+                    });
+                }
             }
 
             // render cell actions
             columnDefinitions.push({
-                key: "actions", sortable: false, width: 16,
+                key: "actions", sortable: false,
                 formatter: function (elCell, oRecord, oColumn, oData) {
                     Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
                     var isRemoveableType = false;
@@ -432,16 +438,17 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 }
             });
 
-            var caption =  resultsListName == "undirected" ? "targets" : resultsListName;
-            var myConfigs = {
-                caption: this.msg("association." + type.replace(":", "_") + "." + caption.slice(0,-1))
-            };
-            var accocTable = new YAHOO.widget.DataTable(
-                this.id + resultsListName + index + '-assocs-table',
-                columnDefinitions,
-                this.assocsDataSource[tableId],
-                myConfigs
-            )
+            var caption = resultsListName == "undirected" ? "targets" : resultsListName,
+                myConfigs = {
+                    caption: this.msg("association." + type.replace(":", "_") + "." + caption.slice(0,-1))
+                },
+                accocTable = new YAHOO.widget.DataTable(
+                    this.id + resultsListName + index + '-assocs-table',
+                    columnDefinitions,
+                    this.assocsDataSource[tableId],
+                    myConfigs
+                )
+
             this.assocsTable[tableId] = accocTable;
         },
 
