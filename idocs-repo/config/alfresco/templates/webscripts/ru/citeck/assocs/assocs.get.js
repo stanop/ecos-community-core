@@ -1,5 +1,5 @@
-(function()
-{
+(function() {
+    
     function checkContentType(node, contentTypes) {
         var result = false;
         for (var i = 0; i < contentTypes.length; i++) {
@@ -13,20 +13,34 @@
         }
         return result;
     }
-    var nodeRef = args['nodeRef'];
-    var assocTypes = args['assocTypes'];
-    var contentTypes = args['contentTypes'];
-    contentTypes = contentTypes == undefined ? [] : contentTypes.split(',');
-    var addAssocs = args['addAssocs']||"true";
+
+    function getTitle(attributeName, dictionaryService, messageService) {
+        var attQName = citeckUtils.createQName(attributeName);
+        var attribute = dictionaryService.getProperty(attQName);
+        if (!attribute) {
+            attribute = dictionaryService.getAssociation(attQName);
+        }
+        return attribute ? attribute.getTitle(messageService) : null;
+    }
+
+
+    var dictionaryService = services.get("dictionaryService"),
+        messageService = services.get("messageService");
+
+    var nodeRef = args['nodeRef'],
+        assocTypes = args['assocTypes'],
+        contentTypes = args['contentTypes'] == undefined ? [] : contentTypes.split(','),
+        addAssocs = args['addAssocs']||"true";
+
     if (assocTypes == undefined) assocTypes = "";
     var assocs = [];
+
     if(nodeRef != null && nodeRef.length != 0) {
         for each(type in assocTypes.split(','))
             if (type != '' && nodeRef != null && nodeRef.length != 0){
                 var node = search.findNode(nodeRef);
                 if (node !== null) {
-                    var sourceAssocs = node.sourceAssocs[type];
-                    var sourceNodeRef = [];
+                    var sourceAssocs = node.sourceAssocs[type], sourceNodeRef = [];
                     if (sourceAssocs == undefined) {
                         sourceAssocs = "";
                     } else {
@@ -38,6 +52,15 @@
                                 var titleSource = source.name;
                                 if (source.properties["cm:title"] != null && source.properties["cm:title"] != "") {
                                     titleSource = source.properties["cm:title"];
+                                }
+
+                                var sourceProperties = {};
+                                for (var s in source.properties) {
+                                    var shortSourcePropertyName = utils.shortQName(s);
+                                    sourceProperties[shortSourcePropertyName] = {
+                                        value: source.properties[s],
+                                        label: getTitle(shortSourcePropertyName, dictionaryService, messageService)
+                                    };
                                 }
 
                                 sourceNodeRef.push({
@@ -65,13 +88,23 @@
                                     titleTarget = target.properties["cm:title"];
                                 }
 
+                                var targetProperties = {};
+                                for (var p in target.properties) {
+                                    var shortTargetPropertyName = utils.shortQName(p);
+                                    targetProperties[shortTargetPropertyName] = {
+                                        value: target.properties[p],
+                                        label: getTitle(shortTargetPropertyName, dictionaryService, messageService)
+                                    };
+                                }
+
                                 targetNodeRef.push({
                                     'nodeRef': target.nodeRef.toString(),
                                     'name': target.name,
                                     'isFolder': target.isSubType("cm:folder").toString(),
                                     'isContent': target.isSubType("cm:content").toString(),
                                     'target': target,
-                                    'title': titleTarget
+                                    'title': titleTarget,
+                                    'properties': targetProperties
                                 });
                             }
                     }
@@ -90,13 +123,23 @@
                                     titleChild = child.properties["cm:title"];
                                 }
 
+                                var childProperties = {};
+                                for (var c in child.properties) {
+                                    var shortChildPropertyName = utils.shortQName(c);
+                                    childProperties[shortChildPropertyName] = {
+                                        value: child.properties[c],
+                                        label: getTitle(shortChildPropertyName, dictionaryService, messageService)
+                                    };
+                                }
+
                                 childNodeRef.push({
                                     'nodeRef': child.nodeRef.toString(),
                                     'name': child.name,
                                     'isFolder': child.isSubType("cm:folder").toString(),
                                     'isContent': child.isSubType("cm:content").toString(),
                                     'child': child,
-                                    'title': titleChild
+                                    'title': titleChild,
+                                    'properties': childProperties
                                 });
                             }
                     }

@@ -378,16 +378,19 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
 
         _setupAssociationDataTable: function QB_setupAssociationDataTable(dataJSON, resultsListName, index, type) {
             var me = this,
-                columnDefinitions = [];
+                columnDefinitions = [],
+                object = dataJSON[resultsListName][index];
 
             // render cells
             for (var c in me.options.cells) {
                 var cellName = me.options.cells[c],
-                    isLink = me.options.linkCells.indexOf(cellName) != -1;
+                    isLink = me.options.linkCells.indexOf(cellName) != -1,
+                    label = object.properties[cellName] ? object.properties[cellName].label : "";
 
                 if (cellName) {
                     columnDefinitions.push({
                         key: cellName.replace(/\w+:/, ""),
+                        label: label,
                         sortable: false, 
                         formatter: me._buildCell(cellName, isLink)
                     });
@@ -396,7 +399,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
 
             // render cell actions
             columnDefinitions.push({
-                key: "actions", sortable: false,
+                key: "actions", sortable: false, label: "",
                 formatter: function (elCell, oRecord, oColumn, oData) {
                     Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
                     var isRemoveableType = false;

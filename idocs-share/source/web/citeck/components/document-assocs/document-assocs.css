@@ -23,10 +23,6 @@
     padding: 5px 0 10px 0;
 }
 
-.document-assocs .assoclist thead {
-    display: none;
-}
-
 .document-assocs .assoclist tbody {
     outline: none;
 }
