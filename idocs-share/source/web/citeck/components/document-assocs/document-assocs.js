@@ -387,7 +387,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                     isLink = me.options.linkCells.indexOf(cellName) != -1,
                     label = object.properties[cellName] ? object.properties[cellName].label : "";
 
-                if (cellName) {
+                if (cellName && object.properties[cellName]) {
                     columnDefinitions.push({
                         key: cellName.replace(/\w+:/, ""),
                         label: label,
