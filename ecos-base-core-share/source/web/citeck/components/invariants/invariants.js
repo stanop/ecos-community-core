@@ -1117,21 +1117,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('getBodyEl', function() { return $(".tab-body[data-tab-id=" + this.id() + "]")[0]; })
 
         .init(function() {
-            var tab = $(this.getTitleEl()),
-                body = $(this.getBodyEl());
+            var self = this;
 
             // subscription
             this._visibility.subscribe(function(newValue) {
+                var tab = $(self.getTitleEl()),
+                    body = $(self.getBodyEl());
+
                 if (!!newValue) { tab.show(); body.show(); }
-                else { tab.hide(); body.hide() }
+                else { tab.hide(); body.hide(); }
             });
 
             this._activity.subscribe(function(newValue) {
-                if (!!newValue) { 
-                    tab.attr("data-activity", true); 
+                var tab = $(self.getTitleEl()),
+                    body = $(self.getBodyEl());
+
+                if (!!newValue) {
+                    tab.attr("data-activity", true);
                     body.show();
-                } else { 
-                    tab.attr("data-activity", false).removeClass("selected"); 
+                } else {
+                    tab.attr("data-activity", false).removeClass("selected");
                     body.hide();
                 }
             });
@@ -1140,7 +1145,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this._visibility(this._visibility());
             this._activity(this._activity());
         })
-        ;
+    ;
 
     NodeImpl
         .constructor([Node, Object], function(node, model) {
