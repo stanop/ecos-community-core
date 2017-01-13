@@ -64,6 +64,22 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             nodeRef: null,
 
             /**
+             * list of cell names, that are displayed by this component
+             *
+             * @property cells
+             * @type array
+             */
+            cells: [ "cm:title" ],
+
+            /**
+             * list of cell names, that will link
+             *
+             * @property linkCells
+             * @type array
+             */
+            linkCells: [ "cm:title" ],
+
+            /**
              * list of association qnames, that are displayed by this component
              *
              * @property visible
@@ -193,9 +209,11 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                         var data = eval('({' + response.responseText + '})');
                                         var messageEl = Dom.get(this.id + "-message");
                                         var isAssocs = false;
-                                        for (var i=0; i<data.assocs.length; i++) {
+
+                                        for (var i = 0; i < data.assocs.length; i++) {
                                             var bodyEl = Dom.get(this.id + "-body");
                                             var type = data.assocs[i].type;
+
                                             if(this.directed[type]) {
                                                 if(data.assocs[i].sources.length != 0) {
                                                     isAssocs = true;
@@ -205,6 +223,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                                     bodyEl.appendChild(table);
                                                     this._setupAssociationDataTable(data.assocs[i], "sources", i, type);
                                                 }
+
                                                 if(data.assocs[i].targets.length != 0) {
                                                     isAssocs = true;
                                                     var table = document.createElement("div");
@@ -225,6 +244,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                                 }
                                             }
                                         }
+
                                         if(!isAssocs) {
                                             messageEl.innerHTML = me.msg("empty-assocs");
                                         }
@@ -331,46 +351,68 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             );
         },
 
-        _setupAssociationDataTable: function QB_setupAssociationDataTable(dataJSON, resultsListName, index, type) {
-            var me = this;
-            var renderCellActions = function GroupFinder_renderCellActions(elCell, oRecord, oColumn, oData) {
-                Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
-                var isRemoveableType = false;
-                for (var i=0; i<me.options.removeable.length; i++)
-                    if(me.options.removeable[i].name == type) {
-                        isRemoveableType = true;
-                        break;
-                    }
-                if(isRemoveableType && me.hasPermissionWrite) {
-                    Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
-                    var removeId = Alfresco.util.generateDomId();
-                    elCell.innerHTML = '<div class="remove-assoc"><a title=' + me.msg("delete-button.label") + ' id="' + removeId + '" class="remove-link">' +
-                        '<span>&nbsp</span></a></div>';
-                    Event.addListener(
-                        removeId,
-                        "click", function() {
-                            me.onRemoveAssociation.apply(me, ['', oRecord, type]);
-                        }
-                    );
+        _buildCell: function QB_generateCell(attributeName, isLink) {
+            return function (elCell, oRecord, oColumn, oData) {
+                var openId = Alfresco.util.generateDomId(),
+                    html = '<span>' + oRecord._oData.attributes[attributeName] + '</span>',
+                    page = "";
+                
+                if (oRecord._oData.isFolder == "true") { page = "folder"; } 
+                else if (oRecord._oData.isContent == "true") { page = "document"; }
+
+                if (isLink) {
+                    var linkTemplate = '<a id="' + openId + 
+                            '" href="/share/page/' + page +  '-details?nodeRef=' + oRecord._oData.nodeRef + 
+                            '" class="open-link">{cell_title}</a>';
+
+                    html = linkTemplate.replace("{cell_title}", html);
                 }
 
-            };
-            var renderCellNodeName = function GroupFinder_renderCellNodeName(elCell, oRecord, oColumn, oData) {
-                var openId = Alfresco.util.generateDomId();
-                var page = "";
-                if(oRecord._oData.isFolder == "true") {
-                    page = "folder";
-                } else if (oRecord._oData.isContent == "true") {
-                    page = "document";
+                elCell.innerHTML = html;
+            }
+        },
+
+        _setupAssociationDataTable: function QB_setupAssociationDataTable(dataJSON, resultsListName, index, type) {
+            var me = this,
+                columnDefinitions = [];
+
+            // render cells
+            for (var c in me.options.cells) {
+                var cellName = me.options.cells[c],
+                    isLink = me.options.linkCells.indexOf(cellName) != -1;
+                    
+                columnDefinitions.push({
+                    key: cellName.replace(/\w+:/, ""), 
+                    sortable: false, 
+                    formatter: me._buildCell(cellName, isLink)
+                });
+            }
+
+            // render cell actions
+            columnDefinitions.push({
+                key: "actions", sortable: false, width: 16,
+                formatter: function (elCell, oRecord, oColumn, oData) {
+                    Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
+                    var isRemoveableType = false;
+                    for (var i=0; i<me.options.removeable.length; i++)
+                        if(me.options.removeable[i].name == type) {
+                            isRemoveableType = true;
+                            break;
+                        }
+                    if(isRemoveableType && me.hasPermissionWrite) {
+                        Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
+                        var removeId = Alfresco.util.generateDomId();
+                        elCell.innerHTML = '<div class="remove-assoc"><a title=' + me.msg("delete-button.label") + ' id="' + removeId + '" class="remove-link">' +
+                            '<span>&nbsp</span></a></div>';
+                        Event.addListener(
+                            removeId,
+                            "click", function() {
+                                me.onRemoveAssociation.apply(me, ['', oRecord, type]);
+                            }
+                        );
+                    }
                 }
-                elCell.innerHTML = '&nbsp;<a id="' + openId + '" href="/share/page/' + page + '-details?nodeRef=' + oRecord._oData.nodeRef + '" class="open-link">' +
-                    '<span>' + oRecord._oData.title + '</span></a>';
-            };
-            var columnDefinitions =
-                [
-                    { key: "name", sortable: false, formatter: renderCellNodeName},
-                    { key: "actions", sortable: false, formatter: renderCellActions, width: 16 }
-                ];
+            });
 
             var tableId = this.id + resultsListName + index + '-assocs-table';
             this.assocsDataSource[tableId] = new YAHOO.util.DataSource(dataJSON, {
@@ -379,6 +421,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                     resultsList : resultsListName, // String pointer to result data
                     // Field order doesn't matter and not all data is required to have a field
                     fields : [
+                        { key: "attributes" },
                         { key: "nodeRef" },
                         { key: "name" },
                         { key: "isFolder" },
