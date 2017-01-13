@@ -1,6 +1,5 @@
 package ru.citeck.ecos.role;
 
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -76,7 +75,7 @@ public class CaseRoleServiceImpl implements CaseRoleService {
             removeAssignees(roleRef);
             return;
         }
-        Set<NodeRef> existing = getTargets(roleRef, ICaseRoleModel.ASSOC_ASSIGNEES);
+        Set<NodeRef> existing = getAssignees(roleRef);
         Set<NodeRef> added = subtract(assignees, existing);
         Set<NodeRef> removed = subtract(existing, assignees);
         for (NodeRef assignee : added) {
@@ -86,6 +85,34 @@ public class CaseRoleServiceImpl implements CaseRoleService {
             nodeService.removeAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
         fireAssigneesChangedEvent(roleRef, added, removed);
+    }
+
+    @Override
+    public void addAssignees(NodeRef caseRef, String roleName, NodeRef... assignees) {
+        addAssignees(needRole(caseRef, roleName), assignees);
+    }
+
+    @Override
+    public void addAssignees(NodeRef roleRef, NodeRef... assignees) {
+        addAssignees(roleRef, Arrays.asList(assignees));
+    }
+
+    @Override
+    public void addAssignees(NodeRef caseRef, String roleName, Collection<NodeRef> assignees) {
+        addAssignees(needRole(caseRef, roleName), assignees);
+    }
+
+    @Override
+    public void addAssignees(NodeRef roleRef, Collection<NodeRef> assignees) {
+        if (assignees == null || assignees.isEmpty()) {
+            return;
+        }
+        Set<NodeRef> existing = getAssignees(roleRef);
+        Set<NodeRef> added = subtract(assignees, existing);
+        for (NodeRef assignee : added) {
+            nodeService.createAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
+        }
+        fireAssigneesChangedEvent(roleRef, added, null);
     }
 
     @Override

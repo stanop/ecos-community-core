@@ -91,6 +91,29 @@ public interface CaseRoleService {
      */
     void setAssignees(NodeRef roleRef, Collection<NodeRef> assignees);
 
+
+    /**
+     * Add role assignees
+     */
+    void addAssignees(NodeRef roleRef, NodeRef... assignees);
+
+    /**
+     * Add role assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void addAssignees(NodeRef caseRef, String roleName, NodeRef... assignees);
+
+    /**
+     * Add role assignees
+     */
+    void addAssignees(NodeRef roleRef, Collection<NodeRef> assignees);
+
+    /**
+     * Add role assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void addAssignees(NodeRef caseRef, String roleName, Collection<NodeRef> assignees);
+
     /**
      * Remove all assignees from role
      */
