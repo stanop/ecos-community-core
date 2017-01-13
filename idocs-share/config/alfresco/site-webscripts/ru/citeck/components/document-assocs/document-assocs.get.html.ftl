@@ -1,6 +1,6 @@
 
 <#if nodeRef?? && assocs??>
-	<#assign el=args.htmlid?js_string>
+    <#assign el=args.htmlid?js_string>
     <#assign pickerId = el + "-picker">
 
 <div id="${pickerId}" class="assocs-picker yui-panel yui-module yui-overlay dynamic-tree-picker" style="visibility: hidden; width: 60em;">
@@ -55,24 +55,29 @@
 </div>
 
 <div id="${el}" class="document-assocs document-details-panel">
-	<h2 id="${el}-heading" class="thin dark">
-	    ${msg("header.assocs")}
+    <h2 id="${el}-heading" class="thin dark">
+        ${msg("header.assocs")}
             <span id="${el}-create-button">&nbsp;</span>
-	</h2>
+    </h2>
     <div id="${el}-body" class="panel-body">
         <div id="${el}-message"></div>
     </div>
 </div>
 
 <#macro renderAssocList list>
-	[
-	<#list list as item> {
-        "name": "${item.name?js_string}",
-        "direction": "${item.direction?js_string}",
-        "directed": ${item.directed?string}
-    }<#if item_has_next>,</#if>
-	</#list>
-	]
+    [
+        <#list list as item>
+        {
+            "name": "${item.name?js_string}",
+            "direction": "${item.direction?js_string}",
+            "directed": ${item.directed?string}
+        }<#if item_has_next>,</#if>
+        </#list>
+    ]
+</#macro>
+
+<#macro renderCells cells>
+    [ <#list cells as cell>"${cell}"<#if cell_has_next>,</#if></#list> ]
 </#macro>
 
 <script type="text/javascript">//<![CDATA[
@@ -181,16 +186,20 @@ YAHOO.util.Event.onContentReady("${el}", function() {
         ]
     });
 
-	var component = new Citeck.widget.DocumentAssocs("${el}");
-	component.setOptions({
-		nodeRef: "${nodeRef?js_string}",
-		visible: <@renderAssocList assocs.visible />,
-		addable: <@renderAssocList assocs.addable />,
-		removeable: <@renderAssocList assocs.removeable />,
-        createAssocPicker: picker
-	}).setMessages(${messages});
+    var component = new Citeck.widget.DocumentAssocs("${el}");
+    component.setOptions({
+        nodeRef: "${nodeRef?js_string}",
 
-	Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssocs", {panel: "${el}-body"});
+        <#if cells??>cells: <@renderCells cells />,</#if>
+        <#if linkCells??>linkCells: <@renderCells linkCells />,</#if>
+        
+        visible: <@renderAssocList assocs.visible />,
+        addable: <@renderAssocList assocs.addable />,
+        removeable: <@renderAssocList assocs.removeable />,
+        createAssocPicker: picker
+    }).setMessages(${messages});
+
+    Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssocs", {panel: "${el}-body"});
 });
 //]]></script>
 
