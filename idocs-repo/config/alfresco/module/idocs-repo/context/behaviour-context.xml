@@ -748,5 +748,15 @@
         <property name="policyComponent" ref="policyComponent" />
     </bean>
 
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformTaskAssignees" init-method="init">
+        <property name="caseActivityService" ref="caseActivityService" />
+        <property name="authorityService" ref="authorityService" />
+        <property name="workflowService" ref="WorkflowService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="runtimeService" ref="activitiRuntimeService" />
+        <property name="taskService" ref="activitiTaskService" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
 </beans>
 

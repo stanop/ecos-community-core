@@ -269,6 +269,13 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         return false;
     }
 
+    @Override
+    public boolean isActive(NodeRef activityRef) {
+        mandatoryNodeRef("activityRef", activityRef);
+        String state = (String) nodeService.getProperty(activityRef, LifeCycleModel.PROP_STATE);
+        return STATE_STARTED.equals(state);
+    }
+
     private void mandatoryActivity(String paramName, NodeRef activityRef) {
         mandatoryNodeRef(paramName, activityRef);
         QName type = nodeService.getType(activityRef);
