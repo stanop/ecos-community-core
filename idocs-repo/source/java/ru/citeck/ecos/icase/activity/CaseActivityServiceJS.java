@@ -86,10 +86,13 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         caseActivityService.setIndex(JavaScriptImplUtils.getNodeRef(activityRef), index);
     }
 
-    public boolean hasActiveChildren(Object activityRef) {
-        return caseActivityService.hasActiveChildren(JavaScriptImplUtils.getNodeRef(activityRef));
+    public boolean hasActiveChildren(Object activity) {
+        return caseActivityService.hasActiveChildren(JavaScriptImplUtils.getNodeRef(activity));
     }
 
+    public boolean isActive(Object activity) {
+        return caseActivityService.isActive(JavaScriptImplUtils.getNodeRef(activity));
+    }
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;

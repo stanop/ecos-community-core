@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
  */
 public class CasePerformUtils {
 
+    public static final String SUB_PROCESS_NAME = "perform-sub-process";
+
     public static final String DEFAULT_DELIMITER = ",";
 
     public static final String OPTIONAL_PERFORMERS = "optionalPerformers";
