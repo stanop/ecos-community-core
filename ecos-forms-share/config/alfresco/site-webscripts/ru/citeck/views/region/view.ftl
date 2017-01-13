@@ -1,6 +1,5 @@
 <#assign params = viewScope.region.params!{} />
 <#assign isViewMode = (viewScope.view.mode == "view")/>
-<#assign completeDelete = (params.completeDelete!"false") == "true" />
 
 <!-- ko foreach: multipleValues -->
 <span class="value-item">
@@ -24,16 +23,7 @@
                 <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }), clickBubble: false"></a>
             <!-- /ko -->
 
-            <#if completeDelete>
-                <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
-                    <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.destroy.bind($parent, $index(), $data.nodeRef), clickBubble: false"></a>
-                <!-- /ko -->
-                <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
-                    <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
-                <!-- /ko -->
-            <#else>
-                <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
-            </#if>
+            <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
         </span>
     </#if>
 </span>

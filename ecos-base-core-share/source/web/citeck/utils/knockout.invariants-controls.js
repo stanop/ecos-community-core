@@ -1451,9 +1451,7 @@ ko.bindingHandlers.fileUploadControl = {
     init: function(element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
-            
-            type = settings.type,
-            properties = settings.properties;
+            multiple = settings.multiple;
 
         // Invariants global object
         var Node = koutils.koclass('invariants.Node');
@@ -1468,6 +1466,10 @@ ko.bindingHandlers.fileUploadControl = {
         var input = Dom.get(element.id + "-fileInput"),
             openFileUploadDialogButton = Dom.get(element.id + "-openFileUploadDialogButton");
 
+        // global variables
+        var lastUploadedFiles = [];
+
+
         // click on input[file] button
         Event.on(openFileUploadDialogButton, 'click', function(event) {
             $(input).click();
@@ -1476,6 +1478,31 @@ ko.bindingHandlers.fileUploadControl = {
         // get files from input[file]
         Event.on(input, 'change', function(event) {
             var files = event.target.files;
+
+            // uploaded files library
+            var uploadedFiles = ko.observableArray();
+            uploadedFiles.subscribe(function(array) {
+                if (files.length > 0 && files.length == array.length) {
+
+                    // delete old nodes
+                    if (lastUploadedFiles.length > 0 && array != lastUploadedFiles) {
+                        for (var i in lastUploadedFiles) {
+                            deleteNode(lastUploadedFiles[i])
+                        }
+                    }
+
+                    value(array);
+
+                    // set last uploaded files
+                    lastUploadedFiles = array;
+                }
+            })
+
+            if (files.length == 0 || files != lastUploadedFiles) {
+                value(null);
+                uploadedFiles.removeAll();
+            }
+
             for (var i = 0; i < files.length; i++) {
                 var request = new XMLHttpRequest();
 
@@ -1505,9 +1532,7 @@ ko.bindingHandlers.fileUploadControl = {
                             
                             if (target.status == 200) {
                                 // push new file to uploaded files library
-                                var currentValues = value();
-                                currentValues.push(result.nodeRef);
-                                value(currentValues);
+                                uploadedFiles.push(result.nodeRef);
                             }
 
                             if (target.status == 500) {
@@ -1531,16 +1556,7 @@ ko.bindingHandlers.fileUploadControl = {
                 formData.append("overwrite", false);
                 formData.append("thumbnails", null);
 
-                if (properties) {
-                    for (var p in properties) {
-                        formData.append("property_" + p, properties[p]);
-                    }
-                }
-
-                var href = Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true";
-                if (type) href += "&contenttype=" + type;
-
-                request.open("POST", href, true);
+                request.open("POST",  Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true", true);
                 request.send(formData);
             }
         });
