@@ -69,7 +69,8 @@
                                     'isFolder': source.isSubType("cm:folder").toString(),
                                     'isContent': source.isSubType("cm:content").toString(),
                                     'source': source,
-                                    'title': titleSource
+                                    'title': titleSource,
+                                    'properties': sourceProperties
                                 });
                             }
                     }
