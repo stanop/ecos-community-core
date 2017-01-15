@@ -379,7 +379,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
         _setupAssociationDataTable: function QB_setupAssociationDataTable(dataJSON, resultsListName, index, type) {
             var me = this,
                 columnDefinitions = [],
-                object = dataJSON[resultsListName][index];
+                object = dataJSON[resultsListName][0];
 
             // render cells
             for (var c in me.options.cells) {
