@@ -15,14 +15,14 @@
     </extensionElements>
     <startEvent id="startevent1" name="Submit Perform Task" activiti:formKey="wfcf:submitConfirmTask"></startEvent>
     <subProcess id="perform-sub-process" name=" ">
-      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${performers}" activiti:elementVariable="performer">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${performers}" activiti:elementVariable="wfcp_performer">
         <completionCondition>${abortPerforming}</completionCondition>
       </multiInstanceLoopCharacteristics>
       <userTask id="confirm" name="Perform Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="${wfcp_formKey}">
         <extensionElements>
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
             <activiti:field name="authority">
-              <activiti:expression><![CDATA[${performer}]]></activiti:expression>
+              <activiti:expression><![CDATA[${wfcp_performer}]]></activiti:expression>
             </activiti:field>
           </activiti:taskListener>
           <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">

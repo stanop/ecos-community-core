@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
  */
 public class CasePerformUtils {
 
+    public static final String PROC_DEFINITION_NAME = "case-perform";
     public static final String SUB_PROCESS_NAME = "perform-sub-process";
 
     public static final String DEFAULT_DELIMITER = ",";
@@ -73,6 +74,8 @@ public class CasePerformUtils {
     void saveTaskResult(ExecutionEntity execution, TaskEntity task) {
 
         String outcome = (String)task.getVariableLocal(toString(CasePerformModel.PROP_PERFORM_OUTCOME));
+        if (outcome == null) return;
+
         NodeRef person = repositoryHelper.getPerson();
         String userName = (String)nodeService.getProperty(person, ContentModel.PROP_USERNAME);
         String resultName = "perform-result-" + userName + "-" + outcome;
