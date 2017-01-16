@@ -1475,26 +1475,29 @@ ko.bindingHandlers.fileUploadControl = {
 
         // get files from input[file]
         Event.on(input, 'change', function(event) {
-            var files = event.target.files;
+            var files = event.target.files,
+                loadedFiles = ko.observable(0);
+
+            loadedFiles.subscribe(function(newValue) {
+                if (newValue == files.length) {
+                    // enable button
+                    $(element).removeClass("loading");
+                    $(openFileUploadDialogButton).removeAttr("disabled");
+                }
+            });
+
+            // disable upload button
+            $(element).addClass("loading");
+            $(openFileUploadDialogButton).attr("disabled", "disabled");
+
             for (var i = 0; i < files.length; i++) {
                 var request = new XMLHttpRequest();
 
                 (function(file){
-                    // loading started
-                    request.addEventListener("loadstart", function(event) {
-                        $(element).addClass("loading");
-                        $(openFileUploadDialogButton).attr("disabled", "disabled");  
-                    }, false);
-
-                    // loading progress
-                    // request.addEventListener("progress", function(event) {
-                    //     var percent = Math.round((event.loaded * 100) / event.total);
-                    //     console.log("progress", percent);
-                    // }, false);
-
                     // loading failure.
                     request.addEventListener("error", function(event) {
                         console.log("loaded failure")
+                        loadedFiles(loadedFiles() + 1);
                     }, false);
                     
                     // request finished
@@ -1513,10 +1516,9 @@ ko.bindingHandlers.fileUploadControl = {
                             if (target.status == 500) {
                                 Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: result.message });
                             }
-                        }
 
-                        $(element).removeClass("loading");
-                        $(openFileUploadDialogButton).removeAttr("disabled");
+                            loadedFiles(loadedFiles() + 1);
+                        }
                     }, false)
                 })(files[i])
 
