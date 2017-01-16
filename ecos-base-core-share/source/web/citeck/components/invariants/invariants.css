@@ -409,6 +409,12 @@
 
 /* TEMPLATE TABLE */
 
+.invariants-form .template-table:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
 .invariants-form .template-table,
 .invariants-form .template-table .template-rowset {
   position: relative;
