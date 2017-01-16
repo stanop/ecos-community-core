@@ -746,16 +746,17 @@
     <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
     </bean>
 
-    <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformTaskAssignees" init-method="init">
-        <property name="caseActivityService" ref="caseActivityService" />
-        <property name="authorityService" ref="authorityService" />
-        <property name="workflowService" ref="WorkflowService" />
+    <bean class="ru.citeck.ecos.behavior.role.UpdateRoleBehaviour" init-method="init">
+        <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
-        <property name="runtimeService" ref="activitiRuntimeService" />
-        <property name="taskService" ref="activitiTaskService" />
         <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformAssignees" init-method="init">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
 </beans>

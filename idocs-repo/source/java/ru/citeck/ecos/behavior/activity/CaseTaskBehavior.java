@@ -13,6 +13,7 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowDefinition;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowPath;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -218,8 +219,11 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     public void onCaseActivityReset(NodeRef taskRef) {
         String workflowInstanceId = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
 
-        if (workflowInstanceId != null && workflowService.getWorkflowById(workflowInstanceId).isActive()) {
-            workflowService.cancelWorkflow(workflowInstanceId);
+        if (workflowInstanceId != null) {
+            WorkflowInstance wf = workflowService.getWorkflowById(workflowInstanceId);
+            if (wf != null && wf.isActive()) {
+                workflowService.cancelWorkflow(workflowInstanceId);
+            }
         }
 
         nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, null);

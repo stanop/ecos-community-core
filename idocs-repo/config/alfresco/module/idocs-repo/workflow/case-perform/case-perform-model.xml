@@ -26,6 +26,19 @@
                 </property>
             </properties>
             <associations>
+                <!--performer for task-->
+                <association name="wfcp:performer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <!--performers for workflow-->
                 <association name="wfcp:performers">
                     <source>
                         <mandatory>false</mandatory>

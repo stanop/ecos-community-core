@@ -21,6 +21,7 @@ public interface CasePerformModel {
     QName PROP_OUTCOMES_WITH_MANDATORY_COMMENT = QName.createQName(NAMESPACE, "outcomesWithMandatoryComment");
     QName PROP_ABORT_OUTCOMES = QName.createQName(NAMESPACE, "abortOutcomes");
 
+    QName ASSOC_PERFORMER = QName.createQName(NAMESPACE, "performer");
     QName ASSOC_PERFORMERS = QName.createQName(NAMESPACE, "performers");
     QName ASSOC_RESULT_PERSON = QName.createQName(NAMESPACE, "resultPerson");
     QName ASSOC_RESULT_PERFORMER = QName.createQName(NAMESPACE, "resultPerformer");
