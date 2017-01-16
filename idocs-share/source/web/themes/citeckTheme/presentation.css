@@ -4474,5 +4474,16 @@ div#HEADER_USER_STATUS {
 }
 
 .yui-skin-citeckTheme .form-template-tabs .template-tabs .tabs-body {
-    padding-bottom: 5px;
+  padding-bottom: 5px;
+}
+
+
+/* tab-template in view mode */
+
+.yui-skin-citeckTheme .invariants-form.view-form .template-tabs .tabs-body {
+  padding: 15px;
+}
+
+.yui-skin-citeckTheme .invariants-form.view-form .template-tabs .tabs-title li.tab-title.selected {
+  background-color: #fafafa;
 }

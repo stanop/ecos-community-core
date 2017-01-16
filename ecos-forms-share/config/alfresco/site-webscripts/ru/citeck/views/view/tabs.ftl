@@ -11,7 +11,7 @@
 <#assign tabs = getTabs(viewScope.view) />
 
 <div class="tabs-title">
-	<span class="scroll-tabs scroll-left hidden" data-bind="click: $root.scrollTabs"> << </span>
+	<span class="scroll-tabs scroll-left hidden" data-bind="click: $root.scrollGroups"> << </span>
 	<ul>
 		<#list tabs as tab>
 			<#assign tabId = tab.id!tab.genId />

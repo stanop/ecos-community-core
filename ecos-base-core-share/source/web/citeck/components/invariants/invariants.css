@@ -330,7 +330,8 @@
   display: block;
 }
 
-.invariants-form .template-wide .template-block {
+.invariants-form .template-wide .template-block,
+.invariants-form .template-wide .template-block-checkbox {
   min-width: 200px;
   width: 250px;
   display: inline-block;
@@ -493,7 +494,8 @@
   padding-bottom: 0;
 }
 
-.invariants-form .template-table .template-rowset .title {
+.invariants-form .template-table .template-rowset .title,
+.invariants-form .template-wide .template-blockset .title {
   font-size: 18px;
   color: #E97527;
   margin-bottom: 10px;
@@ -1747,6 +1749,7 @@
 /* TEMPLATE TABS */
 .static .invariants-form .template-tabs .template-table {
     margin-left: 0;
+    max-width: 100%;
 }
 
 .invariants-form .template-tabs {
@@ -1808,6 +1811,14 @@
   right: 0;
   cursor: e-resize;
 }
+
+
+/* template-tabs in VIEW mode */
+
+.invariants-form.view-form .template-tabs .tabs-body {
+  padding: 10px;
+}
+
 
 /* VALIDATION */
 
