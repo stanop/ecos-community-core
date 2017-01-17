@@ -60,13 +60,7 @@ function getAssocList(assocs, listName, defaultList) {
     }
    
 
-    if (args.cells) { 
-        model.cells = args.cells.split(/[\s,]+/);
-    }
-
-    if (args.linkCells) { 
-        model.linkCells = args.linkCells.split(/[\s,]+/);
-    }
+    if (args.columns) { model.columns = args.columns; }
 
     model.nodeRef = nodeRef;
     model.assocs = {

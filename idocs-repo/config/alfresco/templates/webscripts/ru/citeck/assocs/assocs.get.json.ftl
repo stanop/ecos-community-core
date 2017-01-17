@@ -25,14 +25,6 @@
                         </#if>
                             <@search.associationsJSON source.source.associations/>
                     </#if>
-                },
-                "properties": {
-                    <#list source.properties?keys as property>
-                        "${property}": { 
-                            "value": <#if source.properties[property].value??><@search.printValue source.properties[property].value /><#else>null</#if>,
-                            "label": <#if source.properties[property].label??><@search.printValue source.properties[property].label /><#else>null</#if>
-                        }<#if property_has_next>,</#if>
-                    </#list>
                 }
             }<#if source_has_next>,</#if>
             </#list>
@@ -55,14 +47,6 @@
                         </#if>
                             <@search.associationsJSON target.target.associations/>
                     </#if>
-                },
-                "properties": {
-                    <#list target.properties?keys as property>
-                        "${property}": { 
-                            "value": <#if target.properties[property].value??><@search.printValue target.properties[property].value /><#else>null</#if>,
-                            "label": <#if target.properties[property].label??><@search.printValue target.properties[property].label /><#else>null</#if>
-                        }<#if property_has_next>,</#if>
-                    </#list>
                 }
             }<#if target_has_next>,</#if>
             </#list>
@@ -85,14 +69,6 @@
                         </#if>
                             <@search.associationsJSON child.child.associations/>
                     </#if>
-                },
-                "properties": {
-                    <#list child.properties?keys as property>
-                        "${property}": { 
-                            "value": <#if child.properties[property].value??><@search.printValue child.properties[property].value /><#else>null</#if>,
-                            "label": <#if child.properties[property].label??><@search.printValue child.properties[property].label /><#else>null</#if>
-                        }<#if property_has_next>,</#if>
-                    </#list>
                 }
             }<#if child_has_next>,</#if>
             </#list>

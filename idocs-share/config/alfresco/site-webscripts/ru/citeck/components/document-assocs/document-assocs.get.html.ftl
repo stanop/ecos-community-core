@@ -190,8 +190,7 @@ YAHOO.util.Event.onContentReady("${el}", function() {
     component.setOptions({
         nodeRef: "${nodeRef?js_string}",
 
-        <#if cells??>cells: <@renderCells cells />,</#if>
-        <#if linkCells??>linkCells: <@renderCells linkCells />,</#if>
+        <#if columns??>columns: ${columns},</#if>
         
         visible: <@renderAssocList assocs.visible />,
         addable: <@renderAssocList assocs.addable />,
