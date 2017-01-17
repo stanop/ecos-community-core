@@ -11,6 +11,7 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.springframework.extensions.surf.util.ParameterCheck;
 import ru.citeck.ecos.role.CaseRolePolicies.OnRoleAssigneesChangedPolicy;
 import ru.citeck.ecos.role.CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy;
 import ru.citeck.ecos.model.ICaseRoleModel;
@@ -43,17 +44,22 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     @Override
     public List<NodeRef> getRoles(NodeRef caseRef) {
+        if (caseRef == null || !nodeService.exists(caseRef)) {
+            return Collections.emptyList();
+        }
         List<ChildAssociationRef> assocs = nodeService.getChildAssocs(caseRef, ICaseRoleModel.ASSOC_ROLES,
                                                                                RegexQNamePattern.MATCH_ALL);
         List<NodeRef> result = new ArrayList<>(assocs.size());
         for (ChildAssociationRef assoc : assocs) {
             result.add(assoc.getChildRef());
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     @Override
     public NodeRef getRole(NodeRef caseRef, String name) {
+        ParameterCheck.mandatoryString("name", name);
+
         List<NodeRef> roles = getRoles(caseRef);
         for (NodeRef roleRef : roles) {
             String varName = (String) nodeService.getProperty(roleRef, ICaseRoleModel.PROP_VARNAME);

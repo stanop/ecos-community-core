@@ -32,7 +32,7 @@ import java.util.Set;
 public interface CaseRoleService {
 
     /**
-     * Get all roles in specified case
+     * Get all roles in specified case or empty list if caseRef is null or not exists
      * @return list of roles
      */
     List<NodeRef> getRoles(NodeRef caseRef);
@@ -40,6 +40,7 @@ public interface CaseRoleService {
     /**
      * Get role by name in specified case
      * @return role or null if role not found
+     * @throws IllegalArgumentException if name is null or empty
      */
     NodeRef getRole(NodeRef caseRef, String name);
 
