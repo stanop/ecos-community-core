@@ -54,23 +54,13 @@
                                     titleSource = source.properties["cm:title"];
                                 }
 
-                                var sourceProperties = {};
-                                for (var s in source.properties) {
-                                    var shortSourcePropertyName = utils.shortQName(s);
-                                    sourceProperties[shortSourcePropertyName] = {
-                                        value: source.properties[s],
-                                        label: getTitle(shortSourcePropertyName, dictionaryService, messageService)
-                                    };
-                                }
-
                                 sourceNodeRef.push({
                                     'nodeRef': source.nodeRef.toString(),
                                     'name': source.name,
                                     'isFolder': source.isSubType("cm:folder").toString(),
                                     'isContent': source.isSubType("cm:content").toString(),
                                     'source': source,
-                                    'title': titleSource,
-                                    'properties': sourceProperties
+                                    'title': titleSource
                                 });
                             }
                     }
@@ -89,23 +79,13 @@
                                     titleTarget = target.properties["cm:title"];
                                 }
 
-                                var targetProperties = {};
-                                for (var p in target.properties) {
-                                    var shortTargetPropertyName = utils.shortQName(p);
-                                    targetProperties[shortTargetPropertyName] = {
-                                        value: target.properties[p],
-                                        label: getTitle(shortTargetPropertyName, dictionaryService, messageService)
-                                    };
-                                }
-
                                 targetNodeRef.push({
                                     'nodeRef': target.nodeRef.toString(),
                                     'name': target.name,
                                     'isFolder': target.isSubType("cm:folder").toString(),
                                     'isContent': target.isSubType("cm:content").toString(),
                                     'target': target,
-                                    'title': titleTarget,
-                                    'properties': targetProperties
+                                    'title': titleTarget
                                 });
                             }
                     }
@@ -124,23 +104,13 @@
                                     titleChild = child.properties["cm:title"];
                                 }
 
-                                var childProperties = {};
-                                for (var c in child.properties) {
-                                    var shortChildPropertyName = utils.shortQName(c);
-                                    childProperties[shortChildPropertyName] = {
-                                        value: child.properties[c],
-                                        label: getTitle(shortChildPropertyName, dictionaryService, messageService)
-                                    };
-                                }
-
                                 childNodeRef.push({
                                     'nodeRef': child.nodeRef.toString(),
                                     'name': child.name,
                                     'isFolder': child.isSubType("cm:folder").toString(),
                                     'isContent': child.isSubType("cm:content").toString(),
                                     'child': child,
-                                    'title': titleChild,
-                                    'properties': childProperties
+                                    'title': titleChild
                                 });
                             }
                     }

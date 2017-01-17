@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -64,20 +64,13 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             nodeRef: null,
 
             /**
-             * list of cell names, that are displayed by this component
+             * list of column objects, that are displayed by this component
              *
-             * @property cells
+             * @property columns
              * @type array
              */
-            cells: [ "cm:title" ],
+            columns: [ { attribute: "cm:title", isLink: true } ],
 
-            /**
-             * list of cell names, that will link
-             *
-             * @property linkCells
-             * @type array
-             */
-            linkCells: [ "cm:title" ],
 
             /**
              * list of association qnames, that are displayed by this component
@@ -351,79 +344,86 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             );
         },
 
-        _buildCell: function QB_generateCell(attributeName, isLink) {
-            return function (elCell, oRecord, oColumn, oData) {
-                var openId = Alfresco.util.generateDomId(),
-                    label = oRecord._oData.attributes[attributeName] || "";
+        _buildCell: function QB_buildCell(attributeName, isLink) {
+            var me = this,
+                column = me.options.columns[_.findIndex(this.options.columns, { attribute: attributeName })];
 
-                if (label) {
-                    var html = '<span>' + label + '</span>',
-                        page = "";
-
-                    if (oRecord._oData.isFolder == "true") { page = "folder"; } 
-                    else if (oRecord._oData.isContent == "true") { page = "document"; }
-
-                    if (isLink) {
-                        var linkTemplate = '<a id="' + openId + 
-                                '" href="/share/page/' + page +  '-details?nodeRef=' + oRecord._oData.nodeRef + 
-                                '" class="open-link">{cell_title}</a>';
-
-                        html = linkTemplate.replace("{cell_title}", html);
-                    }
-
-                    elCell.innerHTML = html;
+            return function(elCell, oRecord, oColumn, oData) {
+                if (column.formatter) {
+                    column.formatter(elCell, oRecord, oColumn, oRecord._oData.attributes[attributeName]);
+                    return;
                 }
+
+                var openId = Alfresco.util.generateDomId(),
+                    label = oRecord._oData.attributes[attributeName] || "-";
+                    html = '<span>' + label + '</span>',
+                    page = "";
+
+                if (oRecord._oData.isFolder == "true") { page = "folder"; } 
+                else if (oRecord._oData.isContent == "true") { page = "document"; }
+
+                if (isLink) {
+                    var linkTemplate = '<a id="' + openId + 
+                            '" href="/share/page/' + page +  '-details?nodeRef=' + oRecord._oData.nodeRef + 
+                            '" class="open-link">{cell_title}</a>';
+
+                    html = linkTemplate.replace("{cell_title}", html);
+                }
+
+                elCell.innerHTML = html;
             }
         },
 
-        _setupAssociationDataTable: function QB_setupAssociationDataTable(dataJSON, resultsListName, index, type) {
+        _buildColumnDefinitions: function QB_buildColumnDefinitions(type) {
             var me = this,
-                columnDefinitions = [],
-                object = dataJSON[resultsListName][0];
+                columnDefinitions = [];
 
-            // render cells
-            for (var c in me.options.cells) {
-                var cellName = me.options.cells[c],
-                    isLink = me.options.linkCells.indexOf(cellName) != -1,
-                    label = object.properties[cellName] ? object.properties[cellName].label : "";
+            // render columns
+            for (var c = 0; c < me.options.columns.length; c++) {
+                var column = me.options.columns[c];
 
-                if (cellName && object.properties[cellName]) {
-                    columnDefinitions.push({
-                        key: cellName.replace(/\w+:/, ""),
-                        label: label,
-                        sortable: false, 
-                        formatter: me._buildCell(cellName, isLink)
-                    });
-                }
+                columnDefinitions.push({
+                    key: column.attribute.replace(/\w+:/, ""),
+                    label: column.label,
+                    sortable: false, 
+                    formatter: me._buildCell(column.attribute, column.isLink)
+                });
             }
 
-            // render cell actions
+            // render column actions
             columnDefinitions.push({
                 key: "actions", sortable: false, label: "",
                 formatter: function (elCell, oRecord, oColumn, oData) {
                     Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
+                    
                     var isRemoveableType = false;
-                    for (var i=0; i<me.options.removeable.length; i++)
-                        if(me.options.removeable[i].name == type) {
+                    for (var i = 0; i < me.options.removeable.length; i++) {
+                        if (me.options.removeable[i].name == type) {
                             isRemoveableType = true;
                             break;
                         }
-                    if(isRemoveableType && me.hasPermissionWrite) {
+                    }
+
+                    if (isRemoveableType && me.hasPermissionWrite) {
                         Dom.setStyle(elCell.parentNode, "width", oColumn.width + "px");
+                        
                         var removeId = Alfresco.util.generateDomId();
                         elCell.innerHTML = '<div class="remove-assoc"><a title=' + me.msg("delete-button.label") + ' id="' + removeId + '" class="remove-link">' +
                             '<span>&nbsp</span></a></div>';
-                        Event.addListener(
-                            removeId,
-                            "click", function() {
-                                me.onRemoveAssociation.apply(me, ['', oRecord, type]);
-                            }
-                        );
+                        
+                        Event.addListener( removeId, "click", function() {
+                            me.onRemoveAssociation.apply(me, ['', oRecord, type]);
+                        });
                     }
                 }
             });
 
+            return columnDefinitions;
+        },
+
+        _buildDataTable: function QB_buildDataTable(dataJSON, resultsListName, index, type) {
             var tableId = this.id + resultsListName + index + '-assocs-table';
+            
             this.assocsDataSource[tableId] = new YAHOO.util.DataSource(dataJSON, {
                 responseType: YAHOO.util.DataSource.TYPE_JSON,
                 responseSchema: {
@@ -432,11 +432,9 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                     fields : [
                         { key: "attributes" },
                         { key: "nodeRef" },
-                        { key: "name" },
                         { key: "isFolder" },
                         { key: "isContent" },
                         { key: "typeDirect" },
-                        { key: "title" }
                     ]
                 }
             });
@@ -447,12 +445,41 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 },
                 accocTable = new YAHOO.widget.DataTable(
                     this.id + resultsListName + index + '-assocs-table',
-                    columnDefinitions,
+                    this._buildColumnDefinitions(type),
                     this.assocsDataSource[tableId],
                     myConfigs
                 )
 
             this.assocsTable[tableId] = accocTable;
+        },
+
+        _setupAssociationDataTable: function QB_setupAssociationDataTable(dataJSON, resultsListName, index, type) {
+            var me = this;
+
+            // get labels for attributes without label property
+            var noLabelAttributes = [];
+            for (var c = 0; c < me.options.columns.length; c++) {
+                if (!me.options.columns[c].label) noLabelAttributes.push(me.options.columns[c].attribute);
+            }
+            
+            if (noLabelAttributes.length > 0) {
+                var getTitlesURL = Alfresco.constants.PROXY_URI + "citeck/util/attributes/title?attributes=" + noLabelAttributes.join(",");
+
+                YAHOO.util.Connect.asyncRequest('GET', getTitlesURL, {
+                    success: function (response) {
+                        if (response.responseText) {
+                            var result = eval("(" + response.responseText + ")");
+                            for (var c = 0; c < this.options.columns.length; c++) {
+                                if (!this.options.columns[c].label) {
+                                    this.options.columns[c].label = result[this.options.columns[c].attribute];
+                                }
+                            }
+                            this._buildDataTable(dataJSON, resultsListName, index, type);
+                        }
+                    },
+                    scope: me
+                });
+            } else { this._buildDataTable(dataJSON, resultsListName, index, type); }
         },
 
         onRemoveAssociation: function QB_onRemoveTargetAssociation(event, obj, type) {
