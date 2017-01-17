@@ -79,6 +79,7 @@ public class HistoryUtils {
     }
 
     public static String getChangeValue(NodeRef nodeRef, NodeService nodeService) {
+        if (!nodeService.exists(nodeRef)) { return ""; }
         if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
             return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
                     + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
@@ -126,7 +127,8 @@ public class HistoryUtils {
                         Iterator<AssociationRef> iterRemoved = removed.iterator();
                         while (iterRemoved.hasNext()) {
                             AssociationRef associationRefRemoved = iterRemoved.next();
-                            if (associationRefAdded.getTypeQName().equals(associationRefRemoved.getTypeQName())) {
+                            if (associationRefAdded.getTypeQName().equals(associationRefRemoved.getTypeQName())
+                                    && !isEqualsAssocs(associationRefAdded, associationRefRemoved, nodeService)) {
                                 historyService.persistEvent(
                                         HistoryModel.TYPE_BASIC_EVENT,
                                         HistoryUtils.eventProperties(
@@ -192,6 +194,13 @@ public class HistoryUtils {
         } else {
             return "Something went wrong... Contact the administrator.";
         }
+    }
+
+    private static boolean isEqualsAssocs(AssociationRef added, AssociationRef removed, NodeService nodeService) {
+        if (HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService).equals(HistoryUtils.getChangeValue(added.getTargetRef(), nodeService))) {
+            return true;
+        }
+        return false;
     }
 
 }
