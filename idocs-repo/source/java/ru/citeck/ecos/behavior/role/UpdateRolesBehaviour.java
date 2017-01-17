@@ -91,11 +91,6 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
         }
     }
 
-    @Override
-    public void onCreateNode(ChildAssociationRef childAssociationRef) {
-        caseRoleService.updateRoles(childAssociationRef.getChildRef());
-    }
-
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
     }
