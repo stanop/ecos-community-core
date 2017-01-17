@@ -821,6 +821,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        .method('destroy', function(index, nodeRef) {
+            this.resolve('node.impl.runtime').deleteNode(nodeRef, {
+                success: function(oResponse) {
+                    var result = YAHOO.lang.JSON.parse(oResponse.responseText)
+                    if (result.success) this.remove(index);
+                },
+                scope: this
+            })
+        })
+
         .method('href', function(data) {
             if (data && data.toString().indexOf("invariants.Node") != -1) {
                 if (data.typeShort == "cm:person") {
@@ -910,7 +920,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
-
         .method('getValueJSON', function(value) {
             if(value == null) return null;
             if(_.isArray(value)) return _.map(value, this.getValueJSON, this);
@@ -1699,6 +1708,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
        
+        .method('deleteNode', function(nodeRef, callback) {
+            YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
+        })
+
         .method('selectTab', function(data, event) {
             $(event.target)
                 .parent()
