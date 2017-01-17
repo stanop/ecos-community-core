@@ -73,11 +73,11 @@ public class CasePerformUtils {
 
     void saveTaskResult(ExecutionEntity execution, TaskEntity task) {
 
-        String outcome = (String)task.getVariableLocal(toString(CasePerformModel.PROP_PERFORM_OUTCOME));
+        String outcome = (String) task.getVariableLocal(toString(CasePerformModel.PROP_PERFORM_OUTCOME));
         if (outcome == null) return;
 
         NodeRef person = repositoryHelper.getPerson();
-        String userName = (String)nodeService.getProperty(person, ContentModel.PROP_USERNAME);
+        String userName = (String) nodeService.getProperty(person, ContentModel.PROP_USERNAME);
         String resultName = "perform-result-" + userName + "-" + outcome;
 
         Map<QName, Serializable> properties = new HashMap<>();
@@ -104,19 +104,10 @@ public class CasePerformUtils {
 
     Set<NodeRef> getTaskPerformers(TaskEntity task) {
 
-        Set<IdentityLink> candidates = task.getCandidates();
-        String assigneeName = task.getAssignee();
         Set<NodeRef> performers = new TreeSet<>(KEYS_COMPARATOR);
-
-        if (assigneeName != null) {
-            performers.add(authorityService.getAuthorityNodeRef(assigneeName));
-        }
-
-        for (IdentityLink candidate : candidates) {
-            NodeRef nodeRef = toNodeRef(candidate);
-            if (nodeRef != null) {
-                performers.add(nodeRef);
-            }
+        NodeRef performer = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_PERFORMER));
+        if (performer != null) {
+            performers.add(performer);
         }
 
         return performers;
