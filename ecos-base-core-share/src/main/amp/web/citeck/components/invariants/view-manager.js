@@ -21,14 +21,19 @@ Citeck.namespace('invariants');
     
     Citeck.invariants.NodeViewManager = function(key) {
         this.key = key;
+        
         this.options = {
             onsubmit: null,
-            oncancel: null
+            oncancel: null,
+            redirect: false
         };
+
         this.behaviours = {
             back: this.goBack,
-            card: this.goToCard
+            card: this.goToCard,
+            redirect: this.redirect
         };
+       
         this.defaultBehaviour = this.behaviours.back;
         
         YAHOO.Bubbling.on("node-view-submit", this.onSubmit, this);
@@ -52,7 +57,9 @@ Citeck.namespace('invariants');
             node.thisclass.save(node, {
                 scope: this,
                 fn: function(result) {
-                    var submitBehaviour = this.behaviours[this.options.onsubmit] || this.defaultBehaviour;
+                  var submitBehaviour = this.options.redirect ? 
+                                        this.behaviours.redirect : 
+                                        (this.behaviours[this.options.onsubmit] || this.defaultBehaviour);
                     submitBehaviour.call(this, result);
                 }
             });
@@ -77,6 +84,18 @@ Citeck.namespace('invariants');
         
         goToCard: function(node) {
             document.location.href = Alfresco.constants.URL_PAGECONTEXT + "document-details?nodeRef=" + node.nodeRef;
+        },
+
+        redirect: function(node) {
+            var link = _.clone(this.options.onsubmit);
+            _.each(link.match(/{{\w+(:\w+|)}}/g), function(property) {
+                var propertyName = property.replace(/({{|}})/g, ""),
+                    propertyValue = _.contains(propertyName, ":") ? node.properties[propertyName] : node[propertyName],
+                    templateRegExp = new RegExp(property, "g");
+                link = link.replace(templateRegExp, propertyValue)
+            });
+
+            document.location.href = link;
         }
         
     };

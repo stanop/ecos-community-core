@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get property default value</shortname>
+    <description>Get property default value</description>
+    <url>/citeck/search/get-property-default-value?nodeType=${nodeType}&amp;property=${property}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

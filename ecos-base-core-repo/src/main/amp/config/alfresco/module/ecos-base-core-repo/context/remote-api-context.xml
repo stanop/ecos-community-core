@@ -188,4 +188,11 @@
         <property name="namespaceService" ref="namespaceService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.search.getPropertyDefaultValue.get"
+          class="ru.citeck.ecos.webscripts.search.GetPropertyDefaultValue"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="prefixResolver" ref="namespaceService"/>
+    </bean>
+
 </beans>

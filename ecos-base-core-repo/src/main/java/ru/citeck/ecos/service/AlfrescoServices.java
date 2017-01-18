@@ -10,4 +10,7 @@ public interface AlfrescoServices {
     String ALFRESCO_NAMESPACE = AlfrescoUtils.ALFRESCO_NAMESPACE;
 
     QName MESSAGE_SERVICE = QName.createQName(ALFRESCO_NAMESPACE, "messageService");
+    QName REPOSITORY_STATE = QName.createQName(ALFRESCO_NAMESPACE, "repositoryState");
+    QName POLICY_COMPONENT = QName.createQName(ALFRESCO_NAMESPACE, "policyComponent");
+    QName ACTIVITI_RUNTIME_SERVICE = QName.createQName(ALFRESCO_NAMESPACE, "activitiRuntimeService");
 }

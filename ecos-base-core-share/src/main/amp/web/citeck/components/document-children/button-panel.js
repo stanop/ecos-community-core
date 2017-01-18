@@ -17,6 +17,8 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 (function() {
+
+
 	Citeck = typeof Citeck != "undefined" ? Citeck : {};
 	Citeck.widget = Citeck.widget || {};
 
@@ -31,6 +33,7 @@
 		Citeck.widget.ButtonPanel.superclass.constructor.call(this, "Citeck.widget.ButtonPanel", htmlid, null);
 		this.loaded = false;
 	};
+
 	YAHOO.extend(Citeck.widget.ButtonPanel, Alfresco.component.Base);
 	YAHOO.lang.augmentObject(Citeck.widget.ButtonPanel.prototype, {
 		// default values for options
@@ -74,8 +77,12 @@
 		},
 	
 		onReady: function() {
+			if (this.id.indexOf("agenda") != -1) console.log(this)
+
 			if (this.options.args.buttonsInHeader) {
+
 				var actionKeys = this.options.args.buttonsInHeader.split(',');
+
 				for (var i = 0; i < actionKeys.length; i++) {
 					var key = actionKeys[i];
 					if (key) {
@@ -85,6 +92,7 @@
 					}
 				}
 			}
+
 			this.loaded = true;
 		},
 
@@ -94,20 +102,28 @@
 				url = '/share/res/citeck/components/document-children/images/' + key + '-16.png',
 				id = this.id + '-' + key;
 				element = document.createElement('A');
+
 			element.setAttribute('id', id);
 			element.setAttribute('title', title);
 			element.setAttribute('style', 'background-image:url(' + url + ')');
 			element.innerHTML = '&nbsp;';
+
 			var parent = YAHOO.util.Dom.get(this.id);
 			parent.appendChild(element);
-			if (Citeck.widget.ButtonPanel.Commands &&
-					typeof Citeck.widget.ButtonPanel.Commands[key] === "function") {
+
+			if (Citeck.widget.ButtonPanel.Commands && typeof Citeck.widget.ButtonPanel.Commands[key] === "function") {
 				YAHOO.util.Event.on(element, "click", function() {
-					Citeck.widget.ButtonPanel.Commands[key](scope.options.args);
+					Citeck.widget.ButtonPanel.Commands[key](scope.options.args, scope);
 				});
 			}
+		},
+
+		removePanelAction: function(key) {
+			var element = document.getElementById(this.id + '-' + key);
+			if (element) element.remove();
 		}
 
 	});
+
 
 })();

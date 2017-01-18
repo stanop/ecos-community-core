@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.processor.report;
 
+import org.apache.poi.ss.usermodel.*;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.ProcessorConstants;
@@ -26,28 +27,13 @@ import ru.citeck.ecos.template.TemplateNodeService;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.repo.template.BaseContentNode.TemplateContentData;
-import org.alfresco.repo.template.TemplateNode;
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Header;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.springframework.extensions.surf.util.I18NUtil;
-import org.springframework.util.ClassUtils;
 
 /**
  * Create Excel Report from DataBundle
@@ -75,7 +61,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
         newModel.put(ProcessorConstants.KEY_MIMETYPE, XLSX_MIMETYPE);
         
@@ -169,7 +155,8 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     	}
     }
     
-    private void createSheetData(Workbook wb, Sheet sheet, List<Map<String, String>> reportColumns, List<List<Map<String, Object>>> reportData) {
+    private void createSheetData(Workbook wb, Sheet sheet, List<Map<String, String>> reportColumns,
+								 List<List<Map<String, Object>>> reportData) {
     	if ((reportColumns != null) && (reportColumns.size() > 0) && (reportData != null) && (reportData.size() > 0)) {
 			Row sourceRow = sheet.getRow(1);
 			Cell sourceCell = sourceRow.getCell(0);
@@ -185,14 +172,20 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    				copyCellFormats(wb, sheet, sourceCell, newCell);
 	    				
 	    				String dataType = (String) cellData.get(ReportProducer.DATA_TYPE_ATTR);
-	    				
+						CellStyle cellStyle = newCell.getCellStyle();
 	    				if ("Integer".equals(dataType)) {
 	    					Integer val = (Integer) cellData.get(ReportProducer.DATA_VALUE_ATTR);
 	    					if (val != null) {
 		    					newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
 	    						newCell.setCellValue(Double.valueOf(val));
 	    					}
-	    				} else if ("String".equals(dataType)) {
+	    				} else if ("Double".equals(dataType)) {
+							Double val = Double.parseDouble((String) cellData.get(ReportProducer.DATA_VALUE_ATTR)) ;
+							DataFormat dataFormat = wb.createDataFormat();
+							cellStyle.setDataFormat(dataFormat.getFormat("0.0"));
+							newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+							newCell.setCellValue(val);
+						} else if ("String".equals(dataType)) {
 	    					String val = (String) cellData.get(ReportProducer.DATA_VALUE_ATTR);
 	    					if (val != null)
 	    						appendStringValue(newCell, val);

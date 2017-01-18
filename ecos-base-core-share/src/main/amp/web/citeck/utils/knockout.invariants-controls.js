@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals'], function(ko, koutils, invariants, journals) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/utils/knockout.components', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals', 'lib/moment'], function(ko, koutils, kocomponents, invariants, journals, moment) {
 
 // ----------------
 // GLOBAL FUNCTIONS 
@@ -32,6 +32,74 @@ var Event = YAHOO.util.Event,
 
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
+
+// ---------------
+// HELP
+// ---------------
+
+ko.components.register("help", {
+    viewModel: function(params) {
+        kocomponents.initializeParameters.call(this, params);
+
+        this.text.subscribe(function(newValue) {
+            if (newValue) {
+                if (!this.tooltip) {
+                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                        showDelay: 500,
+                        hideDelay: 250,
+                        xyoffset: [0, 0],
+                        autodismissdelay: 10000
+                    });
+
+                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+                }
+            
+                this.tooltip.cfg.setProperty("text", newValue);
+                this.tooltip.cfg.setProperty("context", this.id);
+            }
+        }, this);
+    },
+    template:
+       '<span data-bind="attr: { id: id }, if: text">?</span>'
+});
+
+// ---------------
+// SELECT
+// ---------------
+
+ko.components.register("select", {
+    viewModel: function(params) {
+        kocomponents.initializeParameters.call(this, params);     
+        this.data.options.extend({ throttle: 500 });
+
+        if (!this.optionsText) {
+            if (this.data.optionsText) { this.optionsText = this.data.optionsText; }
+            else { this.optionsText = function(option) { return this.getValueTitle(option); }.bind(this.data) };
+        }
+        if (!this.optionsValue && this.data.optionsValue) { this.optionsValue = this.data.optionsValue; }
+        if (!this.optionsAfterRender && this.data.optionsAfterRender) { this.optionsAfterRender = this.data.optionsAfterRender; }
+    },
+    template: 
+       '<!--ko ifnot: data.multiple -->\
+            <select data-bind="attr: { id: id },\
+                disable: data.protected,\
+                options: data.options,\
+                optionsCaption: optionsCaption,\
+                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
+                value: data.value,\
+                valueAllowUnset: true"></select>\
+        <!-- /ko -->\
+        <!-- ko if: data.multiple -->\
+            <select data-bind="attr: { id: id, multiple: multiple },\
+                disable: data.protected,\
+                options: data.options,\
+                optionsCaption: optionsCaption,\
+                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
+                selectedOptions: data.multipleValues,\
+                valueAllowUnset: true"></select>\
+        <!-- /ko -->'
+});
+
 
 // ---------------
 // NUMBER-GENERATE
@@ -107,13 +175,15 @@ ko.components.register("number", {
         this.noValue = _.isEmpty(this.value());
 
         this.validation = function(data, event) {
-            var whiteNumbers = _.range(48, 58), whiteKeys = [46]
-                code = event.keyCode;
+            var whiteNumbers = _.range(48, 58),
+                whiteKeys = [8, 46, 37, 39],
+                whitePeriod = [44, 46],
+                code = event.keyCode || event.charCode;
 
             // return if code of key out of white list
-            if (!_.contains(_.union(whiteNumbers, whiteKeys), code)) return false;
+            if (!_.contains(_.union(whiteNumbers, whiteKeys, whitePeriod), code)) return false;
 
-            if (_.contains(whiteKeys, code)) {
+            if (_.contains(whitePeriod, event.charCode)) {
                 if (self.lastSymbolIsPeriod || self.hasPeriodSymbol || self.noValue) return false;
             };
 
@@ -213,16 +283,19 @@ ko.components.register("datetime", {
 
         this.calendar = function() {
             if (!calendarDialog) {
-                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, { 
-                    visible:    false, 
-                    context:    [calendarAccessorId, "tl", "bl"], 
-                    draggable:  false, 
+                var formContainer = $("#" + this.fieldId).closest(".yui-panel-container"),
+                    zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+
+                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                    visible:    false,
+                    context:    [calendarAccessorId, "tl", "bl"],
+                    draggable:  false,
                     close:      true,
-                    zindex:     15
+                    zindex:     zindex 
                 });
                 calendarDialog.setHeader(localization.labels.header);
                 calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                calendarDialog.render(document.body); 
+                calendarDialog.render(document.body);
             }
 
             if (!calendar) {
@@ -337,14 +410,13 @@ ko.bindingHandlers.dateControl = {
         var value = valueAccessor(),
             params = allBindings();
 
-        var localization = params.localization;
-
+        var localization = params.localization,
+            mode = params.mode;
+        
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (!Citeck.HTML5.supportedInputTypes.date) {
-            input.setAttribute("placeholder", localization.placeholder);
-
+        if (mode == "alfresco" || !Citeck.HTML5.supportedInputTypes.date) {
             var calendarDialogId = elementId + "-calendarDialog",
                 calendarContainerId = elementId + "-calendarContainer",
                 calendarAccessorId = elementId + "-calendarAccessor",
@@ -355,12 +427,15 @@ ko.bindingHandlers.dateControl = {
 
             Event.on(showCalendarButton, "click", function() {
                 if (!calendarDialog) {
+                    var formContainer = $(element).closest(".yui-panel-container"),
+                        zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+
                     calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, { 
                         visible:    false, 
                         context:    [calendarAccessorId, "tl", "bl"], 
                         draggable:  false, 
                         close:      true,
-                        zindex:     15
+                        zindex:     zindex
                     });
                     calendarDialog.setHeader(localization.labels.header);
                     calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
@@ -391,11 +466,7 @@ ko.bindingHandlers.dateControl = {
                     // selected date
                     calendar.selectEvent.subscribe(function() {
                         if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0],
-                                dStr = selectedDate.getDate(),
-                                mStr = selectedDate.getMonth(),
-                                yStr = selectedDate.getFullYear();
-                                
+                            var selectedDate = calendar.getSelectedDates()[0];
                             value(selectedDate.toString("yyyy-MM-dd"));                           
                         }
                         calendarDialog.hide();
@@ -411,13 +482,15 @@ ko.bindingHandlers.dateControl = {
             var date = new Date(), 
                 year = date.getFullYear()
 
-            input.setAttribute("max", (year + 50) + "-12-31");
-            input.setAttribute("min", (year - 25) + "-12-31");
+            if (input) {
+                input.setAttribute("max", (year + 50) + "-12-31");
+                input.setAttribute("min", (year - 25) + "-12-31");
 
-            Dom.setStyle(input, "color", "lightgray");
-            value.subscribe(function(value) {
-              Dom.setStyle(input, "color", value ? "" : "lightgray");
-            });
+                Dom.setStyle(input, "color", "lightgray");
+                value.subscribe(function(value) {
+                  Dom.setStyle(input, "color", value ? "" : "lightgray");
+                });
+            }
         }
     }
 };
@@ -427,296 +500,11 @@ ko.bindingHandlers.dateControl = {
 // JOURNAL
 // -------------
 
-
-// TODO:
-// - hide drop down menu out block
-// - progress bar for download fields of criteria
-
-ko.components.register('value-of-selected-criterion', {
-    viewModel: function(params) {
-        var self = this;
-
-        self.htmlId  = params.htmlId;
-        self.itemId  = params.itemId;
-        self.fieldId = params.field;
-        self.name    = params.name;
-        self.value   = params.value;
-
-        self.template = ko.observable();
-
-        var URL = Alfresco.constants.URL_PAGECONTEXT + "citeck/components/form-control?htmlid=" + self.htmlId + "&itemKind=type&itemId=" + self.itemId + "&field=" + self.fieldId + "&name=" + self.name;
-
-        YAHOO.util.Connect.asyncRequest('GET', URL, {
-            success: function(response) {
-                var result = response.responseText;
-                result = prepareResultString(result, self.htmlId)
-
-                // support value bindings
-                if(self.name) {
-                    result = _.reduce(
-                        [ 
-                            'name="' + self.name + '"', 
-                            "name='" + self.name + "'", 
-                            'name="' + self.name + '_added"', 
-                            "name='" + self.name + "_added'"
-                        ], 
-                        function(html, pattern) { 
-                            return html.replace(new RegExp('(' + pattern + ')', 'gi'), '$1 data-bind="value: value"') 
-                        }, 
-                        result
-                    );
-                }
-
-                self.template(result);
-
-                var fieldContainer = Dom.get(self.htmlId);
-                if (fieldContainer) {
-                    ko.cleanNode(fieldContainer);
-                    ko.applyBindings({ value: self.value }, fieldContainer);
-                }
-            },
-
-            failure: function(response) {
-                // error
-            }
-        });
-    },
-    template: 
-        '<div data-bind="html: template"></div>'
-});
-
-function deleteLabelFromField(fieldString) {
-    if (fieldString && typeof fieldString == "string") return fieldString.replace(/<label.+\/label>/, "");
-    return fieldString;
-}
-
-function prepareResultString(fieldString, fieldId) {
-    var container = $("<div>", { html: fieldString }),
-        field = $(".form-field", container);
-
-    // set id
-    if (field) field.attr("id", fieldId);
-
-    // remove label
-    $("label", field).remove();
-
-    return container.html();
-}
-
-ko.components.register('list-of-selected-criterion', {
-    viewModel: function(params) {
-        var self = this;
-
-        self.htmlId                 = params.htmlId;
-        self.itemId                 = params.itemId;
-        self.journalType            = params.journalType;
-        self.selectedFilterCriteria = params.selectedFilterCriteria;
-        self.defaultFilterCriteria  = params.defaultFilterCriteria;
-
-        self.remove = function(data, event) {
-            self.selectedFilterCriteria.remove(data);
-        };
-    },
-    template: 
-       '<table class="selected-criteria-list">\
-            <tbody>\
-                <!-- ko foreach: selectedFilterCriteria -->\
-                    <tr>\
-                        <td class="action-col"><a class="remove-selected-criterion" data-bind="click: $component.remove">X</a></td>\
-                        <td class="name-col"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
-                        <td class="predicate-col" data-bind="with: datatype">\
-                            <select class="predicate" data-bind="options: predicates,\
-                                                                 optionsText: \'label\',\
-                                                                 optionsValue: \'id\',\
-                                                                 value: $parent.predicateValue"></select>\
-                        </td>\
-                        <td class="value-col">\
-                            <!-- ko component: { name: \'value-of-selected-criterion\',\
-                                params: {\
-                                    htmlId: $component.htmlId + \'_\'  + $index(),\
-                                    itemId: $component.itemId,\
-                                    name: "criterionValue_" + $index(),\
-                                    field: name(),\
-                                    value: value\
-                                }\
-                            } --><!-- /ko -->\
-                        </td>\
-                    </tr>\
-                <!-- /ko -->\
-            </tbody>\
-        </table>'
-});
-
-ko.components.register('journal', {
-    viewModel: function(params) {
-        if (!params.sourceElements && !params.journalType) {
-            throw new Error("Required parameters are missing");
-            return;
-        }
-
-        var self = this;
-
-        // required params
-        self.sourceElements = params.sourceElements;
-        self.targetElements = params.targetElements;
-        self.journalType    = params.journalType;
-        self.page           = params.page;
-        self.callback       = params.callback;
-        self.loading        = params.loading;
-        self.columns        = params.columns;
-        self.hidden         = params.hidden;
-
-        // options
-        self.options = {
-            multiple: false,  
-            pagination: false,
-            localization: { 
-                nextPageLabel: "-->", 
-                nextPageTitle: "-->", 
-                previousPageLabel: "<--", 
-                previousPageTitle: "<--" 
-            } 
-        };
-        concatOptions(self.options, params.options);
-
-        // methods
-        self.selectElement = function(data, event) {
-            if (self.targetElements) {
-                if (self.options.multiple && (ko.isObservable(self.options.multiple) ? self.options.multiple() : self.options.multiple)) {
-                    if (self.targetElements.indexOf(data) == -1) self.targetElements.push(data);
-                } else {
-                    self.targetElements([data]);
-                }
-            };
-
-            if (self.callback) self.callback(data, event);
-        };
-
-        self.nextPage = function(data, event) {
-            self.page(self.page() + 1);
-        };
-
-        self.previousPage = function(data, event) {
-            self.page(self.page() - 1);
-        };
-
-        self.displayText = function(value, attr) {
-            if (value) {
-                // if string
-                if (typeof value == "string") {
-                    if (attr.labels() && attr.labels()[value]) 
-                        return attr.labels()[value];
-                }
-
-                // if object
-                if (typeof value == "object") {
-                    if (value instanceof Date) return value.toLocaleString();
-                    if (isInvariantsObject(value)) return value.name;
-                }
-
-                return value;
-            }
-
-            return null;
-        };
-    },
-    template:
-       '<!-- ko if: loading -->\
-            <div class="loading"></div>\
-        <!-- /ko -->\
-        <table class="journal">\
-            <thead>\
-                <!-- ko if: columns ? true : false -->\
-                    <tr data-bind="foreach: columns">\
-                        <!-- ko if: $component.journalType.attribute($data) -->\
-                            <!-- ko with: $component.journalType.attribute($data) -->\
-                                <th data-bind="text: displayName"></th>\
-                            <!-- /ko -->\
-                        <!-- /ko -->\
-                    </tr>\
-                <!-- /ko -->\
-                <!-- ko ifnot: columns ? true : false -->\
-                    <tr data-bind="foreach: $component.journalType.defaultAttributes">\
-                        <th data-bind="text: displayName"></th>\
-                    </tr>\
-                <!-- /ko -->\
-            </thead>\
-            <tbody data-bind="foreach: sourceElements">\
-                <!-- ko if: $component.columns ? true : false -->\
-                    <tr class="journal-element" data-bind="attr: { id: nodeRef },\
-                                                           foreach: $component.columns,\
-                                                           click: $component.selectElement, clickBubble: false">\
-                       <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
-                            <!-- ko with: $component.journalType.attribute($data) -->\
-                                <!-- ko if: $parents[1].properties[$data.name()] -->\
-                                    <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
-                                <!-- /ko -->\
-                                <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
-                                    <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
-                                        <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
-                                    <!-- /ko -->\
-                                <!-- /ko -->\
-                            <!-- /ko -->\
-                        <!-- /ko -->\
-                    </tr>\
-                <!-- /ko -->\
-                <!-- ko ifnot: $component.columns ? true : false -->\
-                    <tr class="journal-element" data-bind="attr: { id: nodeRef },\
-                                                           foreach: $component.journalType.defaultAttributes,\
-                                                           click: $component.selectElement, clickBubble: false">\
-                        <!-- ko if: $parent.properties[$data.name()] -->\
-                            <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
-                        <!-- /ko -->\
-                        <!-- ko ifnot: $parent.properties[$data.name()] -->\
-                            <!-- ko with: $parent.impl().attribute($data.name()) -->\
-                                <td data-bind="text: $data.valueTitle() || $data.textValue()"></td>\
-                            <!-- /ko -->\
-                        <!-- /ko -->\
-                    </tr>\
-                <!-- /ko -->\
-            </tbody>\
-        </table>\
-        <!-- ko if: options.pagination && sourceElements -->\
-            <!-- ko with: sourceElements().pagination -->\
-                <!-- ko if: ($component.page() - 1 > 0) || hasMore -->\
-                    <div class="journal-pagination">\
-                        <span class="previous-page">\
-                            <!-- ko if: $component.page() - 1 > 0 -->\
-                                <a data-bind="click: $component.previousPage,\
-                                              text: $component.options.localization.previousPageLabel,\
-                                              attr: { title: $component.options.localization.previousPageTitle }"><--</a>\
-                            <!-- /ko -->\
-                            <!-- ko ifnot: $component.page() - 1 > 0 -->\
-                                <!-- ko text: $component.options.localization.previousPageLabel --><!-- /ko -->\
-                            <!-- /ko -->\
-                        </span>\
-                        <span class="page-label">\
-                            <span class="start-page" data-bind="text: $component.page() * maxItems - maxItems + 1"></span>\
-                            <span class="dash">-</span>\
-                            <span class="end-page" data-bind="text: $component.page() * maxItems"></span>\
-                        </span>\
-                        <span class="next-page">\
-                            <!-- ko if: hasMore -->\
-                                <a data-bind="click: $component.nextPage,\
-                                              text: $component.options.localization.nextPageLabel,\
-                                              attr: { title: $component.options.localization.nextPageTitle }">--></a>\
-                            <!-- /ko -->\
-                            <!-- ko ifnot: hasMore -->\
-                                <!-- ko text: $component.options.localization.nextPageLabel --><!-- /ko -->\
-                            <!-- /ko -->\
-                        </span>\
-                    </div>\
-                <!-- /ko -->\
-            <!-- /ko -->\
-        <!-- /ko -->'
-});
+var JournalType = koclass('JournalType');
 
 ko.bindingHandlers.journalControl = {
   init: function(element, valueAccessor, allBindings, data, context) {
     var self = this;
-
-    //  Citeck global objects
-    var JournalType = koclass('JournalType');
 
     // html elements
     var button  = Dom.get(element.id + "-button"),
@@ -731,6 +519,24 @@ ko.bindingHandlers.journalControl = {
     // sorting
     var sortBy  = params.sortBy;
 
+    // localization
+    var localization = {
+        title: Alfresco.util.message("form.select.label"),
+        search: Alfresco.util.message("journal.search"),
+        elementsTab: Alfresco.util.message("journal.elements"),
+        filterTab: Alfresco.util.message("journal.filter"),
+        createTab: Alfresco.util.message("journal.create"),
+        selectedElements: Alfresco.util.message("journal.selected-elements"),
+        applyCriteria: Alfresco.util.message("journal.apply-criteria"),
+        addFilterCriterion: Alfresco.util.message("journal.add-filter-criterion"),
+        submitButton: Alfresco.util.message("button.ok"),
+        cancelButton: Alfresco.util.message("button.cancel"),
+        nextPageLabel: Alfresco.util.message("journal.pagination.next-page-label"),
+        nextPageTitle: Alfresco.util.message("journal.pagination.next-page-title"),
+        previousPageLabel: Alfresco.util.message("journal.pagination.previous-page-label"),
+        previousPageTitle: Alfresco.util.message("journal.pagination.previous-page-title")
+    };
+
     // params
     var defaultVisibleAttributes    = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
@@ -738,11 +544,12 @@ ko.bindingHandlers.journalControl = {
         
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
-        searchCriteria              = params.searchCriteria,
 
+        searchCriteria              = params.searchCriteria || data.searchCriteria,
         defaultCriteria             = params.defaultCriteria,
-        
-        localization                = params.localization;
+        hiddenCriteria              = params.hiddenCriteria || [],
+
+        createVariantsVisibility    = params.createVariantsVisibility;
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -756,26 +563,36 @@ ko.bindingHandlers.journalControl = {
         defaultHiddenByType = _.map(defaultHiddenByType.split(","), function(item) { return trim(item) });
     }
 
+    // maxItems
+    var maxItems = ko.observable($("body").hasClass("mobile") ? 5 : 10);
+
     //  initialize criteria
     var criteria = ko.observable([]);
     if (defaultCriteria) criteria(defaultCriteria);
 
     var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
         loading = ko.observable(true), criteriaListShow = ko.observable(false), 
-        journalType = params.journalType ? new JournalType(params.journalType) : null,
         searchBar = params.searchBar ? params.searchBar == "true" : true,
-        mode = params.mode ? params.mode : "collapse",
-        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * 10 }),
+        mode = params.mode, dockMode = params.dock ? "dock" : "",
+        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
         additionalOptions = ko.observable([]), options = ko.computed(function(page) {
-            var nudeOptions = data.filterOptions(criteria(), { 
-                    maxItems: 10, 
+            var actualCriteria = criteria();
+            if (hiddenCriteria) {
+                for (var hc in hiddenCriteria) {
+                    if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
+                        actualCriteria.push(hiddenCriteria[hc]);
+                }
+            }
+
+            var nudeOptions = data.filterOptions(actualCriteria, {
+                    maxItems: maxItems(), 
                     skipCount: skipCount(), 
                     searchScript: searchScript,
                     sortBy: sortBy
                 }),
                 config = nudeOptions.pagination,
                 result;
-          
+      
             var tempAdditionalOptions = additionalOptions();
             _.each(additionalOptions(), function(o) {
                 if (_.contains(nudeOptions, o)) {
@@ -786,11 +603,11 @@ ko.bindingHandlers.journalControl = {
             additionalOptions(tempAdditionalOptions);
 
             if (additionalOptions().length > 0) {
-                if (nudeOptions.length < 10) {
+                if (nudeOptions.length < maxItems()) {
                     result = _.union(nudeOptions, additionalOptions());
 
-                    if (result.length > 10) result = result.slice(0, 10);
-                    if (10 - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                    if (result.length > maxItems()) result = result.slice(0, maxItems());
+                    if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
                     
                     result.pagination = config;
                     return result;
@@ -800,33 +617,24 @@ ko.bindingHandlers.journalControl = {
                 }
             }
 
-            return nudeOptions ;
+            loading(_.isUndefined(nudeOptions.pagination));
+            return nudeOptions;
         });
 
     // reset page after new search
-    criteria.subscribe(function(newValue) {
-        pageNumber(1);
-    });
+    criteria.subscribe(function(newValue) { pageNumber(1); });
 
     // show loading indicator if page was changed
-    pageNumber.subscribe(function(newValue) {
-        loading(true);
-    })
-
-    // hide loading indicator if options got elements
-    options.subscribe(function(newValue) {
-        loading(_.isUndefined(newValue.pagination));
-    });
+    pageNumber.subscribe(function(newValue) { loading(true); })
 
     // extend notify
-    criteria.extend({ notify: 'always' });
+    criteria.extend({ notify: 'notifyWhenChangesStop' });
     pageNumber.extend({ notify: 'always' });
-    options.extend({ notify: 'always' });
+    options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
 
-    if (!journalType) {
-        // TODO: other way to get journalType
-    }
-    
+    var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+    if (!journalType) { /* so, it is fail */ }
+
     // get default criteria
     var defaultCriteria = ko.computed(function() {
         if (defaultSearchableAttributes) return journalType.attributes();
@@ -872,6 +680,9 @@ ko.bindingHandlers.journalControl = {
 
     // open dialog
     Event.on(button, "click", function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
         if (!panel) {
             panel = new YAHOO.widget.Panel(panelId, {
                 width:          "800px", 
@@ -885,21 +696,25 @@ ko.bindingHandlers.journalControl = {
 
             panel.setHeader(localization.title || 'Journal Picker');
             panel.setBody('\
-                <div class="journal-picker-header ' + mode + '" id="' + journalPickerHeaderId + '">\
+                <div class="journal-picker-header ' + mode + ' ' + dockMode + '" id="' + journalPickerHeaderId + '">\
                     <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
                     <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
-                    <!-- ko component: { name: "createObjectButton", params: {\
-                        scope: scope,\
-                        source: \"create-views\",\
-                        callback: callback,\
-                        buttonTitle: buttonTitle\
-                    }} --><!-- /ko -->\
+                    <!-- ko if: createVariantsVisibility -->\
+                        <!-- ko component: { name: "createObjectButton", params: {\
+                            scope: scope,\
+                            source: createVariantsSource,\
+                            callback: callback,\
+                            buttonTitle: buttonTitle,\
+                            virtualParent: virtualParent,\
+                            journalType: journalType\
+                        }} --><!-- /ko -->\
+                    <!-- /ko -->\
                     ' + (searchBar ? '<div class="journal-search"><input type="search" placeholder="' + localization.search + '" class="journal-search-input" id="' + searchId + '" /></div>' : '') + '\
                 </div>\
                 <div class="journal-picker-page-container ' + mode + '">\
                     <div class="filter-page hidden" id="' + filterPageId + '">\
                         <div class="selected-filter-criteria-container">\
-                            <!-- ko component: { name: \'list-of-selected-criterion\',\
+                            <!-- ko component: { name: \'filter-criteria-table\',\
                                 params: {\
                                     htmlId: htmlId,\
                                     itemId: itemId,\
@@ -938,6 +753,8 @@ ko.bindingHandlers.journalControl = {
                                     hidden: hidden,\
                                     page: page,\
                                     loading: loading,\
+                                    hightlightSelection: hightlightSelection,\
+                                    afterSelectionCallback: afterSelectionCallback,\
                                     options: {\
                                         multiple: multiple,\
                                         pagination: true,\
@@ -951,16 +768,18 @@ ko.bindingHandlers.journalControl = {
                                 }\
                             } --><!-- /ko -->\
                         </div>\
-                        <div class="journal-capture">' + localization.selectedElements + '</div>\
-                        <div class="journal-container selected-elements" id="' + selectedJournalId + '">\
-                            <!-- ko component: { name: \'journal\',\
-                                params: {\
-                                    sourceElements: selectedElements,\
-                                    journalType: journalType,\
-                                    columns: columns\
-                                }\
-                            } --><!-- /ko -->\
-                        </div>\
+                        <!-- ko if: dock -->\
+                            <div class="journal-capture">' + localization.selectedElements + '</div>\
+                            <div class="journal-container selected-elements" id="' + selectedJournalId + '">\
+                                <!-- ko component: { name: \'journal\',\
+                                    params: {\
+                                        sourceElements: selectedElements,\
+                                        journalType: journalType,\
+                                        columns: columns\
+                                    }\
+                                } --><!-- /ko -->\
+                            </div>\
+                        <!-- /ko -->\
                     </div>\
                     <div class="create-page hidden" id="' + createPageId + '"></div>\
                 </div>\
@@ -1083,7 +902,12 @@ ko.bindingHandlers.journalControl = {
                 page: pageNumber,
                 loading: loading,
                 columns: defaultVisibleAttributes,
-                hidden: defaultHiddenByType
+                hidden: defaultHiddenByType,
+                dock: params.dock,
+                hightlightSelection: params.hightlightSelection,
+                afterSelectionCallback: function(data, event) {
+                    if (!multiple() && event.type == "dblclick") { value(data); panel.hide(); }
+                }
             }, Dom.get(elementsPageId));
 
             // say knockout that we have something on search page
@@ -1133,6 +957,8 @@ ko.bindingHandlers.journalControl = {
             ko.applyBindings({
                 scope: data,
                 buttonTitle: localization.createTab,
+                journalType: journalType,
+                createVariantsVisibility: createVariantsVisibility,
                 callback: function(variant) {
                     var scCallback = function(node) {
                         if (mode == "collapse") {
@@ -1184,19 +1010,33 @@ ko.bindingHandlers.journalControl = {
                         fieldId: data.name()
                     });
 
-                }
+                },
+                virtualParent: params.virtualParent,
+                createVariantsSource: params.createVariantsSource
             }, Dom.get(journalPickerHeaderId));
+
+            if (value()) selectedElements(multiple() ? value() : [ value() ]);
         }
         
         panel.show();
     })
 
+    if (!Citeck.mobile.isMobileDevice()) {
+        YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
+            var itemsCount = args[1].mobileMode ? 5 : 10;
+            if (itemsCount != maxItems()) { 
+                pageNumber(1);
+                maxItems(itemsCount);
+            };
+        });
+    }
+
     // reload filterOptions request if was created new object
     YAHOO.Bubbling.on("object-was-created", function(layer, args) {
         if (args[1].fieldId == data.name()) {
             if (args[1].value) {
-                additionalOptions(_.union(additionalOptions(), args[1].value));
-                selectedElements(multiple() ? _.union(selectedElements(), args[1].value) : args[1].value); 
+                additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
+                selectedElements.push(args[1].value); 
             }
             
             criteria(_.clone(criteria()));
@@ -1210,10 +1050,20 @@ ko.bindingHandlers.journalControl = {
 // -------------
 
 var CreateVariant = koclass('CreateVariant'),
+    CreateVariantsByJournal = koclass('controls.CreateVariantsByJournal'),
     CreateVariantsByType = koclass('controls.CreateVariantsByType'),
     CreateVariantsByView = koclass('controls.CreateVariantsByView'),
     CreateObjectButton = koclass('controls.CreateObjectButton'),
     CreateObjectLink = koclass('controls.CreateObjectLink');
+
+CreateVariantsByJournal
+    .key('journal', String)
+    .property('createVariants', [CreateVariant])
+    .load('createVariants', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/journal/{journal}",
+        resultsMap: { createVariants: 'createVariants' }
+    }))
+    ;
 
 CreateVariantsByType
     .key('type', String)
@@ -1235,20 +1085,32 @@ CreateVariantsByView
  
 CreateObjectButton
     .key('id', String)
+
     .property('scope', Object)
     .property('constraint', Function)
     .property('constraintMessage', String)
     .property('source', String)
     .property('buttonTitle', String)
+    .property('journalType', JournalType)
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
     .property('callback', Function)
+
+    .shortcut('protected', 'scope.protected')
+    .shortcut('nodetype', 'scope.nodetype')
+
     .computed('createVariants', function() {
-        if(!this.scope().nodetype()) return [];
-        var list = this.source() == 'create-views' 
-            ? new CreateVariantsByView(this.scope().nodetype())
-            : new CreateVariantsByType(this.scope().nodetype());
-        return list.createVariants();
+
+        var list = null;
+
+        if (this.source() == 'create-views' && this.nodetype()) {
+            list = new CreateVariantsByView(this.nodetype());
+        } else if (this.source() == 'type-create-variants' && this.nodetype()) {
+            list = new CreateVariantsByType(this.nodetype());
+        } else if (this.source() == 'journal-create-variants' && this.journalType()) {
+            list = new CreateVariantsByJournal(this.journalType().id());
+        }
+        return list ? list.createVariants() : [];
     })
     .method('execute', function(createVariant) {
         if (this.callback() && _.isFunction(this.callback())) {
@@ -1300,17 +1162,16 @@ CreateObjectButton
     ;
 
 
-
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
     template: 
-        '<!-- ko if: createVariants().length == 0 --> \
+       '<!-- ko if: protected() || createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
-        <!-- ko if: createVariants().length == 1 --> \
+        <!-- ko if: !protected() && createVariants().length == 1 --> \
             <button class="create-object-button" data-bind="text: buttonTitle, attr: { title: createVariants()[0].title() }, click: execute.bind($data, createVariants()[0])"></button> \
         <!-- /ko --> \
-        <!-- ko if: createVariants().length > 1 --> \
+        <!-- ko if: !protected() && createVariants().length > 1 --> \
             <div class="yui-overlay yuimenu button-menu" data-bind="attr: { id: id() + \'-create-menu\' }"> \
                 <div class="bd"> \
                     <ul data-bind="foreach: createVariants" class="first-of-type"> \
@@ -1326,7 +1187,6 @@ ko.components.register('createObjectButton', {
                 </span> \
             </span> \
         <!-- /ko -->'
-
 });
 
 
@@ -1336,86 +1196,129 @@ ko.components.register('createObjectButton', {
 
 ko.components.register("autocomplete", {
     viewModel: function(params) {
+        var self = this;
+
         this.defaults = {
             criteria: [{ attribute: "all", predicate: "string-contains" }],
             searchScript: "criteria-search",
-            minQueryLength: 3,
-
-            // messages
-            labelMessage: "Select...",
-            helpMessage:  "Start typing..."
+            maxItems: 10
         }
 
-        var self = this;
+        this.labels = {
+            label: Alfresco.util.message("autocomplete.label"),
+            help: Alfresco.util.message("autocomplete.help"),
+            empty: Alfresco.util.message("autocomplete.empty"),
+            more: Alfresco.util.message("autocomplete.more")
+        }
 
-        this.data  = params["data"];
+        this.cache = {
+            criteria: [],
+            options: []
+        }
+
+        // base variables
+        this.element = params.element;
+        this.data  = params.data;
         this.value = this.data["singleValue"];
         this.disabled = this.data["protected"];
-        this.searchScript = params["searchScript"] || self.defaults.searchScript;
-        this.minQueryLength = params["minQueryLength"] || self.defaults.minQueryLength;
+
+        this.searchScript = params.searchScript || self.defaults.searchScript;
+        this.minQueryLength = params.minQueryLength;
+        this.maxItems = params.maxItems || self.defaults.maxItems;
 
         // observables
         this.containerVisibility = ko.observable(false);
         this.highlightedElement = ko.observable();
-        this.componentFocused = ko.observable(false);
         this.searchQuery = ko.observable();
-        this.searchInput = ko.observable();
         this.searching = ko.observable(false);
-        this.searchFocused = ko.observable(false);
+
+        this.componentFocused = ko.observable(false);
+        this.searchFocused = ko.observable(true);
+
+        this.hasMore = ko.observable(false);
+        this.skipCount = ko.observable(0);
 
         
         // computed
         this.label = ko.pureComputed(function() {
-            var defaultLabel = params.labelMessage || self.defaults.labelMessage;
-            return self.value() ? self.data.getValueTitle(self.value()) : defaultLabel; 
+            return self.value() ? self.data.getValueTitle(self.value()) : self.labels.label; 
         });
 
-        this.search = ko.computed(function() {
-            var input = self.searchInput();
-            if (input && input.length >= self.minQueryLength) {
-                self.searching(true);
-                self.searchQuery(input);
+        this.searchInput = ko.computed({
+            read: function() {
+                return self.searchQuery();
+            },
+            write: function(newValue) {
+                if (!newValue || (!self.minQueryLength || (newValue.length >= self.minQueryLength))) {
+                    self.searchQuery(newValue);
+                    self.searching(true);
+                }
             }
-        }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
+        });
 
         this.criteria = ko.pureComputed(function() {
-            var query = self.searchQuery();
-            return _.map(params["criteria"] || self.defaults.criteria, function(item) {
-                return _.defaults({ value: query }, item);
-            });
-        });
+            if (self.searchQuery()) {
+                return _.map(params["criteria"] || self.defaults.criteria, function(item) {
+                    return _.defaults({ value: self.searchQuery() }, item);
+                });
+            } else { return [] }
+        }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
         this.options = ko.pureComputed(function() {
-            return self.criteria().length > 0 ? self.data.filterOptions(self.criteria(), { 
-                                                    maxItems: 10, 
-                                                    skipCount: 0, 
-                                                    searchScript: self.searchScript 
-                                                }) : [];
-        }).extend({ notify: 'always' });
+            var result = self.data.filterOptions(self.criteria(), { 
+                maxItems: 10, 
+                skipCount: self.skipCount(), 
+                searchScript: self.searchScript
+            });
+            if (result.pagination) return result;
+        });
         
+        this.visibleOptions = ko.pureComputed(function() {
+            if (self.options() && self.options().pagination) {
+                self.cache.options = self.cache.options.concat(self.options());
+                return self.cache.options;
+            }
+        });
+
 
         // subscription and events
+        this.containerVisibility.subscribe(function() {
+            self.searchFocused(true);
+        });
+
+        this.criteria.subscribe(function(newValue) {
+            self.skipCount(0);
+            self.cache.options = [];
+        });      
+         
         this.options.subscribe(function(newValue) {
-            // highlight first element of list
             if (newValue && newValue.pagination) {
-                if (newValue.length > 0) self.highlightedElement(newValue[0]);
-                if (newValue.length == 0) self.searching(false);
+                self.hasMore(newValue.pagination.hasMore);
+                self.searching(false);
+
+                if (newValue.length > 0 && self.skipCount() == 0) 
+                    self.highlightedElement(newValue[0]);
+                      
             }
         });
 
         // public methods
-        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()) };
-        this.helpMessage = function() { return params.helpMessage || self.defaults.helpMessage };
-        this.searchBlur = function() { self.containerVisibility(false) };
+        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
+        this.renderHandler = function(element, data) { if(this.foreach()[this.foreach().length - 1] === data) self.searching(false); };
 
+        this.more = function(element, data) { 
+            self.skipCount(self.skipCount() + 10);
+            self.searchFocused(true);
+        };
+        
         this.selectItem = function(data, event) {
             if (event.which == 1) {
                 self.value(data);
                 self.containerVisibility(false);
+                self.highlightedElement(data);
             }
         };
-
-        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
 
         this.keyAction = function(data, event) {
             if ([9, 13, 27, 38, 40].indexOf(event.keyCode) != -1) {
@@ -1434,9 +1337,15 @@ ko.components.register("autocomplete", {
 
                 // move selection
                 if (event.keyCode == 38 || event.keyCode == 40) {
-                    var selectedIndex = self.options().indexOf(self.highlightedElement()),
+                    var selectedIndex = self.visibleOptions().indexOf(self.highlightedElement()),
                         nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
-                    if (selectedIndex != -1 && self.options()[nextSelectIndex]) { self.highlightedElement(self.options()[nextSelectIndex]) };
+                    
+                    if (selectedIndex != -1 && self.visibleOptions()[nextSelectIndex]) { 
+                        self.highlightedElement(self.visibleOptions()[nextSelectIndex]) 
+                    };
+
+                    // TODO:
+                    // - select 'more' throuth keyboard
                 }
 
                 return false;
@@ -1459,10 +1368,21 @@ ko.components.register("autocomplete", {
             return true;
         };
 
-        this.renderHandler = function(element, data) {
-            // stop loading when all elements was rendred
-            if(this.foreach()[this.foreach().length - 1] === data) self.searching(false);
-        };
+        // blur
+        $("body").click(function(event, a) {
+            var node = event.target,
+                body = document.getElementById("Share");
+
+            while (node != body) {
+                if (node == self.element) {
+                    return;
+                }
+    
+                node = node.parentNode;
+            }
+
+            self.containerVisibility(false);
+        });
     },
     template: 
        '<!-- ko if: disabled -->\
@@ -1488,20 +1408,20 @@ ko.components.register("autocomplete", {
             <div class="autocomplete-container" data-bind="css: { loading: searching() }">\
                 <div class="autocomplete-search-container">\
                     <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
-                        <div class="help-message" data-bind="text: helpMessage()"></div>\
+                        <div class="help-message" data-bind="text: labels.help"></div>\
                     <!-- /ko -->\
                     <input type="text" class="autocomplete-search"\
                         data-bind="\
                             textInput: searchInput,\
-                            event: { keydown: keyAction, blur: searchBlur },\
+                            event: { keydown: keyAction },\
                             keydownBubble: false,\
-                            attr: { placeholder: helpMessage() },\
-                            hasFocus: true">\
+                            attr: { placeholder: labels.help },\
+                            hasFocus: searchFocused">\
                     <div class="loading-indicator" data-bind="css: { hidden: !searching() }"></div>\
                 </div>\
-                <!-- ko if: searchQuery() && options() -->\
-                    <!-- ko if: options().length > 0 -->\
-                        <ul class="autocomplete-list" data-bind="foreach: { data: options, afterRender: renderHandler }">\
+                <!-- ko if: visibleOptions() && !searching() -->\
+                    <!-- ko if: visibleOptions().length > 0 -->\
+                        <ul class="autocomplete-list" data-bind="foreach: { data: visibleOptions, afterRender: renderHandler }">\
                             <li data-bind="\
                                 event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
                                 css: { selected: $parent.highlightedElement() == $data }">\
@@ -1509,6 +1429,14 @@ ko.components.register("autocomplete", {
                             </li>\
                         </ul>\
                     <!-- /ko -->\
+                    <!-- ko if: visibleOptions().length == 0 -->\
+                        <span class="autocomplete-message empty-message" data-bind="text: labels.empty"></span>\
+                    <!-- /ko -->\
+                <!-- /ko -->\
+                <!-- ko if: hasMore -->\
+                    <div class="autocomplete-more">\
+                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    </div>\
                 <!-- /ko -->\
             </div>\
         <!-- /ko -->'
@@ -1523,7 +1451,9 @@ ko.bindingHandlers.fileUploadControl = {
     init: function(element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
-            multiple = settings.multiple;
+            
+            type = settings.type,
+            properties = settings.properties;
 
         // Invariants global object
         var Node = koutils.koclass('invariants.Node');
@@ -1538,10 +1468,6 @@ ko.bindingHandlers.fileUploadControl = {
         var input = Dom.get(element.id + "-fileInput"),
             openFileUploadDialogButton = Dom.get(element.id + "-openFileUploadDialogButton");
 
-        // global variables
-        var lastUploadedFiles = [];
-
-
         // click on input[file] button
         Event.on(openFileUploadDialogButton, 'click', function(event) {
             $(input).click();
@@ -1549,94 +1475,52 @@ ko.bindingHandlers.fileUploadControl = {
 
         // get files from input[file]
         Event.on(input, 'change', function(event) {
-            var files = event.target.files;
+            var files = event.target.files,
+                loadedFiles = ko.observable(0);
 
-            // uploaded files library
-            var uploadedFiles = ko.observableArray();
-            uploadedFiles.subscribe(function(array) {
-                if (files.length > 0 && files.length == array.length) {
-
-                    // delete old nodes
-                    if (lastUploadedFiles.length > 0 && array != lastUploadedFiles) {
-                        for (var i in lastUploadedFiles) {
-                            deleteNode(lastUploadedFiles[i])
-                        }
-                    }
-
-                    value(array);
-
-                    // set last uploaded files
-                    lastUploadedFiles = array;
+            loadedFiles.subscribe(function(newValue) {
+                if (newValue == files.length) {
+                    // enable button
+                    $(element).removeClass("loading");
+                    $(openFileUploadDialogButton).removeAttr("disabled");
                 }
-            })
+            });
 
-            if (files.length == 0 || files != lastUploadedFiles) {
-                value(null);
-                uploadedFiles.removeAll();
-            }
+            // disable upload button
+            $(element).addClass("loading");
+            $(openFileUploadDialogButton).attr("disabled", "disabled");
 
             for (var i = 0; i < files.length; i++) {
                 var request = new XMLHttpRequest();
 
                 (function(file){
-                    // loading started
-                    request.addEventListener("loadstart", function(event) {
-                        // set fake data for content class
-                        if (data.datatype() == "d:content") {
-                            var fileObject = {
-                                filename: file.name,
-                                mimetype: file.type,
-                                size:     file.size
-                            };
-
-                            if (multiple()) {
-                                var values = updateList(value(), function(option) { 
-                                    return { 
-                                        filename: option.filename, 
-                                        mimetype: option.mimetype, 
-                                        size: option.size
-                                    };
-                                });
-
-                                values.push(fileObject)
-                                value(values);
-                            } else {
-                                value(fileObject)
-                            }
-                        }
-
-                        $(element).addClass("loading");
-                        $(openFileUploadDialogButton).attr("disabled", "disabled");  
+                    // loading failure.
+                    request.addEventListener("error", function(event) {
+                        console.log("loaded failure")
+                        loadedFiles(loadedFiles() + 1);
                     }, false);
+                    
+                    // request finished
+                    request.addEventListener("readystatechange", function(event) {
+                        var target = event.target;
+                        if (target.readyState == 4) {
+                            var result = JSON.parse(target.responseText || "{}");
+                            
+                            if (target.status == 200) {
+                                // push new file to uploaded files library
+                                var currentValues = value();
+                                currentValues.push(result.nodeRef);
+                                value(currentValues);
+                            }
+
+                            if (target.status == 500) {
+                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: result.message });
+                            }
+
+                            loadedFiles(loadedFiles() + 1);
+                        }
+                    }, false)
                 })(files[i])
-
-                // loading progress
-                // request.addEventListener("progress", function(event) {
-                //     var percent = Math.round((event.loaded * 100) / event.total);
-                //     console.log("progress", percent);
-                // }, false);
-
-                // loading failure.
-                request.addEventListener("error", function(event) {
-                    console.log("loaded failure")
-                }, false);
-                
-                // request finished
-                request.addEventListener("readystatechange", function(event) {
-                    var target = event.target;
-                    if (target.status == 200 && target.readyState == 4) {
-                        var result = JSON.parse(target.responseText || "{}");
-
-                        // instance for invariant.node
-                        new Node(result);
-
-                        // push new file to uploaded files library
-                        uploadedFiles.push(result.nodeRef);
-
-                        $(element).removeClass("loading");
-                        $(openFileUploadDialogButton).removeAttr("disabled"); 
-                    }
-                }, false)
 
                 var formData = new FormData;
                 formData.append("filedata", files[i]);
@@ -1649,7 +1533,16 @@ ko.bindingHandlers.fileUploadControl = {
                 formData.append("overwrite", false);
                 formData.append("thumbnails", null);
 
-                request.open("POST",  Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true", true);
+                if (properties) {
+                    for (var p in properties) {
+                        formData.append("property_" + p, properties[p]);
+                    }
+                }
+
+                var href = Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true";
+                if (type) href += "&contenttype=" + type;
+
+                request.open("POST", href, true);
                 request.send(formData);
             }
         });
@@ -1662,7 +1555,7 @@ ko.bindingHandlers.fileUploadControl = {
 // ---------
 
 ko.bindingHandlers.orgstructControl = {
-    init: function(element, valueAccessor, allBindings) {
+    init: function(element, valueAccessor, allBindings, data, context) {
         var self = this;
 
         // default option
@@ -1670,6 +1563,10 @@ ko.bindingHandlers.orgstructControl = {
             allowedAuthorityType: "USER",
             allowedGroupType: ""
         }
+
+        // from fake model option
+        if (data.allowedAuthorityType && data.allowedAuthorityType())
+            options.allowedAuthorityType = data.allowedAuthorityType();
 
         var settings = valueAccessor(),
             value = settings.value,
@@ -1681,10 +1578,13 @@ ko.bindingHandlers.orgstructControl = {
             tree, selectedItems;
 
         // concat default and new options
-        if (params) concatOptions(options, params);
+        if (params) Citeck.utils.concatOptions(options, params);
 
 
         Event.on(showVariantsButton, "click", function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+
             if (!orgstructPanel) {
                 orgstructPanel = new YAHOO.widget.Panel(orgstructPanelId, {
                     width:          "800px", 
@@ -1990,17 +1890,6 @@ function clearUnselectedElements(tree) {
         .addClass("selectable");
 }
 
-function concatOptions(defaultOptions, newOptions) {
-    for (var key in newOptions) {
-        var newValue = newOptions[key],
-            oldValue = defaultOptions[key];
-
-        if (newValue && newValue != oldValue) {
-            defaultOptions[key] = newOptions[key];
-        }
-    }
-}
-
 function createSelectedObject(options) {
     if (!options.id || !options.label) {
         throw new Error("Required parameters not found");
@@ -2033,7 +1922,7 @@ function updatedControlValue(valueObject, ulSelected, tree) {
         }
 
         if (typeof valueObject == "string") {
-            valueArray = field.value.split(",");
+            valueArray = valueObject.split(",");
         }
 
         for (var i in valueArray) {
@@ -2160,10 +2049,6 @@ function attributeValue(node, attributeName, callback) {
             callback(newAttributeValue);
         }) 
     }
-}
-
-function isInvariantsObject(object) {
-    return object.toString().toLowerCase().indexOf("invariants") != -1
 }
 
 function trim(string) {

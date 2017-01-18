@@ -121,7 +121,7 @@
 			// subscribe on model updates:
 			this.model.subscribe("childAdded", this.onChildAdded, this, true);
 			this.model.subscribe("childDeleted", this.onChildDeleted, this, true);
-			this.model.subscribe("childrenUpdated", this.setSelectStyle, this, true);
+			this.model.subscribe("childrenUpdated", this.onChildrenUpdated, this, true);
 			
 			// subscribe on tree events:
 			this.widgets.list.subscribe("clickEvent", this.onListItemSelected, this, true);
@@ -402,6 +402,14 @@
 			}
 			this.setSelectStyle();
 		},
+
+		/**
+		 * Event handler - childred was updated.
+		 */
+		onChildrenUpdated: function(args) {
+			this.setSelectStyle();
+			this.toggleEmptyMessage(args.items);
+		},
 		
 		/**
 		 * Event handler - item was updated.
@@ -415,6 +423,17 @@
 				Dom.addClass(this.id, "selected");
 			}
 		},
+
+		toggleEmptyMessage: function(items) {
+			var itemsCount = items.length,
+				emptyMessageEl = Dom.get(this.id + "-emptyMessage");
+
+			if (itemsCount == 0) {
+				if (Dom.hasClass(emptyMessageEl, "hidden")) Dom.removeClass(emptyMessageEl, "hidden");
+			} else {
+				if (!Dom.hasClass(emptyMessageEl, "hidden")) Dom.addClass(emptyMessageEl, "hidden");
+			}
+		}
 	
 	});
 	

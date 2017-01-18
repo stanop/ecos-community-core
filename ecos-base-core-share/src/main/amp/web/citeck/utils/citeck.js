@@ -24,6 +24,7 @@ if (typeof Citeck == "undefined" || !Citeck)
 Citeck.utils   = Citeck.utils || {};
 Citeck.HTML5   = Citeck.HTML5 || {};
 Citeck.Browser = Citeck.Browser || {};
+Citeck.UI      = Citeck.UI || {};
 
 Citeck.namespace = function(namespace) {
 	var names = namespace.split('.'),
@@ -37,6 +38,9 @@ Citeck.namespace = function(namespace) {
 	}
 	return scope;
 };
+
+// HTML5
+// -----
 
 Citeck.HTML5.supportedInputTypes = function() {
   var input = document.createElement("INPUT");
@@ -73,6 +77,21 @@ for (var i in inputTypes) {
 }
 supportedInputTypes = null;
 inputTypes = null;
+
+
+// UTILS
+// -----
+
+Citeck.utils.concatOptions = function(defaultOptions, newOptions) {
+    for (var key in newOptions) {
+        var newValue = newOptions[key],
+            oldValue = defaultOptions[key];
+
+        if (newValue && newValue != oldValue) {
+            defaultOptions[key] = newOptions[key];
+        }
+    }
+};
 
 /**
  * Format user name
@@ -562,6 +581,159 @@ Citeck.utils.getURLParameterByName = function(name) {
   return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+
+// BROWSER
+// -------
+
+Citeck.Browser.isIE = function(version) {
+    var ua = window.navigator.userAgent, 
+        msie = ua.indexOf("MSIE "), trident = ua.indexOf('Trident/'), edge = ua.indexOf('Edge/'),
+        ieVersion = false;
+
+    // IE 10 or older 
+    if (msie > 0) {
+        ieVersion = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+
+    // IE 11
+    } else if (trident > 0) {
+        var rv = ua.indexOf('rv:');
+        ieVersion = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+
+    // Edge (IE 12+)
+    } else if (edge > 0) {
+        ieVersion = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    return ieVersion ? (version ? +ieVersion == +version : true) : false;
+}
+
+
+// UI
+// --
+
+Citeck.UI.waitIndicator = function(id, params) {
+    this.id = id;
+    var self = this;
+
+    this.options = { 
+        modal: true, 
+        context: null, 
+        spinners: "two", 
+        size: 200, 
+        message: Alfresco.util.message("label.loading")
+    };
+    for (var p in params) { this.options[p] = params[p]; }
+
+
+    // build DOM
+    this._envelope = $("<div>", { "id": this.id + "-envelope", "class": "wait-indicator-envelope", "style": "visibility: hidden;"  });
+    this._container = $("<div>", { "id": this.id + "-container", "class": "wait-indicator-container" });
+    this._indicator = $("<div>", { "id": this.id + "-indicator", "class": "wait-indicator-indicator" });
+    this._message = $("<div>", { "id": this.id + "-message", "class": "wait-indicator-message", "text": this.options.message });
+
+    // custom color of spinner
+    if (this.options.color) {
+        this._indicator.css("border-color", this.options.color);
+        this._message.css("color", this.options.color);
+    }
+
+    this._envelope.append(
+        this._container
+            .append(this._indicator)
+            .append(this._message)
+    );
+
+    // public functions
+    this.getEl = function() { return this._envelope[0]; }
+
+    this.hide = function() {
+        var parent = self._envelope.parent();
+
+        if (parent.attr("data-height-was-modified")) {
+            parent.height("");
+        }
+
+        self._envelope.css("visibility", "hidden"); 
+    }
+
+    this.show = function() { 
+        var parent = self._envelope.parent(),
+            offset = parent.offset();
+
+        if (parent.css("position") == "static") {
+            parent.css("position", "relative").css("overflow", "hidden");
+
+            if (parent.height() <= self.options.size) {
+                parent.height(self.options.size + self.options.size / 2).attr("data-height-was-modified", "true");
+            }
+        }
+
+        // location envelope
+        if (parent.css("position") != "relative") {           
+            self._envelope.css("height", parent.height()).css("width", parent.width()).css("top", offset.top).css("left", offset.left);
+        }
+
+        // options for envelope
+        if (self.options.backgroundColor) {
+            self._envelope.css("background-color", self.options.backgroundColor);
+        }
+
+        // location container
+        self._container.css("top", "calc(50% - " + self.options.size / 2 + "px)");
+        self._container.css("left", "calc(50% - " + self.options.size / 2 + "px)");
+
+        // resize and mode indicator
+        self._indicator
+            .css("width", self.options.size)
+            .css("height", self.options.size)
+            .addClass(self.options.spinners + "-spinner");
+
+        // location message
+        self._message
+            .css("left", "calc(50% - " + self._message.width() / 2 + "px)")
+            .css("top", "calc(50% - " + self._message.height() / 2 + "px)");
+
+        self._envelope.css("visibility", "visible"); 
+    }
+
+    this.setMessage = function(newMessage) {
+        self.options.message = newMessage;
+        self._message.text(self.options.message);
+    }
+
+    // private functions
+    this._dispose = function() {
+        $(self._message).unbind().remove();
+        $(self._indicator).unbind().remove();
+        $(self._container).unbind().remove();
+        $(self._envelope).unbind().remove();
+    }
+
+    this._render = function() {
+        if (self.options.context) {
+            if (self.options.context instanceof HTMLElement) {
+                if ($(self.options.context).has(self._envelope).length) self._dispose();
+                $(self.options.context).append(self._envelope);
+            } else if (typeof self.options.context == "string") {
+                if ($("#" + self.options.context).has(self._envelope).length) self._dispose();
+                $("#" + self.options.context).append(self._envelope);
+            }
+
+
+        } else {
+            if ($(".sticky-wrapper").has(self._envelope).length) self._dispose();
+            $(".sticky-wrapper").append(self._envelope);
+            self._container.css("position", "fixed");
+        }
+    }
+
+    this._render();
+}
+
+
+// OVERWRITE
+// ---------
+
 /**
  * Online edit url override: generate correct address even in absense of site information.
  */
@@ -637,28 +809,3 @@ Alfresco.thirdparty.toISO8601 = function() {
 
   return toISOString.apply(arguments.callee, arguments);
 };
-
-
-// BROWSER
-
-Citeck.Browser.isIE = function(version) {
-    var ua = window.navigator.userAgent, 
-        msie = ua.indexOf("MSIE "), trident = ua.indexOf('Trident/'), edge = ua.indexOf('Edge/'),
-        ieVersion = false;
-
-    // IE 10 or older 
-    if (msie > 0) {
-        ieVersion = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-
-    // IE 11
-    } else if (trident > 0) {
-        var rv = ua.indexOf('rv:');
-        ieVersion = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-
-    // Edge (IE 12+)
-    } else if (edge > 0) {
-        ieVersion = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-    }
-
-    return ieVersion ? (version ? +ieVersion == +version : true) : false;
-}

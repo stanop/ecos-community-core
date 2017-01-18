@@ -20,30 +20,25 @@ package ru.citeck.ecos.processor.report;
 
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.service.cmr.dictionary.Constraint;
-import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.repo.template.BaseContentNode.TemplateContentData;
+import org.alfresco.repo.template.TemplateNode;
+import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
+import org.springframework.extensions.surf.util.I18NUtil;
+import org.springframework.util.ClassUtils;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.template.TemplateNodeService;
+import ru.citeck.ecos.utils.DictionaryUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import org.alfresco.repo.template.TemplateNode;
-import org.alfresco.repo.template.BaseContentNode.TemplateContentData;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
-import org.springframework.extensions.surf.util.I18NUtil;
-import org.springframework.util.ClassUtils;
-import ru.citeck.ecos.utils.DictionaryUtils;
 
 /**
  * Create list with report data to output
@@ -119,6 +114,15 @@ public class ReportProducer extends AbstractDataBundleLine {
                             } else {
                                 QName colAttrQName = QName.resolveToQName(namespaceService, colAttribute);
                                 Object value = nodeAttributeService.getAttribute(node, colAttrQName);
+                                QName typeQName = getAttributeTypeName(colAttrQName);
+                                if (typeQName != null) {
+                                    if (typeQName.equals(DataTypeDefinition.DOUBLE)) {
+                                        data.put(DATA_TYPE_ATTR, "Double");
+                                    } else if (typeQName.equals(DataTypeDefinition.INT)) {
+                                        data.put(DATA_TYPE_ATTR, "Integer");
+                                    }
+                                }
+
                                 data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat, ""));
                             }
                         }
@@ -225,6 +229,14 @@ public class ReportProducer extends AbstractDataBundleLine {
         }
 
         return result;
+    }
+
+    private QName getAttributeTypeName(QName qName) {
+        PropertyDefinition property = serviceRegistry.getDictionaryService().getProperty(qName);
+        if (property != null) {
+            return property.getDataType().getName();
+        }
+        return null;
     }
 
     private String shortQName(String s) {
