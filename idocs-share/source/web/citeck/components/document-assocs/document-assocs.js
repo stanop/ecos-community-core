@@ -349,13 +349,18 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 column = me.options.columns[_.findIndex(this.options.columns, { attribute: attributeName })];
 
             return function(elCell, oRecord, oColumn, oData) {
+                if (!oRecord._oData.attributes[attributeName]) {
+                    elCell.innerHTML = '<span>-</span>';
+                    return;
+                }
+
                 if (column.formatter) {
                     column.formatter(elCell, oRecord, oColumn, oRecord._oData.attributes[attributeName]);
                     return;
                 }
 
                 var openId = Alfresco.util.generateDomId(),
-                    label = oRecord._oData.attributes[attributeName] || "-";
+                    label = oRecord._oData.attributes[attributeName];
                     html = '<span>' + label + '</span>',
                     page = "";
 
