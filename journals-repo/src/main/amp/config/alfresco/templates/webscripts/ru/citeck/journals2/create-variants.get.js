@@ -19,10 +19,14 @@ function getWritableVariants(variants) {
 (function() {
 
 var siteId = url.templateArgs.site,
-	nodetypeId = url.templateArgs.nodetype;
+	nodetypeId = url.templateArgs.nodetype,
+	journalId = url.templateArgs.journal,
+	createVariants,
+	journal,
+	query;
 
-if((!siteId && !nodetypeId)) {
-	status.setCode(status.STATUS_BAD_REQUEST, "Site or Nodetype should be specified");
+if((!siteId && !nodetypeId && !journalId)) {
+	status.setCode(status.STATUS_BAD_REQUEST, "Site or Nodetype or Journal ID should be specified");
 	return;
 }
 
@@ -37,14 +41,13 @@ if (siteId) {
 		return;
 	}
 
-	var query = 'TYPE:"journal:journalsList" AND @cm\\:name:"site-' + siteId + '-main"';
+	query = 'TYPE:"journal:journalsList" AND @cm\\:name:"site-' + siteId + '-main"';
 	var journalsLists = search.luceneSearch(query);
 
 	var journals = [];
 	for(var i = 0, ii = journalsLists.length; i < ii; i++) {
 		journals = journals.concat(journalsLists[i].assocs["journal:journals"] || []);
 	}
-
 
 	for(var i = 0, ii = journals.length; i < ii; i++) {
 		var journalVariants = journals[i].childAssocs["journal:createVariants"] || [];
@@ -57,12 +60,22 @@ if (siteId) {
 	}
 
 	model.siteId = siteId;
-}
 
-// search createVariants by nodetypeId
-if (!siteId) {
-	var query = 'TYPE:"journal:createVariant" AND @journal\\:type:"' + nodetypeId + '"',
-		createVariants = search.query({ query: query });
+} else if (nodetypeId) {
+
+	query = 'TYPE:"journal:createVariant" AND @journal\\:type:"' + nodetypeId + '"';
+	createVariants = search.query({ query: query });
+	createVariants = createVariants.filter(function (it) {
+		return it.properties["journal:type"] == nodetypeId;
+	});
+
+	variants = writable ? getWritableVariants(createVariants) : createVariants;
+
+} else {
+
+	query = 'TYPE:"journal:journal" AND @journal\\:journalType:"' + journalId + '"';
+	journal = (search.query({ query: query }) || [])[0];
+	createVariants = journal ? journal.childAssocs['journal:createVariants'] || [] : [];
 
 	variants = writable ? getWritableVariants(createVariants) : createVariants;
 }

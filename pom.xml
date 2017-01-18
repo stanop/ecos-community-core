@@ -41,8 +41,8 @@
         <!--<ecos.module.release>-SNAPSHOT</ecos.module.release>-->
         <ecos.build.classifier>common</ecos.build.classifier>
 
-        <ecos-base-core.version>2.0.0.0-SNAPSHOT</ecos-base-core.version>
-        <ecos-journals.version>2.0.0.0-SNAPSHOT</ecos-journals.version>
+        <ecos-base-core.version>2.0.0.1-SNAPSHOT</ecos-base-core.version>
+        <ecos-journals.version>2.0.0.1-SNAPSHOT</ecos-journals.version>
         <ecos-forms.version>2.0.0.0-SNAPSHOT</ecos-forms.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yy.MM.dd.HH.mm</maven.build.timestamp.format>
