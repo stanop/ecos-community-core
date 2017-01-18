@@ -7,7 +7,7 @@
     border: none;
 }
 
-.document-assocs .assoclist:not(:first-child) {
+.document-assocs .assoclist + .assoclist {
     margin-top: 15px;
 }
 
