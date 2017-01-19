@@ -4,6 +4,8 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -17,7 +19,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
-public class ClosingDocumentBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy {
+public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy  {
 
     private NodeService nodeService;
     private PolicyComponent policyComponent;
@@ -34,10 +36,39 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnUpdatePro
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnCreateNodePolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
                 QName.createQName(namespace, type),
                 new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
+                ContractsModel.ASSOC_CLOSING_DOCUMENT_CURRENCY,
+                new JavaBehaviour(this, "onCreateAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+    }
+
+    @Override
+    public void onCreateAssociation(AssociationRef associationRef) {
+        NodeRef sourceRef = associationRef.getSourceRef();
+        if (!nodeService.exists(sourceRef)) {
+            return;
+        }
+        setTotalAmountInWords(sourceRef);
+    }
+
+    @Override
+    public void onCreateNode(ChildAssociationRef childAssociationRef) {
+        NodeRef paymentRef = childAssociationRef.getChildRef();
+        if (!nodeService.exists(paymentRef)) {
+            return;
+        }
+        setTotalAmountInWords(paymentRef);
     }
 
     @Override
