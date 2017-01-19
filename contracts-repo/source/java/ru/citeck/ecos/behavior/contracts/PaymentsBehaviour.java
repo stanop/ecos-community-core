@@ -3,7 +3,7 @@ package ru.citeck.ecos.behavior.contracts;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -35,6 +35,7 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
     private PolicyComponent policyComponent;
     private String namespace;
     private String type;
+    private int order;
 
     public void setType(String type) {
         this.type = type;
@@ -52,26 +53,26 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
         this.searchService = searchService;
     }
 
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
+    public void setPolicyComponent(PolicyComponent policyComponent) { this.policyComponent = policyComponent; }
+
+    public void setOrder(int order) { this.order = order; }
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnCreateNodePolicy.QNAME,
                 QName.createQName(namespace, type),
-                new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+                new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order)
         );
         this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
                 QName.createQName(namespace, type),
-                new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+                new OrderedBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order)
         );
         this.policyComponent.bindAssociationBehaviour(
                 NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
                 PaymentsModel.TYPE,
                 PaymentsModel.ASSOC_PAYMENT_CURRENCY,
-                new JavaBehaviour(this, "onCreateAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+                new OrderedBehaviour(this, "onCreateAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order)
         );
     }
 
