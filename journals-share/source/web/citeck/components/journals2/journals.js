@@ -1087,9 +1087,9 @@ JournalType
 				attributes: data.attributes,
 				options: data.settings,
 				formInfo: {
-					type: data.settings.type,
-					formId: data.settings.formId
-				},
+					type: data.settings ? data.settings.type : "",
+					formId: data.settings ? data.settings.formId : ""
+				}
 			}
 		},
 		postprocessing: function(model) { model["journal"] = this; }
