@@ -173,24 +173,30 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    				
 	    				String dataType = (String) cellData.get(ReportProducer.DATA_TYPE_ATTR);
 						CellStyle cellStyle = newCell.getCellStyle();
-	    				if ("Integer".equals(dataType)) {
-	    					Integer val = (Integer) cellData.get(ReportProducer.DATA_VALUE_ATTR);
-	    					if (val != null) {
-		    					newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
-	    						newCell.setCellValue(Double.valueOf(val));
-	    					}
-	    				} else if ("Double".equals(dataType)) {
-							Double val = Double.parseDouble((String) cellData.get(ReportProducer.DATA_VALUE_ATTR)) ;
-							DataFormat dataFormat = wb.createDataFormat();
-							cellStyle.setDataFormat(dataFormat.getFormat("0.0"));
-							newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							newCell.setCellValue(val);
-						} else if ("String".equals(dataType)) {
-	    					String val = (String) cellData.get(ReportProducer.DATA_VALUE_ATTR);
-	    					if (val != null)
-	    						appendStringValue(newCell, val);
-	    				}
-	    				
+						String valStr =  (String) cellData.get(ReportProducer.DATA_VALUE_ATTR);
+						if (valStr != null && !valStr.isEmpty()) {
+							if ("Integer".equals(dataType)) {
+								try {
+									Integer val = Integer.parseInt(valStr);
+									newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+									newCell.setCellValue(Double.valueOf(val));
+								} catch (NumberFormatException e) {
+									appendStringValue(newCell, valStr);
+								}
+							} else if ("Double".equals(dataType)) {
+								try {
+									Double val = Double.parseDouble(valStr);
+									DataFormat dataFormat = wb.createDataFormat();
+									cellStyle.setDataFormat(dataFormat.getFormat("0.0"));
+									newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+									newCell.setCellValue(val);
+								} catch (NumberFormatException e) {
+									appendStringValue(newCell, valStr);
+								}
+							} else if ("String".equals(dataType)) {
+								appendStringValue(newCell, valStr);
+							}
+						}
 	    				j++;
 	    			}
 	    			
