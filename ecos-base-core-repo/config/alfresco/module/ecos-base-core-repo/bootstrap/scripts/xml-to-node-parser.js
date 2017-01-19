@@ -116,30 +116,64 @@ var parser = {
             }
 
             for each(var assocData in assocsData) {
-                if (assocData.assocType.length() == 0 || assocData.targetNodeType.length() == 0
-                    || assocData.propId.length() == 0 || assocData.propValue.length() == 0
-                    || assocData.targetNodePath.length() == 0) {
-                    logger.error(parser.parserScriptName
-                        + " fillAssocs(): one of mandatory parameter is empty. Method aborted.");
-                    return;
 
-                }
+                if (assocData.cm_authority.length() > 0) {
+                    if (assocData.cm_authority.name.length() == 0 || assocData.assocType.length() == 0) {
+                        logger.error(parser.parserScriptName
+                            + " fillAssocs() - cm_authority: (name) or (assocType) parameter is empty. Method aborted.");
+                        return;
+                    }
 
-                var targetNodeRoot = this.getRootNodeByPath(assocData.targetNodePath);
+                    var groupName = assocData.cm_authority.name;
+                    var groupDisplayName = assocData.cm_authority.displayName;
+                    var createIfNotExists = assocData.cm_authority.createIfNotExists;
 
-                if (!targetNodeRoot) {
-                    return;
-                }
+                    var targetGroup = groups.getGroup(groupName);
 
-                var targetNode = this.getChildByProperty(targetNodeRoot, assocData.propId, assocData.propValue);
+                    if (!targetGroup) {
+                        if (createIfNotExists == 'true') {
+                            if (groupDisplayName.length() == 0) {
+                                groupDisplayName = groupName;
+                            }
+                            targetGroup = groups.createRootGroup(groupName, groupDisplayName)
+                        } else {
+                            logger.error(this.parserScriptName + " cannot create association with authority: "
+                                + groupName + ", because this authority doesn't exists and "
+                                + "parameter (createIfNotExists) not equals (true)")
+                            return;
+                        }
+                    }
 
-                if (!targetNode) {
-                    logger.error(this.parserScriptName + " fillAssocs(): Cannot find target node. Information: " +
-                        "\ntargetNodeRoot: " + targetNodeRoot.nodeRef + " prop id: "
-                        + assocData.propId + " prop value: " + assocData.propValue);
+                    var groupNode = search.findNode(targetGroup.groupNodeRef);
+                    node.createAssociation(groupNode, assocData.assocType);
+
                 } else {
-                    node.createAssociation(targetNode, assocData.assocType);
+                    if (assocData.assocType.length() == 0 || assocData.targetNodeType.length() == 0
+                        || assocData.propId.length() == 0 || assocData.propValue.length() == 0
+                        || assocData.targetNodePath.length() == 0) {
+                        logger.error(parser.parserScriptName
+                            + " fillAssocs(): one of mandatory parameter is empty. Method aborted.");
+                        return;
+
+                    }
+
+                    var targetNodeRoot = this.getRootNodeByPath(assocData.targetNodePath);
+
+                    if (!targetNodeRoot) {
+                        return;
+                    }
+
+                    var targetNode = this.getChildByProperty(targetNodeRoot, assocData.propId, assocData.propValue);
+
+                    if (!targetNode) {
+                        logger.error(this.parserScriptName + " fillAssocs(): Cannot find target node. Information: " +
+                            "\ntargetNodeRoot: " + targetNodeRoot.nodeRef + " prop id: "
+                            + assocData.propId + " prop value: " + assocData.propValue);
+                    } else {
+                        node.createAssociation(targetNode, assocData.assocType);
+                    }
                 }
+
             }
         },
         fillNodeTitle: function (node) {
