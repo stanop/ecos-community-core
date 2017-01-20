@@ -88,9 +88,8 @@
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
                     var currentDate = node.properties["payments:billDate"];
-
+                    var nextDay = new Date(currentDate);
                     var amtDay = 5;
-                    var nextDay = currentDate;
 
                     while (amtDay > 0) {
                         nextDay.setDate(nextDay.getDate() + 1);
