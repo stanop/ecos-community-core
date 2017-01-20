@@ -173,7 +173,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    				
 	    				String dataType = (String) cellData.get(ReportProducer.DATA_TYPE_ATTR);
 						CellStyle cellStyle = newCell.getCellStyle();
-						String valStr =  (String) cellData.get(ReportProducer.DATA_VALUE_ATTR);
+						String valStr = String.valueOf(cellData.get(ReportProducer.DATA_VALUE_ATTR));
 						if (valStr != null && !valStr.isEmpty()) {
 							if ("Integer".equals(dataType)) {
 								try {
@@ -199,7 +199,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 						}
 	    				j++;
 	    			}
-	    			
+
 	    			if (i == 19) 
 	    				autoSizeColumns(sheet);
 	    			
