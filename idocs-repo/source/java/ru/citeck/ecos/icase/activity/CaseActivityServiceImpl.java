@@ -134,7 +134,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type) {
-        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, type);
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
 
         if (children == null || children.isEmpty()) {
             return new ArrayList<>(0);
@@ -143,8 +143,10 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         List<Pair<NodeRef, Integer>> indexedChildren = new ArrayList<>(children.size());
         for (ChildAssociationRef child : children) {
             NodeRef childRef = child.getChildRef();
-            Integer index = (Integer) nodeService.getProperty(childRef, ActivityModel.PROP_INDEX);
-            indexedChildren.add(new Pair<>(childRef, index != null ? index : 0));
+            if (type.isMatch(nodeService.getType(childRef))) {
+                Integer index = (Integer) nodeService.getProperty(childRef, ActivityModel.PROP_INDEX);
+                indexedChildren.add(new Pair<>(childRef, index != null ? index : 0));
+            }
         }
 
         Collections.sort(indexedChildren, new Comparator<Pair<NodeRef, Integer>>() {
