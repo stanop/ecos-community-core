@@ -62,36 +62,40 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
 
     @Override
     public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean b) {
-        NodeRef childRef = childAssociationRef.getChildRef();
-        NodeRef caseRef = null;
+        NodeRef attachmentRef = childAssociationRef.getChildRef();
+        NodeRef caseRef;
 
-        if (nodeService.getParentAssocs(childRef) != null) {
-            caseRef = nodeService.getParentAssocs(childRef).get(0).getParentRef();
+        if (sender == null || !nodeService.exists(attachmentRef)) {
+            return;
+        } else {
+            caseRef = childAssociationRef.getParentRef();
         }
 
-        if (sender == null || !nodeService.exists(childRef) || !isActive(caseRef)) {
+        if (!nodeService.exists(caseRef) || !isActive(caseRef)) {
             return;
         }
 
         addition = new HashMap<>();
-        addition = addTypeAndKind(childRef, addition);
+        addition = addTypeAndKind(attachmentRef, addition);
         addition.put(PARAM_METHOD, PARAM_METHOD_ON_CREATE);
         sender.setAdditionArgs(addition);
-        sender.sendNotification(childAssociationRef.getParentRef(), childRef, recipients,
+        sender.sendNotification(caseRef, attachmentRef, recipients,
                 notificationType, subjectTemplate);
     }
 
     @Override
     public void beforeDeleteNode(NodeRef nodeRef) {
-        if (!nodeService.exists(nodeRef) || nodeService.hasAspect(nodeRef, ContentModel.ASPECT_WORKING_COPY) || !isEnabled()) {
+        if (sender == null || !nodeService.exists(nodeRef)
+                || nodeService.hasAspect(nodeRef, ContentModel.ASPECT_WORKING_COPY)) {
             return;
         }
 
         ChildAssociationRef primaryParent = nodeService.getPrimaryParent(nodeRef);
-        NodeRef parentRef = primaryParent.getParentRef();
+        NodeRef caseRef = primaryParent.getParentRef();
 
-        if (nodeService.exists(parentRef) && primaryParent.getTypeQName().equals(ICaseModel.ASSOC_DOCUMENTS)) {
-            QName parentQName = nodeService.getType(parentRef);
+        if (nodeService.exists(caseRef) && isActive(caseRef)
+                && primaryParent.getTypeQName().equals(ICaseModel.ASSOC_DOCUMENTS)) {
+            QName parentQName = nodeService.getType(caseRef);
             if (sender != null && parentQName.equals(documentQName)) {
                 String fileName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
                 addition = new HashMap<>();
@@ -99,7 +103,7 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
                 addition.put(PARAM_METHOD, PARAM_METHOD_ON_DELETE);
                 addition.put(PARAM_FILE_NAME, fileName);
                 sender.setAdditionArgs(addition);
-                sender.sendNotification(parentRef, nodeRef, recipients,
+                sender.sendNotification(caseRef, nodeRef, recipients,
                         notificationType, subjectTemplate, true);
             }
         }
@@ -107,20 +111,21 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
 
     @Override
     public void afterCreateVersion(NodeRef nodeRef, Version version) {
-        if (!nodeService.exists(nodeRef) || !isEnabled()) {
+        if (sender == null || !nodeService.exists(nodeRef)) {
             return;
         }
 
         ChildAssociationRef primaryParent = nodeService.getPrimaryParent(nodeRef);
-        NodeRef parentRef = primaryParent.getParentRef();
+        NodeRef caseRef = primaryParent.getParentRef();
 
-        if (nodeService.exists(parentRef) && primaryParent.getTypeQName().equals(ICaseModel.ASSOC_DOCUMENTS)
-                && nodeService.getType(parentRef).equals(documentQName)) {
+        if (nodeService.exists(caseRef) && isActive(caseRef)
+                && primaryParent.getTypeQName().equals(ICaseModel.ASSOC_DOCUMENTS)
+                && nodeService.getType(caseRef).equals(documentQName)) {
             addition = new HashMap<>();
             addition = addTypeAndKind(nodeRef, addition);
             addition.put(PARAM_METHOD, PARAM_METHOD_UPLOAD_NEW_VERSION);
             sender.setAdditionArgs(addition);
-            sender.sendNotification(parentRef, nodeRef, recipients,
+            sender.sendNotification(caseRef, nodeRef, recipients,
                     notificationType, subjectTemplate);
         }
     }
