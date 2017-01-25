@@ -94,17 +94,24 @@ if (user.capabilities.isMutable) {
 }
 
 if (!context.externalAuthentication) {
-  userMenuItems.push({
+  var logoutItemConfig = {
     id: "HEADER_USER_MENU_LOGOUT",
     name: "alfresco/header/AlfMenuItem",
     config:
     {
       id: "HEADER_USER_MENU_LOGOUT",
       label: "header.logout.label",
-      iconImage: "/share/res/components/images/header/logout.png",
-      publishTopic: "ALF_DOLOGOUT"
+      iconImage: "/share/res/components/images/header/logout.png"
     }
-  });
+  };
+
+  // Alfresco community version doesn't have LogoutService so we should check
+  if (model.jsonModel.services && model.jsonModel.services.indexOf("alfresco/services/LogoutService") > -1) {
+    logoutItemConfig.config.publishTopic = "ALF_DOLOGOUT";
+  } else {
+    logoutItemConfig.config.targetUrl = "dologout";
+  }
+  userMenuItems.push(logoutItemConfig);
 }
 
 // USER MENU
