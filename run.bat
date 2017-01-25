@@ -5,4 +5,4 @@ IF "%MAVEN_OPTS%" == "" (
     SET MAVEN_OPTS=-Xms256m -Xmx2G -XX:PermSize=300m
 )
 ECHO MAVEN_OPTS is set to '%MAVEN_OPTS%'
-mvn -Ddependency.surf.version=6.3 clean install -Prun
+mvn -Ddependency.surf.version=6.10 clean install -Prun
