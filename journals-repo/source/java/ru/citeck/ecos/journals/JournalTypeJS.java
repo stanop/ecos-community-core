@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.journals;
 
+import java.util.List;
 import java.util.Map;
 
 import org.alfresco.service.ServiceRegistry;
@@ -70,7 +71,7 @@ public class JournalTypeJS {
     public Map<String, String> getAttributeOptions(String attributeKey) {
         return impl.getAttributeOptions(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
     }
-    
+
     public boolean isAttributeDefault(String attributeKey) {
         return impl.isAttributeDefault(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
     }
@@ -89,6 +90,10 @@ public class JournalTypeJS {
     
     public boolean isAttributeGroupable(String attributeKey) {
         return impl.isAttributeGroupable(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+    }
+
+    public List<JournalBatchEdit> getBatchEdit(String attributeKey) {
+        return impl.getBatchEdit(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
     }
     
 }

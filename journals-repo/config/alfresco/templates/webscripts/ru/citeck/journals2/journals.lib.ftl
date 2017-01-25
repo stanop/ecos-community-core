@@ -12,12 +12,26 @@
         "searchable": ${journalType.isAttributeSearchable(attribute)?string},
         "sortable":   ${journalType.isAttributeSortable(attribute)?string},
         "groupable":  ${journalType.isAttributeGroupable(attribute)?string},
-        "settings": <@renderJournalOptions journalType.getAttributeOptions(attribute) />
+        "settings": <@renderJournalOptions journalType.getAttributeOptions(attribute) />,
+        "batchEdit": <@renderJournalBatchEdit journalType.getBatchEdit(attribute) />
         }<#if attribute_has_next>,</#if>
         </#list>
     ]
 }
 </#escape>
+</#macro>
+
+<#macro renderJournalBatchEdit batchEdit>
+    <#escape x as jsonUtils.encodeJSONString(x)>
+    [
+        <#list batchEdit as edit>
+            {
+                "title": "${edit.getTitle()}",
+                "settings": <@renderJournalOptions edit.getOptions() />
+            }<#if edit_has_next>,</#if>
+        </#list>
+    ]
+    </#escape>
 </#macro>
 
 <#macro renderJournalOptions options>

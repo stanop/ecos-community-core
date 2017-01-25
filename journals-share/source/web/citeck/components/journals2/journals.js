@@ -313,6 +313,7 @@ Attribute
 	.property('groupable', b)
 	.property('isDefault', b)
 	.property('settings', o)
+	.property('batchEdit', [o])
 
 	.shortcut('type', '_info.type')
 	.shortcut('displayName', '_info.displayName')
@@ -443,11 +444,13 @@ Column
 
 Action
 	.key('id', s)
+	.property('function', s)
 	.property('label', s)
 	.property('permission', s)
 	.property('requiredAspect', s)
 	.property('forbiddenAspect', s)
 	.property('syncMode', s)
+	.property('options', o)
 	;
 
 ActionsColumn

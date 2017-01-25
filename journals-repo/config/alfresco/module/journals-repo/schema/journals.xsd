@@ -47,10 +47,35 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-  
+
+  <xs:simpleType name="logicJoinType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OR"/>
+      <xs:enumeration value="AND"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="evaluator">
+    <xs:sequence>
+      <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="evaluator" type="j:evaluator" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional" />
+    <xs:attribute name="joinBy" type="j:logicJoinType" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="batchEdit">
+    <xs:sequence>
+      <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="evaluator" type="j:evaluator" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="title" type="xs:string" use="optional" />
+  </xs:complexType>
+
   <xs:complexType name="header">
     <xs:sequence>
       <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="batchEdit" type="j:batchEdit" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="key" type="xs:string" use="required" />
     <xs:attribute name="default" type="xs:boolean" default="false" />

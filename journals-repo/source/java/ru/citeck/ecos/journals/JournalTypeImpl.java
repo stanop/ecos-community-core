@@ -27,9 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.journals.xml.BatchEdit;
 import ru.citeck.ecos.journals.xml.Header;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Option;
@@ -41,18 +43,22 @@ class JournalTypeImpl implements JournalType {
     private final List<QName> attributes;
     private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
     private final Map<QName, Map<String, String>> attributeOptions;
+    private final Map<QName, List<JournalBatchEdit>> batchEdit;
     
-    public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver) {
+    public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry) {
+
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         List<Header> headers = journal.getHeaders().getHeader();
         List<QName> allAttributes = new ArrayList<>(headers.size());
+        batchEdit = new HashMap<>();
         defaultAttributes = new BitSet(allAttributes.size());
         visibleAttributes = new BitSet(allAttributes.size());
         searchableAttributes = new BitSet(allAttributes.size());
         sortableAttributes = new BitSet(allAttributes.size());
         groupableAttributes = new BitSet(allAttributes.size());
         this.attributeOptions = new TreeMap<>();
+
         int index = 0;
         for(Header header : headers) {
             QName attributeKey = QName.createQName(header.getKey(), prefixResolver);
@@ -66,6 +72,11 @@ class JournalTypeImpl implements JournalType {
                 this.attributeOptions.put(attributeKey,
                         Collections.unmodifiableMap(getOptions(header.getOption())));
             }
+            List<JournalBatchEdit> attributeBatchEdit = new ArrayList<>();
+            for (BatchEdit batchEdit : header.getBatchEdit()) {
+                attributeBatchEdit.add(new JournalBatchEdit(batchEdit, journal.getId(), serviceRegistry));
+            }
+            batchEdit.put(attributeKey, attributeBatchEdit);
             index++;
         }
         this.attributes = Collections.unmodifiableList(allAttributes);
@@ -140,6 +151,18 @@ class JournalTypeImpl implements JournalType {
     @Override
     public boolean isAttributeGroupable(QName attributeKey) {
         return checkFeature(attributeKey, groupableAttributes);
+    }
+
+    @Override
+    public List<JournalBatchEdit> getBatchEdit(QName attributeKey) {
+        List<JournalBatchEdit> batchEdit = this.batchEdit.get(attributeKey);
+        List<JournalBatchEdit> result = new ArrayList<>(batchEdit.size());
+        for (JournalBatchEdit edit : batchEdit) {
+            if (edit.getEvaluator().evaluate()) {
+                result.add(edit);
+            }
+        }
+        return result;
     }
 
     private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
