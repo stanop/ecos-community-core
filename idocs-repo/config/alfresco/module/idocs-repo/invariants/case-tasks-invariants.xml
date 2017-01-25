@@ -49,6 +49,16 @@
                 message(value.replace("activiti$", "") + ".workflow.title")
             </invariant>
         </property>
+        <associations type="icaseTask:performer">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                var parent = node.parent;
+                while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                parent = parent.parent;
+                return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </associations>
     </type>
 
     <type name="icaseTask:confirmTask">
@@ -65,6 +75,16 @@
             <invariant on="relevant" language="javascript">node.properties["wfcf:terminateOnPartialConfirms"]</invariant>
             <invariant on="mandatory" language="javascript">node.properties["wfcf:terminateOnPartialConfirms"]</invariant>
         </property>
+        <association name="icaseTask:confirmers">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                var parent = node.parent;
+                while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                parent = parent.parent;
+                return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </association>
     </type>
 
     <type name="icaseTask:performTask">
@@ -90,6 +110,29 @@
         <association name="icaseTask:controller">
             <invariant on="relevant" language="javascript">node.properties["wfperf:enableControl"]</invariant>
         </association>
+        <associations type="icaseTask:performers">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                var parent = node.parent;
+                while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                parent = parent.parent;
+                return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </associations>
+    </type>
+
+    <type name="wfcp:performCaseTask">
+        <associations type="wfcp:performersRoles">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                var parent = node.parent;
+                while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                parent = parent.parent;
+                return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </associations>
     </type>
 
     <aspect name="wfcp:basePerformData">
