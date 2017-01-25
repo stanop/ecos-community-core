@@ -18,6 +18,18 @@
  */
 package ru.citeck.ecos.webscripts.processor;
 
+import org.alfresco.repo.content.MimetypeMap;
+import org.alfresco.service.cmr.repository.MimetypeService;
+import org.apache.commons.io.IOUtils;
+import org.springframework.extensions.surf.util.Content;
+import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.json.JSONUtils;
+import ru.citeck.ecos.processor.*;
+import ru.citeck.ecos.server.utils.Utils;
+import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,29 +38,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.repo.content.MimetypeMap;
-import org.springframework.extensions.surf.util.Content;
-import org.springframework.extensions.webscripts.AbstractWebScript;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
-
-import org.springframework.extensions.webscripts.json.JSONUtils;
-import ru.citeck.ecos.processor.CompositeDataBundleProcessor;
-import ru.citeck.ecos.processor.DataBundle;
-import ru.citeck.ecos.processor.DataBundleProcessor;
-import ru.citeck.ecos.processor.ExpressionEvaluator;
-import ru.citeck.ecos.processor.ProcessorConstants;
-import ru.citeck.ecos.server.utils.Utils;
-import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
-import org.alfresco.service.cmr.repository.MimetypeService;
-
 /**
  * Web Script, that executes specified data bundle processors and returns the result.
  * It puts web script arguments as object "args" in the input model.
- * It utilize output variables @{code ProcessorConstants.MIMETYPE}, 
+ * It utilize output variables @{code ProcessorConstants.MIMETYPE},
  *  @{code ProcessorConstants.ENCODING} and @{code ProcessorConstants.FILENAME}
  *  to set corresponding response properties.
- * 
+ *
  * @author Sergey Tiunov
  *
  */
@@ -63,7 +59,7 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 	private ExpressionEvaluator evaluator;
 	private String downloadExpr;
 	private MimetypeService mimetypeService;
-	
+
 	public void init() {
 		if(processor instanceof CompositeDataBundleProcessor) {
 			((CompositeDataBundleProcessor)processor).setProcessors(processors);
@@ -72,17 +68,17 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 
 	@Override
 	public void execute(WebScriptRequest req, WebScriptResponse res)
-			throws IOException 
+			throws IOException
 	{
 		DataBundle inputBundle = getInputBundle(req);
-		
+
 		List<DataBundle> inputs = Arrays.asList(new DataBundle[]{inputBundle});
 
 		// get actual input stream and model
 		InputStream inputStream = null;
 
 		OutputStream outputStream = null;
-		
+
 		try {
 			// do the processing
 			List<DataBundle> outputs = processor.process(inputs);
@@ -97,9 +93,9 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 					break;
 				}
 			}
-			
+
 			if(inputStream != null) {
-				
+
 				// first set the headers
 				String encoding = (String) outputModel.get(ProcessorConstants.KEY_ENCODING);
 				String mimetype = (String) outputModel.get(ProcessorConstants.KEY_MIMETYPE);
@@ -129,27 +125,23 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 
 				// then output the content
 				outputStream = res.getOutputStream();
-				
+
 				byte[] buffer = new byte[1000];
 				while(true) {
 					int size = inputStream.read(buffer);
 					if(size <= 0) break;
 					outputStream.write(buffer, 0, size);
 				}
-				
+
 				outputStream.flush();
-				
+
 			}
-			
+
 		} finally {
-			if(inputStream != null) {
-				inputStream.close();
-			}
-			if(outputStream != null) {
-				outputStream.close();
-			}
+			IOUtils.closeQuietly(inputStream);
+			IOUtils.closeQuietly(outputStream);
 		}
-		
+
 	}
 
 	private DataBundle getInputBundle(WebScriptRequest req) {
@@ -163,7 +155,7 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
         DataBundle inputBundle = new DataBundle(stream, model);
 		return inputBundle;
 	}
-	
+
 	public void setProcessor(DataBundleProcessor processor) {
 		this.processor = processor;
 	}

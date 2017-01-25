@@ -18,23 +18,15 @@
  */
 package ru.citeck.ecos.processor;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.ContentAccessor;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.ContentWriter;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.util.TempFileProvider;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProcessorHelper {
 	
@@ -122,26 +114,13 @@ public class ProcessorHelper {
 			}
 			outputStream.flush();
 			outputStream.close();
-			
+
 			return tempWriter.getReader();
-			
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			if(inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					// do nothing
-				}
-			}
-			if(outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-					// do nothing
-				}
-			}
+			IOUtils.closeQuietly(inputStream);
+			IOUtils.closeQuietly(outputStream);
 		}
 	}
 	
