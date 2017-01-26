@@ -1478,6 +1478,10 @@ ko.bindingHandlers.fileUploadControl = {
             var files = event.target.files,
                 loadedFiles = ko.observable(0);
 
+            if (files.length === 0) {
+                return;
+            }
+
             loadedFiles.subscribe(function(newValue) {
                 if (newValue == files.length) {
                     // enable button
