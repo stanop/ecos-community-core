@@ -430,6 +430,12 @@
                     <title>Курс валюты</title>
                     <type>d:double</type>
                 </property>
+                <property name="idocs:currencyNameRu">
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:currencyCatalogCode">
+                    <type>d:text</type>
+                </property>
             </properties>
         </type>
         
