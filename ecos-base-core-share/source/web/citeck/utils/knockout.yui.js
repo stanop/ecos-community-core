@@ -171,10 +171,11 @@ ko.bindingHandlers.yuiDataTable = {
 
                 YAHOO.util.Event.addListener(dt.getTableEl(), "touchstart", function(event) {
                     longTouchTimer = setTimeout(function() {
-                        var yuiRecord = getYuiRecord(event.target),
-                            nodeRef = yuiRecord.getData("nodeRef");
-
-                        if (nodeRef) doubleClickConfig.setter(nodeRef); 
+                        var yuiRecord = getYuiRecord(event.target);
+                        if (yuiRecord) {
+                            var nodeRef = yuiRecord.getData("nodeRef");
+                            if (nodeRef) doubleClickConfig.setter(nodeRef);
+                        }
                     }, 500);
                 });
 
@@ -205,15 +206,17 @@ ko.bindingHandlers.yuiDataTable = {
                         records = cfg.records(),
                         yuiRecord = getYuiRecord(event.target);
 
-                    if (simpleClickTimer) {
-                        var nodeRef = yuiRecord.getData("nodeRef");
-                        clearTimeout(simpleClickTimer);
-                        if (nodeRef) doubleClickConfig.setter(nodeRef); 
-                    } else {
-                        simpleClickTimer = setTimeout(function() {
-                            toggleRow(yuiRecord, getModelRecord(yuiRecord, records));
-                            simpleClickTimer = null;
-                        }, 200)
+                    if (yuiRecord) {
+                        if (simpleClickTimer) {
+                            var nodeRef = yuiRecord.getData("nodeRef");
+                            clearTimeout(simpleClickTimer);
+                            if (nodeRef) doubleClickConfig.setter(nodeRef);
+                        } else {
+                            simpleClickTimer = setTimeout(function() {
+                                toggleRow(yuiRecord, getModelRecord(yuiRecord, records));
+                                simpleClickTimer = null;
+                            }, 200)
+                        }
                     }
                 });
             }
@@ -243,6 +246,7 @@ ko.bindingHandlers.yuiDataTable = {
                     return dt.getRecord(eventTarget);
                 } else {
                     eventTarget = eventTarget.parentNode;
+                    if (eventTarget == null) return null;
                 }
             }
         }
