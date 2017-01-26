@@ -22,7 +22,6 @@ var logger = Alfresco.logger,
 		noneActionGroupId = "none",
 		buttonsActionGroupId = "buttons",
 		defaultActionGroupId = "injournal",
-		DELETE_ACTION_ID = "onActionDelete",
 		BulkLoader = Citeck.utils.BulkLoader,
 		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
 		koclass = koutils.koclass,
@@ -313,7 +312,7 @@ Attribute
 	.property('groupable', b)
 	.property('isDefault', b)
 	.property('settings', o)
-	.property('batchEdit', [o])
+	.property('batchEdit', [ Action ])
 
 	.shortcut('type', '_info.type')
 	.shortcut('displayName', '_info.displayName')
@@ -322,9 +321,12 @@ Attribute
 	.shortcut('journalType', '_info.journalType')
 	.shortcut('labels', '_info.labels', {})
 
-	
 	.init(function() {
 		this.model({ _info: this.name() });
+        var self = this;
+		_.each(this.batchEdit(), function (a) {
+			a.options()["attribute"] = self;
+		});
 	})
 	;
 
@@ -444,13 +446,16 @@ Column
 
 Action
 	.key('id', s)
-	.property('function', s)
 	.property('label', s)
+	.property('isDoclib', b)
 	.property('permission', s)
 	.property('requiredAspect', s)
 	.property('forbiddenAspect', s)
 	.property('syncMode', s)
 	.property('options', o)
+	.computed("func", function () {
+		return this.options()["function"] || this.id();
+	})
 	;
 
 ActionsColumn
@@ -751,24 +756,36 @@ JournalsWidget
                 return record.hasAspect(aspect);
             };
         if(records.length == 0) return [];
-        return _.filter(this.multiActions(), function(action) {
-            // sync mode check:
-            if(action.syncMode() != null) return false;
-            // doclib mode check:
-            if(!doclibMode && action.id() != DELETE_ACTION_ID) return false;
-            // permission check
+
+		var actions = this.multiActions();
+
+		var journal = this.journal();
+		if (journal) {
+			var attributes = journal.type().attributes();
+			actions = _.reduce(attributes, function(actions, att){
+				return actions.concat(att.batchEdit());
+			}, actions);
+		}
+
+        return _.filter(actions, function(action) {
+			// sync mode check:
+			if (action.syncMode() != null) return false;
+			// doclib mode check:
+			if (!doclibMode && action.isDoclib()) return false;
+
+			// permission check
             var permission = action.permission();
-            if(permission && !_.all(records, _.partial(hasPermission, _, permission))) {
+            if (permission && !_.all(records, _.partial(hasPermission, _, permission))) {
                 return false;
             }
             // required aspect check
             var requiredAspect = action.requiredAspect();
-            if(requiredAspect && !_.all(records, _.partial(hasAspect, _, requiredAspect))) {
+            if (requiredAspect && !_.all(records, _.partial(hasAspect, _, requiredAspect))) {
                 return false;
             }
             // forbidden aspect check
             var forbiddenAspect = action.forbiddenAspect();
-            if(forbiddenAspect && _.any(records, _.partial(hasAspect, _, forbiddenAspect))) {
+            if (forbiddenAspect && _.any(records, _.partial(hasAspect, _, forbiddenAspect))) {
                 return false;
             }
 

@@ -26,8 +26,10 @@
     [
         <#list batchEdit as edit>
             {
-                "title": "${edit.getTitle()}",
-                "settings": <@renderJournalOptions edit.getOptions() />
+                "id": "${edit.getId()}",
+                "label": "${edit.getTitle()}",
+                "isDoclib": false,
+                "options": <@renderJournalOptions edit.getOptions() />
             }<#if edit_has_next>,</#if>
         </#list>
     ]

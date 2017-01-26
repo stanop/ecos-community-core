@@ -23,7 +23,8 @@ var PopupManager = Alfresco.util.PopupManager,
 	koclass = koutils.koclass,
 	JournalsWidget = koclass('JournalsWidget'),
 	JournalsPage = koclass('JournalsPage', JournalsWidget),
-	Record = koclass('Record');
+	Record = koclass('Record'),
+   	msg = Alfresco.util.message;
 
 JournalsPage
 	// load filter method
@@ -55,22 +56,26 @@ JournalsPage
 
 	// actions support
 	.method('executeAction', function(action) {
-		var vms = this.selectedRecords(), 
+		var vms = this.selectedRecords(),
 			records = [];
-		for(var i in vms) {
-			var vm = vms[i],
-				loaded = vm.doclib.loaded(),
-				record = vm.doclib();
-			if(record) {
-				records.push(record);
-			} else if(!loaded) {
-				koutils.subscribeOnce(vm.doclib, _.partial(this.executeAction, action), this);
-				return;
-			} else {
-				throw new Error("doclib actions can be executed only on doclib nodes");
+		if (action.isDoclib()) {
+			for(var i in vms) {
+				var vm = vms[i],
+					loaded = vm.doclib.loaded(),
+					record = vm.doclib();
+				if(record) {
+					records.push(record);
+				} else if(!loaded) {
+					koutils.subscribeOnce(vm.doclib, _.partial(this.executeAction, action), this);
+					return;
+				} else {
+					throw new Error("doclib actions can be executed only on doclib nodes");
+				}
 			}
+		} else {
+			records = vms;
 		}
-		this.actionsRuntime[action.id()](records);
+		this.actionsRuntime[action.func()](records, action.options());
 	})
 
 	// add user interaction for save and remove methods:
@@ -244,15 +249,58 @@ YAHOO.extend(JournalsPageWidget, Journals, {
 _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 
 	// override for deleting multiple records
-	onActionDelete: function(doclib) {
-		if(_.isArray(doclib)) {
-			this.viewModel.removeRecords(_.map(doclib, function(doclib) {
-				return new Record(doclib.nodeRef);
-			}));
+	onActionDelete: function(record) {
+		if(_.isArray(record)) {
+			this.viewModel.removeRecords(record);
 		} else {
-			this.viewModel.removeRecord(new Record(doclib.nodeRef));
+			this.viewModel.removeRecord(record);
 		}
 	},
+
+	onBatchEdit: function(records, options) {
+
+		var id = Alfresco.util.generateDomId();
+
+		var panel = new YAHOO.widget.Panel(id, {
+			width: "40em",
+			fixedcenter: YAHOO.env.ua.mobile === null ? "contained" : false,
+			constraintoviewport: true,
+			underlay: "shadow",
+			close: true,
+			modal: true,
+			visible: true,
+			draggable: true,
+			postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
+			hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
+			fireHideShowEvents: true
+		});
+
+		panel.setHeader("Batch edit");
+
+		var body =
+			'<div>' +
+				'<input id="' + id + '-batch-edit-value" type="text" />' +
+				'<div class="form-buttons">'+
+					'<input id="' + id + '-form-submit" type="button" value="'+msg("button.send")+'" />' +
+					'<input id="' + id + '-form-cancel" type="button" value="'+msg("button.cancel")+'" />' +
+				'</div>' +
+			'</div>';
+
+		panel.setBody(body);
+		panel.render(document.body);
+
+		var editField = document.getElementById(id + "-batch-edit-value");
+
+		var submitBtn = document.getElementById(id + "-form-submit");
+		submitBtn.onclick = function () {
+			console.log(options.attribute.name() + " = " + editField.value);
+		};
+
+		var cancelBtn = document.getElementById(id + "-form-cancel");
+		cancelBtn.onclick = function () {
+			panel.destroy();
+		};
+	}
 
 });
 

@@ -74,7 +74,9 @@ class JournalTypeImpl implements JournalType {
             }
             List<JournalBatchEdit> attributeBatchEdit = new ArrayList<>();
             for (BatchEdit batchEdit : header.getBatchEdit()) {
-                attributeBatchEdit.add(new JournalBatchEdit(batchEdit, journal.getId(), serviceRegistry));
+                attributeBatchEdit.add(new JournalBatchEdit(batchEdit, journal.getId(),
+                                                            attributeKey, prefixResolver,
+                                                            serviceRegistry));
             }
             batchEdit.put(attributeKey, attributeBatchEdit);
             index++;

@@ -86,14 +86,24 @@
 	{
 		"id": "${action.attributes.id}",
 		"label": "${msg(action.attributes.label)}",
+		"isDoclib": ${msg(action.attributes.isDoclib!"true")},
 		"permission": <#if action.attributes.permission??>"${action.attributes.permission}"<#else>null</#if>,
 		"requiredAspect": <#if action.attributes.hasAspect??>"${action.attributes.hasAspect}"<#else>null</#if>,
 		"forbiddenAspect": <#if action.attributes.notAspect??>"${action.attributes.notAspect}"<#else>null</#if>,
-		"syncMode": <#if action.attributes.syncMode??>"${action.attributes.syncMode}"<#else>null</#if>
+		"syncMode": <#if action.attributes.syncMode??>"${action.attributes.syncMode}"<#else>null</#if>,
+		"options": <@renderActionOptions options=action.childrenMap['param']![] />
 	}<#if action_has_next>,</#if>
 	</#list>
 ]
 </#escape>
+</#macro>
+
+<#macro renderActionOptions options>
+{
+	<#list options as option>
+		"${option.attributes.name}": "${option.value}"<#if option_has_next>,</#if>
+	</#list>
+}
 </#macro>
 
 <#macro renderJournalTable>
