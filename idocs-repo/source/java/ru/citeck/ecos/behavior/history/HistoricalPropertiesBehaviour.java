@@ -36,7 +36,6 @@ import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.history.HistoryUtils;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.model.ICaseModel;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -49,7 +48,8 @@ public class HistoricalPropertiesBehaviour implements
 		NodeServicePolicies.OnCreateAssociationPolicy,
 		NodeServicePolicies.OnDeleteAssociationPolicy,
 		NodeServicePolicies.OnCreateChildAssociationPolicy,
-		NodeServicePolicies.OnDeleteChildAssociationPolicy
+		NodeServicePolicies.OnDeleteChildAssociationPolicy,
+		NodeServicePolicies.BeforeDeleteNodePolicy
 {
 
 	private PolicyComponent policyComponent;
@@ -88,7 +88,10 @@ public class HistoricalPropertiesBehaviour implements
 				new JavaBehaviour(this, "onCreateChildAssociation", NotificationFrequency.TRANSACTION_COMMIT)
 		);
 		policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteChildAssociationPolicy.QNAME, className,
-				new JavaBehaviour(this, "onDeleteChildAssociation", NotificationFrequency.TRANSACTION_COMMIT)
+				new JavaBehaviour(this, "onDeleteChildAssociation")
+		);
+		policyComponent.bindClassBehaviour(NodeServicePolicies.BeforeDeleteNodePolicy.QNAME, ContentModel.TYPE_CONTENT,
+				new JavaBehaviour(this, "beforeDeleteNode", NotificationFrequency.EVERY_EVENT)
 		);
 	}
 
@@ -236,7 +239,7 @@ public class HistoricalPropertiesBehaviour implements
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.ASSOC_ADDED, historyService, dictionaryService, nodeService);
+                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.ASSOC_ADDED, historyService, dictionaryService, nodeService, "");
 			}
 		}
 	}
@@ -256,11 +259,32 @@ public class HistoricalPropertiesBehaviour implements
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService);
+                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService, "");
 			}
 		}
 	}
 
+
+	@Override
+	public void beforeDeleteNode(NodeRef nodeTarget) {
+		logger.debug("beforeDeleteNode event");
+		ChildAssociationRef childAssociationRef = nodeService.getPrimaryParent(nodeTarget);
+		NodeRef nodeSource = childAssociationRef.getParentRef();
+		AssociationDefinition assoc = dictionaryService.getAssociation(childAssociationRef.getTypeQName());
+
+		if(enableHistoryOnDeleteChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()))
+		{
+			HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, childAssociationRef);
+			if(assoc!=null && (ignoreAssocsWithTypes==null || ignoreAssocsWithTypes!=null && nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
+						HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
+						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
+						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
+				));
+				HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService, String.valueOf(nodeService.getProperty(nodeTarget, ContentModel.PROP_NAME)));
+			}
+		}
+	}
 
 	public void setAllowedProperties(List<QName> allowedProperties) {
 		this.allowedProperties = allowedProperties;

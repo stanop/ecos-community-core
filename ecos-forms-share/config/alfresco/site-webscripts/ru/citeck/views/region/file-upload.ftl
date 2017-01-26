@@ -4,7 +4,7 @@
 <div id="${controlId}" class="file-upload-control" data-bind="fileUploadControl: { 
 	<#if params.type??>type: '${params.type}',</#if>
 	<#if params.properties??>properties: ${params.properties},</#if>
-	
+	multiple: multiple,
 	value: multipleValues
 }">
     <input id="${controlId}-fileInput" type="file" class="hidden" data-bind="attr: { multiple: multiple }">

@@ -1451,7 +1451,7 @@ ko.bindingHandlers.fileUploadControl = {
     init: function(element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
-            
+            multiple = settings.multiple,
             type = settings.type,
             properties = settings.properties;
 
@@ -1508,9 +1508,14 @@ ko.bindingHandlers.fileUploadControl = {
                             
                             if (target.status == 200) {
                                 // push new file to uploaded files library
-                                var currentValues = value();
-                                currentValues.push(result.nodeRef);
-                                value(currentValues);
+                                if (multiple()) {
+                                    var currentValues = value();
+                                    currentValues.push(result.nodeRef);
+                                    value(currentValues);
+                                } else {
+                                    //TODO: remove previous node if parent == attachments-root?
+                                    value(result.nodeRef);
+                                }
                             }
 
                             if (target.status == 500) {

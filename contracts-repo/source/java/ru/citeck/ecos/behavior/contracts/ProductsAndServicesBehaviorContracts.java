@@ -51,7 +51,8 @@ import java.util.Objects;
  * @author Roman.Makarskiy on 04.04.2016.
  */
 public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies.OnCreateNodePolicy,
-        NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy {
+        NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy,
+        NodeServicePolicies.OnCreateAssociationPolicy {
 
     private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
 
@@ -81,7 +82,6 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         this.serviceRegistry = serviceRegistry;
     }
 
-
     public void init() {
         this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnCreateNodePolicy.QNAME,
@@ -97,6 +97,11 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
                 NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
                 QName.createQName(namespace, type),
                 new JavaBehaviour(this, "beforeDeleteNode", Behaviour.NotificationFrequency.EVERY_EVENT)
+        );
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onCreateAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
     }
 
@@ -130,6 +135,17 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         updateTotalAmountInDocument(nodeRef, ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
                 ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
 
+    }
+
+    @Override
+    public void onCreateAssociation(AssociationRef associationRef) {
+        NodeRef documentRef = associationRef.getSourceRef();
+        if (!nodeService.exists(documentRef)) {
+            return;
+        }
+        updateTotalAmountInDocument(documentRef, PaymentsModel.TYPE, PaymentsModel.PROP_PAYMENT_AMOUNT);
+        updateTotalAmountInDocument(documentRef, ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
+                ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
     }
 
     private BigDecimal getTotalAmount(NodeRef nodeRef) {
