@@ -696,18 +696,20 @@ public class RepoUtils {
             List<NodeRef> linkedNodes = existingAssocs.containsKey(name) 
                     ? existingAssocs.get(name) 
                     : Collections.<NodeRef>emptyList();
+
+			// delete existing assocs
+			if (linkedNodes != null) {
+				for (NodeRef linkedNode : linkedNodes) {
+					if (!nodesToLink.contains(linkedNode)) {
+						removeAssociation(nodeRef, linkedNode, name, isTarget,
+								nodeService);
+					}
+				}
+			}
+			// add assocs
             for (NodeRef nodeToLink : nodesToLink) {
                 if (!linkedNodes.contains(nodeToLink)) {
                     createAssociation(nodeRef, nodeToLink, name, isTarget, nodeService);
-                }
-            }
-            // delete existing assocs
-            if (linkedNodes != null) {
-                for (NodeRef linkedNode : linkedNodes) {
-                    if (!nodesToLink.contains(linkedNode)) {
-                        removeAssociation(nodeRef, linkedNode, name, isTarget,
-                                nodeService);
-                    }
                 }
             }
         }
