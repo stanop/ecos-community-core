@@ -1,10 +1,12 @@
 const STATUS_SUCCESS = "OK";
 const STATUS_ERROR = "ERROR";
+const STATUS_PERMISSION_DENIED = "PERMISSION_DENIED";
 
 (function() {
 
     var nodes = json.get('nodes'),
-        attrs = json.get('attributes');
+        attrs = json.get('attributes'),
+        permService = services.get("attributesPermissionService");
 
     if (!exists("nodes", nodes) ||
         !exists("attributes", attrs)) {
@@ -20,19 +22,26 @@ const STATUS_ERROR = "ERROR";
         while (it.hasNext()) {
             var key = it.next();
             try {
-                attributes.set(node, key, attrs.get(key));
-                changeResult[key] = STATUS_SUCCESS;
+                if (checkPermission(node, key, permService)) {
+                    attributes.set(node, key, attrs.get(key));
+                    changeResult[key] = STATUS_SUCCESS;
+                } else {
+                    changeResult[key] = STATUS_PERMISSION_DENIED;
+                }
             } catch (e) {
+                logger.error(e);
                 changeResult[key] = STATUS_ERROR;
             }
         }
-        throw "Errror!!!!";
         results[node.nodeRef] = changeResult;
     }
 
     model.results = results;
 })();
 
+function checkPermission(node, attr, permService) {
+    return permService.isFieldEditable(citeckUtils.createQName(attr), node.nodeRef, "edit");
+}
 
 function exists(name, obj) {
     if(!obj) {

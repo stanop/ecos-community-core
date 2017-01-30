@@ -353,10 +353,9 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 					scope: this,
 					fn: function(response) {
 						Alfresco.util.PopupManager.displayMessage({
-							text: msg("message.failure") + ':' + response.text,
+							text: msg("message.failure") + ':' + response.json.message,
 							displayTime: 4
 						});
-						console.log(response);
 					}
 				}
 			});
@@ -378,7 +377,6 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 								 + "'. Желаете его заменить?", function() {
 						this.destroy();
 						result.push(records[idx]);
-						setStatus(records[idx], "PENDING");
 						filterByConfirmChange(records, idx + 1, result, callback);
 					}, function () {
 						this.destroy();
@@ -395,9 +393,6 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 			if (action.settings().confirmChange == "true") {
 				filterByConfirmChange(records, 0, [], processRecords);
 			} else {
-				for (var i in records) {
-					setStatus(records[i], "PENDING");
-				}
 				processRecords(records);
 			}
 		};
@@ -433,7 +428,19 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 				'</div>' +
 			'</div>';
 
-		var editValue = ko.observable(null);
+		var defaultValueMapping = {
+			"boolean": false,
+			"text": "",
+			"int": 0,
+			"double": 0,
+			"long": 0,
+			"float": 0,
+			"association": null,
+			"mltext": ""
+		};
+
+		var datatype = action.attribute().datatype().name();
+		var editValue = ko.observable(defaultValueMapping[datatype]);
 
 		panel.setBody(body);
 		panel.render(document.body);
@@ -450,6 +457,10 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 		cancelBtn.onclick = function () {
 			panel.destroy();
 		};
+
+		for (var i in records) {
+			setStatus(records[i], "PENDING");
+		}
 	}
 
 });

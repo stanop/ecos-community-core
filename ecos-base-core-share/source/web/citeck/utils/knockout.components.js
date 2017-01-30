@@ -43,6 +43,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.settings = this.attribute().settings();            
 
             if (this.datatype) {
+                var datatypeMapping = {
+                    'boolean': 'd:boolean'
+                };
+                var datatype = datatypeMapping[self.datatype] || self.datatype;
+
                 // prepare fake viewModel
                 this.fakeViewModel = {
                     "fieldId": this.fieldId,
@@ -64,6 +69,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }),
 
                     "nodetype": ko.observable(self.nodetype),
+                    "datatype": ko.observable(datatype),
 
                     "options": ko.observable([]),
                     "optionsText": function(o) { return o.attributes["cm:name"]; },
@@ -775,6 +781,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 case "int":
                 case "double":
                     templateName = "number";
+                    break;
+                case "boolean":
+                    templateName = "checkbox";
                     break;
                 case "mltext":
                 default:
