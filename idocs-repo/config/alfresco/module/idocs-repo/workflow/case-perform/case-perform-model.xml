@@ -74,6 +74,9 @@
                 <property name="wfcp:resultDate">
                     <type>d:date</type>
                 </property>
+                <property name="wfcp:comment">
+                    <type>d:text</type>
+                </property>
             </properties>
             <associations>
                 <association name="wfcp:resultPerson">
