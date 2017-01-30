@@ -75,6 +75,7 @@ public class CasePerformUtils {
 
         String outcome = (String) task.getVariableLocal(toString(CasePerformModel.PROP_PERFORM_OUTCOME));
         if (outcome == null) return;
+        String comment = (String) task.getVariableLocal(toString(WorkflowModel.PROP_COMMENT));
 
         NodeRef person = repositoryHelper.getPerson();
         String userName = (String) nodeService.getProperty(person, ContentModel.PROP_USERNAME);
@@ -83,6 +84,7 @@ public class CasePerformUtils {
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(CasePerformModel.PROP_RESULT_OUTCOME, outcome);
         properties.put(CasePerformModel.PROP_RESULT_DATE, new Date());
+        properties.put(CasePerformModel.PROP_COMMENT, comment);
         properties.put(ContentModel.PROP_NAME, resultName);
 
         NodeRef bpmPackage = ((ScriptNode) execution.getVariable("bpm_package")).getNodeRef();
