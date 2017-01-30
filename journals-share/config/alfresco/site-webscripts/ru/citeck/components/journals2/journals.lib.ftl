@@ -85,13 +85,14 @@
 	<#list multiActions.children as action>
 	{
 		"id": "${action.attributes.id}",
+		"func": "${action.attributes.function!action.attributes.id}",
 		"label": "${msg(action.attributes.label)}",
 		"isDoclib": ${msg(action.attributes.isDoclib!"true")},
 		"permission": <#if action.attributes.permission??>"${action.attributes.permission}"<#else>null</#if>,
 		"requiredAspect": <#if action.attributes.hasAspect??>"${action.attributes.hasAspect}"<#else>null</#if>,
 		"forbiddenAspect": <#if action.attributes.notAspect??>"${action.attributes.notAspect}"<#else>null</#if>,
 		"syncMode": <#if action.attributes.syncMode??>"${action.attributes.syncMode}"<#else>null</#if>,
-		"options": <@renderActionOptions options=action.childrenMap['param']![] />
+		"settings": <@renderActionOptions options=action.childrenMap['param']![] />
 	}<#if action_has_next>,</#if>
 	</#list>
 ]

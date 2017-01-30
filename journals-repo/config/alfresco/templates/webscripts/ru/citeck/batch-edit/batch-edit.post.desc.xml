@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Batch edit</shortname>
+    <description>Edit attribute in multiple nodes</description>
+    <url>/api/journals/batch-edit</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+</webscript>

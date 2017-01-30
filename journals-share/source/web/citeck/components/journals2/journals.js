@@ -325,7 +325,7 @@ Attribute
 		this.model({ _info: this.name() });
         var self = this;
 		_.each(this.batchEdit(), function (a) {
-			a.options()["attribute"] = self;
+			a.attribute(self);
 		});
 	})
 	;
@@ -446,16 +446,15 @@ Column
 
 Action
 	.key('id', s)
+	.property('attribute', Attribute)
+	.property('func', s)
 	.property('label', s)
 	.property('isDoclib', b)
 	.property('permission', s)
 	.property('requiredAspect', s)
 	.property('forbiddenAspect', s)
 	.property('syncMode', s)
-	.property('options', o)
-	.computed("func", function () {
-		return this.options()["function"] || this.id();
-	})
+	.property('settings', o)
 	;
 
 ActionsColumn

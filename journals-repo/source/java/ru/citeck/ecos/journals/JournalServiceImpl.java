@@ -34,7 +34,6 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
-import ru.citeck.ecos.model.DACLModel;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;

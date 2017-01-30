@@ -57,7 +57,7 @@
 
   <xs:complexType name="evaluator">
     <xs:sequence>
-      <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="evaluator" type="j:evaluator" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="id" type="xs:string" use="optional" />
@@ -66,7 +66,7 @@
 
   <xs:complexType name="batchEdit">
     <xs:sequence>
-      <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="evaluator" type="j:evaluator" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
     <xs:attribute name="title" type="xs:string" use="optional" />

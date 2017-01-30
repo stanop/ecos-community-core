@@ -28,8 +28,9 @@
             {
                 "id": "${edit.getId()}",
                 "label": "${edit.getTitle()}",
+                "func": "onBatchEdit",
                 "isDoclib": false,
-                "options": <@renderJournalOptions edit.getOptions() />
+                "settings": <@renderJournalOptions edit.getOptions() />
             }<#if edit_has_next>,</#if>
         </#list>
     ]

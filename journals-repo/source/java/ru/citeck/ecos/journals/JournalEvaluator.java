@@ -52,9 +52,9 @@ public class JournalEvaluator {
                 throw new IllegalStateException("Field 'id' must be specified for not composite evaluator");
             }
             condition = actionService.createActionCondition(id);
-            List<Option> options = evaluator.getOption();
-            for (Option option : options) {
-                condition.setParameterValue(option.getName(), option.getValue());
+            List<Option> params = evaluator.getParam();
+            for (Option param : params) {
+                condition.setParameterValue(param.getName(), param.getValue());
             }
         }
         return condition;

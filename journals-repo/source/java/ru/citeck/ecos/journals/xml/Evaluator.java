@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="option" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="param" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="evaluator" type="{http://www.citeck.ru/ecos/journals/1.0}evaluator" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -33,12 +33,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "evaluator", propOrder = {
-    "option",
+    "param",
     "evaluator"
 })
 public class Evaluator {
 
-    protected List<Option> option;
+    protected List<Option> param;
     protected List<Evaluator> evaluator;
     @XmlAttribute(name = "id")
     protected String id;
@@ -46,18 +46,18 @@ public class Evaluator {
     protected LogicJoinType joinBy;
 
     /**
-     * Gets the value of the option property.
+     * Gets the value of the param property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the option property.
+     * This is why there is not a <CODE>set</CODE> method for the param property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getOption().add(newItem);
+     *    getParam().add(newItem);
      * </pre>
      * 
      * 
@@ -67,11 +67,11 @@ public class Evaluator {
      * 
      * 
      */
-    public List<Option> getOption() {
-        if (option == null) {
-            option = new ArrayList<Option>();
+    public List<Option> getParam() {
+        if (param == null) {
+            param = new ArrayList<Option>();
         }
-        return this.option;
+        return this.param;
     }
 
     /**
