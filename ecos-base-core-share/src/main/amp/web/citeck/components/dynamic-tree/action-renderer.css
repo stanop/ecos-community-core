@@ -108,6 +108,38 @@
 	background-image: url(icons/stop-active.png) !important;
 }
 
+.yui-dt div.action-set .export-case-template a {
+	background-image: url(../../../themes/citeckTheme/images/upload.png) !important;
+}
+
+.yui-dt div.action-set .export-case-template a:hover {
+	background-image: url(../../../themes/citeckTheme/images/upload-active.png) !important;
+}
+
+.yui-dt div.action-set .import-case-template a {
+	background-image: url(../../../themes/citeckTheme/images/download.png) !important;
+}
+
+.yui-dt div.action-set .import-case-template a:hover {
+	background-image: url(../../../themes/citeckTheme/images/download-active.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties a {
+	background-image: url(icons/edit-properties.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties a:hover {
+	background-image: url(icons/edit-properties-active.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties-cardlet a {
+	background-image: url(icons/edit-properties.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties-cardlet a:hover {
+	background-image: url(icons/edit-properties-active.png) !important;
+}
+
 .requestDeleteRemote-checkBox
 {
 	margin-top: 10px;

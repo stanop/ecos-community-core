@@ -64,7 +64,7 @@
 .dynamic-tree-list .item-buttons {
 	position: absolute;
 	top: 0px;
-	right: -25px;
+	right: 0;
 	height: 100%;
 	min-height: 2em;
 }

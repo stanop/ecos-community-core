@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-
-<project name="idocs" default="hotcopy-tomcat">
-
-	<property name="scope" value="core" />
-
-	<import file="build.xml" />
-
-</project>

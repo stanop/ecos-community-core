@@ -5,6 +5,7 @@
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
     </imports>
     
     <associations type="idocs:legalEntity">
@@ -13,10 +14,10 @@
 
     <aspect name="idocs:pagesInfo">
         <property name="idocs:pagesNumber">
-            <invariant on="valid" language="javascript" description="Количество листов не может быть меньше нуля.">+value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">+value >= 0 ? true : false</invariant>
         </property>
         <property name="idocs:appendixPagesNumber">
-            <invariant on="valid" language="javascript" description="Количество листов приложений не может быть меньше нуля.">+value >= 0 ? true : false</invariant>
+            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">+value >= 0 ? true : false</invariant>
         </property>
     </aspect>
 
@@ -43,6 +44,35 @@
         </property>
         <property name="idocs:inn">
             <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <type name="deputy:absenceEvent">
+        <property name="deputy:startAbsence">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="protected" language="explicit">true</invariant>
+        </property>
+        <property name="deputy:endAbsence">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript" description="Дата начала не может быть больше даты окончания">node.properties['deputy:endAbsence'] >= node.properties['deputy:startAbsence']</invariant>
+        </property>
+    </type>
+
+    <type name="deputy:selfAbsenceEvent">
+        <property name="deputy:startAbsence">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="valid" language="javascript" description="Дата начала не может быть меньше текущей даты">
+                node.properties['deputy:startAbsence'] >= new Date().setSeconds(0,0)
+            </invariant>
+            <invariant on="protected" language="explicit">false</invariant>
+        </property>
+        <property name="deputy:endAbsence">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript" description="Дата начала не может быть больше даты окончания">
+                node.properties['deputy:endAbsence'] >= node.properties['deputy:startAbsence']
+            </invariant>
         </property>
     </type>
 

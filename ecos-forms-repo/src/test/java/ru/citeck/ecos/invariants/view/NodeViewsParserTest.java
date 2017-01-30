@@ -1,17 +1,18 @@
 package ru.citeck.ecos.invariants.view;
 
-//import static org.junit.Assert.*;
+import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
-//import org.alfresco.model.ContentModel;
-//import org.alfresco.service.namespace.QName;
-//import org.junit.After;
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.springframework.core.io.ClassPathResource;
+import org.alfresco.model.ContentModel;
+import org.alfresco.service.namespace.QName;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 
 import ru.citeck.ecos.invariants.view.NodeField;
 import ru.citeck.ecos.invariants.view.NodeView;
@@ -20,24 +21,25 @@ import ru.citeck.ecos.invariants.view.NodeViewsParser;
 //import ru.citeck.ecos.model.ClassificationModel;
 //import ru.citeck.ecos.model.PassportModel;
 
+@Ignore
 public class NodeViewsParserTest {
     
     private InputStream viewsFile;
     private NodeViewsParser parser;
 
-//    @Before
-//    public void setUp() throws Exception {
-//        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-views.xml");
-//        viewsFile = resource.getInputStream();
-//        parser = new NodeViewsParser();
-//    }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//        if(viewsFile != null) {
-//            viewsFile.close();
-//        }
-//    }
+    @Before
+    public void setUp() throws Exception {
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-views.xml");
+        viewsFile = resource.getInputStream();
+        parser = new NodeViewsParser();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if(viewsFile != null) {
+            viewsFile.close();
+        }
+    }
 
 /*    @Test
     public void testParse() {
@@ -133,27 +135,27 @@ public class NodeViewsParserTest {
         
     }*/
 
-//    private void assertElement(NodeViewElement element, boolean concrete, boolean any, String id, String kind, String template, int elementsCount) {
-//        assertEquals(any, element.any);
-//        assertEquals(concrete, element.isConcrete());
-//        assertEquals(id, element.getId());
-//        assertEquals(kind, element.getKind());
-//        assertEquals(template, element.getTemplate());
-//        assertEquals(elementsCount, element.getElements().size());
-//    }
-//
-//    private void assertView(NodeView view, QName className, NodeViewMode mode, boolean concrete, boolean any, String id, String kind, String template, int elementsCount) {
-//        assertElement(view, concrete, any, id, kind, template, elementsCount);
-//        assertEquals(className, view.getClassName());
-//        assertEquals(mode, view.getMode());
-//    }
-//
-//    private void assertField(NodeField field, QName attributeName, boolean isProperty, boolean isAssociation, boolean concrete, boolean any, String id, String kind, String template, int regionsCount) {
-//        assertElement(field, concrete, any, id, kind, template, regionsCount);
-//        assertEquals(attributeName, field.getAttributeName());
-//        assertEquals(isProperty, field.isProperty());
-//        assertEquals(isAssociation, field.isAssociation());
-//    }
+    private void assertElement(NodeViewElement element, boolean concrete, boolean any, String id, String kind, String template, int elementsCount) {
+        assertEquals(any, element.any);
+        assertEquals(concrete, element.isConcrete());
+        assertEquals(id, element.getId());
+        assertEquals(kind, element.getKind());
+        assertEquals(template, element.getTemplate());
+        assertEquals(elementsCount, element.getElements().size());
+    }
+    
+    private void assertView(NodeView view, QName className, NodeViewMode mode, boolean concrete, boolean any, String id, String kind, String template, int elementsCount) {
+        assertElement(view, concrete, any, id, kind, template, elementsCount);
+        assertEquals(className, view.getClassName());
+        assertEquals(mode, view.getMode());
+    }
+    
+    private void assertField(NodeField field, QName attributeName, boolean isProperty, boolean isAssociation, boolean concrete, boolean any, String id, String kind, String template, int regionsCount) {
+        assertElement(field, concrete, any, id, kind, template, regionsCount);
+        assertEquals(attributeName, field.getAttributeName());
+        assertEquals(isProperty, field.isProperty());
+        assertEquals(isAssociation, field.isAssociation());
+    }
 
 
 }

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="idocs.import-spaces.3-0-2" abstract="true" parent="idocs.import-spaces">
+		<property name="sinceVersion" value="3.0.2" />
+		<property name="appliesFromVersion" value="3.0.2" />
+	</bean>
+
+    <bean id="ecos.workflow.case-perform-utils" class="ru.citeck.ecos.workflow.perform.CasePerformUtils">
+        <property name="nodeService" ref="nodeService" />
+        <property name="authorityService" ref="authorityService" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="namespaceService" ref="namespaceService" />
+        <property name="repositoryHelper" ref="repositoryHelper" />
+    </bean>
+
+    <bean id="ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.workflow.perform.CasePerformWorkflowHandler"
+                                                init-method="init">
+        <property name="utils" ref="ecos.workflow.case-perform-utils" />
+    </bean>
+
+    <bean id="idocs.module-component.users-absence-events-journal" parent="idocs.import-spaces.3-0-2"
+          depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="users-absence-events-journal"/>
+        <property name="description" value="User Absence Events Journals"/>
+        <property name="sinceVersion" value="2.3"/>
+        <property name="appliesFromVersion" value="2.3"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/users-absence-events-journal.xml
+                </prop>
+                <prop key="messages">alfresco/module/idocs-repo/messages/journals-absence-events</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.country-iso3166" parent="idocs.import-spaces.3-0-2"
+          depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="country-iso3166"/>
+        <property name="description" value="Country iso3166 Journals"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/country-iso3166</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/country-iso3166</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:country-iso3166</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/country-iso3166</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:country-iso3166</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/country-iso3166</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/country-iso3166</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

@@ -31,7 +31,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.namespace.QName;
-//import org.alfresco.repo.policy.OrderedBehaviour;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 
 import java.io.Serializable;
@@ -63,18 +63,18 @@ public class TitleGenerationBehaviour implements
 	private int order = 80;
 
     public void init() {
-        policyComponent.bindClassBehaviour(NodeServicePolicies
-                .OnUpdatePropertiesPolicy.QNAME, className, new JavaBehaviour(
-                this, "onUpdateProperties", Behaviour.NotificationFrequency.EVERY_EVENT));
-//		OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
-//        policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
+        //policyComponent.bindClassBehaviour(NodeServicePolicies
+        //        .OnUpdatePropertiesPolicy.QNAME, className, new JavaBehaviour(
+        //        this, "onUpdateProperties", Behaviour.NotificationFrequency.EVERY_EVENT));
+		OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
 		
-//		OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
-//		policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
+		OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
+		policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
 
-        policyComponent.bindClassBehaviour(VersionServicePolicies
-                .OnCreateVersionPolicy.QNAME, className, new JavaBehaviour(
-                this, "onCreateVersion", Behaviour.NotificationFrequency.EVERY_EVENT));
+        //policyComponent.bindClassBehaviour(VersionServicePolicies
+        //        .OnCreateVersionPolicy.QNAME, className, new JavaBehaviour(
+        //        this, "onCreateVersion", Behaviour.NotificationFrequency.EVERY_EVENT));
     }
 
     @Override
@@ -187,5 +187,8 @@ public class TitleGenerationBehaviour implements
 
     public void setDescriptionMLTemplate(Map<Locale, String> descriptionTemplate) {
         this.descriptionMLTemplate = descriptionTemplate;
+    }
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

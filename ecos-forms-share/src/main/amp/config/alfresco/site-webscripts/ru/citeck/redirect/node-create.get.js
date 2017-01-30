@@ -25,7 +25,8 @@
                 + (args.viewId ? '&formId=' + encodeURIComponent(args.viewId) : '')
                 + (args.destination ? '&destination=' + encodeURIComponent(args.destination) : '')
                 + (args.mimetype ? '&mimeType=' + encodeURIComponent(args.param_mimetype) : '')
-                ;
+                + (args.onsubmit ? '&onsubmit=' + encodeURIComponent(args.onsubmit) : '')
+                + (args.redirect ? '&redirect=' + encodeURIComponent(args.redirect) : '');
     }
     status.code = 303;
     

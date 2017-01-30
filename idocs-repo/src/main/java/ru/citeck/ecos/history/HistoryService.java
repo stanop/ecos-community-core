@@ -96,10 +96,10 @@ public class HistoryService {
         this.historyRoot = historyRoot;
     }
 
-    public void persistEvent(final QName type, final Map<QName, Serializable> properties) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
+    public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
+        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<NodeRef>() {
             @Override
-            public Object doWork() throws Exception {
+            public NodeRef doWork() throws Exception {
                 NodeRef initiator = getInitiator(properties);
                 properties.remove(HistoryModel.ASSOC_INITIATOR);
                 if (initiator == null) {
@@ -107,7 +107,17 @@ public class HistoryService {
                 }
                 NodeRef document = getDocument(properties);
                 properties.remove(HistoryModel.ASSOC_DOCUMENT);
-                properties.put(HistoryModel.PROP_DATE, new Date());
+
+                //sorting in history for assocs
+                Date now = new Date();
+                if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
+                    now.setTime(now.getTime() + 1000);
+                }
+                if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
+                        || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
+                    now.setTime(now.getTime() - 5000);
+                }
+                properties.put(HistoryModel.PROP_DATE, now);
                 QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
                 NodeRef historyEvent = nodeService.createNode(getHistoryRoot(), ContentModel.ASSOC_CONTAINS, assocName, type, properties).getChildRef();
 
@@ -131,7 +141,7 @@ public class HistoryService {
 							nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
 						}
 					}
-					List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);;
+					List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
 					for(AssociationRef source : sources)
 					{
 						NodeRef sourceCase = source.getSourceRef();
@@ -141,7 +151,7 @@ public class HistoryService {
 						}
 					}
                 }
-                return null;
+                return historyEvent;
             }
         });
     }

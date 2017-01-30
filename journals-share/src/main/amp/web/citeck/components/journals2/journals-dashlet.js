@@ -28,6 +28,12 @@ var PopupManager = Alfresco.util.PopupManager,
 	JournalsDashlet = koclass('JournalsDashlet', JournalsWidget),
 	DashletConfig = koclass('DashletConfig');
 
+JournalsList
+	.load('journals', koutils.simpleLoad({
+		url: Alfresco.constants.PROXY_URI + "api/journals/list?journalsList={id}"
+	}))
+	;
+
 DashletConfig
 	.property('journalsList', JournalsList)
 	.property('journal', Journal)
@@ -47,6 +53,7 @@ JournalsDashlet
 	})
 	.property('mode', String)
 	.computed('actionGroupId', _.constant("none"))
+
 	.init(function() {
 		this.dashletConfig.subscribe(function() {
 			var config = this.resolve('dashletConfig.clone');
@@ -56,6 +63,20 @@ JournalsDashlet
 			this.filter(config.filter());
 			this.settings(config.settings());
 		}, this);
+
+		this.maxItems(Citeck.mobile.isMobileDevice() || $("body").hasClass("mobile") ? 5 : 10);
+
+		if (!Citeck.mobile.isMobileDevice()) {
+	        YAHOO.Bubbling.on("on-change-mobile-mode", function(l, args) {
+	            var itemsCount = args[1].mobileMode ? 5 : 10;
+	            if (itemsCount != this.maxItems()) {
+	                this.setModel({
+	                	"maxItems": itemsCount,
+	                	"skipCount": 0
+	                })
+	            };
+	        }, this);
+	    }
 	})
 	;
 

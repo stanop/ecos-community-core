@@ -18,12 +18,7 @@
  */
 package ru.citeck.ecos.webscripts.invariants;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -47,6 +42,7 @@ public class InvariantsGet extends DeclarativeWebScript {
     private static final String PARAM_NODEREF = "nodeRef";
     private static final String PARAM_ASPECTS = "aspects";
     private static final String PARAM_ATTRIBUTES = "attributes";
+    private static final String PARAM_MODE = "mode";
     private static final String MODEL_INVARIANTS = "invariants";
     private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
@@ -64,9 +60,12 @@ public class InvariantsGet extends DeclarativeWebScript {
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
         String aspectsParam = req.getParameter(PARAM_ASPECTS);
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
-        
+        String modeParam = req.getParameter(PARAM_MODE);
+
         Set<QName> classNames = new LinkedHashSet<>();
         
+        NodeRef nodeRef = null;
+
         if(typeParam != null && !typeParam.isEmpty()) {
             QName type = QName.createQName(typeParam, prefixResolver);
             classNames.add(type);
@@ -75,7 +74,7 @@ public class InvariantsGet extends DeclarativeWebScript {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
-            NodeRef nodeRef = new NodeRef(nodeRefParam);
+            nodeRef = new NodeRef(nodeRefParam);
             classNames.add(nodeService.getType(nodeRef));
             classNames.addAll(nodeService.getAspects(nodeRef));
         }
@@ -83,13 +82,13 @@ public class InvariantsGet extends DeclarativeWebScript {
         if(aspectsParam != null && !aspectsParam.isEmpty()) {
             classNames.addAll(splitQNames(aspectsParam));
         }
-        
-        if(attributesParam != null && !attributesParam.isEmpty()) {
-            List<QName> attributeNames = splitQNames(attributesParam);
-            classNames.addAll(DictionaryUtils.getDefiningClassNames(attributeNames, dictionaryService));
+
+        List<QName> attributeNames = null;
+        if(attributesParam != null) {
+            attributeNames = attributesParam.isEmpty() ? Collections.<QName>emptyList() : splitQNames(attributesParam);
         }
         
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames);
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames, nodeRef, modeParam);
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(MODEL_INVARIANTS, invariants);

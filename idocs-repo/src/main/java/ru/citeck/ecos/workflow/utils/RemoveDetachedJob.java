@@ -1,12 +1,8 @@
 package ru.citeck.ecos.workflow.utils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
+import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -15,12 +11,14 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-public class RemoveDetachedJob implements Job 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+public class RemoveDetachedJob extends AbstractScheduledLockedJob
 {
 	private static Log logger = LogFactory.getLog(RemoveDetachedJob.class);
 
@@ -38,7 +36,7 @@ public class RemoveDetachedJob implements Job
 
 	@SuppressWarnings("unused")
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
+	public void executeJob(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getJobDetail().getJobDataMap();
 
         final SearchService searchService = (SearchService) data.get(PARAM_SEARCH_SERVICE);

@@ -1,8 +1,6 @@
 (function() {
 
-  var hasPermissionRead = function(node) {
-    return node.hasPermission("Read");
-  };
+
   var journalListName = args.journalsList,
       nodeRef = args.nodeRef,
       query = 'TYPE:"journal:journalsList"';
@@ -15,22 +13,23 @@
   }
 
   var journalLists = search.luceneSearch(query),
-      journalListTitle = "",
-      allJournals = [],
+      journalListTitle = "";
+  allJournals = [],
       defaultJournals = [];
 
-  for(var i in journalLists) {
-    var _journalList = journalLists[i];
-    journalListTitle = journalListTitle || _journalList.properties.title;
-    var subJournals = _journalList.assocs["journal:journals"];
-    if (subJournals && subJournals.length > 0) {
-      allJournals = allJournals.concat(subJournals.filter(hasPermissionRead));
+    for (var i in journalLists) {
+        if (journalLists[i].hasPermission("Read")) {
+            journalListTitle = journalListTitle || journalLists[i].properties.title;
+            allJournals = allJournals.concat(journalLists[i].assocs["journal:journals"] || []);
+            defaultJournals = defaultJournals.concat(journalLists[i].assocs["journal:default"] || []);
+            defaultJournals = defaultJournals.filter(function (node) {
+                return node.hasPermission("Read");
+            });
+            allJournals = allJournals.filter(function (node) {
+                return node.hasPermission("Read");
+            });
+        }
     }
-    var defaultJournal = _journalList.assocs["journal:default"];
-    if (defaultJournal && defaultJournal.length > 0) {
-      defaultJournals = defaultJournals.concat(defaultJournal.filter(hasPermissionRead));
-    }
-  }
 
   if (nodeRef) {
     // java services
@@ -65,7 +64,7 @@
                   "journal:predicate": "assoc-contains",
                   "journal:criterionValue": node.nodeRef.toString()
                 }
-              });
+              })
 
               // create virtual journal if original journal exists on array
               if (journalIsOnArray(journalsWithNode, journal)) {

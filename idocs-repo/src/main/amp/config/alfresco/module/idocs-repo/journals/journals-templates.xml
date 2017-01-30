@@ -71,8 +71,11 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
+			<header key="cm:name" default="true" />
+			<header key="icase:caseEcosType" default="true" />
+			<header key="icase:caseEcosKind" default="true" />
 			<header key="icase:caseType" default="true" />
-			<header key="icase:condition" />
+			<header key="icase:condition" default="true" />
 		</headers>
 	</journal>
 

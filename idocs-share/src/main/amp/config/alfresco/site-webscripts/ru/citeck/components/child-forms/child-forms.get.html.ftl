@@ -1,3 +1,13 @@
+<@markup id="js">
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/child-forms/child-forms.js"></@script>
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-panel.js"></@script>
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-commands.js"></@script>
+</@>
+
+<@markup id="css">
+	<@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/child-forms/child-forms.css" />
+</@>
+
 <#assign id=args.htmlid?js_string />
 
 <div id="${id}-panel" class="child-forms document-details-panel">

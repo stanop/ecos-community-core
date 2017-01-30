@@ -27,12 +27,6 @@
 	<!--                    Document WebScripts                       -->
 	<!--==============================================================-->
 
-	<bean id="webscript.ru.citeck.workflow.name-last-version-by-node.get"
-		class="ru.citeck.ecos.webscripts.document.NameAndLastVersionByNodeRefGet"
-		parent="webscript">
-		<property name="serviceRegistry" ref="ServiceRegistry" />
-	</bean>
-
 	<bean id="webscript.ru.citeck.document.supplementary-files.get"
 		class="ru.citeck.ecos.webscripts.document.SupplementaryFilesGet"
 		parent="webscript">
@@ -70,10 +64,6 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="nodeInfoFactory" ref="NodeInfoFactory" />
     </bean>
-
-	<!--==============================================================-->
-	<!--                    Security WebScripts                       -->
-	<!--==============================================================-->
 
     <bean id="webscript.ru.citeck.print.metadata-printpdf.get" parent="dbp.webscript.view">
         <property name="processors">
@@ -192,6 +182,13 @@
     </bean>
 
     <bean id="webscript.ru.citeck.repository.dictionary.childrenClassesWithFullQname.get"
+          class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.repository.dictionary.fullChildrenClasses.get"
           class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
           parent="webscript">
         <property name="dictionaryService" ref="dictionaryService"/>

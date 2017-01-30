@@ -18,11 +18,6 @@
  */
 package ru.citeck.ecos.icase;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.BehaviourDefinition;
@@ -32,11 +27,15 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-
 import ru.citeck.ecos.behavior.ParameterizedJavaBehaviour;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
@@ -47,7 +46,7 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO {
     public QName getElementConfigType() {
         return ICaseModel.TYPE_ASSOC_CONFIG;
     }
-    
+
     enum AssociationType {
         TARGET {
             @Override

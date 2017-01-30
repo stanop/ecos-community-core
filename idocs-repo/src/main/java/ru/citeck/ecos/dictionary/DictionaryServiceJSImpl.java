@@ -18,20 +18,15 @@
  */
 package ru.citeck.ecos.dictionary;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
+
+import java.util.*;
 
 class DictionaryServiceJSImpl extends AlfrescoScopableProcessorExtension implements DictionaryServiceJS {
     
@@ -64,6 +59,11 @@ class DictionaryServiceJSImpl extends AlfrescoScopableProcessorExtension impleme
     @Override
     public boolean isSubType(String type, String isType) {
         return getDictionaryService().isSubClass(convert(type), convert(isType));
+    }
+
+    @Override
+    public String[] getSubTypes(String type, Boolean recursive) {
+        return convert(getDictionaryService().getSubTypes(convert(type), recursive));
     }
 
     @Override

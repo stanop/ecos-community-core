@@ -18,11 +18,11 @@
  */
 package ru.citeck.ecos.invariants.view;
 
-import java.io.InputStream;
-import java.util.Map;
-
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+
+import java.io.InputStream;
+import java.util.Map;
 
 public interface NodeViewService {
 
@@ -39,7 +39,7 @@ public interface NodeViewService {
      * 
      * @param sourceId id of definition
      */
-    public void undeployDefinition(String sourceId);
+    void undeployDefinition(String sourceId);
     
     /**
      * Checks, if the specified view is registered or not.
@@ -47,7 +47,7 @@ public interface NodeViewService {
      * @param view node view to check
      * @return true, if the view is registered, false otherwise
      */
-    public boolean hasNodeView(NodeView view);
+    boolean hasNodeView(NodeView view);
     
     /**
      * Get node view for specified class name and default id.
@@ -55,7 +55,7 @@ public interface NodeViewService {
      * @param className
      * @return
      */
-    public NodeView getNodeView(QName className);
+    NodeView getNodeView(QName className);
     
     /**
      * Get node view for specified class name and id.
@@ -64,7 +64,7 @@ public interface NodeViewService {
      * @param id
      * @return
      */
-    public NodeView getNodeView(QName className, String id);
+    NodeView getNodeView(QName className, String id);
     
     /**
      * Get node view for specified nodeRef and default id.
@@ -72,7 +72,7 @@ public interface NodeViewService {
      * @param nodeRef
      * @return
      */
-    public NodeView getNodeView(NodeRef nodeRef);
+    NodeView getNodeView(NodeRef nodeRef);
     
     /**
      * Get node view for specified nodeRef and id.
@@ -81,7 +81,7 @@ public interface NodeViewService {
      * @param id
      * @return
      */
-    public NodeView getNodeView(NodeRef nodeRef, String id);
+    NodeView getNodeView(NodeRef nodeRef, String id);
     
     /**
      * Get expanded node view, filled with all necessary elements, according to configuration.
@@ -89,7 +89,7 @@ public interface NodeViewService {
      * @param view view to expand
      * @return expanded view
      */
-    public NodeView getNodeView(NodeView view);
+    NodeView getNodeView(NodeView view);
     
     /**
      * Save node view to specified node (view with default id).
@@ -97,7 +97,7 @@ public interface NodeViewService {
      * @param nodeRef node in which to save the node view changes.
      * @param attributes
      */
-    public void saveNodeView(NodeRef nodeRef, Map<QName, Object> attributes);
+    void saveNodeView(NodeRef nodeRef, Map<QName, Object> attributes);
     
     /**
      * Save node view to new node (view with default id).
@@ -105,7 +105,7 @@ public interface NodeViewService {
      * @param typeQName type for which this node view is defined.
      * @param attributes
      */
-    public NodeRef saveNodeView(QName typeQName, Map<QName, Object> attributes);
+    NodeRef saveNodeView(QName typeQName, Map<QName, Object> attributes);
     
     /**
      * Save node view to specified node (view with specified id).
@@ -115,7 +115,7 @@ public interface NodeViewService {
      * @param attributes attributes to persist
      * @param params view parameters
      */
-    public void saveNodeView(NodeRef nodeRef, String id, Map<QName, Object> attributes, Map<String, Object> params);
+    void saveNodeView(NodeRef nodeRef, String id, Map<QName, Object> attributes, Map<String, Object> params);
     
     /**
      * Save node view to new node (view with specified id).
@@ -125,6 +125,6 @@ public interface NodeViewService {
      * @param attributes attributes to persist
      * @param params view parameters
      */
-    public NodeRef saveNodeView(QName typeQName, String id, Map<QName, Object> attributes, Map<String, Object> params);
+    NodeRef saveNodeView(QName typeQName, String id, Map<QName, Object> attributes, Map<String, Object> params);
     
 }

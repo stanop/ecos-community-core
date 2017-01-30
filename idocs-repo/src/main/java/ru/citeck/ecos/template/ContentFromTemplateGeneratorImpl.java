@@ -19,9 +19,11 @@
 package ru.citeck.ecos.template;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.model.RenditionModel;
 import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.version.VersionService;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
@@ -42,7 +44,7 @@ import java.util.Objects;
  * @author Alexander Nemerov <alexander.nemerov@citeck.ru>
  * date: 06.05.14
  */
-class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
+class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
 
     private static final String MESSAGE_AUTO_GENERATED = "version.auto.generated";
     private static final String EMPTY_EXTENSION = "";
@@ -50,6 +52,7 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
     private static final Log logger = LogFactory.getLog(ContentFromTemplateGeneratorImpl.class);
 
     private static final String KEY_DOCUMENT = "document";
+    private static final String DOCX_EXTENSION = "docx";
 
     private NodeService nodeService;
     private VersionService versionService;
@@ -65,8 +68,8 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
 
     @Override
     public void generateContentByTemplate(NodeRef nodeRef, String historyDescriptionText) {
-        // check existence 
-        if(!nodeService.exists(nodeRef)) {
+        // check existence
+        if (!nodeService.exists(nodeRef)) {
             logger.debug("Skipped non-existing nodeRef: " + nodeRef);
             return;
         }
@@ -82,15 +85,17 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
         NodeRef template = assocs.get(0).getTargetRef();
 
         ContentData templateContent = (ContentData) nodeService.getProperty(template, ContentModel.PROP_CONTENT);
-        if(templateContent == null) {
+        if (templateContent == null) {
             throw new IllegalStateException("Template " + template + " has no content");
         }
 
         // get template encoding
         String encoding = "ISO-8859-1";
+        String docxTemplateMimetype = mimetypeService.getMimetypesByExtension().get(DOCX_EXTENSION);
         if (nodeService.hasAspect(nodeRef, DmsModel.ASPECT_TEMPLATEABLE)
                 && !Objects.equals(templateContent.getEncoding(), "")
-                && templateContent.getEncoding() != null) {
+                && templateContent.getEncoding() != null
+                && !templateContent.getMimetype().equals(docxTemplateMimetype)) {
             encoding = templateContent.getEncoding();
         }
 
@@ -128,7 +133,7 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
                 logger.debug("Content successfully generated. node=" + nodeRef);
 
         } finally {
-            if(writer != null) {
+            if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException e) {
@@ -138,6 +143,8 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
             }
         }
 
+        removeThumbnails(nodeRef);
+
         Map<String, Serializable> versionProperties = new HashMap<>(3);
         versionProperties.put(
                 VersionModel.PROP_DESCRIPTION,
@@ -145,6 +152,23 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator{
         );
         RepoUtils.setUniqueOriginalName(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
         RepoUtils.createVersion(nodeRef, versionProperties, nodeService, versionService);
+    }
+
+    private void removeThumbnails (NodeRef nodeRef) {
+
+        List<ChildAssociationRef> thAssocs = nodeService.getChildAssocs(
+                nodeRef,
+                RenditionModel.ASSOC_RENDITION,
+                RegexQNamePattern.MATCH_ALL);
+
+        if (thAssocs != null) {
+            for (ChildAssociationRef thAssoc : thAssocs) {
+                nodeService.removeChildAssociation(thAssoc);
+                if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_THUMBNAIL_MODIFICATION)) {
+                    nodeService.removeAspect(nodeRef, ContentModel.ASPECT_THUMBNAIL_MODIFICATION);
+                }
+            }
+        }
     }
 
     public void setNodeService(NodeService nodeService) {

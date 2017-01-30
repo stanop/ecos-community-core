@@ -163,6 +163,12 @@
             <artifactId>ecos-forms-repo</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>ru.citeck.ecos</groupId>-->
+            <!--<artifactId>test-suite</artifactId>-->
+            <!--<scope>test</scope>-->
+            <!--<version>1.0.0.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>

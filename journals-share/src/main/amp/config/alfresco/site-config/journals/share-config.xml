@@ -24,7 +24,7 @@
 				<css src="/citeck/components/dynamic-tree/dynamic-table.css" />
 
 				<js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
-	            <js src="/yui/resize/resize.js" />
+        <js src="/yui/resize/resize.js" />
 
 				<css src="/citeck/components/journals2/journals.css" />
 				<js src="/citeck/components/dynamic-tree/criteria-model.js" />

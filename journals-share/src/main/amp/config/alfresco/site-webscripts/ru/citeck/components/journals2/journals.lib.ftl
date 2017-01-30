@@ -113,7 +113,7 @@
 		'MSG_SORTDESC': '${msg('message.dynamic-table.sortdesc')?html}',
 	};
 	//]]></script>
-	<div class="content-table hide-buttons" data-bind="yuiDataTable: {
+	<div class="journal-content-table content-table hide-buttons" data-bind="yuiDataTable: {
         fields: fields,
 		columns: columns,
 		records: records,

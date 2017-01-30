@@ -129,6 +129,7 @@
         <property name="templateService" ref="templateService"/>
         <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>
+        <property name="order" value="${behavior.order.title}"/>
     </bean>
 
     <bean id="FieldAutoFillBehaviour" class="ru.citeck.ecos.behavior.common.FieldAutoFillBehaviour"
@@ -157,6 +158,7 @@
     <bean id="templateChange" class="ru.citeck.ecos.behavior.common.TemplateChangeBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
     <bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
@@ -603,7 +605,7 @@
     </bean>
 
     <bean id="documentChangedNotificationSender"
-          class="ru.citeck.ecos.notification.DocumentNotificationSender">
+          class="ru.citeck.ecos.notification.DocumentNotificationSender" parent="AbstractNotificationSender">
         <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/app:notify_email_templates" />
         <property name="defaultTemplate" value="cm:default-doc-changed-notification.html.ftl"/>
@@ -673,6 +675,56 @@
         <property name="nodeService" ref="nodeService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="siteService" ref="siteService" />
+    </bean>
+
+    <bean id="idocs.deputy.reasonAbsence" parent="AutoNameBehaviour">
+        <property name="className" value="deputy:absenceReason" />
+        <property name="nameTemplate" value="#{'$'}{node.properties['deputy:reason']}"/>
+        <property name="appendExtension" value="false" />
+    </bean>
+
+    <bean id="idocs.deputy.absenceEvent" parent="AutoNameBehaviour">
+        <property name="className" value="deputy:absenceEvent" />
+        <property name="nameTemplate">
+            <value><![CDATA[
+                <#if node.assocs['deputy:reasonOfAbsence']?? && node.assocs['deputy:reasonOfAbsence']?size &gt; 0>#{'$'}{node.assocs['deputy:reasonOfAbsence'][0].name} </#if><#if node.properties['deputy:startAbsence']??>#{'$'}{node.properties['deputy:startAbsence']?string('dd.MM.yyyy')} - </#if><#if node.properties['deputy:endAbsence']??>#{'$'}{node.properties['deputy:endAbsence']?string('dd.MM.yyyy')}</#if>
+            ]]></value>
+        </property>
+        <property name="appendExtension" value="false" />
+    </bean>
+
+    <bean id="idocs.totalDocumentsSumBehaviour"
+          class="ru.citeck.ecos.behavior.common.TotalDocumentsSumBehaviour"
+          init-method="init" abstract="true">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="currencyService" ref="currencyService"/>
+    </bean>
+
+    <bean id="idocs.currencyChangesBehaviour"
+          class="ru.citeck.ecos.behavior.currency.CurrencyChangesBehaviour"
+          init-method="init">
+        <property name="currencyService" ref="currencyService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+    </bean>
+
+    <bean id="ecos.caseStatusHistoryBehaviour" class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour" abstract="true" init-method="init">
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="historyService" ref="historyService" />
+        <property name="scriptService" ref="scriptService" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="messageScript">
+            <value><![CDATA[(function() {
+                var beforeTitle = statusBefore? statusBefore.properties['cm:title'] : "—";
+                var afterTitle = statusAfter? statusAfter.properties['cm:title'] : "—";
+                return beforeTitle + " -> " + afterTitle;
+            })()]]></value>
+        </property>
+    </bean>
+
+    <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
+        <property name="caseRoleService" ref="caseRoleService" />
+        <property name="policyComponent" ref="policyComponent" />
     </bean>
 
 </beans>

@@ -12,6 +12,8 @@
 		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="nodeAttributeService" ref="nodeAttributeService" />
 		<property name="attributeTypesRegistry" ref="invariantAttributeTypesRegistry" />
+		<property name="namespaceService" ref="namespaceService"/>
+		<property name="attributesPermissionService" value="#{getObject('attributesPermissionService')}"/>
 	</bean>
 	
 	<bean id="invariantsRuntime" class="ru.citeck.ecos.invariants.InvariantsRuntime">
@@ -177,6 +179,7 @@
 		<property name="nodeService" ref="nodeService" />
 		<property name="nodeViewService" ref="nodeViewService" />
 		<property name="prefixResolver" ref="namespaceService" />
+		<property name="dictionaryService" ref="dictionaryService" />
 	</bean>
 	
 	<bean id="webscript.ru.citeck.invariants.view.post" parent="webscript" class="ru.citeck.ecos.webscripts.invariants.NodeViewPost">

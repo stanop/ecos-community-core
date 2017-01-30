@@ -1,85 +1,79 @@
 <#assign controlId = fieldId + "-journalControl">
 <#assign params = viewScope.region.params!{} />
 
-<#assign title = msg("form.select.label")>
-<#assign search = msg("journal.search")>
+<#assign createVariantsVisibility = params.createVariantsVisibility!"true" />
 
-<#assign elementsTab = msg("journal.elements")>
-<#assign filterTab = msg("journal.filter")>
-<#assign createTab = msg("journal.create")>
-<#assign selectedElements = msg("journal.selected-elements")>
-<#assign applyCriteria = msg("journal.apply-criteria")>
-<#assign addFilterCriterion = msg("journal.add-filter-criterion")>
+<#if params.createVariantsSource??>
+    <#assign createVariantsSource = params.createVariantsSource />
+<#elseif params.journalType??>
+    <#assign createVariantsSource = "journal-create-variants" />
+<#else>
+    <#assign createVariantsSource = "create-views" />
+</#if>
 
-<#assign nextPageLabel = msg("journal.pagination.next-page-label")>
-<#assign nextPageTitle = msg("journal.pagination.next-page-title")>
-<#assign previousPageLabel = msg("journal.pagination.previous-page-label")>
-<#assign previousPageTitle = msg("journal.pagination.previous-page-title")>
+<#assign virtualParent = params.virtualParent!"false" />
 
-<#assign submitButtonTitle = msg("button.ok")>
-<#assign cancelButtonTitle = msg("button.cancel")>
+<#assign hightlightSelection>
+    <#if params.hightlightSelection??>
+        ${params.hightlightSelection}
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? && 
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["hightlightSelection"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["hightlightSelection"]}
+    <#else>false</#if>
+</#assign>
+
+<#assign dock>
+    <#if params.dock??>
+        ${params.dock}
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["dock"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["dock"]}
+    <#else>true</#if>
+</#assign>
+
+<#assign mode>
+    <#if params.mode??>
+        ${params.mode}
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? && 
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["mode"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["mode"]}
+    <#else>collapse</#if>
+</#assign>
 
 <div id="${controlId}" class="journal-control" 
     data-bind="journalControl: { value: value, multiple: multiple, options: options }, params: function() {
       return {
-        <#if params.journalType??>
-          journalType: '${params.journalType}',
-        </#if>
-        <#if params.searchBar??>
-          searchBar: '${params.searchBar}',
-        </#if>
-        <#if params.defaultVisibleAttributes??>
-          defaultVisibleAttributes: '${params.defaultVisibleAttributes}',
-        </#if>
-        <#if params.defaultSearchableAttributes??>
-          defaultSearchableAttributes: '${params.defaultSearchableAttributes}',
-        </#if>
-        <#if params.mode??>
-          mode: '${params.mode}',
-        </#if>
+        <#if params.journalType??>journalType: '${params.journalType}',</#if>
+        <#if params.searchBar??>searchBar: '${params.searchBar}',</#if>
+        <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: '${params.defaultVisibleAttributes}',</#if>
+        <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: '${params.defaultSearchableAttributes}',</#if>
+        
+        mode: '${mode?trim}',
+        dock: ${dock?trim},
+        hightlightSelection: ${hightlightSelection?trim},
 
-        <#if params.sortBy??>
-          sortBy: ${params.sortBy},
-        </#if>
+        <#if params.sortBy??>sortBy: ${params.sortBy},</#if>
 
-        <#if params.defaultHiddenByType??>
-          defaultHiddenByType: '${params.defaultHiddenByType}',
-        </#if>
+        <#if params.defaultHiddenByType??>defaultHiddenByType: '${params.defaultHiddenByType}',</#if>
 
-        <#if params.searchMinQueryLength??>
-          searchMinQueryLength: '${params.searchMinQueryLength}',
-        </#if>
-        <#if params.searchScript??>
-          searchScript: '${params.searchScript}',
-        </#if>
-        <#if params.searchCriteria??>
-          searchCriteria: ${params.searchCriteria},
-        </#if>
+        <#if params.searchMinQueryLength??>searchMinQueryLength: '${params.searchMinQueryLength}',</#if>
+        <#if params.searchScript??>searchScript: '${params.searchScript}',</#if>
+        <#if params.searchCriteria??>searchCriteria: ${params.searchCriteria},</#if>
+        <#if params.defaultCriteria??>defaultCriteria: ${params.defaultCriteria},</#if>
+        <#if params.hiddenCriteria??>hiddenCriteria: ${params.hiddenCriteria},</#if>
 
-        <#if params.defaultCriteria??>
-          defaultCriteria: ${params.defaultCriteria},
-        </#if>
+        createVariantsVisibility: ${createVariantsVisibility},
 
-        localization: {
-          title: '${title}',
-          search: '${search}',
-          elementsTab: '${elementsTab}',
-          filterTab: '${filterTab}',
-          createTab: '${createTab}',
-          selectedElements: '${selectedElements}',
-          applyCriteria: '${applyCriteria}',
-          addFilterCriterion: '${addFilterCriterion}',
-          submitButton: '${submitButtonTitle}',
-          cancelButton: '${cancelButtonTitle}',
-          nextPageLabel: '${nextPageLabel}',
-          nextPageTitle: '${nextPageTitle}',
-          previousPageLabel: '${previousPageLabel}',
-          previousPageTitle: '${previousPageTitle}'
-        }
+        <#-- Create Object Transition -->
+        createVariantsSource: '${createVariantsSource}',
+        virtualParent: ${virtualParent}
       }
     }">
 
     <button id="${controlId}-button" 
             class="journal-control-button" 
-            data-bind="disable: protected">${msg("button.select")}</button>
+            data-bind="disable: protected">${msg(params.buttonTitle!"button.select")}</button>
 </div>

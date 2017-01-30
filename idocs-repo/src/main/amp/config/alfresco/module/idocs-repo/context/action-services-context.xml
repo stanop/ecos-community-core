@@ -73,6 +73,7 @@
     <bean id="abstractNodeActionProvider" class="ru.citeck.ecos.action.NodeActionsProvider" abstract="true">
         <property name="nodeActionsService" ref="nodeActionsService" />
         <property name="nodeService" ref="nodeService" />
+        <property name="dictionaryService" ref="dictionaryService" />
     </bean>
 
     <bean id="nodeActionsServiceJS" class="ru.citeck.ecos.action.NodeActionsServiceJS" parent="baseJavaScriptExtension">

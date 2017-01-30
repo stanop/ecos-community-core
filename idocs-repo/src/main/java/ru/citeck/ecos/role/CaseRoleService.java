@@ -19,12 +19,107 @@
 package ru.citeck.ecos.role;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import ru.citeck.ecos.role.dao.RoleDAO;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Created by maxim.strizhov on 15.10.2015.
+ * @author Maxim Strizhov
+ * @author Pavel Simonov
  */
 public interface CaseRoleService {
-    List<NodeRef> getRoles(NodeRef nodeRef);
+
+    /**
+     * Get all roles in specified case
+     * @return list of roles
+     */
+    List<NodeRef> getRoles(NodeRef caseRef);
+
+    /**
+     * Get role by name in specified case
+     * @return role or null if role not found
+     */
+    NodeRef getRole(NodeRef caseRef, String name);
+
+    /**
+     * Get role assignees by case reference and role name
+     * @return role assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    Set<NodeRef> getAssignees(NodeRef caseRef, String roleName);
+
+    /**
+     * Get role assignees
+     * @return role assignees
+     */
+    Set<NodeRef> getAssignees(NodeRef roleRef);
+
+    /**
+     * Check authority belongs to the role or not
+     */
+    boolean isRoleMember(NodeRef roleRef, NodeRef authorityRef);
+
+    /**
+     * Check authority belongs to the role or not
+     * @param immediate if true, limit the depth to just immediate child, if false find authorities at any depth
+     */
+    boolean isRoleMember(NodeRef roleRef, NodeRef authorityRef, boolean immediate);
+
+    /**
+     * Check authority belongs to the role or not.
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    boolean isRoleMember(NodeRef caseRef, String roleName, NodeRef authorityRef);
+
+    /**
+     * Check authority belongs to the role or not
+     * @param immediate if true, limit the depth to just immediate child, if false find authorities at any depth
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    boolean isRoleMember(NodeRef caseRef, String roleName, NodeRef authorityRef, boolean immediate);
+
+    /**
+     * Search role by name and set assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void setAssignees(NodeRef caseRef, String roleName, Collection<NodeRef> assignees);
+
+    /**
+     * Set role assignees
+     */
+    void setAssignees(NodeRef roleRef, Collection<NodeRef> assignees);
+
+    /**
+     * Remove all assignees from role
+     */
+    void removeAssignees(NodeRef roleRef);
+
+    /**
+     * Search role by name and remove all assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void removeAssignees(NodeRef caseRef, String roleName);
+
+    /**
+     * Recalculate assignees for all dynamic roles in case
+     */
+    void updateRoles(NodeRef caseRef);
+
+    /**
+     * Recalculate assignees for role
+     */
+    void updateRole(NodeRef roleRef);
+
+    /**
+     * Search role by name and recalculate assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void updateRole(NodeRef caseRef, String roleName);
+
+    /**
+     * Register role DAO
+     */
+    void register(RoleDAO roleDAO);
 }

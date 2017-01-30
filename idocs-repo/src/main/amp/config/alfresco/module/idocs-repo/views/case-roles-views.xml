@@ -8,7 +8,9 @@
         <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
     </imports>
 
-    <view class="icaseRole:role">
+    <view class="icaseRole:role" id="case">
+        <field prop="icaseRole:varName">
+        </field>
         <field prop="cm:title">
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
@@ -17,6 +19,64 @@
                 <param name="attribute">cm:title</param>
             </region>
             <region name="select" template="select-orgstruct"/>
+        </field>
+    </view>
+
+    <view class="icaseRole:scriptRole" id="case">
+        <field prop="icaseRole:varName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:script">
+            <region name="input" template="textarea">
+                <param name="height">120px</param>
+            </region>
+        </field>
+    </view>
+
+    <!--<view class="icaseRole:role" mode="create" id="case">-->
+        <!--<field prop="cm:name">-->
+            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
+        <!--</field>-->
+        <!--<field prop="cm:title">-->
+            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
+        <!--</field>-->
+        <!--<field prop="icaseRole:isReferenceRole">-->
+            <!--<invariant on="value" language="explicit">true</invariant>-->
+            <!--&lt;!&ndash;<invariant on="relevant" language="javascript">false</invariant>&ndash;&gt;-->
+        <!--</field>-->
+    <!--</view>-->
+
+    <view class="icaseRole:role" id="journal">
+        <field prop="icaseRole:varName"/>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:isReferenceRole">
+            <invariant on="value" language="explicit">true</invariant>
+            <!--<invariant on="relevant" language="javascript">false</invariant>-->
+        </field>
+    </view>
+
+    <view class="icaseRole:role" mode="create" id="journal">
+        <field prop="icaseRole:varName">
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:isReferenceRole">
+            <invariant on="value" language="explicit">true</invariant>
+            <!--<invariant on="relevant" language="javascript">false</invariant>-->
+        </field>
+    </view>
+
+    <view class="icaseRole:role" mode="edit" id="journal">
+        <field prop="icaseRole:varName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="cm:title">
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
     </view>

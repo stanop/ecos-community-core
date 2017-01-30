@@ -197,9 +197,9 @@ function hasPermissionsToStartProcess() {
     if (availability.getUserAvailability(document.properties.creator)) {
         return document.properties.creator == person.properties.userName;
     } else {
-        var delegates = delegates.getUserDelegates(document.properties.creator);
-        for (var i = 0; i < delegates.length; i++) {
-            if (delegates[i].userName == person.properties.userName) {
+        var deputies = deputies.getUserDeputies(document.properties.creator);
+        for (var i = 0; i < deputies.length; i++) {
+            if (deputies[i].userName == person.properties.userName) {
                 return true;
             }
         }

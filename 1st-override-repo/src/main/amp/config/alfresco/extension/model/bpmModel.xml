@@ -63,6 +63,15 @@
                  <value>250</value>
              </parameter>
         </constraint>
+
+        <constraint name="bpm:constraint:additionalInfo" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>notYetStarted</value>
+                    <value>checked</value>
+                </list>
+            </parameter>
+        </constraint>
         
     </constraints>
 
@@ -506,6 +515,18 @@
 
             </properties>
 
+        </aspect>
+
+        <aspect name="bpm:hasAdditionalInfo">
+            <properties>
+                <property name="bpm:additionalInfo">
+                    <type>d:text</type>
+                    <default>notYetStarted</default>
+                    <constraints>
+                        <constraint ref="bpm:constraint:additionalInfo"/>
+                    </constraints>
+                </property>
+            </properties>
         </aspect>
 
         <!--                                                                                                                                                                           -->

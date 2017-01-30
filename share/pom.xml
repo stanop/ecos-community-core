@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <alfresco.version>5.1.f</alfresco.version>
+        <alfresco.version>5.1.2</alfresco.version>
         <alfresco.rm.version>2.4.b</alfresco.rm.version>
         <!-- Used in share-config-custom.xml when testing.
              By default points to standard location (local) of Alfresco Repository -->

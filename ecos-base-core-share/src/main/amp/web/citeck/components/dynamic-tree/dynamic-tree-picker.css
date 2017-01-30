@@ -100,20 +100,13 @@
 }
 
 /* empty picker message */
-.dynamic-tree-picker .dynamic-tree > :only-child > :only-child:empty
-{
-    display: block !important;
+.dynamic-tree-picker .dynamic-tree + .no-items-message {
+    position: absolute;
+    width: 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
     text-align: center;
-}
-
-.dynamic-tree-picker .dynamic-tree.loading > :only-child > :only-child:empty:before
-{
-    content: "\0417 \0430 \0433 \0440 \0443 \0437 \043A \0430 ...";
-}
-
-.dynamic-tree-picker .dynamic-tree > :only-child > :only-child:empty:before
-{
-    content: "\041D \0438 \0447 \0435 \0433 \043E  \043D \0435  \0437 \0430 \0433 \0440 \0443 \0436 \0435 \043D \043E !";
+    top: 0;
 }
 
 /* do not show unselect action, when remove action is denied */

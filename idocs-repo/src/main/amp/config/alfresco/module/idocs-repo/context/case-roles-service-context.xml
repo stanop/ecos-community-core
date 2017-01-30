@@ -5,13 +5,26 @@
     <bean id="caseRoleService" class="ru.citeck.ecos.role.CaseRoleServiceImpl" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="NodeService"/>
-        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="authorityService" ref="authorityService"/>
     </bean>
 
     <bean id="caseRoleServiceJS" name="CaseRoleServiceJS" class="ru.citeck.ecos.role.CaseRoleServiceJS"
           parent="baseJavaScriptExtension">
         <property name="extensionName" value="caseRoleService" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
-        <property name="caseRoleService" ref="caseRoleService"/>
+        <property name="caseRoleService" ref="caseRoleService" />
+        <property name="authorityService" ref="authorityService" />
     </bean>
+
+    <bean id="ecos.case-role-dao.abstract" class="ru.citeck.ecos.role.dao.AbstractRoleDAO" init-method="init" abstract="true">
+        <property name="caseRoleService" ref="caseRoleService" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean id="ecos.case-role-dao.script" class="ru.citeck.ecos.role.dao.ScriptRoleDAO" parent="ecos.case-role-dao.abstract">
+        <property name="scriptService" ref="scriptService" />
+        <property name="authorityService" ref="authorityService" />
+    </bean>
+
 </beans>

@@ -15,6 +15,12 @@
         <editFormUrl>true</editFormUrl>
         <twisterKey>agenda</twisterKey>
 
+        <afterCreate>
+            ButtonPanel.removePanelAction('onPanelButtonCreate');
+            ButtonPanel.options.args.nodeRef = persistedNode;
+            ButtonPanel.renderPanelAction('onPanelButtonEdit');
+        </afterCreate>
+
 		<destination>{nodeRef}</destination>
 		<calcDestinationChildrenCount>true</calcDestinationChildrenCount>
 		<contentType>meet:agenda</contentType>

@@ -16,6 +16,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
+
+<@markup id="css">
+<!-- Comments -->
+   <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/dashlets/comments/css/comments.css" />
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/dashlets/comments/css/comments-ie.css" />
+<![endif]-->
+</@>
+
+<@markup id="js">
+   <@script type="text/javascript" src="${page.url.context}/res/components/dashlets/comments/comment-balloon.js"></@script>
+   <@script type="text/javascript" src="${page.url.context}/res/components/dashlets/comments/comment-view-details-actions.js"></@script>
+   <@script type="text/javascript" src="${page.url.context}/res/components/dashlets/comments/comments.js"></@script>
+</@>
+
 <#assign id = args.htmlid>
 <#assign jsid = args.htmlid?js_string>
 

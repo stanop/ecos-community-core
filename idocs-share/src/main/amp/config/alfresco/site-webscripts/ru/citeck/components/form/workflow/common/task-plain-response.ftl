@@ -14,7 +14,7 @@
 	</#if>
 	<@formLib.renderField field = outcomeField + {
 		"control": {
-			"template": "/org/alfresco/components/form/controls/workflow/activiti-transitions.ftl",
+			"template": "/ru/citeck/components/form/controls/workflow/activiti-transitions.ftl",
 			"params": outcomeField.control.params + {
 				"options": forms.constructOutcomeOptions(outcomes, outcomeLabels)
 			}

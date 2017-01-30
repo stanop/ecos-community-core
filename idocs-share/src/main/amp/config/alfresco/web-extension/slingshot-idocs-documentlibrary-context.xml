@@ -110,6 +110,14 @@
 		</property>
 	</bean>
 
+	<bean id="evaluator.doclib.ecos.document" parent="evaluator.doclib.action.nodeType">
+		<property name="types">
+			<list>
+				<value>ecos:document</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="evaluator.doclib.action.isUndeletable" parent="evaluator.doclib.action.hasAspect">
 		<property name="aspects">
 			<list>
@@ -138,14 +146,7 @@
 	</bean>
 
 	<!-- DMS specific evaluators -->
-	
-	<bean id="evaluator.doclib.dms.documentIsSigned" parent="evaluator.doclib.action.hasAspect">
-		<property name="aspects">
-			<list>
-				<value>sam:signable</value>
-			</list>
-		</property>
-	</bean>
+
 
 	<bean id="evaluator.doclib.dms.isActive" class="org.alfresco.web.evaluator.ValueEvaluator">
 		<property name="accessor">
@@ -217,8 +218,8 @@
     	
 	<bean id="slingshotEvaluatorUtil" class="org.alfresco.web.extensibility.SlingshotEvaluatorUtil"/>
 	
-    <!--<bean id="alfresco.subcomponent.evaluator.versionsdiff.checkMimetype"
-          class="org.alfresco.cms.documentlibrary.evaluator.MimetypeSubComponentEvaluator"/>-->
+    <bean id="alfresco.subcomponent.evaluator.versionsdiff.checkMimetype" 
+          class="org.alfresco.cms.documentlibrary.evaluator.MimetypeSubComponentEvaluator"/>
 
 	<bean id="evaluator.doclib.dms.hasTemplate" class="org.alfresco.web.evaluator.ValueEvaluator">
 		<property name="accessor">

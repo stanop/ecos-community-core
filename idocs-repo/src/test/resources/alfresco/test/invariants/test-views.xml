@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/passport/1.0" prefix="pass" />
+		<import uri="http://www.citeck.ru/model/privacy/1.0" prefix="privacy" />
+	</imports>
+	
+	<view class="pass:passport">
+		<field prop="tk:type" />
+		<field prop="tk:kind" />
+		<field assoc="pass:person" />
+		<view template="rowset">
+			<fields any="true">
+				<invariant on="relevant" language="javascript">node.properties['tk:type'].nodeRef == "workspace://SpacesStore/idocs-cat-dockind-passport-rus"</invariant>
+			</fields>
+			<field prop="pass:series" template="half-width" />
+			<field prop="pass:number" template="half-width" />
+			<field prop="pass:issuingAuthority">
+				<region name="input" template="textarea">
+					<param name="width">95%</param>
+				</region>
+			</field>
+			<field prop="pass:issueDate" template="half-width" />
+			<field prop="pass:subdivisionCode" template="half-width" />
+		</view>
+		<view template="rowset">
+			<fields any="true">
+				<invariant on="relevant" language="javascript">node.properties['tk:type'].nodeRef == "workspace://SpacesStore/idocs-cat-dockind-passport-other"</invariant>
+			</fields>
+			<field prop="pass:info">
+				<region name="input" template="textarea">
+					<param name="width">95%</param>
+				</region>
+			</field>
+		</view>
+		<field prop="cm:content" kind="file-upload">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+		<field prop="privacy:consent" />
+	</view>
+	
+</views>

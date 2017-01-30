@@ -4,6 +4,7 @@
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
     </imports>
 
     <view class="idocs:organizationInfo">
@@ -49,10 +50,11 @@
             <field prop="idocs:CEOname"/>
         </view>
         <view>
-            <field assoc="idocs:contacts">
+            <!-- Temporarily hidden field (no controls exists for it yet) -->
+            <!--<field assoc="idocs:contacts">
                 <region name="input" template="view" />
                 <region name="select" template="select-orgstruct" />
-            </field>
+            </field>-->
             <field prop="idocs:nameInGenitiveCase" />
         </view>
     </view>
@@ -96,7 +98,7 @@
         <field assoc="idocs:legalEntity">
             <region name="input" template="view"/>
             <region name="select" template="select-journal">
-                <param name="journalType">original-location</param>
+                <param name="journalType">legal-entities</param>
             </region>
         </field>
         <field prop="idocs:bankTitle"/>
@@ -107,6 +109,85 @@
         <field prop="idocs:corresponentBankTitle"/>
         <field prop="idocs:correspondentBankId"/>
         <field prop="idocs:corresponentAccountNumber"/>
+    </view>
+
+    <view class="deputy:absenceReason">
+        <field prop="deputy:reason"/>
+    </view>
+
+    <view class="deputy:absenceEvent">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:comment"/>
+        <field assoc="deputy:user">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <!-- <field assoc="deputy:reasonOfAbsence">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
+            </region>
+        </field> -->
+    </view>
+
+    <view class="deputy:absenceEvent" id="currentUserAbsence">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:comment"/>
+        <field assoc="deputy:user">
+            <invariant on="value" language="javascript">
+                person
+            </invariant>
+        </field>
+        <!-- <field assoc="deputy:reasonOfAbsence">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
+            </region>
+        </field> -->
+    </view>
+
+    <view class="deputy:selfAbsenceEvent">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:autoAnswer"/>
+        <field assoc="deputy:user">
+            <invariant on="value" language="javascript">
+                person
+            </invariant>
+        </field>
+    </view>
+
+    <view class="idocs:legalForm">
+        <field prop="idocs:legalFormName" />
+        <field prop="idocs:legalFormDescription" />
+    </view>
+
+    <view class="idocs:baseAttorneys">
+        <field assoc="idocs:fullName" />
+        <field prop="idocs:citizenship" />
+        <field prop="idocs:numberPass" />
+        <field prop="idocs:whoIssuedPass" />
+        <field prop="idocs:passIssueDate" />
+    </view>
+
+    <view class="idocs:filesNomenclature">
+        <views mode="create" kind="1-column" />
+        <views mode="edit" kind="1-column" />
+        
+        <field prop="idocs:fileIndex"/>
+        <field prop="idocs:fileName"/>
+        <field prop="idocs:fileYear"/>
+        <field prop="idocs:clauseNumber"/>
+    </view>
+
+    <view class="idocs:countryISO3166">
+        <field prop="cm:title"/>
+        <field prop="idocs:countryISO3166Alpha2"/>
+        <field prop="idocs:countryISO3166Alpha3"/>
+        <field prop="idocs:countryISO3166Number"/>
     </view>
 
 </views>

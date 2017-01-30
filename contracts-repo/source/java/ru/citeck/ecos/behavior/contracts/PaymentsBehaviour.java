@@ -12,10 +12,12 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
-import ru.citeck.ecos.utils.ConvertAmountInWords;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverter;
+import ru.citeck.ecos.utils.converter.amount.AmountInWordConverterFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -109,46 +111,36 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
     private void setTotalAmountInWords(NodeRef nodeRef) {
         Double amount;
-        String paymentCurrency;
-        String currency;
+        String currencyCode = "";
 
         NodeRef currencyRef = RepoUtils.getFirstTargetAssoc(nodeRef, PaymentsModel.ASSOC_PAYMENT_CURRENCY, nodeService);
-        paymentCurrency = currencyRef != null ? currencyRef.toString() : "";
 
-        switch (paymentCurrency) {
-            case "workspace://SpacesStore/currency-usd": {
-                currency = "USD";
-                break;
-            }
-            case "workspace://SpacesStore/currency-eur": {
-                currency = "EUR";
-                break;
-            }
-            default: {
-                currency = "RUB";
-            }
+        if (currencyRef != null && nodeService.exists(currencyRef)) {
+            currencyCode = (String) nodeService.getProperty(currencyRef, IdocsModel.PROP_CURRENCY_CODE);
         }
 
         if (nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT) != null) {
             amount = (Double) nodeService.getProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT);
-            String amountInWords = ConvertAmountInWords.convert(amount, currency);
+
+            AmountInWordConverter wordConverter = new AmountInWordConverterFactory().getConverter();
+            String amountInWords = wordConverter.convert(amount, currencyCode);
+
             nodeService.setProperty(nodeRef, PaymentsModel.PROP_PAYMENT_AMOUNT_IN_WORDS, amountInWords);
         }
     }
 
     private void setCopiedAssociations(NodeRef nodeRef) {
         NodeRef parentRef = null;
-        ResultSet results = null;
+        ResultSet resultset = null;
         try {
-            results = searchService.query(nodeRef.getStoreRef(), SearchService.LANGUAGE_XPATH, "/app:company_home/st:sites/cm:contracts/cm:dataLists/cm:products-and-services");
-        } finally {
-            if(results != null) {
-                results.close();
+            resultset = searchService.query(nodeRef.getStoreRef(), SearchService.LANGUAGE_XPATH, "/app:company_home/st:sites/cm:contracts/cm:dataLists/cm:products-and-services");
+            if (resultset != null) {
+                parentRef = resultset.getNodeRef(0);
             }
-        }
-
-        if(results != null) {
-            parentRef = results.getNodeRef(0);
+        } finally {
+            if(resultset != null) {
+                resultset.close();
+            }
         }
 
         List<AssociationRef> origProdAndServs = nodeService.getTargetAssocs(nodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_ORIG_PRODUCTS_AND_SERVICES);
@@ -176,6 +168,9 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 
             List<AssociationRef> assocRefs = nodeService.getTargetAssocs(assocRef.getTargetRef(), ProductsAndServicesModel.ASSOC_ENTITY_UNIT);
             nodeService.createAssociation(childNodeRef, assocRefs.get(0).getTargetRef(), ProductsAndServicesModel.ASSOC_ENTITY_UNIT);
+
+            NodeRef currencyRef = (nodeService.getTargetAssocs(assocRef.getTargetRef(), ProductsAndServicesModel.ASSOC_CURRENCY)).get(0).getTargetRef();
+            nodeService.createAssociation(childNodeRef, currencyRef, ProductsAndServicesModel.ASSOC_CURRENCY);
 
             nodeService.createAssociation(nodeRef, childNodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
         }

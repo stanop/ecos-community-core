@@ -33,10 +33,11 @@
                                         properties['pas:type'] = targetNode.properties['pas:type'];
                                         properties['pas:quantity'] = 1;
                                         properties['pas:total'] = 1 * targetNode.properties['pas:pricePerUnit'];
-                                        var childNode = root.createNode(null, "pas:pasEntityCopied", properties);
-                                        childNode.addAspect("pas:hasUnit");
-                                        var unitNode = targetNode.assocs["pas:entityUnit"];
-                                        childNode.createAssociation(unitNode[0], "pas:entityUnit");
+                                        var childNode = root.createNode(null, 'pas:pasEntityCopied', properties);
+                                        childNode.addAspect('pas:hasUnit');
+                                        var unitNode = targetNode.assocs['pas:entityUnit'];
+                                        childNode.createAssociation(unitNode[0], 'pas:entityUnit');
+                                        childNode.createAssociation(targetNode.assocs['pas:currency'][0], 'pas:currency');
                                         sourceNode.createAssociation(childNode, assocType);
                                         childNode.save();
                                     } else {

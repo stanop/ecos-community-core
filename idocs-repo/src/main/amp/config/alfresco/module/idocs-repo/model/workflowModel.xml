@@ -185,6 +185,13 @@
             </properties>
         </aspect>
 
+        <aspect name="cwf:optionalTaskAspect">
+            <properties>
+                <property name="cwf:isOptionalTask">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
 
 	</aspects>
 

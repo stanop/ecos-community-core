@@ -108,7 +108,7 @@
                     <field id="idocs:registrationNumber" set="response">
                         <control template="/ru/citeck/components/form/controls/auto-manual.ftl" />
                     </field>
-                    <field id="idocs:registrationDate" set="response"/>
+                    <field id="idocs:registrationDate" mandatory="true" set="response"/>
                     
                     <field id="cwf:lastcomment" set="response">
                         <control template="/org/alfresco/components/form/controls/info.ftl" />
@@ -135,7 +135,7 @@
                     <field id="idocs:registrationNumber" set="response">
                         <control template="/ru/citeck/components/form/controls/auto-manual.ftl" />
                     </field>
-                    <field id="idocs:registrationDate" set="response"/>
+                    <field id="idocs:registrationDate" mandatory="true" set="response"/>
                     <field id="bpm:comment" label-id="workflow.field.comment" set="response">
                         <control template="/org/alfresco/components/form/controls/textarea.ftl" />
                     </field>

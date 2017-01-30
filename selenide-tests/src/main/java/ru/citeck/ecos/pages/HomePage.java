@@ -1,45 +1,30 @@
 package ru.citeck.ecos.pages;
 
-import org.openqa.selenium.By;
+import com.codeborne.selenide.SelenideElement;
+import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
-public class HomePage {
+public class HomePage extends PageBase{
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title();
     }
 
-    public void openFormCreateSite()
-    {
-        $(By.id("HEADER_SITES_MENU_text")).shouldBe(present).click();
-        $(By.id("HEADER_SITES_MENU_CREATE_SITE_text")).shouldBe(present).click();
+    public JournalsPage openJournalTasks() {
+        $("[href *= \"journal-meta\"]").shouldBe(enabled).click();
+        JournalsPage journalsPage = new JournalsPage();
+        return  journalsPage;
     }
 
-    public SiteHomePage createSite(String mySite)
-    {
-        SiteHomePage siteHomePage = new SiteHomePage();
-        $(By.cssSelector("#alfresco-createSite-instance-form  #alfresco-createSite-instance-title")).shouldBe(present).setValue(mySite);
-        $(By.cssSelector("#alfresco-createSite-instance-ok-button > span > button")).shouldBe(present).click();
-        $(By.cssSelector("#HEADER_SITE_DASHBOARD")).shouldBe(present);
-        return siteHomePage;
+    public SelenideElement getTableTasks() {
+        return $("[id *= \"attributeswfmtaskType-liner\"]");
     }
 
-    public HomePage cancelCreateSiteFromHomePage()
-    {
+    public HomePageSiteContracts openSiteContract() {
         HomePage homePage = new HomePage();
-        $(By.cssSelector("#alfresco-createSite-instance-cancel-button > span > button")).shouldBe(present).click();
-        return homePage;
+        HomePageSiteContracts homePageSiteContracts =  homePage.getMenu().goToContracts();
+        return homePageSiteContracts;
     }
-
-    public AdminToolsPage openAdminTools()
-    {
-        AdminToolsPage adminToolsPage = new AdminToolsPage();
-        $("#HEADER_ADMIN_CONSOLE_text > a").shouldBe(present).click();
-        return adminToolsPage;
-    }
-
-
 }

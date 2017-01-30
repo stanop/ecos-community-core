@@ -469,7 +469,7 @@ function getDataItem(siteId, containerId, pathParts, node)
 }
 
 /**
- * Delegates the extraction to the correct extraction function
+ * Deputies the extraction to the correct extraction function
  * depending on containerId.
  */
 function getItem(siteId, containerId, pathParts, node)

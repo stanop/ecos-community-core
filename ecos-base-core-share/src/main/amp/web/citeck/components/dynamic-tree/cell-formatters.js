@@ -476,6 +476,75 @@
 			};
 		},
 
+		taskHistoryOutcome: function() {
+			var cache = repoMessageCache;
+			return function(elCell, oRecord, oColumn, sData) {
+				if (!sData) { return; }
+
+				var getMessages = function(keys, onSuccess, onFailure) {
+					var result = {};
+					var notCachedKeys = [];
+					for (var k = 0; k < keys.length; k++) {
+						var key = keys[k];
+						var cachedValue = cache[key];
+						if (cachedValue) {
+							result[key] = cachedValue;
+						} else {
+							notCachedKeys.push(key);
+						}
+					}
+					if (notCachedKeys.length > 0) {
+						Alfresco.util.Ajax.jsonPost({
+							url: Alfresco.constants.PROXY_URI + "citeck/util/messages",
+							dataObj: {"keys" : notCachedKeys},
+							successCallback: {
+								fn: function(response) {
+									for (var i = 0; i < notCachedKeys.length; i++) {
+										var key = notCachedKeys[i];
+										result[key] = response.json[key];
+										cache[key] = response.json[key];
+									}
+									onSuccess(result);
+								}
+							},
+							failureCallback: {
+								fn: function() {
+									for (var i = 0; i < notCachedKeys.length; i++) {
+										result[notCachedKeys[i]] = notCachedKeys[i];
+									}
+									onFailure(result);
+								}
+							}
+						});
+					} else {
+						onSuccess(result);
+					}
+				};
+
+				var typeQName = oRecord.getData()['attributes["event:taskType"]']["shortQName"];
+				var outcome = sData;
+
+				elCell.innerHTML = '<span class="column-loading"></span>';
+
+				var keyByType = "workflowtask." + typeQName.replace(/:/g, "_") + ".outcome." + outcome;
+				var globalKey = "workflowtask.outcome." + outcome;
+
+				getMessages([keyByType, globalKey],
+					function(msgs) {
+						if (msgs[keyByType] != keyByType) {
+							elCell.innerHTML = msgs[keyByType];
+						} else if (msgs[globalKey] != globalKey) {
+							elCell.innerHTML = msgs[globalKey];
+						} else {
+							elCell.innerHTML = outcome;
+						}
+					},
+					function (msgs) {
+						elCell.innerHTML = outcome;
+					});
+			};
+		},
+
         documentDetailsLink: function (target) {
             return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', target)
         },
@@ -1417,42 +1486,47 @@
 
 
 		assocOrProps: function(props) {
+			if (!props) props = "cm:name";
+
 			return function(elCell, oRecord, oColumn, sData) {
-				if(!sData) {
-					elCell.innerHTML = "";
-				} else if(sData.indexOf("workspace") > -1){
+				var request = function(nodeRef) {
 					Alfresco.util.Ajax.request({
-						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + sData + (props ? '&props=' + props + '&replaceColon=_' : ''),
+						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef + "&props=" + props + "&replaceColon=_",
 						successCallback: {
-							scope: this,
 							fn: function(response) {
 								if (response.json && response.json.props) {
-									props = props ? ('' + props).split(',') : ["cm:name"];
-									var value = '';
-									for (var i = 0; i < props.length; i++) {
-										var v1 = response.json.props[props[i]];
-										var v2 = response.json.props[props[i].replace(':', '_')];
-										value += (v1 || v2 || ' ') + ( i < props.length - 1 ? ', ' : '');
-									}
-									elCell.innerHTML = value;
+									if (elCell.innerHTML) elCell.innerHTML += "<br>";
+									elCell.innerHTML += _.values(response.json.props).join(", ");
 								}
 							}
 						},
 						failureCallback: {
-							scope: this,
 							fn: function(response) {
 								elCell.innerHTML = sData;
 							}
 						},
 						execScripts: true
 					});
-				} else if (/^-?\d*(\.\d+)?$/.test(sData)) {
-					elCell.innerHTML = parseFloat(sData);
-				} else {
-					elCell.innerHTML = sData;
 				}
+
+				if (!sData || !(sData instanceof Object || sData instanceof String)) {
+					elCell.innerHTML = "";
+					return;
+				}
+
+				if (sData instanceof String) {
+					if (sData.indexOf("workspace") != -1) { request(sData) } 
+					else if (/^-?\d*(\.\d+)?$/.test(sData)) { elCell.innerHTML = parseFloat(sData) }
+					else { elCell.innerHTML = sData }
+				}
+
+				if (sData instanceof Object) {
+					if (_.has(sData, "nodeRef")) { request(sData.nodeRef) } 
+					else { elCell.innerHTML = _.values(sData).join(", ") }
+				} 
+
 			};
-		},
+		}
 
 	});
 

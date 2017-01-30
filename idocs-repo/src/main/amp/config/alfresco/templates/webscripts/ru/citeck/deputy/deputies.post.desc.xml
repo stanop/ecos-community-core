@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Add deputies for specified role or user</shortname>
+	<description>Deputy Service: add deputies for specified role or user</description>
+    <url>/api/deputy/{fullName}/deputies?users={user1,user2,...}&amp;addAssistants={isAssistant?}</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

@@ -215,6 +215,7 @@
                     <show id="idocs:currencyCode"/>
                     <show id="idocs:currencyName"/>
                     <show id="idocs:currencyShortName"/>
+                    <show id="idocs:currencyRate"/>
                 </field-visibility>
             </form>
         </forms>
@@ -227,6 +228,7 @@
                     <show id="idocs:currencyCode"/>
                     <show id="idocs:currencyName"/>
                     <show id="idocs:currencyShortName"/>
+                    <show id="idocs:currencyRate"/>
                 </field-visibility>
             </form>
         </forms>
@@ -250,6 +252,37 @@
                     <show id="budget:itemCode"/>
                     <show id="budget:itemName"/>
                 </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="pas:pasEntityOriginal">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:title"/>
+                    <show id="pas:pricePerUnit"/>
+                    <show id="pas:entityUnit"/>
+                    <show id="pas:type"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    
+    <config evaluator="model-type" condition="pas:pasEntityOriginal">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:title"/>
+                    <show id="pas:pricePerUnit"/>
+                    <show id="pas:entityUnit"/>
+                    <show id="pas:type"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+                    </field>
+                </appearance>
             </form>
         </forms>
     </config>

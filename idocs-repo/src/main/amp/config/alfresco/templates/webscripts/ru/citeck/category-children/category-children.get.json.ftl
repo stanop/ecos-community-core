@@ -20,13 +20,14 @@
                         "delete": ${item.hasPermission("Delete")?string}
                     },
                 </#if>
-
-                <#if item.description??>
-                    "description": "${(c.properties.description!"")}",
+                <#if item.properties?? && item.properties.description??>
+                    "description": "${item.properties.description}",
                 </#if>
-
-                "nodeRef": "${item.nodeRef}",
-                "name": "${item.name}"
+                <#if item.properties?? && item.properties.title??>
+                    "title": "${item.properties.title}",
+                </#if>
+                    "nodeRef": "${item.nodeRef}",
+                    "name": "${item.name}"                
             }<#if item_has_next>,</#if>
          </#list>
     ]

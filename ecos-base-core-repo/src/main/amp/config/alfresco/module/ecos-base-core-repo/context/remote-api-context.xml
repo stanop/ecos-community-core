@@ -12,7 +12,7 @@
             <bean parent="dbp.sequential" />
         </property>
         <property name="evaluator" ref="TemplateExpressionEvaluator" />
-        <property name="mimetypeService" ref="MimetypeService" />
+        <property name="mimetypeService" ref="mimetypeService" />
     </bean>
 
     <bean id="DataBundleProcessorWebScript.download" name="dbp.webscript.download" parent="DataBundleProcessorWebscript">
@@ -186,6 +186,13 @@
           parent="webscript">
         <property name="dictionaryService" ref="dictionaryService"/>
         <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.search.getPropertyDefaultValue.get"
+          class="ru.citeck.ecos.webscripts.search.GetPropertyDefaultValue"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="prefixResolver" ref="namespaceService"/>
     </bean>
 
 </beans>

@@ -1,40 +1,42 @@
 package ru.citeck.ecos.invariants;
 
-//import static org.junit.Assert.*;
-//
-//import java.io.InputStream;
-//import java.util.Iterator;
-//import java.util.List;
-//
-//import org.junit.After;
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.springframework.core.io.ClassPathResource;
-//
-//import ru.citeck.ecos.invariants.InvariantScope.AttributeScopeKind;
-//import ru.citeck.ecos.invariants.InvariantScope.ClassScopeKind;
-////import ru.citeck.ecos.model.ClassificationModel;
-////import ru.citeck.ecos.model.PassportModel;
-//import ru.citeck.ecos.search.SearchCriteria;
+import static org.junit.Assert.*;
 
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+
+import ru.citeck.ecos.invariants.InvariantScope.AttributeScopeKind;
+import ru.citeck.ecos.invariants.InvariantScope.ClassScopeKind;
+//import ru.citeck.ecos.model.ClassificationModel;
+//import ru.citeck.ecos.model.PassportModel;
+import ru.citeck.ecos.search.SearchCriteria;
+
+@Ignore
 public class InvariantsParserTest {
     
-//    private InputStream invariantsFile;
-//    private InvariantsParser parser;
-//
-//    @Before
-//    public void setUp() throws Exception {
-//        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-invariants.xml");
-//        invariantsFile = resource.getInputStream();
-//        parser = new InvariantsParser();
-//    }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//        if(invariantsFile != null) {
-//            invariantsFile.close();
-//        }
-//    }
+    private InputStream invariantsFile;
+    private InvariantsParser parser;
+
+    @Before
+    public void setUp() throws Exception {
+        ClassPathResource resource = new ClassPathResource("alfresco/test/invariants/test-invariants.xml");
+        invariantsFile = resource.getInputStream();
+        parser = new InvariantsParser();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if(invariantsFile != null) {
+            invariantsFile.close();
+        }
+    }
 
 /*    @Test
     public void testParse() {

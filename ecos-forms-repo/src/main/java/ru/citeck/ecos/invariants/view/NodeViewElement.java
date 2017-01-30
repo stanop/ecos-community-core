@@ -18,28 +18,15 @@
  */
 package ru.citeck.ecos.invariants.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import ru.citeck.ecos.invariants.xml.*;
 
-import ru.citeck.ecos.invariants.xml.Element;
-import ru.citeck.ecos.invariants.xml.Field;
-import ru.citeck.ecos.invariants.xml.Fields;
-import ru.citeck.ecos.invariants.xml.Param;
-import ru.citeck.ecos.invariants.xml.Region;
-import ru.citeck.ecos.invariants.xml.Regions;
-import ru.citeck.ecos.invariants.xml.View;
-import ru.citeck.ecos.invariants.xml.Views;
+import java.util.*;
 
 public abstract class NodeViewElement {
     
@@ -218,12 +205,12 @@ public abstract class NodeViewElement {
         }
         
         public B id(String id) {
-            this.id = id == null || id.isEmpty() ? null : id;
+            this.id = (id == null || id.isEmpty() ? null : id);
             return (B) this;
         }
         
         public B kind(String kind) {
-            this.kind = kind == null || kind.isEmpty() ? null : kind;
+            this.kind = (kind == null || kind.isEmpty() ? null : kind);
             return (B) this;
         }
         

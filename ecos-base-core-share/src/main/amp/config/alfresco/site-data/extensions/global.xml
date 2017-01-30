@@ -34,6 +34,7 @@
 						<js src="/lib/underscore.js" />
 						<js src="/citeck/utils/citeck.js" />
 						<css src="/citeck/utils/citeck.css" />
+                        <js src="/citeck/components/dynamic-tree/cell-formatters.js"/>
 					</dependencies>
 				</config>
             </configurations>

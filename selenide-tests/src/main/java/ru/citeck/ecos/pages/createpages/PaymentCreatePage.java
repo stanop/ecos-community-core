@@ -1,46 +1,57 @@
 package ru.citeck.ecos.pages.createpages;
 
+import com.codeborne.selenide.SelenideElement;
+import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
+
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.present;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.$$;
 
-public class PaymentCreatePage extends CreatePage{
-    public void openCreatePage()
-    {
-        open("/node-create-page?type=payments:payment");
+public class PaymentCreatePage extends CreatePageBase {
+
+    public void openCreatePagePayment() {
+        HomePageSiteContracts homePageSiteContracts = new HomePageSiteContracts();
+        homePageSiteContracts.openCreateFormPayment();
     }
 
-    public void setPaymentFor()
-    {
-        $("[id *= \"payments_paymentFor\"]").selectOptionByValue("client");
+    public void setPaymentFor(String paymentFor) {
+        $("[id *= \"payments_paymentFor\"]").selectOptionByValue(paymentFor);
     }
+
     @Override
-    public void setLegalEntity()
-    {
-        $("[id *= \"payments_payer-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"payments_payer-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
-        $("[id *= \"payments_payer-journalControl-journalPanel-submitInput\"]").click();
+    public void setDocumentNumber(String number) {
+        $("[id *= \"paymentNumber\"]").setValue(number).shouldBe(present);
     }
-    @Override
-    public void setContractor()
-    {
-        $("[id *= \"payments_beneficiary-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"payments_beneficiary-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
-        $("[id *= \"payments_beneficiary-journalControl-journalPanel-submitInput\"]").click();
+
+    public ContractCreatePage openContractCreatePage(String nameDocumentBase) {
+        $("[id *= \"payments_basis-journalControl-button\"]").shouldBe(present).shouldBe(enabled).click();
+        $(".create.yui-button.yui-menu-button").shouldBe(present).shouldBe(enabled).click();
+        $(byText(nameDocumentBase)).shouldBe(present).shouldBe(enabled).click();
+        ContractCreatePage contractCreatePage = new ContractCreatePage();
+        return contractCreatePage;
     }
-    @Override
-    public void setDocumentNumber()
-    {
-        $("[id *= \"paymentNumber\"]").setValue("№"+Math.random()*100).shouldBe(present);
+
+    public  SupplementaryAgreementCreatePage openSupplementaryAgreementCreatePage(String nameDocumentBase) {
+        $("[id *= \"payments_basis-journalControl-button\"]").shouldBe(present).shouldBe(enabled).click();
+        $(".create.yui-button.yui-menu-button").shouldBe(present).shouldBe(enabled).click();
+        $(byText(nameDocumentBase)).shouldBe(present).shouldBe(enabled).click();
+        SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
+        return supplementaryAgreementCreatePage;
     }
-    public void selectProductOrServise()
-    {
-        $("[id *= \"containsOriginalProductsAndServices-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"containsOriginalProductsAndServices-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
-        $("[id *= \"containsOriginalProductsAndServices-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
+
+    public SelenideElement selectDocumentBase() {
+        $("[id *= \"payments_basis-journalControl-journalPanel-selectedElementsTable\"] table td").shouldBe(present);
+        $("[id *= \"payments_basis-journalControl-journalPanel-submitInput\"]").shouldBe(enabled).click();
+        return $$(".value-item").get(0);
+    }
+
+    public ProductsAndServicesCreatePage openProductOrServiceCreatePage() {
+        $("[id *= \"containsOriginalProductsAndServices-journalControl-button\"]").shouldBe(present).shouldBe(enabled).click();
+        $(".create-object-button").shouldBe(present).shouldBe(enabled).click();
+        ProductsAndServicesCreatePage productsAndServicesCreatePage = new ProductsAndServicesCreatePage();
+        return productsAndServicesCreatePage;
     }
 
 }

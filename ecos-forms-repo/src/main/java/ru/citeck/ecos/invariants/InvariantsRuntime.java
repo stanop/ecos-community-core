@@ -19,17 +19,10 @@
 package ru.citeck.ecos.invariants;
 
 import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.map.CompositeMap;
@@ -37,13 +30,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ru.citeck.ecos.attr.NodeAttributeService;
-import ru.citeck.ecos.invariants.view.NodeView;
-import ru.citeck.ecos.invariants.view.NodeViewMode;
+import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.utils.ConvertUtils;
 import ru.citeck.ecos.utils.SingletonGetterMap;
 
 class InvariantsRuntime {
-    
+
+    private static final int INVARIANTS_EXECUTIONS_LIMIT = 100;
+
     private static final Log logger = LogFactory.getLog(InvariantsRuntime.class);
     
     private NodeAttributeService nodeAttributeService;
@@ -71,17 +65,23 @@ class InvariantsRuntime {
     }
     
     public void executeInvariants(NodeRef nodeRef, List<InvariantDefinition> invariants, Map<String, Object> model, boolean justCreated) {
-        
+
         Set<QName> attributes = nodeAttributeService.getDefinedAttributeNames(nodeRef);
         
         RuntimeNode node = new RuntimeNode(nodeRef, attributes, model);
-        node.setInvariants(invariants);
+        Boolean isDraft = (Boolean) nodeAttributeService.getAttribute(nodeRef, InvariantsModel.PROP_IS_DRAFT);
+        if (isDraft != null && isDraft) {
+            node.setInvariants(filterByFeatures(invariants, true, Feature.MANDATORY));
+        } else {
+            node.setInvariants(invariants);
+        }
+
         node.setPersistedAttributes(nodeAttributeService.getPersistedAttributeNames(nodeRef, justCreated));
         
         // adjust values loop
         // the size of the history map is the expected maximum iterations count
         Set<Map<?,?>> oldAttributes = new HashSet<>(10);
-        do {
+        while (oldAttributes.size() < INVARIANTS_EXECUTIONS_LIMIT) {
             node.reset();
             Map<QName, Object> newAttributes = node.getNewAttributeValues();
             nodeAttributeService.setAttributes(nodeRef, newAttributes);
@@ -93,17 +93,40 @@ class InvariantsRuntime {
             } else {
                 oldAttributes.add(newAttributes);
             }
-        } while(true);
-        
+        }
+
+        if (oldAttributes.size() >= INVARIANTS_EXECUTIONS_LIMIT) {
+            throw new InvariantsUnstableException(node, oldAttributes.size());
+        }
+
         // validation:
         if(!node.isValid()) {
             RuntimeAttribute failedAttribute = node.getFailedAttribute();
             throw new InvariantValidationException(nodeRef, failedAttribute.getName(), failedAttribute.getFailedInvariant());
         }
-        
+    }
+
+    private List<InvariantDefinition> filterByFeatures(List<InvariantDefinition> definitions,
+                                                       boolean exclude, Feature... features) {
+
+        List<InvariantDefinition> result = new ArrayList<>(definitions.size());
+        for (InvariantDefinition def : definitions) {
+            Feature invFeature = def.getFeature();
+            boolean allowed = exclude;
+            for (Feature feature : features) {
+                if (feature.equals(invFeature)) {
+                    allowed = !allowed;
+                    break;
+                }
+            }
+            if (allowed) {
+                result.add(def);
+            }
+        }
+        return result;
     }
     
-    private class RuntimeNode {
+    /*package*/ class RuntimeNode {
         
         private final NodeRef nodeRef;
         private final Map<QName, RuntimeAttribute> attributes;

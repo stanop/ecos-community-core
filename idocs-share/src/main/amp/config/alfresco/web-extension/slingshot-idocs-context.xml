@@ -28,6 +28,7 @@
                 <value>alfresco.site-messages.idocs.case-roles</value>
                 <value>alfresco.site-messages.idocs.case-tasks</value>
                 <value>alfresco.site-messages.idocs.products-and-services</value>
+                <value>alfresco.site-messages.idocs.idocs-site-presets</value>
             </list>
         </property>
     </bean>
@@ -86,7 +87,7 @@
             <list>
                 <value>data</value>
                 <value>properties</value>
-                <value>{http://www.citeck.ru/model/delegate/1.0}available</value>
+                <value>{http://www.citeck.ru/model/deputy/1.0}available</value>
             </list>
         </property>
     </bean>

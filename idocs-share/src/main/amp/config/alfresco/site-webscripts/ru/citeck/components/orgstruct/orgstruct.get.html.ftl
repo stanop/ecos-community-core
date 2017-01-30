@@ -204,56 +204,65 @@
 				},
 			},
 			{
-				name: "delegates",
+				name: "deputies",
 				model: {
 					formats: {
-						"authority": {
-							name: "authority-{fullName}",
-							keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "authority" ]
-						},
-						"member": {
-							"name": "delegate-{delegate}-{userName}",
-							keys: [ "available-{available}", "delegate-{delegate}", "manage-{manage}", "member" ],
-							calc: function(item) {
-								if(typeof item.delegate == "undefined") item.delegate = true;
-							}
-						},
-						"delegate": {
-							name: "delegate-true-{userName}",
-							keys: [ "available-{available}", "delegate-true", "manage-false", "member" ]
-						},
+                        "authority": {
+                            name: "authority-{fullName}",
+                            keys: ["{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "deputy-{deputy}", "manage-{manage}", "authority", "available-{available}"]
+                        },
+                        "member": {
+                            "name": "deputy-{deputy}-isAssistant-{isAssistant}-{userName}",
+                            keys: ["available-{available}", "deputy-{deputy}", "manage-{manage}", "member", "deputy-{deputy}-isAssistant-{isAssistant}", "canDelete-{canDelete}"],
+                            calc: function (item) {
+                                if (typeof item.deputy == "undefined") item.deputy = true;
+                                if (typeof item.isAssistant == "undefined") item.isAssistant = false;
+                            }
+                        },
+                        "deputy": {
+                            name: "deputy-true-isAssistant-{isAssistant}-{userName}",
+                            keys: ["available-{available}", "deputy-true", "manage-false", "member", "canDelete-{canDelete}", "isAssistant-{isAssistant}", "deputy-true-isAssistant-{isAssistant}"]
+                        },
 					},
-					item: {
-						"authority": {
-							"format": "authority",
-							"get": "${page.url.context}/proxy/alfresco/api/orgstruct/authority/{fullName}",
-						},
-						"delegate-false": {
-							"format": "member",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{userName}",
-						},
-						"delegate-true": {
-							"format": "delegate",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{userName}",
-						},
-					},
+                    item: {
+                        "authority": {
+                            "format": "authority",
+                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/authority/{fullName}",
+                        },
+                        "deputy-false-isAssistant-false": {
+                            "format": "member",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
+                        },
+                        "deputy-false-isAssistant-true": {
+                            "format": "member",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
+                        },
+                        "deputy-true-isAssistant-false": {
+                            "format": "deputy",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
+                        },
+                        "deputy-true-isAssistant-true": {
+                            "format": "deputy",
+                            "get": "${page.url.context}/proxy/alfresco/api/assistant/{userName}",
+                        },
+                    },
 					children: {
 						"search": {
 							"format": "authority",
 							"get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/${rootGroup}/children/?filter={query}&recurse=true&role=true&user=true&default=false",
 						},
-						"GROUP": {
-							"format": "member",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{fullName}/members",
-							"add": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
-							"delete": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
-						},
-						"USER": {
-							"format": "delegate",
-							"get": "${page.url.context}/proxy/alfresco/api/delegate/{fullName}/delegates",
-							"add": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
-							"delete": "${page.url.context}/proxy/alfresco/api/delegate/{parent.fullName}/delegates?users={item.userName}",
-						}
+                        "GROUP": {
+                            "format": "member",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/members",
+                            "add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&addAssistants={item.isAssistant}",
+                            "delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&isAssistants={item.isAssistant}",
+                        },
+                        "USER": {
+                            "format": "deputy",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/deputies",
+                            "add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&addAssistants={item.isAssistant}",
+                            "delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&isAssistants={item.isAssistant}",
+                        }
 					},
 					titles: {
 						"root": "{title}",
@@ -271,19 +280,19 @@
 					buttons: {
 						"root": [ "search" ],
 						"search": [ "search", "resetSearch" ],
-						"authority": [ "addDelegate" ],
+                        "authority": ["addDeputy", "addAssistant"],
 						"": [],
 					},
 				},
 				tree: {
 					buttons: {
-						"delegate-true": [ "editItem", "deleteItem" ],
+						"deputy-true": [ "editItem", "deleteItem" ],
 						"": [ "editItem" ]
 					},
 				},
 				list: {
 					buttons: {
-						"delegate-true": [ "editItem", "deleteItem" ],
+						"deputy-true": [ "editItem", "deleteItem" ],
 						"": [ "editItem" ]
 					},
 				},

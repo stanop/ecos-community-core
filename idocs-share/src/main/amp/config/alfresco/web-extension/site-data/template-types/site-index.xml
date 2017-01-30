@@ -4,9 +4,9 @@
 	<description>Site index landing page JSP Template Type</description>
 
 	<!-- Define the rendering processors for this template type -->	
-	<processor mode="view">
-		<id>jsp</id>
-		<jsp-path>/custom-site-index.jsp</jsp-path>
-	</processor>
+	<!--<processor mode="view">-->
+		<!--<id>jsp</id>-->
+		<!--<jsp-path>/custom-site-index.jsp</jsp-path>-->
+	<!--</processor>-->
 
 </template-type>

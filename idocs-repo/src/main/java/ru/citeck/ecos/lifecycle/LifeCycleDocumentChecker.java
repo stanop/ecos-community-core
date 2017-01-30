@@ -20,8 +20,8 @@ package ru.citeck.ecos.lifecycle;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -32,12 +32,12 @@ import java.util.List;
  * @author: Alexander Nemerov
  * @date: 22.04.2014
  */
-public class LifeCycleDocumentChecker implements Job {
+public class LifeCycleDocumentChecker extends AbstractScheduledLockedJob {
 
     private static final String PARAM_LIFECYCLE_SERVICE = "lifeCycleService";
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void executeJob(JobExecutionContext context) throws JobExecutionException {
         JobDataMap jobData = context.getJobDetail().getJobDataMap();
 
         // Get the lifecycle service from the job map

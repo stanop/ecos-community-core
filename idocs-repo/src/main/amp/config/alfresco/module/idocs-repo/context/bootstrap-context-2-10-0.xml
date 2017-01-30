@@ -46,6 +46,11 @@
 	<bean id="idocs.module-component.idocs-approval-list-template" parent="idocs.import-spaces.2-10-0" depends-on="idocs.dictionaryBootstrap">
 		<property name="name" value="idocs-approval-list-template" />
 		<property name="description" value="approval-list-template" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.templates-journals.card-template" />
+			</list>
+		</property>
 		<property name="bootstrapViews">
 			<list>
 				<props>
@@ -57,23 +62,6 @@
 			</list>
 		</property>
 	</bean>
-	
-	<!-- bugfix: #5204 - APP.SHARE zone should exist before creating any sites -->
-	<!--bean id="idocs.module-component.app-share-zone" parent="idocs.import-spaces.2-10-0">
-		<property name="name" value="app-share-zone" />
-		<property name="description" value="APP.SHARE zone" />
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="uuidBinding">UPDATE_EXISTING</prop>
-					<prop key="path">/</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/authority-zone.xml</prop>
-					<prop key="messages">alfresco/module/idocs-repo/bootstrap/groups/app-share-zone</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-			</list>
-		</property>
-	</bean-->
 
 	<bean id="idocs.orgmetaBootstrap" parent="idocs.import-spaces.2-10-0">
 		<property name="name" value="idocs-orgmeta" />

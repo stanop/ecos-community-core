@@ -2,18 +2,18 @@
 <model name="route:routeModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 	<description>Route model</description>
 	<version>1.0</version>
-	
+
 	<imports>
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-		
+
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
 	</imports>
 
 	<namespaces>
 		<namespace uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
 	</namespaces>
-	
+
 	<types>
 		<type name="route:participant">
 			<parent>cm:cmobject</parent>
@@ -31,7 +31,7 @@
 				</association>
 			</associations>
 		</type>
-		
+
 		<type name="route:stage">
 			<parent>cm:cmobject</parent>
 			<properties>
@@ -54,7 +54,7 @@
 				</child-association>
 			</associations>
 		</type>
-		
+
 		<type name="route:route">
 			<parent>cm:content</parent>
 			<properties>
@@ -81,4 +81,15 @@
 			</mandatory-aspects>
 		</type>
 	</types>
+
+	<aspects>
+		<aspect name="route:hasScriptCondition">
+			<properties>
+				<property name="route:scriptCondition">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+
 </model>

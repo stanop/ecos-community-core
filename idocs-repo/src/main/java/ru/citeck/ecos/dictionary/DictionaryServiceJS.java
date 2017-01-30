@@ -52,6 +52,11 @@ public interface DictionaryServiceJS {
      * @return true if the type is a subtype of isType or the same type
      */
     public boolean isSubType(final String type, final String isType);
+
+    /**
+     * Get all sub types
+     */
+    public String[] getSubTypes(final String type, final Boolean recursive);
     
     /**
      * hasDefaultAspect - return if the type definition has the default aspect applied..

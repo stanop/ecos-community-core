@@ -20,11 +20,11 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) Citeck.widget = {};
    * DocumentJournal constructor
    */
 
-  Citeck.widget.DocumentStatus = function(htmlId) {
-    Citeck.widget.DocumentJournal.superclass.constructor.call(this, "Citeck.widget.DocumentJournal", htmlId, ["event","button"]);
+  Citeck.widget.DocumentJournals = function(htmlId) {
+    Citeck.widget.DocumentJournal.superclass.constructor.call(this, "Citeck.widget.DocumentJournals", htmlId, ["event","button"]);
   };
 
-  YAHOO.extend(Citeck.widget.DocumentJournal, Alfresco.component.Base, {
+  YAHOO.extend(Citeck.widget.DocumentJournals, Alfresco.component.Base, {
 
     options: { },
 

@@ -30,17 +30,20 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 	private Expression var;
 	private Expression precedence;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void notifyImpl(DelegateExecution execution) throws Exception {
 		String variableName = (String) var.getValue(execution);
 		String precedenceLine = (String) precedence.getValue(execution);
-		//precedenceLine
+		execution.setVariable(variableName, convertPrecedence(precedenceLine));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static JSONObject convertPrecedence(String precedence) {
 		JSONObject result = new JSONObject();
 		JSONArray stages = new JSONArray();
 		result.put("stages", stages);
-		if (precedenceLine != null && precedenceLine.length() != 0) {
-			String[] stageLines = precedenceLine.split("[,]");
+		if (precedence != null && precedence.length() != 0) {
+			String[] stageLines = precedence.split("[,]");
 			for (String line : stageLines) {
 				JSONObject stage = new JSONObject();
 
@@ -52,18 +55,34 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
 				for (String confirmer : confirmLines) {
 					if (confirmer.length() != 0) {
 						JSONObject conf = new JSONObject();
-						conf.put("nodeRef", confirmer);
+						String[] splittedStrings = confirmer.split("_");
+						conf.put("nodeRef", splittedStrings[0]);
 						// full name is not supported in old format
-						conf.put("fullName", confirmer);
+						conf.put("fullName", splittedStrings[0]);
 						// 'can cancel' is not supported in old format
 						conf.put("canCancel", false);
+						if (splittedStrings.length > 1) {
+							conf.put("amountHours", getNumberOfHoursForStage(splittedStrings[1]));
+						}
 						confirmers.add(conf);
 					}
 				}
 				stages.add(stage);
 			}
 		}
-		execution.setVariable(variableName, result);
+		return result;
+	}
+
+	private static double getNumberOfHoursForStage(String timeStage) {
+		String time = timeStage.split("/")[0];
+		String timeType = timeStage.split("/")[1];
+		if ("m".equals(timeType)) {
+			return (double)Math.round(Double.parseDouble(time) * 30 * 24 * 1000)/1000;
+		} else if ("d".equals(timeType)) {
+			return (double)Math.round(Double.parseDouble(time) * 24 * 1000)/1000;
+		} else {
+			return Double.parseDouble(time);
+		}
 	}
 
 }

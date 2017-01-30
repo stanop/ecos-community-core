@@ -18,17 +18,6 @@
  */
 package ru.citeck.ecos.icase;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -50,13 +39,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
-
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.ExceptQNamePattern;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class CaseElementServiceImpl extends AbstractLifecycleBean implements CaseElementService {
     
@@ -128,8 +119,9 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         List<ChildAssociationRef> configAssocs = nodeService.getChildAssocs(root, Collections.singleton(configType));
         return RepoUtils.getChildNodeRefs(configAssocs);
     }
-    
-    /*package*/ NodeRef getConfig(String configName) {
+
+    @Override
+    public NodeRef getConfig(String configName) {
         NodeRef root = caseElementConfigRoot.getNodeRef();
         NodeRef config = nodeService.getChildByName(root, ContentModel.ASSOC_CONTAINS, configName);
         if(config == null) {
@@ -243,12 +235,12 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         NodeRef elementTypesConfig = needConfig(CaseConstants.ELEMENT_TYPES);
         CaseElementDAO elementTypesStrategy = getStrategy(elementTypesConfig);
         List<NodeRef> elementConfigs = elementTypesStrategy.get(caseNodeRef, elementTypesConfig);
-        
+
         for(NodeRef config : elementConfigs) {
             if(elementTypesConfig.equals(config))
                 continue;
             NodeRef elementType = getOrCreateElementType(templateRef, config);
-            
+
             if(shouldCopyElements(config)) {
                 CaseElementDAO strategy = getStrategy(config);
                 strategy.copyElementsToTemplate(caseNodeRef, elementType, config);
@@ -258,6 +250,12 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         registerElementCopy(caseNodeRef, templateRef);
 
         adjustCopies();
+
+        turnOffSavedTemplate(templateRef);
+    }
+
+    private void turnOffSavedTemplate(NodeRef templateRef) {
+        nodeService.setProperty(templateRef, ICaseModel.PROP_CONDITION, "false");
     }
 
     @Override
@@ -271,7 +269,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         for(NodeRef elementType : elementTypes) {
             NodeRef config = getTemplateElementConfig(elementType);
             elementTypesStrategy.add(config, caseNodeRef, elementTypesConfig);
-            
+
             if(shouldCopyElements(config)) {
                 CaseElementDAO strategy = getStrategy(config);
                 strategy.copyElementsFromTemplate(elementType, caseNodeRef, config);

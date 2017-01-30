@@ -11,6 +11,7 @@
 		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
 		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
 	</imports>
 
 	<namespaces>
@@ -142,9 +143,18 @@
                 <property name="icase:caseType">
                     <title>Case Type</title>
                     <type>d:qname</type>
-                    <mandatory>true</mandatory>
                 </property>
-				<!-- condition, when the template is applicable -->
+                <!-- ecos type of document, for which this template is designed -->
+                <property name="icase:caseEcosType">
+                    <title>Case EcoS Type</title>
+                    <type>d:category</type>
+                </property>
+                <!-- ecos kind of document, for which this template is designed -->
+                <property name="icase:caseEcosKind">
+                    <title>Case EcoS Kind</title>
+                    <type>d:category</type>
+                </property>
+                <!-- condition, when the template is applicable -->
                 <property name="icase:condition">
                     <title>Condition</title>
                     <type>d:text</type>
@@ -217,12 +227,36 @@
         	</associations>
         </type>
 
+		<type name="icase:caseStatus">
+			<parent>dl:dataListItem</parent>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<!--<type name="icase:typeKindStatus">-->
+			<!--<parent>dl:dataListItem</parent>-->
+			<!--<associations>-->
+				<!--<association name="icase:statusLink">-->
+					<!--<source>-->
+						<!--<many>true</many>-->
+					<!--</source>-->
+					<!--<target>-->
+						<!--<class>icase:caseStatus</class>-->
+						<!--<many>false</many>-->
+					<!--</target>-->
+				<!--</association>-->
+			<!--</associations>-->
+			<!--<mandatory-aspects>-->
+				<!--<aspect>tk:documentTypeKind</aspect>-->
+			<!--</mandatory-aspects>-->
+		<!--</type>-->
+
 	</types>
 
 	<aspects>
 
 		<aspect name="icase:case">
-
 			<associations>
 				<!-- obsolete -->
 				<association name="icase:elementConfigs">
@@ -237,6 +271,9 @@
 					</target>
 				</association>
 			</associations>
+			<mandatory-aspects>
+				<aspect>icase:hasCaseStatus</aspect>
+			</mandatory-aspects>
 		</aspect>
 
 		<aspect name="icase:subcase">
@@ -329,6 +366,37 @@
 			</properties>
 		</aspect>
 
+		<aspect name="icase:hasDocuments">
+			<associations>
+				<child-association name="icase:documents">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:content</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+			</associations>
+		</aspect>
+
+		<aspect name="icase:hasCaseStatus">
+			<associations>
+				<association name="icase:caseStatusAssoc">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>icase:caseStatus</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</aspect>
 	</aspects>
 
 </model>

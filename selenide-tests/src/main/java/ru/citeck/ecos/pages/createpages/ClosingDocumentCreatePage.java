@@ -1,48 +1,87 @@
 package ru.citeck.ecos.pages.createpages;
 
+
+import com.codeborne.selenide.SelenideElement;
+import ru.citeck.ecos.pages.homepagessites.HomePageSiteContracts;
+
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.present;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
 
-public class ClosingDocumentCreatePage extends CreatePage{
+public class ClosingDocumentCreatePage extends CreatePageBase {
 
-    public void openCreatePage()
-    {
-        open("/node-create-page?type=contracts:closingDocument");
+    public void openCreatePageClosingDocument() {
+        HomePageSiteContracts homePageSiteContracts = new HomePageSiteContracts();
+        homePageSiteContracts.openCreateFormClosingDocument();
     }
-    public void setNameClosingDocument()
-    {
-        $("[id *= \"default-cm_name\"]").setValue("Act"+Math.random()).shouldBe(present);
+
+    public ContractCreatePage openContractCreatePage(String nameDocumentBase) {
+        $("[id *= \"closingDocumentAgreement-journalControl-button\"]").shouldBe(present).shouldBe(enabled).click();
+        $(".create.yui-button.yui-menu-button").shouldBe(present).shouldBe(enabled).click();
+        $(byText(nameDocumentBase)).shouldBe(present).shouldBe(enabled).click();
+        ContractCreatePage contractCreatePage = new ContractCreatePage();
+        return contractCreatePage;
     }
-    @Override
-    public void setDocumentNumber()
-    {
-        $("[id *= \"contracts_closingDocumentNumber\"]").setValue("№"+Math.random()*100).shouldBe(present);
+
+    public SupplementaryAgreementCreatePage openSupplementaryAgreementCreatePage(String nameDocumentBase) {
+        $("[id *= \"closingDocumentAgreement-journalControl-button\"]").shouldBe(present).shouldBe(enabled).click();
+        $(".create.yui-button.yui-menu-button").shouldBe(present).shouldBe(enabled).click();
+        $(byText(nameDocumentBase)).shouldBe(present).shouldBe(enabled).click();
+        SupplementaryAgreementCreatePage supplementaryAgreementCreatePage = new SupplementaryAgreementCreatePage();
+        return supplementaryAgreementCreatePage;
     }
-    public void selectPayment()
-    {
-        $("[id *= \"contracts_closingDocumentPayment-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"closingDocumentPayment-journalControl-journalPanel-selectedElementsTable\"] table tbody tr td").shouldBe(present);
+
+    public void selectDocumentBase() {
+        SelenideElement selectedDocumentBase
+                = $("[id *= \"closingDocumentAgreement-journalControl-journalPanel-selectedElementsTable\"] table td");
+        selectedDocumentBase.shouldBe(present);
+        $("[id *= \"closingDocumentAgreement-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
+    }
+
+    public PaymentCreatePage openPaymentCreatePage() {
+        $("[id *= \"contracts_closingDocumentPayment-journalControl-button\"]").shouldBe(enabled).click();
+        SelenideElement buttonCreate
+                = $("[id *= \"contracts_closingDocumentPayment-journalControl-journalPanel-journal-picker-header\"] " +
+                ".create-object-button");
+        buttonCreate.shouldBe(present).shouldBe(enabled).click();
+        PaymentCreatePage payment = new PaymentCreatePage();
+        return payment;
+    }
+
+    public void selectPayment() {
+        SelenideElement selectedPayment
+                = $("[id *= \"closingDocumentPayment-journalControl-journalPanel-selectedElementsTable\"] table td");
+        selectedPayment.shouldBe(present);
         $("[id *= \"closingDocumentPayment-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
     }
-    public void selectOriginalLocation()
-    {
+
+    public OriginalLocationCreatePage openCreatePageOriginalLocation() {
         $("[id *= \"closingDocumentOriginalLocation-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"closingDocumentOriginalLocation-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
-        $("[id *= \"closingDocumentOriginalLocation-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
+        SelenideElement buttonCreate
+                = $("[id *= \"contracts_closingDocumentOriginalLocation-journalControl\"] .create-object-button");
+        buttonCreate.should(enabled).click();
+        OriginalLocationCreatePage originalLocation = new OriginalLocationCreatePage();
+        return originalLocation;
     }
+
+    public void selectOriginalLocation() {
+        SelenideElement selectedOriginalLocation
+                = $("[id *= \"closingDocumentOriginalLocation-journalControl-journalPanel-selectedElementsTable\"] " +
+                "table tbody");
+        selectedOriginalLocation.shouldBe(present);
+        SelenideElement buttonOK
+                = $("[id *= \"closingDocumentOriginalLocation-journalControl-journalPanel-submitInput\"]");
+        buttonOK.shouldBe(present).click();
+    }
+
     @Override
-    public void setDocumentDate()
-    {
-        $("[id *= \"closingDocumentDate\"] input").setValue("2016-06-29").shouldBe(present);
+    public void setDocumentDate(String date) {
+        $("[id *= \"closingDocumentDate\"] input").setValue(date).shouldBe(present);
     }
-    public void selectContract()
+
+    public void setNameClosingDocument(String name)
     {
-        $("[id *= \"closingDocumentAgreement-journalControl-button\"]").shouldBe(present).click();
-        $("[id *= \"workspace\"]").shouldBe(present).click();
-        $("[id *= \"closingDocumentAgreement-journalControl-journalPanel-selectedElementsTable\"] table tbody").shouldBe(present);
-        $("[id *= \"closingDocumentAgreement-journalControl-journalPanel-submitInput\"]").shouldBe(present).click();
+        $("[id *= \"cm_name\"]").shouldBe(present).setValue(name);
     }
 }

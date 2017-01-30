@@ -19,24 +19,16 @@
 package ru.citeck.ecos.workflow.listeners;
 
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.impl.context.Context;
-import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.search.SearchService;
-import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.action.ActionConstants;
+import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ICaseTaskModel;
-import ru.citeck.ecos.search.*;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.workflow.utils.ActivitiVariableScopeMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,36 +49,36 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
         AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
             @Override
             public Object doWork() throws Exception {
-                NodeRef docRef = ListenerUtils.getDocument(delegateExecution, nodeService);
-                if (docRef == null) {
-                    return null;
-                }
-                ActivitiVariableScopeMap activitiVariables = new ActivitiVariableScopeMap(delegateExecution, serviceRegistry);
-
-                Object bpmPackage = activitiVariables.get("bpm_package");
-                if(bpmPackage == null) return null;
-
-                NodeRef packageRef = ((ScriptNode)bpmPackage).getNodeRef();
-                List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(packageRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
-
-                if(packageAssocs != null && packageAssocs.size() > 0) {
-
-                    Map<String, Object> actionConditionVariables =
-                                        AlfrescoTransactionSupport.getResource(ActionConstants.ACTION_CONDITION_VARIABLES);
-
-                    if(actionConditionVariables == null) {
-                        actionConditionVariables = new HashMap<String, Object>();
-                    }
-
-                    actionConditionVariables.put("process", activitiVariables);
-                    AlfrescoTransactionSupport.bindResource(ActionConstants.ACTION_CONDITION_VARIABLES, actionConditionVariables);
-
-                    caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
-                }
-
+                CaseTaskEndProcessListener.this.doWork(delegateExecution);
                 return null;
             }
         });
+    }
+
+    private void doWork(DelegateExecution delegateExecution) {
+        if (ListenerUtils.getDocument(delegateExecution, nodeService) == null) {
+            return;
+        }
+        stopActivity(delegateExecution);
+    }
+
+    private void stopActivity(DelegateExecution delegateExecution) {
+
+        NodeRef bpmPackage = ListenerUtils.getWorkflowPackage(delegateExecution);
+
+        List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+
+        if(packageAssocs != null && packageAssocs.size() > 0) {
+            ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
+            caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
+        }
+    }
+
+    private static <T> T castOrNull(Object obj, Class<T> clazz) {
+        if (obj != null && clazz.isAssignableFrom(obj.getClass())) {
+            return clazz.cast(obj);
+        }
+        return null;
     }
 
     @Override

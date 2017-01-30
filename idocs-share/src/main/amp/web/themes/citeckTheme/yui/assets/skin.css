@@ -20,20 +20,20 @@ version: 2.6.0
 
 /* INPUT COLORS */
 
-.yui-skin-citeckTheme select:not(:disabled):hover, 
-.yui-skin-citeckTheme input:not(:disabled):hover, 
+.yui-skin-citeckTheme select:not(:disabled):hover,
+.yui-skin-citeckTheme input:not(:disabled):hover,
 .yui-skin-citeckTheme textarea:not(:disabled):hover {
 	border-color: #aaaaaa !important;
 }
 
-.yui-skin-citeckTheme select:not(:disabled):focus, 
-.yui-skin-citeckTheme input:not(:disabled):focus, 
+.yui-skin-citeckTheme select:not(:disabled):focus,
+.yui-skin-citeckTheme input:not(:disabled):focus,
 .yui-skin-citeckTheme textarea:not(:disabled):focus {
 	border-color: #1c55da !important;
 }
 
-.yui-skin-citeckTheme select:disabled, 
-.yui-skin-citeckTheme input:disabled, 
+.yui-skin-citeckTheme select:disabled,
+.yui-skin-citeckTheme input:disabled,
 .yui-skin-citeckTheme textarea:disabled {
 	border-color: #ccc !important;
 	background-color: #eee !important;
@@ -155,7 +155,7 @@ version: 2.6.0
 	text-decoration: none;
 }
 
-.yui-skin-citeckTheme .yui-button button, 
+.yui-skin-citeckTheme .yui-button button,
 .yui-skin-citeckTheme .yui-button a {
 	padding: 0 10px;
 	font-size: 1em;
@@ -610,7 +610,7 @@ p#clear {
 }
 
 .yui-skin-citeckTheme .yui-calcontainer .yui-cal-nav label {
- 
+
 }
 
 .yui-cal-nav > div {
@@ -813,7 +813,7 @@ p#clear {
 	left: 200px;
 	height: 183px;
 	width: 14px;
-	background: url(hue_bg.png) no-repeat;
+	background: url(web/themes/citeckTheme/yui/assets/hue_bg.png) no-repeat;
 	top: 4px;
 }
 .yui-picker-bg {
@@ -1005,11 +1005,11 @@ p#clear {
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd {
-	margin: 0; 
+	margin: 0;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel form.bd .form-fields {
-	border: none; 
+	border: none;
 }
 
 /* bd picker header */
@@ -1046,7 +1046,7 @@ p#clear {
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .picker-header .search span.search-button button {
   padding-left: 10px;
   padding-right: 10px;
-  background-image: url(search.png);
+  background-image: url(../../images/search.png);
   background-repeat: no-repeat;
   text-indent: -9999px;
   background-position: left center;
@@ -1064,7 +1064,7 @@ p#clear {
 
 .yui-skin-citeckTheme #bd .yui-panel-container .yui-panel > .bd .upload-select button,
 .yui-skin-citeckTheme #bd .yui-panel-container .yui-panel > .bd .upload-select input {
-	padding-left: 3px; 
+	padding-left: 3px;
 }
 
 .yui-skin-citeckTheme #bd .yui-panel-container .yui-panel > .bd .upload-select input[type="file"] {
@@ -1072,31 +1072,31 @@ p#clear {
   width: 97% !important;
 }
 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtm, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtmh, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlm, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtm,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtmh,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlm,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlmh,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtp, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtph, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlp, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtp,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtph,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlp,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlph {
 	background-position: right center;
 	width: 17px;
 }
 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtm, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtmh, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlm, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtm,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtmh,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlm,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlmh {
 	background-image: url(menuitem_submenuindicator.png);
 	background-position: 70% center;
 }
 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtp, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtph, 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlp, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtp,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvtph,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlp,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree .ygtvlph {
-	background-image: url(menubaritem_submenuindicator.png);
+	background-image: url(web/themes/citeckTheme/yui/assets/menubaritem_submenuindicator.png);
 }
 
 
@@ -1133,7 +1133,7 @@ p#clear {
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree-list > .ygtvitem > .ygtvchildren > .ygtvitem {
-	padding: 5px 35px 5px 12px; 
+	padding: 5px 35px 5px 12px;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree-list > .ygtvitem > .ygtvchildren > .ygtvitem:not(:first-child) {
@@ -1144,17 +1144,17 @@ p#clear {
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree-list .item-buttons button.itemUnselect,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .yui-dt a.remove-item > span.removeIcon {
-	background-image: url(cross.png);
+	background-image: url(../../images/remove.png);
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree-list .item-buttons button.itemUnselect:hover,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .yui-dt a.remove-item:hover > span.removeIcon {
-	background-image: url(cross-active.png);
+	background-image: url(../../images/remove-active.png);
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree-list .item-buttons button.itemSelect,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .yui-dt a.add-item > span.addIcon {
-	background-image: url(create.png);
+	background-image: url(../../images/create.png);
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .dynamic-tree-list .item-buttons button.itemSelect:hover,
@@ -1165,7 +1165,7 @@ p#clear {
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u .yui-dt {
 	margin: 0;
 	border: none;
-	overflow-y: auto; 
+	overflow-y: auto;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .yui-g .yui-u.first .yui-dt {
@@ -1230,7 +1230,7 @@ p#clear {
 	border-color: #008c03 !important;
 }
 
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .bdft .yui-button.yui-button-disabled > span.first-child > button, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .bdft .yui-button.yui-button-disabled > span.first-child > button,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .yui-button.yui-button-disabled > span.first-child > button,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .buttons input[type="submit"]:disabled,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .buttons input[type="button"]:disabled {
@@ -1256,14 +1256,14 @@ p#clear {
 	width: 13px;
 	height: 13px;
 	cursor: pointer;
-	background-image: url(close-dialog.png);
-	background-repeat: no-repeat; 
+	background-image: url(../../images/close-dialog.png);
+	background-repeat: no-repeat;
 	background-position: center;
-	padding: 5px; 
+	padding: 5px;
 }
 
 .yui-skin-citeckTheme .container-close:hover {
-	background-image: url(close-dialog-active.png);
+	background-image: url(../../images/close-dialog-active.png);
 }
 
 .yui-skin-citeckTheme .yui-panel-container .underlay {
@@ -1423,7 +1423,7 @@ th.yui-dt-hidden .yui-dt-liner,td.yui-dt-hidden .yui-dt-liner,th.yui-dt-hidden .
 
 
 .yui-skin-citeckTheme .yui-dt {
-    overflow-x: auto; 
+    overflow-x: auto;
 }
 
 
@@ -1555,7 +1555,7 @@ th.yui-dt-hidden .yui-dt-liner,td.yui-dt-hidden .yui-dt-liner,th.yui-dt-hidden .
 	background: url(dt-arrow-up.png) no-repeat right;
 }
 .yui-skin-citeckTheme th.yui-dt-desc .yui-dt-liner {
-	background: url(dt-arrow-dn.png) no-repeat right;
+	background: url(web/themes/citeckTheme/yui/assets/dt-arrow-dn.png) no-repeat right;
 }
 tbody .yui-dt-editable {
 	cursor: pointer;
@@ -3197,7 +3197,7 @@ body.yui-layout {
 	padding-right: 20px;*display:inline-block;
 }
 .yui-skin-citeckTheme .yuimenubarnav .yuimenubaritemlabel-hassubmenu {
-	background: url(menubaritem_submenuindicator.png) right center no-repeat;
+	background: url(web/themes/citeckTheme/yui/assets/menubaritem_submenuindicator.png) right center no-repeat;
 }
 .yui-skin-citeckTheme .yuimenubaritem-selected {
 	background: url(sprite.png) repeat-x 0 -1700px;
@@ -3214,7 +3214,7 @@ body.yui-layout {
 	color: #A6A6A6;
 }
 .yui-skin-citeckTheme .yuimenubarnav .yuimenubaritemlabel-hassubmenu-disabled {
-	background-image: url(menubaritem_submenuindicator_disabled.png);
+	background-image: url(web/themes/citeckTheme/yui/assets/menubaritem_submenuindicator_disabled.png);
 }
 .yui-skin-citeckTheme .yuimenu {
 	font-size: 93%;
@@ -3280,7 +3280,7 @@ body.yui-layout {
 	background-repeat: no-repeat;
 }
 .yui-skin-citeckTheme .yuimenuitem-checked {
-	background-image: url(menuitem_checkbox.png);
+	background-image: url(web/themes/citeckTheme/yui/assets/menuitem_checkbox.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
@@ -3296,10 +3296,10 @@ body.yui-layout {
 	color: #A6A6A6;
 }
 .yui-skin-citeckTheme .yuimenuitem-hassubmenu-disabled {
-	background-image: url(menuitem_submenuindicator_disabled.png);
+	background-image: url(web/themes/citeckTheme/yui/assets/menuitem_submenuindicator_disabled.png);
 }
 .yui-skin-citeckTheme .yuimenuitem-checked-disabled {
-	background-image: url(menuitem_checkbox_disabled.png);
+	background-image: url(web/themes/citeckTheme/yui/assets/menuitem_checkbox_disabled.png);
 }
 .yui-skin-citeckTheme .yui-pg-container {
 	display: block;
@@ -3323,9 +3323,33 @@ body.yui-layout {
 	text-decoration: underline;
 	/*outline: 0;*/
 }
-.yui-skin-citeckTheme span.yui-pg-first,.yui-skin-citeckTheme span.yui-pg-previous,.yui-skin-citeckTheme span.yui-pg-next,.yui-skin-citeckTheme span.yui-pg-last {
+.yui-skin-citeckTheme span.yui-pg-first,
+.yui-skin-citeckTheme span.yui-pg-previous,
+.yui-skin-citeckTheme span.yui-pg-next,
+.yui-skin-citeckTheme span.yui-pg-last {
 	color: #a6a6a6;
 }
+
+.yui-skin-citeckTheme .yui-pg-previous,
+.yui-skin-citeckTheme .yui-pg-next {
+	font-size: 0;
+	text-decoration: none !important;
+}
+
+.yui-skin-citeckTheme .yui-pg-previous:before,
+.yui-skin-citeckTheme .yui-pg-next:before {
+	font-family: FontAwesome;
+	font-size: 13px;
+}
+
+.yui-skin-citeckTheme .yui-pg-previous:before {
+  	content: "\f100";
+}
+
+.yui-skin-citeckTheme .yui-pg-next:before {
+  	content: "\f101";
+}
+
 .yui-skin-citeckTheme .yui-pg-page {
 	background-color: #fff;
 	border: 1px solid #CBCBCB;
@@ -3438,7 +3462,7 @@ body.yui-layout {
 	background: transparent url(asc.gif) no-repeat scroll right center;
 }
 .yui-skin-citeckTheme .yui-pv th.yui-dt-desc .yui-dt-liner {
-	background: transparent url(desc.gif) no-repeat scroll right center;
+	background: transparent url(web/themes/citeckTheme/yui/assets/desc.gif) no-repeat scroll right center;
 }
 .yui-skin-citeckTheme .yui-pv .yui-pv-table .yui-dt-hd th a {
 	color: #fff;
@@ -4721,7 +4745,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 	cursor: default;
 }
 .yui-skin-citeckTheme .yui-h-slider {
-	background: url(bg-h.gif) no-repeat 5px 0;
+	background: url(web/themes/citeckTheme/yui/assets/bg-h.gif) no-repeat 5px 0;
 	height: 28px;
 	width: 228px;
 }
@@ -5065,8 +5089,8 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
    background-image: none !important;
 }
 
-.yui-skin-citeckTheme .form-buttons .yui-button > span.first-child, 
-.yui-skin-citeckTheme .form-field.suggested-actions .yui-button > span.first-child, 
+.yui-skin-citeckTheme .form-buttons .yui-button > span.first-child,
+.yui-skin-citeckTheme .form-field.suggested-actions .yui-button > span.first-child,
 #bd #yui-main .search .yui-gc .yui-u .yui-button.search-icon > .first-child {
     background-image: none;
     padding: 0;
@@ -5178,7 +5202,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
    border: none;
    font-weight: normal;
    padding: 0 20px 0 0;
-   background-image: url(arrow-down-dark.png);
+   background-image: url(../../images/arrow-down-dark.png);
    background-repeat: no-repeat;
    background-position: right center;
 }
@@ -5196,7 +5220,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .yui-button.yui-menu-button.yui-menu-button-hover > .first-child,
 .yui-skin-citeckTheme .share-form .form-fields .form-field .yui-button.yui-menu-button.yui-menu-button-hover > .first-child,
 .yui-skin-citeckTheme .dashlet .yui-button.yui-button-hover.yui-menu-button.yui-menu-button-hover > .first-child {
-   background-image: url(arrow-down-blue.png);
+   background-image: url(../../images/arrow-down-blue.png);
 }
 
 .yui-skin-citeckTheme .yui-button.yui-menu-button.yui-menu-button-active > .first-child,
@@ -5205,7 +5229,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .yui-button.yui-menu-button.yui-menu-button-hover.yui-menu-button-active > .first-child,
 .yui-skin-citeckTheme .share-form .form-fields .form-field .yui-button.yui-menu-button.yui-menu-button-hover.yui-menu-button-active > .first-child,
 .yui-skin-citeckTheme .dashlet .yui-button.yui-menu-button.yui-menu-button-hover.yui-menu-button-active > .first-child {
-   background-image: url(arrow-up-blue.png);
+   background-image: url(../../images/arrow-up-blue.png);
 }
 
 .yui-skin-citeckTheme .yui-button.yui-menu-button.yui-menu-button-hover > .first-child > button,
@@ -5218,7 +5242,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .yui-button.yui-menu-button.yui-menu-button-disabled > .first-child,
 .yui-skin-citeckTheme .share-form .form-fields .form-field .yui-button.yui-menu-button.yui-menu-button-disabled > .first-child,
 .yui-skin-citeckTheme .dashlet .yui-button.yui-menu-button.yui-menu-button-disabled > .first-child {
-   background-image: url(arrow-down-gray.png);
+   background-image: url(../../images/arrow-down-gray.png);
    color: gray;
 }
 
@@ -5330,38 +5354,38 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 
 /*.yui-skin-citeckTheme .icon-buttons .yui-button.create > span.first-child,
 .yui-skin-citeckTheme .icon-buttons .yui-button.add > span.first-child {
-    background-image: url(create.png);
+    background-image: url(../../images/create.png);
 }
 
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-hover.create > span.first-child,
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-active.create > span.first-child,
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-hover.add > span.first-child,
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-active.add > span.first-child {
-    background-image: url(create-active.png);
+    background-image: url(../../images/create-active.png);
 }*/
 
 /*.yui-skin-citeckTheme .icon-buttons .yui-button.settings > span.first-child {
-    background-image: url(settings.png);
+    background-image: url(../../images/settings.png);
 }
 
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-hover.settings > span.first-child {
-    background-image: url(settings-active.png);
+    background-image: url(../../images/settings-active.png);
 }
 
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-checked.settings > span.first-child {
-    background-image: url(settings-checked.png);
+    background-image: url(../../images/settings-checked.png);
 }
 
 .yui-skin-citeckTheme .icon-buttons .yui-button.filter > span.first-child {
-    background-image: url(filter.png);
+    background-image: url(../../images/filter.png);
 }
 
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-hover.filter > span.first-child {
-    background-image: url(filter-active.png);
+    background-image: url(../../images/filter-active.png);
 }
 
 .yui-skin-citeckTheme .icon-buttons .yui-button.yui-button-checked.filter > span.first-child {
-    background-image: url(filter-checked.png);
+    background-image: url(../../images/filter-checked.png);
 }*/
 
 
@@ -5393,27 +5417,27 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 /* ICONS */
 
 .yui-skin-citeckTheme .alf-user-icon {
-   background: url(add-user.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/add-user.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme .title-menu .dijitMenuItemHover .alf-user-icon,
 .yui-skin-citeckTheme .title-menu .dijitMenuItemSelected .alf-user-icon {
-   background: url(add-user-active.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/add-user-active.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme .alf-configure-icon {
-   background: url(settings.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/settings.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme .title-menu .dijitMenuItemHover .alf-configure-icon,
 .yui-skin-citeckTheme .title-menu .dijitMenuItemSelected .alf-configure-icon {
-   background: url(settings-active.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/settings-active.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme #bd .dijitMenuItem .alf-menu-arrow,
 .yui-skin-citeckTheme .navigation-menu .dijitMenuItem .alf-menu-arrow,
 .yui-skin-citeckTheme .title-menu .dijitMenuItem .alf-menu-arrow {
-   background: url(arrow-dn.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/arrow-dn.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme #bd .dijitMenuItemHover .alf-menu-arrow,
@@ -5422,20 +5446,20 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme #bd .dijitMenuItemSelected .alf-menu-arrow,
 .yui-skin-citeckTheme .navigation-menu .dijitMenuItemSelected .alf-menu-arrow,
 .yui-skin-citeckTheme .title-menu .dijitMenuItemSelected .alf-menu-arrow {
-   background: url(arrow-dn-active.png) no-repeat center center rgba(0,0,0,0) !important;
+   background: url(../../images/arrow-dn-active.png) no-repeat center center rgba(0,0,0,0) !important;
 }
 
 .yui-skin-citeckTheme .document-metadata-header h2 a.edit,
 .yui-skin-citeckTheme .document-tags h2 a.edit,
 .yui-skin-citeckTheme .document-details-panel.node-view h2 a.edit {
-	background-image: url(edit.png) !important;
-	background-size: 17px; 
+	background-image: url(../../images/edit.png) !important;
+	background-size: 17px;
 }
 
 .yui-skin-citeckTheme .document-metadata-header h2 a.edit:hover,
 .yui-skin-citeckTheme .document-tags h2 a.edit:hover,
 .yui-skin-citeckTheme .document-details-panel.node-view h2 a.edit:hover {
-	background-image: url(edit-active.png) !important;
+	background-image: url(../../images/edit-active.png) !important;
 }
 
 /* END ICONS */
@@ -5456,7 +5480,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .navigation-menu .alf-menu-bar .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
 .yui-skin-citeckTheme .navigation-menu .alf-menu-bar .dijitMenuBar .dijitMenuItem.dijitMenuItemFocused {
     color: red;
-    background-color: transparent; 
+    background-color: transparent;
 }
 
 /* Popup */
@@ -5488,10 +5512,10 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
    padding: 7px;
 }
 
-.yui-skin-citeckTheme .dijitMenu .dijitMenuItemHover td, 
-.yui-skin-citeckTheme .dijitMenu .dijitMenuItemSelected td, 
-.yui-skin-citeckTheme .dijitMenu .dijitMenuItemHover, 
-.yui-skin-citeckTheme .dijitComboBoxMenu .dijitMenuItemHover, 
+.yui-skin-citeckTheme .dijitMenu .dijitMenuItemHover td,
+.yui-skin-citeckTheme .dijitMenu .dijitMenuItemSelected td,
+.yui-skin-citeckTheme .dijitMenu .dijitMenuItemHover,
+.yui-skin-citeckTheme .dijitComboBoxMenu .dijitMenuItemHover,
 .yui-skin-citeckTheme .dijitMenuItemSelected {
    background-color: #2d3541;
 }
@@ -5529,7 +5553,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 }
 
 .yui-skin-citeckTheme .dijitPopup .alf-menu-groups .alf-menu-group .dijitMenuTable .dijitMenuItem td.alf-checkable-menu-item.alf-selected-icon {
-	
+
 }
 
 .yui-skin-citeckTheme .dijitPopup .alf-menu-groups .alf-menu-group .dijitMenuTable .dijitMenuItem td.dijitMenuItemIconCell > span:empty {
@@ -5573,27 +5597,27 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 /* header site configuration dropdown */
 
 .yui-skin-citeckTheme tr.dijitMenuItem td.dijitMenuItemIconCell .dijitIcon.alf-edit-icon {
-  background-image: url(edit.png);
+  background-image: url(../../images/edit.png);
 }
 
 .yui-skin-citeckTheme tr.dijitMenuItemHover td.dijitMenuItemIconCell .dijitIcon.alf-edit-icon {
-  background-image: url(edit-active.png);
+  background-image: url(../../images/edit-active.png);
 }
 
 .yui-skin-citeckTheme tr.dijitMenuItem td.dijitMenuItemIconCell .dijitIcon.alf-cog-icon {
-	background-image: url(settings.png);
+	background-image: url(../../images/settings.png);
 }
 
 .yui-skin-citeckTheme tr.dijitMenuItemHover td.dijitMenuItemIconCell .dijitIcon.alf-cog-icon {
-	background-image: url(settings-active.png);
+	background-image: url(../../images/settings-active.png);
 }
 
 .yui-skin-citeckTheme tr.dijitMenuItem td.dijitMenuItemIconCell .dijitIcon.alf-leave-icon {
-	background-image: url(leave.png);
+	background-image: url(../../images/leave.png);
 }
 
 .yui-skin-citeckTheme tr.dijitMenuItemHover td.dijitMenuItemIconCell .dijitIcon.alf-leave-icon {
-	background-image: url(leave-active.png);
+	background-image: url(../../images/leave-active.png);
 }
 
 /* drop-down menu in page title */
@@ -5671,9 +5695,9 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 /* 3 color for input */
 
 /*.yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .picker-header .search input.search-input:hover,
-.share-form .form-container .form-fields .form-field select:hover, 
+.share-form .form-container .form-fields .form-field select:hover,
 .share-form .form-container .form-fields .form-field input[type="text"]:hover,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field select:hover, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field select:hover,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field input[type="text"]:hover,
 #bd #yui-main .search .forms-container .share-form .form-container .form-fields .set > input.terms:hover,
 .profile .row input:hover,
@@ -5682,9 +5706,9 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .picker-header .search input.search-input:focus,
-.share-form .form-container .form-fields .form-field select:focus, 
+.share-form .form-container .form-fields .form-field select:focus,
 .share-form .form-container .form-fields .form-field input[type="text"]:focus,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field select:focus, 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field select:focus,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field input[type="text"]:focus,
 #bd #yui-main .search .forms-container .share-form .form-container .form-fields .set > input.terms:focus,
 .profile .row input:focus,
@@ -5726,19 +5750,19 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 }
 
 .yui-skin-citeckTheme .actions-cell .yui-button.edit .first-child {
-	background-image: url(edit.png);
+	background-image: url(../../images/edit.png);
 }
 
 .yui-skin-citeckTheme .actions-cell .yui-button.edit.yui-button-hover .first-child {
-	background-image: url(edit-active.png);
+	background-image: url(../../images/edit-active.png);
 }
 
 .yui-skin-citeckTheme .actions-cell .yui-button.remove .first-child {
-	background-image: url(cross.png);
+	background-image: url(../../images/remove.png);
 }
 
 .yui-skin-citeckTheme .actions-cell .yui-button.remove.yui-button-hover .first-child {
-	background-image: url(cross-active.png);
+	background-image: url(../../images/remove-active.png);
 }
 
 
@@ -5785,7 +5809,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 
 .yui-skin-citeckTheme .historic-properties-viewer .bd .form-container,
 .yui-skin-citeckTheme .historic-properties-viewer .bd .form-fields .set:only-child {
-	padding: 0; 
+	padding: 0;
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer .bd .form-fields {
@@ -5807,27 +5831,27 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer a.historic-properties-nav.next {
-	background-image: url(right.png);
+	background-image: url(../../images/right.png);
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer a.historic-properties-nav.next:hover {
-	background-image: url(right-active.png);
+	background-image: url(../../images/right-active.png);
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer a.historic-properties-nav.next.disabled {
-	background-image: url(right-disabled.png);
+	background-image: url(../../images/right-disabled.png);
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer a.historic-properties-nav.prev {
-	background-image: url(left.png);
+	background-image: url(../../images/left.png);
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer a.historic-properties-nav.prev:hover {
-	background-image: url(left-active.png);
+	background-image: url(../../images/left-active.png);
 }
 
 .yui-skin-citeckTheme .historic-properties-viewer a.historic-properties-nav.prev.disabled {
-	background-image: url(left-disabled.png);
+	background-image: url(../../images/left-disabled.png);
 }
 
 

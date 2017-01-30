@@ -1,6 +1,11 @@
 package ru.citeck.ecos.action;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.action.node.NodeActionDefinition;
+import ru.citeck.ecos.action.node.RedirectAction;
+import ru.citeck.ecos.action.node.RequestAction;
+import ru.citeck.ecos.action.node.URLAction;
 import ru.citeck.ecos.lifecycle.LifeCycleDefinition;
 import ru.citeck.ecos.lifecycle.LifeCycleService;
 
@@ -34,28 +39,35 @@ public class LifecycleActionProvider extends NodeActionsProvider {
             String eventType = event.getEventType();
             Map<String, String> actionParams = event.getEventParams();
             String url;
-            NodeActionDefinition action = new NodeActionDefinition();
+            URLAction action;
             if ("onStartProcess".equals(eventType)) {
+                action = new RedirectAction();
                 String form = actionParams.get("formId");
                 form = form==null ? "" : "&formId=" + form;
                 url = String.format(URL_REDIRECT_TEMPLATE, nodeRef.toString(), actionParams.get("workflowId"), form);
-                action.setActionType(NodeActionDefinition.NODE_ACTION_TYPE_REDIRECT);
             } else if ("userTransition".equals(eventType)) {
                 if (actionParams.get("urlId") != null) {
+                    action = new RedirectAction();
                     url = actionParams.get("urlId").replace("{nodeRef}", nodeRef.toString());
-                    action.setContext("service-context");
-                    action.setActionType(NodeActionDefinition.NODE_ACTION_TYPE_REDIRECT);
+                    action.setContext(URLAction.URLContext.URL_SERVICECONTEXT);
                 } else {
+                    action = new RequestAction();
                     url = String.format(URL_SERVER_ACTION_TEMPLATE, nodeRef.toString());
                 }
             } else {
                 throw new RuntimeException("Unsupported lifecycle event type: " + eventType);
             }
-            action.setTitle("lifecycle.action." + actionParams.get("actionName"));
+            action.setTitle(getTitle(actionParams.get("actionName")));
             action.setUrl(url);
             actionDefinitionList.add(action);
         }
         return actionDefinitionList;
+    }
+
+    private String getTitle(String actionName) {
+        String key = "lifecycle.action." + actionName;
+        String title = I18NUtil.getMessage(key);
+        return title != null ? title : actionName;
     }
 
     public void setLifecycleService(LifeCycleService lifecycleService) {

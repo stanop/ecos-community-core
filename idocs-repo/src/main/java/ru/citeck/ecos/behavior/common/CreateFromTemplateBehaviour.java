@@ -21,7 +21,7 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
@@ -34,8 +34,8 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.template.GenerateContentActionExecuter;
 
 import java.io.Serializable;
@@ -52,26 +52,14 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
     private ServiceRegistry serviceRegistry;
     private QName className;
     private Boolean enabled = null;
+    private int order = 500;
 
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
+
+    public void init() {
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
+                new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
     }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    public void setClassName(QName className) {
-        this.className = className;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
@@ -112,24 +100,30 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
         for (NodeRef tag : tags) {
             logger.info(tag);
         }
-		NodeRef template = getTemplateBasedOnKind(node)!= null ? getTemplateBasedOnKind(node) : getTemplateBasedOnType(node);
-		if(template==null) 
-		{
+
+        NodeRef template;
+        if (nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).size() > 0) {
+            template = nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).get(0).getTargetRef();
+            nodeService.setProperty(node, DmsModel.PROP_UPDATE_CONTENT, true);
+        } else {
+            template = getTemplateBasedOnKind(node)!= null ? getTemplateBasedOnKind(node) : getTemplateBasedOnType(node);
+        }
+
+		if(template == null) {
             template = getTemplateBasedOnTag(node, tags);
 		}
-		if(template!=null)
-		{
+		if(template != null) {
 			if (!containsAssoc(node, template)) {
-				nodeService.createAssociation(node, template, DmsModel.ASSOC_TEMPLATE);
-                /*added generate template*/
-                boolean updateContent = (boolean) nodeService.getProperty(node, DmsModel.PROP_UPDATE_CONTENT);
-                if (updateContent) {
-                    ActionService actionService = serviceRegistry.getActionService();
-                    Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
-                    actionService.executeAction(actionGenerateContent, node);
-                }
-                /*end*/
-			}
+                nodeService.createAssociation(node, template, DmsModel.ASSOC_TEMPLATE);
+            }
+            /*added generate template*/
+            boolean updateContent = (boolean) nodeService.getProperty(node, DmsModel.PROP_UPDATE_CONTENT);
+            if (updateContent) {
+                ActionService actionService = serviceRegistry.getActionService();
+                Action actionGenerateContent = actionService.createAction(GenerateContentActionExecuter.NAME);
+                actionService.executeAction(actionGenerateContent, node);
+            }
+            /*end*/
 		}
         else {
             logger.info("Can't find template for document");
@@ -144,11 +138,6 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             }
         }
         return false;
-    }
-
-    public void init() {
-        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
-                new JavaBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT));
     }
 
     @SuppressWarnings("unchecked")
@@ -237,4 +226,29 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 		}
 		return template;
 	}
+
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
+    public void setClassName(QName className) {
+        this.className = className;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
 }

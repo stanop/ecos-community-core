@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+﻿﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <#escape x as x?html>
 <html>
@@ -62,9 +62,10 @@
         </#if>
     </#macro>
 
-    <#assign VAT = 0>
     <#if document.properties["payments:paymentVAT"]??>
-        <#assign VAT = '${document.properties["payments:paymentVAT"]?string.computer!0}'>
+        <#assign VAT = document.properties["payments:paymentVAT"]!0>
+    <#else>
+        <#assign VAT = 0>
     </#if>
 
     <@findPayer />
@@ -158,15 +159,15 @@
                 <tr>
                         <td style="border-style: hidden" colspan="5"><p align="right"><b>НДС:</b></p></td>
                         <td><p align="right">
-                            <#if VAT?? && VAT?number gt 0>
-                                ${VAT?number}
+                            <#if VAT?? && VAT gt 0>
+                                ${VAT}
                             <#else>-
                             </#if>
                         </p></td>
                 </tr>
                 <tr>
                         <td colspan="5" style="border-style: hidden"><p align="right"><b>Всего к оплате:</b></p></td>
-                        <td><p align="right">${totalAmount + VAT?number}</p></td>
+                        <td><p align="right">${totalAmount + VAT}</p></td>
                 </tr>
         </table>
 
@@ -183,7 +184,7 @@
     <tr>
         <td>
             <#if document.properties["payments:paymentAmountInWords"]??>${document.properties["payments:paymentAmountInWords"]}</#if>
-            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && VAT?number == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && VAT == 0>(НДС не облагается согласно части 2 НК РФ, глава 26.2, статья 346.12, статья 346.13)
             </#if>
         </td>
     </tr>

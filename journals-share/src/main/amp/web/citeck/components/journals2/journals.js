@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -23,14 +23,11 @@ var logger = Alfresco.logger,
 		buttonsActionGroupId = "buttons",
 		defaultActionGroupId = "injournal",
 		DELETE_ACTION_ID = "onActionDelete",
-		HasButtons = Citeck.widget.HasButtons,
 		BulkLoader = Citeck.utils.BulkLoader,
-		$buttonSubscribe = HasButtons.subscribe,
 		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
 		koclass = koutils.koclass,
 		formatters = Citeck.format,
-		msg = Alfresco.util.message,
-		$isNodeRef = Citeck.utils.isNodeRef;
+		msg = Alfresco.util.message;
 
 var defaultFormatters = {
     "qname": formatters.qname(false),
@@ -120,55 +117,42 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
-	.computed('valueTemplate', {
-		read: function() {
-				if(!this._valueTemplate) {
-					// make this 'private' to suppress cloning
-					this._valueTemplate = ko.observable();
-				}
-				return this._valueTemplate();
-		},
-		write: function(value) {
-			if(!this._valueTemplate) {
-				this._valueTemplate = ko.observable();
-			}
-			this._valueTemplate(value);
-		}
-	})
 	;
 
 CreateVariant
 	.property('url', s)
 	.load('url', function() {
-        YAHOO.util.Connect.asyncRequest(
-            'GET',
-            Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template",
-            {
-                success: function(response) {
-                    var result = response.responseText;
-                    this.url(result);
-                },
-                scope: this
-            }
-        );
+      YAHOO.util.Connect.asyncRequest('GET', Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template", {
+          success: function(response) {
+              var result = response.responseText;
+              this.url(result);
+          },
+          scope: this
+        }
+      );
     })
+
 	.property('title', s)
 	.property('destination', s)
 	.property('type', s)
 	.property('formId', s)
 	.property('canCreate', b)
 	.property('isDefault', b)
+	.property('journal', Journal)
+
 	.computed('link', function() {
-		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}';
-		if (this.url() != null) {
-			urlTemplate = this.url().replace(/(^\s+|\s+$)/g,''); //removing whitespace at the beginning and at the end of the string
-		} else {
-			urlTemplate = defaultUrlTemplate;
+		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
+				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+
+		// redirect back after submit from journal page only
+		var options = this.resolve("journal.type.options");
+		if (window.location.pathname.indexOf("journals2") != -1 && options) {
+			var redirectionMethod = options["createVariantRedirectionMethod"] || "back";
+			urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
 		}
+
 		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
-			if(typeof value == "function") {
-				return value();
-			}
+			if(typeof value == "function") { return value(); }
 			return value;
 		}));
 	})
@@ -176,9 +160,13 @@ CreateVariant
 
 JournalType
 	.key('id', s)
+	.property('journal', Journal)
 	.property('options', o)
 	.property('formInfo', FormInfo)
 	.property('attributes', [ Attribute ])
+	.property('filters', [ Filter ])
+	.property('settings', [ Settings ])
+
 	.computed('visibleAttributes', function() {
 		return _.invoke(_.filter(this.attributes(), function(attr) {
 			return attr.visible();
@@ -204,13 +192,22 @@ JournalType
 			return attr.isDefault();
 		}), '_info');
 	})
+	.computed('defaultSearchableAttributes', function(attr) {
+		return _.intersection(this.defaultAttributes(), this.searchableAttributes());
+	})
 	.computed('defaultFilter', function() {
+		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
+			var predicates = attr.resolve("datatype.predicates");
+			if (!predicates || predicates.length == 0) return;
+			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
+		});
+
 		return new Filter({
 			nodeRef: null,
 			title: null,
 			permissions: { Write: false, Delete: false},
 			journalTypes: [ this.id() ],
-			criteria: []
+			criteria: _.compact(criteria)
 		});
 	})
 	.computed('defaultSettings', function() {
@@ -222,8 +219,7 @@ JournalType
 			visibleAttributes: _.invoke(this.defaultAttributes(), 'name')
 		});
 	})
-	.property('filters', [ Filter ])
-	.property('settings', [ Settings ])
+
 	.method('attribute', function(name) {
 		return _.find(this.attributes(), function(attr) {
 			return attr.name() == name;
@@ -239,11 +235,15 @@ Journal
 	.property('type', JournalType)
 	.property('criteria', [ Criterion ])
 	.property('createVariants', [ CreateVariant ])
+	
 	.computed('availableCreateVariants', function() {
 		return _.filter(this.createVariants(), function(variant) {
 			return variant.canCreate();
 		});
 	})
+
+	.shortcut('options', 'type.options')
+
 	.init(function() {
 		this.criteria.extend({ rateLimit: 0 });
 	})
@@ -269,6 +269,12 @@ Filter
 			title: this.title(),
 			journalTypes: _.invoke(this.journalTypes(), 'id')
 		};
+	})
+	.computed('usableCriteria', function() {
+		return _.filter(this.criteria(), function(criterion) {
+			if (criterion.value() || criterion.predicate().id().indexOf("empty") != -1) return true;
+			return false;
+		});
 	})
 	.init(function() {
 		this.criteria.extend({ rateLimit: 0 });
@@ -301,19 +307,24 @@ Settings
 Attribute
 	.property('name', s)
 	.property('_info', AttributeInfo)
-	.init(function() {
-		this.model({ _info: this.name() });
-	})
-	.shortcut('type', '_info.type')
-	.shortcut('displayName', '_info.displayName')
-	.shortcut('datatype', '_info.datatype')
-	.shortcut('labels', '_info.labels', {})
 	.property('visible', b)
 	.property('searchable', b)
 	.property('sortable', b)
 	.property('groupable', b)
 	.property('isDefault', b)
 	.property('settings', o)
+
+	.shortcut('type', '_info.type')
+	.shortcut('displayName', '_info.displayName')
+	.shortcut('datatype', '_info.datatype')
+	.shortcut('nodetype', '_info.nodetype')
+	.shortcut('journalType', '_info.journalType')
+	.shortcut('labels', '_info.labels', {})
+
+	
+	.init(function() {
+		this.model({ _info: this.name() });
+	})
 	;
 
 AttributeInfo
@@ -322,6 +333,8 @@ AttributeInfo
 	.property('displayName', s)
 	.property('datatype', Datatype)
 	.property('labels', o)
+	.property('nodetype', s)
+	.property('journalType', JournalType)
 	;
 
 Datatype
@@ -465,19 +478,21 @@ SortBy
 	;
 
 JournalsWidget
-  .property('documentNodeRef', s)
+  	.property('documentNodeRef', s)
 	.property('journalsLists', [JournalsList])
 	.property('journals', [Journal])
 	.property('journalsList', JournalsList)
-	.shortcut('filters', 'journal.type.filters', [])
-	.shortcut('settingsList', 'journal.type.settings', [])
 	.property('journal', Journal)
 	.property('filter', Filter)
 	.property('settings', Settings)
 	.property('_filter', Filter)
 	.property('_settings', Settings)
+
+	.shortcut('filters', 'journal.type.filters', [])
+	.shortcut('settingsList', 'journal.type.settings', [])
 	.shortcut('currentFilter', 'filter', 'journal.type.defaultFilter', null)
 	.shortcut('currentSettings', 'settings', 'journal.type.defaultSettings', null)
+	
 	.computed('journalsListId', {
 		read: function() {
 			return this.resolve('journalsList.id', '');
@@ -542,7 +557,6 @@ JournalsWidget
 			}
 		}
 	})
-
 
 	// paging
 	.property('skipCount', n)
@@ -650,21 +664,24 @@ JournalsWidget
 
 		columns = _.map(columns, Column);
 
-		// init action column
-		var actionGroupId = this.actionGroupId();
-		if(actionGroupId == buttonsActionGroupId) {
-			columns.unshift(new ActionsColumn({
-				id: 'actions',
-				label: this.msg("column.actions"),
-				formatter: formatters.buttons()
-			}));
-		} else if(actionGroupId != noneActionGroupId) {
-			columns.unshift(new ActionsColumn({
-				id: 'actions',
-				label: this.msg("column.actions"),
-				formatter: formatters.actions(actionGroupId)
-			}));
+		// init action column. Not for mobile version
+		if (!Citeck.mobile.isMobileDevice() && !Citeck.mobile.hasTouchEvent()) {
+			var actionGroupId = this.actionGroupId();
+			if(actionGroupId == buttonsActionGroupId) {
+				columns.unshift(new ActionsColumn({
+					id: 'actions',
+					label: this.msg("column.actions"),
+					formatter: formatters.buttons()
+				}));
+			} else if(actionGroupId != noneActionGroupId) {
+				columns.unshift(new ActionsColumn({
+					id: 'actions',
+					label: this.msg("column.actions"),
+					formatter: formatters.actions(actionGroupId)
+				}));
+			}
 		}
+		
 		// init selected column
 		columns.unshift(new ActionsColumn({
 			id: 'selected',
@@ -949,6 +966,7 @@ JournalsWidget
 		},
 
 		applyCriteria: function() {
+			this.skipCount(0);
 			this.filter(this._filter().clone());
 		},
 
@@ -1079,7 +1097,7 @@ JournalsList
 JournalType
 	.load('filters', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/filters?journalType={id}",
-		resultsMap: { filters: 'filters' }
+		resultsMap: { filters: 'filters' },
 	}))
 	.load('settings', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/settings?journalType={id}",
@@ -1096,13 +1114,17 @@ JournalType
 					formId: data.settings.formId
 				},
 			}
-		}
+		},
+		postprocessing: function(model) { model["journal"] = this; }
 	}))
 	;
 
 Journal
 	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}"
+		url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
+		postprocessing: function(model) {
+			for (var c in model.createVariants) { model.createVariants[c]["journal"] = this; }
+		}
 	}))
 	;
 
@@ -1148,7 +1170,9 @@ AttributeInfo
 	.load('*', koutils.bulkLoad(new BulkLoader({
 		url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
 		method: "GET",
-		emptyFn: function() { return { attributes: [] }; },
+		emptyFn: function() { 
+			return { attributes: [] }; 
+		},
 		addFn: function(query, id) {
 			if(id) {
 				query.attributes.push(id);
@@ -1157,7 +1181,9 @@ AttributeInfo
 				return false;
 			}
 		},
-		getFn: function(response) { return response.json.attributes; }
+		getFn: function(response) { 
+			return response.json.attributes; 
+		}
 	}), 'name'))
 	;
 
@@ -1198,7 +1224,7 @@ JournalsWidget
 				return;
 			}
 
-			var filterCriteria = filter.criteria();
+			var filterCriteria = filter.usableCriteria();
 			if(!filter.criteria.loaded()) {
 				logger.debug("Filter criteria are not loaded, deferring search");
 				koutils.subscribeOnce(filter.criteria, load, this);
@@ -1261,9 +1287,12 @@ Record
 	;
 
 
-	/*********************************************************/
-	/*              KNOCKOUT PERFORMANCE TUNING              */
-	/*********************************************************/
+/*********************************************************/
+/*              KNOCKOUT PERFORMANCE TUNING              */
+/*********************************************************/
+
+
+var rateLimit = { rateLimit: { timeout: 5, method: "notifyWhenChangesStop" } };
 
 JournalsWidget
 //	.extend('*', { logChange: true })
@@ -1271,8 +1300,6 @@ JournalsWidget
 //	.extend('records', { rateLimit: 0 })
 //	.extend('*', { rateLimit: 0 })
 	;
-
-var rateLimit = { rateLimit: { timeout: 5, method: "notifyWhenChangesStop" } };
 
 AttributeInfo
 	.extend('*', rateLimit)

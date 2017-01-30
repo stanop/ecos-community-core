@@ -1,4 +1,5 @@
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/invariants/view.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/citeck.lib.js">
 <import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
 
 (function() {
@@ -32,10 +33,11 @@
         mode: model.mode
     };
 
-    var view = getView(viewArgs);
-    if(view == null) return;
+    var viewData = getViewData(viewArgs);
+    if(viewData == null) return;
+    var view = viewData.view;
 
-    var attributes = getAttributes(view);
+    var attributes = map(getAttributes(view), function(attr) { return attr.attribute; });
     var invariantSet = getInvariantSet(view['class'], attributes);
     var viewScopedInvariants = getViewScopedInvariants(view);
     var defaultModel = {};

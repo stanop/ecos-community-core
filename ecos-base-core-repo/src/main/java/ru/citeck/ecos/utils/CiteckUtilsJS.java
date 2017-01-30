@@ -18,18 +18,49 @@
  */
 package ru.citeck.ecos.utils;
 
+import org.alfresco.repo.jscript.ValueConverter;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension {
 
-	public QName createQName(String s) {
-		QName qname;
-		if (s.indexOf(QName.NAMESPACE_BEGIN) != -1) {
-			qname = QName.createQName(s);
-		} else {
-			qname = QName.createQName(s, this.serviceRegistry.getNamespaceService());
-		}
-		return qname;
-	}
+    private ValueConverter converter = new ValueConverter();
+
+    public QName createQName(String s) {
+        QName qname;
+        if (s.indexOf(QName.NAMESPACE_BEGIN) != -1) {
+            qname = QName.createQName(s);
+        } else {
+            qname = QName.createQName(s, this.serviceRegistry.getNamespaceService());
+        }
+        return qname;
+    }
+
+    public Map<QName, Object> toQNameMap(Serializable map) {
+        if (map == null) {
+            return Collections.emptyMap();
+        }
+
+        Serializable value = converter.convertValueForRepo(map);
+        Map<QName, Object> result = new HashMap<>();
+
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException("parameter 'map' has incorrect type: " + value.getClass().getName()
+                                                                      + " expected: " + Map.class.getName());
+        }
+
+        NamespaceService namespaceService = this.serviceRegistry.getNamespaceService();
+        Map<String, Object> values = (Map<String, Object>)value;
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            result.put(QName.resolveToQName(namespaceService, entry.getKey()), entry.getValue());
+        }
+
+        return result;
+    }
 
 }

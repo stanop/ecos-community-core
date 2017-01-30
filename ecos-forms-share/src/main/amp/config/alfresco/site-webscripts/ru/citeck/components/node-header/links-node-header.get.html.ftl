@@ -1,3 +1,7 @@
+<@markup id="css">
+    <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/node-header/node-header.css" />
+</@>
+
 <#function nodeURL node={}>
     <#assign site_url = url.context + "/page">
     <#if node.isContainer>

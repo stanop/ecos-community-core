@@ -6,6 +6,8 @@
 		<import uri="http://www.citeck.ru/model/cardlet/1.0" prefix="cardlet" />
 		<import uri="http://www.citeck.ru/model/config/1.0" prefix="config" />
 		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+		<import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+		<import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
 	</imports>
 
 	<journal id="cardlets">
@@ -15,6 +17,10 @@
 			<header key="cardlet:regionId" default="true" />
 			<header key="cardlet:regionColumn" default="true" />
 			<header key="cardlet:regionPosition" default="true" />
+
+			<header key="cardlet:availableInMobile" default="true" />
+			<header key="cardlet:positionIndexInMobile" default="true" />
+
 			<header key="cardlet:allowedType" default="true" />
 			<header key="cardlet:allowedAuthorities" default="true" />
 			<header key="cardlet:condition" />
@@ -58,6 +64,53 @@
 			<header key="config:key" default="true" />
 			<header key="config:value" default="true" />
 			<header key="cm:description" default="true" /> <!-- detailed description of the settings -->
+		</headers>
+	</journal>
+
+	<journal id="absence-events">
+		<option name="type">deputy:absenceEvent</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="deputy:startAbsence" default="true"/>
+			<header key="deputy:endAbsence" default="true"/>
+			<header key="deputy:reasonOfAbsence" default="true"/>
+			<header key="deputy:user" default="true"/>
+			<header key="deputy:comment" default="true"/>
+		</headers>
+	</journal>
+
+	<journal id="users-absence-events">
+		<option name="type">deputy:selfAbsenceEvent</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="deputy:startAbsence" default="true"/>
+			<header key="deputy:endAbsence" default="true"/>
+			<header key="deputy:autoAnswer" default="true"/>
+		</headers>
+	</journal>
+
+	<journal id="case-status">
+		<option name="type">icase:caseStatus</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="cm:name" default="true"/>
+			<header key="cm:title" default="true"/>
+		</headers>
+	</journal>
+
+	<journal id="case-role">
+		<option name="type">icaseRole:role</option>
+		<option name="formId">journal</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="actionGroupId">role-injournal</option>
+		<headers>
+			<header key="icaseRole:varName" default="true" />
+			<header key="cm:title" default="true" />
+			<header key="cm:description" />
 		</headers>
 	</journal>
 

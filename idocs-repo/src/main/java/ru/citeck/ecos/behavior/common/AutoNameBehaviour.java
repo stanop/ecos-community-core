@@ -18,16 +18,10 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-//import org.alfresco.repo.policy.OrderedBehaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.PolicyScope;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -35,19 +29,18 @@ import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.repo.version.VersionServicePolicies;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-import org.alfresco.service.cmr.repository.MimetypeService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.TemplateService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.model.IdocsTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoNameBehaviour implements 
     NodeServicePolicies.OnUpdatePropertiesPolicy,
@@ -84,14 +77,11 @@ public class AutoNameBehaviour implements
 	private int order = 100;
 
 	public void init() {
-//        OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
-		JavaBehaviour updateBehaviour = new JavaBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT);
+        OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
-//        OrderedBehaviour moveBehaviour = new OrderedBehaviour(this, "onMoveNode", NotificationFrequency.TRANSACTION_COMMIT, order);
-		JavaBehaviour moveBehaviour = new JavaBehaviour(this, "onMoveNode", NotificationFrequency.TRANSACTION_COMMIT);
+        OrderedBehaviour moveBehaviour = new OrderedBehaviour(this, "onMoveNode", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnMoveNodePolicy.QNAME, className, moveBehaviour);
-//		OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
-		JavaBehaviour createBehaviour = new JavaBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT);
+		OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
 		policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
 		if(appendExtension == null) {
 			if(dictionaryService.isSubClass(className, ContentModel.TYPE_CONTENT)) {
@@ -130,8 +120,15 @@ public class AutoNameBehaviour implements
 				return;
 			}
 
+			if (nameTemplate == null || "".equals(nameTemplate)) {
+				return;
+			}
+
 			String oldName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
 			int pos = oldName.lastIndexOf('.');
+			if (!appendExtension && pos >= 0) {
+				nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, oldName.substring(0, pos));
+			}
 			String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
 			String newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
 				@Override

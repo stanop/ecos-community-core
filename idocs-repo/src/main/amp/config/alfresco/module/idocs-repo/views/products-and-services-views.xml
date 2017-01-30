@@ -18,10 +18,12 @@
 
     <view class="pas:pasEntityOriginal">
         <field prop="cm:title">
-            <region name="input" template="text"/>
+            <region name="input" template="textarea"/>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
-        <field prop="cm:description"/>
+        <field prop="cm:description">
+            <region name="input" template="textarea"/>
+        </field>
         <field prop="pas:type">
             <region name="input" template="select"/>
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -34,6 +36,9 @@
             </invariant>
             <!--<region name="select" template="create-object" />-->
             <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field assoc="pas:currency">
+            <region name="input" template="select"/>
         </field>
     </view>
 
@@ -54,6 +59,9 @@
             </invariant>
             <!--<region name="select" template="create-object" />-->
             <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field assoc="pas:currency">
+            <region name="input" template="select"/>
         </field>
     </view>
 

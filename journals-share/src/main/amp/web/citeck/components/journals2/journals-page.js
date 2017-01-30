@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2016 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -26,9 +26,26 @@ var PopupManager = Alfresco.util.PopupManager,
 	Record = koclass('Record');
 
 JournalsPage
+	// load filter method
+	.property('loadFilterMethod', String)
+	.load('loadFilterMethod', function() { this.loadFilterMethod("onclick") })
+	.computed('filterVisibility', function() {
+		switch (this.loadFilterMethod()) {
+			case "onstart":
+			case "loaded":
+				return true;
+
+			case "onclick":
+			default:
+				return false;
+		};
+	})
+
 	// menu
 	.property('currentMenu', String)
 	.method('toggleToolbarMenu', function(menu) {
+		if (menu == "filter") this.loadFilterMethod("loaded");
+
 		if(this.currentMenu() == menu) {
 			this.currentMenu('');
 		} else {
@@ -141,6 +158,11 @@ JournalsPage
 	.method('applyCriteria', function() {
 		this.userInteraction.simulateChange();
 		this.$super.applyCriteria();
+	})
+
+	.method('toggleSidebar', function(data, event) {
+		$("#alf-filters").toggle();
+		$("#alfresco-journals #alf-content .toolbar .sidebar-toggle").toggleClass("yui-button-selected");
 	})
 	;
 	

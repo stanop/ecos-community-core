@@ -20,10 +20,9 @@
 				<value>alfresco/module/idocs-repo/model/dmsModel.xml</value>
 				<value>alfresco/module/idocs-repo/workflow/related-workflows/related-workflows-task-model.xml</value>
 				<value>alfresco/module/idocs-repo/model/lifecycleModel.xml</value>
-				<!--<value>alfresco/module/idocs-repo/model/securityModel.xml</value>-->
 				<value>alfresco/module/idocs-repo/model/workflowModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/grantModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/delegateModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/deputyModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/helpConfigurationModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/counterModel.xml</value>
@@ -58,7 +57,7 @@
 				<value>alfresco/module/idocs-repo/messages/version-descriptions</value>
 				<value>alfresco/module/idocs-repo/messages/counter</value>
 				<value>alfresco/module/idocs-repo/messages/dms</value>
-				<value>alfresco/module/idocs-repo/messages/delegate</value>
+				<value>alfresco/module/idocs-repo/messages/deputy</value>
 				<value>alfresco/module/idocs-repo/messages/orgstruct</value>
 				<value>alfresco/module/idocs-repo/messages/lifecycle</value>
 				<value>alfresco/module/idocs-repo/messages/workflow</value>
@@ -80,6 +79,7 @@
 				<value>alfresco/module/idocs-repo/messages/ecosModel</value>
 				<value>alfresco/module/idocs-repo/messages/business-calendar</value>
 				<value>alfresco/module/idocs-repo/messages/productsAndServices</value>
+				<value>alfresco/module/idocs-repo/messages/amount-in-word-converter</value>
 			</list>
 		</property>
 	</bean>
@@ -110,6 +110,7 @@
 		<value>alfresco/module/idocs-repo/workflow/prolongation-workflow/prolongation-workflow-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment-model.xml</value>
 		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow-model.xml</value>
+		<value>alfresco/module/idocs-repo/workflow/case-perform/case-perform-model.xml</value>
 	</util:list>
 
 	<util:list id="idocs.workflowLabelsList">
@@ -131,6 +132,7 @@
 		<value>alfresco/module/idocs-repo/workflow/prolongation-workflow/prolongation-workflow</value>
 		<value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment</value>
 		<value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow</value>
+		<value>alfresco/module/idocs-repo/workflow/case-perform/case-perform</value>
 	</util:list>
 
 	<bean id="idocs.workflowModelsBootstrap" parent="dictionaryModelBootstrap"
@@ -256,11 +258,17 @@
                     <prop key="mimetype">text/xml</prop>
                     <prop key="redeploy">true</prop>
                 </props>
-			</list>
-		</property>
-		<property name="models" ref="idocs.workflowModelsList" />
-		<property name="labels" ref="idocs.workflowLabelsList" />
-	</bean>
+                <props>
+                    <prop key="engineId">activiti</prop>
+                    <prop key="location">alfresco/module/idocs-repo/workflow/case-perform/case-perform.bpmn</prop>
+                    <prop key="mimetype">text/xml</prop>
+                    <prop key="redeploy">true</prop>
+                </props>
+            </list>
+        </property>
+        <property name="models" ref="idocs.workflowModelsList" />
+        <property name="labels" ref="idocs.workflowLabelsList" />
+    </bean>
 
 	<bean id="idocs.import-lifecycle" class="ru.citeck.ecos.lifecycle.LifeCycleDeployer" abstract="true">
 		<property name="lifeCycleService" ref="lifeCycleService"/>
@@ -366,13 +374,7 @@
 				<props>
 					<prop key="uuidBinding">UPDATE_EXISTING</prop>
 					<prop key="path">/</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/delegation-records-root.xml</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="uuidBinding">UPDATE_EXISTING</prop>
-					<prop key="path">/</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/absence-events.xml</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/deputation-records-root.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
@@ -472,18 +474,18 @@
 		<property name="description" value="Document Type Categories" />
 		<property name="sinceVersion" value="2.3" />
 		<property name="appliesFromVersion" value="2.3" />
+		<property name="executeOnceOnly" value="false" />
 		<property name="bootstrapView">
 			<props>
 				<prop key="uuidBinding">UPDATE_EXISTING</prop>
 				<prop key="path">/cm:categoryRoot/cm:generalclassifiable</prop>
 				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/document-type-categories.xml</prop>
-				<prop key="messages">alfresco/module/idocs-repo/messages/document-type-categories</prop>
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
 	</bean>
 
-	<!-- <bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
+	<bean id="idocs.module-component.doctype-passport" parent="idocs.import-spaces">
 		<property name="name" value="doctype-passport" />
 		<property name="description" value="Passport Type Categories" />
 		<property name="sinceVersion" value="2.4" />
@@ -501,7 +503,7 @@
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>
-	</bean> -->
+	</bean>
 
     <bean id="idocs.documentFolders" parent="idocs.import-spaces">
         <property name="name" value="idocs-document-folders" />
@@ -631,6 +633,28 @@
 				<!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
 				<prop key="path">/cm:IDocsRoot</prop>
 				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/notification-logging-root.xml</prop>
+				<prop key="encoding">UTF-8</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.unavailable-complete-notification-template" parent="idocs.import-spaces" depends-on="idocs.dictionaryBootstrap">
+		<property name="name" value="unavailable-complete-notification-template" />
+		<property name="description" value="Template for notification" />
+		<property name="sinceVersion" value="2.8" />
+		<property name="appliesFromVersion" value="2.8" />
+		<property name="executeOnceOnly" value="false" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.idocs-root" />
+			</list>
+		</property>
+		<property name="bootstrapView">
+			<props>
+				<prop key="uuidBinding">UPDATE_EXISTING</prop>
+				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.workflowemailnotification.childname}</prop>
+				<prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/config_email_templates_additional.xml</prop>
+				<prop key="messages">alfresco/module/idocs-repo/messages/notification-templates</prop>
 				<prop key="encoding">UTF-8</prop>
 			</props>
 		</property>

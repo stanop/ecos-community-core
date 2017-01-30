@@ -1,1 +1,1 @@
-mvn -Ddependency.surf.version=6.3 clean -Ppurge
+mvn -Ddependency.surf.version=6.10 clean -Ppurge

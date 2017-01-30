@@ -18,17 +18,15 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -36,10 +34,18 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.history.HistoryService;
+import ru.citeck.ecos.model.CasePerformModel;
+import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.service.CiteckServices;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TaskHistoryListener extends AbstractTaskListener {
 
@@ -60,6 +66,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 	private HistoryService historyService;
 	private NamespaceService namespaceService;
 	private AuthorityService authorityService;
+	private DeputyService deputyService;
 
 	private WorkflowQNameConverter qNameConverter;
 	private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
@@ -76,7 +83,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 			logger.warn("Unsupported activiti task event: " + task.getEventName());
 			return;
 		}
-		
+		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>();
 		// task type
 		QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY), namespaceService);
 		
@@ -95,7 +102,15 @@ public class TaskHistoryListener extends AbstractTaskListener {
         
 		// task assignee
 		String assignee = task.getAssignee();
-		
+
+		String originalOwner = (String) task.getVariableLocal("taskOriginalOwner");
+
+		if (assignee != null && !assignee.equals(originalOwner)) {
+			if (originalOwner != null && deputyService.isAssistantUserByUser(originalOwner, assignee)) {
+				eventProperties.put(QName.createQName("", "taskOriginalOwner"), authorityService.getAuthorityNodeRef(originalOwner));
+			}
+		}
+
 		// pooled actors
 		ArrayList<NodeRef> pooledActors = ListenerUtils.getPooledActors(task, authorityService);
 
@@ -106,10 +121,24 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		Map<QName, Serializable> additionalProperties = getAdditionalProperties(task.getExecution());
 		
 		// persist it
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>();
+
         if(additionalProperties != null) {
             eventProperties.putAll(additionalProperties);
         }
+		NodeRef bpmPackage = ListenerUtils.getWorkflowPackage(task);
+		List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+		String roleName = "";
+		if (packageAssocs.size() > 0) {
+			NodeRef currentTask = packageAssocs.get(0).getSourceRef();
+			List<AssociationRef> performerRoles = nodeService.getTargetAssocs(currentTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
+			if (performerRoles != null && !performerRoles.isEmpty()) {
+				NodeRef firstRole = performerRoles.get(0).getTargetRef();
+				roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
+			}
+		}
+		if (roleName.isEmpty()) {
+			roleName = assignee;
+		}
 		eventProperties.put(HistoryModel.PROP_NAME, eventName);
 		eventProperties.put(HistoryModel.PROP_TASK_INSTANCE_ID, ACTIVITI_PREFIX + task.getId());
 		eventProperties.put(HistoryModel.PROP_TASK_TYPE, taskType);
@@ -117,6 +146,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		eventProperties.put(HistoryModel.PROP_TASK_COMMENT, taskComment);
 		eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
 		eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
+		eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
 		
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(VAR_DESCRIPTION));
@@ -162,6 +192,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		nodeService = serviceRegistry.getNodeService();
 		namespaceService = serviceRegistry.getNamespaceService();
 		authorityService = serviceRegistry.getAuthorityService();
+		deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
 		
 		qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);

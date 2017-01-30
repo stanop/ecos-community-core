@@ -12,6 +12,8 @@
 
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals.css" group="journals-list"/>
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals-page.css" group="journals-list" />
+
+    <@link rel="stylesheet" href="${page.url.context}/res/yui/calendar/assets/calendar.css" group="journals-list" />
 </@>
 
 <@markup id="js">
@@ -26,8 +28,9 @@
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="journals-list" />
 
+    <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="journals-list" />
+
     <@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/form/select.js" group="journals-list"/>
 </@>
 
 <@markup id="widgets">
@@ -35,11 +38,15 @@
         new Alfresco.widget.Resizer("journals").setOptions({
             initialWidth: 250
         });
-        require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui',
-                 'citeck/utils/knockout.invariants-controls'], function(JournalsPage, koyui, koic) {
+        require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components',
+                 'citeck/utils/knockout.invariants-controls'], function(JournalsPage, koyui, kocomponents, koic) {
 
             new JournalsPage("${id}").setOptions({
                 model: {
+                    <#if loadFilterMethod??>
+                        loadFilterMethod: "${loadFilterMethod}",
+                    </#if>
+
                     <@journals.renderCurrentIds />
                     multiActions: <@journals.renderMultiActionsJSON multiActions />
                 },
@@ -59,32 +66,36 @@
 
     <script type="html/template" id="visible-criterion">
         <div class="criterion">
-                            <span class="criterion-actions">
-                                <a class="criterion-remove" title="${msg("button.remove-criterion")}" data-bind="click: $root._filter().criteria.remove.bind($root._filter().criteria, $data)"></a>
-                            </span>
-                            <span class="criterion-field">
-                                <input type="hidden" data-bind="attr: { name: 'field_' + id() }, value: field().name" />
-                                <label data-bind="text: field().displayName"></label>
-                            </span>
-                            <span class="criterion-predicate">
-                                <!-- ko if: resolve('field.datatype.predicates.length', 0) == 0 && predicate() != null -->
-                                <input type="hidden" data-bind="attr: { name: 'predicate_' + id() }, value: predicate().id" />
-                                <!-- /ko -->
-                                <!-- ko if: resolve('field.datatype.predicates.length', 0) != 0 -->
-                                <select data-bind="attr: { name: 'predicate_' + id() }, value: predicate, options: field().datatype().predicates, optionsText: 'label'"></select>
-                                <!-- /ko -->
-                            </span>
-                            <span class="criterion-value" data-bind="visible: resolve('predicate.needsValue', false)">
-                                <!-- ko template: { name: valueTemplate() || 'hidden-value' } -->
-                                <!-- /ko -->
-                            </span>
+            <span class="criterion-actions">
+                <a class="criterion-remove" title="${msg("button.remove-criterion")}" data-bind="click: $root._filter().criteria.remove.bind($root._filter().criteria, $data)"></a>
+            </span>
+
+            <span class="criterion-field">
+                <input type="hidden" data-bind="attr: { name: 'field_' + id() }, value: field().name" />
+                <label data-bind="text: field().displayName"></label>
+            </span>
+
+            <span class="criterion-predicate">
+                <!-- ko if: resolve('field.datatype.predicates.length', 0) == 0 && predicate() != null -->
+                <input type="hidden" data-bind="attr: { name: 'predicate_' + id() }, value: predicate().id" />
+                <!-- /ko -->
+                <!-- ko if: resolve('field.datatype.predicates.length', 0) != 0 -->
+                <select data-bind="attr: { name: 'predicate_' + id() }, value: predicate, options: field().datatype().predicates, optionsText: 'label'"></select>
+                <!-- /ko -->
+            </span>
+
+            <span class="criterion-value" data-bind="visible: resolve('predicate.needsValue', false)">
+                <!-- ko template: { name: valueTemplate() || 'hidden-value' } -->
+                <!-- /ko -->
+            </span>
+
             <!-- ko if: $root.resolve('journal.type.formInfo') != null -->
             <div class="hidden" data-bind="
-                                templateSetter: {
-                                    name: valueTemplate,
-                                    field: 'value_' + id(),
-                                    url: '${url.context}/page/citeck/components/form-control?htmlid=${id}-criterion-' + id() + '&itemKind=type&itemId=' + $root.journal().type().formInfo().type() + '&formId=' + ($root.journal().type().formInfo().formId()||'') + '&field=' + field().name() + '&name=value_' + id() + '&value=' + encodeURIComponent(value()) + '&disabled=false&mode=create'
-                                }">
+                templateSetter: {
+                    name: valueTemplate,
+                    field: 'value_' + id(),
+                    url: '${url.context}/page/citeck/components/form-control?htmlid=${id}-criterion-' + id() + '&itemKind=type&itemId=' + $root.journal().type().formInfo().type() + '&formId=' + ($root.journal().type().formInfo().formId()||'') + '&field=' + field().name() + '&name=value_' + id() + '&value=' + encodeURIComponent(value()) + '&disabled=false&mode=create'
+                }">
             </div>
             <!-- /ko -->
         </div>
@@ -99,6 +110,12 @@
             <div id="yui-main">
                 <div class="yui-b" id="alf-content">
                     <div id="${toolbarId}" class="toolbar flat-button icon-buttons" data-bind="css: { hidden: journal() == null }">
+                        <span id="${id}-sidebar-toggle" class="sidebar-toggle" title="" 
+                              data-bind="yuiButton: { type: 'push'}">
+                            <span class="first-child">
+                                <button data-bind="click: toggleSidebar"></button>
+                            </span>          
+                        </span>
 
                         <#if additionalMenuItem?seq_contains("showSelectMenuItem")>
                             <span class="selected-menu" data-bind="yuiButton: { type: 'menu', menu: '${toolbarId}-fileSelect-menu' }">
@@ -183,50 +200,58 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div id="${id}-search" class="form-container">
                         <form id="${id}-search-form" data-bind="submit: applyCriteria">
                             <!-- search criteria -->
                             <div id="${toolbarId}-filter" class="toolbar-menu" data-bind="if: journal() && _filter(), visible: currentMenu() == 'filter'">
-                                <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
+                                
+                                <!-- ko if: filterVisibility -->
+                                    <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
 
-                                    <span class="apply" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
-                                        <span class="first-child">
-                                            <button data-bind="click: applyCriteria"></button>
+                                        <span class="apply" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
+                                            <span class="first-child">
+                                                <button data-bind="click: applyCriteria"></button>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <span class="reset" title="${msg("button.reset-criteria")}" data-bind="yuiButton: { type: 'push' }">
-                                        <span class="first-child">
-                                            <button data-bind="click: clearCriteria"></button>
+                                        <span class="reset" title="${msg("button.reset-criteria")}" data-bind="yuiButton: { type: 'push' }">
+                                            <span class="first-child">
+                                                <button data-bind="click: clearCriteria"></button>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <span class="save" title="${msg("button.save-filter")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
-                                        <span class="first-child">
-                                            <button data-bind="click: saveFilter"></button>
+                                        <span class="save" title="${msg("button.save-filter")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
+                                            <span class="first-child">
+                                                <button data-bind="click: saveFilter"></button>
+                                            </span>
                                         </span>
-                                    </span>
 
-                                    <span class="add" data-bind="yuiButton: { type: 'menu', menu: '${id}-add-criterion-menu' }, css: { hidden: resolve('journal.type.searchableAttributes.length', 0) == 0 }">
-                                        <span class="first-child">
-                                            <button>${msg("button.add-criterion")}</button>
+                                        <span class="add" data-bind="yuiButton: { type: 'menu', menu: '${id}-add-criterion-menu' }, css: { hidden: resolve('journal.type.searchableAttributes.length', 0) == 0 }">
+                                            <span class="first-child">
+                                                <button>${msg("button.add-criterion")}</button>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <div id="${id}-add-criterion-menu" class="yui-overlay yuimenu button-menu">
-                                        <div class="bd">
-                                            <ul data-bind="foreach: resolve('journal.type.searchableAttributes', [])" class="first-of-type">
-                                                <li class="yuimenuitem">
-                                                    <span class="yuimenuitemlabel" data-bind="text: displayName, click: $root.addCriterion.bind($root,name(),'','')"></span>
-                                                </li>
-                                            </ul>
+                                        <div id="${id}-add-criterion-menu" class="yui-overlay yuimenu button-menu">
+                                            <div class="bd">
+                                                <ul data-bind="foreach: resolve('journal.type.searchableAttributes', [])" class="first-of-type">
+                                                    <li class="yuimenuitem">
+                                                        <span class="yuimenuitemlabel" data-bind="text: displayName, click: $root.addCriterion.bind($root,name(),'','')"></span>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div id="${id}-filter-criteria" class="filter-criteria">
-                                <!-- ko template: { name: 'visible-criterion', foreach: _filter().criteria() } -->
+
+                                
+                                    <!-- ko component: { name: "filter-criteria", params: {
+                                        journalType: resolve("journal.type", null),
+                                        filter: _filter,
+                                        id: "${id}"
+                                    }} --><!-- /ko -->                               
                                 <!-- /ko -->
-                                </div>
                             </div>
                         </form>
                     </div>
+                    
                     <!-- other settings -->
                     <div id="${toolbarId}-settings" class="toolbar-menu" data-bind="if: journal() && _settings(), visible: currentMenu() == 'settings'">
 
@@ -266,13 +291,16 @@
                         <!-- /ko -->
 
                     </div>
+
                     <!-- ko if: journal() != null -->
-                    <div id="${id}-content">
-                        <@journals.renderJournalTable />
-                        <#assign pagingTemplate = '{PreviousPageLink} {PageLinks} {NextPageLink} <span class=rows-per-page-label>' + (msg('label.rows-per-page')?html) + '</span> {RowsPerPageDropdown}' />
-                        <div id="${id}-paging" data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />">
+                        <div id="${id}-content" class="journal-content">
+                            <@journals.renderJournalTable />
+
+                            <#assign pagingTemplate = '{PreviousPageLink} {PageLinks} {NextPageLink} <span class=rows-per-page-label>' + (msg('label.rows-per-page')?html) + '</span> {RowsPerPageDropdown}' />
+
+                            <div id="${id}-paging" class="journal-content-pagination"
+                                 data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />"></div>
                         </div>
-                    </div>
                     <!-- /ko -->
 
                     <!-- ko if: journal() == null && journalsList() != null && journalsList().journals().length > 0 -->
@@ -357,8 +385,7 @@
             </div>
         </div>
 
-        <!-- ko gotoAddress: gotoAddress -->
-        <!-- /ko -->
+        <!-- ko gotoAddress: gotoAddress --><!-- /ko -->
 
         <iframe id="${id}-history-iframe" src="${url.context}/res/favicon.ico" style="position: absolute;top: 0;left: 0;width: 1px;height: 1px;visibility: hidden;"></iframe>
         <input id="${id}-history-field" type="hidden" data-bind="yuiHistory: {
@@ -372,7 +399,6 @@
             }
         } "/>
 
-        <!-- ko dependencies: dependencies --><!-- /ko -->
         <!-- ko dependencies: dependencies --><!-- /ko -->
     </@>
 </@>

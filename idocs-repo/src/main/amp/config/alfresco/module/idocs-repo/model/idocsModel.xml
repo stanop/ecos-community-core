@@ -311,6 +311,7 @@
                 <aspect>idocs:organizationInfo</aspect>
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
+                <aspect>idocs:hasLegalForm</aspect>
             </mandatory-aspects>
         </type>
         
@@ -425,6 +426,10 @@
                     <type>d:text</type>
                     <mandatory>true</mandatory>
                 </property>
+                <property name="idocs:currencyRate">
+                    <title>Курс валюты</title>
+                    <type>d:double</type>
+                </property>
             </properties>
         </type>
         
@@ -530,6 +535,97 @@
             </properties>
         </type>
 
+        <type name="idocs:legalForm">
+            <title>Организационно-правовая форма</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:legalFormName">
+                    <title>Наименование организационно-правовой формы контрагента</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:legalFormDescription">
+                    <title>Описание организационно-правовой формы контрагента</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+
+        <type name="idocs:abstractAttorney">
+            <title>Абстрактный тип поверенного</title>
+            <description>Данный тип наследуют все поверенные</description>
+            <parent>dl:dataListItem</parent>
+        </type>
+
+        <type name="idocs:personAttorney">
+            <title>Поверенное лицо</title>
+            <parent>idocs:abstractAttorney</parent>
+            <properties>
+                <property name="idocs:numberPass">
+                    <title>Номер паспорта</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:whoIssuedPass">
+                    <title>Кем выдан паспорт</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:passIssueDate">
+                    <title>Дата выдачи паспорта</title>
+                    <type>d:date</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:personFullName">
+                    <title>ФИО</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="idocs:abstractOrganizationAttorney">
+            <title>Абстрактная поверенная организация</title>
+            <parent>idocs:abstractAttorney</parent>
+            <properties>
+                <property name="idocs:organizationAddress">
+                    <title>Organization Address</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:organizationInn">
+                    <title>INN</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>idocs:hasLegalForm</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="idocs:countryISO3166">
+            <title>ISO 3166 Codes</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:countryISO3166Alpha2">
+                    <title>Alpha 2</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:countryISO3166Alpha3">
+                    <title>Alpha 3</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:countryISO3166Number">
+                    <title>Number</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+
     </types>
 
     <aspects>
@@ -592,6 +688,23 @@
                     <mandatory>false</mandatory>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="idocs:hasLegalForm">
+            <associations>
+                <association name="idocs:legalForm">
+                    <title>Legal Form</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:legalForm</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
         
         <!-- DEPRECATED -->
@@ -1064,6 +1177,22 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="idocs:hasAttorneys">
+            <associations>
+                <association name="idocs:docAttorneys">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:abstractAttorney</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
 
     </aspects>

@@ -80,7 +80,7 @@
 		</action>
 
         <action id="document-print-payment-signature-pdf" type="link" label="actions.print-signature.invoice" icon="document-print">
-            <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=230</param>
+            <param name="href">/share/proxy/alfresco/citeck/print/invoice-signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=230</param>
             <evaluator>evaluator.doclib.contracts.payment</evaluator>
         </action>
 
@@ -96,7 +96,7 @@
 		</action>
 
         <action id="document-print-closing-document-signature-pdf" type="link" label="actions.print-signature.closing-document" icon="document-print">
-            <param name="href">/share/proxy/alfresco/citeck/print/signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=175</param>
+            <param name="href">/share/proxy/alfresco/citeck/print/closing-document-signature?nodeRef={node.nodeRef}&amp;shiftUp=20&amp;shiftRight=175</param>
             <evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
         </action>
 
@@ -122,6 +122,7 @@
 			<doctype id="payments:payment">
 				<visible>
 					<association name="payments:basis" direction="target" />
+					<association name="contracts:closingDocumentPayment" direction="source" />
 				</visible>
 			</doctype>
 			<doctype id="contracts:closingDocument">

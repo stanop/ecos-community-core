@@ -1,6 +1,7 @@
 package ru.citeck.ecos.icase.activity;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
 
 import java.util.List;
@@ -40,6 +41,27 @@ public interface CaseActivityService {
     List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type);
 
     /**
+     * @param nodeRef node with activities in children
+     * @param assocType association type between node and activities in children
+     * @param type activity type
+     */
+    List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type);
+
+    /**
+     * Get all started activities of node
+     *@param nodeRef  node with activities in children
+     */
+    List<NodeRef> getStartedActivities(NodeRef nodeRef);
+
+    /**
+     * Get activity by title
+     *
+     * @param nodeRef node with activities in children
+     * @param title   title of activity
+     */
+    NodeRef getActivityByTitle(NodeRef nodeRef, String title);
+
+    /**
      * @param activityRef activity node reference
      * @return document which is owner of activity
      */
@@ -61,4 +83,10 @@ public interface CaseActivityService {
      *                 In other case activity position in result list of "getActivities" equals to this parameter.
      */
     void setIndex(NodeRef activityRef, int newIndex);
+
+    /**
+     * Check there is active activities in children
+     * @param activityRef activity node reference. Mandatory parameter.
+     */
+    boolean hasActiveChildren(NodeRef activityRef);
 }

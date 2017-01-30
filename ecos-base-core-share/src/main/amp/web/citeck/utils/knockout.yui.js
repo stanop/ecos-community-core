@@ -329,75 +329,6 @@ ko.bindingHandlers.yuiDataTable = {
     }
 };
 
-ko.bindingHandlers.templateSetter = (function() {
-    var updateTemplate = function(element, valueAccessor) {
-        var cfg = valueAccessor(),
-            url = cfg.url,
-            fieldName = cfg.field,
-            templateName = cfg.name;
-        if(typeof templateName != "function") {
-            return;
-        }
-        
-        var templateEl = valueAccessor.templateEl;
-        if(!templateEl) {
-            templateEl = document.createElement("SCRIPT");
-            templateEl.id = Alfresco.util.generateDomId();
-            templateEl.type = "html/template";
-            element.appendChild(templateEl);
-            valueAccessor.templateEl = templateEl;
-        }
-        
-        // once template is set, no change is needed
-        if(templateName() == templateEl.id) {
-            return;
-        }
-        
-        // if it is loading - no more requests permited
-        if(valueAccessor.loading) {
-            return;
-        }
-        
-        Alfresco.util.Ajax.request({
-            url: url,
-            execScripts: true,
-            successCallback: {
-                scope: this,
-                fn: function(response) {
-                    var html = response.serverResponse.responseText;
-                    
-                    // support value bindings
-                    if(fieldName) {
-                        html = _.reduce([
-                                'name="' + fieldName + '"', 
-                                "name='" + fieldName + "'", 
-                                'name="' + fieldName + '_added"', 
-                                "name='" + fieldName + "_added'"], 
-                            function(html, pattern) {
-                                return html.replace(new RegExp('(' + pattern + ')', 'gi'), '$1 data-bind="value: value"');
-                            }, html);
-                    }
-                    
-                    templateEl.innerHTML = html;
-                    templateName(templateEl.id);
-                    valueAccessor.loading = false;
-                }
-            },
-            failureCallback: {
-                scope: this,
-                fn: function(response) {
-                    valueAccessor.loading = false;
-                }
-            }
-        });
-        valueAccessor.loading = true;
-    };
-    return {
-        init: updateTemplate,
-        update: updateTemplate
-    };
-})();
-
 ko.bindingHandlers.yuiPanel = {
     init: function(element, valueAccessor) {
         var cfg = valueAccessor() || {},
@@ -461,60 +392,7 @@ ko.bindingHandlers.yuiHistory = (function() {
 })();
 ko.virtualElements.allowedBindings.yuiHistory = true;
 
-ko.bindingHandlers.gotoAddress = (function() {
-    var gotoAddress = function(element, valueAccessor) {
-        var value = koValue(valueAccessor());
-        if(value) window.location = Alfresco.util.siteURL(value);
-    };
-    return {
-        init: gotoAddress,
-        update: gotoAddress
-    };
-})();
 
-ko.virtualElements.allowedBindings.gotoAddress = true;
-
-ko.bindingHandlers.dependencies = (function() {
-    var updateDependencies = function(element, valueAccessor) {
-        if(!element.currentDeps) element.currentDeps = {};
-        var currentDeps = element.currentDeps,
-            oldDeps = _.keys(currentDeps),
-            newDeps = koValue(valueAccessor());
-        
-        // old dependencies;
-        _.each(_.difference(oldDeps, newDeps), function(dep) {
-            if(typeof currentDeps[dep].purge == "function") {
-                    currentDeps[dep].purge();
-            }
-            delete currentDeps[dep];
-        });
-        
-            
-        // new dependencies
-        _.each(_.difference(newDeps, oldDeps), function(dep) {
-            var config = {
-                data: dep,
-                onSuccess: function(o) {
-//                  valueAccessor().notifySubscribers(o.data, "loaded")
-                    currentDeps[o.data] = o;
-                }
-            };
-            if(dep.match(/\.js$/)) {
-                Get.script(Alfresco.constants.URL_RESCONTEXT + dep, config);
-            } else if(dep.match(/\.css$/)) {
-                Get.css(Alfresco.constants.URL_RESCONTEXT + dep, config);
-            } else {
-                logger.warn("Unknown dependency type: " + dep);
-            }
-        });
-    };
-    return {
-        init: updateDependencies,
-        update: updateDependencies
-    };
-})();
-
-ko.virtualElements.allowedBindings.dependencies = true;
 
 ko.extenders.logChange = function(target, option) {
     var level = typeof option == "string" ? option : option.level,

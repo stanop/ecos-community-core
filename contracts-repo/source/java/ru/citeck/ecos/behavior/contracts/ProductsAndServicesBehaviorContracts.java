@@ -23,11 +23,20 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ContractsModel;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
+import ru.citeck.ecos.template.GenerateContentActionExecuter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -44,10 +53,13 @@ import java.util.Objects;
 public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies.OnCreateNodePolicy,
         NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy {
 
+    private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
+
     private NodeService nodeService;
     private PolicyComponent policyComponent;
     private String namespace;
     private String type;
+    private ServiceRegistry serviceRegistry;
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
@@ -64,6 +76,11 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
     public void setType(String type) {
         this.type = type;
     }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
@@ -156,5 +173,7 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
                 }
             }
         }
+
     }
+
 }

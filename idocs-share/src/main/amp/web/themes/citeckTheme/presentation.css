@@ -1,17 +1,23 @@
+/*@import "/share/res/fonts/FontAwesome/css/font-awesome.css";*/
+
+/* mobile */
+@import "/share/res/themes/citeckTheme/custom-mobile.css";
+
+
  /* Site-wide Styles */
 
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: url(../../js/alfresco/css/opensans.woff) format('woff');
+  src: url(../../../../src/main/amp/web/js/alfresco/css/opensans.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Open Sans Bold';
   font-style: normal;
   font-weight: 600;
-  src: url(../../js/alfresco/css/opensansbold.woff) format('woff');
+  src: url(../../../../src/main/amp/web/js/alfresco/css/opensansbold.woff) format('woff');
 }
 
 
@@ -1421,12 +1427,17 @@ h3.alfresco-twister-closed
 
 /* Preview Tooltip */
 
-.yui-tt .bd
-{
-   background-color: #f4faff !important;
-   border: 1px solid #333 !important;
-   padding: 4px 4px 1px !important;
-   text-align: left;
+.yui-skin-citeckTheme .yui-tt .bd {
+  background-color: #2d3541;
+  color: white;
+  padding: 3px 5px;
+  text-align: justify;
+  border: none; 
+  border-radius: 3px;
+}
+
+.yui-skin-citeckTheme .yui-tt .yui-tt-shadow {
+  display: none;
 }
 
 /* Theme colors */
@@ -1660,6 +1671,31 @@ body.alfresco-guest
 .login .form-fields {
    padding: 1em 0 0 0 !important;
 }
+
+
+/* share locale changer */
+
+.login {
+  position: relative;
+}
+
+.login #sharelocaleform {
+  position: absolute;
+  bottom: 1.5em;
+  right: 1.5em;
+  padding: 0;
+  z-index: 100;
+}
+
+.login #sharelocaleform select {
+  font-size: 13px;
+  height: 24px;
+  border-radius: 3px;
+  background-color: white;
+}
+
+/* end share locale changer */
+
 
 .theme-company-logo {
    height: 34px;
@@ -2107,6 +2143,7 @@ table td.thumbnail img
 #alf-hd {
     border-bottom: 1px solid #ccc;
     background-color: white;
+    width: 100% !important;
 }
 
 #alf-full-width {
@@ -2212,9 +2249,9 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding-left: 5px;
 }
 
-#alf-hd .alf-header .right-widgets .horizontal-widget {
+/*#alf-hd .alf-header .right-widgets .horizontal-widget {
    float: right;
-}
+}*/
 
 #alf-hd .alf-header #HEADER_SEARCH_BOX {
    margin: 5px 10px;
@@ -2263,7 +2300,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding: 5px 10px 5px 30px !important;
    border-radius: 10px;
    position: initial;
-   width: 200px !important;
+   width: 135px !important;
 }
 
 #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text:hover {
@@ -2278,13 +2315,14 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 
 #alf-hd .path-nav {
-   padding: 0 40px 15px 40px;
-   margin: 0;
+  padding: 0 40px 15px 40px;
+  margin: 0;
 }
 
 #alf-hd .widgets > .left-and-right {
   height: 75px;
   padding: 0 30px 0 40px;
+  overflow: hidden;
 }
 
 @media screen and (max-width: 810px) {
@@ -2684,6 +2722,74 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 #bd #alfresco-journals {
    border-top: none;
+}
+
+.filter-criteria .criterion .criterion-predicate select,
+.filter-criteria-table .criterion .criterion-predicate select {
+  background-color: white;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button,
+.filter-criteria-table .criterion .criterion-value .criterion-value-field-input button {
+  padding: 2px 10px;
+  font-weight: 900;
+  background-color: white;
+  border: 2px solid #1c55da;
+  color: #1c55da;
+  cursor: pointer;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:hover,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:focus,
+.filter-criteria-table .criterion .criterion-value .criterion-value-field-input button:hover,
+.filter-criteria-table .criterion .criterion-value .criterion-value-field-input button:focus {
+  color: white;
+  background-color: #1c55da;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input button:disabled,
+.filter-criteria-table .criterion .criterion-value .criterion-value-field-input button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  background-color: white;
+  cursor: default;
+}
+
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.sidebar-toggle {
+  display: none;
+}
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button {
+  background-image: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+}
+
+#alfresco-journals .toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button:before {
+  font-family: FontAwesome;
+  font-size: 20px;
+  content: "\f0c9";
+}
+
+
+.yui-skin-citeckTheme .journal-container {
+    height: 385px;
+}
+
+.yui-skin-citeckTheme .journal-container .journal {
+    height: calc(100% - 31px);
+}
+
+.yui-skin-citeckTheme .journal-pagination {
+    border-top: none;
+}
+
+.yui-skin-citeckTheme .journal-picker-page-container .full .filter-page,
+.yui-skin-citeckTheme .journal-picker-page-container .create-page {
+  height: 385px;
+  overflow: auto;
 }
 
 /*  end journal */
@@ -3512,6 +3618,13 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    background-image: url(images/upload-active.png) !important;
 }
 
+ .alfresco-twister.alfresco-twister-open .alfresco-twister-actions a[id$="onPanelButtonAddRole"] {
+     background-image: url(images/create-document.png) !important;
+ }
+
+ .alfresco-twister.alfresco-twister-open .alfresco-twister-actions a[id$="onPanelButtonAddRole"]:hover {
+     background-image: url(images/create-document-active.png) !important;
+ }
 
 
 .alfresco-header-CurrentUserStatus .status {
@@ -4288,4 +4401,78 @@ div#HEADER_USER_STATUS {
   #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
     position: static;
   }
+}
+
+
+/* dynamic-tree */
+.yui-skin-citeckTheme .dynamic-tree-picker .dynamic-tree-list .item-buttons {
+  right: -25px;
+}
+
+
+/* tab-template */
+
+.yui-skin-citeckTheme .static .form-template-tabs .form-fields {
+  padding: 0;
+}
+
+.yui-skin-citeckTheme .form-template-tabs .form-buttons {
+  padding-top: 15px !important;
+}
+
+.yui-skin-citeckTheme .static .form-template-tabs .form-fields > .template-tabs {
+    border: none;
+    border-bottom: 1px solid #ccc;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
+  padding: 7px 30px 0 30px;
+  background-color: #2d3541;
+  color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title span.scroll-tabs {
+    height: 34px;
+    width: 30px;
+    padding: 14px 0 0 0;
+    border: none;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title {
+  border: none;
+  padding: 5px 10px;
+  border: 1px solid #f0f0f0;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title.selected {
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: default;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title li.tab-title:not(.selected):hover {
+  font-weight: 900;
+  color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title {
+  padding-bottom: 0 !important;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title li.tab-title {
+  border-color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-title li.tab-title.selected {
+  background-color: white;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-tabs .tabs-body {
+  background-color: white;
+}
+
+.yui-skin-citeckTheme .form-template-tabs .template-tabs .tabs-body {
+    padding-bottom: 5px;
 }
