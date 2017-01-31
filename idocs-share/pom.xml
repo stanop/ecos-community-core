@@ -80,14 +80,16 @@
         </dependency>
 -->
         <dependency>
-          <groupId>org.alfresco.surf</groupId>
-          <artifactId>spring-surf</artifactId>
-          <version>${dependency.surf.version}</version>
+            <groupId>org.alfresco.surf</groupId>
+            <artifactId>spring-surf</artifactId>
+            <version>${dependency.surf.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>org.alfresco.surf</groupId>
-          <artifactId>spring-surf-api</artifactId>
-          <version>${dependency.surf.version}</version>
+            <groupId>org.alfresco.surf</groupId>
+            <artifactId>spring-surf-api</artifactId>
+            <version>${dependency.surf.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -109,6 +111,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-share</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

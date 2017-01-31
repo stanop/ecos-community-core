@@ -90,3 +90,87 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+
+/* ---------------- UI ---------------- */
+
+.wait-indicator-envelope {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 10005;
+  top: 0;
+  left: 0;
+}
+
+.wait-indicator-envelope {
+  background-color: rgba(0,0,0,0.3);
+}
+
+.wait-indicator-container {
+  position: absolute;
+  text-align: center;
+  z-index: 10010;
+}
+
+.wait-indicator-container .wait-indicator-indicator {
+  max-width: 250px;
+  max-height: 250px;
+  margin: 0 auto;
+  border: 10px solid #2d3541;
+  border-radius: 50%;
+
+  animation: cssload-spin 1250ms infinite linear;
+  -o-animation: cssload-spin 1250ms infinite linear;
+  -ms-animation: cssload-spin 1250ms infinite linear;
+  -webkit-animation: cssload-spin 1250ms infinite linear;
+  -moz-animation: cssload-spin 1250ms infinite linear;
+}
+
+.wait-indicator-container .wait-indicator-indicator.three-spinner {
+  border-left-color: transparent !important;
+}
+
+.wait-indicator-container .wait-indicator-indicator.two-spinner {
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+.wait-indicator-container .wait-indicator-indicator.one-spinner {
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-color: transparent !important;
+}
+
+.wait-indicator-container .wait-indicator-message {
+  max-width: 80%;
+  position: absolute;
+}
+
+@keyframes cssload-spin {
+  100%{ transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-o-keyframes cssload-spin {
+  100%{ -o-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-ms-keyframes cssload-spin {
+  100%{ -ms-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-webkit-keyframes cssload-spin {
+  100%{ -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-moz-keyframes cssload-spin {
+  100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -124,11 +124,13 @@
 			if (!pattern) {
 				pattern = 'dd.MM.yyyy';
 			}
+
 			return function(elCell, oRecord, oColumn, sData) {
 				if (!sData) {
 					elCell.innerHTML = '';
 					return;
 				}
+
 				var date = Alfresco.util.fromISO8601(sData);
 				elCell.innerHTML = date.toString(pattern);
 			};
@@ -1521,9 +1523,21 @@
 				}
 
 				if (sData instanceof Object) {
-					if (_.has(sData, "nodeRef")) { request(sData.nodeRef) } 
-					else { elCell.innerHTML = _.values(sData).join(", ") }
-				} 
+					var renderRequest = function(object) {
+						if (_.has(object, "nodeRef")) { 
+							request(object.nodeRef) 
+				} else {
+							if (elCell.innerHTML) elCell.innerHTML += "<br>";
+							elCell.innerHTML = _.values(object).join(", ") 
+						}
+					};
+
+					if (sData instanceof Array) {
+						for (var d = 0; d < sData.length; d++) {
+							if (sData[d]) renderRequest(sData[d]);
+						}
+					} else { renderRequest(sData); }
+				}
 
 			};
 		}

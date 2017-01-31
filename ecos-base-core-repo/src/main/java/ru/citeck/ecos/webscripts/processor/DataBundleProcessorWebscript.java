@@ -18,6 +18,18 @@
  */
 package ru.citeck.ecos.webscripts.processor;
 
+import org.alfresco.repo.content.MimetypeMap;
+import org.alfresco.service.cmr.repository.MimetypeService;
+import org.apache.commons.io.IOUtils;
+import org.springframework.extensions.surf.util.Content;
+import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.json.JSONUtils;
+import ru.citeck.ecos.processor.*;
+import ru.citeck.ecos.server.utils.Utils;
+import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,22 +37,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.alfresco.repo.content.MimetypeMap;
-import org.springframework.extensions.surf.util.Content;
-import org.springframework.extensions.webscripts.AbstractWebScript;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
-
-import org.springframework.extensions.webscripts.json.JSONUtils;
-import ru.citeck.ecos.processor.CompositeDataBundleProcessor;
-import ru.citeck.ecos.processor.DataBundle;
-import ru.citeck.ecos.processor.DataBundleProcessor;
-import ru.citeck.ecos.processor.ExpressionEvaluator;
-import ru.citeck.ecos.processor.ProcessorConstants;
-import ru.citeck.ecos.server.utils.Utils;
-import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
-import org.alfresco.service.cmr.repository.MimetypeService;
 
 /**
  * Web Script, that executes specified data bundle processors and returns the result.
@@ -142,12 +138,8 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 			}
 			
 		} finally {
-			if(inputStream != null) {
-				inputStream.close();
-			}
-			if(outputStream != null) {
-				outputStream.close();
-			}
+			IOUtils.closeQuietly(inputStream);
+			IOUtils.closeQuietly(outputStream);
 		}
 		
 	}

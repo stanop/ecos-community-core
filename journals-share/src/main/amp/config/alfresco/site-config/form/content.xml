@@ -11,6 +11,7 @@
 					<show id="cm:modifier" />
 					<show id="cm:accessed" />
 				</field-visibility>
+				<create-form template="/ru/citeck/components/form/calendar/calendar.ftl" />
 			</form>
 			<form id="search">
 				<field-visibility>

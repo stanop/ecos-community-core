@@ -6,7 +6,7 @@
     <name>journals-repo</name>
     <description>journals-repo</description>
     <packaging>amp</packaging>
-    <version>2.0.0.0-SNAPSHOT</version>
+    <version>2.0.0.1-SNAPSHOT</version>
 
     <parent>
         <groupId>ru.citeck.ecos</groupId>
@@ -70,6 +70,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

@@ -19,6 +19,8 @@
 <@markup id="js">
     <#include "/org/alfresco/components/form/form.js.ftl"/>
 
+    <@script type="text/javascript" src="${url.context}/res/lib/underscore.js" group="journals-list"/>
+
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="journals-list" />
 
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals-list" />
@@ -110,11 +112,11 @@
             <div id="yui-main">
                 <div class="yui-b" id="alf-content">
                     <div id="${toolbarId}" class="toolbar flat-button icon-buttons" data-bind="css: { hidden: journal() == null }">
-                        <span id="${id}-sidebar-toggle" class="sidebar-toggle" title="" 
+                        <span id="${id}-sidebar-toggle" class="sidebar-toggle" title=""
                               data-bind="yuiButton: { type: 'push'}">
                             <span class="first-child">
                                 <button data-bind="click: toggleSidebar"></button>
-                            </span>          
+                            </span>
                         </span>
 
                         <#if additionalMenuItem?seq_contains("showSelectMenuItem")>

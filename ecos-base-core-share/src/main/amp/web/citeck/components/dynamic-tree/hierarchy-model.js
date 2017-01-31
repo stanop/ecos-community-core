@@ -215,11 +215,11 @@
 				for(var i = 0; i < templates.length; i++) {
 					if (templates[i]) {
 						var template = '' + templates[i];
-							pos = template.indexOf('.');
+						pos = template.indexOf('.');
 						if (pos > 0 && pos < template.length - 1) {
 							var name = template.substring(0, pos),
 								method = template.substring(pos + 1);
-								data = extractTemplateData(template, name, method);
+							data = extractTemplateData(template, name, method);
                             if (data.template !== 'undefined' || data.template !== null) {
                                 result[data.template] = {key: data.key, value: data.value};
                             } else {

@@ -18,7 +18,11 @@
  */
 package ru.citeck.ecos.processor.report;
 
+import org.alfresco.service.namespace.QName;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.ProcessorConstants;
@@ -30,10 +34,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.alfresco.service.namespace.QName;
-import org.apache.log4j.Logger;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 /**
  * Create Excel Report from DataBundle
@@ -67,16 +67,19 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
         
         ByteArrayOutputStream os = getExcelReportStream(getTemplate(), model);
         InputStream excelIS = null;
-        if (os != null)
-        	excelIS = new ByteArrayInputStream(os.toByteArray());
+        if (os != null) {
+			excelIS = new ByteArrayInputStream(os.toByteArray());
+			IOUtils.closeQuietly(os);
+		}
         
         return new DataBundle(excelIS, newModel);
     }
     
     @SuppressWarnings("unchecked")
 	private ByteArrayOutputStream getExcelReportStream(String template, Map<String, Object> model) {
+		InputStream is = null;
 	    try {
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + template);
+			is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + template);
 			Workbook wb = WorkbookFactory.create(is);
 			
 			Sheet sheet = wb.getSheetAt(0);
@@ -105,9 +108,9 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 			List<List<Map<String, Object>>> reportData = (List<List<Map<String, Object>>>) model.get(REPORT_DATA);
 			
 			createColumnTitlesRow(wb, sheet, reportColumns);
-			
+
 			createSheetData(wb, sheet, reportColumns, reportData);
-			
+
 			// remove rows if no columns defined or no data presents
 			if ((reportColumns == null) || (reportColumns.size() == 0)) {
 				removeRow(sheet, 0);
@@ -118,21 +121,23 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			wb.write(baos);
-			is.close();
-			
 			return baos;
 		} catch (Exception e) {
 			Logger.getLogger(ReportOutputExcel.class).error(e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
-	    
+		
 		return null;
 	}
     
     private void createColumnTitlesRow(Workbook wb, Sheet sheet, List<Map<String, String>> reportColumns) {
-    	Row row = sheet.getRow(0);
-    	Cell formatCell = row.getCell(0); 
-    	
     	if ((reportColumns != null) && (reportColumns.size() > 0)) {
+			Row row = sheet.getRow(0);
+			Cell formatCell = row.getCell(0);
+			CellStyle titleCellStyle = wb.createCellStyle();
+			titleCellStyle.cloneStyleFrom(formatCell.getCellStyle());
+
 	    	int i = 0;
 	    	for (Map<String, String> col : reportColumns) {
 	    		if (col != null) {
@@ -145,7 +150,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    				formatCell.setCellValue(title);
 	    			else {
 	    				Cell cell = row.createCell(i);
-	    				copyCellFormats(wb, sheet, formatCell, cell);
+						cell.setCellStyle(titleCellStyle);
 	    				cell.setCellValue(title);
 	    			}
 	    			
@@ -154,13 +159,19 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    	}
     	}
     }
-    
+
     private void createSheetData(Workbook wb, Sheet sheet, List<Map<String, String>> reportColumns,
 								 List<List<Map<String, Object>>> reportData) {
     	if ((reportColumns != null) && (reportColumns.size() > 0) && (reportData != null) && (reportData.size() > 0)) {
 			Row sourceRow = sheet.getRow(1);
-			Cell sourceCell = sourceRow.getCell(0);
-			
+			Cell formatCell = sourceRow.getCell(0);
+			CellStyle valueCellStyle = wb.createCellStyle();
+			valueCellStyle.cloneStyleFrom(formatCell.getCellStyle());
+			CellStyle doubleCellStyle = wb.createCellStyle();
+			DataFormat dataFormat = wb.createDataFormat();
+			doubleCellStyle.cloneStyleFrom(formatCell.getCellStyle());
+			doubleCellStyle.setDataFormat(dataFormat.getFormat("0.0"));
+
 			int i = 0;
 			for (List<Map<String, Object>> rowData : reportData) {
 	    		if (rowData != null) {
@@ -169,28 +180,32 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    			int j = 0;
 	    			for (Map<String, Object> cellData : rowData) {
 	    				Cell newCell = newRow.createCell(j);
-	    				copyCellFormats(wb, sheet, sourceCell, newCell);
-	    				
+						newCell.setCellStyle(valueCellStyle);
+
 	    				String dataType = (String) cellData.get(ReportProducer.DATA_TYPE_ATTR);
-						CellStyle cellStyle = newCell.getCellStyle();
-	    				if ("Integer".equals(dataType)) {
-	    					Integer val = (Integer) cellData.get(ReportProducer.DATA_VALUE_ATTR);
-	    					if (val != null) {
-		    					newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
-	    						newCell.setCellValue(Double.valueOf(val));
-	    					}
-	    				} else if ("Double".equals(dataType)) {
-							Double val = Double.parseDouble((String) cellData.get(ReportProducer.DATA_VALUE_ATTR)) ;
-							DataFormat dataFormat = wb.createDataFormat();
-							cellStyle.setDataFormat(dataFormat.getFormat("0.0"));
-							newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							newCell.setCellValue(val);
-						} else if ("String".equals(dataType)) {
-	    					String val = (String) cellData.get(ReportProducer.DATA_VALUE_ATTR);
-	    					if (val != null)
-	    						appendStringValue(newCell, val);
-	    				}
-	    				
+						String valStr = String.valueOf(cellData.get(ReportProducer.DATA_VALUE_ATTR));
+						if (valStr != null && !valStr.isEmpty()) {
+							if ("Integer".equals(dataType)) {
+								try {
+									Integer val = Integer.parseInt(valStr);
+									newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+									newCell.setCellValue(Double.valueOf(val));
+								} catch (NumberFormatException e) {
+									appendStringValue(newCell, valStr);
+								}
+							} else if ("Double".equals(dataType)) {
+								try {
+									Double val = Double.parseDouble(valStr);
+									newCell.setCellStyle(doubleCellStyle);
+									newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+									newCell.setCellValue(val);
+								} catch (NumberFormatException e) {
+									appendStringValue(newCell, valStr);
+								}
+							} else if ("String".equals(dataType)) {
+								appendStringValue(newCell, valStr);
+							}
+						}
 	    				j++;
 	    			}
 	    			
@@ -241,13 +256,13 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     private void appendStringValue(Cell cell, String value) {
     	if (value != null) {
 	    	String currentValue = cell.getStringCellValue();
-	    	
+
+			String newValue;
 	    	if ((currentValue != null) && (!currentValue.isEmpty()))
-	    		currentValue += "\n";
+				newValue = currentValue + "\n" + value;
 	    	else
-	    		currentValue = "";
+	    		newValue = value;
 	    	
-	    	String newValue = currentValue + value;
 	    	cell.setCellValue(newValue);
     	}
     }

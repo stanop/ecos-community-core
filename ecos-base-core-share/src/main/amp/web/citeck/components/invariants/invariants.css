@@ -56,6 +56,14 @@
 }
 
 
+  background-color: rgba(0,0,0,0.3);
+}
+
+.static .invariants-form.loading .loading-overlay {
+  background-color: white;
+}
+
+
 .invariants-form .loading-container {
   display: none;
   position: absolute;
@@ -330,7 +338,8 @@
   display: block;
 }
 
-.invariants-form .template-wide .template-block {
+.invariants-form .template-wide .template-block,
+.invariants-form .template-wide .template-block-checkbox {
   min-width: 200px;
   width: 250px;
   display: inline-block;
@@ -339,6 +348,79 @@
   margin-bottom: 10px;
   box-sizing: border-box;
   vertical-align: top;
+}
+
+.invariants-form .template-wide .template-block.with-help {
+  padding-right: 15px;
+}
+
+.invariants-form .template-wide .template-block-checkbox .block-region {
+  display: inline-block;
+}
+
+.invariants-form .template-wide .template-block-checkbox .template-checkbox input {
+  position: relative;
+  top: 2px;
+}
+
+/* regions */
+.invariants-form .template-wide .template-block .block-region .form-region {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region-select .form-region  {
+  margin-right: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region .form-region.template-none, 
+.invariants-form .template-wide .template-block .block-region .form-region.template-default {
+  display: none;
+}
+
+.invariants-form .template-wide .template-block .block-region-input .form-region {
+  display: block;
+}
+
+
+/* specified regions */
+.invariants-form .template-wide .template-block.with-help .block-region-label,
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
+  width: calc(100% - 10px);
+}
+
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-mandatory {
+  float: right;
+  width: 10px;
+  text-align: right;
+}
+
+.invariants-form .template-wide .template-block .template-help {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+.invariants-form .template-wide .template-block .template-message span.validation-message {
+  margin-bottom: 10px;
+  margin-top: -3px;
+}
+
+.invariants-form .template-wide .template-block.invalid .template-message span.validation-message {
+  color: red;
+}
+
+.invariants-form .template-wide .template-block .template-view {
+  position: relative;
+}
+
+
+/* TEMPLATE TABLE */
+
+.invariants-form .template-table:after {
+  content: "";
+  display: block;
+  clear: both;
 }
 
 .invariants-form .template-wide .template-block.with-help {
@@ -493,7 +575,8 @@
   padding-bottom: 0;
 }
 
-.invariants-form .template-table .template-rowset .title {
+.invariants-form .template-table .template-rowset .title,
+.invariants-form .template-wide .template-blockset .title {
   font-size: 18px;
   color: #E97527;
   margin-bottom: 10px;
@@ -1717,6 +1800,104 @@
 .invariants-form .template-view span.value-item .value-item-actions a.delete-value-item:hover,
 .invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
   background-image: url(images/remove-active.png);
+}
+
+
+@media screen and (max-width: 1000px) {
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-view,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-select,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-date,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-datetime,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-text,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-textarea,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-auto-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-autocomplete,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-checkbox,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-free-content {
+    width: 100%;
+    float: none;
+    max-width: 100%;
+  }
+
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label {
+    margin-bottom: 10px;
+  }
+}
+
+
+/* TEMPLATE TABS */
+.static .invariants-form .template-tabs .template-table {
+    margin-left: 0;
+    max-width: 100%;
+}
+
+.invariants-form .template-tabs {
+  border: 1px solid #ccc;
+}
+
+.invariants-form .template-tabs .tabs-body {
+  padding: 15px 0;
+}
+
+.invariants-form .template-tabs .tabs-title {
+  position: relative;
+  overflow: hidden;
+  height: 27px;
+  padding: 0px 30px;
+}
+
+.invariants-form .template-tabs .tabs-title ul {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  height: 27px;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title:not(.selected) {
+  cursor: pointer;  
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false],
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false]:hover {
+  cursor: default;
+  opacity: 0.5;
+  font-weight: normal !important;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs {
+  position: absolute;
+  height: 27px;
+  width: 30px;
+  padding: 7px 0 0px 0;
+  top: 0px;
+  border: 1px solid #ccc;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-left {
+  left: 0;
+  cursor: w-resize;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-right {
+  right: 0;
+  cursor: e-resize;
+}
+
+
+/* template-tabs in VIEW mode */
+
+.invariants-form.view-form .template-tabs .tabs-body {
+  padding: 10px;
 }
 
 
