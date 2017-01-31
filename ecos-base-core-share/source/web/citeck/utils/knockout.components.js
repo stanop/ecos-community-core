@@ -431,6 +431,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             </div>'
     });
 
+    // TODO:
+    // - formatter for cell
+
     ko.components.register('journal', {
         viewModel: function(params) {
             if (!params.sourceElements && !params.journalType) {
@@ -510,9 +513,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.getTitle = function(data) {
                 return ko.computed(function() {
-                    var value = data.value(), title;
-                    if (isInvariantsObject(value)) title = value.properties["cm:title"];
-                    return title || (data.valueTitle() || data.textValue())
+                    var value = data.value(),
+                        invariantNodeName = function(object) {
+                            if (isInvariantsObject(object) && object.properties)
+                                return object.properties["cm:title"] || object.properties["cm:name"];
+                            return object;
+                        };
+
+                    if (data.multiple()) {
+                        var assemblyTitle = [];
+                        for (var v in value) {
+                            var tempTitle = invariantNodeName(value[v]);
+                            if (tempTitle) assemblyTitle.push(tempTitle);
+                        }
+                        if (assemblyTitle.length > 0) return assemblyTitle.join(", ");
+                    }
+                   
+                    return data.valueTitle() || data.textValue();
                 });
             };
         },
