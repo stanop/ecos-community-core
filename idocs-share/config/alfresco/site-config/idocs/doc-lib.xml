@@ -423,7 +423,7 @@
 			<!-- disable start-workflow -->
 			<!-- TODO configure hidden-workflows instead -->
 			<action notAspect="cm:auditable" id="onActionAssignWorkflow" />
-			<action notAspect="wfm:attributes" id="onActionDelete" />
+			<action notAspect="wfm:attributes" id="onActionDelete" isDoclib="false" />
 		</multi-select>
 		
 		<!-- global associations UI configuration -->

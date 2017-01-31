@@ -58,7 +58,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "journals")
 public class Journals {
 
-    protected Journals.Imports imports;
+    protected Imports imports;
     @XmlElement(required = true)
     protected List<Journal> journal;
 
@@ -67,10 +67,10 @@ public class Journals {
      * 
      * @return
      *     possible object is
-     *     {@link Journals.Imports }
+     *     {@link Imports }
      *     
      */
-    public Journals.Imports getImports() {
+    public Imports getImports() {
         return imports;
     }
 
@@ -79,10 +79,10 @@ public class Journals {
      * 
      * @param value
      *     allowed object is
-     *     {@link Journals.Imports }
+     *     {@link Imports }
      *     
      */
-    public void setImports(Journals.Imports value) {
+    public void setImports(Imports value) {
         this.imports = value;
     }
 
@@ -151,7 +151,7 @@ public class Journals {
     public static class Imports {
 
         @XmlElement(name = "import", required = true)
-        protected List<Journals.Imports.Import> _import;
+        protected List<Import> _import;
 
         /**
          * Gets the value of the import property.
@@ -171,13 +171,13 @@ public class Journals {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link Journals.Imports.Import }
+         * {@link Import }
          * 
          * 
          */
-        public List<Journals.Imports.Import> getImport() {
+        public List<Import> getImport() {
             if (_import == null) {
-                _import = new ArrayList<Journals.Imports.Import>();
+                _import = new ArrayList<Import>();
             }
             return this._import;
         }
