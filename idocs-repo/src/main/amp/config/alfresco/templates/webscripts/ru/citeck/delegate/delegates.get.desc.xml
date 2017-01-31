@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Delegates for specified role or user</shortname>
-	<description>Delegate Service: get delegates for specified role or user</description>
-	<url>/api/delegate/{fullName}/delegates?available={true|false}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

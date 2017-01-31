@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Remove delegates for specified role or user</shortname>
-	<description>Delegate Service: remove delegates for specified role or user</description>
-	<url>/api/delegate/{fullName}/delegates?users={user1,user2,...}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-</webscript>

@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Role members and delegates</shortname>
-	<description>Delegate Service: get members and delegates for specified role</description>
-	<url>/api/delegate/{roleName}/members?status={all,own,manage,delegate}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>
