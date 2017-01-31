@@ -262,9 +262,23 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 
 		var editStatus = {}, ref;
 
+		var defaultValueMapping = {
+			"boolean": false,
+			"text": "",
+			"int": 0,
+			"double": 0,
+			"long": 0,
+			"float": 0,
+			"association": null,
+			"mltext": ""
+		};
+
 		var id = Alfresco.util.generateDomId();
 		var attribute = action.attribute();
+		var datatype = attribute.datatype().name();
+		var editValue = ko.observable(defaultValueMapping[datatype]);
 		var journalsPage = this;
+
 		var confirmPopup = function(text, onYes, onNo) {
 			Alfresco.util.PopupManager.displayPrompt({
 				title: Alfresco.util.message("message.confirm.title"),
@@ -390,10 +404,12 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 				return result;
 			};
 
-			if (action.settings().confirmChange == "true") {
-				filterByConfirmChange(records, 0, [], processRecords);
-			} else {
-				processRecords(records);
+			if (datatype != "association" || editValue() != null) {
+				if (action.settings().confirmChange == "true") {
+					filterByConfirmChange(records, 0, [], processRecords);
+				} else {
+					processRecords(records);
+				}
 			}
 		};
 
@@ -427,20 +443,6 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 					'<input id="' + id + '-form-cancel" type="button" value="'+msg("button.cancel")+'" />' +
 				'</div>' +
 			'</div>';
-
-		var defaultValueMapping = {
-			"boolean": false,
-			"text": "",
-			"int": 0,
-			"double": 0,
-			"long": 0,
-			"float": 0,
-			"association": null,
-			"mltext": ""
-		};
-
-		var datatype = action.attribute().datatype().name();
-		var editValue = ko.observable(defaultValueMapping[datatype]);
 
 		panel.setBody(body);
 		panel.render(document.body);
