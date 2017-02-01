@@ -1201,6 +1201,14 @@
             </associations>
         </aspect>
 
+        <aspect name="idocs:hasArchiveDate">
+            <properties>
+                <property name="idocs:archiveDate">
+                    <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+
     </aspects>
 
 </model>
