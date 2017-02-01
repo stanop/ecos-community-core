@@ -40,7 +40,7 @@
     </bean>
 
     <bean id="ecos-base-core.import-scripts" abstract="true" class="ru.citeck.ecos.repo.module.ScriptImporterModuleComponent" parent="module.baseComponent">
-        <property name="moduleId" value="ecos-esign-repo" />
+        <property name="moduleId" value="ecos-base-core-repo" />
         <property name="scriptService" ref="ScriptService"/>
         <property name="scriptEngine" value="javascript"/>
     </bean>
