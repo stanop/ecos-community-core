@@ -343,7 +343,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
