@@ -330,6 +330,7 @@ ko.components.register("datetime", {
 
                         self.value(selectedDate);
                     }
+
                     calendarDialog.hide();
                 });
 
@@ -340,10 +341,12 @@ ko.components.register("datetime", {
         };
 
         this.textValue = ko.pureComputed({
-            read: function() { return self.value() ? self.value().toLocaleString() : null },
+            read: function() {
+                return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
+            },
             write: function(newValue) {
-                if (newValue) {
-                    if (/\d{2}.\d{2}.\d{2,4}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
+                if (newValue) {                   
+                    if (/\d{2,4}-\d{2}-\d{2}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
                         var timeArray = newValue.split(/, | /);
                         timeArray[0] = timeArray[0].split(".").reverse().join("/");
 
