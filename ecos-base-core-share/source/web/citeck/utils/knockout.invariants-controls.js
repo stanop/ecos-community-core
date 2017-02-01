@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -37,30 +37,57 @@ var Event = YAHOO.util.Event,
 // HELP
 // ---------------
 
+YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
+    var el = this,
+        procIds = [ "showProcId", "hideProcId" ];
+
+    if (obj._tempTitle) {
+        el.title = obj._tempTitle;
+        obj._tempTitle = null;
+    }
+
+    for (var p = 0; p < procIds.length; procIds++) {
+        if (obj[procIds[p]]) {
+            clearTimeout(obj[procIds[p]]);
+            obj[procIds[p]] = null; 
+        }
+    }
+
+    obj.fireEvent("contextMouseOut", el, e);
+
+    if (!obj.cfg.getProperty("forceVisible")) {
+        obj.hideProcId = setTimeout(function () { obj.hide(); }, obj.cfg.getProperty("hidedelay"));
+    }
+};
+
 ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
+        var self = this;
+
+        if (!this.tooltip) {
+            this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                showDelay: 250,
+                hideDelay: 250,
+                xyoffset: [5, 0],
+                autodismissdelay: 10000,
+                context: [ this.id ]
+            });
+
+            this.tooltip.cfg.addProperty("forceVisible", { value: false });
+            this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+        }
 
         this.text.subscribe(function(newValue) {
-            if (newValue) {
-                if (!this.tooltip) {
-                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
-                        showDelay: 500,
-                        hideDelay: 250,
-                        xyoffset: [0, 0],
-                        autodismissdelay: 10000
-                    });
-
-                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
-                }
-            
-                this.tooltip.cfg.setProperty("text", newValue);
-                this.tooltip.cfg.setProperty("context", this.id);
-            }
+            this.tooltip.cfg.setProperty("text", newValue);
         }, this);
+
+        this.onclick = function(data, event) {
+            data.tooltip.cfg.setProperty("forceVisible",  !data.tooltip.cfg.getProperty("forceVisible"));
+        };
     },
     template:
-       '<span data-bind="attr: { id: id }, if: text">?</span>'
+       '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
 });
 
 // ---------------
