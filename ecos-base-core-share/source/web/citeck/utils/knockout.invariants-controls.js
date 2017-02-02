@@ -60,10 +60,12 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
     }
 };
 
+// TODO:
+// - init tooltip only if text not empty
+
 ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
-        var self = this;
 
         if (!this.tooltip) {
             this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
@@ -354,7 +356,6 @@ ko.components.register("datetime", {
 
                         selectedDate.setHours(nowDate.getHours());
                         selectedDate.setMinutes(nowDate.getMinutes());
-
                         self.value(selectedDate);
                     }
 
@@ -377,7 +378,7 @@ ko.components.register("datetime", {
                         var timeArray = newValue.split(/, | /);
                         timeArray[0] = timeArray[0].split(".").reverse().join("/");
 
-                        var newDate = new Date(timeArray.join(", "));
+                        var newDate = new Date(timeArray.join(" "));
                         if (newDate != "Invalid Date") {
                             self.value(newDate);
                             return;
@@ -418,7 +419,7 @@ ko.components.register("datetime", {
             <input type="datetime-local" data-bind="value: dateValue, disable: disabled" />\
         <!-- /ko -->\
         <!-- ko ifnot: Citeck.HTML5.supportInput("datetime-local") -->\
-            <input type="text" data-bind="value: textValue, disable: disabled" />\
+            <input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
             <!-- ko if: disabled -->\
                 <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
             <!-- /ko -->\

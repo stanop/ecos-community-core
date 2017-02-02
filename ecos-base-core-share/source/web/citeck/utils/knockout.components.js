@@ -214,11 +214,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     });
                 } else if (this.datatype == "datetime") {
                     this.fakeViewModel.value = ko.computed({
-                        read: function() { 
+                        read: function() {
                             return self.value() ? new Date(self.value()) : null; 
                         },
-                        write: function(newValue) { 
-                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-dd, HH:mm") : newValue); 
+                        write: function(newValue) {
+                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-dd HH:mm") : null);
                         }
                     })
                 }
