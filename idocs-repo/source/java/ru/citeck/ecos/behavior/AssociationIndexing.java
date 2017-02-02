@@ -165,6 +165,14 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
         if(nodeRefs.isEmpty()) {
             nodeService.removeProperty(node, propQName);
         } else {
+            if (logger.isDebugEnabled()) {
+                StringBuilder debugMessage = new StringBuilder();
+                debugMessage.append("setIndexProperty...");
+                debugMessage.append("\nnode: ").append(node);
+                debugMessage.append("\nproperty QName: ").append(propQName);
+                debugMessage.append("\nnode refs list: ").append(nodeRefs);
+                logger.debug(debugMessage);
+            }
             nodeService.setProperty(node, propQName, nodeRefs);
         }
     }
