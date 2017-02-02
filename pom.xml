@@ -42,8 +42,9 @@
         <ecos.build.classifier>common</ecos.build.classifier>
 
         <st-override.version>3.1.a.0-SNAPSHOT</st-override.version>
-        <ecos-base-core.version>2.0.0.0-SNAPSHOT</ecos-base-core.version>
-        <ecos-journals.version>2.0.0.0-SNAPSHOT</ecos-journals.version>
+        <ecos-citeckTheme.version>2.0.0.0-SNAPSHOT</ecos-citeckTheme.version>
+        <ecos-base-core.version>2.0.0.1-SNAPSHOT</ecos-base-core.version>
+        <ecos-journals.version>2.0.0.1-SNAPSHOT</ecos-journals.version>
         <ecos-forms.version>2.0.0.0-SNAPSHOT</ecos-forms.version>
         <idocs.version>3.1.a.0-SNAPSHOT</idocs.version>
         <timestamp>${maven.build.timestamp}</timestamp>
