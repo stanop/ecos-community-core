@@ -16,6 +16,7 @@ import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.CasePerformModel;
+import ru.citeck.ecos.role.CaseRoleService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -34,11 +35,12 @@ public class CasePerformUtils {
 
     public static final String OPTIONAL_PERFORMERS = "optionalPerformers";
     public static final String EXCLUDED_PERFORMERS = "excludedPerformers";
-    public static final String TASKS_PERFORMERS = "tasksPerformers";
     public static final String MANDATORY_TASKS = "mandatoryTasks";
     public static final String ABORT_PERFORMING = "abortPerforming";
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
+
+    public static final String PERFORMER_ROLES_POOL = "performerRolesPool";
 
     private static final DummyComparator KEYS_COMPARATOR = new DummyComparator();
 
@@ -50,6 +52,7 @@ public class CasePerformUtils {
     private AuthorityService authorityService;
     private DictionaryService dictionaryService;
     private Repository repositoryHelper;
+    private CaseRoleService caseRoleService;
 
     boolean isCommentMandatory(ExecutionEntity execution, TaskEntity task) {
         return isInSplitString(execution, CasePerformModel.PROP_OUTCOMES_WITH_MANDATORY_COMMENT,
@@ -59,17 +62,6 @@ public class CasePerformUtils {
     boolean isAbortOutcomeReceived(ExecutionEntity execution, TaskEntity task) {
         return isInSplitString(execution, CasePerformModel.PROP_ABORT_OUTCOMES,
                                   task, CasePerformModel.PROP_PERFORM_OUTCOME);
-    }
-
-    void saveTaskPerformers(ExecutionEntity execution, TaskEntity task) {
-
-        Map<String, Collection<NodeRef>> tasksPerformers = getMap(execution, TASKS_PERFORMERS);
-        Collection<NodeRef> performers = tasksPerformers.get(task.getId());
-        if (performers == null) {
-            performers = new ArrayList<>();
-            tasksPerformers.put(task.getId(), performers);
-        }
-        addAllIfNotContains(performers, getTaskPerformers(task));
     }
 
     void saveTaskResult(ExecutionEntity execution, TaskEntity task) {
@@ -97,23 +89,10 @@ public class CasePerformUtils {
 
         nodeService.createAssociation(result, person, CasePerformModel.ASSOC_RESULT_PERSON);
 
-        Map<String, Collection<NodeRef>> performersByTask = getMap(execution, TASKS_PERFORMERS);
-        Collection<NodeRef> performers = performersByTask.get(task.getId());
-
-        for (NodeRef performer : performers) {
-            nodeService.createAssociation(result, performer, CasePerformModel.ASSOC_RESULT_PERFORMER);
-        }
-    }
-
-    Set<NodeRef> getTaskPerformers(TaskEntity task) {
-
-        Set<NodeRef> performers = new TreeSet<>(KEYS_COMPARATOR);
         NodeRef performer = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_PERFORMER));
         if (performer != null) {
-            performers.add(performer);
+            nodeService.createAssociation(result, performer, CasePerformModel.ASSOC_RESULT_PERFORMER);
         }
-
-        return performers;
     }
 
     void shareVariables(VariableScope from, VariableScope to) {
@@ -171,14 +150,14 @@ public class CasePerformUtils {
         return varCollection;
     }
 
-    <K,V> Map<K,V> getMap(VariableScope scope, String key) {
+    public static <K, V> Map<K, V> getMap(VariableScope scope, String key) {
         if (scope.hasVariable(key)) {
             Object var = scope.getVariable(key);
             if (var instanceof Map) {
-                return (Map<K,V>) var;
+                return (Map<K, V>) var;
             }
         }
-        Map<K,V> varMap = new TreeMap<>(KEYS_COMPARATOR);
+        Map<K, V> varMap = new TreeMap<>(KEYS_COMPARATOR);
         scope.setVariable(key, varMap);
         return varMap;
     }
@@ -224,6 +203,48 @@ public class CasePerformUtils {
         return Collections.emptySet();
     }
 
+    boolean hasCandidate(TaskEntity task, NodeRef candidate) {
+        if (candidate == null) {
+            return false;
+        }
+
+        Set<IdentityLink> candidates = task.getCandidates();
+
+        for (IdentityLink taskCandidate : candidates) {
+            NodeRef candidateRef = toNodeRef(taskCandidate);
+            if (candidate.equals(candidateRef)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    NodeRef getFirstGroupCandidate(TaskEntity task) {
+
+        Set<IdentityLink> candidates = task.getCandidates();
+
+        for (IdentityLink taskCandidate : candidates) {
+            String groupId = taskCandidate.getGroupId();
+            if (groupId != null) {
+                return authorityService.getAuthorityNodeRef(groupId);
+            }
+        }
+        return null;
+    }
+
+    void setPerformer(TaskEntity task, NodeRef performer) {
+        String performerKey = toString(CasePerformModel.ASSOC_PERFORMER);
+        NodeRef currentPerformer = (NodeRef) task.getVariable(performerKey);
+        NodeRef caseRoleRef = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_CASE_ROLE));
+        if (caseRoleRef != null) {
+            caseRoleService.setDelegate(caseRoleRef, currentPerformer, performer);
+            Set<NodeRef> assignees = caseRoleService.getAssignees(caseRoleRef);
+            if (assignees.contains(performer)) {
+                task.setVariableLocal(performerKey, performer);
+            }
+        }
+    }
+
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
@@ -242,6 +263,10 @@ public class CasePerformUtils {
 
     public void setRepositoryHelper(Repository repositoryHelper) {
         this.repositoryHelper = repositoryHelper;
+    }
+
+    public void setCaseRoleService(CaseRoleService caseRoleService) {
+        this.caseRoleService = caseRoleService;
     }
 
     private static class DummyComparator implements Serializable, Comparator<Object> {

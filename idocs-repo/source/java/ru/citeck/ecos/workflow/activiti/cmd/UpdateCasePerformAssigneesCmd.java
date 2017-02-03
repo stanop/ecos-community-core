@@ -37,14 +37,16 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
 
     private Set<NodeRef> performersAdd;
     private Set<NodeRef> performersRemove;
+    private NodeRef caseRole;
 
-    public UpdateCasePerformAssigneesCmd(String workflowId, Set<NodeRef> performersAdd, Set<NodeRef> performersRemove, ServiceRegistry serviceRegistry) {
+    public UpdateCasePerformAssigneesCmd(String workflowId, NodeRef caseRole, Set<NodeRef> performersAdd, Set<NodeRef> performersRemove, ServiceRegistry serviceRegistry) {
         super(workflowId.replace(ACTIVITI_PREFIX, ""));
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.performersRemove = performersRemove;
         this.performersAdd = performersAdd;
         this.nodeService = serviceRegistry.getNodeService();
         this.mirrorService = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
+        this.caseRole = caseRole;
     }
 
     @Override
@@ -60,8 +62,12 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
         ExecutionEntity execution = processExecution.findExecution(CasePerformUtils.SUB_PROCESS_NAME);
         if (execution == null) return null;
 
-        removePerformers(execution, performersRemove);
-        addPerformers(execution, performersAdd);
+        Boolean syncEnabled = (Boolean) execution.getVariable(toString(CasePerformModel.PROP_SYNC_PERFORMERS));
+
+        if (syncEnabled != null && syncEnabled) {
+            removePerformers(execution, performersRemove);
+            addPerformers(execution, performersAdd);
+        }
 
         return null;
     }
@@ -80,18 +86,29 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
             additionalPerformers.remove(performer);
         }
 
-        AddParallelExecutionInstanceCmd.addParallelExecution(execution, CasePerformUtils.SUB_PROCESS_NAME,
-                                                             additionalPerformers);
+        if (!additionalPerformers.isEmpty()) {
+            Map<NodeRef, Collection<NodeRef>> rolesPool = CasePerformUtils.getMap(execution, CasePerformUtils.PERFORMER_ROLES_POOL);
+            for (NodeRef performer : additionalPerformers) {
+                List<NodeRef> roles = new ArrayList<>(1);
+                roles.add(caseRole);
+                rolesPool.put(performer, roles);
+            }
+            AddParallelExecutionInstanceCmd.addParallelExecution(execution,
+                                                                 CasePerformUtils.SUB_PROCESS_NAME,
+                                                                 additionalPerformers);
+        }
     }
 
     private void removePerformers(ExecutionEntity execution, Set<NodeRef> performers) {
 
         Set<NodeRef> deleted = deleteTasksByPerformers(execution, performers);
 
-        ActivityImpl activity = execution.getActivity();
-        ParallelMultiInstanceBehavior activityBehavior = (ParallelMultiInstanceBehavior) activity.getActivityBehavior();
-        Collection collection = (Collection) activityBehavior.getCollectionExpression().getValue(execution);
-        collection.removeAll(deleted);
+        if (!deleted.isEmpty()) {
+            ActivityImpl activity = execution.getActivity();
+            ParallelMultiInstanceBehavior activityBehavior = (ParallelMultiInstanceBehavior) activity.getActivityBehavior();
+            Collection collection = (Collection) activityBehavior.getCollectionExpression().getValue(execution);
+            collection.removeAll(deleted);
+        }
     }
 
     private Set<NodeRef> deleteTasksByPerformers(ExecutionEntity execution, Set<NodeRef> performers) {
@@ -122,10 +139,12 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
             }
         }
 
-        int numberOfInstances = (Integer) execution.getVariableLocal(NUMBER_OF_INSTANCES);
-        int numberOfActiveInstances = (Integer) execution.getVariableLocal(NUMBER_OF_ACTIVE_INSTANCES);
-        execution.setVariableLocal(NUMBER_OF_INSTANCES, numberOfInstances - deleted.size());
-        execution.setVariableLocal(NUMBER_OF_ACTIVE_INSTANCES, numberOfActiveInstances - deleted.size());
+        if (!deleted.isEmpty()) {
+            int numberOfInstances = (Integer) execution.getVariableLocal(NUMBER_OF_INSTANCES);
+            int numberOfActiveInstances = (Integer) execution.getVariableLocal(NUMBER_OF_ACTIVE_INSTANCES);
+            execution.setVariableLocal(NUMBER_OF_INSTANCES, numberOfInstances - deleted.size());
+            execution.setVariableLocal(NUMBER_OF_ACTIVE_INSTANCES, numberOfActiveInstances - deleted.size());
+        }
 
         return deleted;
     }

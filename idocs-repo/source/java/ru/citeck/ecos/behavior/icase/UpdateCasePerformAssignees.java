@@ -93,7 +93,7 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
 
         if (commandExecutor != null) {
             for (String workflowId : activeWorkflows) {
-                commandExecutor.execute(new UpdateCasePerformAssigneesCmd(workflowId, added, removed, serviceRegistry));
+                commandExecutor.execute(new UpdateCasePerformAssigneesCmd(workflowId, roleRef, added, removed, serviceRegistry));
             }
         }
     }

@@ -22,8 +22,10 @@ public interface CasePerformModel {
     QName PROP_ABORT_OUTCOMES = QName.createQName(NAMESPACE, "abortOutcomes");
     QName PROP_COMMENT = QName.createQName(NAMESPACE, "comment");
     QName PROP_FORM_KEY = QName.createQName(NAMESPACE, "formKey");
+    QName PROP_SYNC_PERFORMERS = QName.createQName(NAMESPACE, "syncPerformers");
 
     QName ASSOC_PERFORMER = QName.createQName(NAMESPACE, "performer");
+    QName ASSOC_CASE_ROLE = QName.createQName(NAMESPACE, "caseRole");
     QName ASSOC_PERFORMERS = QName.createQName(NAMESPACE, "performers");
     QName ASSOC_RESULT_PERSON = QName.createQName(NAMESPACE, "resultPerson");
     QName ASSOC_RESULT_PERFORMER = QName.createQName(NAMESPACE, "resultPerformer");

@@ -24,6 +24,9 @@
                 <property name="wfcp:performOutcome">
                     <type>d:text</type>
                 </property>
+                <property name="wfcp:syncPerformers">
+                    <type>d:boolean</type>
+                </property>
             </properties>
             <associations>
                 <!--performer for task-->
@@ -106,6 +109,11 @@
 
         <type name="wfcp:performCaseTask">
             <parent>icaseTask:task</parent>
+            <properties>
+                <property name="wfcp:ctSyncPerformers">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
             <associations>
                 <association name="wfcp:performersRoles">
                     <source>
@@ -163,6 +171,22 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="wfcp:hasCaseRole">
+            <associations>
+                <association name="wfcp:caseRole">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
     </aspects>
 

@@ -16,11 +16,15 @@
         <property name="dictionaryService" ref="dictionaryService" />
         <property name="namespaceService" ref="namespaceService" />
         <property name="repositoryHelper" ref="repositoryHelper" />
+        <property name="caseRoleService" ref="caseRoleService" />
     </bean>
 
     <bean id="ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.workflow.perform.CasePerformWorkflowHandler"
                                                 init-method="init">
         <property name="utils" ref="ecos.workflow.case-perform-utils" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="caseRoleService" ref="caseRoleService" />
+        <property name="authorityService" ref="authorityService" />
     </bean>
 
     <bean id="idocs.module-component.users-absence-events-journal" parent="idocs.import-spaces.3-0-2"
