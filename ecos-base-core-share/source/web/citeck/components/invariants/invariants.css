@@ -506,12 +506,14 @@
 /* label */
 .invariants-form:not(.view-form) .template-table .template-row-checkbox .template-label {
   width: 90%;
+  padding-right: 0;
 }
 
 .invariants-form:not(.view-form) .template-table .template-half-width-checkbox .template-label,
 .invariants-form:not(.view-form) .template-table .template-third-width-checkbox .template-label {
   width: 89.5%;
   display: inline-block;
+  padding-right: 0;
 }
 
 .invariants-form:not(.view-form) .template-table .template-row .template-label {
@@ -519,7 +521,7 @@
   padding-bottom: 5px;
 }
 
-.invariants-form .template-table .template-row .template-label {
+.invariants-form .template-table .template-label {
   float: left;
   width: 45.5%;
   padding-right: 10px;
