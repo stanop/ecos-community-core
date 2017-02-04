@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class ScriptRoleDAO extends AbstractRoleDAO {
 
-    private static final Log LOGGER = LogFactory.getLog(ScriptRoleDAO.class);
+    private static final Log logger = LogFactory.getLog(ScriptRoleDAO.class);
 
     private ScriptService scriptService;
     private AuthorityService authorityService;
@@ -44,7 +44,7 @@ public class ScriptRoleDAO extends AbstractRoleDAO {
             Object result = scriptService.executeScriptString(script, model);
             return JavaScriptImplUtils.getAuthoritiesSet(result, authorityService);
         } catch (Exception e) {
-            LOGGER.warn(e);
+            logger.warn("Script role evaluation failed", e);
         }
 
         return Collections.emptySet();

@@ -21,6 +21,7 @@ import ru.citeck.ecos.role.CaseRolePolicies;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.workflow.activiti.cmd.UpdateCasePerformAssigneesCmd;
+import ru.citeck.ecos.workflow.perform.CasePerformUtils;
 
 import java.util.*;
 
@@ -89,11 +90,33 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
     private void updateTask(NodeRef roleRef, Set<NodeRef> added, Set<NodeRef> removed) {
 
         Set<String> activeWorkflows = getActiveWorkflows(roleRef);
-        CommandExecutor commandExecutor = getCommandExecutor();
 
+        CommandExecutor commandExecutor = getCommandExecutor();
         if (commandExecutor != null) {
             for (String workflowId : activeWorkflows) {
-                commandExecutor.execute(new UpdateCasePerformAssigneesCmd(workflowId, added, removed, serviceRegistry));
+
+                String id = workflowId.replace("activiti$", "");
+
+                Set<NodeRef> toAdd = new HashSet<>(added);
+                Set<NodeRef> toRemove = new HashSet<>(removed);
+
+                Map<NodeRef, Map<String, Map<NodeRef, NodeRef>>> reassignmentByRole =
+                                        TransactionalResourceHelper.getMap(CasePerformUtils.REASSIGNMENT_KEY);
+
+                Map<String, Map<NodeRef, NodeRef>> reassignmentByWorkflow = reassignmentByRole.get(roleRef);
+                if (reassignmentByWorkflow != null) {
+                    Map<NodeRef, NodeRef> reassignment = reassignmentByWorkflow.get(id);
+                    if (reassignment != null) {
+                        for (NodeRef from : reassignment.keySet()) {
+                            toRemove.remove(from);
+                            toAdd.remove(reassignment.get(from));
+                        }
+                    }
+                }
+
+                if (!toAdd.isEmpty() || !toRemove.isEmpty()) {
+                    commandExecutor.execute(new UpdateCasePerformAssigneesCmd(id, toAdd, toRemove, serviceRegistry));
+                }
             }
         }
     }

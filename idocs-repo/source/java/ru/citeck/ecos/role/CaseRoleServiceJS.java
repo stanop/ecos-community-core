@@ -1,14 +1,19 @@
 package ru.citeck.ecos.role;
 
+import jdk.nashorn.internal.runtime.Context;
 import org.alfresco.repo.jscript.ScriptNode;
+import org.alfresco.repo.jscript.ScriptableHashMap;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.mozilla.javascript.Scriptable;
 import org.springframework.extensions.surf.util.ParameterCheck;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -113,6 +118,49 @@ public class CaseRoleServiceJS extends AlfrescoScopableProcessorExtension {
         NodeRef roleRef = getRoleRef(document, role);
         NodeRef authorityRef = JavaScriptImplUtils.getAuthorityRef(authority, authorityService);
         return caseRoleService.isRoleMember(roleRef, authorityRef, immediate);
+    }
+
+    public void setDelegate(Object role, Object assignee, Object delegate) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        NodeRef assigneeRef = JavaScriptImplUtils.getAuthorityRef(assignee, authorityService);
+        NodeRef delegateRef = JavaScriptImplUtils.getAuthorityRef(delegate, authorityService);
+        caseRoleService.setDelegate(roleRef, assigneeRef, delegateRef);
+    }
+
+    public void setDelegates(Object role, Object delegatesJSObj) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        Object delegatesObj = converter.convertValueForJava(delegatesJSObj);
+        if (delegatesObj instanceof Map) {
+            Map<NodeRef, NodeRef> delegates = new HashMap<>();
+            Map<Object, Object> delegatesObjMap = (Map<Object, Object>) delegatesObj;
+            for (Map.Entry entry : delegatesObjMap.entrySet()) {
+                NodeRef assignee = JavaScriptImplUtils.getAuthorityRef(entry.getKey(), authorityService);
+                NodeRef delegate = JavaScriptImplUtils.getAuthorityRef(entry.getValue(), authorityService);
+                delegates.put(assignee, delegate);
+            }
+            caseRoleService.setDelegates(roleRef, delegates);
+        } else {
+            throw new IllegalArgumentException("Illegal argument 'delegates'. Expected Map but found: " + delegatesJSObj.getClass());
+        }
+    }
+
+    public void removeDelegate(Object role, Object assignee) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        NodeRef assigneeRef = JavaScriptImplUtils.getAuthorityRef(assignee, authorityService);
+        caseRoleService.removeDelegate(roleRef, assigneeRef);
+    }
+
+    public void removeDelegates(Object role) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        caseRoleService.removeDelegates(roleRef);
+    }
+
+    public ScriptNode getDelegate(Object role, Object assignee) {
+        NodeRef roleRef = JavaScriptImplUtils.getNodeRef(role);
+        NodeRef assigneeRef = JavaScriptImplUtils.getAuthorityRef(assignee, authorityService);
+        Map<NodeRef, NodeRef> delegates = caseRoleService.getDelegates(roleRef);
+        NodeRef delegateRef = delegates.get(assigneeRef);
+        return delegateRef != null ? new ScriptNode(delegateRef, serviceRegistry, getScope()) : null;
     }
 
     private NodeRef getRoleRef(Object document, Object role) {
