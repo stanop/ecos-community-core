@@ -69,34 +69,6 @@ public class CasePerformWorkflowHandler implements Serializable {
         }
 
         execution.setVariableLocal(CasePerformUtils.PERFORMERS, performers);
-
-        ActivitiScriptNode pack = (ActivitiScriptNode) execution.getVariable(utils.toString(WorkflowModel.ASSOC_PACKAGE));
-        NodeRef caseTask = null;
-
-        List<AssociationRef> assocs = nodeService.getSourceAssocs(pack.getNodeRef(), ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
-        if (assocs != null && !assocs.isEmpty()) {
-            caseTask = assocs.get(0).getSourceRef();
-        }
-
-        if (caseTask != null) {
-
-            Map<NodeRef, List<NodeRef>> performersRolesPool;
-            performersRolesPool = CasePerformUtils.getMap(execution, CasePerformUtils.PERFORMER_ROLES_POOL);
-
-            List<AssociationRef> roleAssocs = nodeService.getTargetAssocs(caseTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
-            for (AssociationRef ref : roleAssocs) {
-                NodeRef roleRef = ref.getTargetRef();
-                Set<NodeRef> assignees = caseRoleService.getAssignees(roleRef);
-                for (NodeRef assignee : assignees) {
-                    List<NodeRef> roles = performersRolesPool.get(assignee);
-                    if (roles == null) {
-                        roles = new ArrayList<>();
-                        performersRolesPool.put(assignee, roles);
-                    }
-                    roles.add(roleRef);
-                }
-            }
-        }
     }
 
     public void onSkipPerformingGatewayStarted(ExecutionEntity execution) {
@@ -138,13 +110,7 @@ public class CasePerformWorkflowHandler implements Serializable {
             utils.addIfNotContains(mandatoryTasks, task.getId());
         }
 
-        Map<NodeRef, List<NodeRef>> performersRolesPool;
-        performersRolesPool = CasePerformUtils.getMap(execution, CasePerformUtils.PERFORMER_ROLES_POOL);
-        List<NodeRef> roles = performersRolesPool.get(performer);
-        if (roles != null && !roles.isEmpty()) {
-            NodeRef role = roles.remove(roles.size() - 1);
-            task.setVariableLocal(utils.toString(CasePerformModel.ASSOC_CASE_ROLE), role);
-        }
+        task.setVariableLocal(utils.toString(CasePerformModel.ASSOC_CASE_ROLE), utils.getCaseRole(performer, execution));
     }
 
     public void onPerformTaskAssigned(ExecutionEntity execution, TaskEntity task) {

@@ -94,6 +94,7 @@
         </field>
         <field prop="wfcp:abortOutcomes" />
         <field prop="wfcp:outcomesWithMandatoryComment" />
+        <field prop="wfcp:ctSyncPerformers" />
     </view>
 
 </views>

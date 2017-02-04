@@ -2,6 +2,7 @@ package ru.citeck.ecos.role;
 
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -191,22 +192,34 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     }
 
     @Override
-    public void updateRoles(NodeRef caseRef) {
-        Collection<NodeRef> roles = getRoles(caseRef);
-        for (NodeRef roleRef : roles) {
-            updateRole(caseRef, roleRef);
-        }
+    public void updateRoles(final NodeRef caseRef) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                Collection<NodeRef> roles = getRoles(caseRef);
+                for (NodeRef roleRef : roles) {
+                    updateRoleImpl(caseRef, roleRef);
+                }
+                return null;
+            }
+        });
     }
 
     @Override
     public void updateRole(NodeRef caseRef, String roleName) {
-        updateRole(caseRef, needRole(caseRef, roleName));
+        updateRole(needRole(caseRef, roleName));
     }
 
     @Override
-    public void updateRole(NodeRef roleRef) {
-        NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
-        updateRole(caseRef, roleRef);
+    public void updateRole(final NodeRef roleRef) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
+                updateRoleImpl(caseRef, roleRef);
+                return null;
+            }
+        });
     }
 
     @Override
@@ -256,7 +269,6 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
         if (wasChanged) {
             persistDelegates(roleRef, actualDelegates);
-            updateRole(roleRef);
         }
     }
 
@@ -317,7 +329,7 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         nodeService.setProperty(roleRef, ICaseRoleModel.PROP_DELEGATES, jsonObject.toString());
     }
 
-    private void updateRole(NodeRef caseRef, NodeRef roleRef) {
+    private void updateRoleImpl(NodeRef caseRef, NodeRef roleRef) {
         QName type = nodeService.getType(roleRef);
         RoleDAO dao = rolesDAOByType.get(type);
         if (dao != null) {

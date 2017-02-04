@@ -7,6 +7,7 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -37,16 +38,14 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
 
     private Set<NodeRef> performersAdd;
     private Set<NodeRef> performersRemove;
-    private NodeRef caseRole;
 
-    public UpdateCasePerformAssigneesCmd(String workflowId, NodeRef caseRole, Set<NodeRef> performersAdd, Set<NodeRef> performersRemove, ServiceRegistry serviceRegistry) {
+    public UpdateCasePerformAssigneesCmd(String workflowId, Set<NodeRef> performersAdd, Set<NodeRef> performersRemove, ServiceRegistry serviceRegistry) {
         super(workflowId.replace(ACTIVITI_PREFIX, ""));
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.performersRemove = performersRemove;
         this.performersAdd = performersAdd;
         this.nodeService = serviceRegistry.getNodeService();
         this.mirrorService = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
-        this.caseRole = caseRole;
     }
 
     @Override
@@ -74,6 +73,8 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
 
     private void addPerformers(ExecutionEntity execution, Set<NodeRef> performers) {
 
+        if (performers.isEmpty()) return;
+
         List<NodeRef> additionalPerformers = new ArrayList<>(performers);
         List<ExecutionEntity> parallelExecutions = new ArrayList<>(execution.getExecutions());
 
@@ -87,19 +88,17 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
         }
 
         if (!additionalPerformers.isEmpty()) {
-            Map<NodeRef, Collection<NodeRef>> rolesPool = CasePerformUtils.getMap(execution, CasePerformUtils.PERFORMER_ROLES_POOL);
-            for (NodeRef performer : additionalPerformers) {
-                List<NodeRef> roles = new ArrayList<>(1);
-                roles.add(caseRole);
-                rolesPool.put(performer, roles);
-            }
-            AddParallelExecutionInstanceCmd.addParallelExecution(execution,
-                                                                 CasePerformUtils.SUB_PROCESS_NAME,
-                                                                 additionalPerformers);
+            AddParallelExecutionInstanceCmd.addParallelExecution(
+                execution,
+                CasePerformUtils.SUB_PROCESS_NAME,
+                additionalPerformers
+            );
         }
     }
 
     private void removePerformers(ExecutionEntity execution, Set<NodeRef> performers) {
+
+        if (performers.isEmpty()) return;
 
         Set<NodeRef> deleted = deleteTasksByPerformers(execution, performers);
 

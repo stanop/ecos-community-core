@@ -7,8 +7,11 @@ import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.model.Repository;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -16,6 +19,7 @@ import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.CasePerformModel;
+import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 
 import java.io.Serializable;
@@ -40,7 +44,7 @@ public class CasePerformUtils {
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
 
-    public static final String PERFORMER_ROLES_POOL = "performerRolesPool";
+    public static final String REASSIGNMENT_KEY = "case-perform-reassignment";
 
     private static final DummyComparator KEYS_COMPARATOR = new DummyComparator();
 
@@ -238,11 +242,52 @@ public class CasePerformUtils {
         NodeRef caseRoleRef = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_CASE_ROLE));
         if (caseRoleRef != null) {
             caseRoleService.setDelegate(caseRoleRef, currentPerformer, performer);
+            caseRoleService.updateRole(caseRoleRef);
             Set<NodeRef> assignees = caseRoleService.getAssignees(caseRoleRef);
             if (assignees.contains(performer)) {
                 task.setVariableLocal(performerKey, performer);
+                persistReassign(caseRoleRef, task.getProcessInstanceId(), currentPerformer, performer);
             }
         }
+
+    }
+
+    void persistReassign(NodeRef caseRole, String workflowId, NodeRef from, NodeRef to) {
+        Map<NodeRef, Map<String, Map<NodeRef, NodeRef>>> reassignmentByRole = TransactionalResourceHelper.getMap(REASSIGNMENT_KEY);
+        Map<String, Map<NodeRef, NodeRef>> reassignmentByWorkflow = reassignmentByRole.get(caseRole);
+        if (reassignmentByWorkflow == null) {
+            reassignmentByWorkflow = new HashMap<>(1);
+            reassignmentByRole.put(caseRole, reassignmentByWorkflow);
+        }
+        Map<NodeRef, NodeRef> reassignment = reassignmentByWorkflow.get(workflowId);
+        if (reassignment == null) {
+            reassignment = new HashMap<>(1);
+            reassignmentByWorkflow.put(workflowId, reassignment);
+        }
+        reassignment.put(from, to);
+    }
+
+    NodeRef getCaseRole(NodeRef performer, ExecutionEntity execution) {
+
+        ActivitiScriptNode pack = (ActivitiScriptNode) execution.getVariable(toString(WorkflowModel.ASSOC_PACKAGE));
+        NodeRef caseTask = null;
+
+        List<AssociationRef> assocs = nodeService.getSourceAssocs(pack.getNodeRef(), ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+        if (assocs != null && !assocs.isEmpty()) {
+            caseTask = assocs.get(0).getSourceRef();
+        }
+
+        if (caseTask != null) {
+
+            List<AssociationRef> roleAssocs = nodeService.getTargetAssocs(caseTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
+            for (AssociationRef roleAssocRef : roleAssocs) {
+                NodeRef roleRef = roleAssocRef.getTargetRef();
+                if (caseRoleService.isRoleMember(roleRef, performer, true)) {
+                    return roleRef;
+                }
+            }
+        }
+        return null;
     }
 
     public void setNodeService(NodeService nodeService) {
