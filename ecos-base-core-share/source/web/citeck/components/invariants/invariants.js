@@ -751,8 +751,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(invariantValue != null) return invariantValue;
             if(this.changed()) return this.newValue();
             
-            if(this.persisted()) { 
-                return !this.persistedValue() && isDraft ? this.invariantDefault() : this.persistedValue();
+            if(this.persisted()) {
+                if (isDraft && !_.isBoolean(this.persistedValue()) && _.isEmpty(this.persistedValue())) {
+                    return this.invariantDefault();
+                }
+                return this.persistedValue();
             }
 
             return isView ? null : this.invariantDefault();    

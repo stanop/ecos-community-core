@@ -378,7 +378,7 @@ ko.components.register("datetime", {
                         var timeArray = newValue.split(/, | /);
                         timeArray[0] = timeArray[0].split(".").reverse().join("/");
 
-                        var newDate = new Date(timeArray.join(" "));
+                        var newDate = new Date(timeArray.join("T"));
                         if (newDate != "Invalid Date") {
                             self.value(newDate);
                             return;

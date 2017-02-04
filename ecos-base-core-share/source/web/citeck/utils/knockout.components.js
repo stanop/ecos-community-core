@@ -218,7 +218,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             return self.value() ? new Date(self.value()) : null; 
                         },
                         write: function(newValue) {
-                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-dd HH:mm") : null);
+                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-ddTHH:mm") : null);
                         }
                     })
                 }

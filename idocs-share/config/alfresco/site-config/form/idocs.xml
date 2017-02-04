@@ -226,10 +226,15 @@
             <form>
                 <field-visibility>
                     <show id="idocs:currencyCode"/>
-                    <show id="idocs:currencyName"/>
+                    <show id="cm:title" force="true"/>
                     <show id="idocs:currencyShortName"/>
                     <show id="idocs:currencyRate"/>
                 </field-visibility>
+                <appearance>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+                    </field>
+                </appearance>
             </form>
         </forms>
     </config>
