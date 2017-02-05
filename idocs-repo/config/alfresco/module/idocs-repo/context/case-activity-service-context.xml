@@ -109,6 +109,8 @@
                         <entry key="wfcp:abortOutcomes" value="wfcp:abortOutcomes" />
                         <entry key="wfcp:performersRoles" value="wfcp:performers" />
                         <entry key="wfcp:outcomesWithMandatoryComment" value="wfcp:outcomesWithMandatoryComment" />
+                        <entry key="wfcp:syncWorkflowToRoles" value="wfcp:syncWorkflowToRoles" />
+                        <entry key="wfcp:syncRolesToWorkflow" value="wfcp:syncRolesToWorkflow" />
                     </map>
                 </entry>
             </map>

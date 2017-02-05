@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -37,30 +37,59 @@ var Event = YAHOO.util.Event,
 // HELP
 // ---------------
 
+YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
+    var el = this,
+        procIds = [ "showProcId", "hideProcId" ];
+
+    if (obj._tempTitle) {
+        el.title = obj._tempTitle;
+        obj._tempTitle = null;
+    }
+
+    for (var p = 0; p < procIds.length; procIds++) {
+        if (obj[procIds[p]]) {
+            clearTimeout(obj[procIds[p]]);
+            obj[procIds[p]] = null; 
+        }
+    }
+
+    obj.fireEvent("contextMouseOut", el, e);
+
+    if (!obj.cfg.getProperty("forceVisible")) {
+        obj.hideProcId = setTimeout(function () { obj.hide(); }, obj.cfg.getProperty("hidedelay"));
+    }
+};
+
+// TODO:
+// - init tooltip only if text not empty
+
 ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
 
-        this.text.subscribe(function(newValue) {
-            if (newValue) {
-                if (!this.tooltip) {
-                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
-                        showDelay: 500,
-                        hideDelay: 250,
-                        xyoffset: [0, 0],
-                        autodismissdelay: 10000
-                    });
+        if (!this.tooltip) {
+            this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                showDelay: 250,
+                hideDelay: 250,
+                xyoffset: [5, 0],
+                autodismissdelay: 10000,
+                context: [ this.id ]
+            });
 
-                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
-                }
-            
-                this.tooltip.cfg.setProperty("text", newValue);
-                this.tooltip.cfg.setProperty("context", this.id);
-            }
+            this.tooltip.cfg.addProperty("forceVisible", { value: false });
+            this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+        }
+
+        this.text.subscribe(function(newValue) {
+            this.tooltip.cfg.setProperty("text", newValue);
         }, this);
+
+        this.onclick = function(data, event) {
+            data.tooltip.cfg.setProperty("forceVisible",  !data.tooltip.cfg.getProperty("forceVisible"));
+        };
     },
     template:
-       '<span data-bind="attr: { id: id }, if: text">?</span>'
+       '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
 });
 
 // ---------------
@@ -327,9 +356,9 @@ ko.components.register("datetime", {
 
                         selectedDate.setHours(nowDate.getHours());
                         selectedDate.setMinutes(nowDate.getMinutes());
-
                         self.value(selectedDate);
                     }
+
                     calendarDialog.hide();
                 });
 
@@ -340,14 +369,16 @@ ko.components.register("datetime", {
         };
 
         this.textValue = ko.pureComputed({
-            read: function() { return self.value() ? self.value().toLocaleString() : null },
+            read: function() {
+                return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
+            },
             write: function(newValue) {
-                if (newValue) {
-                    if (/\d{2}.\d{2}.\d{2,4}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
+                if (newValue) {                   
+                    if (/\d{2,4}-\d{2}-\d{2}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
                         var timeArray = newValue.split(/, | /);
                         timeArray[0] = timeArray[0].split(".").reverse().join("/");
 
-                        var newDate = new Date(timeArray.join(", "));
+                        var newDate = new Date(timeArray.join("T"));
                         if (newDate != "Invalid Date") {
                             self.value(newDate);
                             return;
@@ -388,7 +419,7 @@ ko.components.register("datetime", {
             <input type="datetime-local" data-bind="value: dateValue, disable: disabled" />\
         <!-- /ko -->\
         <!-- ko ifnot: Citeck.HTML5.supportInput("datetime-local") -->\
-            <input type="text" data-bind="value: textValue, disable: disabled" />\
+            <input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
             <!-- ko if: disabled -->\
                 <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
             <!-- /ko -->\

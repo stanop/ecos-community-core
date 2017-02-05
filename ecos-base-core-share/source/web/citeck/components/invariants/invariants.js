@@ -32,7 +32,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
         ExplicitInvariantSet = koclass('invariants.ExplicitInvariantSet', InvariantSet),
-        GroupedInvariantSet = koclass('invariants.GroupedInvariantSet', InvariantSet),
         ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
         MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
@@ -47,7 +46,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         ContentFileImpl = koclass('invariants.ContentFileImpl'),
         ContentTextImpl = koclass('invariants.ContentTextImpl'),
         ContentFakeImpl = koclass('invariants.ContentFakeImpl'),
-        Group = koclass('invariants.Group'),
         Runtime = koclass('invariants.Runtime');
 
     var EnumerationServiceImpl = {
@@ -492,7 +490,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         if (createdInvariants.indexOf(invariant) == -1) {
                             invariants.push(new Invariant(invariant));
                             createdInvariants.push(invariant);
-                        } 
+                        }
                     };
 
                 _.each(this.forcedInvariants(), processInvariant);
@@ -975,15 +973,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var invariantValue = this.invariantValue(),
                 isDraft = this.node().properties["invariants:isDraft"],
                 isView = this.node().impl().inViewMode();
-            
+
             if(invariantValue != null) return invariantValue;
             if(this.changed()) return this.newValue();
-            
-            if(this.persisted()) { 
+
+            if(this.persisted()) {
                 return !this.persistedValue() && isDraft ? this.invariantDefault() : this.persistedValue();
             }
 
-            return isView ? null : this.invariantDefault();    
+            return isView ? null : this.invariantDefault();
         })
         .computed('value', {
             read: function() { return this.convertValue(this.rawValue(), this.multiple()); },
@@ -1317,13 +1315,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
                 //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
-                //       return this.forcedAttributes().indexOf(attribute) != - 1;  
-                //     }, this)) { 
+                //       return this.forcedAttributes().indexOf(attribute) != - 1;
+                //     }, this)) {
                 //         var remainingAttributes = _.difference(this.forcedAttributes(), this.definedAttributeNames());
                 //         console.log(remainingAttributes);
-                //         _.each(remainingAttributes, processAttributeName); 
+                //         _.each(remainingAttributes, processAttributeName);
                 //     }
-                // }           
+                // }
 
                 return attributes;
             },
@@ -1771,8 +1769,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return false;
         })
 
-        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')      
-        
+        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
+
         .method('deleteNode', function(nodeRef, callback) {
             YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
         })
@@ -1811,8 +1809,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     if (!window[indicatorId]) {
                         buttons.hide();
 
-                        window[indicatorId] = new Citeck.UI.waitIndicator(indicatorId, { 
-                            context: bodyId, 
+                        window[indicatorId] = new Citeck.UI.waitIndicator(indicatorId, {
+                            context: bodyId,
                             backgroundColor: "#f0f0f0"
                         });
 
@@ -1836,7 +1834,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         window[indicatorId].show();
                     }
                 }
-                
+
                 this.runtime().loadGroupInvariants(group);
                 this.runtime().loadGroupAttributes(group);
             }
@@ -1855,13 +1853,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .method('checkGroupAttributes', function(attributes) {
-            return _.every(attributes, function(attribute) { 
-                return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1; 
+            return _.every(attributes, function(attribute) {
+                return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1;
             }, this);
         })
         .method('checkGroupInvariants', function(invariants) {
-            return _.every(invariants, function(invariant) { 
-                return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1; 
+            return _.every(invariants, function(invariant) {
+                return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1;
             }, this);
         })
 
@@ -1918,7 +1916,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     // performance tuning
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
-    
+
     Attribute.extend('*', rateLimit);
     AttributeInfo.extend('*', rateLimit);
     DDClass.extend('attributes', rateLimit);
@@ -2021,9 +2019,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 $(window).resize();
             }
-           
+
             // define attributes from first group as forced
-            if (this.options.model.loadAttributesMethod == "clickOnGroup") { 
+            if (this.options.model.loadAttributesMethod == "clickOnGroup") {
                 this.options.model.invariantSet.forcedInvariants = this.options.model.node.groups[0].invariants;
                 this.options.model.node.forcedAttributes = this.options.model.node.groups[0].attributes;
             }

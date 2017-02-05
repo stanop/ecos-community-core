@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -20,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="option" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="batch-edit" type="{http://www.citeck.ru/ecos/journals/1.0}batchEdit" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -36,11 +38,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "header", propOrder = {
-    "option"
+    "option",
+    "batchEdit"
 })
 public class Header {
 
     protected List<Option> option;
+    @XmlElement(name = "batch-edit")
+    protected List<BatchEdit> batchEdit;
     @XmlAttribute(name = "key", required = true)
     protected String key;
     @XmlAttribute(name = "default")
@@ -81,6 +86,35 @@ public class Header {
             option = new ArrayList<Option>();
         }
         return this.option;
+    }
+
+    /**
+     * Gets the value of the batchEdit property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the batchEdit property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getBatchEdit().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link BatchEdit }
+     * 
+     * 
+     */
+    public List<BatchEdit> getBatchEdit() {
+        if (batchEdit == null) {
+            batchEdit = new ArrayList<BatchEdit>();
+        }
+        return this.batchEdit;
     }
 
     /**

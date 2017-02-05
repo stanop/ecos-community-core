@@ -2,15 +2,17 @@ package ru.citeck.ecos.role;
 
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.extensions.surf.util.ParameterCheck;
 import ru.citeck.ecos.role.CaseRolePolicies.OnRoleAssigneesChangedPolicy;
 import ru.citeck.ecos.role.CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy;
@@ -26,6 +28,10 @@ import java.util.*;
  * @author Pavel Simonov
  */
 public class CaseRoleServiceImpl implements CaseRoleService {
+
+    private static final int ASSIGNEE_DELEGATION_DEPTH_LIMIT = 100;
+
+    private static final Logger logger = LoggerFactory.getLogger(CaseRoleServiceImpl.class);
 
     private NodeService nodeService;
     private PolicyComponent policyComponent;
@@ -186,22 +192,34 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     }
 
     @Override
-    public void updateRoles(NodeRef caseRef) {
-        Collection<NodeRef> roles = getRoles(caseRef);
-        for (NodeRef roleRef : roles) {
-            updateRole(caseRef, roleRef);
-        }
+    public void updateRoles(final NodeRef caseRef) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                Collection<NodeRef> roles = getRoles(caseRef);
+                for (NodeRef roleRef : roles) {
+                    updateRoleImpl(caseRef, roleRef);
+                }
+                return null;
+            }
+        });
     }
 
     @Override
     public void updateRole(NodeRef caseRef, String roleName) {
-        updateRole(caseRef, needRole(caseRef, roleName));
+        updateRole(needRole(caseRef, roleName));
     }
 
     @Override
-    public void updateRole(NodeRef roleRef) {
-        NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
-        updateRole(caseRef, roleRef);
+    public void updateRole(final NodeRef roleRef) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
+                updateRoleImpl(caseRef, roleRef);
+                return null;
+            }
+        });
     }
 
     @Override
@@ -209,12 +227,144 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         rolesDAOByType.put(roleDAO.getRoleType(), roleDAO);
     }
 
-    private void updateRole(NodeRef caseRef, NodeRef roleRef) {
+    @Override
+    public void setDelegate(NodeRef roleRef, NodeRef assignee, NodeRef delegate) {
+        setDelegates(roleRef, Collections.singletonMap(assignee, delegate));
+    }
+
+    @Override
+    public void setDelegates(NodeRef roleRef, Map<NodeRef, NodeRef> delegates) {
+
+        Map<NodeRef, NodeRef> actualDelegates = new HashMap<>(getDelegates(roleRef));
+        boolean wasChanged = false;
+
+        for (Map.Entry<NodeRef, NodeRef> entry : delegates.entrySet()) {
+            NodeRef assignee = entry.getKey();
+            NodeRef delegate = entry.getValue();
+
+            if (Objects.equals(assignee, delegate)) {
+                continue;
+            }
+            NodeRef actualDelegate = actualDelegates.get(assignee);
+            if (Objects.equals(delegate, actualDelegate)) {
+                continue;
+            }
+
+            actualDelegates.remove(assignee);
+            NodeRef delegateIter = delegate;
+            while (delegateIter != null && !delegateIter.equals(assignee)) {
+                delegateIter = actualDelegates.get(delegateIter);
+            }
+            if (delegateIter != null) {
+                delegateIter = delegate;
+                while (delegateIter != null) {
+                    delegateIter = actualDelegates.remove(delegateIter);
+                }
+            } else {
+                actualDelegates.put(assignee, delegate);
+            }
+
+            wasChanged = true;
+        }
+
+        if (wasChanged) {
+            persistDelegates(roleRef, actualDelegates);
+        }
+    }
+
+    @Override
+    public void removeDelegate(NodeRef roleRef, NodeRef assignee) {
+        Map<NodeRef, NodeRef> delegates = getDelegates(roleRef);
+        delegates.remove(assignee);
+        persistDelegates(roleRef, delegates);
+        updateRole(roleRef);
+    }
+
+    @Override
+    public void removeDelegates(NodeRef roleRef) {
+        persistDelegates(roleRef, Collections.<NodeRef, NodeRef>emptyMap());
+        updateRole(roleRef);
+    }
+
+    @Override
+    public Map<NodeRef, NodeRef> getDelegates(NodeRef roleRef) {
+        String delegatesStr = (String) nodeService.getProperty(roleRef, ICaseRoleModel.PROP_DELEGATES);
+        Map<NodeRef, NodeRef> delegates = new HashMap<>();
+        if (delegatesStr != null) {
+            boolean dirtyProperty = false;
+            try {
+                JSONObject jsonObject = new JSONObject(delegatesStr);
+                Iterator it = jsonObject.keys();
+                while (it.hasNext()) {
+                    String key = (String) it.next();
+                    String value = (String) jsonObject.get(key);
+                    try {
+                        delegates.put(new NodeRef(key), new NodeRef(value));
+                    } catch (MalformedNodeRefException e) {
+                        dirtyProperty = true;
+                    }
+                }
+            } catch (Exception e) {
+                dirtyProperty = true;
+            }
+            if (dirtyProperty) {
+                persistDelegates(roleRef, delegates);
+            }
+        }
+        return delegates;
+    }
+
+    private void persistDelegates(NodeRef roleRef, Map<NodeRef, NodeRef> delegates) {
+        JSONObject jsonObject = new JSONObject();
+
+        for (Map.Entry<NodeRef, NodeRef> entry : delegates.entrySet()) {
+            if (nodeService.exists(entry.getKey()) && nodeService.exists(entry.getValue())) {
+                try {
+                    jsonObject.putOpt(entry.getKey().toString(), entry.getValue().toString());
+                } catch (JSONException e) {
+                    //do nothing
+                }
+            }
+        }
+        nodeService.setProperty(roleRef, ICaseRoleModel.PROP_DELEGATES, jsonObject.toString());
+    }
+
+    private void updateRoleImpl(NodeRef caseRef, NodeRef roleRef) {
         QName type = nodeService.getType(roleRef);
         RoleDAO dao = rolesDAOByType.get(type);
         if (dao != null) {
-            setAssignees(roleRef, dao.getAssignees(caseRef, roleRef));
+            Set<NodeRef> assignees = dao.getAssignees(caseRef, roleRef);
+            setAssignees(roleRef, getDelegates(roleRef, assignees));
         }
+    }
+
+    private Set<NodeRef> getDelegates(NodeRef roleRef, Set<NodeRef> assignees) {
+        Map<NodeRef, NodeRef> delegation = getDelegates(roleRef);
+        if (delegation.isEmpty()) {
+            return assignees;
+        }
+        Set<NodeRef> delegates = new HashSet<>();
+        for (NodeRef assigneeRef : assignees) {
+            NodeRef delegateRef = assigneeRef;
+            NodeRef next = delegation.get(assigneeRef);
+            int idx = 0;
+            for (; idx < ASSIGNEE_DELEGATION_DEPTH_LIMIT; idx++) {
+                if (next == null) break;
+                delegateRef = next;
+                next = delegation.get(next);
+            }
+            if (idx == ASSIGNEE_DELEGATION_DEPTH_LIMIT) {
+                logger.error("ROLE ASSIGNEE DELEGATION ERROR! " +
+                             "Role assignees delegates is looped. " +
+                             "RoleRef: " + roleRef + " AssigneeRef: " + assigneeRef);
+            }
+            if (nodeService.exists(delegateRef)) {
+                delegates.add(delegateRef);
+            } else {
+                delegates.add(assigneeRef);
+            }
+        }
+        return delegates;
     }
 
     private void fireAssigneesChangedEvent(NodeRef roleRef, Set<NodeRef> added, Set<NodeRef> removed) {

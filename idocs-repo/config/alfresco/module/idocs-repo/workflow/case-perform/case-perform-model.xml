@@ -164,6 +164,33 @@
                 </property>
             </properties>
         </aspect>
+
+        <aspect name="wfcp:hasCaseRole">
+            <associations>
+                <association name="wfcp:caseRole">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="wfcp:hasPerformersSync">
+            <properties>
+                <property name="wfcp:syncWorkflowToRoles">
+                    <type>d:boolean</type>
+                </property>
+                <property name="wfcp:syncRolesToWorkflow">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
     </aspects>
 
 </model>

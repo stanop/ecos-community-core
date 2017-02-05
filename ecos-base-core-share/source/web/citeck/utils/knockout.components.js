@@ -43,6 +43,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.settings = this.attribute().settings();            
 
             if (this.datatype) {
+                var datatypeMapping = {
+                    'boolean': 'd:boolean'
+                };
+                var datatype = datatypeMapping[self.datatype] || self.datatype;
+
                 // prepare fake viewModel
                 this.fakeViewModel = {
                     "fieldId": this.fieldId,
@@ -64,6 +69,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }),
 
                     "nodetype": ko.observable(self.nodetype),
+                    "datatype": ko.observable(datatype),
 
                     "options": ko.observable([]),
                     "optionsText": function(o) { return o.attributes["cm:name"]; },
@@ -208,8 +214,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     });
                 } else if (this.datatype == "datetime") {
                     this.fakeViewModel.value = ko.computed({
-                        read: function() { return  new Date(self.value()); },
-                        write: function(newValue) { self.value(moment(newValue).format()); }
+                        read: function() {
+                            return self.value() ? new Date(self.value()) : null; 
+                        },
+                        write: function(newValue) {
+                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-ddTHH:mm") : null);
+                        }
                     })
                 }
 
@@ -793,6 +803,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 case "int":
                 case "double":
                     templateName = "number";
+                    break;
+                case "boolean":
+                    templateName = "checkbox";
                     break;
                 case "mltext":
                 default:
