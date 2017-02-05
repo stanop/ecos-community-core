@@ -32,6 +32,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
         ExplicitInvariantSet = koclass('invariants.ExplicitInvariantSet', InvariantSet),
+        GroupedInvariantSet = koclass('invariants.GroupedInvariantSet', InvariantSet),
         ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
         MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
@@ -46,6 +47,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         ContentFileImpl = koclass('invariants.ContentFileImpl'),
         ContentTextImpl = koclass('invariants.ContentTextImpl'),
         ContentFakeImpl = koclass('invariants.ContentFakeImpl'),
+        Group = koclass('invariants.Group'),
         Runtime = koclass('invariants.Runtime');
 
     var EnumerationServiceImpl = {
