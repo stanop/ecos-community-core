@@ -94,7 +94,8 @@
         </field>
         <field prop="wfcp:abortOutcomes" />
         <field prop="wfcp:outcomesWithMandatoryComment" />
-        <field prop="wfcp:ctSyncPerformers" />
+        <field prop="wfcp:syncRolesToWorkflow" />
+        <field prop="wfcp:syncWorkflowToRoles" />
     </view>
 
 </views>
