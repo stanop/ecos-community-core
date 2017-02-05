@@ -61,7 +61,7 @@ public class UpdateCasePerformAssigneesCmd extends NeedsActiveExecutionCmd<Void>
         ExecutionEntity execution = processExecution.findExecution(CasePerformUtils.SUB_PROCESS_NAME);
         if (execution == null) return null;
 
-        Boolean syncEnabled = (Boolean) execution.getVariable(toString(CasePerformModel.PROP_SYNC_PERFORMERS));
+        Boolean syncEnabled = (Boolean) execution.getVariable(toString(CasePerformModel.PROP_SYNC_ROLES_TO_WORKFLOW));
 
         if (syncEnabled != null && syncEnabled) {
             removePerformers(execution, performersRemove);

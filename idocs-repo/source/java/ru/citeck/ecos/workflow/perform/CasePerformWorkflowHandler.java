@@ -115,7 +115,7 @@ public class CasePerformWorkflowHandler implements Serializable {
 
     public void onPerformTaskAssigned(ExecutionEntity execution, TaskEntity task) {
 
-        Boolean syncEnabled = (Boolean) execution.getVariable(utils.toString(CasePerformModel.PROP_SYNC_PERFORMERS));
+        Boolean syncEnabled = (Boolean) execution.getVariable(utils.toString(CasePerformModel.PROP_SYNC_WORKFLOW_TO_ROLES));
 
         if (syncEnabled != null && syncEnabled) {
             String performerKey = utils.toString(CasePerformModel.ASSOC_PERFORMER);
