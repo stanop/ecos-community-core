@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<!-- supply application context to helper -->
+	<bean class="ru.citeck.ecos.test.ApplicationContextHelper" />
+
+	<!-- run test webscript -->
+	<bean id="webscript.ru.citeck.test.run-test.get" class="ru.citeck.ecos.test.RunTestWebscript" parent="webscript">
+	</bean>
+	
+</beans>
