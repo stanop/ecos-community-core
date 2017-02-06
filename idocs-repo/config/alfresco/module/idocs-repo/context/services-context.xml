@@ -550,4 +550,10 @@
 
 	<bean id="ecos.itemsUpdateState" class="ru.citeck.ecos.state.ItemsUpdateState" />
 
+	<bean id="ecosConfigSearchService" class="ru.citeck.ecos.config.EcosConfigSearchService">
+		<property name="criteriaSearchService" ref="criteriaSearchService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="searchCriteriaFactory" ref="searchCriteriaFactory"/>
+	</bean>
+
 </beans>
