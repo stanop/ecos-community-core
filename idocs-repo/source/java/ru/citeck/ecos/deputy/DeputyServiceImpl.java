@@ -150,7 +150,7 @@ public class DeputyServiceImpl implements DeputyService
 	@Override
 	public List<String> getUsersWhoHaveThisUserDeputy(String userName) {
 		NodeRef user = authorityHelper.needUser(userName);
-		return getAuthorityNames(getUsersDeputiedToUserImpl(user));
+		return getAuthorityNames(getUsersDeputiedToUserImpl(user, false));
 	}
 
 	@Override
@@ -458,6 +458,23 @@ public class DeputyServiceImpl implements DeputyService
 		}
 	}
 
+	@Override
+	public List<String> getUsersDeputedTo(String userName) {
+
+		NodeRef user = authorityHelper.needUser(userName);
+		List<NodeRef> deputedUsers = new ArrayList<>();
+
+		List<NodeRef> deputies = getUsersDeputiedToUserImpl(user, false);
+		for (NodeRef ref : deputies) {
+			if (!availabilityService.getUserAvailability(ref)) {
+				deputedUsers.add(ref);
+			}
+		}
+		deputedUsers.addAll(getUsersDeputiedToUserImpl(user, true));
+
+		return getAuthorityNames(deputedUsers);
+	}
+
 	/////////////////////////////////////////////////////////////////
 	//                       PRIVATE STUFF                         //
 	/////////////////////////////////////////////////////////////////
@@ -508,9 +525,9 @@ public class DeputyServiceImpl implements DeputyService
 		return filterAuthoritiesByType(deputyMap.values(), ContentModel.TYPE_AUTHORITY_CONTAINER);
 	}
 
-	private List<NodeRef> getUsersDeputiedToUserImpl(NodeRef user) {
+	private List<NodeRef> getUsersDeputiedToUserImpl(NodeRef user, boolean isAssistants) {
 		List<NodeRef> deputationRecords =
-				searchDeputationRecords(DeputyModel.ASSOC_DEPUTY, user, false);
+				searchDeputationRecords(DeputyModel.ASSOC_DEPUTY, user, isAssistants);
 		Map<NodeRef, NodeRef> deputyMap = mapDeputationRecordsAssocs(deputationRecords,
 				DeputyModel.ASSOC_DEPUTIED_AUTHORITY);
 		return filterAuthoritiesByType(deputyMap.values(), ContentModel.TYPE_PERSON);

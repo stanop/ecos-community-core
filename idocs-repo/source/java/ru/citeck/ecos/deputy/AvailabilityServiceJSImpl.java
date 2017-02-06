@@ -40,6 +40,11 @@ public class AvailabilityServiceJSImpl extends AlfrescoScopableProcessorExtensio
 	}
 
 	@Override
+	public boolean getUserAvailability(NodeRef userRef) {
+		return availabilityService.getUserAvailability(userRef);
+	}
+
+	@Override
 	public String getUserUnavailableAutoAnswer(String userName) {
 		return availabilityService.getUserUnavailableAutoAnswer(userName);
 	}
