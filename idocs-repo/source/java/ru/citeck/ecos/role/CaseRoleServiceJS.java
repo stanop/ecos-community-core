@@ -1,12 +1,9 @@
 package ru.citeck.ecos.role;
 
-import jdk.nashorn.internal.runtime.Context;
 import org.alfresco.repo.jscript.ScriptNode;
-import org.alfresco.repo.jscript.ScriptableHashMap;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
-import org.mozilla.javascript.Scriptable;
 import org.springframework.extensions.surf.util.ParameterCheck;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
