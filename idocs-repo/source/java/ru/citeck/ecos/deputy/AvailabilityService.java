@@ -31,6 +31,14 @@ public interface AvailabilityService {
 	public abstract boolean getUserAvailability(String userName);
 
 	/**
+	 * Get specified user availability.
+	 *
+	 * @param userRef - user to query availability
+	 * @return true if user is available, false if user is not available
+	 */
+	public abstract boolean getUserAvailability(NodeRef userRef);
+
+	/**
 	 * Get specified user autoAnswer.
 	 *
 	 * @param userName - user to query autoAnswer

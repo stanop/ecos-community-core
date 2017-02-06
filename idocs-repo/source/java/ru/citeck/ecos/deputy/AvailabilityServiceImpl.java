@@ -35,19 +35,19 @@ public class AvailabilityServiceImpl implements AvailabilityService
 	private NodeService nodeService;
 	private AuthorityHelper authorityHelper;
 	private SearchService searchService;
-	
+
 	/////////////////////////////////////////////////////////////////
 	//                      SPRING INTERFACE                       //
 	/////////////////////////////////////////////////////////////////
-	
+
 	public void setAuthenticationService(AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
 	}
-	
+
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;
 	}
-	
+
 	public void setAuthorityHelper(AuthorityHelper authorityHelper) {
 		this.authorityHelper = authorityHelper;
 	}
@@ -55,18 +55,23 @@ public class AvailabilityServiceImpl implements AvailabilityService
 	public void setSearchService(SearchService searchService) {
 		this.searchService = searchService;
 	}
-	
+
 	/////////////////////////////////////////////////////////////////
 	//                       ADMIN INTERFACE                       //
 	/////////////////////////////////////////////////////////////////
-	
+
 	@Override
 	public boolean getUserAvailability(String userName) {
 		NodeRef person = authorityHelper.needUser(userName);
-		if(person == null) {
+		if (person == null) {
 			throw new IllegalArgumentException("No such user: " + userName);
 		}
-		Boolean available = (Boolean) nodeService.getProperty(person, DeputyModel.PROP_AVAILABLE);
+		return getUserAvailability(person);
+	}
+
+	@Override
+	public boolean getUserAvailability(NodeRef userRef) {
+		Boolean available = (Boolean) nodeService.getProperty(userRef, DeputyModel.PROP_AVAILABLE);
 		// user is available by default
 		return !Boolean.FALSE.equals(available);
 	}

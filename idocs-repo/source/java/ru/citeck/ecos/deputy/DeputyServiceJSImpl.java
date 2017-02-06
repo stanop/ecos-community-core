@@ -265,4 +265,9 @@ public class DeputyServiceJSImpl extends AlfrescoScopableProcessorExtension
     public boolean isCanDeleteDeputeOrAssistantFromRole(String roleFullName) {
         return deputyService.isCanDeleteDeputeOrAssistantFromRole(roleFullName);
     }
+
+	@Override
+	public ScriptUser[] getUsersDeputedTo(String userName) {
+		return wrapUsers(deputyService.getUsersDeputedTo(userName), this);
+	}
 }
