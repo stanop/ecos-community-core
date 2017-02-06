@@ -346,6 +346,7 @@
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
                 <aspect>idocs:communicationInfo</aspect>
+                <aspect>idocs:diadocFields</aspect>
             </mandatory-aspects>
         </type>
 
@@ -847,6 +848,16 @@
                     </constraints>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="idocs:diadocFields">
+          <properties>
+              <property name="idocs:diadocBoxId">
+                  <title>Diadoc Box ID</title>
+                  <type>d:text</type>
+                  <mandatory>false</mandatory>
+              </property>
+          </properties>
         </aspect>
 
         <aspect name="idocs:hasRegistrator">
