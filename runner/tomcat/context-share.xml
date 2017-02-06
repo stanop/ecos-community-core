@@ -38,6 +38,9 @@
             ${project.parent.basedir}/ecos-forms-share/target/classes;
             ${project.parent.basedir}/ecos-forms-share/target/amp/config;
             ${project.parent.basedir}/ecos-forms-share/target/test-classes;
+            ${project.parent.basedir}/idocs-share/target/classes;
+            ${project.parent.basedir}/idocs-share/target/amp/config;
+            ${project.parent.basedir}/idocs-share/target/test-classes;
             ${project.parent.basedir}/share/target/test-classes" />
 
     <!-- Load from all directories, not just when the META-INF directory is found in exploded JAR -->
