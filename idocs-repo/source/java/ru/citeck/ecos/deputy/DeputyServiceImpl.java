@@ -458,23 +458,6 @@ public class DeputyServiceImpl implements DeputyService
 		}
 	}
 
-	@Override
-	public List<String> getUsersDeputedTo(String userName) {
-
-		NodeRef user = authorityHelper.needUser(userName);
-		List<NodeRef> deputedUsers = new ArrayList<>();
-
-		List<NodeRef> deputies = getUsersDeputiedToUserImpl(user, false);
-		for (NodeRef ref : deputies) {
-			if (!availabilityService.getUserAvailability(ref)) {
-				deputedUsers.add(ref);
-			}
-		}
-		deputedUsers.addAll(getUsersDeputiedToUserImpl(user, true));
-
-		return getAuthorityNames(deputedUsers);
-	}
-
 	/////////////////////////////////////////////////////////////////
 	//                       PRIVATE STUFF                         //
 	/////////////////////////////////////////////////////////////////

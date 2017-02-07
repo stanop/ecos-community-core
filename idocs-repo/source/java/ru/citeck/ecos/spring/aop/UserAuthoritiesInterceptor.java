@@ -4,10 +4,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import ru.citeck.ecos.deputy.DeputyService;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Pavel Simonov
@@ -49,7 +46,14 @@ public class UserAuthoritiesInterceptor implements MethodInterceptor {
         if (userName == null) {
             return Collections.emptyList();
         }
-        return deputyService.getUsersDeputedTo(userName);
+        List<String> deputies = deputyService.getUsersWhoHaveThisUserDeputy(userName);
+        List<String> result = new ArrayList<>(deputies.size());
+        for (String user : deputies) {
+            if (!deputyService.isUserAvailable(user)) {
+                result.add(user);
+            }
+        }
+        return result;
     }
 
     public void setDeputyService(DeputyService deputyService) {
