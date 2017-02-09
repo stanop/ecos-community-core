@@ -2,9 +2,10 @@ package ru.citeck.ecos.behavior.status;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.admin.RepositoryState;
+import org.alfresco.repo.batch.BatchProcessWorkProvider;
+import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -14,15 +15,18 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.quartz.StatefulJob;
+import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,9 +35,13 @@ import java.util.List;
  *
  * @author Pavel Simonov
  */
-public class ChangeStatusByDate extends AbstractScheduledLockedJob {
+public class ChangeStatusByDate extends AbstractScheduledLockedJob implements StatefulJob {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeStatusByDate.class);
+    private static final int WORKER_THREADS = 1;
+    private static final int BATCH_SIZE = 10;
+    private static final int LOGGING_INTERVAL = 50;
+
+    private static final Log logger = LogFactory.getLog(ChangeStatusByDate.class);
 
     private static final String SEARCH_QUERY = "TYPE:\"%s\" AND @%s:[MIN TO NOW] AND @icase\\:caseStatusAssoc_added:\"%s\"";
 
@@ -48,19 +56,11 @@ public class ChangeStatusByDate extends AbstractScheduledLockedJob {
                 if (repositoryState.isBootstrapping()) {
                     return null;
                 }
-                final TransactionService transactionService = serviceRegistry.getTransactionService();
+                @SuppressWarnings("unchecked")
                 final List<String> transitions = (List) data.get("transitions");
-                final RetryingTransactionHelper transactionHelper = transactionService.getRetryingTransactionHelper();
-
-                transactionHelper.doInTransaction(new RetryingTransactionCallback<Void>() {
-                    @Override
-                    public Void execute() throws Throwable {
-                        for (String transition : transitions) {
-                            makeTransition(serviceRegistry, transition);
-                        }
-                        return null;
-                    }
-                });
+                for (String transition : transitions) {
+                    makeTransition(serviceRegistry, transition);
+                }
                 return null;
             }
         });
@@ -73,14 +73,23 @@ public class ChangeStatusByDate extends AbstractScheduledLockedJob {
 
         Transition transition = new Transition(transitionData, namespaceService);
         List<NodeRef> nodeRefs = findNodes(caseStatusService, searchService, transition);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Found " + nodeRefs.size() + " nodes which required transition.");
-        }
-        for (NodeRef ref : nodeRefs) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Make transition for node '" + ref + "' transition: " + transitionData);
-            }
-            caseStatusService.setStatus(ref, getStatus(caseStatusService, transition.toStatus));
+
+        logger.info("Transition '" + transitionData + "' nodes to change: " + nodeRefs.size());
+        if (!nodeRefs.isEmpty()) {
+
+            TransactionService transactionService = serviceRegistry.getTransactionService();
+            RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
+
+            String processName = "Change status '" + transitionData + "'";
+            BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
+                    processName,
+                    retryingTransactionHelper,
+                    new ChangeStatusWorkProvider(nodeRefs),
+                    WORKER_THREADS, BATCH_SIZE,
+                    null, logger, LOGGING_INTERVAL
+            );
+
+            batchProcessor.process(new ChangeStatusWorker(caseStatusService, transition.toStatus), true);
         }
     }
 
@@ -90,7 +99,22 @@ public class ChangeStatusByDate extends AbstractScheduledLockedJob {
         ResultSet results = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
                                                 SearchService.LANGUAGE_FTS_ALFRESCO, query);
 
-        return results != null ? results.getNodeRefs() : Collections.<NodeRef>emptyList();
+        if (results != null) {
+            return filterByStatus(results.getNodeRefs(), statusRef, caseStatusService);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<NodeRef> filterByStatus(List<NodeRef> nodeRefs, NodeRef statusRef, CaseStatusService caseStatusService) {
+        List<NodeRef> result = new ArrayList<>(nodeRefs.size());
+        for (NodeRef nodeRef : nodeRefs) {
+            NodeRef caseStatusRef = caseStatusService.getStatusRef(nodeRef);
+            if (statusRef.equals(caseStatusRef)) {
+                result.add(nodeRef);
+            }
+        }
+        return result;
     }
 
     private NodeRef getStatus(CaseStatusService caseStatusService, String name) {
@@ -99,6 +123,47 @@ public class ChangeStatusByDate extends AbstractScheduledLockedJob {
             throw new AlfrescoRuntimeException("Status not found: " + name);
         }
         return statusRef;
+    }
+
+    private static class ChangeStatusWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
+
+        private CaseStatusService caseStatusService;
+        private NodeRef toStatus;
+
+        ChangeStatusWorker(CaseStatusService caseStatusService, String toStatus) {
+            this.caseStatusService = caseStatusService;
+            this.toStatus = caseStatusService.getStatusByName(toStatus);
+        }
+
+        @Override
+        public void process(NodeRef entry) throws Throwable {
+            caseStatusService.setStatus(entry, toStatus);
+        }
+    }
+
+    private static class ChangeStatusWorkProvider implements BatchProcessWorkProvider<NodeRef> {
+
+        private Collection<NodeRef> nodeRefs;
+        private boolean hasMore = true;
+
+        ChangeStatusWorkProvider(Collection<NodeRef> nodeRefs) {
+            this.nodeRefs = nodeRefs;
+        }
+
+        @Override
+        public int getTotalEstimatedWorkSize() {
+            return nodeRefs.size();
+        }
+
+        @Override
+        public Collection<NodeRef> getNextWork() {
+            if (hasMore) {
+                hasMore = false;
+                return nodeRefs;
+            } else {
+                return Collections.emptyList();
+            }
+        }
     }
 
     private static class Transition {

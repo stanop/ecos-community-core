@@ -78,10 +78,13 @@ ko.components.register("help", {
 
             this.tooltip.cfg.addProperty("forceVisible", { value: false });
             this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+
+            if (this.text()) { this.tooltip.cfg.setProperty("text", this.text()); }
         }
 
         this.text.subscribe(function(newValue) {
-            this.tooltip.cfg.setProperty("text", newValue);
+            if (newValue) this.tooltip.cfg.setProperty("text", newValue);
+            this.tooltip.cfg.setProperty("disabled", !newValue);
         }, this);
 
         this.onclick = function(data, event) {
