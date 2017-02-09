@@ -79,7 +79,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
 
     public void sendNotification(NodeRef sourceRef, NodeRef targetRef, Map<String, List<String>> recipients,
                                  String notificationType, String subjectTemplate, boolean afterCommit) {
-        if (!aspectConditionIsFulfilled(sourceRef) || !existExcludeStatus(sourceRef)) {
+        if (!aspectConditionIsFulfilled(sourceRef) || existExcludeStatus(sourceRef)) {
             return;
         }
 
