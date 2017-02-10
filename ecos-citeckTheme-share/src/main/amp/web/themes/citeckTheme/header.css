@@ -24,15 +24,9 @@
   height: 20px;
 }
 
-/*.yui-skin-citeckTheme #SHARE_HEADER .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > 
-span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
-  border: none;
-  padding: 0 15px 0 0;
-  background-color: #2d3541;
-  color: white !important;
-  line-height: normal;
-  background-position-y: 3px;
-}*/
+.yui-skin-citeckTheme #SHARE_HEADER .dijitMenuBar .dijitMenuItem .alfresco-menus-AlfMenuBarPopup__arrow {
+  margin-left: 5px;
+}
 
 .yui-skin-citeckTheme #SHARE_HEADER #HEADER_APP_MENU_BAR .dijitMenuBar {
   padding: 0;
@@ -43,10 +37,6 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
 .yui-skin-citeckTheme #SHARE_HEADER #HEADER_APP_MENU_BAR .dijitMenuBar .dijitMenuItem {
   border-left: 1px solid #394353;
   border-right: 1px solid #1e242c;
-}
-
-.yui-skin-citeckTheme #SHARE_HEADER #HEADER_APP_MENU_BAR .dijitMenuBar .dijitMenuItem .alfresco-menus-AlfMenuBarPopup__arrow {
-  margin-left: 5px;
 }
 
 .yui-skin-citeckTheme #SHARE_HEADER #HEADER_APP_MENU_BAR .dijitMenuBar .dijitMenuItem:first-child {
@@ -217,7 +207,8 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
   margin: 0;
 }
 
-.yui-skin-citeckTheme #HEADER_TITLE a {
+.yui-skin-citeckTheme #HEADER_TITLE a,
+.yui-skin-citeckTheme #HEADER_TITLE span {
   font-family: Open Sans !important;
   font-weight: 900 !important;
   font-size: 18px !important;
