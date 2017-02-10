@@ -2133,17 +2133,14 @@ table td.thumbnail img
 }
 
 
-
-/*.yui-skin-citeckTheme .alf-menu-bar .dijitMenuBar .dijitMenuItemHover, 
-.yui-skin-citeckTheme .alf-menu-bar .dijitMenuBar .dijitMenuItemSelected {
-   background-color: transparent !important; 
-}*/
-
-
 /* CONTENT */
 
 #doc3 {
    margin: 0;
+}
+
+#alf-content {
+  padding: 15px 25px 0px 25px;
 }
 
 #bd {
