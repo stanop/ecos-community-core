@@ -38,7 +38,7 @@ var userMenuItems = [
 
   {
     id: "HEADER_USER_MENU_MY_PROFILE",
-    name: "alfresco/header/AlfMenuItem",
+    name: "js/citeck/header/citeckMenuItem",
     config:
     {
       id: "HEADER_USER_MENU_MY_PROFILE",
@@ -69,7 +69,7 @@ var availability = "make-" + (currentUser.properties.available === false ? "" : 
 
 userMenuItems.push({
     id: "HEADER_USER_MENU_AVAILABILITY",
-    name: "alfresco/header/AlfMenuItem",
+    name: "js/citeck/header/citeckMenuItem",
     config: {
         id: "HEADER_USER_MENU_AVAILABILITY",
         label: "header." + availability + ".label",
@@ -82,7 +82,7 @@ userMenuItems.push({
 if (user.capabilities.isMutable) {
   userMenuItems.push({
     id: "HEADER_USER_MENU_PASSWORD",
-    name: "alfresco/header/AlfMenuItem",
+    name: "js/citeck/header/citeckMenuItem",
     config:
     {
       id: "HEADER_USER_MENU_PASSWORD",
@@ -96,7 +96,7 @@ if (user.capabilities.isMutable) {
 if (!context.externalAuthentication) {
   userMenuItems.push({
     id: "HEADER_USER_MENU_LOGOUT",
-    name: "alfresco/header/AlfMenuItem",
+    name: "js/citeck/header/citeckMenuItem",
     config:
     {
       id: "HEADER_USER_MENU_LOGOUT",
@@ -115,7 +115,7 @@ userMenu.config.widgets = [{
     id: "HEADER_USER_MENU",
     label: user.fullName,
     widgets: [{
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "js/citeck/menus/citeckMenuGroup",
       config: {
         widgets: userMenuItems
       }
@@ -131,7 +131,7 @@ var createSiteClickEvent = function(event, element) {
  
 var HEADER_HOME = {
       id: "HEADER_HOME",
-      name: "alfresco/menus/AlfMenuBarItem",
+      name: "js/citeck/menus/citeckMenuBarItem",
       config: {
         id: "HEADER_HOME",
         label: "header.menu.home.label",
@@ -140,7 +140,7 @@ var HEADER_HOME = {
     },
     HEADER_SITES_VARIANTS = {
       id: "HEADER_SITES_VARIANTS",
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "js/citeck/menus/citeckMenuGroup",
       config: {
         id: "HEADER_SITES_VARIANTS",
         widgets: buildSitesForUser(user.name)
@@ -148,7 +148,7 @@ var HEADER_HOME = {
     },
     HEADER_SITES_SEARCH = {
       id: "HEADER_SITES_SEARCH",
-      name: "alfresco/menus/AlfMenuItem",
+      name: "js/citeck/menus/citeckMenuItem",
       config: {
         id: "HEADER_SITES_SEARCH",
         label: "header.find-sites.label",
@@ -157,7 +157,7 @@ var HEADER_HOME = {
     },
     HEADER_SITES_CREATE = {
       id: "HEADER_SITES_CREATE",
-      name: "alfresco/menus/AlfMenuItem",
+      name: "js/citeck/menus/citeckMenuItem",
       config: {
         id: "HEADER_SITES_CREATE",
         label: "header.create-site.label",
@@ -167,7 +167,7 @@ var HEADER_HOME = {
     },
     HEADER_CREATE_VARIANTS = {
       id: "HEADER_CREATE_VARIANTS",
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "js/citeck/menus/citeckMenuGroup",
       config: {
         id: "HEADER_CREATE_VARIANTS",
         widgets: buildCreateVariantsForSite(currentSite)
@@ -175,7 +175,7 @@ var HEADER_HOME = {
     },
     HEADER_JOURNALS = {
       id: "HEADER_JOURNALS",
-      name: "alfresco/menus/AlfMenuBarItem",
+      name: "js/citeck/menus/citeckMenuBarItem",
       config: {
         id: "HEADER_JOURNALS",
         label: "header.journals.label",
@@ -185,7 +185,7 @@ var HEADER_HOME = {
     },
     HEADER_DOCUMENTLIBRARY = {
       id: "HEADER_DOCUMENTLIBRARY",
-      name: "alfresco/menus/AlfMenuBarItem",
+      name: "js/citeck/menus/citeckMenuBarItem",
       config: {
         id: "HEADER_DOCUMENTLIBRARY",
         label: "header.documentlibrary.label",
@@ -195,13 +195,13 @@ var HEADER_HOME = {
     },
     HEADER_CREATE_WORKFLOW_VARIANTS = {
       id: "HEADER_CREATE_WORKFLOW_VARIANTS",
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "js/citeck/menus/citeckMenuGroup",
       config: {
         id: "HEADER_CREATE_WORKFLOW_VARIANTS",
         widgets: [
           {
             id: "HEADER_CREATE_WORKFLOW_ADHOC",
-            name: "alfresco/menus/AlfMenuItem",
+            name: "js/citeck/menus/citeckMenuItem",
             config: {
               id: "HEADER_CREATE_WORKFLOW_ADHOC",
               label: "header.create-workflow-adhoc.label",
@@ -210,7 +210,7 @@ var HEADER_HOME = {
           },
           {
             id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-            name: "alfresco/menus/AlfMenuItem",
+            name: "js/citeck/menus/citeckMenuItem",
             config: {
               id: "HEADER_CREATE_WORKFLOW_CONFIRM",
               label: "header.create-workflow-confirm.label",
@@ -245,7 +245,7 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
 
   loggingWidgetItems = [
     {
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "js/citeck/menus/citeckMenuGroup",
       config: {
         label: "Quick Settings",
         widgets: [
@@ -289,12 +289,12 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
       }
     },
     {
-      name: "alfresco/menus/AlfMenuGroup",
+      name: "js/citeck/menus/citeckMenuGroup",
       config: {
         label: "Logging Configuration",
         widgets: [
           {
-            name: "alfresco/menus/AlfMenuItem",
+            name: "js/citeck/menus/citeckMenuItem",
             config: {
               label: "Update Logging Preferences",
               publishTopic: "ALF_UPDATE_LOGGING_PREFERENCES"
@@ -323,7 +323,7 @@ if (!isMobile) {
         HEADER_SITES_VARIANTS,
         {
           id: "HEADER_SITES_MANAGEMENT",
-          name: "alfresco/menus/AlfMenuGroup",
+          name: "js/citeck/menus/citeckMenuGroup",
           config: {
             id: "HEADER_SITES_MANAGEMENT",
             widgets: [ 
@@ -373,14 +373,14 @@ if (!isMobile) {
 
 // BUILD MOBILE MENU
 var HEADER_MOBILE_HOME = toMobileWidget(HEADER_HOME);
-HEADER_MOBILE_HOME.name = "alfresco/menus/AlfMenuItem";
+HEADER_MOBILE_HOME.name = "js/citeck/menus/citeckMenuItem";
 
 var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
-HEADER_MOBILE_JOURNALS.name = "alfresco/menus/AlfMenuItem";
+HEADER_MOBILE_JOURNALS.name = "js/citeck/menus/citeckMenuItem";
 HEADER_MOBILE_JOURNALS.config.movable = null;
 
 var HEADER_MOBILE_DOCUMENTLIBRARY = toMobileWidget(HEADER_DOCUMENTLIBRARY);
-HEADER_MOBILE_DOCUMENTLIBRARY.name = "alfresco/menus/AlfMenuItem";
+HEADER_MOBILE_DOCUMENTLIBRARY.name = "js/citeck/menus/citeckMenuItem";
 HEADER_MOBILE_DOCUMENTLIBRARY.config.movable = null;
 
 var HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS = toMobileWidget(HEADER_CREATE_WORKFLOW_VARIANTS);
@@ -395,7 +395,7 @@ var HEADER_MOBILE_SITES_CREATE = toMobileWidget(HEADER_SITES_CREATE);
 
 var HEADER_MOBILE_MENU_VARIANTS = {
   id: "HEADER_MOBILE_MENU_VARIANTS",
-  name: "alfresco/menus/AlfMenuGroup",
+  name: "js/citeck/menus/citeckMenuGroup",
   config: {
     id: "HEADER_MOBILE_MENU_VARIANTS",
     widgets: [
@@ -405,7 +405,7 @@ var HEADER_MOBILE_MENU_VARIANTS = {
 
       {
         id: "HEADER_MOBILE_SITES",
-        name: "alfresco/menus/AlfMenuGroup",
+        name: "js/citeck/menus/citeckMenuGroup",
         config: {
           id: "HEADER_MOBILE_SITES",
           label: "header.sites.label",
@@ -413,7 +413,7 @@ var HEADER_MOBILE_MENU_VARIANTS = {
             HEADER_MOBILE_SITES_VARIANTS, 
             {
               id: "HEADER_MOBILE_SITES_MANAGEMENT",
-              name: "alfresco/menus/AlfMenuGroup",
+              name: "js/citeck/menus/citeckMenuGroup",
               config: {
                 id: "HEADER_MOBILE_SITES_MANAGEMENT",
                 widgets: [ HEADER_MOBILE_SITES_SEARCH, HEADER_MOBILE_SITES_CREATE ]
@@ -463,7 +463,7 @@ if (siteConfig && siteData.userIsSiteManager) {
   if (!page.titleId && !hasWidget("HEADER_CUSTOMIZE_SITE_DASHBOARD")) {
     siteConfig.config.widgets.splice(0, 0, {
       id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
-      name: "alfresco/menus/AlfMenuItem",
+      name: "js/citeck/menus/citeckMenuItem",
       config: {
         label: "customize_dashboard.label",
         iconClass: "alf-cog-icon",
@@ -492,7 +492,7 @@ function buildMorePopup(isMobile) {
 
   return {
     id: "HEADER_MORE",
-    name: isMobile ? "alfresco/menus/AlfMenuGroup" : "alfresco/header/AlfMenuBarPopup",
+    name: isMobile ? "js/citeck/menus/citeckMenuGroup" : "alfresco/header/AlfMenuBarPopup",
     config: config
   };
 };
@@ -500,7 +500,7 @@ function buildMorePopup(isMobile) {
 function buildMovableGroup() {
   return {
     id: "HEADER_MORE_MOVABLE_GROUP",
-    name: "alfresco/menus/AlfMenuGroup",
+    name: "js/citeck/menus/citeckMenuGroup",
     config: {
       id: "HEADER_MORE_MOVABLE_GROUP",
       label: "",
@@ -526,7 +526,7 @@ function buildMyGroup(isMobile) {
 
   return {
     id: id,
-    name: "alfresco/menus/AlfMenuGroup",
+    name: "js/citeck/menus/citeckMenuGroup",
     config: {
       id: id,
       label: "header.my.label",
@@ -550,7 +550,7 @@ function buildAdminGroup(isMobile) {
 
   return {
     id: id,
-    name: "alfresco/menus/AlfMenuGroup",
+    name: "js/citeck/menus/citeckMenuGroup",
     config: {
       id: id,
       label: "header.tools.label",
@@ -591,7 +591,7 @@ function buildItems(items, groupName) {
 
     result.push({
       id: configuration.id,
-      name: "alfresco/menus/AlfMenuItem",
+      name: "js/citeck/menus/citeckMenuItem",
       config: configuration
     });
   }

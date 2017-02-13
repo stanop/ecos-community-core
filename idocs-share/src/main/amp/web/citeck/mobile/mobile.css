@@ -96,7 +96,7 @@
 }
 
 .mobile #HEADER_MOBILE_MENU_text {
-    content: url(../../../../src/main/amp/web/citeck/images/treeline-20.png);
+    content: url(/share/res/citeck/images/treeline-20.png);
     width: 22px;
     height: 20px;
     float: left;
