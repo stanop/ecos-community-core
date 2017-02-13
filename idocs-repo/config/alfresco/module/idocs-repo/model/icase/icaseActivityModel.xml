@@ -53,8 +53,10 @@
                 </property>
                 <property name="activ:index">
                     <type>d:int</type>
-                    <!-- add to the end -->
                     <default>999999</default>
+                </property>
+                <property name="activ:repeatable">
+                    <type>d:boolean</type>
                 </property>
             </properties>
             <mandatory-aspects>

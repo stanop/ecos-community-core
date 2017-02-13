@@ -25,11 +25,9 @@
         </field>
         <field prop="activ:plannedStartDate">
             <region name="input" template="datetime"/>
-            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
         </field>
         <field prop="activ:plannedEndDate">
             <region name="input" template="datetime"/>
-            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
         </field>
         <field prop="icaseTask:priority">
             <region name="input" template="select"/>

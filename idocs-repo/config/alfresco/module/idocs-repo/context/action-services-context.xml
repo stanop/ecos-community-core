@@ -28,7 +28,11 @@
 	</bean>
 	
 	<bean id="set-process-variable" class="ru.citeck.ecos.action.SetLifecycleProcessVariableActionExecuter" parent="action-executer" />
-	
+
+    <bean id="set-case-status" class="ru.citeck.ecos.action.SetCaseStatusActionExecuter" parent="action-executer">
+        <property name="caseStatusService" ref="caseStatusService" />
+    </bean>
+
 	<bean id="fail" class="ru.citeck.ecos.action.FailActionExecuter" parent="action-executer" />
 
 	<bean id="evaluate-script" class="ru.citeck.ecos.action.evaluator.ScriptEvaluator" parent="action-condition-evaluator">

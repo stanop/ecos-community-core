@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity;
 
+import com.google.common.collect.Lists;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -50,8 +51,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         onActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStoppedPolicy.class);
         onActivityResetDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityResetPolicy.class);
 
-        allowedTransitions.put(STATE_NOT_STARTED, Arrays.asList(STATE_STARTED));
-        allowedTransitions.put(STATE_STARTED, Arrays.asList(STATE_COMPLETED));
+        allowedTransitions.put(STATE_NOT_STARTED, Lists.newArrayList(STATE_STARTED));
+        allowedTransitions.put(STATE_STARTED, Lists.newArrayList(STATE_COMPLETED));
     }
 
     @Override
@@ -92,24 +93,6 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
         policy = onActivityStoppedDelegate.get(classes);
         policy.onCaseActivityStopped(activityRef);
-    }
-
-    private boolean setState(NodeRef nodeRef, String state) {
-        if (!nodeService.exists(nodeRef)) {
-            return false;
-        }
-
-        String currentState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
-        if (currentState == null) {
-            currentState = STATE_NOT_STARTED;
-        }
-
-        List<String> transitions = allowedTransitions.get(currentState);
-        if (transitions != null && transitions.contains(state)) {
-            nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, state);
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -164,6 +147,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         return result;
     }
 
+    @Override
     public List<NodeRef> getStartedActivities(NodeRef nodeRef) {
         List<NodeRef> startedActivities = new ArrayList<>();
         for (NodeRef activiti : getActivities(nodeRef)) {
@@ -175,6 +159,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         return startedActivities;
     }
 
+    @Override
     public NodeRef getActivityByTitle(NodeRef nodeRef, String title) {
         for (NodeRef activiti : getActivities(nodeRef)) {
             String actTitle = (String) nodeService.getProperty(activiti, ContentModel.PROP_TITLE);
@@ -192,26 +177,6 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             resetActivity(nodeRef);
         } else {
             resetActivitiesInChildren(nodeRef);
-        }
-    }
-
-    private void resetActivity(NodeRef activityRef) {
-
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
-        nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
-
-        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
-        CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
-        policy.onCaseActivityReset(activityRef);
-
-        resetActivitiesInChildren(activityRef);
-    }
-
-    private void resetActivitiesInChildren(NodeRef nodeRef) {
-        List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
-        for (NodeRef activityRef : children) {
-            resetActivity(activityRef);
         }
     }
 
@@ -274,8 +239,64 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     @Override
     public boolean isActive(NodeRef activityRef) {
         mandatoryNodeRef("activityRef", activityRef);
+        return STATE_STARTED.equals(getActivityState(activityRef));
+    }
+
+    private void resetActivity(NodeRef activityRef) {
+
+        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
+        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
+        nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
+
+        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
+        CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
+        policy.onCaseActivityReset(activityRef);
+
+        resetActivitiesInChildren(activityRef);
+    }
+
+    private void resetActivitiesInChildren(NodeRef nodeRef) {
+        List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
+        for (NodeRef activityRef : children) {
+            resetActivity(activityRef);
+        }
+    }
+
+    private boolean setState(NodeRef activityRef, String state) {
+        if (!nodeService.exists(activityRef)) {
+            return false;
+        }
+
+        String currentState = getActivityState(activityRef);
+
+        if (!currentState.equals(state)) {
+
+            if (isRequiredReset(activityRef, currentState, state)) {
+                reset(activityRef);
+                currentState = getActivityState(activityRef);
+            }
+
+            List<String> transitions = allowedTransitions.get(currentState);
+            if (transitions != null && transitions.contains(state)) {
+                nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, state);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isRequiredReset(NodeRef activityRef, String fromState, String toState) {
+        if (!STATE_NOT_STARTED.equals(fromState) && STATE_STARTED.equals(toState)) {
+            Boolean repeatable = (Boolean) nodeService.getProperty(activityRef, ActivityModel.PROP_REPEATABLE);
+            return Boolean.TRUE.equals(repeatable);
+        }
+        return false;
+    }
+
+    private String getActivityState(NodeRef activityRef) {
         String state = (String) nodeService.getProperty(activityRef, LifeCycleModel.PROP_STATE);
-        return STATE_STARTED.equals(state);
+        return state != null ? state : STATE_NOT_STARTED;
     }
 
     private void mandatoryActivity(String paramName, NodeRef activityRef) {
