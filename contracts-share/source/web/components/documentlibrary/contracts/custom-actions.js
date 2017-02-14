@@ -29,6 +29,33 @@
         }
     });
 
+    YAHOO.Bubbling.fire("registerAction", {
+        actionName: "onActionGenerateBarcode",
+        fn: function (record) {
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "citeck/barcode/generate-barcode?nodeRef=" + record.nodeRef,
+                successCallback: {
+                    scope: this,
+                    fn: function (response) {
+                        var result = JSON.parse(response.serverResponse.responseText);
+                        if (result.success == "true") {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message('actions.citeck.generate-barcode.success-message'),
+                                displayTime: 5
+                            });
+                            YAHOO.Bubbling.fire("metadataRefresh");
+                        } else {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message('actions.citeck.generate-barcode.failure-message'),
+                                displayTime: 5
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+
     function redirectToCreatePage(record, pageOfCreate) {
         var jsNode = record.jsNode;
 

@@ -5,7 +5,6 @@
 			<action id="document-download">
 				<param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}</param>
 				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
-				<evaluator negate="true">evaluator.doclib.contracts.payment</evaluator>
 			</action>
 			<action id="document-publish" type="javascript" label="actions.document.publish">
 				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
@@ -136,6 +135,8 @@
 			<action id="document-copy-in-place" label="actions.document.copy.in-place" icon="document-copy-to" type="javascript">
 				<param name="function">onActionCopyInPlace</param>
 				<evaluator>evaluator.parent.canCreateChildren</evaluator>
+				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
 			</action>
 
 			<!-- delete case item -->
@@ -238,6 +239,7 @@
 			<action id="case-save-as-template" type="javascript" label="actions.case.save-as-template">
 				<param name="function">onActionCaseSaveAsTemplate</param>
 				<evaluator>evaluator.doclib.idocs.isCase</evaluator>
+				<evaluator>evaluator.doclib.dms.isAdmin</evaluator>
 			</action>
 
 			<action id="document-start-task" type="javascript" label="actions.task.start">

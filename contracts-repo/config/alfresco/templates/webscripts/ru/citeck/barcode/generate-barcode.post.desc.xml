@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Generate barcode for document</shortname>
+    <description>Generate barcode for document</description>
+    <url>/citeck/barcode/generate-barcode?nodeRef={nodeRef}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+</webscript>

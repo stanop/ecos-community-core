@@ -346,7 +346,7 @@
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
                 <aspect>idocs:communicationInfo</aspect>
-                <aspect>idocs:diadocFields</aspect>
+                <aspect>idocs:diadocInfo</aspect>
             </mandatory-aspects>
         </type>
 
@@ -771,8 +771,24 @@
         </aspect>
 
         <aspect name="idocs:hasPerformer">
+        <associations>
+            <association name="idocs:performer">
+                <source>
+                    <mandatory>false</mandatory>
+                    <many>true</many>
+                </source>
+                <target>
+                    <class>cm:person</class>
+                    <mandatory>false</mandatory>
+                    <many>false</many>
+                </target>
+            </association>
+        </associations>
+    </aspect>
+
+        <aspect name="idocs:hasSupervisor">
             <associations>
-                <association name="idocs:performer">
+                <association name="idocs:supervisor">
                     <source>
                         <mandatory>false</mandatory>
                         <many>true</many>
@@ -850,14 +866,14 @@
             </properties>
         </aspect>
 
-        <aspect name="idocs:diadocFields">
-          <properties>
-              <property name="idocs:diadocBoxId">
-                  <title>Diadoc Box ID</title>
-                  <type>d:text</type>
-                  <mandatory>false</mandatory>
-              </property>
-          </properties>
+        <aspect name="idocs:diadocInfo">
+            <properties>
+                <property name="idocs:diadocBoxId">
+                    <title>Diadoc Box Id</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
         </aspect>
 
         <aspect name="idocs:hasRegistrator">
