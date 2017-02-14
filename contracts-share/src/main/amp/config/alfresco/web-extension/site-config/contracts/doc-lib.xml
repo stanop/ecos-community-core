@@ -100,6 +100,12 @@
             <evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
         </action>
 
+		<action id="document-generate-barcode" type="javascript" label="actions.citeck.generate-barcode.label">
+			<param name="function">onActionGenerateBarcode</param>
+			<evaluator>evaluator.doclib.contracts.agreement</evaluator>
+			<evaluator>evaluator.doclib.dms.isAdmin</evaluator>
+		</action>
+
 	</actions>
 
 	</config>
@@ -150,6 +156,7 @@
 				<action index="490" id="document-add-closing-doc-for-payment" />
 				<action index="491" id="document-add-sup-agreement" />
 				<action index="492" id="document-add-closing-doc-for-invoice" />
+				<action index="515" id="document-generate-barcode"/>
 
 			</actionGroup>
 			<actionGroup id="folder-details">

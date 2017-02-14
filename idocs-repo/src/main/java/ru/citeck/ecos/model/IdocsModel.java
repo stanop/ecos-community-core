@@ -73,5 +73,6 @@ public final class IdocsModel {
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
     public static final QName ASSOC_ACCOUNTANT_GENERAL = QName.createQName(IDOCS_NAMESPACE, "accountantGeneral");
     public static final QName ASSOC_DOC_ATTORNEYS = QName.createQName(IDOCS_NAMESPACE, "docAttorneys");
+    public static final QName ASSOC_SIGNER = QName.createQName(IDOCS_NAMESPACE, "signatory");
 
 }

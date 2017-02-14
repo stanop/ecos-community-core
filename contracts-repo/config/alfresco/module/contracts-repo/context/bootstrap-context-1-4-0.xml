@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.import-spaces.1-4-0" parent="contracts.import-spaces" abstract="true">
+        <property name="sinceVersion" value="1.4.0" />
+        <property name="appliesFromVersion" value="1.4.0" />
+    </bean>
+
+    <bean id="contracts.module-component.cardlets-documents-without-upload" parent="contracts.import-spaces.1-4-0">
+        <property name="name" value="cardlets-documents-without-upload" />
+        <property name="description" value="Cardlets of Documents without upload button" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/documents-wu</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.cardlets-advanced-associations" parent="contracts.import-spaces.1-4-0">
+        <property name="name" value="cardlets-advanced-associations" />
+        <property name="description" value="Cardlets of Associations with custom properties" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/advanced-associations</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.cardlets-disable-associations" parent="contracts.import-spaces.1-4-0">
+        <property name="name" value="cardlets-disable-associations" />
+        <property name="description" value="Disable cardlet Associations" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/associations</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.cardlets-contracts-barcode" parent="contracts.import-spaces.1-4-0">
+        <property name="name" value="cardlets-contracts-barcode" />
+        <property name="description" value="Cardlets of barcode" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/barcode</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>
