@@ -20,6 +20,7 @@ package ru.citeck.ecos.counter;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.lock.JobLockService;
+import org.alfresco.repo.lock.LockAcquisitionException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -174,7 +175,11 @@ public class CounterServiceImpl implements CounterService {
          */
         private void releaseLock(String lockToken) {
             if (lockToken != null) {
-                jobLockService.releaseLock(lockToken, lockQName);
+                try {
+                    jobLockService.releaseLockVerify(lockToken, lockQName);
+                } catch (LockAcquisitionException e) {
+                    //do nothing
+                }
             }
         }
         // else: We can't release without a token
