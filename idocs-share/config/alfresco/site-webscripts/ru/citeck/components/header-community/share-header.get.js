@@ -7,7 +7,6 @@
 // TODO:
 // - fix click on open popup item
 
-
 // GLOBAL VARIABLES
 var isMobile = isMobileDevice(context.headers["user-agent"]);
 
@@ -20,7 +19,7 @@ var header = getWidget("SHARE_HEADER"),
     userMenu = getWidget("HEADER_USER_MENU_BAR"),
     search = getWidget("HEADER_SEARCH"),
 
-    currentSite = page.url.templateArgs.site || getLastSite();
+    currentSite = page.url.templateArgs.site || getLastSiteFromCookie()();
 
 appMenu.config.id = "HEADER_APP_MENU_BAR";
 userMenu.config.id = "HEADER_USER_MENU_BAR";
@@ -661,3 +660,6 @@ function toMobileWidget(object) {
   
   return widget;
 }
+
+
+model.__alf_current_site__ = currentSite;
