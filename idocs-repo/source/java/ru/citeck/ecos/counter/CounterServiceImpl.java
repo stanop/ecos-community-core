@@ -20,7 +20,6 @@ package ru.citeck.ecos.counter;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.lock.JobLockService;
-import org.alfresco.repo.lock.LockAcquisitionException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -147,14 +146,9 @@ public class CounterServiceImpl implements CounterService {
         public T execute() throws JobExecutionException, EnumerationException {
             String lockToken = null;
             try {
-                lockToken = jobLockService.getLock(lockQName, LOCK_TTL);
+                lockToken = jobLockService.getLock(lockQName, LOCK_TTL, 500, 60);
                 jobLockService.refreshLock(lockToken, lockQName, LOCK_TTL);
                 return doWork(lockToken);
-            } catch (LockAcquisitionException e) {
-                // work being done by another process
-                if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("   Job %s already underway.", lockQName.getLocalName()));
-                }
             } catch (VmShutdownListener.VmShutdownException e) {
                 // Aborted
                 if (logger.isDebugEnabled()) {
