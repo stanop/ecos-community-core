@@ -45,15 +45,14 @@
 
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
-	<#assign template_exists = "ru.citeck.ecos.freemarker.TemplateExistsMethod"?new() />
 	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 	<#assign file>/ru/citeck/views/${element.type}/${template}.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/default.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 	<#assign file>/ru/citeck/views/${element.type}/default.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 </#macro>
 
 <#macro renderRegion name>
