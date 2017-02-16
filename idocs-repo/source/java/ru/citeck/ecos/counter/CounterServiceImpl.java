@@ -162,11 +162,7 @@ public class CounterServiceImpl implements CounterService {
         }
 
         private synchronized T doWork(String lockToken) throws EnumerationException {
-            try {
                 return (T) code.execute();
-            } finally {
-                releaseLock(lockToken);
-            }
         }
 
 
