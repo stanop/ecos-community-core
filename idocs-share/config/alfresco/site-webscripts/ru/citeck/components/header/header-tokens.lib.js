@@ -103,7 +103,7 @@ function getLastSite(method)
     }
     
     // if last site is not set yet
-    if(lastsite == "") {
+    if(!lastsite) {
         var sites = getUserSites();
         if(sites.length > 0) {
             // set the first site of user 
