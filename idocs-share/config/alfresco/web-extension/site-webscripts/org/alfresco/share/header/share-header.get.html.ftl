@@ -13,11 +13,13 @@
       </#list>
    </#if>
 
-   <@inlineScript group="header">
-      var __alf_lastsite__ = "${__alf_current_site__}", expirationDate = new Date();
-      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-      document.cookie="alf_lastsite=" + __alf_lastsite__ + "; path=/; expires=" + expirationDate.toUTCString() + ";";
-   </@>
+   <#if __alf_current_site__?has_content>
+      <@inlineScript group="header">
+         var __alf_lastsite__ = "${__alf_current_site__}", expirationDate = new Date();
+         expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+         document.cookie="alf_lastsite=" + __alf_lastsite__ + "; path=/; expires=" + expirationDate.toUTCString() + ";";
+      </@>
+   </#if>
 </@>
 
 <@markup id="widgets">
