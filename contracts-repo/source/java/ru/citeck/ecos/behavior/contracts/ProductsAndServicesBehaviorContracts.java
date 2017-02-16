@@ -94,9 +94,9 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
                 new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
         this.policyComponent.bindClassBehaviour(
-                NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
+                NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
                 QName.createQName(namespace, type),
-                new JavaBehaviour(this, "beforeDeleteNode", Behaviour.NotificationFrequency.EVERY_EVENT)
+                new JavaBehaviour(this, "onDeleteAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
         this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
