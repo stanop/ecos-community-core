@@ -718,8 +718,23 @@ ko.bindingHandlers.journalControl = {
         event.preventDefault();
 
         if (!panel) {
+            var optimalWidth = (function() {
+                var maxContainerWidth = screen.width - 200,
+                    countOfAttributes = (function() {
+                        if (defaultVisibleAttributes) return defaultVisibleAttributes.length;
+                        if (journalType.defaultAttributes()) return journalType.defaultAttributes().length; 
+                    })();
+
+                if (countOfAttributes > 5) {
+                    var potentialWidth = 150 * countOfAttributes;
+                    return (potentialWidth >= maxContainerWidth ? maxContainerWidth : potentialWidth) + "px";
+                }
+
+                return "800px";
+            })();
+
             panel = new YAHOO.widget.Panel(panelId, {
-                width:          "800px", 
+                width:          optimalWidth, 
                 visible:        false, 
                 fixedcenter:    true,  
                 draggable:      true,
