@@ -24,7 +24,7 @@
 			</#if>
 		</#assign>
 	</#if>
-	
+
 	<div class="form-${element.type} template-${template}"
 		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
 
@@ -80,7 +80,7 @@
 					<div class="loading-indicator"></div>
 					<div class="loading-message">${msg('message.loading.form')}</div>
 					<div class="submit-process-message">${msg('message.submit-process.form')}</div>
-				</div>			
+				</div>
 			</div>
 		</#if>
 
@@ -95,21 +95,26 @@
 		<#if view.mode != 'view'>
 			<div class="form-buttons" data-bind="with: node().impl">
 
-				<#if canBeDraft!false>
-	                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg("button.send")}"
-	                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+			<#assign submitButtonTitle = view.params.submitButtonTitle!"button.send" />
+			<#assign saveButtonTitle = view.params.saveButtonTitle!"button.save" />
+			<#assign resetButtonTitle = view.params.resetButtonTitle!"button.reset" />
+			<#assign cancelButtonTitle = view.params.cancelButtonTitle!"button.cancel" />
 
-	                <input id="${args.htmlid}-form-submit" type="submit" value="${msg("button.save")}"
-	                       data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
-				<#else>
-	                <input id="${id}-form-submit" type="submit"
-	                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>"
-	                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
-				</#if>
+			<#if canBeDraft!false>
+                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg(submitButtonTitle)}"
+                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 
-				<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
-				<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
-			</div>
+                <input id="${args.htmlid}-form-submit" type="submit" value="${msg(saveButtonTitle)}"
+                       data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
+			<#else>
+                <input id="${id}-form-submit" type="submit"
+                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg(saveButtonTitle)}</#if>"
+                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+			</#if>
+
+			<input id="${id}-form-reset"  type="button" value="${msg(resetButtonTitle)}" data-bind="enable: changed, click: reset" />
+			<input id="${id}-form-cancel" type="button" value="${msg(cancelButtonTitle)}" data-bind="enable: true, click: $root.cancel.bind($root)" />
+		</div>
 		</#if>
 	
 	</div>
@@ -236,11 +241,11 @@
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
-					formTemplate: "${view.template}",				
+					formTemplate: "${view.template}",
 
 					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
-					
+
 					node: {
 						key: "${runtimeKey}",
 						virtualParent: <#if (args.param_virtualParent!"false") == "true">"${args.param_parentRuntime}"<#else>null</#if>,
