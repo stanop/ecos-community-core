@@ -9,4 +9,15 @@
         </element-readers>
     </plug-ins>
 
+    <config evaluator="string-compare" condition="WebFramework">
+		<dojo-pages>
+			<packages>
+			    <package name="citeckHeaderItem" location="js/citeck/header/citeckMenuItem"/>
+			    <package name="citeckMenuBarItem" location="js/citeck/menus/citeckMenuBarItem"/>
+			    <package name="citeckMenuGroup" location="js/citeck/menus/citeckMenuGroup"/>
+			    <package name="citeckMenuItem" location="js/citeck/menus/citeckMenuItem"/>
+			</packages>
+	    </dojo-pages>
+    </config>
+
 </alfresco-config>
