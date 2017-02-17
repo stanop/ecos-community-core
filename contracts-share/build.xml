@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="contracts-share" default="hotcopy-tomcat">
-	<property file="module.properties" />
-	<import file="../idocs-share-dependent.xml" />
-</project>

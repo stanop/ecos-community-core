@@ -59,6 +59,12 @@
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>contracts-share</artifactId>
+            <classifier>${ecos.build.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
         <!-- Uncomment if you are using RM (Records Management) module -->
         <!-- Make sure to set the correct version for 5.1 with alfresco.rm.version property in parent POM
         <dependency>
@@ -146,6 +152,12 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-share</artifactId>
+                            <classifier>${ecos.build.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>contracts-share</artifactId>
                             <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>

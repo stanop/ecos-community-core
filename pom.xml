@@ -47,6 +47,7 @@
         <ecos-journals.version>2.0.0.1-SNAPSHOT</ecos-journals.version>
         <ecos-forms.version>2.0.0.0-SNAPSHOT</ecos-forms.version>
         <idocs.version>3.1.a.0-SNAPSHOT</idocs.version>
+        <contracts.version>2.0.0.0-SNAPSHOT</contracts.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yy.MM.dd.HH.mm</maven.build.timestamp.format>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
@@ -262,11 +263,11 @@
             <!--</dependency>-->
 
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>idocs-repo</artifactId>
-                <version>${idocs.version}</version>
-                <classifier>${ecos.build.classifier}</classifier>
-            </dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>idocs-repo</artifactId>
+            <version>${idocs.version}</version>
+            <classifier>${ecos.build.classifier}</classifier>
+        </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idocs-repo</artifactId>
@@ -288,6 +289,32 @@
                 <type>amp</type>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>contracts-repo</artifactId>
+                <version>${contracts.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>contracts-repo</artifactId>
+                <version>${contracts.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>contracts-share</artifactId>
+                <version>${contracts.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>contracts-share</artifactId>
+                <version>${contracts.version}</version>
+                <classifier>${ecos.build.classifier}</classifier>
+                <type>amp</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -418,6 +445,8 @@
         <module>ecos-forms-share</module>
         <module>idocs-repo</module>
         <module>idocs-share</module>
+        <module>contracts-repo</module>
+        <module>contracts-share</module>
         <module>repo</module>
         <module>solr-config</module>
         <module>share</module>

@@ -72,6 +72,12 @@
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>contracts-repo</artifactId>
+            <classifier>${ecos.build.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
         <!-- Uncomment if you are using SPP (SharePoint Protocol Support) for Online Edit etc -->
         <!--
         <dependency>
@@ -141,6 +147,12 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-repo</artifactId>
+                            <classifier>${ecos.build.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>contracts-repo</artifactId>
                             <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
