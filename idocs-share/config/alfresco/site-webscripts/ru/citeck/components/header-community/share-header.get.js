@@ -485,22 +485,22 @@ if (siteConfig && siteData.userIsSiteManager) {
 // ---------------------
 
 function buildMorePopup(isMobile) {
-  var config = {
-    widgets: [ buildMyGroup(isMobile) ]
-  };
+    var config = {
+        widgets: [buildMyGroup(isMobile)]
+    };
 
-  if (!isMobile) {
-    config.label = "header.more.label";
-    config.widgets.unshift(buildMovableGroup());
-  }
+    if (!isMobile) {
+        config.label = "header.more.label";
+        config.widgets.unshift(buildMovableGroup());
+    }
 
-  if (user.isAdmin) config.widgets.push(buildAdminGroup(isMobile));
+    if (user.isAdmin) config.widgets.push(buildAdminGroup(isMobile));
 
-  return {
-    id: "HEADER_MORE",
-    name: isMobile ? "alfresco/menus/AlfMenuGroup" : "alfresco/header/AlfMenuBarPopup",
-    config: config
-  };
+    return {
+        id: "HEADER_" + (isMobile ? "MOBILE_" : "") + "MORE",
+        name: isMobile ? "alfresco/menus/AlfMenuGroup" : "alfresco/header/AlfMenuBarPopup",
+        config: config
+    };
 };
 
 function buildMovableGroup() {
@@ -527,7 +527,7 @@ function buildMovableGroup() {
 };
 
 function buildMyGroup(isMobile) {
-  var id = "HEADER_" + (isMobile ? "MOBILE" : "") + "_MORE_MY_GROUP",
+  var id = "HEADER_" + (isMobile ? "MOBILE_" : "") + "MORE_MY_GROUP",
       group = (isMobile ? "MOBILE_" : "") + "MORE";
 
   return {
@@ -551,7 +551,7 @@ function buildMyGroup(isMobile) {
 };
 
 function buildAdminGroup(isMobile) {
-  var id = "HEADER_" + (isMobile ? "MOBILE" : "") + "_MORE_TOOLS_GROUP",
+  var id = "HEADER_" + (isMobile ? "MOBILE_" : "") + "MORE_TOOLS_GROUP",
       group = (isMobile ? "MOBILE_" : "") + "MORE_TOOLS";
 
   return {
