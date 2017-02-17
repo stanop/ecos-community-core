@@ -225,6 +225,8 @@
 	<bean name="CounterService" class="ru.citeck.ecos.counter.CounterServiceImpl">
 		<property name="nodeService" ref="NodeService" />
 		<property name="counterRoot" value="workspace://SpacesStore/counter-root" />
+		<property name="jobLockService" ref="jobLockService"/>
+		<property name="transactionService" ref="transactionService"/>
 	</bean>
 	
 	<bean name="EnumerationService" class="ru.citeck.ecos.counter.EnumerationServiceImpl">

@@ -21,15 +21,14 @@
 
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
-	<#assign template_exists = "ru.citeck.ecos.freemarker.TemplateExistsMethod"?new() />
 	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 	<#assign file>/ru/citeck/views/${element.type}/${template}.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/default.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 	<#assign file>/ru/citeck/views/${element.type}/default.ftl</#assign>
-	<#if template_exists(file)><#include file /><#return /></#if>
+	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 </#macro>
 
 <#macro renderRegion name>
@@ -63,20 +62,25 @@
 		<#if view.mode != 'view'>
 		<div class="form-buttons" data-bind="with: node().impl">
 
+			<#assign submitButtonTitle = view.params.submitButtonTitle!"button.send" />
+			<#assign saveButtonTitle = view.params.saveButtonTitle!"button.save" />
+			<#assign resetButtonTitle = view.params.resetButtonTitle!"button.reset" />
+			<#assign cancelButtonTitle = view.params.cancelButtonTitle!"button.cancel" />
+
 			<#if canBeDraft!false>
-                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg("button.send")}"
+                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg(submitButtonTitle)}"
                        data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 
-                <input id="${args.htmlid}-form-submit" type="submit" value="${msg("button.save")}"
+                <input id="${args.htmlid}-form-submit" type="submit" value="${msg(saveButtonTitle)}"
                        data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
 			<#else>
                 <input id="${id}-form-submit" type="submit"
-                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg("button.save")}</#if>"
+                       value="<#if view.mode == "create">${msg("button.create")}<#else/>${msg(saveButtonTitle)}</#if>"
                        data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
 			</#if>
 
-			<input id="${id}-form-reset"  type="button" value="${msg("button.reset")}" data-bind="enable: changed, click: reset" />
-			<input id="${id}-form-cancel" type="button" value="${msg("button.cancel")}" data-bind="enable: true, click: $root.cancel.bind($root)" />
+			<input id="${id}-form-reset"  type="button" value="${msg(resetButtonTitle)}" data-bind="enable: changed, click: reset" />
+			<input id="${id}-form-cancel" type="button" value="${msg(cancelButtonTitle)}" data-bind="enable: true, click: $root.cancel.bind($root)" />
 		</div>
 		</#if>
 	

@@ -4,7 +4,7 @@
 	var tokens = {};
 
 	// insert lastsite into tokens
-	var lastsite = getLastSite();
+	var lastsite = getLastSiteFromCookie();
 	tokens.lastsite = lastsite;
 	
 	// save tokens
