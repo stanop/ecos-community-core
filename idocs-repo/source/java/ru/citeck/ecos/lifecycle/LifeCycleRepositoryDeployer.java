@@ -64,7 +64,7 @@ public class LifeCycleRepositoryDeployer extends AbstractLifecycleBean {
             }
         });
 
-        logger.info("Successfully deployed lifecycles from reposotory");
+        logger.info("Successfully deployed lifecycles from repository");
     }
 
     @Override
