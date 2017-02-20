@@ -269,12 +269,12 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
         String currentState = getActivityState(activityRef);
 
-        if (!currentState.equals(state)) {
+        if (isRequiredReset(activityRef, currentState, state)) {
+            reset(activityRef);
+            currentState = getActivityState(activityRef);
+        }
 
-            if (isRequiredReset(activityRef, currentState, state)) {
-                reset(activityRef);
-                currentState = getActivityState(activityRef);
-            }
+        if (!currentState.equals(state)) {
 
             List<String> transitions = allowedTransitions.get(currentState);
             if (transitions != null && transitions.contains(state)) {
