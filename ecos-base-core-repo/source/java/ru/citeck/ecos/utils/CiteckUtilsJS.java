@@ -18,16 +18,22 @@
  */
 package ru.citeck.ecos.utils;
 
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ValueConverter;
+import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension {
+
+    private static final Charset UTF8 = Charset.forName("UTF-8");
 
     private ValueConverter converter = new ValueConverter();
 
@@ -55,12 +61,30 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension {
         }
 
         NamespaceService namespaceService = this.serviceRegistry.getNamespaceService();
-        Map<String, Object> values = (Map<String, Object>)value;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> values = (Map<String, Object>) value;
         for (Map.Entry<String, Object> entry : values.entrySet()) {
             result.put(QName.resolveToQName(namespaceService, entry.getKey()), entry.getValue());
         }
 
         return result;
+    }
+
+    public void setMLText(ScriptNode node, String property, Serializable valueObj) {
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> value = (Map) converter.convertValueForRepo(valueObj);
+
+        MLText mlText = new MLText();
+        for (Map.Entry<String, String> entry : value.entrySet()) {
+            mlText.put(Locale.forLanguageTag(entry.getKey()), entry.getValue());
+        }
+
+        node.getProperties().put(property, mlText);
+    }
+
+    public String toUTF8(String str) {
+        return new String(str.getBytes(), UTF8);
     }
 
 }
