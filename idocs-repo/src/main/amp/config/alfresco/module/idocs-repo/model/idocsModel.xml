@@ -346,6 +346,7 @@
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
                 <aspect>idocs:communicationInfo</aspect>
+                <aspect>idocs:diadocInfo</aspect>
             </mandatory-aspects>
         </type>
 
@@ -607,24 +608,6 @@
             </mandatory-aspects>
         </type>
 
-        <type name="idocs:countryISO3166">
-            <title>ISO 3166 Codes</title>
-            <parent>dl:dataListItem</parent>
-            <properties>
-                <property name="idocs:countryISO3166Alpha2">
-                    <title>Alpha 2</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:countryISO3166Alpha3">
-                    <title>Alpha 3</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:countryISO3166Number">
-                    <title>Number</title>
-                    <type>d:text</type>
-                </property>
-            </properties>
-        </type>
 
     </types>
 
@@ -788,8 +771,24 @@
         </aspect>
 
         <aspect name="idocs:hasPerformer">
+        <associations>
+            <association name="idocs:performer">
+                <source>
+                    <mandatory>false</mandatory>
+                    <many>true</many>
+                </source>
+                <target>
+                    <class>cm:person</class>
+                    <mandatory>false</mandatory>
+                    <many>false</many>
+                </target>
+            </association>
+        </associations>
+    </aspect>
+
+        <aspect name="idocs:hasSupervisor">
             <associations>
-                <association name="idocs:performer">
+                <association name="idocs:supervisor">
                     <source>
                         <mandatory>false</mandatory>
                         <many>true</many>
@@ -863,6 +862,16 @@
                     <constraints>
                         <constraint ref="dms:constraint:mail" />
                     </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:diadocInfo">
+            <properties>
+                <property name="idocs:diadocBoxId">
+                    <title>Diadoc Box Id</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
                 </property>
             </properties>
         </aspect>
