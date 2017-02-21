@@ -1,5 +1,5 @@
-﻿<#macro currency fieldName selectedItem ="workspace://SpacesStore/currency-rur">
-	<!-- по умолчанию Рубль workspace://SpacesStore/currency-rur -->
+﻿<#macro currency fieldName selectedItem ="workspace://SpacesStore/currency-rub">
+	<!-- по умолчанию Рубль workspace://SpacesStore/currency-rub -->
 	<#if form.mode == "create">
 		<@forms.renderField field=fieldName extension = { "control": {
 		"template": "/ru/citeck/components/form/controls/select.ftl",

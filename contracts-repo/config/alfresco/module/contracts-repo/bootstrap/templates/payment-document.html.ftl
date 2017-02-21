@@ -42,7 +42,7 @@
                 <#if assoc.typeShort == "idocs:bankAccount" && assoc.properties["idocs:currencyEnabled"] == true && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>
                     <#assign bankAccount = assoc />
                     <#break>
-                <#elseif assoc.typeShort == "idocs:bankAccount" && assoc.properties["idocs:currencyEnabled"] == false && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>
+                <#elseif assoc.typeShort == "idocs:bankAccount" && assoc.properties["idocs:currencyEnabled"] == false && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rub'>
                     <#assign bankAccount = assoc />
                     <#break>
                 </#if>
@@ -175,7 +175,7 @@
     <tr>
         <td>
             Всего наименований ${count?string["0"]}, на сумму ${totalAmount}
-            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rur'>руб.
+            <#if document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-rub'>руб.
             <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-usd'>USD
             <#elseif document.associations?? && document.associations["payments:currency"]?? && document.associations["payments:currency"]?size != 0 && document.associations["payments:currency"][0].nodeRef=='workspace://SpacesStore/currency-eur'>EUR
             </#if>
