@@ -45,7 +45,7 @@ public class CounterServiceImpl implements CounterService {
 
     @Override
     public void setCounterLast(final String counterName, final int value) {
-        LockExecutor executor = new LockExecutor<Void>(counterName, new LockExecutorCode<Void>() {
+        final LockExecutor executor = new LockExecutor<Void>(counterName, new LockExecutorCode<Void>() {
             @Override
             public Void execute() {
                 NodeRef counter = getCounter(counterName, true);
@@ -53,11 +53,19 @@ public class CounterServiceImpl implements CounterService {
                 return null;
             }
         });
-        try {
-            executor.execute();
-        } catch (JobExecutionException | EnumerationException e) {
-            logger.error("setCounterLast something goes wrong", e);
-        }
+
+        transactionService.getRetryingTransactionHelper().doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>() {
+            @Override
+            public Void execute() throws Throwable {
+                try {
+                    executor.execute();
+                } catch (JobExecutionException | EnumerationException e) {
+                    logger.error("setCounterLast something goes wrong", e);
+                }
+                return null;
+            }
+        }, false, true);
+
     }
 
     @Override
@@ -162,7 +170,7 @@ public class CounterServiceImpl implements CounterService {
         }
 
         private synchronized T doWork(String lockToken) throws EnumerationException {
-                return (T) code.execute();
+            return (T) code.execute();
         }
 
 
