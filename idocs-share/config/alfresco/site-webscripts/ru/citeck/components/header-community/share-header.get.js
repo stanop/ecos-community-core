@@ -576,35 +576,6 @@ function buildAdminGroup(isMobile) {
   };
 };
 
-function buildSiteUrl(sitename) {
-  return sitename ? "site/" + encodeURIComponent(sitename) + "/" : "";
-};
-
-function buildItems(items, groupName) {
-  var result = [];
-
-  for (var i = 0; i < items.length; i++) {
-    var id = "HEADER_" + (groupName + "_" + items[i].id.replace(/-/, "_")).toUpperCase(),
-        configuration = {
-          id: id,
-          label: items[i].label || "header." + items[i].id + ".label",
-          targetUrl: items[i].url,
-          targetUrlType: items[i].urlType || "SHARE_PAGE_RELATIVE"
-        };
-
-    if (items[i].iconImage) configuration["iconImage"] = items[i].iconImage;
-    if (items[i].movable) configuration["movable"] = items[i].movable;
-
-    result.push({
-      id: configuration.id,
-      name: "alfresco/menus/AlfMenuItem",
-      config: configuration
-    });
-  }
-
-  return result;
-};
-
 function buildSitesForUser(username) {
   var sitesPresets = [],
       result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
@@ -646,19 +617,6 @@ function buildCreateVariantsForSite(sitename) {
   }
 
   return buildItems(createVariantsPresets, "CREATE_VARIANT");
-}
-
-function toMobileWidget(object) {
-  var widget = jsonUtils.toObject(jsonUtils.toJSONObject(object));
-  widget.id = widget.config.id = widget.id.replace("HEADER_", "HEADER_MOBILE_");
-
-  if (widget.config.widgets && widget.config.widgets.length > 0) {
-    for (var i in widget.config.widgets) {
-      widget.config.widgets[i] = toMobileWidget(widget.config.widgets[i])
-    }
-  }
-  
-  return widget;
 }
 
 
