@@ -25,7 +25,7 @@
 			<list>
 				<props>
 					<prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
-					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-rub.xml</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency-rur.xml</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>

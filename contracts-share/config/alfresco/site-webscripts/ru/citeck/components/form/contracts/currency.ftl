@@ -1,5 +1,5 @@
-﻿<#macro currency fieldName hasSelectedItem = false selectedItem ="workspace://SpacesStore/currency-rub">
-	<!-- по умолчанию Рубль workspace://SpacesStore/currency-rub -->
+﻿<#macro currency fieldName hasSelectedItem = false selectedItem ="workspace://SpacesStore/currency-rur">
+	<!-- по умолчанию Рубль workspace://SpacesStore/currency-rur -->
 	<!-- if form.mode = "create"-->
 	<#if hasSelectedItem>
 		<@forms.renderField field=fieldName extension = { "control": {
