@@ -69,6 +69,5 @@ public final class HistoryModel {
     public static final QName ASSOC_INITIATOR = QName.createQName(EVENT_NAMESPACE, "initiator");
     public static final QName ASSOC_DOCUMENT = QName.createQName(EVENT_NAMESPACE, "document");
     public static final QName ASSOC_CASE = QName.createQName(EVENT_NAMESPACE, "case");
-
-
+    public static final QName ASSOC_EVENT_CONTAINED = QName.createQName(HISTORY_NAMESPACE, "eventContained");
 }
