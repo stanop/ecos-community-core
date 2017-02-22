@@ -1508,6 +1508,17 @@ ko.components.register("select2", {
             more: Alfresco.util.message("autocomplete.more")
         }
 
+        if (this.forceOptions) {
+            this.forceOptions = this.forceOptions();
+            this.forceOptions.extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
+        }
+
+        // private methods
+        this.optionTitle = function(option) {
+            if (self.optionsText) return self.optionsText(option);
+            return self.getValueTitle(option);
+        };
+        
         // observables
         this.containerVisibility = ko.observable(false);
         this.highlightedElement = ko.observable();
@@ -1527,12 +1538,12 @@ ko.components.register("select2", {
         });
 
         this.visibleOptions = ko.pureComputed(function() {
-            var preparedOptions = self.options();
+            var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
             
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
-                        labelString  = self.getValueTitle(option)().toLowerCase();
+                        labelString  = self.optionTitle(option)().toLowerCase();
 
                     switch (self.searchPredicat) {
                         case "startsWith":
@@ -1563,19 +1574,17 @@ ko.components.register("select2", {
 
         // public methods
         this.clear = function(data, event) { if (event.which == 1) self.value(null) };
-        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
-       
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };       
+
         this.selectItem = function(data, event) {
             if (event.which == 1) {
-                self.value(data);                // put item to value
+                if (self.optionsValue) {
+                    var optionValue = self.optionsValue(data);
+                    self.value(optionValue());
+                } else { self.value(data);  }    // put item to value
                 self.containerVisibility(false); // close container after select item
                 self.highlightedElement(data);   // highlight the selected item
             }
-        };
-
-        this.optionTitle = function(option) {
-            if (self.optionsText) return self.optionsText(option);
-            return self.getValueTitle(option);
         };
 
         this.keyAction = function(data, event) {

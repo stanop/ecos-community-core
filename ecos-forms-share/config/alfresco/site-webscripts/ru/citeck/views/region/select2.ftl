@@ -1,7 +1,7 @@
 <#assign params = viewScope.region.params!{} />
 <#assign controlId = fieldId + "-select2Control">
 
-<#assign optionParameters = [ "optionsText" ]>
+<#assign optionParameters = [ "optionsText", "optionsValue" ]>
 
 <#-- mode: list, table -->
 <#assign mode = params.mode!"list">
@@ -17,18 +17,20 @@
 
 			disabled: protected,
 			multiple: multiple,
-			options: options,
 			value: value,
+
+			options: options,
 
 			mode: "${mode}",
 			searchPredicat: "${searchPredicat}",
 			step: ${step},
 
-			getValueTitle: function(value) { 
-				return ko.computed(function() { 
-					return $data.getValueTitle.call($data, value);
-				}); 
-			},
+			<#if params.options??>
+				forceOptions: function() {
+					var attribute = $data, node = attribute.node();
+					return ko.computed(function() { return ${params.options}; });
+				},
+			</#if>
 
 			<#list optionParameters as op>
 				<#if params[op]??>
@@ -40,11 +42,11 @@
 				</#if>
 			</#list>
 
-			<#if params.options??>
-				options: return ko.computed(function() {
-					return ${params.options};
-				})
-			</#if>
+			getValueTitle: function(value) { 
+				return ko.computed(function() { 
+					return $data.getValueTitle.call($data, value);
+				}); 
+			}
         }
     }'>
 </div>
