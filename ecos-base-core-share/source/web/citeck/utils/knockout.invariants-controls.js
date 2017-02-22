@@ -1515,6 +1515,9 @@ ko.components.register("select2", {
 
         this.componentFocused = ko.observable(false);
         this.searchFocused = ko.observable(true);
+
+        this.hasMore = ko.observable(false);
+        this.count = ko.observable(this.step);
         
         // computed
         this.label = ko.pureComputed(function() {
@@ -1523,34 +1526,40 @@ ko.components.register("select2", {
                    self.labels.label; 
         });
 
-        this.visibleOptions = ko.computed(function() {
+        this.visibleOptions = ko.pureComputed(function() {
+            var preparedOptions = self.options();
+            
             if (self.searchQuery()) {
-                return _.filter(self.options(), function(option) {
-                    var label = self.getValueTitle(option)(),;
+                preparedOptions = _.filter(preparedOptions, function(option) {
+                    var searchString = self.searchQuery().toLowerCase(),
+                        labelString  = self.getValueTitle(option)().toLowerCase();
+
                     switch (self.searchPredicat) {
                         case "startsWith":
-                            return label.startsWith(self.searchQuery());
+                            return labelString.startsWith(searchString);
 
                         case "contains":
-                            var searchString = self.searchQuery().toLowerCase(),
-                                labelString  = label.toLowerCase();
                             return labelString.indexOf(searchString) != -1;
                     }
-                    
                 });
             }
 
-            return self.options();
+            if (self.count() < preparedOptions.length) {
+                self.hasMore(true);
+                return preparedOptions.slice(0, self.count());
+            }
+
+            self.hasMore(false);
+            return preparedOptions;
         });
 
+        // extends
+        this.searchQuery.extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } })
+
         // subscription and events
-        this.containerVisibility.subscribe(function() {
-            self.searchFocused(true);
-        });  
-         
-        this.visibleOptions.subscribe(function(newValue) {
-            if (newValue.length > 0) self.highlightedElement(newValue[0]);
-        });
+        this.containerVisibility.subscribe(function() { self.searchFocused(true); });  
+        this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        this.searchQuery.subscribe(function() { self.count(self.step); });
 
         // public methods
         this.clear = function(data, event) { if (event.which == 1) self.value(null) };
@@ -1562,6 +1571,11 @@ ko.components.register("select2", {
                 self.containerVisibility(false); // close container after select item
                 self.highlightedElement(data);   // highlight the selected item
             }
+        };
+
+        this.optionTitle = function(option) {
+            if (self.optionsText) return self.optionsText(option);
+            return self.getValueTitle(option);
         };
 
         this.keyAction = function(data, event) {
@@ -1605,6 +1619,10 @@ ko.components.register("select2", {
             }
 
             return true;
+        };
+
+        this.more = function(element, data) { 
+            self.count(self.count() + self.step);
         };
 
         // blur
@@ -1658,13 +1676,18 @@ ko.components.register("select2", {
                             <li data-bind="\
                                 event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
                                 css: { selected: $parent.highlightedElement() == $data }">\
-                                <a data-bind="text: $component.getValueTitle($data)"></a>\
+                                <a data-bind="text: $component.optionTitle($data)"></a>\
                             </li>\
                         </ul>\
                     <!-- /ko -->\
                     <!-- ko if: visibleOptions().length == 0 -->\
                         <span class="select2-message empty-message" data-bind="text: labels.empty"></span>\
                     <!-- /ko -->\
+                <!-- /ko -->\
+                <!-- ko if: hasMore -->\
+                    <div class="select2-more">\
+                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    </div>\
                 <!-- /ko -->\
             </div>\
         <!-- /ko -->'
