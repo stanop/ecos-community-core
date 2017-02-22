@@ -1491,6 +1491,217 @@ ko.components.register("autocomplete", {
         <!-- /ko -->'
 });
 
+// ---------------
+// SELECT 2
+// ---------------
+
+ko.components.register("select2", {
+    viewModel: function(params) {
+        var self = this;
+        kocomponents.initializeParameters.call(this, params);
+        console.log("debug select2", this);
+
+        this.labels = {
+            label: Alfresco.util.message("autocomplete.label"),
+            help: Alfresco.util.message("autocomplete.help"),
+            empty: Alfresco.util.message("autocomplete.empty"),
+            more: Alfresco.util.message("autocomplete.more")
+        }
+
+        if (this.forceOptions) {
+            this.forceOptions = this.forceOptions();
+            this.forceOptions.extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
+        }
+
+        // private methods
+        this.optionTitle = function(option) {
+            if (self.optionsText) return self.optionsText(option);
+            return self.getValueTitle(option);
+        };
+        
+        // observables
+        this.containerVisibility = ko.observable(false);
+        this.highlightedElement = ko.observable();
+        this.searchQuery = ko.observable();
+
+        this.componentFocused = ko.observable(false);
+        this.searchFocused = ko.observable(true);
+
+        this.hasMore = ko.observable(false);
+        this.count = ko.observable(this.step);
+        
+        // computed
+        this.label = ko.pureComputed(function() {
+            return self.value() ? 
+                   self.getValueTitle(self.value())() : 
+                   self.labels.label; 
+        });
+
+        this.visibleOptions = ko.pureComputed(function() {
+            var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
+            
+            if (self.searchQuery()) {
+                preparedOptions = _.filter(preparedOptions, function(option) {
+                    var searchString = self.searchQuery().toLowerCase(),
+                        labelString  = self.optionTitle(option)().toLowerCase();
+
+                    switch (self.searchPredicat) {
+                        case "startsWith":
+                            return labelString.startsWith(searchString);
+
+                        case "contains":
+                            return labelString.indexOf(searchString) != -1;
+                    }
+                });
+            }
+
+            if (self.count() < preparedOptions.length) {
+                self.hasMore(true);
+                return preparedOptions.slice(0, self.count());
+            }
+
+            self.hasMore(false);
+            return preparedOptions;
+        });
+
+        // extends
+        this.searchQuery.extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } })
+
+        // subscription and events
+        this.containerVisibility.subscribe(function() { self.searchFocused(true); });  
+        this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        this.searchQuery.subscribe(function() { self.count(self.step); });
+
+        // public methods
+        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };       
+
+        this.selectItem = function(data, event) {
+            if (event.which == 1) {
+                if (self.optionsValue) {
+                    var optionValue = self.optionsValue(data);
+                    self.value(optionValue());
+                } else { self.value(data);  }    // put item to value
+                self.containerVisibility(false); // close container after select item
+                self.highlightedElement(data);   // highlight the selected item
+            }
+        };
+
+        this.keyAction = function(data, event) {
+            if ([9, 13, 27, 38, 40].indexOf(event.keyCode) != -1) {
+                // apply element for value
+                if (event.keyCode == 9 || event.keyCode == 13) {
+                    self.value(self.highlightedElement());
+                }
+
+                // close container
+                if (event.keyCode == 9 || event.keyCode == 13 || event.keyCode == 27) {
+                    self.containerVisibility(false); // close container after select item
+                    self.componentFocused(true);     // restore focus on component
+                }
+
+                // move selection
+                if (event.keyCode == 38 || event.keyCode == 40) {                   
+                    var selectedIndex = self.options().indexOf(self.highlightedElement()),
+                        nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
+                    
+                    if (selectedIndex != -1 && self.options()[nextSelectIndex]) { 
+                        self.highlightedElement(self.options()[nextSelectIndex]); // highlight next or previous item
+                    };
+                }
+
+                return false;
+            }
+
+            return true;
+        };
+
+        this.keyManagment = function(data, event) {
+            if ([40, 46].indexOf(event.keyCode) != -1) {
+                // open container if 'down'
+                if (event.keyCode == 40) self.containerVisibility(true);
+
+                // clear if 'delete'
+                if (event.keyCode == 46) self.value(null);
+
+                return false;
+            }
+
+            return true;
+        };
+
+        this.more = function(element, data) { 
+            self.count(self.count() + self.step);
+        };
+
+        // blur
+        $("body").click(function(event, a) {
+            var node = event.target, body = document.getElementById("Share");
+
+            while (node != body) {
+                if (node == self.element) return;
+                node = node.parentNode;
+            }
+
+            self.containerVisibility(false);
+        });
+    },
+    template: 
+       '<!-- ko if: disabled -->\
+            <div class="select2-select disabled" tabindex="0">\
+                <span class="select2-value" data-bind="text: label"></span>\
+                <div class="select2-twister"></div>\
+            </div>\
+        <!-- /ko -->\
+        <!-- ko ifnot: disabled -->\
+            <div class="select2-select" tabindex="0"\
+                data-bind="\
+                    event: { mousedown: toggleContainer, keydown: keyManagment }, mousedownBubble: false,\
+                    css: { opened: containerVisibility },\
+                    hasFocus: componentFocused">\
+                <span class="select2-value" data-bind="text: label"></span>\
+                <!-- ko if: value -->\
+                    <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
+                <!-- /ko -->\
+                <div class="select2-twister"></div>\
+            </div>\
+        <!-- /ko -->\
+        <!-- ko if: containerVisibility -->\
+            <div class="select2-container">\
+                <div class="select2-search-container">\
+                    <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
+                        <div class="help-message" data-bind="text: labels.help"></div>\
+                    <!-- /ko -->\
+                    <input type="text" class="select2-search" data-bind="\
+                        textInput: searchQuery,\
+                        event: { keydown: keyAction },\
+                        keydownBubble: false,\
+                        attr: { placeholder: labels.help },\
+                        hasFocus: searchFocused">\
+                </div>\
+                <!-- ko if: visibleOptions -->\
+                    <!-- ko if: visibleOptions().length > 0 -->\
+                        <ul class="select2-list" data-bind="foreach: visibleOptions">\
+                            <li data-bind="\
+                                event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
+                                css: { selected: $parent.highlightedElement() == $data }">\
+                                <a data-bind="text: $component.optionTitle($data)"></a>\
+                            </li>\
+                        </ul>\
+                    <!-- /ko -->\
+                    <!-- ko if: visibleOptions().length == 0 -->\
+                        <span class="select2-message empty-message" data-bind="text: labels.empty"></span>\
+                    <!-- /ko -->\
+                <!-- /ko -->\
+                <!-- ko if: hasMore -->\
+                    <div class="select2-more">\
+                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    </div>\
+                <!-- /ko -->\
+            </div>\
+        <!-- /ko -->'
+});
+
 
 // -----------
 // FILE UPLOAD
