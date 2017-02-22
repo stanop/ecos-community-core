@@ -1523,12 +1523,32 @@ ko.components.register("select2", {
                    self.labels.label; 
         });
 
+        this.visibleOptions = ko.computed(function() {
+            if (self.searchQuery()) {
+                return _.filter(self.options(), function(option) {
+                    var label = self.getValueTitle(option)(),;
+                    switch (self.searchPredicat) {
+                        case "startsWith":
+                            return label.startsWith(self.searchQuery());
+
+                        case "contains":
+                            var searchString = self.searchQuery().toLowerCase(),
+                                labelString  = label.toLowerCase();
+                            return labelString.indexOf(searchString) != -1;
+                    }
+                    
+                });
+            }
+
+            return self.options();
+        });
+
         // subscription and events
         this.containerVisibility.subscribe(function() {
             self.searchFocused(true);
         });  
          
-        this.options.subscribe(function(newValue) {
+        this.visibleOptions.subscribe(function(newValue) {
             if (newValue.length > 0) self.highlightedElement(newValue[0]);
         });
 
@@ -1553,10 +1573,8 @@ ko.components.register("select2", {
 
                 // close container
                 if (event.keyCode == 9 || event.keyCode == 13 || event.keyCode == 27) {
-                    self.containerVisibility(false);
-
-                    // restore focus on component
-                    self.componentFocused(true);
+                    self.containerVisibility(false); // close container after select item
+                    self.componentFocused(true);     // restore focus on component
                 }
 
                 // move selection
@@ -1565,7 +1583,7 @@ ko.components.register("select2", {
                         nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
                     
                     if (selectedIndex != -1 && self.options()[nextSelectIndex]) { 
-                        self.highlightedElement(self.options()[nextSelectIndex]);
+                        self.highlightedElement(self.options()[nextSelectIndex]); // highlight next or previous item
                     };
                 }
 
@@ -1634,9 +1652,9 @@ ko.components.register("select2", {
                         attr: { placeholder: labels.help },\
                         hasFocus: searchFocused">\
                 </div>\
-                <!-- ko if: options -->\
-                    <!-- ko if: options().length > 0 -->\
-                        <ul class="select2-list" data-bind="foreach: options">\
+                <!-- ko if: visibleOptions -->\
+                    <!-- ko if: visibleOptions().length > 0 -->\
+                        <ul class="select2-list" data-bind="foreach: visibleOptions">\
                             <li data-bind="\
                                 event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
                                 css: { selected: $parent.highlightedElement() == $data }">\
@@ -1644,13 +1662,14 @@ ko.components.register("select2", {
                             </li>\
                         </ul>\
                     <!-- /ko -->\
-                    <!-- ko if: options().length == 0 -->\
+                    <!-- ko if: visibleOptions().length == 0 -->\
                         <span class="select2-message empty-message" data-bind="text: labels.empty"></span>\
                     <!-- /ko -->\
                 <!-- /ko -->\
             </div>\
         <!-- /ko -->'
 });
+
 
 // -----------
 // FILE UPLOAD

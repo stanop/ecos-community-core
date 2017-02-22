@@ -4,6 +4,9 @@
 <#-- mode: simple, details -->
 <#assign mode = params.mode!"simple">
 
+<#-- predicats: startsWith, contains -->
+<#assign searchPredicat = params.searchPredicat!"contains">
+
 <div id="${controlId}" class="select2-control" data-bind='component: { name: "select2", params: {
 			element: $element,
 
@@ -13,11 +16,7 @@
 			value: value,
 
 			mode: "${mode}",
-
-		    optionsCaption: "${msg(optionsCaption?trim)}",
-			optionsText: <#if params.optionsText??>function(option) { return ${params.optionsText?trim}; }<#else>null</#if>,
-			optionsValue: <#if params.optionsValue??>function(option) { return ${params.optionsValue?trim}; }<#else>null</#if>,
-			optionsAfterRender: <#if params.optionsAfterRender??>function(option) { return ${params.optionsAfterRender?trim}; }<#else>null</#if>,
+			searchPredicat: "${searchPredicat}",
 
 			getValueTitle: function(value) { 
 				return ko.computed(function() { 
