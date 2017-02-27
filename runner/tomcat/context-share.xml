@@ -9,7 +9,7 @@
      webapp resources and path (i.e. /share). -->
 <Context>
     <Resources className="org.apache.naming.resources.VirtualDirContext"
-               extraResourcePaths="/=${project.parent.basedir}/ecos-citeckTheme-share/target/amp/web,/=${project.parent.basedir}/ecos-base-core-share/target/amp/web,/=${project.parent.basedir}/journals-share/target/amp/web,/=${project.parent.basedir}/ecos-forms-share/target/amp/web" />
+               extraResourcePaths="/=${project.parent.basedir}/ecos-citeckTheme-share/target/amp/web,/=${project.parent.basedir}/ecos-base-core-share/target/amp/web,/=${project.parent.basedir}/journals-share/target/amp/web,/=${project.parent.basedir}/ecos-forms-share/target/amp/web,/=${project.parent.basedir}/idocs-share/target/amp/web,/=${project.parent.basedir}/contracts-share/target/amp/web"/>
     <!-- IMPORTANT! The extraResourcePaths string need to be on one continues line, so if we add another Share AMP,
                     it would look something like this:
     <Resources className="org.apache.naming.resources.VirtualDirContext"
@@ -41,8 +41,11 @@
             ${project.parent.basedir}/idocs-share/target/classes;
             ${project.parent.basedir}/idocs-share/target/amp/config;
             ${project.parent.basedir}/idocs-share/target/test-classes;
-            ${project.parent.basedir}/share/target/test-classes" />
+            ${project.parent.basedir}/contracts-share/target/classes;
+            ${project.parent.basedir}/contracts-share/target/amp/config;
+            ${project.parent.basedir}/contracts-share/target/test-classes;
+            ${project.parent.basedir}/share/target/test-classes"/>
 
     <!-- Load from all directories, not just when the META-INF directory is found in exploded JAR -->
-    <JarScanner scanAllDirectories="true" />
+    <JarScanner scanAllDirectories="true"/>
 </Context>

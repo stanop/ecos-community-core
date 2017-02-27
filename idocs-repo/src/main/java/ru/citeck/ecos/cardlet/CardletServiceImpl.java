@@ -25,7 +25,9 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.ScriptService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.QName;
@@ -118,12 +120,13 @@ import java.util.*;
             Collection<String> modes = new ArrayList<>(2);
             modes.add(cardMode);
             modes.add(CardletService.ALL_MODES);
-            modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, CardletService.DEFAULT_MODE.equals(cardMode));
+            modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, false, true);
         }
 
+        authorities.add("");
         String typeClause = "TYPE:\"" + CardletModel.TYPE_CARDLET + "\"";
-        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true);
-        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true);
+        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, false, true);
+        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, false, true);
         String query = typeClause + " AND " + modeClause + " AND " + documentClause + " AND " + authorityClause;
         if (logger.isDebugEnabled()) {
             logger.debug("Quering cardlets: " + query);
@@ -158,8 +161,8 @@ import java.util.*;
 
     private List<NodeRef> queryCardModes(List<QName> types, Collection<String> authorities) {
         String typeClause = "TYPE:\"" + CardletModel.TYPE_CARD_MODE + "\"";
-        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true);
-        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true);
+        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, false, true);
+        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true, true);
         String query = typeClause + " AND " + documentClause + " AND " + authorityClause;
         if (logger.isDebugEnabled()) {
             logger.debug("Quering card modes: " + query);
@@ -177,8 +180,12 @@ import java.util.*;
         ResultSet results = null;
         List<NodeRef> cardModes;
         try {
-            results = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
-                    SearchService.LANGUAGE_FTS_ALFRESCO, query);
+            SearchParameters searchParameters = new SearchParameters();
+            searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+            searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+            searchParameters.setQuery(query);
+            searchParameters.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
+            results = searchService.query(searchParameters);
             cardModes = results.getNodeRefs();
         } finally {
             if (results != null) {
@@ -188,11 +195,12 @@ import java.util.*;
         return cardModes;
     }
 
-    private String disjunction(QName property, Collection<?> objects, boolean allowNull) {
+    private String disjunction(QName property, Collection<?> objects, boolean allowNull, boolean exactSearch) {
         List<String> clauses = new LinkedList<>();
+        String exactPrefix = exactSearch ? "=" : "";
         for (Object object : objects) {
             if (object == null) continue;
-            clauses.add("@" + property + ":\"" + object.toString().replaceAll("[\"]", "\\\"") + "\"");
+            clauses.add(exactPrefix + "@" + property + ":\"" + object.toString().replaceAll("[\"]", "\\\"") + "\"");
         }
         if (allowNull) {
             clauses.add("ISNULL:\"" + property + "\"");

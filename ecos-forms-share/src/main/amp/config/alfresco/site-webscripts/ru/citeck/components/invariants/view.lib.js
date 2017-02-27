@@ -10,15 +10,25 @@ function getAttributesRecursively(element, attributes) {
             getAttributesRecursively(element.elements[i], attributes);
         }
     } else if(element.type == "field") {
-        if(attributes.indexOf(element.attribute) == -1) {
-            attributes.push(element.attribute);
+        if(attributes.indexOf(element) == -1) {
+            attributes.push(element);
         }
     }
 }
 
+function get(view, type) {
+    var objects = [];
+    for(var i in view.elements) {
+        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) {
+            objects.push(view.elements[i]);
+        }
+    }
+    return objects;
+}
+
 function getInvariantSet(args, attributes) {
-    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
-        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : ''));
+    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
+        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : '') + (args.mode ? '&mode=' + args.mode : ''));
     return eval('(' + response + ')');
 }
 
@@ -40,7 +50,16 @@ function getInvariantsRecursively(element, invariants) {
     }
 }
 
-function getView(args) {
+function getWritePermission(nodeRef) {
+    if (!nodeRef) return;
+
+    var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
+        response = eval('(' + remote.call(serviceURI) + ')');
+
+    return response;
+}
+
+function getViewData(args) {
     var serviceURI = '/citeck/invariants/view?';
 
     // try-block is used to protect from absense of page object in model.
@@ -52,12 +71,15 @@ function getView(args) {
             serviceURI += name + '=' + encodeURIComponent(page.url.args[name]) + '&';
         }
     } catch(e) {}
+
     for(var name in args) {
         if(name == 'htmlid') continue;
         serviceURI += name + '=' + encodeURIComponent(args[name]) + '&';
     }
+
     var response = remote.call(serviceURI);
-    var view = eval('(' + response + ')');
+    var viewData = eval('(' + response + ')');
+
     if(response.status == 404) {
         var formUrl = url.context + '/page/components/form?htmlid=' + encodeURIComponent(args.htmlid) + '&submitType=json&showCancelButton=true';
         if(args.type) formUrl += '&itemKind=type&itemId=' + encodeURIComponent(args.type);
@@ -71,8 +93,10 @@ function getView(args) {
         status.redirect = true;
         return null;
     }
+
     if(response.status != 200) {
-        throw 'Can not get view from uri "' + serviceURI + '": ' + view.message;
+        throw 'Can not get view from uri "' + serviceURI + '": ' + response.message;
     }
-    return view;
+
+    return viewData;
 }

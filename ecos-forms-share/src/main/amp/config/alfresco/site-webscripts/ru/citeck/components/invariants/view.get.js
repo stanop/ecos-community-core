@@ -1,102 +1,94 @@
-function getAttributes(view) {
-    var attributes = [];
-    getAttributesRecursively(view, attributes);
-    return attributes;
-}
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/invariants/view.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/citeck.lib.js">
 
-function getAttributesRecursively(element, attributes) {
-    if(element.type == "view") {
-        for(var i in element.elements) {
-            getAttributesRecursively(element.elements[i], attributes);
+
+    (function() {
+        model.isMobile = isMobileDevice(context.headers["user-agent"]);
+
+        var viewData = getViewData(args);
+        if(!viewData) return;
+
+        var view = viewData.view,
+            attributes = getAttributes(view);
+
+        if (model.isMobile) {
+            for (var a = 0; a < attributes.length; a++) {
+                prepareAttributeForMobileVersion(attributes[a]);
+            }
         }
-    } else if(element.type == "field") {
-        if(attributes.indexOf(element) == -1) {
-            attributes.push(element);
+
+        attributes = map(attributes, function(attr) { return attr.attribute; });
+
+        var groups = get(view, "view"),
+            attributesByGroups = map(groups, function(group) {
+                return map(getAttributes(group), function(attribute) { return attribute.attribute; })
+            });
+
+        // generate id
+        each(groups, function(group, index) {
+            group["genId"] = view["class"].replace(":", "_") + "-group-" + index;
+        });
+
+        var invariantSet = getInvariantSet(args, attributes),
+            invariantSetByGroups = map(attributesByGroups, function(group) { return getInvariantSet(args, group) });
+
+        var viewScopedInvariants = getViewScopedInvariants(view),
+            viewScopedInvariantsByGroups = map(groups, function(group) { return getViewScopedInvariants(group) });
+
+        var invariantsByGroups = [];
+        for (var fi = 0; fi < groups.length; fi++) {
+            invariantsByGroups.push(viewScopedInvariantsByGroups[fi].concat(invariantSetByGroups[fi].invariants));
         }
-    }
-}
 
-function get(view, type) {
-    var objects = [];
-    for(var i in view.elements) {
-        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) {
-            objects.push(view.elements[i]);
+        // ATTENTION: this view model should comply to repository NodeView interface!
+        var defaultModel = {},
+            publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
+
+        for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
+
+        defaultModel.view = {};
+        for(var i in publicViewProperties) {
+            var name = publicViewProperties[i];
+            defaultModel.view[name] = view[name];
         }
+
+
+        model.view = view;
+        model.canBeDraft = viewData.canBeDraft;
+
+        model.attributes = attributes;
+        model.attributesByGroups = attributesByGroups;
+        model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
+        model.invariantsByGroups = invariantsByGroups;
+
+        model.classNames = invariantSet.classNames;
+        model.defaultModel = defaultModel;
+
+        model.groups = map(groups, function(group, index) {
+            return {
+                "id": group.id || group.genId,
+                "index": index,
+                "attributes": attributesByGroups[index],
+                "invariants": invariantsByGroups[index]
+            }
+        });
+
+        if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
+
+    })()
+
+
+function prepareAttributeForMobileVersion(attribute) {
+    var journalRegion = findBy(attribute.regions, "template", function(template) {
+        return /^(select-|)journal$/.test(template);
+    });
+
+    if (journalRegion) {
+        // change 'journal' or 'select-journal' to 'autocomplete'
+        journalRegion.template = "autocomplete";
+
+        // delete view region
+        var viewRegion = findBy(attribute.regions, "template", "view");
+        if (viewRegion) attribute.regions.splice(attribute.regions.indexOf(viewRegion), 1);
     }
-    return objects;
-}
-
-function getInvariantSet(args, attributes) {
-    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
-        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : '') + (args.mode ? '&mode=' + args.mode : ''));
-    return eval('(' + response + ')');
-}
-
-function getViewScopedInvariants(view) {
-    var invariants = [];
-    getInvariantsRecursively(view, invariants);
-    return invariants
-}
-
-function getInvariantsRecursively(element, invariants) {
-    if(element.type == "view") {
-        for(var i in element.elements) {
-            getInvariantsRecursively(element.elements[i], invariants);
-        }
-    } else if(element.type == "field" && element.invariants && element.invariants.length) {
-        for(var i in element.invariants) {
-            invariants.push(element.invariants[i]);
-        }
-    }
-}
-
-function getWritePermission(nodeRef) {
-  if (!nodeRef) return;
-
-  var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
-      response = eval('(' + remote.call(serviceURI) + ')');
-
-  return response;
-}
-
-function getViewData(args) {
-    var serviceURI = '/citeck/invariants/view?';
-
-    // try-block is used to protect from absense of page object in model.
-    // typeof page somehow fails with exception:
-    // Invalid JavaScript value of type java.util.HashMap
-    try {
-        for(var name in page.url.args) {
-            if(!name.match(/^param_/)) continue;
-            serviceURI += name + '=' + encodeURIComponent(page.url.args[name]) + '&';
-        }
-    } catch(e) {}
-
-    for(var name in args) {
-        if(name == 'htmlid') continue;
-        serviceURI += name + '=' + encodeURIComponent(args[name]) + '&';
-    }
-
-    var response = remote.call(serviceURI);
-    var viewData = eval('(' + response + ')');
-
-    if(response.status == 404) {
-        var formUrl = url.context + '/page/components/form?htmlid=' + encodeURIComponent(args.htmlid) + '&submitType=json&showCancelButton=true';
-        if(args.type) formUrl += '&itemKind=type&itemId=' + encodeURIComponent(args.type);
-        else formUrl += '&itemKind=node&itemId=' + encodeURIComponent(args.nodeRef);
-        if(args.viewId) formUrl += '&formId=' + encodeURIComponent(args.viewId);
-        if(args.mode) formUrl += '&mode=' + encodeURIComponent(args.mode);
-        if(args.param_destination) formUrl += '&destination=' + encodeURIComponent(args.param_destination);
-
-        status.code = 303;
-        status.location = formUrl;
-        status.redirect = true;
-        return null;
-    }
-
-    if(response.status != 200) {
-        throw 'Can not get view from uri "' + serviceURI + '": ' + response.message;
-    }
-
-    return viewData;
 }

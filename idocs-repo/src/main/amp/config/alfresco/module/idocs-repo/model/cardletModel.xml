@@ -131,6 +131,7 @@
 					<title>Allowed authorities</title>
 					<type>d:text</type>
 					<multiple>true</multiple>
+					<default></default>
 					<index enabled="true">
 						<atomic>true</atomic>
 						<tokenised>false</tokenised>
