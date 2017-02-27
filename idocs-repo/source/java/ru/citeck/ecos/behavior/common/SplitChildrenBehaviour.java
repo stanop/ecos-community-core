@@ -61,25 +61,25 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         final NodeRef parent = childAssociationRef.getParentRef();
         final NodeRef child = childAssociationRef.getChildRef();
 
-        if (parent.equals(getNodeRef()) && nodeService.exists(child)) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
 
-            NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
+                if (parent.equals(getNodeRef()) && nodeService.exists(child)) {
 
-            if (parent.equals(actualParent)) {
+                    NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
 
-                AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-                    @Override
-                    public Void doWork() throws Exception {
+                    if (parent.equals(actualParent)) {
                         try {
                             moveChild(childAssociationRef);
                         } catch (Exception e) {
                             logger.warn("Moving a child is failed. Parent: " + parent + " Child: " + child, e);
                         }
-                        return null;
                     }
-                });
+                }
+                return null;
             }
-        }
+        });
     }
 
     private void moveChild(ChildAssociationRef assocRef) {
