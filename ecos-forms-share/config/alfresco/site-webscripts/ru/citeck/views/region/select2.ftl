@@ -7,7 +7,7 @@
 <#assign mode = params.mode!"list">
 
 <#-- predicats: startsWith, contains -->
-<#assign searchPredicat = params.searchPredicat!"startsWith">
+<#assign searchPredicat = params.searchPredicat!"contains">
 
 <#-- step: 10, 15, 20 ...  -->
 <#assign step = params.step!"10">
