@@ -1554,6 +1554,8 @@ ko.components.register("select2", {
                                 return labelString.indexOf(searchString) != -1;
                         }
                     }
+
+                    return false;
                 });
             }
 
