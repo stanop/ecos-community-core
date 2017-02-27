@@ -6,17 +6,21 @@ import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.Pair;
 import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.service.AlfrescoServices;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Pavel Simonov
@@ -24,6 +28,8 @@ import java.util.*;
 public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
     private static final Logger logger = Logger.getLogger(SplitChildrenBehaviour.class);
+
+    private static final ConcurrentHashMap<Object,Boolean> nameCache = new ConcurrentHashMap<>(100);
 
     private NamespaceService namespaceService;
     private ServiceRegistry serviceRegistry;
@@ -65,16 +71,13 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
             @Override
             public Void doWork() throws Exception {
 
-                if (parent.equals(getNodeRef()) && nodeService.exists(child)) {
+                if (parent.equals(getNodeRef()) && nodeService.exists(child)
+                        && !ContentModel.TYPE_FOLDER.equals(nodeService.getType(child))) {
 
                     NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
 
                     if (parent.equals(actualParent)) {
-                        try {
-                            moveChild(childAssociationRef);
-                        } catch (Exception e) {
-                            logger.warn("Moving a child is failed. Parent: " + parent + " Child: " + child, e);
-                        }
+                        moveChild(childAssociationRef);
                     }
                 }
                 return null;
@@ -108,8 +111,27 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
         int counter = 1;
         NodeRef child = nodeService.getChildByName(parent, ContentModel.ASSOC_CONTAINS, name);
+
         while (child != null) {
-            name = String.format("%s (%d)", baseName, counter++);
+
+            Object key;
+            do {
+                name = String.format("%s (%d)", baseName, counter++);
+                key = new Pair<>(parent, name);
+            } while (nameCache.putIfAbsent(key, true) != null);
+
+            final Object finalKey = key;
+            AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+                @Override
+                public void afterCommit() {
+                    nameCache.remove(finalKey);
+                }
+                @Override
+                public void afterRollback() {
+                    nameCache.remove(finalKey);
+                }
+            });
+
             child = nodeService.getChildByName(parent, ContentModel.ASSOC_CONTAINS, name);
         }
 
