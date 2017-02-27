@@ -4,7 +4,7 @@
 
 	<!-- models -->
 	<bean id="contracts.modelBootstrap" parent="dictionaryModelBootstrap"
-		depends-on="idocs.dictionaryBootstrap">
+		depends-on="idocs.dictionaryBootstrap,idocs.workflowModelsBootstrap,ecos.forms.dictionaryBootstrap">
 		<property name="models">
 			<list>
 				<value>alfresco/module/contracts-repo/model/paymentsModel.xml</value>

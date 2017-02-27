@@ -89,7 +89,7 @@
         <view>
             <field prop="contracts:agreementNumber">
                 <region name="select" template="number-generate">
-                    <param name="template">supAgreement-number-template</param>
+                    <param name="template">agreement-number-template</param>
                     <param name="mode">checkbox</param>
                 </region>
                 <region name="label" template="label">
@@ -162,6 +162,14 @@
                     <param name="key">idocs_idocsModel.association.idocs_performer.title</param>
                 </region>
             </field>
+            <field assoc="idocs:supervisor">
+                <region name="label" template="label">
+                    <param name="key">idocs_idocsModel.association.idocs_supervisor.title</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field prop="contracts:digiSign" />
         </view>
         <view id="note" kind="1-column">
             <field prop="idocs:note">
@@ -190,6 +198,9 @@
             <region name="label" template="label">
                 <param name="key">payments_paymentsModel.association.payments_payments.title</param>
             </region>
+        </field>
+        <field prop="contracts:barcode" template="none">
+            <invariant on="value" language="explicit">-</invariant>
         </field>
     </view>
 
@@ -236,7 +247,9 @@
     </view>
 
     <!-- в моделе есть только model-type -->
-    <view class="contracts:documentType" />
+    <view class="contracts:documentType" >
+        <field prop="cm:name" />
+    </view>
 
     <view class="payments:payment">
         <views mode="create" kind="3-column" />
