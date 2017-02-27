@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+	<scope>page</scope>
+	<source-id>card-details</source-id>
+	<region-id>barcode</region-id>
+	<url>/citeck/components/barcode</url>
+	<properties>
+		<nodeRef>{nodeRef}</nodeRef>
+		<barcodeType>code-128</barcodeType>
+		<property>contracts:barcode</property>
+		<header>cardlet.barcode.header</header>
+		<printScale>1.0</printScale>
+		<printMargins>20,200,20,500</printMargins>
+	</properties>
+</component>

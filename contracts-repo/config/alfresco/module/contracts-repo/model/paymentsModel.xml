@@ -15,6 +15,7 @@
 		<import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
 		<import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+		<import uri="http://www.citeck.ru/model/invariants/1.0" prefix="invariants" />
 	</imports>
 
 	<namespaces>
@@ -302,6 +303,7 @@
 				<aspect>pas:hasProductsAndServices</aspect>
 				<aspect>payments:paymentType</aspect>
 				<aspect>dms:templateable</aspect>
+				<aspect>invariants:draftAspect</aspect>
 			</mandatory-aspects>
 		</type>
 	</types>

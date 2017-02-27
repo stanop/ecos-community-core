@@ -42,10 +42,10 @@
 				</#if>
 			</#list>
 
-			getValueTitle: function(value) { 
-				return ko.computed(function() { 
+			getValueTitle: function(value) {
+				return ko.computed(function() {
 					return $data.getValueTitle.call($data, value);
-				}); 
+				});
 			}
         }
     }'>

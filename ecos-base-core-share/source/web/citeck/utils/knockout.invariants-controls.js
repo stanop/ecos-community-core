@@ -722,7 +722,7 @@ ko.bindingHandlers.journalControl = {
                 var maxContainerWidth = screen.width - 200,
                     countOfAttributes = (function() {
                         if (defaultVisibleAttributes) return defaultVisibleAttributes.length;
-                        if (journalType.defaultAttributes()) return journalType.defaultAttributes().length; 
+                        if (journalType.defaultAttributes()) return journalType.defaultAttributes().length;
                     })();
 
                 if (countOfAttributes > 5) {
@@ -734,7 +734,7 @@ ko.bindingHandlers.journalControl = {
             })();
 
             panel = new YAHOO.widget.Panel(panelId, {
-                width:          optimalWidth, 
+                width:          optimalWidth,
                 visible:        false, 
                 fixedcenter:    true,  
                 draggable:      true,
@@ -1517,7 +1517,7 @@ ko.components.register("select2", {
             if (self.optionsText) return self.optionsText(option);
             return self.getValueTitle(option);
         };
-        
+
         // observables
         this.containerVisibility = ko.observable(false);
         this.highlightedElement = ko.observable();
@@ -1528,17 +1528,17 @@ ko.components.register("select2", {
 
         this.hasMore = ko.observable(false);
         this.count = ko.observable(this.step);
-        
+
         // computed
         this.label = ko.pureComputed(function() {
-            return self.value() ? 
-                   self.getValueTitle(self.value())() : 
-                   self.labels.label; 
+            return self.value() ?
+                   self.getValueTitle(self.value())() :
+                   self.labels.label;
         });
 
         this.visibleOptions = ko.pureComputed(function() {
             var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
-            
+
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
@@ -1572,13 +1572,13 @@ ko.components.register("select2", {
         this.searchQuery.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
 
         // subscription and events
-        this.containerVisibility.subscribe(function() { self.searchFocused(true); });  
+        this.containerVisibility.subscribe(function() { self.searchFocused(true); });
         this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
         this.searchQuery.subscribe(function() { self.count(self.step); });
 
         // public methods
         this.clear = function(data, event) { if (event.which == 1) self.value(null) };
-        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };       
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
 
         this.selectItem = function(data, event) {
             if (event.which == 1) {
@@ -1605,11 +1605,11 @@ ko.components.register("select2", {
                 }
 
                 // move selection
-                if (event.keyCode == 38 || event.keyCode == 40) {                   
+                if (event.keyCode == 38 || event.keyCode == 40) {
                     var selectedIndex = self.options().indexOf(self.highlightedElement()),
                         nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
-                    
-                    if (selectedIndex != -1 && self.options()[nextSelectIndex]) { 
+
+                    if (selectedIndex != -1 && self.options()[nextSelectIndex]) {
                         self.highlightedElement(self.options()[nextSelectIndex]); // highlight next or previous item
                     };
                 }
@@ -1634,7 +1634,7 @@ ko.components.register("select2", {
             return true;
         };
 
-        this.more = function(element, data) { 
+        this.more = function(element, data) {
             self.count(self.count() + self.step);
         };
 
@@ -1650,7 +1650,7 @@ ko.components.register("select2", {
             self.containerVisibility(false);
         });
     },
-    template: 
+    template:
        '<!-- ko if: disabled -->\
             <div class="select2-select disabled" tabindex="0">\
                 <span class="select2-value" data-bind="text: label"></span>\

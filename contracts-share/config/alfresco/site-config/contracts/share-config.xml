@@ -28,5 +28,8 @@
             <taskType label="Подготовить резолюцию">{http://www.citeck.ru/model/workflow/resolve/1.0}prepareTask</taskType>
         </taskTypes>
     </config>
+    <config evaluator="string-compare" condition="InvariantControlsConfiguration">
+        <journal dock="false" hightlightSelection="true" />
+    </config>
 
 </alfresco-config>
