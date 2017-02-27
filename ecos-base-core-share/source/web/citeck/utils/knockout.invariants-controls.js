@@ -1499,7 +1499,6 @@ ko.components.register("select2", {
     viewModel: function(params) {
         var self = this;
         kocomponents.initializeParameters.call(this, params);
-        console.log("debug select2", this);
 
         this.labels = {
             label: Alfresco.util.message("autocomplete.label"),
@@ -1510,7 +1509,7 @@ ko.components.register("select2", {
 
         if (this.forceOptions) {
             this.forceOptions = this.forceOptions();
-            this.forceOptions.extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
+            this.forceOptions.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
         }
 
         // private methods
@@ -1543,14 +1542,17 @@ ko.components.register("select2", {
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
-                        labelString  = self.optionTitle(option)().toLowerCase();
+                        labelString  = self.optionTitle(option)();
 
-                    switch (self.searchPredicat) {
-                        case "startsWith":
-                            return labelString.startsWith(searchString);
+                    if (labelString) {
+                        labelString = labelString.toLowerCase();
+                        switch (self.searchPredicat) {
+                            case "startsWith":
+                                return labelString.startsWith(searchString);
 
-                        case "contains":
-                            return labelString.indexOf(searchString) != -1;
+                            case "contains":
+                                return labelString.indexOf(searchString) != -1;
+                        }
                     }
                 });
             }
@@ -1565,7 +1567,7 @@ ko.components.register("select2", {
         });
 
         // extends
-        this.searchQuery.extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } })
+        this.searchQuery.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
 
         // subscription and events
         this.containerVisibility.subscribe(function() { self.searchFocused(true); });  
