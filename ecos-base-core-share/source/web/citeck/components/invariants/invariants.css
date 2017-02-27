@@ -537,6 +537,7 @@
 
 /* row field width */
 .invariants-form .template-table .template-row .template-select,
+.invariants-form .template-table .template-row .template-select2,
 .invariants-form .template-table .template-row .template-date,
 .invariants-form .template-table .template-row .template-datetime,
 .invariants-form .template-table .template-row .template-text,
@@ -551,6 +552,7 @@
 
 /* row field with help */
 .invariants-form .template-table .template-row.with-help .template-select,
+.invariants-form .template-table .template-row.with-help .template-select2,
 .invariants-form .template-table .template-row.with-help .template-date,
 .invariants-form .template-table .template-row.with-help .template-datetime,
 .invariants-form .template-table .template-row.with-help .template-text,
@@ -1241,6 +1243,148 @@
     display: inline-block;
 }
 
+/* select2 */
+.select2-control {
+  position: relative;
+}
+
+.select2-control .select2-select,
+.select2-control .select2-container {
+  background-color: white;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.select2-control .select2-select {
+  height: 30px;
+  padding: 4px 35px 4px 7px;
+  line-height: normal;
+  color: black;
+  position: relative;
+}
+
+.select2-control .select2-select.disabled {
+  color: #aaa;
+}
+
+.select2-control .select2-select:not(.disabled):hover {
+  border-color: #aaa;
+}
+
+.select2-control .select2-select:not(.disabled):focus {
+  border-color: #1c55da;
+}
+
+.select2-control .select2-select .select2-value {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: default;
+}
+
+.select2-control .select2-select a.clear-button {
+  height: 28px;
+  width: 9px;
+  position: absolute;
+  top: 0px;
+  right: 18px;
+  text-indent: -9999px;
+  cursor: pointer;
+
+  background-image: url(images/remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 9px;
+}
+
+.select2-control .select2-select .select2-twister {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 28px;
+  width: 18px;
+
+  background-image: url(images/autocomplete-closed-twister.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 7px;
+}
+
+.select2-control .select2-select.opened .select2-twister {
+  background-image: url(images/autocomplete-opened-twister.jpg);
+}
+
+.select2-control .select2-select.disabled .select2-twister {
+  background-image: url(images/autocomplete-disabled-close-twister.jpg);
+}
+
+.select2-control .select2-container {
+  position: absolute;
+  padding: 7px;
+  z-index: 5;
+  border-top: none;
+  box-shadow: 0 0 25px -5px gray;
+}
+
+.select2-container .select2-search-container {
+  position: relative;
+}
+
+.select2-container .select2-search-container .help-message {
+  margin-bottom: 7px;
+}
+
+.select2-container .select2-search-container input.select2-search {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 7px;
+  padding-right: 30px !important;
+}
+
+.select2-container ul.select2-list {
+  margin-top: 7px;
+}
+
+.select2-container ul.select2-list a {
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+  line-height: normal;
+}
+
+.select2-container ul.select2-list li.selected a {
+  font-weight: 900;
+  color: red;
+}
+
+.select2-container .emplty-message {
+    margin-top: 7px;
+    color: #777;
+}
+
+.select2-container .select2-more {
+    text-align: center;
+    border-top: 1px solid #ccc;
+    margin-bottom: -7px;
+    margin-top: 7px;
+}
+
+.select2-container .select2-more a {
+    display: block;
+    width: calc(100% + 14px);
+    margin-left: -7px;
+    padding: 0 0 7px 0;
+    letter-spacing: 5px;
+}
+
+.select2-container span.select2-message.empty-message {
+    padding-top: 5px;
+    display: inline-block;
+}
+
+
 
 /* file-upload */
 .invariants-form .template-table .form-field:not(.template-row) .template-file-upload {
@@ -1836,6 +1980,7 @@
 }
 
 .invariants-form .template-table .invalid .form-region:not(.template-autocomplete) input,
+.invariants-form .template-table .invalid .form-region:not(.template-select2) input,
 .invariants-form .template-table .invalid textarea,
 .invariants-form .template-table .invalid select {
   border-color: red !important;
