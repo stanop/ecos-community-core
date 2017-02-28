@@ -50,12 +50,12 @@
         <dependency>
           <groupId>org.alfresco.surf</groupId>
           <artifactId>spring-surf</artifactId>
-          <version>${dependency.surf.version}</version>
+          <version>6.10</version>
         </dependency>
         <dependency>
           <groupId>org.alfresco.surf</groupId>
           <artifactId>spring-surf-api</artifactId>
-          <version>${dependency.surf.version}</version>
+          <version>6.10</version>
         </dependency>
 
         <!--===============================================================
