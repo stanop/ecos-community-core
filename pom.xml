@@ -89,7 +89,7 @@
 
         <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
-            <id>citeck-snapshots</id>
+            <id>snapshots</id>
             <url>http://artifactory.citeck.ru/artifactory/libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
