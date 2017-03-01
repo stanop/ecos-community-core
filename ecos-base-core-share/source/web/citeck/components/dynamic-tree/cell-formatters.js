@@ -1543,13 +1543,13 @@
 		},
 
 		// change property to another property if original is not exist
-		replaceable: function(attributeName, formatter) {
+		replaceable: function(attributeName, formatter, direction) {
 			return function (elCell, oRecord, oColumn, sData) {
-				if (!sData && attributeName) {
-					var anotherAttribute = oRecord.getData("attributes['" + attributeName + "']");
+				var anotherAttribute = oRecord.getData("attributes['" + attributeName + "']");
 
-					if (formatter)  {
-						formatter(elCell, oRecord, oColumn, anotherAttribute);
+				if ((direction || sData == undefined) && anotherAttribute) {
+					if (formatter.another)  {
+						formatter.another(elCell, oRecord, oColumn, anotherAttribute);
 						return;
 					}
 
@@ -1557,8 +1557,14 @@
 					return;
 				}
 
-				elCell.innerHTML = sData.displayName;
-			};
+				if (formatter.original) {
+					formatter.another(elCell, oRecord, oColumn, sData);
+					return					
+				}
+
+				elCell.innerHTML = sData;
+				return
+			}
 		}
 
 	});
