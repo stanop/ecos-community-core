@@ -1540,6 +1540,25 @@
 				} 
 
 			};
+		},
+
+		// change property to another property if original is not exist
+		replaceable: function(attributeName, formatter) {
+			return function (elCell, oRecord, oColumn, sData) {
+				if (!sData && attributeName) {
+					var anotherAttribute = oRecord.getData("attributes['" + attributeName + "']");
+
+					if (formatter)  {
+						formatter(elCell, oRecord, oColumn, anotherAttribute);
+						return;
+					}
+
+					elCell.innerHTML = anotherAttribute;
+					return;
+				}
+
+				elCell.innerHTML = sData.displayName;
+			};
 		}
 
 	});
