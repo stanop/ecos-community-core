@@ -1540,6 +1540,31 @@
 				} 
 
 			};
+		},
+
+		// change property to another property if original is not exist
+		replaceable: function(attributeName, formatter, direction) {
+			return function (elCell, oRecord, oColumn, sData) {
+				var anotherAttribute = oRecord.getData("attributes['" + attributeName + "']");
+
+				if ((direction || sData == undefined) && anotherAttribute) {
+					if (formatter.another)  {
+						formatter.another(elCell, oRecord, oColumn, anotherAttribute);
+						return;
+					}
+
+					elCell.innerHTML = anotherAttribute;
+					return;
+				}
+
+				if (formatter.original) {
+					formatter.another(elCell, oRecord, oColumn, sData);
+					return					
+				}
+
+				elCell.innerHTML = sData;
+				return
+			}
 		}
 
 	});
