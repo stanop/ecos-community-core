@@ -20,6 +20,7 @@
 			<evaluator>evaluator.doclib.contracts.agreement</evaluator>
 			<evaluator>evaluator.doclib.contracts.agreement.isActive</evaluator>
 			<evaluator negate="true">evaluator.doclib.contracts.agreement.isCancelled</evaluator>
+			<evaluator negate="true">evaluator.doclib.idocs.isCase</evaluator>
 		</action>
 
 		<action id="document-add-closing-doc-for-payment" type="javascript" icon="plus" label="actions.document-add-closing-doc-for-payment">
@@ -30,6 +31,7 @@
 			<evaluator>evaluator.doclib.contracts.agreement</evaluator>
 			<evaluator>evaluator.doclib.contracts.agreement.isActive</evaluator>
 			<evaluator negate="true">evaluator.doclib.contracts.agreement.isCancelled</evaluator>
+			<evaluator negate="true">evaluator.doclib.idocs.isCase</evaluator>
 		</action>
 
         <action id="document-add-sup-agreement" type="javascript" icon="plus"
@@ -41,6 +43,7 @@
             <evaluator>evaluator.doclib.contracts.agreement</evaluator>
             <evaluator>evaluator.doclib.contracts.agreement.isActive</evaluator>
             <evaluator negate="true">evaluator.doclib.contracts.agreement.isCancelled</evaluator>
+			<evaluator negate="true">evaluator.doclib.idocs.isCase</evaluator>
         </action>
 
         <action id="document-add-closing-doc-for-invoice" type="javascript" icon="plus"
