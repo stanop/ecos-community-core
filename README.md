@@ -9,7 +9,7 @@ Citeck EcoS Community is a new open source solution based on the Alfresco ECM fo
 * Main repository - https://bitbucket.org/citeck/ecos-community
 * Features description - http://www.citeck.com
 
-### Documentation and tutorials ###
+### Documentation and tutorials  ###
 
 * Alfresco ECM and Citeck EcoS Installation - http://ecos24.com/s/NEwSbCfOSbyw_rwsi--ekg
 * Citeck EcoS Architecture - http://ecos24.com/s/6tfsLQchRja69LmZORNTNg
