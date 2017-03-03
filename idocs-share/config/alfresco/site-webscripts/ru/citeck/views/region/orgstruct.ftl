@@ -18,12 +18,18 @@
                                                                         allowedGroupType: '${params.allowedGroupType}',
                                                                     </#if>
 
+                                                                    <#if params.rootGroup??>
+                                                                        rootGroup: '${params.rootGroup}',
+                                                                    <#elseif params.rootGroupFunction??>
+                                                                        rootGroupFunction: ${params.rootGroupFunction},
+                                                                    </#if>
+
                                                                     submitButtonTitle: '${submitButtonTitle}',
                                                                     cancelButtonTitle: '${cancelButtonTitle}'
-                                                                } 
+                                                                }
                                                             }" >
 
-    <button id="${controlId}-showVariantsButton" 
-            class="orgstruct-control-show-variants" 
+    <button id="${controlId}-showVariantsButton"
+            class="orgstruct-control-show-variants"
             data-bind="disable: protected">${msg(params.buttonTitle!"form.select.label")}</button>
 </div>

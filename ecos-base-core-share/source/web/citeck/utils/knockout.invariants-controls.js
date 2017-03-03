@@ -1834,8 +1834,9 @@ ko.bindingHandlers.orgstructControl = {
         // default option
         var options = {
             allowedAuthorityType: "USER",
-            allowedGroupType: ""
-        }
+            allowedGroupType: "",
+            rootGroup: ko.observable("_orgstruct_home_")
+        };
 
         // from fake model option
         if (data.allowedAuthorityType && data.allowedAuthorityType())
@@ -1850,9 +1851,14 @@ ko.bindingHandlers.orgstructControl = {
             orgstructPanelId = element.id + "-orgstructPanel", orgstructPanel, resize,
             tree, selectedItems;
 
+        var rootGroupFunction;
+        if (!params.rootGroup && params.rootGroupFunction && _.isFunction(params.rootGroupFunction)) {
+            rootGroupFunction = ko.computed(params.rootGroupFunction);
+            rootGroupFunction.subscribe(function (newValue) { options.rootGroup(newValue) });
+        }
+
         // concat default and new options
         if (params) Citeck.utils.concatOptions(options, params);
-
 
         Event.on(showVariantsButton, "click", function(event) {
             event.stopPropagation();
@@ -1960,7 +1966,7 @@ ko.bindingHandlers.orgstructControl = {
                     },
 
                     loadRootNodes: function(tree, scope, query) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl("_orgstruct_home_", query), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query), {
                             success: function(oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText), 
                                     rootNode = tree.getRoot(), treeNode,
@@ -2036,7 +2042,7 @@ ko.bindingHandlers.orgstructControl = {
 
                         $("li.selected-object", this.selectedItems).each(function() {
                             existsSelectedItems.push(this.id);
-                        })
+                        });
 
                         // return if element exists
                         if (existsSelectedItems.indexOf(textNode.data.nodeRef) != -1) return false; 
@@ -2088,7 +2094,7 @@ ko.bindingHandlers.orgstructControl = {
                             }
                         }
                     }
-                }
+                };
 
                  // initialise treeView
                 tree.setDynamicLoad(tree.fn.loadNodeData);
@@ -2109,6 +2115,10 @@ ko.bindingHandlers.orgstructControl = {
                     updatedControlValue(newValue, selectedItems, tree);
                 });
 
+                // update tree after change rootGroup
+                options.rootGroup.subscribe(function(newValue) {
+                    tree.fn.loadRootNodes(tree, tree);
+                });
 
                 // second panel delete listener
                 Event.addListener(secondPanel, "click", function(event) {
