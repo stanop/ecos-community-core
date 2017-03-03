@@ -16,6 +16,6 @@ Citeck EcoS Community is a new open source solution based on the Alfresco ECM fo
 * Alfresco Share Setup - http://ecos24.com/s/t9K9TBp1RdKH3_KSBGQlig
 * Cards and journals in Citeck EcoS - http://ecos24.com/s/d7yyukC6QAy6dWdhgKZAyg
 * Import and Export in Citeck EcoS - http://ecos24.com/s/9VSEaTkATr6r3huoGTazEw
-* Content modeling in Alfresco ECM and Citeck EcoS - http://ecos24.com/s/e33EFEjrTfaKFefXGNtREg
+* Content modelling in Alfresco ECM and Citeck EcoS - http://ecos24.com/s/e33EFEjrTfaKFefXGNtREg
 * Processes in Citeck EcoS - http://ecos24.com/s/-ncV-u0PQ6m2qZG10-ceCg
 * Forms in Citeck EcoS - http://ecos24.com/s/b6pAC1wOQSSGYUnjIF5oYw
