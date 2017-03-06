@@ -30,7 +30,9 @@
                     <param name="mode">checkbox</param>
                 </region>
             </field>
-            <field prop="ecos:documentDate"/>
+            <field prop="ecos:documentDate">
+                <invariant on="mandatory" language="javascript">node.properties["tk:kind"].nodeRef == "workspace://SpacesStore/cat-document-hr-documents"</invariant>
+            </field>
         </view>
         <view kind="1-column">
             <field prop="cm:name"/>
@@ -55,6 +57,7 @@
                 <region name="select" template="select-journal">
                     <param name="journalType">idocs-contractor</param>
                 </region>
+                <invariant on="mandatory" language="javascript">node.properties["tk:kind"].nodeRef == "workspace://SpacesStore/cat-document-hr-documents"</invariant>
             </field>
         </view>
         <view>
