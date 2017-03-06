@@ -8,20 +8,24 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.ContractsModel;
 import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.model.ProductsAndServicesModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.converter.amount.AmountInWordConverter;
 import ru.citeck.ecos.utils.converter.amount.AmountInWordConverterFactory;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy  {
 
     private NodeService nodeService;
+    private SearchService searchService;
     private PolicyComponent policyComponent;
     private String namespace;
     private String type;
@@ -36,6 +40,10 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateNod
     public void setType(String type) { this.type = type; }
 
     public void setOrder(int order) { this.order = order; }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
@@ -72,6 +80,7 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateNod
             return;
         }
         setTotalAmountInWords(paymentRef);
+        cloneProductsAndServices(paymentRef);
     }
 
     @Override
@@ -108,6 +117,14 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateNod
             AmountInWordConverter wordConverter = new AmountInWordConverterFactory().getConverter();
             String amountInWords = wordConverter.convert(amount, currencyCode);
             nodeService.setProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS, amountInWords);
+        }
+    }
+
+    private void cloneProductsAndServices(NodeRef nodeRef) {
+        NodeRef payment = RepoUtils.getFirstTargetAssoc(nodeRef, ContractsModel.ASSOC_CLOSING_DOCUMENT_PAYMENT, nodeService);
+        if (payment != null) {
+            List<AssociationRef> paymentProdAndServs = nodeService.getTargetAssocs(payment, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
+            ProductsAndServicesUtils.setCopiedProductsAndServicesAssocs(nodeRef, paymentProdAndServs, searchService, nodeService);
         }
     }
 }

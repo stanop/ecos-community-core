@@ -239,9 +239,6 @@
         <!-- <association name="contracts:closingDocumentSigner">
            <invariant on="mandatory" language="javascript">node.assocs["contracts:closingDocumentPayment"] == false</invariant>
         </association> -->
-        <association name="pas:containsProductsAndServices">
-            <invariant on="value" language="javascript">node.assocs['contracts:closingDocumentPayment'][0].assocs['pas:containsProductsAndServices']</invariant>
-        </association>
     </type>
 
     <type name="contracts:supplementaryAgreement">

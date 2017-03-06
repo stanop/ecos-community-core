@@ -14,6 +14,7 @@ public interface ContractsModel {
     public static final QName ASSOC_CLOSING_DOCUMENT_AGREEMENT = QName.createQName(NAMESPACE, "closingDocumentAgreement");
     public static final QName ASSOC_CLOSING_DOCUMENT_CURRENCY = QName.createQName(NAMESPACE, "closingDocumentCurrency");
     public static final QName ASSOC_AGREEMENT_CURRENCY = QName.createQName(NAMESPACE, "agreementCurrency");
+    public static final QName ASSOC_CLOSING_DOCUMENT_PAYMENT = QName.createQName(NAMESPACE, "closingDocumentPayment");
 
     public static final QName PROP_CLOSING_DOCUMENT_AMOUNT = QName.createQName(NAMESPACE, "closingDocumentAmount");
     public static final QName PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS = QName.createQName(NAMESPACE, "closingDocumentAmountInWords");
