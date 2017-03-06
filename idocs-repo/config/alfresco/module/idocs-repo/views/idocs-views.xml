@@ -12,6 +12,9 @@
     <view class="idocs:organizationInfo">
         <field prop="idocs:fullOrganizationName"/>
         <field prop="idocs:shortOrganizationName"/>
+        <field prop="idocs:contractorType">
+            <region name="input" template="select" />
+        </field>
     </view>
 
     <view class="idocs:publicRegInfo">
@@ -31,8 +34,8 @@
     </view>
 
     <view class="idocs:contractor">
-        <views mode="create" kind="2-column"/>
-        <views mode="edit" kind="2-column"/>
+        <views mode="create" kind="3-column"/>
+        <views mode="edit" kind="3-column"/>
 
         <view class="idocs:organizationInfo"/>
         <view>
@@ -52,17 +55,12 @@
                     })()
                 </invariant>
             </field>
-            <field prop="idocs:kpp">
-                <invariant on="mandatory" language="explicit">true</invariant>
-            </field>
+            <field prop="idocs:kpp"/>
         </view>
         <view>
             <field prop="idocs:phone"/>
             <field prop="idocs:fax"/>
-        </view>
-        <view>
             <field prop="idocs:email"/>
-            <field prop="idocs:CEOname"/>
         </view>
         <view>
             <!-- Temporarily hidden field (no controls exists for it yet) -->
@@ -70,38 +68,32 @@
                 <region name="input" template="view" />
                 <region name="select" template="select-orgstruct" />
             </field>-->
+            <field prop="idocs:CEOname"/>
             <field prop="idocs:nameInGenitiveCase"/>
             <field prop="idocs:diadocBoxId"/>
         </view>
     </view>
 
     <view class="idocs:legalEntity">
-        <views mode="create" kind="2-column"/>
-        <views mode="edit" kind="2-column"/>
+        <views mode="create" kind="3-column"/>
+        <views mode="edit" kind="3-column"/>
         <view>
-            <field prop="idocs:code"/>
-        </view>
-        <view>
-            <field prop="idocs:shortOrganizationName"/>
             <field prop="idocs:fullOrganizationName"/>
-        </view>
-        <view>
+            <field prop="idocs:shortOrganizationName"/>
             <field prop="idocs:engOrganizationName"/>
-            <field prop="idocs:juridicalAddress"/>
         </view>
         <view>
+            <field prop="idocs:juridicalAddress"/>
             <field prop="idocs:postAddress"/>
             <field prop="idocs:okpo"/>
         </view>
         <view>
-            <field prop="idocs:ogrn"/>
             <field prop="idocs:inn"/>
-        </view>
-        <view>
             <field prop="idocs:kpp"/>
-            <field assoc="idocs:generalDirector"/>
+            <field prop="idocs:ogrn"/>
         </view>
         <view>
+            <field assoc="idocs:generalDirector"/>
             <field assoc="idocs:accountantGeneral"/>
             <field prop="idocs:phoneNumber"/>
         </view>

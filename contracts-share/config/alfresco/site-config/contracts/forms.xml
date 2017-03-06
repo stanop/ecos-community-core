@@ -1644,7 +1644,6 @@
 		<forms>
 			<form>
 				<field-visibility>
-					<show id="idocs:code"/>
 					<show id="idocs:fullOrganizationName"/>
 					<show id="idocs:shortOrganizationName"/>
 					<show id="idocs:juridicalAddress"/>
@@ -1674,7 +1673,6 @@
 			<form>
 				<field-visibility>
 					<show id="cm:name" />
-					<show id="idocs:code"/>
 					<show id="idocs:fullOrganizationName"/>
 					<show id="idocs:shortOrganizationName"/>
 					<show id="idocs:juridicalAddress"/>

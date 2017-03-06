@@ -56,7 +56,7 @@
                     <value>rescinded</value>
                     <value>notActive</value>
                     
-                    <!-- spitamen temporary statuses -->
+                    <!-- temporary statuses -->
                     <!-- TODO refactor, remove -->
                     <value>credit-project</value>
                     <value>credit-evaluation</value>
@@ -152,6 +152,16 @@
                 <list>
                     <value>1</value>
                     <value>2</value>
+                </list>
+            </parameter>
+        </constraint>
+
+        <constraint name="idocs:constraint:contractorType" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>customer</value>
+                    <value>vendor</value>
+                    <value>employee</value>
                 </list>
             </parameter>
         </constraint>
@@ -347,6 +357,7 @@
                 <aspect>idocs:entityInfo</aspect>
                 <aspect>idocs:communicationInfo</aspect>
                 <aspect>idocs:diadocInfo</aspect>
+                <aspect>idocs:contractorType</aspect>
             </mandatory-aspects>
         </type>
 
@@ -1202,6 +1213,21 @@
                     </target>
                 </association>
             </associations>
+        </aspect>
+
+        <aspect name="idocs:contractorType">
+            <title>Contractor type</title>
+            <properties>
+                <property name="idocs:contractorType">
+                    <title>Contractor type</title>
+                    <type>d:text</type>
+                    <!-- <default>customer</default> -->
+                    <!-- <multiple>true</multiple>-->
+                    <constraints>
+                        <constraint ref="idocs:constraint:contractorType" />
+                    </constraints>
+                </property>
+            </properties>
         </aspect>
 
     </aspects>
