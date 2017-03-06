@@ -552,7 +552,7 @@
 
 	<bean id="ecos.itemsUpdateState" class="ru.citeck.ecos.state.ItemsUpdateState" />
 
-	<bean id="ecosConfigSearchService" class="ru.citeck.ecos.config.EcosConfigSearchService">
+	<bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
 		<property name="searchService" ref="searchService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>

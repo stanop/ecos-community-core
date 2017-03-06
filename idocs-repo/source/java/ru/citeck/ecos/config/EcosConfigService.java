@@ -8,9 +8,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ConfigModel;
 
-public class EcosConfigSearchService {
+public class EcosConfigService {
 
-    private static final Log LOGGER = LogFactory.getLog(EcosConfigSearchService.class);
+    private static final Log LOGGER = LogFactory.getLog(EcosConfigService.class);
 
     private SearchService searchService;
 
