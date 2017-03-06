@@ -1222,7 +1222,7 @@
                     <title>Contractor type</title>
                     <type>d:text</type>
                     <!-- <default>customer</default> -->
-                    <!-- <multiple>true</multiple>-->
+                    <multiple>true</multiple>
                     <constraints>
                         <constraint ref="idocs:constraint:contractorType" />
                     </constraints>

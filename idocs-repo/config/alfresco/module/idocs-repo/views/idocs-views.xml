@@ -13,7 +13,7 @@
         <field prop="idocs:fullOrganizationName"/>
         <field prop="idocs:shortOrganizationName"/>
         <field prop="idocs:contractorType">
-            <region name="input" template="select" />
+            <region name="input" template="checkbox" />
         </field>
     </view>
 
