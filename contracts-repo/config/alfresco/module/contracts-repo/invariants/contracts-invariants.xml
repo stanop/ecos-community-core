@@ -38,6 +38,11 @@
         <!-- <property name="contracts:agreementDate">
             <invariant on="value" language="javascript">node.properties["contracts:duration"].setFullYear(value.getFullYear() + 1)</invariant>
         </property> -->
+        <property name="contracts:agreementDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
+        </property>
+
         <property name="contracts:duration">
             <invariant on="default" language="javascript">
                 if (node.properties["contracts:agreementDate"] != null &amp;&amp; node.properties["contracts:duration"] == null) {
@@ -108,6 +113,10 @@
         </association>
         <property name="payments:beneficiaryType">
             <invariant on="default" language="explicit">resident</invariant>
+        </property>
+        <property name="payments:billDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
         </property>
         <property name="payments:paymentAccount">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -200,6 +209,10 @@
             <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
 </invariant> -->
         </property>
+        <property name="contracts:closingDocumentDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
+        </property>
         <property name="contracts:closingDocumentNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
@@ -264,6 +277,10 @@
         </association>
         <property name="contracts:agreementNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="contracts:agreementDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
         </property>
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>
