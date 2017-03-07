@@ -122,7 +122,7 @@ ko.components.register("select", {
                 valueAllowUnset: true"></select>\
         <!-- /ko -->\
         <!-- ko if: data.multiple -->\
-            <select data-bind="attr: { id: id, multiple: multiple },\
+            <select data-bind="attr: { id: id, multiple: data.multiple },\
                 disable: data.protected,\
                 options: data.options,\
                 optionsCaption: optionsCaption,\

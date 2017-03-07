@@ -374,9 +374,7 @@
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.association.payments_currency.title</param>
                 </region>
-                <region name="input" template="select" >
-                    <param name="alwaysSingle">true</param>
-                </region>
+                <region name="input" template="select"/>
             </field>
             <field prop="payments:paymentAmount">
                 <region name="label" template="label">

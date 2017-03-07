@@ -139,6 +139,7 @@
             </invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
+            <invariant on="multiple" language="explicit">false</invariant> 
         </association>
         <property name="payments:paymentAmount">
             <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
@@ -185,6 +186,7 @@
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
+            <invariant on="multiple" language="explicit">false</invariant> 
         </association>
         <property name="payments:typePayment">
             <invariant on="default" language="explicit">advance</invariant>
