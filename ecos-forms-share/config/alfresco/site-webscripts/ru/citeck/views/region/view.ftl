@@ -1,6 +1,13 @@
 <#assign params = viewScope.region.params!{} />
 <#assign isViewMode = (viewScope.view.mode == "view")/>
 <#assign completeDelete = (params.completeDelete!"false") == "true" />
+<#assign editable>
+    <#if config.scoped["InvariantControlsConfiguration"]?? &&
+             config.scoped["InvariantControlsConfiguration"]["view"]?? &&
+             config.scoped["InvariantControlsConfiguration"]["view"].attributes["editable"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["view"].attributes["editable"]}
+    <#else>all</#if>
+</#assign>
 
 <!-- ko foreach: multipleValues -->
 <span class="value-item">
@@ -20,9 +27,11 @@
 
     <#if !isViewMode>
         <span class="value-item-actions" data-bind="ifnot: $parent.protected()">
-            <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Write") -->
-                <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }), clickBubble: false"></a>
-            <!-- /ko -->
+            <#if editable?trim == "all" || (editable?trim == "admin" && user.isAdmin)>
+                <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Write") -->
+                    <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }), clickBubble: false"></a>
+                <!-- /ko -->
+            </#if>
 
             <#if completeDelete>
                 <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
