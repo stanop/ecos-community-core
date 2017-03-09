@@ -204,19 +204,6 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open("POST", '${url.service}' + "execute/", true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState != 4) return;
-                if (xhr.status == 200) {
-                    if (refreshLoadingDescriptionTimer) {
-                        clearInterval(refreshLoadingDescriptionTimer);
-                    }
-                    popUpMessage('<h2>Importing data finished</h2>',
-                            '<p>See more information on alfresco.log</p><p>Window will be reload</p>');
-                }
-                if (xhr.status == 204) {
-
-                }
-            };
             xhr.send(formData);
             loadingStart();
         }
@@ -232,6 +219,15 @@
                         var displayText = '<h2>Executing in progress!</h2>';
                         displayText = displayText.concat('\n').concat(description);
                         setLoadingText(displayText);
+
+                        var status = processStatus.props["xni:prsStatus"];
+                        if (status == "Wait") {
+                            if (refreshLoadingDescriptionTimer) {
+                                clearInterval(refreshLoadingDescriptionTimer);
+                            }
+                            popUpMessage('<h2>Importing data finished</h2>',
+                                    '<p>See more information on alfresco.log</p><p>Window will be reload</p>');
+                        }
                     }
                     if (xhr.status == 204) {
                         setLoadingText(xhr.statusText);
