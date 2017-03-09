@@ -143,7 +143,7 @@ function arrayObjectsToStringNodeRef(array, type) {
         }
 
     }
-    return newArray.sort();
+    return newArray;
 }
 
 function setStatusAsync(node, status) {
