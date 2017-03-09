@@ -94,7 +94,10 @@ var parser = {
             var prop = properties.child(i);
             var propType = prop.name().toString().split('_').join(':');
             var propValue = prop.toString();
-            propObj[propType] = propValue;
+
+            if (propType != "cm:title:ru" && propType != "cm:title:en") {
+                propObj[propType] = propValue;
+            }
 
             if (!propValueForUuid) {
                 propValueForUuid = this.helper.getUuidValue(propValue, prop);
