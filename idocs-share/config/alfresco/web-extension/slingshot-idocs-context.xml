@@ -29,6 +29,7 @@
                 <value>alfresco.site-messages.idocs.case-tasks</value>
                 <value>alfresco.site-messages.idocs.products-and-services</value>
                 <value>alfresco.site-messages.idocs.idocs-site-presets</value>
+                <value>alfresco.site-messages.idocs.override</value>
             </list>
         </property>
     </bean>
