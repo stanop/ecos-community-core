@@ -256,8 +256,9 @@ var parser = {
                     if (parser.parserData.uuidPrefix && parser.parserData.uuidPrefix.toString().length > 0) {
                         uuidValue = parser.parserData.uuidPrefix.toString();
                     }
-                    var correctUuid = propValue.split(' ').join('+').toLowerCase();
+                    var correctUuid = propValue.split(' ').join('-').toLowerCase();
                     correctUuid = correctUuid.split(".").join("");
+                    correctUuid = correctUuid.split("_").join("-");
                     correctUuid = correctUuid.split(",").join("");
 
                     uuidValue = uuidValue + correctUuid
