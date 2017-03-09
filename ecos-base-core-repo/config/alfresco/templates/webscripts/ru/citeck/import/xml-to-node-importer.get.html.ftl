@@ -216,7 +216,8 @@
                     if (xhr.status == 200) {
                         var processStatus = JSON.parse(xhr.responseText);
                         var description = processStatus.props["xni:activeParsingDescription"];
-                        var displayText = '<h2>Executing in progress!</h2>';
+                        var displayText = '<h2>Executing in progress!</h2>' +
+                                '<p>Please, check errors in alfresco.log<p>';
                         displayText = displayText.concat('\n').concat(description);
                         setLoadingText(displayText);
 
@@ -226,7 +227,7 @@
                                 clearInterval(refreshLoadingDescriptionTimer);
                             }
                             popUpMessage('<h2>Importing data finished</h2>',
-                                    '<p>See more information on alfresco.log</p><p>Window will be reload</p>');
+                                    '<p>Please, check errors in alfresco.log</p>');
                         }
                     }
                     if (xhr.status == 204) {
@@ -322,12 +323,13 @@
 
             span.onclick = function() {
                 modal.style.display = "none";
+                location.reload()
             };
 
             window.onclick = function(event) {
                 if (event.target == modal) {
                     modal.style.display = "none";
-                    setTimeout(location.reload(), 5000);
+                    location.reload();
                 }
             };
         }
@@ -337,9 +339,7 @@
 <body onload="start()">
 <h3 align="center">XML to node importer</h3>
 <p>On this moment import data available only for 'New' status of data objects.</p>
-<div style="display:none;" id="loadText" class="animate-bottom" align="center">
-    <h2>Executing in progress!</h2>
-</div>
+<div style="display:none;" id="loadText" class="animate-bottom" align="center"></div>
 <div id="loader" class="loader" style="display: none"></div>
 
 <#if xmlData?size == 0>
