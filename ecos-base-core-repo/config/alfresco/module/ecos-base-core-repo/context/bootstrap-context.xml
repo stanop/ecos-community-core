@@ -16,6 +16,7 @@
         <property name="models">
             <list>
                 <value>alfresco/module/ecos-base-core-repo/model/attributeModel.xml</value>
+                <value>alfresco/module/ecos-base-core-repo/model/xmlNodeImportModel.xml</value>
             </list>
         </property>
         <property name="labels">

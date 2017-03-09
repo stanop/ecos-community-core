@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Execute xni data</shortname>
+    <description>Execute Xml to Node Importer data</description>
+    <url>/import/xml-to-node/execute?nodeRef={nodeRef}</url>
+    <url>/import/xml-to-node/execute/</url>
+    <format default="json">argument</format>
+    <authentication>admin</authentication>
+</webscript>

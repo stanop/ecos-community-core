@@ -1,6 +1,7 @@
 /**
  * @author Roman Makarskiy
  */
+var status = "Complete";
 
 var parser = {
     parserScriptName: "xml-to-node-parser.js",
@@ -19,9 +20,9 @@ var parser = {
     createNodes: function(xmlData) {
         var xmlDataNode = search.findNode(xmlData);
 
-        if (!xmlDataNode) {
-            logger.error(this.parserScriptName + ": failed find xml data - " + xmlData);
-            return;
+        if (!xmlDataNode || xmlDataNode.typeShort != "xni:data") {
+            logger.warn(this.parserScriptName + ": failed find xml data - " + xmlData);
+            return false;
         }
 
         var content = xmlDataNode.content;
@@ -33,7 +34,7 @@ var parser = {
         var root = this.helper.getRootNodeByPath(path);
 
         if (!root) {
-            return;
+            return false;
         }
 
         var startTime = new Date().getTime();
@@ -44,28 +45,36 @@ var parser = {
         this.parserData.cmTitleRuFromProp = xml.cmTitle_RU_fromProp;
         this.parserData.cmTitleEnFromProp = xml.cmTitle_EN_fromProp;
 
-        var objects = xml.object;
-        var objCount = objects.length();
+        var objects = this.helper.getObjects(xml);
+        var objCount = objects.length;
 
         logger.warn(this.parserScriptName + " Start parse... type: " + type);
         logger.warn(this.parserScriptName + " Found " + objCount + " objects. Parse in progress...");
 
-        for each (var object in objects) {
-            var propObj = this.getProperties(object);
+        batchExecuter.processArray({
+            items: objects,
+            batchSize: 200,
+            threads: 4,
+            onNode: function(row) {
+                var propObj = parser.getProperties(row);
 
-            if (this.helper.uuidExists(propObj)) {
-                logger.error(this.parserScriptName + " Cannot create node, because node with uuid: '"
-                    + propObj['sys:node-uuid'] +"' already exists.");
-            } else if (this.helper.cmNameExists(path, propObj)) {
-                logger.error(this.parserScriptName + " Cannot create node, because node with cm:name - '"
-                    + propObj['cm:name'] +"' already exists.");
-            } else {
-                var createdNode = root.createNode(null, type, propObj, "cm:contains");
-                this.helper.fillNodeTitle(createdNode);
-                this.helper.fillAssocs(object, createdNode);
+                if (parser.helper.uuidExists(propObj)) {
+                    logger.warn(parser.parserScriptName + " Cannot create node, because node with uuid: '"
+                        + propObj['sys:node-uuid'] +"' already exists.");
+                    status = "Error";
+                } else if (parser.helper.cmNameExists(path, propObj)) {
+                    logger.warn(parser.parserScriptName + " Cannot create node, because node with cm:name - '"
+                        + propObj['cm:name'] +"' already exists.");
+                    status = "Error";
+                } else {
+                    var createdNode = root.createNode(null, type, propObj, "cm:contains");
+                    parser.helper.fillNodeTitle(createdNode);
+                    parser.helper.fillAssocs(row, createdNode);
+                }
             }
-        }
+        });
 
+        setStatusAsync(xmlDataNode, status);
         var endTime = new Date().getTime();
         var executedTime = endTime - startTime;
         logger.warn(this.parserScriptName + " Parse ends in " + this.helper.millisToMinAndSeconds(executedTime)
@@ -108,6 +117,13 @@ var parser = {
         return propObj;
     },
     helper: {
+        getObjects: function (xml) {
+            var objects = [];
+            for each (var i in xml.object) {
+                objects.push(i);
+            }
+            return objects;
+        },
         fillAssocs: function(obj, node) {
             var assocsData = obj.associations.association;
 
@@ -293,3 +309,15 @@ var parser = {
         }
     }
 };
+
+function setStatusAsync(node, status) {
+    batchExecuter.processArray({
+        items: [node],
+        batchSize: 1,
+        threads: 1,
+        onNode: function(row) {
+            row.properties["xni:status"] = status;
+            row.save();
+        }
+    });
+}
