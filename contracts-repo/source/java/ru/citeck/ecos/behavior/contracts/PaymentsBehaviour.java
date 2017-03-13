@@ -88,8 +88,8 @@ public class PaymentsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
         if (!nodeService.exists(paymentRef)) {
             return;
         }
-        setTotalAmountInWords(paymentRef);
         setCopiedAssociations(paymentRef);
+        setTotalAmountInWords(paymentRef);
     }
 
     @Override
