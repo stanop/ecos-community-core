@@ -155,7 +155,7 @@
 			$buttonSubscribe("createItem", this.onCreateItem, this, ids);
 			$buttonSubscribe("addGroup", this.onAddGroup, this, ids);
 			$buttonSubscribe("addUser", this.onAddUser, this, ids);
-			$buttonSubscribe("addDeputy", this.onAddUser, this, ids);
+			$buttonSubscribe("addDeputy", this.onAddDeputy, this, ids);
             $buttonSubscribe("addAssistant", this.onAddAssistant, this, ids);
 			$buttonSubscribe("editItem", this.onEditItem, this, ids);
 			$buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
@@ -379,6 +379,18 @@
             var itemId = args.item,
                 item = this.model.getItem(itemId);
             item.isAssistant = true;
+            this.state.dialogParentItem = item;
+            this.widgets.selectUserDialog.show();
+        },
+
+		/**
+         * Event handler - add-assistant-user button was clicked.
+         * Show select-user dialog.
+         */
+        onAddDeputy: function (args) {
+            var itemId = args.item,
+                item = this.model.getItem(itemId);
+            item.isAssistant = false;
             this.state.dialogParentItem = item;
             this.widgets.selectUserDialog.show();
         },
