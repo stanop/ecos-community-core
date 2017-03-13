@@ -82,13 +82,13 @@
         <dependency>
             <groupId>org.alfresco.surf</groupId>
             <artifactId>spring-surf</artifactId>
-            <version>6.10</version>
+            <version>${dependency.surf.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.alfresco.surf</groupId>
             <artifactId>spring-surf-api</artifactId>
-            <version>6.10</version>
+            <version>${dependency.surf.version}</version>
             <scope>provided</scope>
         </dependency>
 

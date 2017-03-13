@@ -162,6 +162,7 @@ import java.util.*;
     private List<NodeRef> queryCardModes(List<QName> types, Collection<String> authorities) {
         String typeClause = "TYPE:\"" + CardletModel.TYPE_CARD_MODE + "\"";
         String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, false, true);
+        authorities.add("");
         String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, false, true);
         String query = typeClause + " AND " + documentClause + " AND " + authorityClause;
         if (logger.isDebugEnabled()) {
