@@ -15,5 +15,6 @@ target/*
 */$*
 *.log
 *.todo
+alf_data_dev
 syntax: regexp
 desktop\.ini
