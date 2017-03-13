@@ -143,28 +143,25 @@ var parser = {
                         return;
                     }
 
-                    var groupName = assocData.cm_authority.name;
-                    var groupDisplayName = assocData.cm_authority.displayName;
-                    var createIfNotExists = assocData.cm_authority.createIfNotExists;
-
-                    var targetGroup = groups.getGroup(groupName);
-
+                    var targetGroup = this.createGroup(assocData.cm_authority);
                     if (!targetGroup) {
-                        if (createIfNotExists == 'true') {
-                            if (groupDisplayName.length() == 0) {
-                                groupDisplayName = groupName;
-                            }
-                            targetGroup = groups.createRootGroup(groupName, groupDisplayName)
-                        } else {
-                            logger.error(this.parserScriptName + " cannot create association with authority: "
-                                + groupName + ", because this authority doesn't exists and "
-                                + "parameter (createIfNotExists) not equals (true)")
-                            return;
-                        }
+                        logger.error(this.parserScriptName + " cannot create association with authority: "
+                            + assocData.cm_authority.name);
+                        return;
                     }
 
                     var groupNode = search.findNode(targetGroup.groupNodeRef);
                     node.createAssociation(groupNode, assocData.assocType);
+
+                    if (assocData.cm_authority.child_groups.group.length() > 0) {
+                        var childGroups = assocData.cm_authority.child_groups.group;
+                        for each (var childGroup in childGroups) {
+                            var createdChildGroup = this.createGroup(childGroup);
+                            if (createdChildGroup) {
+                                targetGroup.addAuthority("GROUP_" + childGroup.name);
+                            }
+                        }
+                    }
 
                 } else {
                     if (assocData.assocType.length() == 0 || assocData.targetNodeType.length() == 0
@@ -194,6 +191,28 @@ var parser = {
                 }
 
             }
+        },
+        createGroup: function (groupObj) {
+            var groupName = groupObj.name;
+            var groupDisplayName = groupObj.displayName;
+            var createIfNotExists = groupObj.createIfNotExists;
+
+            var targetGroup = groups.getGroup(groupName);
+
+            if (!targetGroup) {
+                if (createIfNotExists == 'true') {
+                    if (groupDisplayName.length() == 0) {
+                        groupDisplayName = groupName;
+                    }
+                    targetGroup = groups.createRootGroup(groupName, groupDisplayName)
+                } else {
+                    logger.error(this.parserScriptName + " cannot fill group: "
+                        + groupName + ", because this group doesn't exists and "
+                        + "parameter (createIfNotExists) not equals (true)");
+                    return null;
+                }
+            }
+            return targetGroup;
         },
         fillNodeTitle: function (node) {
             if (parser.parserData.titles.en.length > 0) {
