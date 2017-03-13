@@ -44,6 +44,39 @@ define(["dojo/_base/declare", "dijit/MenuBarItem", "alfresco/menus/_AlfMenuItemM
        * @default null
        */
       iconNode: null,
+      iconImage: "/js/alfresco/menus/css/images/transparent-20.png",
+
+      clickEvent: null,
+      inheriteClickEvent: false,
+
+      attributes: {},
+
+      movable: null,
+
+      postMixInProperties: function alfresco_menus__AlfMenuItem__postMixInProperties() {
+        if (this.clickEvent) this.clickEvent = eval("(" + this.clickEvent + ")")
+        this.inherited(arguments);
+      },
+
+      onClick: function(event) {
+        this.alfLog("log", "AlfMenuBarItem clicked");
+
+        this.emitClosePopupEvent();
+        event.stopPropagation();
+
+        if (this.clickEvent) {
+          this.clickEvent(event, document.getElementById(this.id), this);
+          if (!this.inheriteClickEvent) return false;
+        }
+
+        if (this.targetUrl) {
+          this.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: this.targetUrl, type: this.targetUrlType, target: this.targetUrlLocation});
+        } else if (this.publishTopic) {
+          this.alfPublish(this.publishTopic, this.publishPayload ? this.publishPayload : {});
+        } else {
+          this.alfLog("error", "An AlfMenuItem was clicked but did not define a 'targetUrl' or 'publishTopic' or 'clickEvent' attribute", event);
+        }
+      },
 
       /**
        * Sets the label of the menu item that represents the popup and creates a new alfresco/menus/AlfMenuGroups
@@ -58,13 +91,14 @@ define(["dojo/_base/declare", "dijit/MenuBarItem", "alfresco/menus/_AlfMenuItemM
             this.set("label", this.message(this.label));
         }
 
-        if (this.movable) _alflib.visibilityByWindowSizeEventSubscription(this.id, this.movable, true);
+        if (this.movable) 
+            _alflib.visibilityByWindowSizeEventSubscription(this.id, this.movable, true);
 
         domClass.add(this.containerNode, "alf-menu-bar-label-node");
         if (this.iconClass && this.iconClass != "dijitNoIcon") {
             this.iconNode = domConstruct.create("img", {
                 className: this.iconClass,
-                src: Alfresco.constants.URL_RESCONTEXT + "/js/alfresco/menus/css/images/transparent-20.png",
+                src: Alfresco.constants.URL_RESCONTEXT + this.iconImage,
                 alt: this.message(this.iconAltText)
             }, this.focusNode, "first");
 
