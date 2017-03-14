@@ -254,7 +254,7 @@ ko.components.register("free-content", {
         this.content = ko.computed(function() {
             var result = self.func();
             if (result instanceof HTMLElement) return result.outerHTML;
-            if (result instanceof String) return result;
+            if (typeof result == "string") return result;
 
             throw Error('Parameter "func" should return a String or an HTMLElement');
             return null;
