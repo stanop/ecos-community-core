@@ -66,6 +66,7 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
+        var self = this;
 
         if (!this.tooltip) {
             this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
@@ -81,6 +82,12 @@ ko.components.register("help", {
 
             if (this.text()) { this.tooltip.cfg.setProperty("text", this.text()); }
         }
+
+        this.tooltip.contextMouseOverEvent.subscribe(function() {
+            var parent = $("#" + self.id).closest(".yui-panel-container"),
+                zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+            self.tooltip.cfg.setProperty("zIndex", zindex);
+        });
 
         this.text.subscribe(function(newValue) {
             if (newValue) this.tooltip.cfg.setProperty("text", newValue);
