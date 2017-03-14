@@ -8,6 +8,24 @@
         ${config.scoped["InvariantControlsConfiguration"]["view"].attributes["editable"]}
     <#else>all</#if>
 </#assign>
+<#assign postprocessing = params.postprocessing!"">
+<#assign asis><#if params.asis?? && params.asis == "true">white-space: pre-wrap;<#else></#if></#assign>
+
+
+<#macro valueText isLinked="false">
+    <#if isLinked == "true">
+        <a class="value-item-text ${asis}" style="${asis}" 
+            data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: $parent.href($data) }"></a>
+    <#else>
+        <#if postprocessing?has_content>
+            <span class="value-item-text ${asis}" style="${asis}" 
+                data-bind="text: $parent.getValueTitle($data, function(value) { return ${postprocessing}; }), attr: { title: $parent.getValueDescription($data) }"></span>
+        <#else>
+            <span class="value-item-text ${asis}" style="${asis}" 
+                data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data) }"></span>
+        </#if>
+    </#if>
+</#macro>
 
 <!-- ko foreach: multipleValues -->
 <span class="value-item">
@@ -15,14 +33,14 @@
 
     <#if showLink == "true">
         <!-- ko if: $data instanceof koutils.koclass("invariants.Node") -->
-             <a class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: $parent.href($data) }"></a>
+            <@valueText "true" />
         <!-- /ko -->
 
         <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
-            <span class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data) }"></span>
+            <@valueText />
         <!-- /ko -->
     <#else>
-        <span class="value-item-text" data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data) }"></span>
+        <@valueText />
     </#if>
 
     <#if !isViewMode>

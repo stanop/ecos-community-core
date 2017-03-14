@@ -1056,7 +1056,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         // value title
-        .method('getValueTitle', function(value) { return this.valueTitleEvaluator(this.getInvariantsModel(value)).value; })
+        .method('getValueTitle', function(value, postprocessing) {
+            var value = this.valueTitleEvaluator(this.getInvariantsModel(value)).value;
+            if (postprocessing) { return postprocessing(value);  }
+            return value; 
+        })
         .computed('valueTitle', function() { return this.getValueTitle(this.singleValue()); })
         .shortcut('value-title', 'valueTitle')
 
