@@ -6,21 +6,21 @@ import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.util.Pair;
 import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.service.AlfrescoServices;
+import ru.citeck.ecos.utils.FolderUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Pavel Simonov
@@ -28,8 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
     private static final Logger logger = Logger.getLogger(SplitChildrenBehaviour.class);
-
-    private static final ConcurrentHashMap<Object,Boolean> nameCache = new ConcurrentHashMap<>(100);
 
     private NamespaceService namespaceService;
     private ServiceRegistry serviceRegistry;
@@ -96,50 +94,12 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
             NodeRef destination = getFolder(parent, path, true);
 
-            String name = makeUniqueName(destination, child);
+            String name = FolderUtils.makeUniqueName(destination, child, nodeService);
             QName assocQName = QName.createQName(assocRef.getQName().getNamespaceURI(), name);
             nodeService.moveNode(child, destination, ContentModel.ASSOC_CONTAINS, assocQName);
 
             splitBehaviour.onSuccess(parent, child);
         }
-    }
-
-    private String makeUniqueName(NodeRef parent, NodeRef childRef) {
-
-        String baseName = (String) nodeService.getProperty(childRef, ContentModel.PROP_NAME);
-        String name = baseName;
-
-        int counter = 1;
-        NodeRef child = nodeService.getChildByName(parent, ContentModel.ASSOC_CONTAINS, name);
-
-        while (child != null) {
-
-            Object key;
-            do {
-                name = String.format("%s (%d)", baseName, counter++);
-                key = new Pair<>(parent, name);
-            } while (nameCache.putIfAbsent(key, true) != null);
-
-            final Object finalKey = key;
-            AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
-                @Override
-                public void afterCommit() {
-                    nameCache.remove(finalKey);
-                }
-                @Override
-                public void afterRollback() {
-                    nameCache.remove(finalKey);
-                }
-            });
-
-            child = nodeService.getChildByName(parent, ContentModel.ASSOC_CONTAINS, name);
-        }
-
-        if (!baseName.equals(name)) {
-            nodeService.setProperty(childRef, ContentModel.PROP_NAME, name);
-        }
-
-        return name;
     }
 
     private NodeRef getFolder(NodeRef parent, List<String> path, boolean createIfNotExist) {
