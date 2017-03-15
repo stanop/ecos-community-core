@@ -100,7 +100,7 @@
             <evaluator>evaluator.doclib.contracts.closingDocument</evaluator>
         </action>
 
-		<action id="document-generate-barcode" type="javascript" label="actions.citeck.generate-barcode.label">
+		<action id="document-generate-barcode" type="javascript" label="actions.citeck.generate-barcode.label" icon="document-printregnumber">
 			<param name="function">onActionGenerateBarcode</param>
 			<evaluator>evaluator.doclib.contracts.agreement</evaluator>
 			<evaluator>evaluator.doclib.dms.isAdmin</evaluator>
