@@ -11,6 +11,9 @@
     </imports>
 
     <type name="contracts:agreement">
+        <property name="tk:type">
+            <invariant on="default" language="explicit">workspace://SpacesStore/contracts-cat-doctype-contract</invariant>
+        </property>
         <property name="parent">
             <invariant on="default" language="criteria">
                 <criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts" />
