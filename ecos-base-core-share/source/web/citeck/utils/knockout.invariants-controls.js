@@ -1995,7 +1995,11 @@ ko.bindingHandlers.orgstructControl = {
                             },
 
                             failure: function(oResponse) {
-                                // error
+                                //draw empty tree, if group not found
+                                if (oResponse.status == 404) {
+                                    tree.removeChildren(tree.getRoot());
+                                    tree.draw();
+                                }
                             },
 
                             scope: tree.fn

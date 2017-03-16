@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Check user in group</shortname>
+    <description>Check if the user is in the specified group</description>
+    <url>/api/people/check-user-in-group?userName={userName}&amp;groupFullName={groupFullName}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

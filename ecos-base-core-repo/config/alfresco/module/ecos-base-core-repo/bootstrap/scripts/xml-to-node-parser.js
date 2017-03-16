@@ -157,7 +157,7 @@ var parser = {
                         var childGroups = assocData.cm_authority.child_groups.group;
                         for each (var childGroup in childGroups) {
                             var createdChildGroup = this.createGroup(childGroup);
-                            if (createdChildGroup) {
+                            if (createdChildGroup && !this.childGroupExists(targetGroup, childGroup.name)) {
                                 targetGroup.addAuthority("GROUP_" + childGroup.name);
                             }
                         }
@@ -191,6 +191,22 @@ var parser = {
                 }
 
             }
+        },
+        childGroupExists: function (group, childShortName) {
+            var childGroup = this.getChildGroupByNameOrNullNotFound(group, childShortName);
+            return childGroup != null;
+        },
+        getChildGroupByNameOrNullNotFound: function (group, childShortName) {
+            var maxItems = 200;
+            var skipCount = 0;
+            var childGroups = group.getChildGroups(maxItems, skipCount);
+
+            for each (var childGroup in childGroups) {
+                if (childGroup.shortName == childShortName) {
+                    return childGroup;
+                }
+            }
+            return null;
         },
         createGroup: function (groupObj) {
             var groupName = groupObj.name;
