@@ -73,6 +73,8 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
             HashMap<String, Object> model = new HashMap<>(1);
             model.put(nodeVariable, item);
             subject = templateService.processTemplateString(templateEngine, subjectTemplate, model);
+        } else {
+            subject = this.subject;
         }
         return subject;
     }
