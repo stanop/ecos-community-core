@@ -11,7 +11,7 @@
     <property name="journals.project.dir" location="../${journals.project.name}" />
 
     <property name="ecos-forms.project.name" value="ecos-forms-repo" />
-    <property name="ecos-forms.project.version" value="1.0.0.0${module.release}"/>
+    <property name="ecos-forms.project.version" value="1.0.1.0${module.release}"/>
     <property name="ecos-forms.project.dir" location="../${ecos-forms.project.name}" />
 
     <property name="override.project.name" value="1st-override-repo" />
