@@ -173,15 +173,17 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 		if(mailTo!=null)
 		{
 			NodeRef recipient = authorityService.getAuthorityNodeRef(mailTo);
-			nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_RECIPIENT, recipient);
-			logger.debug("mailTo "+mailTo+" nodeService.getType(recipient) "+nodeService.getType(recipient));
-			if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
-			{
-				nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, nodeService.getProperty(recipient, ContentModel.PROP_EMAIL));
-			}
-			else if(nodeService.getType(recipient).equals(ContentModel.TYPE_AUTHORITY_CONTAINER))
-			{
-				nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, getEmailsForGroupMembers(recipient).toString());
+			if (recipient != null) {
+				nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_RECIPIENT, recipient);
+				logger.debug("mailTo "+mailTo+" nodeService.getType(recipient) "+nodeService.getType(recipient));
+				if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
+                {
+                    nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, nodeService.getProperty(recipient, ContentModel.PROP_EMAIL));
+                }
+                else if(nodeService.getType(recipient).equals(ContentModel.TYPE_AUTHORITY_CONTAINER))
+                {
+                    nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, getEmailsForGroupMembers(recipient).toString());
+                }
 			}
 		}
 		else if(mailToMany!=null)
