@@ -19,33 +19,21 @@
 
     attributes = map(attributes, function(attr) { return attr.attribute; });
 
-    var groups = get(view, "view"),
-        attributesByGroups = map(groups, function(group) {
-            return map(getAttributes(group), function(attribute) { return attribute.attribute; })
-        });
+    var invariantSet = { invariants: [], classNames: [] }, viewScopedInvariants = [];
+    if (view.params.postloadInvariants != "true") {
+        invariantSet = getInvariantSet(args, attributes),
+        viewScopedInvariants = getViewScopedInvariants(view);
+    }
 
-    // generate id
-    each(groups, function(group, index) {
-        group["genId"] = view["class"].replace(":", "_") + "-group-" + index;
-    });
-
-    var invariantSet = getInvariantSet(args, attributes),
-        invariantSetByGroups = map(attributesByGroups, function(group) { return getInvariantSet(args, group) });
-
-    var viewScopedInvariants = getViewScopedInvariants(view),
-        viewScopedInvariantsByGroups = map(groups, function(group) { return getViewScopedInvariants(group) });
-
-    var invariantsByGroups = [];
-    for (var fi = 0; fi < groups.length; fi++) {
-        invariantsByGroups.push(viewScopedInvariantsByGroups[fi].concat(invariantSetByGroups[fi].invariants));
-    }    
     
     // ATTENTION: this view model should comply to repository NodeView interface!
     var defaultModel = {},
         publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
 
-    for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }  
-    
+    if (invariantSet.model) {
+        for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
+    }
+      
     defaultModel.view = {};
     for(var i in publicViewProperties) {
         var name = publicViewProperties[i];
@@ -53,26 +41,46 @@
     }
 
 
+    if (view.template == "tabs") {
+        var groups = get(view, "view"),
+        attributesByGroups = map(groups, function(group) {
+            return map(getAttributes(group), function(attribute) { return attribute.attribute; })
+        });
+
+        // generate id
+        each(groups, function(group, index) {
+            group["genId"] = view["class"].replace(":", "_") + "-group-" + index;
+        });
+
+        var invariantSetByGroups = map(attributesByGroups, function(group) { return getInvariantSet(args, group) }),
+            viewScopedInvariantsByGroups = map(groups, function(group) { return getViewScopedInvariants(group) }),
+            invariantsByGroups = [];
+            
+        for (var fi = 0; fi < groups.length; fi++) {
+            invariantsByGroups.push(viewScopedInvariantsByGroups[fi].concat(invariantSetByGroups[fi].invariants));
+        }
+
+        model.attributesByGroups = attributesByGroups;
+        model.invariantsByGroups = invariantsByGroups;
+        model.groups = map(groups, function(group, index) {
+            return {
+                "id": group.id || group.genId,
+                "index": index,
+                "attributes": attributesByGroups[index],
+                "invariants": invariantsByGroups[index]
+            }
+        });
+    };
+
     model.view = view;
     model.canBeDraft = viewData.canBeDraft;
 
     model.attributes = attributes;
-    model.attributesByGroups = attributesByGroups;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
-    model.invariantsByGroups = invariantsByGroups;
 
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
   
-    model.groups = map(groups, function(group, index) {
-        return {
-            "id": group.id || group.genId,
-            "index": index,
-            "attributes": attributesByGroups[index],
-            "invariants": invariantsByGroups[index]
-        }
-    });
-
     if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
 
 })()

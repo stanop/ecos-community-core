@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -1922,6 +1922,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .init(function() {
             this._loading(true);
+
+
         })
         ;
 
@@ -2038,6 +2040,35 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.options.model.node.forcedAttributes = this.options.model.node.groups[0].attributes;
             }
 
+            // define invariants
+            if (!this.options.model.invariantSet.forcedInvariants) {
+                var invariantsURL = Alfresco.constants.PROXY_URI + "/citeck/invariants";
+                if (this.options.model.node.nodeRef) { invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef; }
+                else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
+                invariantsURL += "&attributes=" + this.options.model.node.forcedAttributes.join(",");
+
+                Alfresco.util.Ajax.jsonGet({
+                    url: invariantsURL,
+                    successCallback: {
+                        scope: this,
+                        fn: function (response) {
+                            this.options.model.invariantSet.forcedInvariants = response.json.invariants;
+                            this.options.model.node.classNames = response.json.classNames;
+
+                            for (var name in response.json.model) {
+                                this.options.model.node.defaultModel[name] = response.json.model[name];
+                            }
+
+                            this.initRuntime();
+                        }
+                    }
+                });
+            } else {
+                this.initRuntime();
+            }
+        },
+
+        initRuntime: function() {
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
