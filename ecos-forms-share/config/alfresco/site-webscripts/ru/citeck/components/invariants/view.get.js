@@ -20,7 +20,7 @@
     attributes = map(attributes, function(attr) { return attr.attribute; });
 
     var invariantSet = { invariants: [], classNames: [] }, viewScopedInvariants = [];
-    if (view.params.postloadInvariants != "true") {
+    if (view.params.preloadInvariants == "true") {
         invariantSet = getInvariantSet(args, attributes),
         viewScopedInvariants = getViewScopedInvariants(view);
     }

@@ -2041,7 +2041,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             // define invariants
-            if (!this.options.model.invariantSet.forcedInvariants) {
+            if ((!this.options.model.invariantSet.forcedInvariants || this.options.model.invariantSet.forcedInvariants.length < 1) && 
+                (!this.options.model.node.classNames || this.options.model.node.classNames.length < 1)) {
                 var invariantsURL = Alfresco.constants.PROXY_URI + "/citeck/invariants";
                 if (this.options.model.node.nodeRef) { invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef; }
                 else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }

@@ -233,7 +233,7 @@
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
-		<#assign postloadInvariants = view.params.postloadInvariants!"false" />
+		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
 
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
@@ -245,7 +245,7 @@
 
 					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
-					postloadInvariants: ${postloadInvariants},
+					preloadInvariants: ${preloadInvariants},
 
 					node: {
 						key: "${runtimeKey}",
@@ -278,7 +278,7 @@
 					invariantSet: {
 						key: "${runtimeKey}",
 
-						<#if loadAttributesMethod != "clickOnGroup" && postloadInvariants != "true">
+						<#if loadAttributesMethod != "clickOnGroup">
 							forcedInvariants: <@views.renderInvariants invariants />
 						</#if>
 					}
