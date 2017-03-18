@@ -2053,6 +2053,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         scope: this,
                         fn: function (response) {
                             this.options.model.invariantSet.forcedInvariants = response.json.invariants;
+                            this.options.model.node.classNames = response.json.classNames;
+
+                            for (var name in response.json.model) {
+                                this.options.model.node.defaultModel[name] = response.json.model[name];
+                            }
+
                             this.initRuntime();
                         }
                     }

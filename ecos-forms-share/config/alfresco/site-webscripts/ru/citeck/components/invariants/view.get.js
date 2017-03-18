@@ -19,16 +19,21 @@
 
     attributes = map(attributes, function(attr) { return attr.attribute; });
 
-    var invariantSet = getInvariantSet(args, attributes),
+    var invariantSet = { invariants: [], classNames: [] }, viewScopedInvariants = [];
+    if (view.params.postloadInvariants != "true") {
+        invariantSet = getInvariantSet(args, attributes),
         viewScopedInvariants = getViewScopedInvariants(view);
- 
+    }
+
     
     // ATTENTION: this view model should comply to repository NodeView interface!
     var defaultModel = {},
         publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
 
-    for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }  
-    
+    if (invariantSet.model) {
+        for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
+    }
+      
     defaultModel.view = {};
     for(var i in publicViewProperties) {
         var name = publicViewProperties[i];

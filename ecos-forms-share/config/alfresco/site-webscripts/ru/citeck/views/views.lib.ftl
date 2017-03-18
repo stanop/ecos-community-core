@@ -253,7 +253,7 @@
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						type: <#if type?has_content>"${type}"<#else>null</#if>,
 						
-						<#if classNames??>classNames: <@views.renderQNames classNames />,</#if>
+						classNames: <#if classNames??><@views.renderQNames classNames /><#else>null</#if>,
 						groups: [
 							<#if groups?? && groups?has_content>
 								<#list groups as group>
