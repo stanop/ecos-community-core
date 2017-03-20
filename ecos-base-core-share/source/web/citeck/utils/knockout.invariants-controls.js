@@ -1865,7 +1865,7 @@ ko.bindingHandlers.orgstructControl = {
         }
 
         // concat default and new options
-        if (params) Citeck.utils.concatOptions(options, params);
+        if (params) concatOptionsWithObservable(options, params);
 
         Event.on(showVariantsButton, "click", function(event) {
             event.stopPropagation();
@@ -2363,6 +2363,21 @@ function sortingCreateVariants(variants) {
     if (defaultVariantIndex) {
         defaultVariant = variants.splice(defaultVariantIndex, 1);
         variants.splice(0, 0, defaultVariant[0]);
+    }
+}
+
+function concatOptionsWithObservable(defaultOptions, newOptions) {
+    for (var key in newOptions) {
+        var newValue = newOptions[key],
+            oldValue = defaultOptions[key];
+
+        if (newValue && newValue != oldValue) {
+            if (ko.isObservable(oldValue)) {
+                if (oldValue() != newValue) defaultOptions[key](newOptions[key]);
+            } else {
+               defaultOptions[key] = newOptions[key];
+            }
+        }
     }
 }
 

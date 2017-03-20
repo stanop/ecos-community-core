@@ -153,6 +153,16 @@ var parser = {
                     var groupNode = search.findNode(targetGroup.groupNodeRef);
                     node.createAssociation(groupNode, assocData.assocType);
 
+                    if (assocData.cm_authority.parent_groups.group.length() > 0) {
+                        var parentGroups = assocData.cm_authority.parent_groups.group;
+                        for each (var parentGroup in parentGroups) {
+                            var createdParentGroup = this.createGroup(parentGroup);
+                            if (createdParentGroup && !this.childGroupExists(createdParentGroup, targetGroup.shortName)) {
+                                createdParentGroup.addAuthority("GROUP_" + targetGroup.shortName);
+                            }
+                        }
+                    }
+
                     if (assocData.cm_authority.child_groups.group.length() > 0) {
                         var childGroups = assocData.cm_authority.child_groups.group;
                         for each (var childGroup in childGroups) {
