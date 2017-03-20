@@ -1945,6 +1945,11 @@ ko.bindingHandlers.orgstructControl = {
                         YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
                             success: function (oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                                if (params && params.excludeFields) {
+                                    results = results.filter(function(item) {
+                                        return item.shortName.indexOf(params.excludeFields) == -1;
+                                    });
+                                }
 
                                 if (results) {
                                     for (var i = 0; i < results.length; i++) {

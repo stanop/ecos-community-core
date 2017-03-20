@@ -18,6 +18,10 @@
                                                                         allowedGroupType: '${params.allowedGroupType}',
                                                                     </#if>
 
+                                                                    <#if params.excludeFields??>
+                                                                        excludeFields: '${params.excludeFields}',
+                                                                    </#if>
+
                                                                     <#if params.rootGroup??>
                                                                         rootGroup: '${params.rootGroup}',
                                                                     <#elseif params.rootGroupFunction??>
