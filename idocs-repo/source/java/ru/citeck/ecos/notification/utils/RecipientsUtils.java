@@ -1,5 +1,6 @@
 package ru.citeck.ecos.notification.utils;
 
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -77,6 +78,21 @@ public class RecipientsUtils {
         return assocRecipientsNames;
     }
 
+    public static Set<String> getRecipientsToExclude(List<String> ecludeRecipients, NodeRef node, ServiceRegistry serviceRegistry) {
+        Set<String> recipientsToExclude = new HashSet<>();
+        for (String recipient : ecludeRecipients) {
+            if ("yourself".equals(recipient)) {
+                String currentUser = serviceRegistry.getAuthenticationService().getCurrentUserName();
+                addRecipient(recipientsToExclude, serviceRegistry.getPersonService().getPerson(currentUser),
+                        serviceRegistry.getNodeService(), serviceRegistry.getDictionaryService());
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cannot find recipient: " + recipient + " for document: " + node);
+                }
+            }
+        }
+        return recipientsToExclude;
+    }
 
 
     private static void addRecipient(Set<String> recipients, NodeRef recipientRef, NodeService nodeService,

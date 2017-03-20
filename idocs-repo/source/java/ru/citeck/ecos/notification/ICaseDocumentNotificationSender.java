@@ -35,6 +35,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     private static final String ARG_NOTIFICATION_TYPE = "notificationType";
     private static final String ASSOC_RECIPIENTS_KEY = "assocRecipients";
     private static final String RECIPIENTS_FROM_ROLE_KEY = "recipientsFromRole";
+    private static final String EXCLUDE_RECIPIENTS = "excludeRecipients";
     private static final String INCLUDE_KEY = "include";
     private static final String EXCLUDE_KEY = "exclude";
 
@@ -44,6 +45,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     protected Collection<String> getNotificationRecipients(NodeRef item) {
         List<QName> assocRecipients = convertStringToQNameList(recipients.get(ASSOC_RECIPIENTS_KEY));
         List<String> assocRecipientsFromICaseRole = recipients.get(RECIPIENTS_FROM_ROLE_KEY);
+        List<String> excludeRecipient = recipients.get(EXCLUDE_RECIPIENTS);
         Set<String> finalRecipients = new HashSet<>();
         finalRecipients.addAll(super.getNotificationRecipients(item));
 
@@ -60,6 +62,13 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
                                                                                nodeService, dictionaryService);
             if (!roleRecipients.isEmpty()) {
                 finalRecipients.addAll(roleRecipients);
+            }
+        }
+
+        if (excludeRecipient != null) {
+            Set<String> excludeRecipients = RecipientsUtils.getRecipientsToExclude(excludeRecipient, item, services);
+            if (!excludeRecipients.isEmpty()) {
+                finalRecipients.removeAll(excludeRecipients);
             }
         }
 
