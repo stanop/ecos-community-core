@@ -182,6 +182,8 @@
             this._setupDataSource();
             this._setupDataTable();
 
+            console.log("tableView", this)
+
             this._setMessage("MSG_EMPTY", "message.dynamic-table.empty");
             this._setMessage("MSG_ERROR", "message.dynamic-table.error");
             this._setMessage("MSG_LOADING", "message.dynamic-table.loading");
@@ -310,12 +312,22 @@
 
 		_setupDataTable: function() {
 			var table = this.widgets.table = new YAHOO.widget.GroupedDataTable(
-					this.id,
-					this.defaultColumnConfig,
-					this.widgets.dataSource,
-					{
-						groupBy: this.config.groupBy
-					});
+				this.id,
+				this.defaultColumnConfig,
+				this.widgets.dataSource,
+				{
+					groupBy: this.config.groupBy
+				}
+			);
+
+			if (this.config.selection == "checkbox") {
+				table.subscribe("checkboxClickEvent", function(event) {
+					if (event.target.checked) {
+						table.selectRow(event.target);
+					} else { table.unselectRow(event.target) }
+				});
+			}
+
 			table.doBeforeSortColumn = this.bind(function(column, dir) {
 				this.fireEvent("sortColumnChange", {
 					column: column.key,
@@ -323,6 +335,8 @@
 				});
 				return false;
 			});
+
+
 		},
 
 		_setMessage: function(property, messageCode) {
@@ -449,6 +463,8 @@
          * */
         onReady: function() {
 
+        	console.log("control", this)
+
             var _this_id = this.fieldId,
                 _added_id = this.id + "-added",
                 _rem_id = this.id + "-removed";
@@ -465,7 +481,7 @@
             // fill model with original selected items:
             this.originalItems = this._deserialize(this.field.value);
 
-            var itemsToAdd = this._deserialize(this.fieldAdded.value),
+            var itemsToAdd = this._deserialize(this.fieldAdded.value || "workspace://SpacesStore/dd241a33-0486-4526-a9cb-8749004f790b"),
                 itemsToRemove = this._deserialize(this.fieldRemoved.value),
                 items = _.difference(_.uniq(_.union(this.originalItems, itemsToAdd)), itemsToRemove);
 
@@ -832,13 +848,22 @@
 		},
 
 		_initTable: function() {
-			var table = this.widgets.tableView = new Citeck.widget.DynamicTable(
-					this.id + "-view", this.model, this.name);
-			table.setConfig({
-				columns: this.options.columns,
-				responseSchema: this.options.responseSchema
-			});
-			table.setContext("selected-items", "none");
+			var self = this,
+				tableView = this.widgets.tableView = new Citeck.widget.DynamicTable(this.id + "-view", this.model, this.name),
+				config = { responseSchema: this.options.responseSchema, columns: this.options.columns };
+
+			if (this.options.selection == "checkbox") {
+				config.columns.unshift({
+					key: "checkbox-selection",
+					label: '<input type="checkbox" class="select-all"/>',
+		            formatter: function(elCell) { elCell.innerHTML = '<input type="checkbox" />'; },
+					resizeable: false 
+				});
+				config.selection = this.options.selection;
+			}
+
+			tableView.setConfig(config);
+			tableView.setContext("selected-items", "none");
 		},
 
         _updateFields: function() {
