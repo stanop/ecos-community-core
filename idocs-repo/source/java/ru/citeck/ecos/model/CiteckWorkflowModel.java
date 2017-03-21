@@ -40,5 +40,6 @@ public interface CiteckWorkflowModel {
     public static final QName PROP_LASTCOMMENT = QName.createQName(NAMESPACE, "lastcomment");
     public static final QName PROP_LAST_TASK_OWNER = QName.createQName(NAMESPACE, "lastTaskOwner");
     public static final QName PROP_IS_OPTIONAL_TASK = QName.createQName(NAMESPACE, "isOptionalTask");
+    public static final QName PROP_IS_WORKFLOW_ACTIVE = QName.createQName(NAMESPACE, "isWorkflowActive");
 
 }
