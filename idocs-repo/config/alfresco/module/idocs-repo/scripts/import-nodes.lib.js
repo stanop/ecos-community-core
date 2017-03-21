@@ -2,7 +2,7 @@
 var nodes = [{
     type: 'cm:content',
     props: {
-        'cm:title': {ru_EN: 'русский заголовок', en_GB: 'english title'}
+        'cm:title': {ru_EN: 'русский заголовок', en_GB: 'english title'},
         'cm:name': 'name'
     }
 }]

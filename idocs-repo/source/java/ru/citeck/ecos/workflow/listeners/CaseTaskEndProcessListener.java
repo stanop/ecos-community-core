@@ -27,12 +27,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.service.CiteckServices;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Maxim Strizhov
@@ -65,6 +64,7 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
     private void stopActivity(DelegateExecution delegateExecution) {
 
         NodeRef bpmPackage = ListenerUtils.getWorkflowPackage(delegateExecution);
+        nodeService.setProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE, false);
 
         List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 

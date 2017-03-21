@@ -193,6 +193,13 @@
             </properties>
         </aspect>
 
+        <aspect name="cwf:workflowStateAspect">
+            <properties>
+                <property name="cwf:isWorkflowActive">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
 	</aspects>
 
 </model>

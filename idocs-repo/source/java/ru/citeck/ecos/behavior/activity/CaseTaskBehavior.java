@@ -25,6 +25,7 @@ import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
@@ -219,11 +220,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     public void onCaseActivityReset(NodeRef taskRef) {
         String workflowInstanceId = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
 
-        if (workflowInstanceId != null) {
-            WorkflowInstance wf = workflowService.getWorkflowById(workflowInstanceId);
-            if (wf != null && wf.isActive()) {
-                workflowService.cancelWorkflow(workflowInstanceId);
-            }
+        if (isWorkflowActive(workflowInstanceId)) {
+            workflowService.cancelWorkflow(workflowInstanceId);
         }
 
         nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, null);
@@ -231,6 +229,22 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         if (wfPackage != null) {
             nodeService.removeAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
         }
+    }
+
+    private boolean isWorkflowActive(String id) {
+        if (id == null) {
+            return false;
+        }
+        WorkflowInstance wf = workflowService.getWorkflowById(id);
+        if (wf == null || !wf.isActive()) {
+            return false;
+        }
+        NodeRef bpmPackage = wf.getWorkflowPackage();
+        Boolean isActive = (Boolean) nodeService.getProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE);
+        if (isActive == null) {
+            isActive = true;
+        }
+        return isActive;
     }
 
     private void createOrReplaceAssociation(NodeRef source, NodeRef target, QName assocType) {
