@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -173,6 +173,13 @@
             var parent = this.model.getItem(args.from);
             if(parent == this.state.rootItem)
                 this.loadData(parent._item_children_);
+        },
+
+        getSelectedRecords: function() {
+        	var self = this;
+        	return _.map(self.widgets.table.getSelectedRows(), function(item) {
+        		return self.widgets.table.getRecord(item);
+        	});
         },
 
         /**
@@ -855,11 +862,12 @@
 			if (this.options.selection == "checkbox") {
 				config.columns.unshift({
 					key: "checkbox-selection",
-					label: '<input type="checkbox" class="select-all"/>',
+					label: '',
 		            formatter: function(elCell) { elCell.innerHTML = '<input type="checkbox" />'; },
 					resizeable: false 
 				});
 				config.selection = this.options.selection;
+
 			}
 
 			tableView.setConfig(config);
