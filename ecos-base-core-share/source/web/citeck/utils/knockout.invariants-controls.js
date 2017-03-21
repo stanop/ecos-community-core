@@ -666,7 +666,7 @@ ko.bindingHandlers.journalControl = {
     criteria.subscribe(function(newValue) { pageNumber(1); });
 
     // show loading indicator if page was changed
-    pageNumber.subscribe(function(newValue) { loading(true); })
+    //pageNumber.subscribe(function(newValue) { loading(true); });
 
     // extend notify
     criteria.extend({ notify: 'notifyWhenChangesStop' });
