@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -175,6 +175,13 @@
                 this.loadData(parent._item_children_);
         },
 
+        getSelectedRecords: function() {
+        	var self = this;
+        	return _.map(self.widgets.table.getSelectedRows(), function(item) {
+        		return self.widgets.table.getRecord(item);
+        	});
+        },
+
         /**
          * when on ready
          * */
@@ -310,12 +317,22 @@
 
 		_setupDataTable: function() {
 			var table = this.widgets.table = new YAHOO.widget.GroupedDataTable(
-					this.id,
-					this.defaultColumnConfig,
-					this.widgets.dataSource,
-					{
-						groupBy: this.config.groupBy
-					});
+				this.id,
+				this.defaultColumnConfig,
+				this.widgets.dataSource,
+				{
+					groupBy: this.config.groupBy
+				}
+			);
+
+			if (this.config.selection == "checkbox") {
+				table.subscribe("checkboxClickEvent", function(event) {
+					if (event.target.checked) {
+						table.selectRow(event.target);
+					} else { table.unselectRow(event.target) }
+				});
+			}
+
 			table.doBeforeSortColumn = this.bind(function(column, dir) {
 				this.fireEvent("sortColumnChange", {
 					column: column.key,
@@ -323,6 +340,8 @@
 				});
 				return false;
 			});
+
+
 		},
 
 		_setMessage: function(property, messageCode) {
@@ -448,7 +467,6 @@
          * ON READY
          * */
         onReady: function() {
-
             var _this_id = this.fieldId,
                 _added_id = this.id + "-added",
                 _rem_id = this.id + "-removed";
@@ -465,7 +483,7 @@
             // fill model with original selected items:
             this.originalItems = this._deserialize(this.field.value);
 
-            var itemsToAdd = this._deserialize(this.fieldAdded.value),
+            var itemsToAdd = this._deserialize(this.fieldAdded.value || "workspace://SpacesStore/dd241a33-0486-4526-a9cb-8749004f790b"),
                 itemsToRemove = this._deserialize(this.fieldRemoved.value),
                 items = _.difference(_.uniq(_.union(this.originalItems, itemsToAdd)), itemsToRemove);
 
@@ -832,13 +850,26 @@
 		},
 
 		_initTable: function() {
-			var table = this.widgets.tableView = new Citeck.widget.DynamicTable(
-					this.id + "-view", this.model, this.name);
-			table.setConfig({
-				columns: this.options.columns,
-				responseSchema: this.options.responseSchema
-			});
-			table.setContext("selected-items", "none");
+			var self = this,
+				tableView = this.widgets.tableView = new Citeck.widget.DynamicTable(this.id + "-view", this.model, this.name),
+				config = { responseSchema: this.options.responseSchema, columns: this.options.columns };
+
+			if (this.options.selection == "checkbox") {
+				config.columns.unshift({
+					key: "checkbox-selection",
+					label: '',
+		            formatter: function(elCell, record) {
+		            	var checked = this.getSelectedRows().indexOf(record.getId()) != -1; 
+		            	elCell.innerHTML = '<input type="checkbox" ' + (checked ? 'checked' : '') + '/>'; 
+		            },
+					resizeable: false 
+				});
+				config.selection = this.options.selection;
+
+			}
+
+			tableView.setConfig(config);
+			tableView.setContext("selected-items", "none");
 		},
 
         _updateFields: function() {
