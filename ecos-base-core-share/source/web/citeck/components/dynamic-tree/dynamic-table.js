@@ -189,8 +189,6 @@
             this._setupDataSource();
             this._setupDataTable();
 
-            console.log("tableView", this)
-
             this._setMessage("MSG_EMPTY", "message.dynamic-table.empty");
             this._setMessage("MSG_ERROR", "message.dynamic-table.error");
             this._setMessage("MSG_LOADING", "message.dynamic-table.loading");
@@ -469,9 +467,6 @@
          * ON READY
          * */
         onReady: function() {
-
-        	console.log("control", this)
-
             var _this_id = this.fieldId,
                 _added_id = this.id + "-added",
                 _rem_id = this.id + "-removed";
@@ -863,7 +858,10 @@
 				config.columns.unshift({
 					key: "checkbox-selection",
 					label: '',
-		            formatter: function(elCell) { elCell.innerHTML = '<input type="checkbox" />'; },
+		            formatter: function(elCell, record) {
+		            	var checked = this.getSelectedRows().indexOf(record.getId()) != -1; 
+		            	elCell.innerHTML = '<input type="checkbox" ' + (checked ? 'checked' : '') + '/>'; 
+		            },
 					resizeable: false 
 				});
 				config.selection = this.options.selection;
