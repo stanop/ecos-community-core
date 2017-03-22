@@ -10,6 +10,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,6 +22,7 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
     private String documentNamespace;
     private String documentType;
     private String caseStatus;
+    private String excludeStageName;
 
     private final static String ALL_STATUS_KEY = "AllStatus";
 
@@ -42,6 +44,13 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
 
         if (!isEnabled() || sender == null || !nodeService.exists(caseRef) || !nodeService.exists(caseStatusAfter)) {
             return;
+        }
+
+        if (excludeStageName != null && !excludeStageName.isEmpty()) {
+            List<NodeRef> startedActivities = caseActivityService.getStartedActivities(caseRef);
+            for (NodeRef activity: startedActivities) {
+                if (excludeStageName.equals(nodeService.getProperty(activity, ContentModel.PROP_TITLE))) return;
+            }
         }
 
         QName documentQName = nodeService.getType(caseRef);
@@ -80,4 +89,7 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
         this.caseStatus = caseStatus;
     }
 
+    public void setExcludeStageName(String excludeStageName) {
+        this.excludeStageName = excludeStageName;
+    }
 }
