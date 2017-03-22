@@ -14,10 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Roman Makarskiy
@@ -85,6 +82,16 @@ public class RecipientsUtils {
                 String currentUser = serviceRegistry.getAuthenticationService().getCurrentUserName();
                 addRecipient(recipientsToExclude, serviceRegistry.getPersonService().getPerson(currentUser),
                         serviceRegistry.getNodeService(), serviceRegistry.getDictionaryService());
+            } else if (recipient.contains(":")) {
+                List<QName> qNameList = Arrays.asList(QName.resolveToQName(serviceRegistry.getNamespaceService(), recipient));
+                recipientsToExclude.addAll(
+                        getRecipientFromNodeAssoc(
+                                qNameList,
+                                node,
+                                serviceRegistry.getNodeService(),
+                                serviceRegistry.getDictionaryService()
+                        )
+                );
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Cannot find recipient: " + recipient + " for document: " + node);
