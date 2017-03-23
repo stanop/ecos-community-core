@@ -20,7 +20,7 @@
 <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-commands.js"></@script>
 <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" />
 
-<#assign controlId = fieldHtmlId + "-cntrl">
+<#assign controlId = fieldHtmlId + "-tc-cntrl">
 <#assign childrenUrl = field.control.params.childrenUrl!"">
 <#assign is_property = field.type == "property" />
 
