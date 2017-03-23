@@ -243,6 +243,23 @@ ${key} = somewhat
 	<@formLib.renderField field = f />
 </#macro>
 
+<#macro renderIndependentField field extension={}>
+	<#if default_extensions[field.id]??>
+		<#assign field = field + default_extensions[field.id] />
+	</#if>
+
+	<#if extension?keys?size != 0>
+		<#assign field = field + extension />
+	</#if>
+
+	<#if my_extensions?? && my_extensions[field]??>
+		<#assign field = field + my_extensions[field] />
+	</#if>
+
+	<@print_hash h=field />
+	<@formLib.renderField field = field />
+</#macro>
+
 <#macro renderField field extension={}>
 	<#if form?? && form.fields?? && form.fields[field]??>
 		<@renderFieldImpl field=field extension=extension />
