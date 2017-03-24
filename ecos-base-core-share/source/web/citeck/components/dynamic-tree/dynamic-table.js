@@ -483,7 +483,7 @@
             // fill model with original selected items:
             this.originalItems = this._deserialize(this.field.value);
 
-            var itemsToAdd = this._deserialize(this.fieldAdded.value || "workspace://SpacesStore/dd241a33-0486-4526-a9cb-8749004f790b"),
+            var itemsToAdd = this._deserialize(this.fieldAdded.value),
                 itemsToRemove = this._deserialize(this.fieldRemoved.value),
                 items = _.difference(_.uniq(_.union(this.originalItems, itemsToAdd)), itemsToRemove);
 
