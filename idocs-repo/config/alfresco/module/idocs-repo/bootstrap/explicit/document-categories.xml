@@ -16,6 +16,39 @@
 
         <cm:subcategories>
 
+            <!-- HR Documents -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-document-hr-documents</sys:node-uuid>
+                    <cm:name>${document.hr-documents.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${document.hr-documents.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${document.hr-documents.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <!-- Incorporation  Documents -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-document-incorporation-documents</sys:node-uuid>
+                    <cm:name>${document.incorporation-documents.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${document.incorporation-documents.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${document.incorporation-documents.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <!-- Accounting  Documents -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-document-accounting-documents</sys:node-uuid>
+                    <cm:name>${document.accounting-documents.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${document.accounting-documents.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${document.accounting-documents.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
             <!-- Marketing Materials -->
             <cm:category>
                 <view:properties>

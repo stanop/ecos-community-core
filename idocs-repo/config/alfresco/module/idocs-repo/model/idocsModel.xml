@@ -28,8 +28,8 @@
                     <value>project</value>
                     <value>onApproval</value>
                     <value>onCorrection</value>
-                    <value>approved</value> <!--Это "согласован", хотя больше подходит для "утвержден", а для согласован подходит "agreed"-->
-                    <value>confirmed</value> <!--Это "утвержден"-->
+                    <value>approved</value>
+                    <value>confirmed</value>
                     <value>onNormcontrol</value>
                     <value>onConfirm</value>
                     <value>canceled</value>
@@ -56,45 +56,6 @@
                     <value>rescinded</value>
                     <value>notActive</value>
                     
-                    <!-- spitamen temporary statuses -->
-                    <!-- TODO refactor, remove -->
-                    <value>credit-project</value>
-                    <value>credit-evaluation</value>
-                    <value>credit-committee</value>
-                    <value>credit-agreement</value>
-                    <value>credit-accounts</value>
-                    <value>credit-active</value>
-                    <value>credit-cancelled</value>
-                    <value>credit-committee-preparation</value>
-                    <value>credit-disbursement-preparation</value>
-                    <value>credit-disbursement</value>
-                    <value>credit-checking-blacklist</value>
-                    <value>credit-internal-report</value>
-                    <value>credit-external-report</value>
-                    <value>credit-documents-checking</value>
-                    <value>credit-attach-documents</value>
-                    <value>credit-issue</value>
-                    <value>credit-checklist</value>
-                    <value>credit-check-in-international-lists</value>
-                    <value>at-checkout</value>
-
-                    <value>financial-monitoring</value>
-                    <value>on-credit-committee</value>
-                    <value>on-credit-committee-co</value>
-                    <value>credit-decision-transfer-cc</value>
-                    <value>contractual-documents-creation</value>
-                    <value>pledge-insurance</value>
-                    <value>credit-case-reworking</value>
-
-                    <value>pledge-formation-cc</value>
-                    <value>pledge-conduct-cc</value>
-                    <value>pledge-conduct-gen-office-cc</value>
-                    <value>pledge-figuration-contract-docs</value>
-                    <value>pledge-returning</value>
-
-                    <value>issuance-of-document</value>
-                    <value>document-returned</value>
-
                     <!-- contracts statuses-->
                     <value>draft</value> <!-- Черновик -->
                     <value>forPayment</value> <!-- На оплате -->
@@ -104,27 +65,6 @@
                     <value>conducted</value>
                     <value>closed</value>
                     
-                    <value>early-repayment-new</value>
-                    <value>early-repayment-check-account</value>
-                    <value>early-repayment-transfer-money</value>
-                    <value>early-repayment-check-repayment</value>
-                    <value>early-repayment-new-payment-schedule</value>
-                    <value>early-repayment-change-credit</value>
-                    <value>early-repayment-completed</value>
-                    <value>credit-paid</value>
-
-                    <value>repayment-pledge-check-loan</value>
-                    <value>repayment-pledge-notify-hq</value>
-                    <value>repayment-pledge-charge-hq</value>
-                    <value>repayment-pledge-confirm</value>
-                    <value>repayment-pledge-transfer-filial</value>
-                    <value>repayment-pledge-charge-filial</value>
-                    <value>repayment-pledge-confirm-director</value>
-                    <value>repayment-pledge-open-envelope</value>
-                    <value>repayment-pledge-write-closed</value>
-                    <value>repayment-pledge-prepare-doc</value>
-                    <value>repayment-pledge-transfer-client</value>
-
                     <value>purchase-project</value>
                     <value>purchase-on-approval</value>
                     <value>purchase-on-signing</value>
@@ -137,12 +77,6 @@
                     <value>additional-bids-on-signing</value>
                     <value>additional-bids-on-correction</value>
                     <value>purchase-signed</value>
-
-                    <!-- linkserver-norfos invoice statuses -->
-                    <value>invoice-draft</value>
-                    <value>invoice-on-approval</value>
-                    <value>invoice-on-correction</value>
-                    <value>invoice-paid-completed</value>
                 </list>
             </parameter>
         </constraint>
@@ -152,6 +86,16 @@
                 <list>
                     <value>1</value>
                     <value>2</value>
+                </list>
+            </parameter>
+        </constraint>
+
+        <constraint name="idocs:constraint:contractorType" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>customer</value>
+                    <value>vendor</value>
+                    <value>employee</value>
                 </list>
             </parameter>
         </constraint>
@@ -347,6 +291,8 @@
                 <aspect>idocs:entityInfo</aspect>
                 <aspect>idocs:communicationInfo</aspect>
                 <aspect>idocs:diadocInfo</aspect>
+                <aspect>idocs:contractorType</aspect>
+                <aspect>idocs:hasBankAccount</aspect>
             </mandatory-aspects>
         </type>
 
@@ -443,50 +389,9 @@
         <type name="idocs:bankAccount">
         	<title>Банковский счет</title>
             <parent>dl:dataListItem</parent>
-            <properties>
-                <property name="idocs:bankTitle">
-                    <title>Название банка</title>
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="idocs:bankTitleEng">
-                    <title>Название банка на английском языке</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:bankId">
-                    <title>БИК</title>
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="idocs:accountNumber">
-                    <title>Счет</title>
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="idocs:corresponentBankTitle">
-                    <title>Название банка-корреспондента</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:correspondentBankId">
-                    <title>БИК банка-корреспондента</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:corresponentAccountNumber">
-                    <title>Счет в банке-корреспонденте</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:swift">
-                    <title>SWIFT</title>
-                    <type>d:text</type>
-                </property>
-                <property name="idocs:currencyEnabled">
-                    <title>Использовать счет как валютный</title>
-                    <type>d:boolean</type>
-                    <default>false</default>
-                </property>
-            </properties>
             <mandatory-aspects>
             	<aspect>idocs:hasLegalEntity</aspect>
+                <aspect>idocs:hasBankAccount</aspect>
             </mandatory-aspects>
         </type>
 		
@@ -1232,6 +1137,67 @@
             <properties>
                 <property name="idocs:archiveDate">
                     <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:contractorType">
+            <title>Contractor type</title>
+            <properties>
+                <property name="idocs:contractorType">
+                    <title>Contractor type</title>
+                    <type>d:text</type>
+                    <!-- <default>customer</default> -->
+                    <multiple>true</multiple>
+                    <constraints>
+                        <constraint ref="idocs:constraint:contractorType" />
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasBankAccount">
+            <title>Банковский счет</title>
+            <properties>
+                <property name="idocs:bankTitle">
+                    <title>Название банка</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:bankTitleEng">
+                    <title>Название банка на английском языке</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:bankId">
+                    <title>БИК</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:accountNumber">
+                    <title>Счет</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:corresponentBankTitle">
+                    <title>Название банка-корреспондента</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:correspondentBankId">
+                    <title>БИК банка-корреспондента</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:corresponentAccountNumber">
+                    <title>Счет в банке-корреспонденте</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:swift">
+                    <title>SWIFT</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:currencyEnabled">
+                    <title>Использовать счет как валютный</title>
+                    <type>d:boolean</type>
+                    <default>false</default>
                 </property>
             </properties>
         </aspect>

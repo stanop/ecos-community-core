@@ -4,7 +4,7 @@
         <documentTypes>
             <documentType label="Договор">{http://www.citeck.ru/model/contracts/1.0}agreement</documentType>
             <documentType label="Доп. соглашение">{http://www.citeck.ru/model/contracts/1.0}supplementaryAgreement</documentType>
-            <documentType label="Закрывающий документ">{http://www.citeck.ru/model/contracts/1.0}closingDocument</documentType>
+            <documentType label="Учетный документ">{http://www.citeck.ru/model/contracts/1.0}closingDocument</documentType>
             <documentType label="Заготовка платежа">{http://www.citeck.ru/model/payments/1.0}paymentDraft</documentType>
             <documentType label="Счет">{http://www.citeck.ru/model/payments/1.0}payment</documentType>
             <documentType label="Документ">{http://www.alfresco.org/model/content/1.0}content</documentType>

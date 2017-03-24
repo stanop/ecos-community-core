@@ -33,7 +33,6 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<headers>
-			<header key="idocs:code" />
 			<header key="idocs:fullOrganizationName" default="true" />
 			<header key="idocs:shortOrganizationName" />
 			<header key="idocs:inn" default="true" />
@@ -54,6 +53,7 @@
 		<headers>
 			<header key="idocs:fullOrganizationName" default="true" />
 			<header key="idocs:shortOrganizationName" />
+			<header key="idocs:contractorType" default="true" />
 			<header key="idocs:inn" default="true" />
 			<header key="idocs:kpp" default="true" />
 			<header key="idocs:juridicalAddress" />
