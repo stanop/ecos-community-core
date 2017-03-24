@@ -39,6 +39,10 @@
                     <type>d:datetime</type>
                     <protected>true</protected>
                 </property>
+                <property name="activ:expectedPerformTime">
+                    <title>Expected perform time</title>
+                    <type>d:int</type>
+                </property>
                 <property name="activ:manualStarted">
                     <title>Manual started</title>
                     <type>d:boolean</type>

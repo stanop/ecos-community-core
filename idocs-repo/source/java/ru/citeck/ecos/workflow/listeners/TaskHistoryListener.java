@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.history.HistoryService;
+import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -135,6 +136,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 				NodeRef firstRole = performerRoles.get(0).getTargetRef();
 				roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
 			}
+			eventProperties.put(HistoryModel.PROP_CASE_TASK, currentTask);
 		}
 		if (roleName.isEmpty()) {
 			roleName = assignee;
