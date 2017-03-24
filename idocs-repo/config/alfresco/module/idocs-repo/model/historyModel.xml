@@ -138,6 +138,9 @@
                 <property name="event:taskRole">
                     <type>d:text</type>
                 </property>
+                <property name="event:caseTask">
+                    <type>d:noderef</type>
+                </property>
             </properties>
         </aspect>
         
