@@ -377,6 +377,12 @@
                     <title>Курс валюты</title>
                     <type>d:double</type>
                 </property>
+                <property name="idocs:currencyNameRu">
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:currencyCatalogCode">
+                    <type>d:text</type>
+                </property>
             </properties>
         </type>
         
@@ -513,6 +519,24 @@
             </mandatory-aspects>
         </type>
 
+        <type name="idocs:countryISO3166">
+            <title>ISO 3166 Codes</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:countryISO3166Alpha2">
+                    <title>Alpha 2</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:countryISO3166Alpha3">
+                    <title>Alpha 3</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:countryISO3166Number">
+                    <title>Number</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
 
     </types>
 
