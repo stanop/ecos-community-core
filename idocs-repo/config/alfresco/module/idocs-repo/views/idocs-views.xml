@@ -33,9 +33,12 @@
         <field prop="idocs:phoneNumber"/>
     </view>
 
-    <view class="idocs:contractor">
+    <view class="idocs:contractor" template="tabs">
         <views mode="create" kind="3-column"/>
         <views mode="edit" kind="3-column"/>
+
+    <view id="contractor-mainTab">
+        <param name="title">tab.main</param>
 
         <view class="idocs:organizationInfo"/>
         <view>
@@ -72,6 +75,28 @@
             <field prop="idocs:nameInGenitiveCase"/>
             <field prop="idocs:diadocBoxId"/>
         </view>
+    </view>
+
+    <view id="contractor-bankDetailsTab">
+        <param name="title">tab.bankDetails</param>
+
+        <view>
+            <field prop="idocs:bankTitle"/>
+            <field prop="idocs:bankTitleEng"/>
+            <field prop="idocs:bankId"/>
+        </view>
+        <view>
+            <field prop="idocs:accountNumber"/>
+            <field prop="idocs:swift"/>
+            <field prop="idocs:currencyEnabled"/>
+        </view>
+        <view>
+            <field prop="idocs:corresponentBankTitle"/>
+            <field prop="idocs:correspondentBankId"/>
+            <field prop="idocs:corresponentAccountNumber"/>
+        </view>
+    </view>
+
     </view>
 
     <view class="idocs:legalEntity">
