@@ -27,7 +27,7 @@
         <type name="ecos:document">
             <parent>dms:doc</parent>
            <mandatory-aspects>
-               <aspect>tk:documentTypeKind</aspect>
+               <aspect>ecos:documentType</aspect>
                <aspect>idocs:hasNote</aspect>
                <aspect>ecos:hasNumberAndDate</aspect>
                <aspect>idocs:hasLegalEntity</aspect>
@@ -42,6 +42,15 @@
     </types>
 
     <aspects>
+
+        <aspect name="ecos:documentType">
+            <parent>tk:documentTypeKind</parent>
+            <overrides>
+                <property name="tk:type">
+                    <default>workspace://SpacesStore/category-document-type</default>
+                </property>
+            </overrides>
+        </aspect>
 
         <aspect name="ecos:hasNumberAndDate">
             <title>Document Number and Date</title>

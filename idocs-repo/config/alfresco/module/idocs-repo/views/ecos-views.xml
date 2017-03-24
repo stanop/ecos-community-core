@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
+        <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+    </imports>
+
+    <view class="ecos:document">
+        <views mode="create" kind="3-column"/>
+        <views mode="edit" kind="3-column"/>
+        <view id="type-kind-view">
+            <field prop="tk:type" template="none"/>
+            <field prop="tk:kind">
+                <region name="input" template="autocomplete">
+                    <param name="searchScript">criteria-search</param>
+                    <param name="criteria">
+                        [
+                        { attribute: "cm:title", predicate: "string-starts-with" }
+                        ]
+                    </param>
+                </region>
+            </field>
+            <field prop="ecos:documentNumber">
+                <region name="select" template="number-generate">
+                    <param name="template">ecos-document-number-template</param>
+                    <param name="mode">checkbox</param>
+                </region>
+            </field>
+            <field prop="ecos:documentDate">
+                <invariant on="mandatory" language="javascript">node.properties["tk:kind"].nodeRef == "workspace://SpacesStore/cat-document-hr-documents"</invariant>
+            </field>
+        </view>
+        <view kind="1-column">
+            <field prop="cm:name"/>
+            <field prop="idocs:note">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+                <region name="label" template="label">
+                    <param name="key">idocs_idocsModel.property.idocs_note.title</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field assoc="idocs:legalEntity">
+                <region name="input" template="view"/>
+                <region name="select" template="select-journal">
+                    <param name="journalType">legal-entities</param>
+                </region>
+            </field>
+            <field assoc="idocs:contractor">
+                <region name="input" template="view"/>
+                <region name="select" template="select-journal">
+                    <param name="journalType">idocs-contractor</param>
+                </region>
+                <invariant on="mandatory" language="javascript">node.properties["tk:kind"].nodeRef == "workspace://SpacesStore/cat-document-hr-documents"</invariant>
+            </field>
+        </view>
+        <view>
+            <field assoc="idocs:currencyDocument">
+                <region name="input" template="select" />
+            </field>
+            <field prop="ecos:documentAmount">
+                <region name="input" template="number" />
+            </field>
+        </view>
+        <view>
+            <field prop="dms:updateContent" kind="mode-view"/>
+            <field prop="cm:content">
+                <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+                <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            </field>
+        </view>
+    </view>
+
+    <view class="idocs:countryISO3166">
+        <field prop="cm:title"/>
+        <field prop="idocs:countryISO3166Alpha2"/>
+        <field prop="idocs:countryISO3166Alpha3"/>
+        <field prop="idocs:countryISO3166Number"/>
+    </view>
+
+</views>
