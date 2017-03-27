@@ -651,6 +651,7 @@ ko.bindingHandlers.journalControl = {
                     if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
                     
                     result.pagination = config;
+                    loading(_.isUndefined(nudeOptions.pagination));
                     return result;
                 } else {
                     if (!nudeOptions.pagination.hasMore)
@@ -666,7 +667,7 @@ ko.bindingHandlers.journalControl = {
     criteria.subscribe(function(newValue) { pageNumber(1); });
 
     // show loading indicator if page was changed
-    //pageNumber.subscribe(function(newValue) { loading(true); });
+    pageNumber.subscribe(function(newValue) { loading(true); });
 
     // extend notify
     criteria.extend({ notify: 'notifyWhenChangesStop' });
