@@ -200,8 +200,23 @@
 			this.loaded = true;
 			this._updateColumns();
 			this._updateResponseSchema();
-			if (this.deferredItems)
-				this.loadData(this.deferredItems);
+			if (this.deferredItems) this.loadData(this.deferredItems);
+
+			// SELECTION
+			if (this.config.selection == "checkbox") {
+				var table = this.widgets.table;
+				table.subscribe("checkboxClickEvent", function(event) {
+					if (event.target.checked) {
+						table.selectRow(event.target);
+					} else { table.unselectRow(event.target) }
+				});
+
+				$("input[id*='select-all']:checkbox", table.getTheadEl()).on("change", function(event) {
+					var checked = event.target.checked,
+						selector = ":checkbox" + (checked ? ":not(:checked)" : ":checked");
+					$(selector, table.getBody()).trigger("click");
+				});
+			};
 		},
 
 		/**
@@ -325,15 +340,7 @@
 				}
 			);
 
-			if (this.config.selection == "checkbox") {
-				table.subscribe("checkboxClickEvent", function(event) {
-					if (event.target.checked) {
-						table.selectRow(event.target);
-					} else { table.unselectRow(event.target) }
-				});
-			}
-
-			table.doBeforeSortColumn = this.bind(function(column, dir) {
+ 			table.doBeforeSortColumn = this.bind(function(column, dir) {
 				this.fireEvent("sortColumnChange", {
 					column: column.key,
 					desc: dir == YAHOO.widget.DataTable.CLASS_DESC
@@ -857,7 +864,7 @@
 			if (this.options.selection == "checkbox") {
 				config.columns.unshift({
 					key: "checkbox-selection",
-					label: '',
+					label: '<input type="checkbox" id="' + this.id + '-select-all"/>',
 		            formatter: function(elCell, record) {
 		            	var checked = this.getSelectedRows().indexOf(record.getId()) != -1; 
 		            	elCell.innerHTML = '<input type="checkbox" ' + (checked ? 'checked' : '') + '/>'; 
