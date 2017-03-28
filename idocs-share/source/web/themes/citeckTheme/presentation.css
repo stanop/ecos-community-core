@@ -4487,3 +4487,20 @@ div#HEADER_USER_STATUS {
 .yui-skin-citeckTheme .invariants-form.view-form .template-tabs .tabs-title li.tab-title.selected {
   background-color: #fafafa;
 }
+
+/* batch-edit */
+.yui-skin-citeckTheme #batch-edit-div .form-buttons input,
+.yui-skin-citeckTheme .form-buttons.batch-edit-results-form-buttons input.batch-edit-results-button {
+    border: 2px solid #1c55da;
+    background-color: #1c55da;
+    color: #fff;
+}
+.yui-skin-citeckTheme #batch-edit-div .form-buttons {
+    border-top: 1px solid #ccc;
+}
+
+.yui-skin-citeckTheme #batch-edit-div .criterion-value button {
+    border: 2px solid #1c55da;
+    color: #1c55da;
+    background-color: #fff;
+}

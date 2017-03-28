@@ -636,4 +636,70 @@ select.yui-pg-rpp-options
 	cursor: pointer;
 }
 
+/* batch-edit */
+#batch-edit-div {
+	margin: 0 0 10px 0;
+	position: relative;
+	clear: both;
+	box-sizing: border-box;
+}
 
+#batch-edit-div .form-buttons input,
+.form-buttons.batch-edit-results-form-buttons input.batch-edit-results-button {
+	border: 2px solid;
+	font-weight: 900;
+	padding: 3px 10px;
+	margin: 8px 10px 0 0;
+	cursor: pointer;
+}
+
+#batch-edit-div .criterion-label {
+	float: left;
+	width: 45.5%;
+	padding-right: 10px;
+	box-sizing: border-box;
+}
+
+#batch-edit-div .criterion-label span{
+	padding: 2px 0 2px 15px;
+	font-family: Open Sans Bold, Arial, sans-serif;
+	line-height: normal;
+	display: block;
+}
+
+#batch-edit-div .criterion-value-field-view span {
+	padding: 2px 0 2px 15px;
+	font-family: Open Sans, Arial, sans-serif;
+	line-height: normal;
+	display: block;
+}
+
+#batch-edit-div .criterion-value {
+	width: 45.5%;
+	display: inline-block;
+}
+
+table.batch-edit-results,
+#batch-edit-div .batch-edit-criterion {
+	padding: 10px;
+}
+
+#batch-edit-div .criterion-value .criterion-value-field-input {
+	float: right;
+}
+
+#batch-edit-div .criterion-value button {
+	border: 2px solid;
+	padding: 3px 10px;
+	font-weight: 900;
+	cursor: pointer;
+	font: 99% Open Sans Bold,arial,helvetica,clean,sans-serif;
+}
+
+.yui-panel .bd div.form-buttons.batch-edit-results-form-buttons {
+	padding-bottom: 7px;
+}
+
+[id*="batch-edit-container"] {
+	background-color: #f2f2f2;
+}

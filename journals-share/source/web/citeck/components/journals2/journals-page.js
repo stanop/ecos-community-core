@@ -328,12 +328,12 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 				}
 			}
 
-			var body = '<table>';
+			var body = '<table class="batch-edit-results">';
 			for (ref in editStatus) {
 				body += '<tr><td>' + editStatus[ref].title + '</td><td>' + editStatus[ref].status + '</td></tr>';
 			}
 			body += '</table>';
-			body += '<input id="' + id + '-close-results-btn" type="button" value="'+msg("button.ok")+'" />';
+			body += '<div class="form-buttons batch-edit-results-form-buttons"><input id="' + id + '-close-results-btn" type="button" class="batch-edit-results-button" value="'+msg("button.ok")+'" /></div>';
 
 			panel.setBody(body);
 			panel.render(document.body);
@@ -413,7 +413,7 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 			}
 		};
 
-		var panel = new YAHOO.widget.Panel(id, {
+		var panel = new YAHOO.widget.Panel(id + "-batch-edit-container", {
 			width: "40em",
 			fixedcenter: YAHOO.env.ua.mobile === null ? "contained" : false,
 			constraintoviewport: true,
@@ -431,13 +431,17 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 
 		var body =
 			'<div id="batch-edit-div">' +
-				'<span>' + action.attribute().displayName() + '</span>' +
-				'<!-- ko component: { name: "filter-criterion-value", params: {\
-					fieldId: fieldId,\
-					datatype: action.attribute().datatype().name(),\
-					value: value,\
-					attribute: action.attribute\
-				}} --><!-- /ko -->' +
+            	'<div class="batch-edit-criterion">' +
+					'<div class="criterion-label">' +
+						'<span>' + action.attribute().displayName() + '</span>' +
+					'</div>' +
+					'<!-- ko component: { name: "filter-criterion-value", params: {\
+						fieldId: fieldId,\
+						datatype: action.attribute().datatype().name(),\
+						value: value,\
+						attribute: action.attribute\
+					}} --><!-- /ko -->' +
+				'</div>' +
 				'<div class="form-buttons">'+
 					'<input id="' + id + '-form-submit" type="button" value="'+msg("button.send")+'" />' +
 					'<input id="' + id + '-form-cancel" type="button" value="'+msg("button.cancel")+'" />' +
