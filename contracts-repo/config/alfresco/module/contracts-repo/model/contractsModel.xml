@@ -302,7 +302,7 @@
 				</property>
 				<property name="contracts:agreementAmount">
 					<title>Agreement Amount</title>
-					<type>d:float</type>
+					<type>d:double</type>
 				</property>
 				<property name="contracts:currency">
 					<title>Currency</title>
