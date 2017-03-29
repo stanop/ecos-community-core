@@ -61,7 +61,15 @@
             </#if>
         },
         columns: ${field.control.params.columns},
-        selection: "${field.control.params.selection}",
+        <#if field.control.params.selection??>
+            selection: "${field.control.params.selection}",
+        </#if>
+        <#if field.control.params.preview??>
+            preview: ${field.control.params.preview},
+        </#if>
+        <#if field.control.params.previewByClickOnCell??>
+            previewByClickOnCell: "${field.control.params.previewByClickOnCell}",
+        </#if>
         responseSchema: ${field.control.params.responseSchema},
         field: "${field.name?js_string}",
         forms: {

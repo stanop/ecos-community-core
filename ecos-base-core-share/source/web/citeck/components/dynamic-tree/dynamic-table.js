@@ -186,6 +186,8 @@
          * when on ready
          * */
 		onReady: function() {
+			var self = this;
+
             this._setupDataSource();
             this._setupDataTable();
 
@@ -202,9 +204,11 @@
 			this._updateResponseSchema();
 			if (this.deferredItems) this.loadData(this.deferredItems);
 
+
+			var table = this.widgets.table;
+
 			// SELECTION
 			if (this.config.selection == "checkbox") {
-				var table = this.widgets.table;
 				table.subscribe("checkboxClickEvent", function(event) {
 					if (event.target.checked) {
 						table.selectRow(event.target);
@@ -217,6 +221,24 @@
 					$(selector, table.getBody()).trigger("click");
 				});
 			};
+
+			// PREVIEW
+			if (this.config.preview) {
+				var cell = cell = this.config.previewByClickOnCell || "cm_title";
+				table.subscribe("cellClickEvent", function(args) {
+					if (args.target.headers.indexOf(cell) != -1) {
+						var record = table.getRecord(args.target),
+							preview = Alfresco.util.ComponentManager.get(record.getId());
+
+						if (!preview) {
+							preview = new Citeck.UI.preview(record.getId(), { nodeRef: record.getData().nodeRef, renderImmediately: true });
+							Alfresco.util.ComponentManager.register(preview);
+						}
+
+						preview.show();
+					}
+				});
+			}
 		},
 
 		/**
@@ -871,8 +893,15 @@
 		            },
 					resizeable: false 
 				});
-				config.selection = this.options.selection;
+				
+				config.selection = this.options.selection
+			}
 
+			if (this.options.preview) {
+				config.preview = this.options.preview;
+
+				if (this.options.previewByClickOnCell)
+					config.previewByClickOnCell = this.options.previewByClickOnCell;
 			}
 
 			tableView.setConfig(config);

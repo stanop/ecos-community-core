@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -626,6 +626,94 @@ Citeck.Browser.isIE = function(version) {
 // UI
 // --
 
+Citeck.UI.preview = function(id, params) {
+    if (!id) { throw Error("Argument 'id' should by defined"); return; }
+    if (!params.nodeRef) { throw Error("Parameter 'nodeRef' should by defined"); return; }
+
+    this.name = "Citeck.UI.preview";
+    this.id = id;
+
+    // Add dependencies
+    if (params.withDependencies) {
+        Citeck.UI.previewDependencies();
+    }
+
+    // Overwrite standart sync library
+    if (params.overwriteStandartSync) {
+        Citeck.UI.previewOverwrite();
+    }
+
+    // Build container
+    this.panel = new YAHOO.widget.Panel(id + "-preview-widget", {
+        width: "800px",
+        fixedcenter: true,
+        constraintoviewport: true,
+        close: true,
+        visible: false,
+        draggable: true,
+        modal: true
+    });
+    
+    this.panel.setHeader("Document preview");
+    this.panel.setBody("<div id='" + id + "-previewer-container" + "'></div>");
+
+    if (params.renderImmediately)
+        this.panel.render(params.container || document.body);
+
+    // Render the web-preview
+    Alfresco.util.loadWebscript({
+      url: Alfresco.constants.URL_SERVICECONTEXT + "components/preview/web-preview",
+      properties: { nodeRef: params.nodeRef },
+      target: id + "-previewer-container"
+    });
+
+    // PUBLIC METHODS
+    this.show = function() { this.panel.show(); }
+    this.hide = function() { this.panel.hide(); }
+    this.render = function() { this.panel.render(); }
+
+    this.getPanel = function() { return this.panel; }
+};
+
+Citeck.UI.previewDependencies = function() {
+    var sources = [
+            "res/components/preview/web-preview.js",
+            "res/components/preview/WebPreviewer.js",
+            "res/js/flash/extMouseWheel.js",
+            "res/components/preview/StrobeMediaPlayback.js",
+            "res/components/preview/Flash.js",
+            "res/components/preview/Image.js",
+            "res/components/preview/web-preview.css",
+            "res/components/preview/WebPreviewerHTML.css",
+            "res/components/preview/StrobeMediaPlayback.css",
+            "res/components/preview/Image.css"
+        ],
+        deps = _.map(_.filter(sources, function(s) {
+            var pathname = src.split(/\.(js|css)/)[0];
+            return $("head").html().indexOf(pathname) == -1;
+        }), function(src) {
+            return Alfresco.constants.URL_CONTEXT + src;
+        });
+
+    deps.forEach(function(src) {
+        var node;
+        if (/\.js&/.test(src)) {
+            node = document.createElement('script');
+            node.setAttribute("type","text/javascript");
+            node.setAttribute("src", src);
+        }
+
+        if (/\.css/.test(src)) {
+            node = document.createElement("link");
+            node.setAttribute("rel", "stylesheet");
+            node.setAttribute("type", "text/css");
+            node.setAttribute("href", src);
+        }
+
+        if (node instanceof HTMLElement) $("head").append(node);
+    });
+};
+
 Citeck.UI.waitIndicator = function(id, params) {
     this.id = id;
     var self = this;
@@ -748,6 +836,55 @@ Citeck.UI.waitIndicator = function(id, params) {
 
 // OVERWRITE
 // ---------
+
+Citeck.UI.previewOverwrite = function() {
+    // Overwrite alfresco js
+    if (!Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.createSwfDiv.overwrittenByCiteckUI) {
+        Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.createSwfDiv = function WebPreviewer_createSwfDiv() {    
+            if (!this.swfDiv) {
+                var realSwfDivEl = new YAHOO.util.Element(document.createElement("div"));
+                realSwfDivEl.set("id", this.wp.id + "-full-window-div");
+                realSwfDivEl.setStyle("position", "absolute");
+                realSwfDivEl.addClass("web-preview");
+                realSwfDivEl.addClass("real");
+                
+                var realSwfContainerDivEl = new YAHOO.util.Element(document.getElementById(this.wp.id + "-previewer-div").parentNode);
+                realSwfContainerDivEl.setStyle("position", "relative");
+                realSwfDivEl.appendTo(realSwfContainerDivEl);
+
+                this.swfDiv = realSwfDivEl;
+            }
+        };
+        Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.createSwfDiv.overwrittenByCiteckUI = true;
+    }
+  
+    if (!Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.synchronizeSwfDivPosition.overwrittenByCiteckUI) {
+        Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.synchronizeSwfDivPosition = function WebPreviewer_synchronizePosition() {
+            var sourceYuiEl = new YAHOO.util.Element(this.wp.getPreviewerElement());
+            var region = YAHOO.util.Dom.getRegion(sourceYuiEl.get("id"));
+
+            var sourceElement = YAHOO.util.Dom.get(sourceYuiEl.get("id")),
+                containerElement = sourceElement, zindex;
+
+            if (containerElement) {
+                while (containerElement.tagName != "BODY") {
+                  if (containerElement.classList.contains("yui-panel-container") && containerElement.id.indexOf("preview-widget") != -1) {
+                    this.swfDiv.setStyle("z-index", containerElement.style.zIndex);
+                    break;
+                  }
+
+                  containerElement = containerElement.parentNode;
+                }
+
+                this.swfDiv.setStyle("left", 0 + "px");
+                this.swfDiv.setStyle("top", 0 + "px");
+                this.swfDiv.setStyle("width", region.width + "px");
+                this.swfDiv.setStyle("height", region.height + "px");
+            }
+        };
+        Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.synchronizeSwfDivPosition.overwrittenByCiteckUI = true;
+    }
+};
 
 /**
  * Online edit url override: generate correct address even in absense of site information.
