@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -413,6 +413,10 @@ Record
 	.property('aspects', [s])
 	.property('isDocument', b)
 	.property('isContainer', b)
+
+	.property('selected', b)
+	.load('selected', function() { this.selected(false) })
+
 	.computed('isDoclibNode', function() {
 		if(this.isDocument() === true || this.isContainer() === true) {
 			return true;
@@ -423,17 +427,6 @@ Record
 		return null;
 	})
 	.property('doclib', o) // document library record data
-	.computed('selected', {
-		read: function() {
-			if(!this._selected) {
-				this._selected = ko.observable(false);
-			}
-			return this._selected();
-		},
-		write: function(selected) {
-			this._selected(selected);
-		}
-	})
     .method('hasAspect', function(aspect) {
         return _.contains(this.aspects(), aspect);
     })
@@ -694,7 +687,7 @@ JournalsWidget
 		// init selected column
 		columns.unshift(new ActionsColumn({
 			id: 'selected',
-			label: '',
+			label: '<input type="checkbox" data-action="select-all" />',
 			formatter: formatters.checkbox('selected')
 		}));
 		return columns;

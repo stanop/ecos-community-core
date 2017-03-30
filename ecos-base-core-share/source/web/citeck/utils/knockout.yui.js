@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -113,7 +113,7 @@ ko.bindingHandlers.yuiDataTable = {
             sortedBy = cfg.sortedBy,
             doubleClickConfig = cfg.doubleClickConfig,
             configs = cfg.set;
-        
+       
         // data source
         ds = new YAHOO.util.LocalDataSource({
             records: _.map(records, function(record) {
@@ -319,6 +319,16 @@ ko.bindingHandlers.yuiDataTable = {
                 dt.unselectRow(yuiRecord);
             }
         }
+
+        if (_.every(records, function(record) { return record.selected(); })) {
+            $(":checkbox[data-action='select-all']", dt.getTheadEl()).attr("checked", "");
+        }
+
+        // select all records
+        $(":checkbox[data-action='select-all']", dt.getTheadEl()).on("change", function(event) {
+            records.forEach(function(record) { record.selected(event.target.checked) });
+        });
+
 
         function getYuiRecordByNodeRef(nodeRef) {
             var recordSet = dt.getRecordSet(),
