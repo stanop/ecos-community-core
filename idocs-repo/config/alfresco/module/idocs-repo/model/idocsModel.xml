@@ -1117,6 +1117,15 @@
             </properties>
         </aspect>
 
+        <aspect name="idocs:currencyNumberCode">
+            <properties>
+                <property name="idocs:currencyNumberCode">
+                    <title>Цифровой код валюты</title>
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="idocs:hasAttorneys">
             <associations>
                 <association name="idocs:docAttorneys">

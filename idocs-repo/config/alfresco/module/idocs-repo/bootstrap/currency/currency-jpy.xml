@@ -16,6 +16,7 @@
             <idocs:currencyCode>JPY</idocs:currencyCode>
             <idocs:currencyName>Иена</idocs:currencyName>
             <idocs:currencyShortName>¥</idocs:currencyShortName>
+            <idocs:currencyNumberCode>392</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 

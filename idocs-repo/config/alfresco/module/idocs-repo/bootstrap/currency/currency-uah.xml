@@ -16,6 +16,7 @@
             <idocs:currencyCode>UAH</idocs:currencyCode>
             <idocs:currencyName>Гривна</idocs:currencyName>
             <idocs:currencyShortName>₴</idocs:currencyShortName>
+            <idocs:currencyNumberCode>980</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 

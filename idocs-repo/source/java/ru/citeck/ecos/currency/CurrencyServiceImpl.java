@@ -5,7 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author alexander.nemerov
@@ -29,6 +28,11 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public Currency getCurrencyByCode(String code) {
         return currencyDAO.getCurrencyStorage().get(code);
+    }
+
+    @Override
+    public Currency getCurrencyByNumberCode(Integer code) {
+        return currencyDAO.getCurrencyByNumberCode(code);
     }
 
     @Override

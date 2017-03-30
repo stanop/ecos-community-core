@@ -16,6 +16,7 @@
             <idocs:currencyCode>GBP</idocs:currencyCode>
             <idocs:currencyName>Фунт стерлингов</idocs:currencyName>
             <idocs:currencyShortName>£</idocs:currencyShortName>
+            <idocs:currencyNumberCode>826</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 

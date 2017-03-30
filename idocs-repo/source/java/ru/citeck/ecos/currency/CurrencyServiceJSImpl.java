@@ -31,6 +31,11 @@ public class CurrencyServiceJSImpl extends AlfrescoScopableProcessorExtension
     }
 
     @Override
+    public Currency getCurrencyByNumberCode(Integer code) {
+        return currencyService.getCurrencyByNumberCode(code);
+    }
+
+    @Override
     public BigDecimal transferFromOneCurrencyToOther(Currency from, Currency to, BigDecimal money) {
         return currencyService.transferFromOneCurrencyToOther(from, to, money);
     }

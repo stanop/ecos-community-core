@@ -16,6 +16,7 @@
             <idocs:currencyCode>RUB</idocs:currencyCode>
             <idocs:currencyName>Рубль</idocs:currencyName>
             <idocs:currencyShortName>руб.</idocs:currencyShortName>
+            <idocs:currencyNumberCode>643</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 
