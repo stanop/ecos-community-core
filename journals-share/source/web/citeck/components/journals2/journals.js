@@ -98,7 +98,7 @@ Criterion
 	.computed('shortModel', function() {
 		return {
 			field: this.field().name(),
-		   		predicate: this.predicate().id(),
+			predicate: this.predicate().id(),
 			value: this.value()
 		};
 	})
@@ -116,6 +116,20 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
+    .init(function() {
+    	if (this.predicate() && this.predicate().id().indexOf("boolean") != -1) {
+            this.value("boolean");
+            var predicates = this.resolve("field.datatype.predicateList.predicates");
+            var choosePredicate = new Predicate({
+                id: "choose",
+                label: Alfresco.util.message("form.select.label"),
+                needsValue: false
+            });
+            if (predicates.length && !_.find(predicates, choosePredicate)) {
+                predicates.unshift(choosePredicate);
+			}
+		}
+    })
 	;
 
 CreateVariant
@@ -271,7 +285,8 @@ Filter
 	})
 	.computed('usableCriteria', function() {
 		return _.filter(this.criteria(), function(criterion) {
-			if (criterion.value() || criterion.predicate().id().indexOf("empty") != -1) return true;
+			if (criterion.predicate().id().indexOf("choose") == -1 &&
+				(criterion.value() || criterion.predicate().id().indexOf("empty") != -1)) return true;
 			return false;
 		});
 	})
