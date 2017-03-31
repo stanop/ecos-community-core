@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="idocs" default="hotcopy-tomcat">
+<project name="ecos-community" default="hotcopy-tomcat">
 
 	<!-- Allow override properties -->
 	<property file="build.properties" />
