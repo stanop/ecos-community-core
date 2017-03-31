@@ -244,20 +244,14 @@ ${key} = somewhat
 </#macro>
 
 <#macro renderIndependentField field extension={}>
-	<#if default_extensions[field.id]??>
-		<#assign field = field + default_extensions[field.id] />
-	</#if>
+	<#assign f = field />
 
 	<#if extension?keys?size != 0>
-		<#assign field = field + extension />
+		<#assign f = f + extension />
 	</#if>
 
-	<#if my_extensions?? && my_extensions[field]??>
-		<#assign field = field + my_extensions[field] />
-	</#if>
-
-	<@print_hash h=field />
-	<@formLib.renderField field = field />
+	<@print_hash h=f />
+	<@formLib.renderField field = f />
 </#macro>
 
 <#macro renderField field extension={}>
