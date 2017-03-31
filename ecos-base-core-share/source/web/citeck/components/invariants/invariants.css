@@ -1761,7 +1761,7 @@
   float: left;
 }
 
-.invariants-form .template-table .template-view span.value-item {
+.invariants-form .template-view span.value-item {
   display: block;
   line-height: normal;
   padding-right: 29px;
@@ -1769,9 +1769,15 @@
   margin-bottom: 5px;
 }
 
-.invariants-form .template-table .template-view span.value-item span.value-item-text {
+.invariants-form .template-view span.value-item span.value-item-text {
   display: block;
   overflow: hidden;
+}
+
+.invariants-form .template-view span.value-item .value-item-actions {
+  position: absolute;
+  top: 2px;
+  right: 0px;
 }
 
 /* in view-mode */
@@ -1781,12 +1787,6 @@
   font-family: Open Sans Bold, Arial, sans-serif;
   float: right;
   width: 54.5%;
-}
-
-.invariants-form .template-view span.value-item .value-item-actions {
-  position: absolute;
-  top: 2px;
-  right: 0px;
 }
 
 /* view-table */

@@ -320,7 +320,7 @@ ko.bindingHandlers.yuiDataTable = {
             }
         }
 
-        if (_.every(records, function(record) { return record.selected(); })) {
+        if (records.length > 0 && _.every(records, function(record) { return record.selected(); })) {
             $(":checkbox[data-action='select-all']", dt.getTheadEl()).attr("checked", "");
         }
 
