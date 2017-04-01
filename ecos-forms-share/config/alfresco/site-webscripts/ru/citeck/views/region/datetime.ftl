@@ -12,7 +12,7 @@
         fieldId: $element.id,
         protected: protected,
         value: value,
-        mode: $data.mode || '${mode}',
+        mode: $data.mode && $data.mode() || '${mode}',
         localization: {
             format: '${format}',
             formatIE: '${formatIE}',
