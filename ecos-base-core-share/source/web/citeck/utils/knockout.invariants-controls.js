@@ -1899,7 +1899,7 @@ ko.bindingHandlers.orgstructControl = {
                     orgstructSubmitButtonId = orgstructPanelId + "-submitInput",
                     orgstructCancelButtonId = orgstructPanelId + "-cancelInput";
 
-                orgstructPanel.setHeader('Orgstruct Picker');
+                orgstructPanel.setHeader(Alfresco.util.message("orgstruct.picker"));
                 orgstructPanel.setBody('\
                     <div class="orgstruct-header">\
                         <div class="orgstruct-search" id="' + orgstructSearchBoxId + '">\
