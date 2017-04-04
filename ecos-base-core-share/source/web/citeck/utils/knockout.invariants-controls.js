@@ -751,6 +751,13 @@ ko.bindingHandlers.journalControl = {
                 close:          true
             });
 
+            // hide dialog on click 'esc' button
+            panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
+                fn: panel.hide,
+                scope: panel,
+                correctScope: true
+            }));
+
             panel.setHeader(localization.title || 'Journal Picker');
             panel.setBody('\
                 <div class="journal-picker-header ' + mode + ' ' + dockMode + '" id="' + journalPickerHeaderId + '">\
