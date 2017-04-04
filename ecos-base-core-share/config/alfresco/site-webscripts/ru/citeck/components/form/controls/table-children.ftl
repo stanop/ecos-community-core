@@ -64,6 +64,12 @@
         <#if field.control.params.selection??>
             selection: "${field.control.params.selection}",
         </#if>
+        <#if field.control.params.beforeRender??>
+            beforeRender: function (event) {
+                var dataTable = this;
+                return ${field.control.params.beforeRender};
+            },
+        </#if>
         <#if field.control.params.preview??>
             preview: ${field.control.params.preview},
         </#if>

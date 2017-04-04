@@ -43,12 +43,14 @@
 
 		this.state = {};
 		this.defaultData = {
-				items: [],
-				startIndex: 0,
-				totalRecords: 0 };
+			items: [],
+			startIndex: 0,
+			totalRecords: 0
+		};
 		this.defaultResponseSchema = {
-				resultsList: "items",
-				fields: [] };
+			resultsList: "items",
+			fields: [] 
+		};
 		this.defaultResponseType = YAHOO.util.DataSource.TYPE_JSON;
 		this.defaultColumnConfig = [];
 		this.model = model;
@@ -239,6 +241,11 @@
 					}
 				});
 			}
+
+			// BEFORE RENDER
+			if (this.config.beforeRender) {
+				table.subscribe("beforeRenderEvent", this.config.beforeRender);
+			}
 		},
 
 		/**
@@ -369,8 +376,6 @@
 				});
 				return false;
 			});
-
-
 		},
 
 		_setMessage: function(property, messageCode) {
@@ -887,9 +892,11 @@
 				config.columns.unshift({
 					key: "checkbox-selection",
 					label: '<input type="checkbox" id="' + this.id + '-select-all"/>',
-		            formatter: function(elCell, record) {
-		            	var checked = this.getSelectedRows().indexOf(record.getId()) != -1; 
-		            	elCell.innerHTML = '<input type="checkbox" ' + (checked ? 'checked' : '') + '/>'; 
+		            formatter: function(elCell, oRecord) {
+		            	var checked = this.getSelectedRows().indexOf(oRecord.getId()) != -1,
+		            		disabled = oRecord.getData().disabled;
+
+		            	elCell.innerHTML = '<input type="checkbox" ' +  (checked && !disabled ? 'checked' : '') + '' + (disabled ? 'disabled' : '') +  ' />';
 		            },
 					resizeable: false 
 				});
@@ -902,6 +909,10 @@
 
 				if (this.options.previewByClickOnCell)
 					config.previewByClickOnCell = this.options.previewByClickOnCell;
+			}
+
+			if (this.options.beforeRender) {
+				config.beforeRender = this.options.beforeRender;
 			}
 
 			tableView.setConfig(config);
