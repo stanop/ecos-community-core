@@ -614,101 +614,6 @@ ko.bindingHandlers.journalControl = {
     var criteria = ko.observable([]);
     if (defaultCriteria) criteria(defaultCriteria);
 
-    var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
-        loading = ko.observable(true), criteriaListShow = ko.observable(false), 
-        searchBar = params.searchBar ? params.searchBar == "true" : true,
-        mode = params.mode, dockMode = params.dock ? "dock" : "",
-        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-        additionalOptions = ko.observable([]), options = ko.computed(function(page) {
-            var actualCriteria = criteria();
-            if (hiddenCriteria) {
-                for (var hc in hiddenCriteria) {
-                    if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
-                        actualCriteria.push(hiddenCriteria[hc]);
-                }
-            }
-
-            var nudeOptions = data.filterOptions(actualCriteria, {
-                    maxItems: maxItems(), 
-                    skipCount: skipCount(), 
-                    searchScript: searchScript,
-                    sortBy: sortBy
-                }),
-                config = nudeOptions.pagination,
-                result;
-      
-            var tempAdditionalOptions = additionalOptions();
-            _.each(additionalOptions(), function(o) {
-                if (_.contains(nudeOptions, o)) {
-                    var index = tempAdditionalOptions.indexOf(o);
-                    tempAdditionalOptions.splice(index, 1);
-                }
-            });
-            additionalOptions(tempAdditionalOptions);
-
-            if (additionalOptions().length > 0) {
-                if (nudeOptions.length < maxItems()) {
-                    result = _.union(nudeOptions, additionalOptions());
-
-                    if (result.length > maxItems()) result = result.slice(0, maxItems());
-                    if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
-                    
-                    result.pagination = config;
-                    loading(_.isUndefined(nudeOptions.pagination));
-                    return result;
-                } else {
-                    if (!nudeOptions.pagination.hasMore)
-                        nudeOptions.pagination.hasMore = true;
-                }
-            }
-
-            loading(_.isUndefined(nudeOptions.pagination));
-            return nudeOptions;
-        });
-
-    // reset page after new search
-    criteria.subscribe(function(newValue) { pageNumber(1); });
-
-    // show loading indicator if page was changed
-    pageNumber.subscribe(function(newValue) { loading(true); });
-
-    // extend notify
-    criteria.extend({ notify: 'notifyWhenChangesStop' });
-    pageNumber.extend({ notify: 'always' });
-    options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
-
-    var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
-    if (!journalType) { /* so, it is fail */ }
-
-    // get default criteria
-    var defaultCriteria = ko.computed(function() {
-        if (defaultSearchableAttributes) return journalType.attributes();
-        return journalType.defaultAttributes();
-    });
-
-    // add default criteria to selectedFilterCriteria
-    koutils.subscribeOnce(ko.computed(function() {
-        selectedFilterCriteria.removeAll();
-        var dc = defaultCriteria();
-
-        if (defaultSearchableAttributes) {
-            var validAttributes = [];
-            for (var i = 0; i < dc.length; i++) {
-                if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
-            }
-            dc = validAttributes;
-        }
-
-        if (dc) {
-            for (var i in dc) {
-                var newCriterion = _.clone(dc[i]);
-                newCriterion.value = ko.observable();
-                newCriterion.predicateValue = ko.observable();
-                selectedFilterCriteria.push(newCriterion);
-            }
-        }
-    }), defaultCriteria.dispose);
-
     var submitButtonId           = panelId + "-submitInput",
         cancelButtonId           = panelId + "-cancelInput",
         elementsTabId            = panelId + "-elementsTab",
@@ -729,6 +634,101 @@ ko.bindingHandlers.journalControl = {
         event.preventDefault();
 
         if (!panel) {
+            var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
+                loading = ko.observable(true), criteriaListShow = ko.observable(false), 
+                searchBar = params.searchBar ? params.searchBar == "true" : true,
+                mode = params.mode, dockMode = params.dock ? "dock" : "",
+                pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
+                additionalOptions = ko.observable([]), options = ko.computed(function(page) {
+                    var actualCriteria = criteria();
+                    if (hiddenCriteria) {
+                        for (var hc in hiddenCriteria) {
+                            if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
+                                actualCriteria.push(hiddenCriteria[hc]);
+                        }
+                    }
+
+                    var nudeOptions = data.filterOptions(actualCriteria, {
+                            maxItems: maxItems(), 
+                            skipCount: skipCount(), 
+                            searchScript: searchScript,
+                            sortBy: sortBy
+                        }),
+                        config = nudeOptions.pagination,
+                        result;
+              
+                    var tempAdditionalOptions = additionalOptions();
+                    _.each(additionalOptions(), function(o) {
+                        if (_.contains(nudeOptions, o)) {
+                            var index = tempAdditionalOptions.indexOf(o);
+                            tempAdditionalOptions.splice(index, 1);
+                        }
+                    });
+                    additionalOptions(tempAdditionalOptions);
+
+                    if (additionalOptions().length > 0) {
+                        if (nudeOptions.length < maxItems()) {
+                            result = _.union(nudeOptions, additionalOptions());
+
+                            if (result.length > maxItems()) result = result.slice(0, maxItems());
+                            if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                            
+                            result.pagination = config;
+                            loading(_.isUndefined(nudeOptions.pagination));
+                            return result;
+                        } else {
+                            if (!nudeOptions.pagination.hasMore)
+                                nudeOptions.pagination.hasMore = true;
+                        }
+                    }
+
+                    loading(_.isUndefined(nudeOptions.pagination));
+                    return nudeOptions;
+                });
+
+            // reset page after new search
+            criteria.subscribe(function(newValue) { pageNumber(1); });
+
+            // show loading indicator if page was changed
+            pageNumber.subscribe(function(newValue) { loading(true); });
+
+            // extend notify
+            criteria.extend({ notify: 'notifyWhenChangesStop' });
+            pageNumber.extend({ notify: 'always' });
+            options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
+
+            var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+            if (!journalType) { /* so, it is fail */ }
+
+            // get default criteria
+            var defaultCriteria = ko.computed(function() {
+                if (defaultSearchableAttributes) return journalType.attributes();
+                return journalType.defaultAttributes();
+            });
+
+            // add default criteria to selectedFilterCriteria
+            koutils.subscribeOnce(ko.computed(function() {
+                selectedFilterCriteria.removeAll();
+                var dc = defaultCriteria();
+
+                if (defaultSearchableAttributes) {
+                    var validAttributes = [];
+                    for (var i = 0; i < dc.length; i++) {
+                        if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
+                    }
+                    dc = validAttributes;
+                }
+
+                if (dc) {
+                    for (var i in dc) {
+                        var newCriterion = _.clone(dc[i]);
+                        newCriterion.value = ko.observable();
+                        newCriterion.predicateValue = ko.observable();
+                        selectedFilterCriteria.push(newCriterion);
+                    }
+                }
+            }), defaultCriteria.dispose);
+
             var optimalWidth = (function() {
                 var maxContainerWidth = screen.width - 200,
                     countOfAttributes = (function() {
@@ -1076,32 +1076,33 @@ ko.bindingHandlers.journalControl = {
             }, Dom.get(journalPickerHeaderId));
 
             if (value()) selectedElements(multiple() ? value() : [ value() ]);
+
+
+            if (!Citeck.mobile.isMobileDevice()) {
+                YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
+                    var itemsCount = args[1].mobileMode ? 5 : 10;
+                    if (itemsCount != maxItems()) { 
+                        pageNumber(1);
+                        maxItems(itemsCount);
+                    };
+                });
+            }
+
+            // reload filterOptions request if was created new object
+            YAHOO.Bubbling.on("object-was-created", function(layer, args) {
+                if (args[1].fieldId == data.name()) {
+                    if (args[1].value) {
+                        additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
+                        selectedElements.push(args[1].value); 
+                    }
+                    
+                    criteria(_.clone(criteria()));
+                }
+            });
         }
         
         panel.show();
     })
-
-    if (!Citeck.mobile.isMobileDevice()) {
-        YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
-            var itemsCount = args[1].mobileMode ? 5 : 10;
-            if (itemsCount != maxItems()) { 
-                pageNumber(1);
-                maxItems(itemsCount);
-            };
-        });
-    }
-
-    // reload filterOptions request if was created new object
-    YAHOO.Bubbling.on("object-was-created", function(layer, args) {
-        if (args[1].fieldId == data.name()) {
-            if (args[1].value) {
-                additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
-                selectedElements.push(args[1].value); 
-            }
-            
-            criteria(_.clone(criteria()));
-        }
-    });
   }
 }
 
