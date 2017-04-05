@@ -4487,3 +4487,13 @@ div#HEADER_USER_STATUS {
 .yui-skin-citeckTheme .invariants-form.view-form .template-tabs .tabs-title li.tab-title.selected {
   background-color: #fafafa;
 }
+
+.yui-skin-citeckTheme .orgstruct-console .toolbar.theme-bg-2 {
+  position: static;
+}
+
+.yui-skin-citeckTheme .orgstruct-console .toolbar .toolbar-buttons {
+    position: static;
+    display: inline-block;
+    height: 20px;
+}
