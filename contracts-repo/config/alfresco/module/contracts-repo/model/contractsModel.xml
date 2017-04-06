@@ -89,6 +89,7 @@
 			<mandatory-aspects>
 				<aspect>contracts:agreementCommon</aspect>
 				<aspect>invariants:draftAspect</aspect>
+				<aspect>contracts:contractType</aspect>
 			</mandatory-aspects>
 		</type>
 		<type name="contracts:supplementaryAgreement">
