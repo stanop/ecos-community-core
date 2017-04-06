@@ -580,6 +580,20 @@
                 }
             }
         },
+
+        downloadContent: function (keyToNodeRef) {
+            var downloadUrl = Alfresco.constants.PROXY_URI + "/citeck/print/content?nodeRef=",
+                downloadImage = Alfresco.constants.URL_RESCONTEXT + "/components/documentlibrary/actions/document-download-16.png",
+				title = Alfresco.util.message("actions.document.download");
+            return function (elCell, oRecord) {
+                var nodeRefToDownload = oRecord.getData(keyToNodeRef);
+                downloadUrl = downloadUrl + nodeRefToDownload;
+                console.log(downloadUrl);
+                elCell.innerHTML = '<div class="document-download">' + '<a class="simple-link" onclick="event.stopPropagation()" '
+                    + 'href="' + downloadUrl + '" style="background-image: url(' + downloadImage + ')" ' +
+					'title="' + title +'"/>' + '</div>';
+            }
+        },
         
         doubleClickLink: function(urlTemplate, fieldId, formatter, target) {
             if (!target) target = '_self';
