@@ -719,7 +719,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 if(value == null || value == "") {
                     return this.value(null);
                 } else {
-                    return this.value(value);
+                    return this.value(value.replace(/<(?:[^"'>]+|(["'])(?:\\[\s\S]|(?!\1)[\s\S])*\1)*>/g, ""));
                 }
             }
         })
