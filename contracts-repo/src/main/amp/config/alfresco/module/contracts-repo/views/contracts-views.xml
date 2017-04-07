@@ -48,6 +48,7 @@
             <field assoc="contracts:agreementLegalEntity" >
                 <region name="select" template="select-journal" >
                     <param name="journalType">legal-entities</param>
+                    <param name="searchCriteria">[{ attribute: 'idocs:fullOrganizationName', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementLegalEntity.title</param>
