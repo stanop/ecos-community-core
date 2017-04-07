@@ -30,9 +30,7 @@
             <region name="input" template="select"/>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
-        <field prop="pas:pricePerUnit">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </field>
+        <field prop="pas:pricePerUnit" />
         <field assoc="pas:entityUnit">
             <region name="input" template="select"/>
             <invariant on="value-title" language="javascript">

@@ -30,5 +30,18 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
     </type>
-
+    <type name="pas:pasEntityOriginal">
+        <property name="pas:pricePerUnit">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript"
+                       description="invariants.validation.no-more-then-2-after-decimal-point">
+                <![CDATA[(function() {
+                        var valueStr = value.toString(),
+                            index = valueStr ? valueStr.indexOf(".") : -1,
+                            count = index != -1 ? valueStr.length - (index + 1) : 0;
+                        return count <= 2;
+                    })()]]>
+            </invariant>
+        </property>
+    </type>
 </invariants>
