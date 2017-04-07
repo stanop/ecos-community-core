@@ -4497,3 +4497,18 @@ div#HEADER_USER_STATUS {
     display: inline-block;
     height: 20px;
 }
+
+/* template table */
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-label {
+     width: 100%;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-row .template-label {
+    width: 45.5%;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-half-width .template-label,
+.yui-skin-citeckTheme .invariants-form .template-table .template-third-width .template-label {
+     min-height: 36px;
+}
