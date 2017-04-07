@@ -27,7 +27,9 @@
 	}
 
 
-  model.outputPredicates = true;
-  model.settingsControlMode = args.settingsControlMode;
+	fillActions();
+
+	model.outputPredicates = true;
+	model.settingsControlMode = args.settingsControlMode;
 
 })();
