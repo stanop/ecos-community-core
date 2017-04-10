@@ -610,6 +610,7 @@ ko.bindingHandlers.journalControl = {
                     if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
                     
                     result.pagination = config;
+                    loading(_.isUndefined(nudeOptions.pagination));
                     return result;
                 } else {
                     if (!nudeOptions.pagination.hasMore)
