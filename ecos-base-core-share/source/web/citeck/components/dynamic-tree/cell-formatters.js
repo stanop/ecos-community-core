@@ -1559,7 +1559,7 @@
 		// change property to another property if original is not exist
 		replaceable: function(attributeName, formatter, direction) {
 			return function (elCell, oRecord, oColumn, sData) {
-				var anotherAttribute = oRecord.getData("attributes['" + attributeName + "']");
+				var anotherAttribute = oRecord.getData(attributeName);
 
 				if ((direction || sData == undefined) && anotherAttribute) {
 					if (formatter.another)  {
@@ -1572,7 +1572,7 @@
 				}
 
 				if (formatter.original) {
-					formatter.another(elCell, oRecord, oColumn, sData);
+					formatter.original(elCell, oRecord, oColumn, sData);
 					return					
 				}
 
