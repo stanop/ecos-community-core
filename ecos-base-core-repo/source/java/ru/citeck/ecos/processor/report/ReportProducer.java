@@ -123,7 +123,7 @@ public class ReportProducer extends AbstractDataBundleLine {
                                     }
                                 }
 
-                                data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat, ""));
+                                data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
                             }
                         }
 
@@ -139,8 +139,8 @@ public class ReportProducer extends AbstractDataBundleLine {
     }
     
     @SuppressWarnings("rawtypes")
-    private String getFormattedValue(QName property, Object value, String dateFormat, String oldValue) {
-        String res = oldValue;
+    private String getFormattedValue(QName property, Object value, String dateFormat) {
+        String res = "";
 
         if ((dateFormat == null) || (dateFormat.isEmpty())){
             dateFormat = DEFAULT_DATE_FORMAT;
@@ -161,7 +161,11 @@ public class ReportProducer extends AbstractDataBundleLine {
                 res = getLabel(property, (String) value);
             } else if (value instanceof List) {
                 for (Object o : (List) value) {
-                    res = getFormattedValue(property, o, dateFormat, res);
+                    String itemValue = getFormattedValue(property, o, dateFormat);
+                    if (!res.isEmpty() && !itemValue.isEmpty()) {
+                        res += ", ";
+                    }
+                    res += itemValue;
                 }
             } else if (value instanceof Date) {
                 res = sdf.format((Date) value);
