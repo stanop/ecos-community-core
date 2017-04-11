@@ -540,8 +540,8 @@
 		<property name="currencyDAO" ref="currencyDAO"/>
 	</bean>
 
-	<bean id="currencyServiceJS" class="ru.citeck.ecos.currency.CurrencyServiceJSImpl">
-		<property name="extensionName" value="currency"/>
+	<bean id="currencyServiceJS" class="ru.citeck.ecos.currency.CurrencyServiceJSImpl" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="currencyService"/>
 		<property name="currencyService" ref="currencyService"/>
 	</bean>
 
