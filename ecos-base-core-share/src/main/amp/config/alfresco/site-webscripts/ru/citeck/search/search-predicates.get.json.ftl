@@ -1,22 +1,27 @@
 {
     "datatype": "${args.datatype}",
     "predicates": [
-    <#assign searchConfig = config.scoped["Search"]>
-    <#assign predicateList = config.scoped["Search"]["predicate-lists"]/>
-    <#if predicateList??>
-        <#list predicateList.children as predicates>
-            <#list predicates.childrenMap["type"] as type>
-                <#if type.value == args.datatype>
-                    <#list predicates.childrenMap["predicate"] as predicate>
-        {
-            "id": "${predicate.value}",
-            "label": "${msg(predicate.attributes["label"]!"predicate." + predicate.value)}",
-            "needsValue": ${predicate.attributes["needsValue"]!("true")}
-        }<#if predicate_has_next>,</#if>
-                    </#list>
-                </#if>
+        <#assign predicateList = findPredicateList(args.datatype) />
+
+        <#if predicateList??>
+            <#list predicateList.childrenMap["predicate"] as predicate>
+                {
+                    "id": "${predicate.value}",
+                    "label": "${msg(predicate.attributes["label"]!"predicate." + predicate.value)}",
+                    "needsValue": ${predicate.attributes["needsValue"]!("true")}
+                }<#if predicate_has_next>,</#if>
             </#list>
-        </#list>
-    </#if>
+        </#if>
+
     ]
 }
+
+<#function findPredicateList id>
+    <#assign predicateLists = config.scoped["Search"]["predicate-lists"] />
+
+    <#if predicateLists??>
+        <#list predicateLists.childrenMap["predicate-list"] as predicateList>
+            <#list predicateList.childrenMap["type"] as type><#if type.value == id><#return predicateList></#if></#list>
+        </#list>
+    </#if>
+</#function>
