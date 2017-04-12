@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Currency converter script</shortname>
+    <description>Convert amount from one currency to specified</description>
+    <url>/citeck/currency/convert?fromCurrencyRef={fromCurrencyRef}&amp;toCurrencyRef={toCurrencyRef}&amp;amount={amount}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
