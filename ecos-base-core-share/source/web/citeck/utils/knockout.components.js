@@ -514,6 +514,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     if (typeof value == "object") {
                         if (value instanceof Date) return value.toLocaleString();
                         if (isInvariantsObject(value)) return value.name;
+                        if (value.length && attr.labels()) {
+                            var array = value.map(function (item) {
+                                return attr.labels()[item] ? attr.labels()[item] : item;
+                            });
+                            return array.join(", ");
+                        }
                     }
 
                     return value;

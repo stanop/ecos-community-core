@@ -32,6 +32,7 @@
         <field prop="icaseRole:script">
             <region name="input" template="textarea">
                 <param name="height">120px</param>
+                <param name="validation">false</param>
             </region>
         </field>
     </view>

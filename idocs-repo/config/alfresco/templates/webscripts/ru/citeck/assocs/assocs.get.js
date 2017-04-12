@@ -29,7 +29,7 @@
 
     var nodeRef = args['nodeRef'],
         assocTypes = args['assocTypes'],
-        contentTypes = args['contentTypes'] == undefined ? [] : contentTypes.split(','),
+        contentTypes = args['contentTypes'] == undefined ? [] : args['contentTypes'].split(','),
         addAssocs = args['addAssocs']||"true";
 
     if (assocTypes == undefined) assocTypes = "";
