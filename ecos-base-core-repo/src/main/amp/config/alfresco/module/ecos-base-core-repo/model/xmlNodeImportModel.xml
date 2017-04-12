@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="xni:xmlNodeImporterModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>XML to node importer model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/xni/1.0" prefix="xni"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="xni:constraint:status" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>New</value>
+                    <value>Ready</value>
+                    <value>In progress</value>
+                    <value>Complete</value>
+                    <value>Error</value>
+                    <value>Deletion</value>
+                </list>
+            </parameter>
+        </constraint>
+        <constraint name="xni:constraint:prsStatus" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Wait</value>
+                    <value>Executing</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="xni:data">
+            <title>XNI Data</title>
+            <parent>cm:content</parent>
+            <properties>
+                <property name="xni:status">
+                    <title>Status</title>
+                    <type>d:text</type>
+                    <default>New</default>
+                    <constraints>
+                        <constraint ref="xni:constraint:status"/>
+                    </constraints>
+                </property>
+            </properties>
+            <associations>
+                <association name="xni:dependsOn">
+                    <title>Depends on</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>xni:data</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+        <type name="xni:parserStatus">
+            <title>XNI process status</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="xni:prsStatus">
+                    <title>Status</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="xni:constraint:prsStatus"/>
+                    </constraints>
+                </property>
+                <property name="xni:activeParsingDescription">
+                    <title>Active parsing description</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+    </types>
+
+</model>

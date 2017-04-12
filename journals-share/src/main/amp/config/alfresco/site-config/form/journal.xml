@@ -8,7 +8,6 @@
                     <show id="journal:journalType" />
                     <show id="journal:searchCriteria" />
                     <show id="journal:createVariants" />
-                    <show id="cm:modified" />
                 </field-visibility>
                 <appearance>
                     <field id="cm:title" mandatory="true">

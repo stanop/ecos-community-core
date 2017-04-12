@@ -1,5 +1,21 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
+ *
+ * This file is part of Citeck EcoS
+ *
+ * Citeck EcoS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Citeck EcoS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
+ */
  *
  * This file is part of Citeck EcoS
  *
@@ -492,7 +508,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         if (createdInvariants.indexOf(invariant) == -1) {
                             invariants.push(new Invariant(invariant));
                             createdInvariants.push(invariant);
-                        } 
+                        }
                     };
 
                 _.each(this.forcedInvariants(), processInvariant);
@@ -723,6 +739,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
+        .computed('textValidationValue', {
+            read: function() {
+                return this.getValueText(this.value());
+            },
+            write: function(value) {
+                if(value == null || value == "") {
+                    return this.value(null);
+                } else {
+                    return this.value(value.replace(/<(?:[^"'>]+|(["'])(?:\\[\s\S]|(?!\1)[\s\S])*\1)*>/g, ""));
+                }
+            }
+        })
         .computed('title', featuredProperty('title'))
         .computed('description', featuredProperty('description'))
         .computed('multiple', featuredProperty('multiple'))
@@ -894,6 +922,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
+        .method('destroy', function(index, nodeRef) {
+            this.resolve('node.impl.runtime').deleteNode(nodeRef, {
+                success: function(oResponse) {
+                    var result = YAHOO.lang.JSON.parse(oResponse.responseText)
+                    if (result.success) this.remove(index);
+                },
+                scope: this
+            })
+        })
+        .method('push', function(data) {
+            // TODO:
+            // - push object to multipleValue
+        })
         .method('getValueJSON', function(value) {
             if(value == null) return null;
             if(_.isArray(value)) return _.map(value, this.getValueJSON, this);
@@ -962,15 +1003,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var invariantValue = this.invariantValue(),
                 isDraft = this.node().properties["invariants:isDraft"],
                 isView = this.node().impl().inViewMode();
-            
+
             if(invariantValue != null) return invariantValue;
             if(this.changed()) return this.newValue();
-            
-            if(this.persisted()) { 
-                return !this.persistedValue() && isDraft ? this.invariantDefault() : this.persistedValue();
+
+            if(this.persisted()) {
+                if (!isView && isDraft &&
+                    _.isEmpty(this.persistedValue()) &&
+                    !_.isBoolean(this.persistedValue()) &&
+                    !_.isNumber(this.persistedValue())) {
+                    return this.invariantDefault();
+                }
+                return this.persistedValue();
             }
 
-            return isView ? null : this.invariantDefault();    
+            return isView ? null : this.invariantDefault();
         })
         .computed('value', {
             read: function() { return this.convertValue(this.rawValue(), this.multiple()); },
@@ -1037,7 +1084,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         // value title
-        .method('getValueTitle', function(value) { return this.valueTitleEvaluator(this.getInvariantsModel(value)).value; })
+        .method('getValueTitle', function(value, postprocessing) {
+            var value = this.valueTitleEvaluator(this.getInvariantsModel(value)).value;
+            if (postprocessing) { return postprocessing(value);  }
+            return value; 
+        })
         .computed('valueTitle', function() { return this.getValueTitle(this.singleValue()); })
         .shortcut('value-title', 'valueTitle')
 
@@ -1104,21 +1155,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('getBodyEl', function() { return $(".tab-body[data-tab-id=" + this.id() + "]")[0]; })
 
         .init(function() {
-            var tab = $(this.getTitleEl()),
-                body = $(this.getBodyEl());
+            var self = this;
 
             // subscription
             this._visibility.subscribe(function(newValue) {
+                var tab = $(self.getTitleEl()),
+                    body = $(self.getBodyEl());
+
                 if (!!newValue) { tab.show(); body.show(); }
-                else { tab.hide(); body.hide() }
+                else { tab.hide(); body.hide(); }
             });
 
             this._activity.subscribe(function(newValue) {
-                if (!!newValue) { 
-                    tab.attr("data-activity", true); 
+                var tab = $(self.getTitleEl()),
+                    body = $(self.getBodyEl());
+
+                if (!!newValue) {
+                    tab.attr("data-activity", true);
                     body.show();
-                } else { 
-                    tab.attr("data-activity", false).removeClass("selected"); 
+                } else {
+                    tab.attr("data-activity", false).removeClass("selected");
                     body.hide();
                 }
             });
@@ -1127,7 +1183,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this._visibility(this._visibility());
             this._activity(this._activity());
         })
-        ;
+    ;
 
     NodeImpl
         .constructor([Node, Object], function(node, model) {
@@ -1299,13 +1355,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
                 //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
-                //       return this.forcedAttributes().indexOf(attribute) != - 1;  
-                //     }, this)) { 
+                //       return this.forcedAttributes().indexOf(attribute) != - 1;
+                //     }, this)) {
                 //         var remainingAttributes = _.difference(this.forcedAttributes(), this.definedAttributeNames());
                 //         console.log(remainingAttributes);
-                //         _.each(remainingAttributes, processAttributeName); 
+                //         _.each(remainingAttributes, processAttributeName);
                 //     }
-                // }           
+                // }
 
                 return attributes;
             },
@@ -1753,10 +1809,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return false;
         })
 
-        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')      
-        
-        .method('findGroup', function(id) {
+        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
 
+        .method('deleteNode', function(nodeRef, callback) {
+            YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
         })
 
         .method('selectGroup', function(data, event) {
@@ -1786,9 +1842,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 var group = this.node().impl().group(tabId);
 
                 if (this.runtime().loadGroupIndicator() && tabIndex > 0) {
-                    // TODO:
-                    // - bug. infinity loading in first group
-
                     var self = this,
                         indicatorId = tabId + "-loadGroupIndicator", bodyId = $(".tabs-body .tab-body[data-tab-id=" + tabId + "]").attr("id"),
                         buttons = $(".invariants-form .form-buttons");
@@ -1796,8 +1849,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     if (!window[indicatorId]) {
                         buttons.hide();
 
-                        window[indicatorId] = new Citeck.UI.waitIndicator(indicatorId, { 
-                            context: bodyId, 
+                        window[indicatorId] = new Citeck.UI.waitIndicator(indicatorId, {
+                            context: bodyId,
                             backgroundColor: "#f0f0f0"
                         });
 
@@ -1821,7 +1874,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         window[indicatorId].show();
                     }
                 }
-                
+
                 this.runtime().loadGroupInvariants(group);
                 this.runtime().loadGroupAttributes(group);
             }
@@ -1840,13 +1893,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .method('checkGroupAttributes', function(attributes) {
-            return _.every(attributes, function(attribute) { 
-                return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1; 
+            return _.every(attributes, function(attribute) {
+                return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1;
             }, this);
         })
         .method('checkGroupInvariants', function(invariants) {
-            return _.every(invariants, function(invariant) { 
-                return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1; 
+            return _.every(invariants, function(invariant) {
+                return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1;
             }, this);
         })
 
@@ -1897,13 +1950,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .init(function() {
             this._loading(true);
+
+
         })
         ;
 
 
     // performance tuning
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
-    
+
     Attribute.extend('*', rateLimit);
     AttributeInfo.extend('*', rateLimit);
     DDClass.extend('attributes', rateLimit);
@@ -2006,13 +2061,43 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 $(window).resize();
             }
-           
+
             // define attributes from first group as forced
-            if (this.options.model.loadAttributesMethod == "clickOnGroup") { 
+            if (this.options.model.loadAttributesMethod == "clickOnGroup") {
                 this.options.model.invariantSet.forcedInvariants = this.options.model.node.groups[0].invariants;
                 this.options.model.node.forcedAttributes = this.options.model.node.groups[0].attributes;
             }
 
+            // define invariants
+            if ((!this.options.model.invariantSet.forcedInvariants || this.options.model.invariantSet.forcedInvariants.length < 1) && 
+                (!this.options.model.node.classNames || this.options.model.node.classNames.length < 1)) {
+                var invariantsURL = Alfresco.constants.PROXY_URI + "/citeck/invariants";
+                if (this.options.model.node.nodeRef) { invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef; }
+                else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
+                invariantsURL += "&attributes=" + this.options.model.node.forcedAttributes.join(",");
+
+                Alfresco.util.Ajax.jsonGet({
+                    url: invariantsURL,
+                    successCallback: {
+                        scope: this,
+                        fn: function (response) {
+                            this.options.model.invariantSet.forcedInvariants = response.json.invariants;
+                            this.options.model.node.classNames = response.json.classNames;
+
+                            for (var name in response.json.model) {
+                                this.options.model.node.defaultModel[name] = response.json.model[name];
+                            }
+
+                            this.initRuntime();
+                        }
+                    }
+                });
+            } else {
+                this.initRuntime();
+            }
+        },
+
+        initRuntime: function() {
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));

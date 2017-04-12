@@ -1,0 +1,560 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <bean id="idocs.spring.ConcreteBeanPostProcessor" class="ru.citeck.ecos.spring.ConcreteBeanPostProcessor">
+        <property name="configLocations">
+            <list>
+                <value>classpath*:alfresco/module/*/bean-processors.list</value>
+                <value>classpath*:alfresco/extension/bean-processors.list</value>
+            </list>
+        </property>
+    </bean>
+
+    <util:map id="EcoS.PropertyEditors">
+        <entry key="org.alfresco.service.namespace.QName">
+            <bean id="QNamePropertyEditor" class="ru.citeck.ecos.spring.QNamePropertyEditor">
+                <property name="namespaceService" ref="NamespaceService" />
+            </bean>
+        </entry>
+        <entry key="org.alfresco.service.cmr.admin.RepoUsage">
+            <bean id="RepoUsagePropertyEditor" class="ru.citeck.ecos.spring.RepoUsagePropertyEditor" />
+        </entry>
+        <entry key="org.alfresco.service.cmr.repository.NodeRef">
+            <bean id="NodeRefPropertyEditor" class="ru.citeck.ecos.spring.NodeRefPropertyEditor" />
+        </entry>
+        <entry key="java.util.Date">
+            <bean id="DatePropertyEditor" class="ru.citeck.ecos.spring.DatePropertyEditor" />
+        </entry>
+        <entry key="ru.citeck.ecos.utils.LazyNodeRef">
+            <bean id="LazyNodeRefPropertyEditor" class="ru.citeck.ecos.spring.LazyNodeRefPropertyEditor">
+                <property name="nodeServiceName" value="nodeService" />
+                <property name="searchServiceName" value="searchService" />
+                <property name="namespaceServiceName" value="namespaceService" />
+            </bean>
+        </entry>
+    </util:map>
+
+    <bean id="idocs.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="propertyEditorRegistrars">
+            <list>
+                <bean class="ru.citeck.ecos.spring.MapPropertyEditorRegistrar">
+                    <property name="propertyEditors" ref="EcoS.PropertyEditors" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="relatedWorkflowService" class="ru.citeck.ecos.workflow.related.RelatedWorkflowService" parent="baseJavaScriptExtension">
+        <property name="extensionName">
+            <value>relatedWorkflowService</value>
+        </property>
+        <property name="workflowService" ref="WorkflowService" />
+    </bean>
+
+    <!-- protected: used by custom manage-permissions page -->
+    <bean id="scriptPermissionService" class="ru.citeck.ecos.security.ScriptPermissionService" parent="baseJavaScriptExtension">
+        <property name="extensionName">
+            <value>permissionService</value>
+        </property>
+        <property name="services" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="newCommentNotificationService" class="ru.citeck.ecos.notification.NewCommentNotificationService">
+        <property name="authorityService" ref="AuthorityService"/>
+        <property name="notificationService" ref="NotificationService"/>
+        <property name="nodeService" ref="NodeService"/>
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+		<property name="asyncNotification" value="${notification.send.asyncronical}"/>
+    </bean>
+
+    <bean id="scriptCommentService" class="ru.citeck.ecos.notification.ScriptCommentService" parent="baseJavaScriptExtension">
+        <property name="extensionName">
+            <value>scriptCommentService</value>
+        </property>
+        <property name="newCommentNotificationService" ref="newCommentNotificationService"/>
+    </bean>
+
+	<!--==============================================================-->
+	<!--                   Document Processors                        -->
+	<!--==============================================================-->
+
+    <bean id="SelectTemplate" name="dbp.select-template" parent="AbstractDataBundleLine" class="ru.citeck.ecos.processor.SelectTemplate" abstract="true"/>
+
+	<bean id="SupplementaryFilesSplit" name="dbp.split.suppl-files" class="ru.citeck.ecos.processor.SupplementaryFilesSplit"
+		parent="AbstractDataBundleSplit" abstract="true">
+		<property name="dao" ref="supplementaryFilesDAO" />
+	</bean>
+	
+	<!-- overdue notification sender -->
+	<bean id="OverdueNotificationSender"
+		class="ru.citeck.ecos.notification.TaskNotificationSender" parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
+		<property name="defaultTemplate" value="cm:default-expired-notification.html.ftl" />
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+		<property name="notificationType" value="overdue_task"/>
+	</bean>
+
+	<!-- overdue notification sender -->
+	<bean id="OverdueWorkflowNotificationSender"
+		class="ru.citeck.ecos.notification.TaskNotificationSender" parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+		<property name="notificationType" value="overdue_workflow"/>
+	</bean>
+
+    <bean id="confirmConfigService" class="ru.citeck.ecos.confirm.ConfirmConfigService">
+        <property name="recordSeparator" value=","/>
+        <property name="partSeparator" value="|"/>
+        <property name="keyPart" value="user"/>
+        <property name="parts">
+            <list>
+                <value>user</value>
+                <value>versionRef</value>
+                <value>versionLabel</value>
+                <value>decision</value>
+            </list>
+        </property>
+        <property name="allowedDecisions">
+            <list>
+                <value>confirm</value>
+                <value>decline</value>
+            </list>
+        </property>
+    </bean>
+
+	<!-- Constant Makers -->
+	
+	<bean id="ConstantMaker.allow" class="ru.citeck.ecos.security.ConstantMakerAllowImpl">
+		<property name="nodeService" ref="NodeService" />
+		<property name="permissionService" ref="PermissionService" />
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO" />
+	</bean>
+
+	<bean id="ConstantMaker.deny" class="ru.citeck.ecos.security.ConstantMakerDenyImpl">
+		<property name="nodeService" ref="NodeService" />
+		<property name="permissionService" ref="PermissionService" />
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO" />
+	</bean>
+	
+	<alias name="ConstantMaker.${constant-maker.impl}" alias="ConstantMaker" />
+	
+	<bean id="ConstantMakerJS" class="ru.citeck.ecos.security.ConstantMakerJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="constantMaker" />
+		<property name="implementations">
+			<map>
+				<entry key="allow" value-ref="ConstantMaker.allow" />
+				<entry key="deny"  value-ref="ConstantMaker.deny" />
+			</map>
+		</property>	
+		<property name="implId" value="${constant-maker.impl}" />
+	</bean>
+
+	<!-- custom dictionary models processing -->
+	<bean id="alfrescoDictionaryDAO" class="org.alfresco.repo.dictionary.DictionaryDAOImpl">
+		<constructor-arg index="0">
+			<ref bean="namespaceDAO" />
+		</constructor-arg>
+		<property name="tenantService">
+			<ref bean="tenantService"/>
+		</property>
+		<property name="dictionaryRegistryCache">
+			<ref bean="compiledModelsCache"/>
+		</property>
+		<property name="defaultAnalyserResourceBundleName">
+			<value>alfresco/module/idocs-repo/model/dataTypeAnalyzers</value>
+		</property>
+	</bean>
+	
+	<bean id="dictionaryDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="alfrescoDictionaryDAO" />
+		<property name="interceptorNames">
+			<list>
+				<value>AddBigNumberIndexProperties</value>
+				<value>AddAssociationIndexProperties</value>
+				<value>AddDefaultPropertiesTokenisation</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- interceptor, that automatically adds index properties for each big number property -->
+	<bean name="AddBigNumberIndexProperties" class="ru.citeck.ecos.dictionary.AddBigNumberIndexProperties" />
+
+	<!-- interceptor, that automatically adds index properties for each association -->
+	<bean name="AddAssociationIndexProperties" class="ru.citeck.ecos.dictionary.AddAssociationIndexProperties" init-method="init">
+		<property name="registry" ref="AssociationIndexPropertyRegistry" />
+		<property name="acceptedAuthors">
+			<set>
+				<value>citeck</value>
+				<value>Citeck</value>
+			</set>
+		</property>
+		<property name="acceptedAssocs">
+			<set>
+				<value>bpm:package</value>
+				<value>bpm:pooledActors</value>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- interceptor, that automatically adds indexing to properties, that do not have indexing -->
+	<bean name="AddDefaultPropertiesTokenisation" class="ru.citeck.ecos.dictionary.AddDefaultPropertiesTokenisation">
+		<property name="defaultMode" value="BOTH" />
+		<property name="modes">
+			<map value-type="org.alfresco.repo.dictionary.IndexTokenisationMode">
+				<entry key="d:noderef" value="FALSE" />
+				<entry key="d:category" value="FALSE" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="ScriptDictionaryService" class="ru.citeck.ecos.dictionary.DictionaryServiceJSImpl" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="dictionary" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<!-- Counter Services -->
+	<bean name="CounterService" class="ru.citeck.ecos.counter.CounterServiceImpl">
+		<property name="nodeService" ref="NodeService" />
+		<property name="counterRoot" value="workspace://SpacesStore/counter-root" />
+		<property name="jobLockService" ref="jobLockService"/>
+		<property name="transactionService" ref="transactionService"/>
+	</bean>
+	
+	<bean name="EnumerationService" class="ru.citeck.ecos.counter.EnumerationServiceImpl">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+	
+	<bean name="EnumerationServiceJS" class="ru.citeck.ecos.counter.EnumerationServiceJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="enumeration" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="enumerationService" ref="EnumerationService" />
+	</bean>
+	
+	<bean name="abstractNumberFormProcessor" 
+		class="ru.citeck.ecos.form.AbstractNumberFormProcessor" 
+		abstract="true" init-method="register">
+		<property name="processorRegistry" ref="formProcessorRegistry" />
+		<property name="fieldProcessorRegistry" ref="fieldProcessorRegistry" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="nodeInfoFactory" ref="NodeInfoFactory" />
+		<property name="templateNameField" value="template" />
+	</bean>
+	
+	<bean id="nodeNumberFilterRegistry" class="org.alfresco.repo.forms.processor.FilterRegistry" />
+	<bean id="typeNumberFilterRegistry" class="org.alfresco.repo.forms.processor.FilterRegistry" />
+	
+	<bean name="nodeNumberFormProcessor" 
+		class="ru.citeck.ecos.form.NodeNumberFormProcessor"
+		parent="abstractNumberFormProcessor">
+		<property name="matchPattern" value="node-number" />
+		<property name="filterRegistry" ref="nodeNumberFilterRegistry" />
+	</bean>
+	
+	<bean name="typeNumberFormProcessor" 
+		class="ru.citeck.ecos.form.TypeNumberFormProcessor"
+		parent="abstractNumberFormProcessor">
+		<property name="matchPattern" value="type-number" />
+		<property name="filterRegistry" ref="typeNumberFilterRegistry" />
+	</bean>
+
+
+    <bean id="dFileUploadSupportCreateFilter" parent="FileUploadSupportCreateFilter">
+        <property name="filterRegistry" ref="duplicatorFilterRegistry" />
+    </bean>
+    <bean id="dTemplateTypeFormFilter" parent="templateTypeFormFilter">
+        <property name="filterRegistry" ref="duplicatorFilterRegistry" />
+    </bean>
+    <bean id="dChildAssociationsFilesCreateFilter" parent="ChildAssociationsFilesCreateFilter">
+        <property name="filterRegistry" ref="duplicatorFilterRegistry" />
+    </bean>
+
+
+	<!--==============================================================-->
+	<!--                 Supplementary files services                 -->
+	<!--==============================================================-->
+
+	<bean id="supplementaryFilesDAO.assoc"
+			class="ru.citeck.ecos.document.SupplementaryFilesDAOAssocImpl"
+			init-method="init">
+		<property name="nodeService" ref="NodeService" />
+		<property name="namespaceService" ref="NamespaceService" />
+		<property name="assocTypeName" value="dms:agreement_to_files" />
+	</bean>
+	
+	<bean id="supplementaryFilesDAO.child"
+			class="ru.citeck.ecos.document.SupplementaryFilesDAOChildImpl"
+			init-method="init">
+		<property name="nodeService" ref="NodeService" />
+		<property name="namespaceService" ref="NamespaceService" />
+		<property name="assocTypeName" value="dms:supplementaryFiles" />
+		<property name="aspectTypeName" value="dms:hasSupplementaryFiles" />
+	</bean>
+	
+	<alias name="supplementaryFilesDAO.${supplementary-files.impl}" alias="supplementaryFilesDAO" />
+	
+	<bean id="supplementaryFilesMigration"
+			class="ru.citeck.ecos.document.SupplementaryFilesMigration"
+			parent="baseJavaScriptExtension">
+		<property name="extensionName">
+			<value>supplementaryFilesMigration</value>
+		</property>
+		<property name="nodeService" ref="NodeService" />
+		<property name="daos">
+			<map>
+				<entry key="assoc" value-ref="supplementaryFilesDAO.assoc" />
+				<entry key="child" value-ref="supplementaryFilesDAO.child" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="docxFreeMarkerProcessor"
+			parent="baseTemplateProcessor"
+			class="ru.citeck.ecos.template.DocxFreeMarkerProcessor">
+		<property name="processor" ref="freeMarkerProcessor"/>
+		<property name="name" value="wordDocument" />
+		<property name="extension" value="docx" />
+	</bean>
+
+	<bean id="templateFormFilter" class="ru.citeck.ecos.template.TemplateFormFilter"
+			parent="baseFormFilter" abstract="true">
+		<property name="nodeService" ref="NodeService" />
+		<property name="actionService" ref="actionService" />
+	</bean>
+
+	<bean id="contentFromTemplateGenerator" class="ru.citeck.ecos.template.ContentFromTemplateGeneratorImpl">
+		<property name="contentService" ref="ContentService" />
+		<property name="exceptionService" ref="citeckExceptionService" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="templateService" ref="TemplateService" />
+		<property name="versionService" ref="VersionService" />
+		<property name="mimetypeService" ref="mimetypeService" />
+	</bean>
+
+	<bean name="contentFromTemplateGeneratorJS" class="ru.citeck.ecos.template.ContentFromTemplateGeneratorImplJS"
+			parent="baseJavaScriptExtension">
+		<property name="extensionName" value="contentFromTemplate" />
+		<property name="contentFromTemplateGenerator" ref="contentFromTemplateGenerator" />
+	</bean>
+
+	<bean id="templateTypeFormFilter" parent="templateFormFilter">
+		<property name="filterRegistry" ref="typeFilterRegistry" />
+		<property name="createMode" value="true" />
+	</bean>
+
+	<bean id="templateNodeFormFilter" parent="templateFormFilter">
+		<property name="filterRegistry" ref="nodeFilterRegistry" />
+		<property name="createMode" value="false" />
+	</bean>
+
+    <bean id="ConfirmService" class="ru.citeck.ecos.confirm.ConfirmServiceImpl">
+        <property name="authenticationService" ref="AuthenticationService"/>
+        <property name="confirmConfigService" ref="confirmConfigService"/>
+        <property name="namespaceService" ref="NamespaceService" />
+        <property name="nodeService" ref="NodeService"/>
+        <property name="versionService" ref="VersionService"/>
+    </bean>
+
+    <bean id="confirmersList" class="ru.citeck.ecos.confirm.ConfirmersList">
+        <property name="templatePath" value="alfresco/templates/webscripts/ru/citeck/confirm/confirm-list.get.html.ftl"/>
+        <property name="templateService" ref="TemplateService" />
+        <property name="contentService" ref="ContentService" />
+    </bean>
+
+    <bean id="copyToAction" class="ru.citeck.ecos.behavior.common.documentlibrary.CopyToAction" parent="baseJavaScriptExtension">
+        <property name="extensionName">
+            <value>copyToActionService</value>
+        </property>
+        <property name="strategies">
+            <list></list>
+        </property>
+    </bean>
+    
+     <bean id="CardTemplateService" class="ru.citeck.ecos.template.CardTemplateService">
+        <property name="searchService" ref="searchService" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="nodeService" ref="nodeService" />
+     </bean>
+
+    <bean id="scriptOwnerService" parent="baseJavaScriptExtension" class="ru.citeck.ecos.security.NodeOwnerDAO">
+        <property name="extensionName">
+            <value>ownerService</value>
+        </property>
+        <property name="nodeService" ref="nodeService" />
+        <property name="ownableService" ref="ownableService" />
+    </bean>
+
+	<!-- Archive Service -->
+
+	<bean id="citeckArchiveService" class="ru.citeck.ecos.archive.ArchiveServiceImpl" init-method="init" >
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="tenantService" ref="tenantService" />
+		<property name="storesToIgnorePolicies" ref="storesToIgnorePolicies" />
+		<property name="searchService" ref="searchService" />
+		<property name="dictionaryService" ref="dictionaryService" />
+	</bean>
+
+	<bean id="citeckArchiveServiceJS" class="ru.citeck.ecos.archive.ArchiveServiceJSImpl" parent="baseJavaScriptExtension" >
+		<property name="extensionName" value="archiveService" />
+		<property name="archiveService" ref="citeckArchiveService"/>
+	</bean>
+
+    <!-- Exception Service -->
+
+    <bean id="citeckExceptionService"
+            class="ru.citeck.ecos.exception.ExceptionServiceImpl"
+            name="ExceptionService" >
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <!-- History Service -->
+
+    <bean id="historyService" class="ru.citeck.ecos.history.HistoryService" >
+        <property name="nodeService" ref="NodeService"/>
+        <property name="authenticationService" ref="authenticationService"/>
+        <property name="personService" ref="PersonService"/>
+        <property name="searchService" ref="searchService"/>
+        <property name="historyRoot" value="workspace://SpacesStore/history-events-root"/>
+    </bean>
+
+    <bean id="historyServiceJS" class="ru.citeck.ecos.history.HistoryServiceJS" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="historyService"/>
+        <property name="historyService" ref="historyService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
+    <bean id="VersionsCommentFormEditFilter" class="ru.citeck.ecos.template.VersionsCommentFormFilter" parent="baseFormFilter">
+        <property name="filterRegistry" ref="nodeFilterRegistry" />
+        <property name="nodeService" ref="NodeService" />
+        <property name="versionService" ref="VersionService" />
+    </bean>
+
+	<bean id="toolMigrateVersion" parent="baseJavaScriptExtension" class="ru.citeck.ecos.workflow.activiti.ProcessDefinitionMigrateVersion">
+		<property name="extensionName" value="processDefinitionVersion" />
+		<property name="workflowService" ref="WorkflowService" />
+	</bean>
+	
+	<bean id="mailActionExecuterInterceptor" class="ru.citeck.ecos.notification.MailActionExecuterInterceptor">
+		<!--property name="mailService" ref="mailService" /-->
+		<property name="nodeService" ref="NodeService" />
+		<property name="nodeInfoFactory" ref="NodeInfoFactory"/>
+		<property name="authorityService" ref="authorityService"/>
+		<property name="workflowMirrorService" ref="workflowMirrorService"/>
+		<property name="notificationLoggingRoot" value="workspace://SpacesStore/notification-logging-root" />
+		<property name="notificationLoggingAssoc" value="{http://www.alfresco.org/model/content/1.0}contains" />
+		<property name="workflowService" ref="WorkflowService" />
+	</bean>
+	
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>mail</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<idref bean="mailActionExecuterInterceptor" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="NotificationForLoggingItemSender" class="ru.citeck.ecos.notification.NotificationForLoggingItemSender"
+		  parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="ReportWithAttachmentSender" class="ru.citeck.ecos.notification.ReportWithAttachmentSender"
+		  parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<!--bean id="mail" class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="action-executer">
+		<property name="contentService" ref="ContentService" />
+
+        <property name="mailService">
+            <ref bean="mailService"></ref>
+        </property>
+        <property name="nodeService">
+            <ref bean="nodeService"></ref>
+        </property>
+		<property name="templateService">
+			<ref bean="templateService"></ref>
+		</property>
+        <property name="personService">
+            <ref bean="personService"></ref>
+        </property>
+        <property name="authenticationService">
+            <ref bean="authenticationService"></ref>
+        </property>
+        <property name="authorityService">
+            <ref bean="authorityService"></ref>
+        </property>
+        <property name="serviceRegistry">
+            <ref bean="ServiceRegistry"></ref>
+        </property>
+        <property name="headerEncoding">
+            <value>${mail.header}</value>
+        </property>
+        <property name="fromAddress">
+            <value>${mail.from.default}</value>
+        </property>
+        <property name="fromEnabled">
+            <value>${mail.from.enabled}</value>
+        </property>
+        <property name="sysAdminParams">
+            <ref bean="sysAdminParams"></ref>
+        </property>
+        <property name="sendTestMessage">
+            <value>${mail.testmessage.send}</value>
+        </property>
+        <property name="testMessageTo">
+            <value>${mail.testmessage.to}</value>
+        </property>
+        <property name="testMessageSubject">
+            <value>${mail.testmessage.subject}</value>
+        </property>
+        <property name="testMessageText">
+            <value>${mail.testmessage.text}</value>
+        </property>
+	</bean-->
+	
+	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
+		<property name="searchService" ref="searchService" />
+	</bean-->
+
+	<bean id="BusinessCalendarJS" class="ru.citeck.ecos.calendar.BusinessCalendarJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="businessCalendar" />
+		<property name="searchService" ref="searchService" />
+	</bean>
+
+	<bean id="currencyService" class="ru.citeck.ecos.currency.CurrencyServiceImpl">
+		<property name="currencyDAO" ref="currencyDAO"/>
+	</bean>
+
+	<bean id="currencyServiceJS" class="ru.citeck.ecos.currency.CurrencyServiceJSImpl">
+		<property name="extensionName" value="currency"/>
+		<property name="currencyService" ref="currencyService"/>
+	</bean>
+
+	<bean id="currencyDAO" class="ru.citeck.ecos.currency.CurrencyDAO">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="searchService" ref="searchService"/>
+	</bean>
+
+	<bean id="ecos.itemsUpdateState" class="ru.citeck.ecos.state.ItemsUpdateState" />
+
+	<bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
+		<property name="searchService" ref="searchService"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+</beans>

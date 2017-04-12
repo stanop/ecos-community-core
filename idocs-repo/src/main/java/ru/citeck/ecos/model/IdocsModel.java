@@ -68,7 +68,10 @@ public final class IdocsModel {
     public static final QName PROP_ADDRESS_EXTRA_INFO = QName.createQName(IDOCS_NAMESPACE, "addressExtraInfo");
     public static final QName PROP_CURRENCY_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCode");
     public static final QName PROP_CURRENCY_RATE = QName.createQName(IDOCS_NAMESPACE, "currencyRate");
-
+    public static final QName PROP_CURRENCY_NAME_RU = QName.createQName(IDOCS_NAMESPACE, "currencyNameRu");
+    public static final QName PROP_CURRENCY_CATALOG_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCatalogCode");
+    public static final QName PROP_DIADOC_BOX_ID = QName.createQName(IDOCS_NAMESPACE, "diadocBoxId");
+    public static final QName PROP_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "contractor");
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
     public static final QName ASSOC_ACCOUNTANT_GENERAL = QName.createQName(IDOCS_NAMESPACE, "accountantGeneral");

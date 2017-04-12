@@ -67,7 +67,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
         
         ByteArrayOutputStream os = getExcelReportStream(getTemplate(), model);
         InputStream excelIS = null;
-        if (os != null) {
+		if (os != null) {
 			excelIS = new ByteArrayInputStream(os.toByteArray());
 			IOUtils.closeQuietly(os);
 		}
@@ -78,7 +78,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     @SuppressWarnings("unchecked")
 	private ByteArrayOutputStream getExcelReportStream(String template, Map<String, Object> model) {
 		InputStream is = null;
-	    try {
+		try {
 			is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + template);
 			Workbook wb = WorkbookFactory.create(is);
 			
@@ -127,7 +127,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
-		
+
 		return null;
 	}
     
@@ -208,7 +208,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 						}
 	    				j++;
 	    			}
-	    			
+
 	    			if (i == 19) 
 	    				autoSizeColumns(sheet);
 	    			
@@ -262,7 +262,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 				newValue = currentValue + "\n" + value;
 	    	else
 	    		newValue = value;
-	    	
+
 	    	cell.setCellValue(newValue);
     	}
     }

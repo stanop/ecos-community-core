@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -37,30 +37,69 @@ var Event = YAHOO.util.Event,
 // HELP
 // ---------------
 
+YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
+    var el = this,
+        procIds = [ "showProcId", "hideProcId" ];
+
+    if (obj._tempTitle) {
+        el.title = obj._tempTitle;
+        obj._tempTitle = null;
+    }
+
+    for (var p = 0; p < procIds.length; procIds++) {
+        if (obj[procIds[p]]) {
+            clearTimeout(obj[procIds[p]]);
+            obj[procIds[p]] = null; 
+        }
+    }
+
+    obj.fireEvent("contextMouseOut", el, e);
+
+    if (!obj.cfg.getProperty("forceVisible")) {
+        obj.hideProcId = setTimeout(function () { obj.hide(); }, obj.cfg.getProperty("hidedelay"));
+    }
+};
+
+// TODO:
+// - init tooltip only if text not empty
+
 ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
+        var self = this;
+
+        if (!this.tooltip) {
+            this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                showDelay: 250,
+                hideDelay: 250,
+                xyoffset: [5, 0],
+                autodismissdelay: 10000,
+                context: [ this.id ]
+            });
+
+            this.tooltip.cfg.addProperty("forceVisible", { value: false });
+            this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+
+            if (this.text()) { this.tooltip.cfg.setProperty("text", this.text()); }
+        }
+
+        this.tooltip.contextMouseOverEvent.subscribe(function() {
+            var parent = $("#" + self.id).closest(".yui-panel-container"),
+                zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+            self.tooltip.cfg.setProperty("zIndex", zindex);
+        });
 
         this.text.subscribe(function(newValue) {
-            if (newValue) {
-                if (!this.tooltip) {
-                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
-                        showDelay: 500,
-                        hideDelay: 250,
-                        xyoffset: [0, 0],
-                        autodismissdelay: 10000
-                    });
-
-                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
-                }
-            
-                this.tooltip.cfg.setProperty("text", newValue);
-                this.tooltip.cfg.setProperty("context", this.id);
-            }
+            if (newValue) this.tooltip.cfg.setProperty("text", newValue);
+            this.tooltip.cfg.setProperty("disabled", !newValue);
         }, this);
+
+        this.onclick = function(data, event) {
+            data.tooltip.cfg.setProperty("forceVisible",  !data.tooltip.cfg.getProperty("forceVisible"));
+        };
     },
     template:
-       '<span data-bind="attr: { id: id }, if: text">?</span>'
+       '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
 });
 
 // ---------------
@@ -215,7 +254,7 @@ ko.components.register("free-content", {
         this.content = ko.computed(function() {
             var result = self.func();
             if (result instanceof HTMLElement) return result.outerHTML;
-            if (result instanceof String) return result;
+            if (typeof result == "string") return result;
 
             throw Error('Parameter "func" should return a String or an HTMLElement');
             return null;
@@ -327,9 +366,9 @@ ko.components.register("datetime", {
 
                         selectedDate.setHours(nowDate.getHours());
                         selectedDate.setMinutes(nowDate.getMinutes());
-
                         self.value(selectedDate);
                     }
+
                     calendarDialog.hide();
                 });
 
@@ -340,14 +379,16 @@ ko.components.register("datetime", {
         };
 
         this.textValue = ko.pureComputed({
-            read: function() { return self.value() ? self.value().toLocaleString() : null },
+            read: function() {
+                return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
+            },
             write: function(newValue) {
-                if (newValue) {
-                    if (/\d{2}.\d{2}.\d{2,4}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
+                if (newValue) {                   
+                    if (/\d{2,4}-\d{2}-\d{2}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
                         var timeArray = newValue.split(/, | /);
                         timeArray[0] = timeArray[0].split(".").reverse().join("/");
 
-                        var newDate = new Date(timeArray.join(", "));
+                        var newDate = new Date(timeArray.join("T"));
                         if (newDate != "Invalid Date") {
                             self.value(newDate);
                             return;
@@ -388,7 +429,7 @@ ko.components.register("datetime", {
             <input type="datetime-local" data-bind="value: dateValue, disable: disabled" />\
         <!-- /ko -->\
         <!-- ko ifnot: Citeck.HTML5.supportInput("datetime-local") -->\
-            <input type="text" data-bind="value: textValue, disable: disabled" />\
+            <input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
             <!-- ko if: disabled -->\
                 <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
             <!-- /ko -->\
@@ -570,101 +611,6 @@ ko.bindingHandlers.journalControl = {
     var criteria = ko.observable([]);
     if (defaultCriteria) criteria(defaultCriteria);
 
-    var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
-        loading = ko.observable(true), criteriaListShow = ko.observable(false), 
-        searchBar = params.searchBar ? params.searchBar == "true" : true,
-        mode = params.mode, dockMode = params.dock ? "dock" : "",
-        pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-        additionalOptions = ko.observable([]), options = ko.computed(function(page) {
-            var actualCriteria = criteria();
-            if (hiddenCriteria) {
-                for (var hc in hiddenCriteria) {
-                    if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
-                        actualCriteria.push(hiddenCriteria[hc]);
-                }
-            }
-
-            var nudeOptions = data.filterOptions(actualCriteria, {
-                    maxItems: maxItems(), 
-                    skipCount: skipCount(), 
-                    searchScript: searchScript,
-                    sortBy: sortBy
-                }),
-                config = nudeOptions.pagination,
-                result;
-      
-            var tempAdditionalOptions = additionalOptions();
-            _.each(additionalOptions(), function(o) {
-                if (_.contains(nudeOptions, o)) {
-                    var index = tempAdditionalOptions.indexOf(o);
-                    tempAdditionalOptions.splice(index, 1);
-                }
-            });
-            additionalOptions(tempAdditionalOptions);
-
-            if (additionalOptions().length > 0) {
-                if (nudeOptions.length < maxItems()) {
-                    result = _.union(nudeOptions, additionalOptions());
-
-                    if (result.length > maxItems()) result = result.slice(0, maxItems());
-                    if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
-                    
-                    result.pagination = config;
-                    loading(_.isUndefined(nudeOptions.pagination));
-                    return result;
-                } else {
-                    if (!nudeOptions.pagination.hasMore)
-                        nudeOptions.pagination.hasMore = true;
-                }
-            }
-
-            loading(_.isUndefined(nudeOptions.pagination));
-            return nudeOptions;
-        });
-
-    // reset page after new search
-    criteria.subscribe(function(newValue) { pageNumber(1); });
-
-    // show loading indicator if page was changed
-    pageNumber.subscribe(function(newValue) { loading(true); })
-
-    // extend notify
-    criteria.extend({ notify: 'notifyWhenChangesStop' });
-    pageNumber.extend({ notify: 'always' });
-    options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
-
-    var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
-    if (!journalType) { /* so, it is fail */ }
-
-    // get default criteria
-    var defaultCriteria = ko.computed(function() {
-        if (defaultSearchableAttributes) return journalType.attributes();
-        return journalType.defaultAttributes();
-    });
-
-    // add default criteria to selectedFilterCriteria
-    koutils.subscribeOnce(ko.computed(function() {
-        selectedFilterCriteria.removeAll();
-        var dc = defaultCriteria();
-
-        if (defaultSearchableAttributes) {
-            var validAttributes = [];
-            for (var i = 0; i < dc.length; i++) {
-                if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
-            }
-            dc = validAttributes;
-        }
-
-        if (dc) {
-            for (var i in dc) {
-                var newCriterion = _.clone(dc[i]);
-                newCriterion.value = ko.observable();
-                newCriterion.predicateValue = ko.observable();
-                selectedFilterCriteria.push(newCriterion);
-            }
-        }
-    }), defaultCriteria.dispose);
-
     var submitButtonId           = panelId + "-submitInput",
         cancelButtonId           = panelId + "-cancelInput",
         elementsTabId            = panelId + "-elementsTab",
@@ -685,8 +631,121 @@ ko.bindingHandlers.journalControl = {
         event.preventDefault();
 
         if (!panel) {
+            var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
+                loading = ko.observable(true), criteriaListShow = ko.observable(false), 
+                searchBar = params.searchBar ? params.searchBar == "true" : true,
+                mode = params.mode, dockMode = params.dock ? "dock" : "",
+                pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
+                additionalOptions = ko.observable([]), options = ko.computed(function(page) {
+                    var actualCriteria = criteria();
+                    if (hiddenCriteria) {
+                        for (var hc in hiddenCriteria) {
+                            if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
+                                actualCriteria.push(hiddenCriteria[hc]);
+                        }
+                    }
+
+                    var nudeOptions = data.filterOptions(actualCriteria, {
+                            maxItems: maxItems(), 
+                            skipCount: skipCount(), 
+                            searchScript: searchScript,
+                            sortBy: sortBy
+                        }),
+                        config = nudeOptions.pagination,
+                        result;
+              
+                    var tempAdditionalOptions = additionalOptions();
+                    _.each(additionalOptions(), function(o) {
+                        if (_.contains(nudeOptions, o)) {
+                            var index = tempAdditionalOptions.indexOf(o);
+                            tempAdditionalOptions.splice(index, 1);
+                        }
+                    });
+                    additionalOptions(tempAdditionalOptions);
+
+                    if (additionalOptions().length > 0) {
+                        if (nudeOptions.length < maxItems()) {
+                            result = _.union(nudeOptions, additionalOptions());
+
+                            if (result.length > maxItems()) result = result.slice(0, maxItems());
+                            if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                            
+                            result.pagination = config;
+                            loading(_.isUndefined(nudeOptions.pagination));
+                            return result;
+                        } else {
+                            if (!nudeOptions.pagination.hasMore)
+                                nudeOptions.pagination.hasMore = true;
+                        }
+                    }
+
+                    loading(_.isUndefined(nudeOptions.pagination));
+                    return nudeOptions;
+                });
+
+            // reset page after new search
+            criteria.subscribe(function(newValue) { pageNumber(1); });
+
+            // show loading indicator if page was changed
+            pageNumber.subscribe(function(newValue) { loading(true); });
+
+            // extend notify
+            criteria.extend({ notify: 'notifyWhenChangesStop' });
+            pageNumber.extend({ notify: 'always' });
+            options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
+
+            var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+            if (!journalType) { /* so, it is fail */ }
+
+            // get default criteria
+            var defaultCriteria = ko.computed(function() {
+                if (defaultSearchableAttributes) return journalType.attributes();
+                return journalType.defaultAttributes();
+            });
+
+            // add default criteria to selectedFilterCriteria
+            koutils.subscribeOnce(ko.computed(function() {
+                selectedFilterCriteria.removeAll();
+                var dc = defaultCriteria();
+
+                if (defaultSearchableAttributes) {
+                    var validAttributes = [];
+                    for (var i = 0; i < dc.length; i++) {
+                        if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
+                    }
+                    dc = validAttributes;
+                }
+
+                if (dc) {
+                    for (var i in dc) {
+                        var newCriterion = _.clone(dc[i]);
+                        newCriterion.value = ko.observable();
+                        newCriterion.predicateValue = ko.observable();
+                        selectedFilterCriteria.push(newCriterion);
+                    }
+                }
+            }), defaultCriteria.dispose);
+
+            var optimalWidth = (function() {
+                var maxContainerWidth = screen.width - 200,
+                    countOfAttributes = (function() {
+                        if (defaultVisibleAttributes) return defaultVisibleAttributes.length;
+                        if (journalType.defaultAttributes()) return journalType.defaultAttributes().length;
+                    })();
+
+                if (countOfAttributes > 5) {
+                    var potentialWidth = 150 * countOfAttributes;
+                    return (potentialWidth >= maxContainerWidth ? maxContainerWidth : potentialWidth) + "px";
+                }
+
+                return "800px";
+            })();
+
+        event.stopPropagation();
+        event.preventDefault();
+
             panel = new YAHOO.widget.Panel(panelId, {
-                width:          "800px", 
+                width:          optimalWidth,
                 visible:        false, 
                 fixedcenter:    true,  
                 draggable:      true,
@@ -694,6 +753,13 @@ ko.bindingHandlers.journalControl = {
                 zindex:         5,
                 close:          true
             });
+
+            // hide dialog on click 'esc' button
+            panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
+                fn: panel.hide,
+                scope: panel,
+                correctScope: true
+            }));
 
             panel.setHeader(localization.title || 'Journal Picker');
             panel.setBody('\
@@ -1017,10 +1083,19 @@ ko.bindingHandlers.journalControl = {
             }, Dom.get(journalPickerHeaderId));
 
             if (value()) selectedElements(multiple() ? value() : [ value() ]);
-        }
-        
-        panel.show();
-    })
+
+            if (value()) selectedElements(multiple() ? value() : [ value() ]);
+
+
+            if (!Citeck.mobile.isMobileDevice()) {
+                YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
+                    var itemsCount = args[1].mobileMode ? 5 : 10;
+                    if (itemsCount != maxItems()) { 
+                        pageNumber(1);
+                        maxItems(itemsCount);
+                    };
+                });
+            }
 
     if (!Citeck.mobile.isMobileDevice()) {
         YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
@@ -1032,17 +1107,21 @@ ko.bindingHandlers.journalControl = {
         });
     }
 
-    // reload filterOptions request if was created new object
-    YAHOO.Bubbling.on("object-was-created", function(layer, args) {
-        if (args[1].fieldId == data.name()) {
-            if (args[1].value) {
-                additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
-                selectedElements.push(args[1].value); 
-            }
-            
-            criteria(_.clone(criteria()));
+            // reload filterOptions request if was created new object
+            YAHOO.Bubbling.on("object-was-created", function(layer, args) {
+                if (args[1].fieldId == data.name()) {
+                    if (args[1].value) {
+                        additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
+                        selectedElements.push(args[1].value); 
+                    }
+                    
+                    criteria(_.clone(criteria()));
+                }
+            });
         }
-    });
+        
+        panel.show();
+    })
   }
 }
 
@@ -1443,6 +1522,221 @@ ko.components.register("autocomplete", {
         <!-- /ko -->'
 });
 
+// ---------------
+// SELECT 2
+// ---------------
+
+ko.components.register("select2", {
+    viewModel: function(params) {
+        var self = this;
+        kocomponents.initializeParameters.call(this, params);
+
+        this.labels = {
+            label: Alfresco.util.message("autocomplete.label"),
+            help: Alfresco.util.message("autocomplete.help"),
+            empty: Alfresco.util.message("autocomplete.empty"),
+            more: Alfresco.util.message("autocomplete.more")
+        }
+
+        if (this.forceOptions) {
+            this.forceOptions = this.forceOptions();
+            this.forceOptions.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
+        }
+
+        // private methods
+        this.optionTitle = function(option) {
+            if (self.optionsText) return self.optionsText(option);
+            return self.getValueTitle(option);
+        };
+
+        // observables
+        this.containerVisibility = ko.observable(false);
+        this.highlightedElement = ko.observable();
+        this.searchQuery = ko.observable();
+
+        this.componentFocused = ko.observable(false);
+        this.searchFocused = ko.observable(true);
+
+        this.hasMore = ko.observable(false);
+        this.count = ko.observable(this.step);
+
+        // computed
+        this.label = ko.pureComputed(function() {
+            return self.value() ?
+                   self.getValueTitle(self.value())() :
+                   self.labels.label;
+        });
+
+        this.visibleOptions = ko.pureComputed(function() {
+            var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
+
+            if (self.searchQuery()) {
+                preparedOptions = _.filter(preparedOptions, function(option) {
+                    var searchString = self.searchQuery().toLowerCase(),
+                        labelString  = self.optionTitle(option)();
+
+                    if (labelString) {
+                        labelString = labelString.toLowerCase();
+                        switch (self.searchPredicat) {
+                            case "startsWith":
+                                return labelString.startsWith(searchString);
+
+                            case "contains":
+                                return labelString.indexOf(searchString) != -1;
+                        }
+                    }
+
+                    return false;
+                });
+            }
+
+            if (self.count() < preparedOptions.length) {
+                self.hasMore(true);
+                return preparedOptions.slice(0, self.count());
+            }
+
+            self.hasMore(false);
+            return preparedOptions;
+        });
+
+        // extends
+        this.searchQuery.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
+
+        // subscription and events
+        this.containerVisibility.subscribe(function() { self.searchFocused(true); });
+        this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        this.searchQuery.subscribe(function() { self.count(self.step); });
+
+        // public methods
+        this.clear = function(data, event) { if (event.which == 1) self.value(null) };
+        this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
+
+        this.selectItem = function(data, event) {
+            if (event.which == 1) {
+                if (self.optionsValue) {
+                    var optionValue = self.optionsValue(data);
+                    self.value(optionValue());
+                } else { self.value(data);  }    // put item to value
+                self.containerVisibility(false); // close container after select item
+                self.highlightedElement(data);   // highlight the selected item
+            }
+        };
+
+        this.keyAction = function(data, event) {
+            if ([9, 13, 27, 38, 40].indexOf(event.keyCode) != -1) {
+                // apply element for value
+                if (event.keyCode == 9 || event.keyCode == 13) {
+                    self.value(self.highlightedElement());
+                }
+
+                // close container
+                if (event.keyCode == 9 || event.keyCode == 13 || event.keyCode == 27) {
+                    self.containerVisibility(false); // close container after select item
+                    self.componentFocused(true);     // restore focus on component
+                }
+
+                // move selection
+                if (event.keyCode == 38 || event.keyCode == 40) {
+                    var selectedIndex = self.options().indexOf(self.highlightedElement()),
+                        nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
+
+                    if (selectedIndex != -1 && self.options()[nextSelectIndex]) {
+                        self.highlightedElement(self.options()[nextSelectIndex]); // highlight next or previous item
+                    };
+                }
+
+                return false;
+            }
+
+            return true;
+        };
+
+        this.keyManagment = function(data, event) {
+            if ([40, 46].indexOf(event.keyCode) != -1) {
+                // open container if 'down'
+                if (event.keyCode == 40) self.containerVisibility(true);
+
+                // clear if 'delete'
+                if (event.keyCode == 46) self.value(null);
+
+                return false;
+            }
+
+            return true;
+        };
+
+        this.more = function(element, data) {
+            self.count(self.count() + self.step);
+        };
+
+        // blur
+        $("body").click(function(event, a) {
+            var node = event.target, body = document.getElementById("Share");
+
+            while (node != body) {
+                if (node == self.element) return;
+                node = node.parentNode;
+            }
+
+            self.containerVisibility(false);
+        });
+    },
+    template:
+       '<!-- ko if: disabled -->\
+            <div class="select2-select disabled" tabindex="0">\
+                <span class="select2-value" data-bind="text: label"></span>\
+                <div class="select2-twister"></div>\
+            </div>\
+        <!-- /ko -->\
+        <!-- ko ifnot: disabled -->\
+            <div class="select2-select" tabindex="0"\
+                data-bind="\
+                    event: { mousedown: toggleContainer, keydown: keyManagment }, mousedownBubble: false,\
+                    css: { opened: containerVisibility },\
+                    hasFocus: componentFocused">\
+                <span class="select2-value" data-bind="text: label"></span>\
+                <!-- ko if: value -->\
+                    <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
+                <!-- /ko -->\
+                <div class="select2-twister"></div>\
+            </div>\
+        <!-- /ko -->\
+        <!-- ko if: containerVisibility -->\
+            <div class="select2-container">\
+                <div class="select2-search-container">\
+                    <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
+                        <div class="help-message" data-bind="text: labels.help"></div>\
+                    <!-- /ko -->\
+                    <input type="text" class="select2-search" data-bind="\
+                        textInput: searchQuery,\
+                        event: { keydown: keyAction },\
+                        keydownBubble: false,\
+                        attr: { placeholder: labels.help },\
+                        hasFocus: searchFocused">\
+                </div>\
+                <!-- ko if: visibleOptions -->\
+                    <!-- ko if: visibleOptions().length > 0 -->\
+                        <ul class="select2-list" data-bind="foreach: visibleOptions">\
+                            <li data-bind="\
+                                event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
+                                css: { selected: $parent.highlightedElement() == $data }">\
+                                <a data-bind="text: $component.optionTitle($data)"></a>\
+                            </li>\
+                        </ul>\
+                    <!-- /ko -->\
+                    <!-- ko if: visibleOptions().length == 0 -->\
+                        <span class="select2-message empty-message" data-bind="text: labels.empty"></span>\
+                    <!-- /ko -->\
+                <!-- /ko -->\
+                <!-- ko if: hasMore -->\
+                    <div class="select2-more">\
+                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    </div>\
+                <!-- /ko -->\
+            </div>\
+        <!-- /ko -->'
+});
+
 
 // -----------
 // FILE UPLOAD
@@ -1452,7 +1746,7 @@ ko.bindingHandlers.fileUploadControl = {
     init: function(element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
-            
+            multiple = settings.multiple,
             type = settings.type,
             properties = settings.properties;
 
@@ -1469,10 +1763,6 @@ ko.bindingHandlers.fileUploadControl = {
         var input = Dom.get(element.id + "-fileInput"),
             openFileUploadDialogButton = Dom.get(element.id + "-openFileUploadDialogButton");
 
-        // global variables
-        var lastUploadedFiles = [];
-
-
         // click on input[file] button
         Event.on(openFileUploadDialogButton, 'click', function(event) {
             $(input).click();
@@ -1480,51 +1770,32 @@ ko.bindingHandlers.fileUploadControl = {
 
         // get files from input[file]
         Event.on(input, 'change', function(event) {
-            var files = event.target.files;
+            var files = event.target.files,
+                loadedFiles = ko.observable(0);
 
-            // uploaded files library
-            var uploadedFiles = ko.observableArray();
-            uploadedFiles.subscribe(function(array) {
-                if (files.length > 0 && files.length == array.length) {
-
-                    // delete old nodes
-                    if (lastUploadedFiles.length > 0 && array != lastUploadedFiles) {
-                        for (var i in lastUploadedFiles) {
-                            deleteNode(lastUploadedFiles[i])
-                        }
-                    }
-
-                    value(array);
-
-                    // set last uploaded files
-                    lastUploadedFiles = array;
-                }
-            })
-
-            if (files.length == 0 || files != lastUploadedFiles) {
-                value(null);
-                uploadedFiles.removeAll();
+            if (files.length === 0) {
+                return;
             }
+
+            loadedFiles.subscribe(function(newValue) {
+                if (newValue == files.length) {
+                    // enable button
+                    $(element).removeClass("loading");
+                    $(openFileUploadDialogButton).removeAttr("disabled");
+                }
+            });
+            // disable upload button
+            $(element).addClass("loading");
+            $(openFileUploadDialogButton).attr("disabled", "disabled");
 
             for (var i = 0; i < files.length; i++) {
                 var request = new XMLHttpRequest();
 
                 (function(file){
-                    // loading started
-                    request.addEventListener("loadstart", function(event) {
-                        $(element).addClass("loading");
-                        $(openFileUploadDialogButton).attr("disabled", "disabled");  
-                    }, false);
-
-                    // loading progress
-                    // request.addEventListener("progress", function(event) {
-                    //     var percent = Math.round((event.loaded * 100) / event.total);
-                    //     console.log("progress", percent);
-                    // }, false);
-
                     // loading failure.
                     request.addEventListener("error", function(event) {
                         console.log("loaded failure")
+                        loadedFiles(loadedFiles() + 1);
                     }, false);
                     
                     // request finished
@@ -1535,16 +1806,22 @@ ko.bindingHandlers.fileUploadControl = {
                             
                             if (target.status == 200) {
                                 // push new file to uploaded files library
-                                uploadedFiles.push(result.nodeRef);
+                                if (multiple()) {
+                                    var currentValues = value();
+                                    currentValues.push(result.nodeRef);
+                                    value(currentValues);
+                                } else {
+                                    //TODO: remove previous node if parent == attachments-root?
+                                    value(result.nodeRef);
+                                }
                             }
 
                             if (target.status == 500) {
                                 Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: result.message });
                             }
-                        }
 
-                        $(element).removeClass("loading");
-                        $(openFileUploadDialogButton).removeAttr("disabled");
+                            loadedFiles(loadedFiles() + 1);
+                        }
                     }, false)
                 })(files[i])
 
@@ -1587,8 +1864,13 @@ ko.bindingHandlers.orgstructControl = {
         // default option
         var options = {
             allowedAuthorityType: "USER",
-            allowedGroupType: ""
-        }
+            allowedGroupType: "",
+            rootGroup: ko.observable("_orgstruct_home_")
+        };
+
+        // from fake model option
+        if (data.allowedAuthorityType && data.allowedAuthorityType())
+            options.allowedAuthorityType = data.allowedAuthorityType();
 
         // from fake model option
         if (data.allowedAuthorityType && data.allowedAuthorityType())
@@ -1603,9 +1885,14 @@ ko.bindingHandlers.orgstructControl = {
             orgstructPanelId = element.id + "-orgstructPanel", orgstructPanel, resize,
             tree, selectedItems;
 
-        // concat default and new options
-        if (params) Citeck.utils.concatOptions(options, params);
+        var rootGroupFunction;
+        if (!params.rootGroup && params.rootGroupFunction && _.isFunction(params.rootGroupFunction)) {
+            rootGroupFunction = ko.computed(params.rootGroupFunction);
+            rootGroupFunction.subscribe(function (newValue) { options.rootGroup(newValue) });
+        }
 
+        // concat default and new options
+        if (params) concatOptionsWithObservable(options, params);
 
         Event.on(showVariantsButton, "click", function(event) {
             event.stopPropagation();
@@ -1685,6 +1972,11 @@ ko.bindingHandlers.orgstructControl = {
                         YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
                             success: function (oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                                if (params && params.excludeFields) {
+                                    results = results.filter(function(item) {
+                                        return item.shortName.indexOf(params.excludeFields) == -1;
+                                    });
+                                }
 
                                 if (results) {
                                     for (var i = 0; i < results.length; i++) {
@@ -1713,7 +2005,7 @@ ko.bindingHandlers.orgstructControl = {
                     },
 
                     loadRootNodes: function(tree, scope, query) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl("_orgstruct_home_", query), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query), {
                             success: function(oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText), 
                                     rootNode = tree.getRoot(), treeNode,
@@ -1735,7 +2027,11 @@ ko.bindingHandlers.orgstructControl = {
                             },
 
                             failure: function(oResponse) {
-                                // error
+                                //draw empty tree, if group not found
+                                if (oResponse.status == 404) {
+                                    tree.removeChildren(tree.getRoot());
+                                    tree.draw();
+                                }
                             },
 
                             scope: tree.fn
@@ -1789,7 +2085,7 @@ ko.bindingHandlers.orgstructControl = {
 
                         $("li.selected-object", this.selectedItems).each(function() {
                             existsSelectedItems.push(this.id);
-                        })
+                        });
 
                         // return if element exists
                         if (existsSelectedItems.indexOf(textNode.data.nodeRef) != -1) return false; 
@@ -1841,7 +2137,7 @@ ko.bindingHandlers.orgstructControl = {
                             }
                         }
                     }
-                }
+                };
 
                  // initialise treeView
                 tree.setDynamicLoad(tree.fn.loadNodeData);
@@ -1862,6 +2158,10 @@ ko.bindingHandlers.orgstructControl = {
                     updatedControlValue(newValue, selectedItems, tree);
                 });
 
+                // update tree after change rootGroup
+                options.rootGroup.subscribe(function(newValue) {
+                    tree.fn.loadRootNodes(tree, tree);
+                });
 
                 // second panel delete listener
                 Event.addListener(secondPanel, "click", function(event) {
@@ -2095,6 +2395,21 @@ function sortingCreateVariants(variants) {
     if (defaultVariantIndex) {
         defaultVariant = variants.splice(defaultVariantIndex, 1);
         variants.splice(0, 0, defaultVariant[0]);
+    }
+}
+
+function concatOptionsWithObservable(defaultOptions, newOptions) {
+    for (var key in newOptions) {
+        var newValue = newOptions[key],
+            oldValue = defaultOptions[key];
+
+        if (newValue && newValue != oldValue) {
+            if (ko.isObservable(oldValue)) {
+                if (oldValue() != newValue) defaultOptions[key](newOptions[key]);
+            } else {
+               defaultOptions[key] = newOptions[key];
+            }
+        }
     }
 }
 

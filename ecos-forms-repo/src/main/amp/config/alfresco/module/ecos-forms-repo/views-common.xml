@@ -14,10 +14,12 @@
 	<!-- transmitting view mode -->
 	
 	<views mode="create">
+		<param name="preloadInvariants">true</param>
 		<views any="true" mode="create" />
 	</views>
 	
 	<views mode="edit">
+		<param name="preloadInvariants">true</param>
 		<views any="true" mode="edit" />
 	</views>
 	

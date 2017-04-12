@@ -222,7 +222,9 @@ public class JavaScriptImplUtils {
                 return new NodeRef(strAuthority);
             }
             NodeRef authorityRef = authorityService.getAuthorityNodeRef(strAuthority);
-            if (authorityRef == null) {
+            if (authorityRef != null) {
+                return authorityRef;
+            } else {
                 throw new IllegalArgumentException("Authority with name '" + strAuthority + "' not found!");
             }
         }

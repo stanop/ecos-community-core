@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="pass:pass" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Passport in iDocs</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+		<import uri="http://www.citeck.ru/model/constraints/1.0" prefix="constraints" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/passport/1.0"
+				prefix="pass" />
+		<namespace uri="http://www.citeck.ru/model/privacy/1.0"
+				prefix="privacy" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="pass:constraint:numbersOnly" type="REGEX">
+			<parameter name="expression">
+				<value>^\d+$</value>
+			</parameter>
+			<parameter name="requiresMatch">
+				<value>true</value>
+			</parameter>
+		</constraint>
+		<constraint name="pass:constraint:consent" type="ru.citeck.ecos.constraints.common.PassportConsentConstraint" />
+	</constraints>
+
+	<types>
+		<type name="pass:passport" >
+			<title>Документ удостоверяющий личность</title>
+			<parent>cm:content</parent>
+			<properties>
+				<property name="pass:series">
+					<title>Серия</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="pass:number">
+					<title>Номер</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<constraints>
+						<constraint ref="pass:constraint:numbersOnly"/>
+					</constraints>
+				</property>
+				<property name="pass:issueDate">
+					<title>Дата выдачи</title>
+					<type>d:date</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="pass:issuingAuthority">
+					<title>Кем выдан паспорт</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="pass:subdivisionCode">
+					<title>Код подразделения</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="pass:info">
+					<title>Данные</title>
+					<type>d:text</type>
+				</property>
+			</properties>
+			<associations>
+				<association name="pass:person">
+					<title>Пользователь</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>cm:person</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>pass:passportType</aspect>
+				<aspect>privacy:consentMandatory</aspect>
+			</mandatory-aspects>
+		</type>
+	</types>
+	
+	<aspects>
+	
+		<aspect name="pass:passportType">
+			<parent>tk:documentTypeKind</parent>
+			<overrides>
+				<property name="tk:type">
+					<default>workspace://SpacesStore/idocs-cat-doctype-passport</default>
+				</property>
+				<property name="tk:kind">
+					<mandatory>true</mandatory>
+					<default>workspace://SpacesStore/idocs-cat-dockind-passport-rus</default>
+				</property>
+			</overrides>
+		</aspect>
+	
+		<aspect name="privacy:consent">
+			<properties>
+				<property name="privacy:consent">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+	
+		<aspect name="privacy:consentMandatory">
+			<parent>privacy:consent</parent>
+			<overrides>
+				<property name="privacy:consent">
+					<constraints>
+						<constraint ref="pass:constraint:consent" />
+					</constraints>
+				</property>
+			</overrides>
+		</aspect>
+	
+	</aspects>
+
+</model>

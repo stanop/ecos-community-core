@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy"/>
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+    </imports>
+
+    <view class="idocs:organizationInfo">
+        <field prop="idocs:fullOrganizationName"/>
+        <field prop="idocs:shortOrganizationName"/>
+        <field prop="idocs:contractorType">
+            <region name="input" template="checkbox" />
+        </field>
+    </view>
+
+    <view class="idocs:publicRegInfo">
+        <field prop="idocs:inn"/>
+        <field prop="idocs:kpp"/>
+        <field prop="idocs:okpo"/>
+        <field prop="idocs:ogrn"/>
+        <field prop="idocs:bill"/>
+    </view>
+
+    <view class="idocs:entityInfo">
+        <field assoc="idocs:generalDirector"/>
+        <field assoc="idocs:accountantGeneral"/>
+        <field prop="idocs:juridicalAddress"/>
+        <field prop="idocs:postAddress"/>
+        <field prop="idocs:phoneNumber"/>
+    </view>
+
+    <view class="idocs:contractor" template="tabs">
+        <views mode="create" kind="3-column"/>
+        <views mode="edit" kind="3-column"/>
+
+    <view id="contractor-mainTab">
+        <param name="title">tab.main</param>
+
+        <view class="idocs:organizationInfo"/>
+        <view>
+            <field prop="idocs:juridicalAddress"/>
+            <field prop="idocs:postAddress"/>
+        </view>
+        <view>
+            <field prop="idocs:inn">
+                <invariant on="mandatory" language="explicit">true</invariant>
+                <invariant on="valid" language="javascript" description="Некорректный ИНН/ЕГРПОУ">
+                    (function() {
+                    var flag = value.match(/^\d*$/) ? true : false;
+                    if (flag &amp;&amp; (value.length == 8 || value.length == 10 || value.length == 12)) {
+                    return true;
+                    }
+                    return false;
+                    })()
+                </invariant>
+            </field>
+            <field prop="idocs:kpp"/>
+        </view>
+        <view>
+            <field prop="idocs:phone"/>
+            <field prop="idocs:fax"/>
+            <field prop="idocs:email"/>
+        </view>
+        <view>
+            <!-- Temporarily hidden field (no controls exists for it yet) -->
+            <!--<field assoc="idocs:contacts">
+                <region name="input" template="view" />
+                <region name="select" template="select-orgstruct" />
+            </field>-->
+            <field prop="idocs:CEOname"/>
+            <field prop="idocs:nameInGenitiveCase"/>
+            <field prop="idocs:diadocBoxId"/>
+        </view>
+    </view>
+
+    <view id="contractor-bankDetailsTab">
+        <param name="title">tab.bankDetails</param>
+
+        <view>
+            <field prop="idocs:bankTitle"/>
+            <field prop="idocs:bankTitleEng"/>
+            <field prop="idocs:bankId"/>
+        </view>
+        <view>
+            <field prop="idocs:accountNumber"/>
+            <field prop="idocs:swift"/>
+            <field prop="idocs:currencyEnabled"/>
+        </view>
+        <view>
+            <field prop="idocs:corresponentBankTitle"/>
+            <field prop="idocs:correspondentBankId"/>
+            <field prop="idocs:corresponentAccountNumber"/>
+        </view>
+    </view>
+
+    </view>
+
+    <view class="idocs:legalEntity">
+        <views mode="create" kind="3-column"/>
+        <views mode="edit" kind="3-column"/>
+        <view>
+            <field prop="idocs:fullOrganizationName"/>
+            <field prop="idocs:shortOrganizationName"/>
+            <field prop="idocs:engOrganizationName"/>
+        </view>
+        <view>
+            <field prop="idocs:juridicalAddress"/>
+            <field prop="idocs:postAddress"/>
+            <field prop="idocs:okpo"/>
+        </view>
+        <view>
+            <field prop="idocs:inn"/>
+            <field prop="idocs:kpp"/>
+            <field prop="idocs:ogrn"/>
+        </view>
+        <view>
+            <field assoc="idocs:generalDirector"/>
+            <field assoc="idocs:accountantGeneral"/>
+            <field prop="idocs:phoneNumber"/>
+        </view>
+    </view>
+
+    <view class="idocs:doc">
+        <views mode="create" kind="2-column"/>
+        <views mode="edit" kind="2-column"/>
+        <view>
+            <field prop="cm:name"/>
+            <field prop="cm:title"/>
+        </view>
+        <view>
+            <field prop="tk:type">
+                <region name="select" template="select-journal">
+                    <param name="journalType">original-location</param>
+                </region>
+            </field>
+            <field prop="tk:kind">
+                <region name="select" template="select-journal">
+                    <param name="journalType">original-location</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field assoc="idocs:legalEntity">
+                <region name="input" template="view"/>
+                <region name="select" template="select-journal">
+                    <param name="journalType">legal-entities</param>
+                </region>
+            </field>
+        </view>
+        <view>
+            <field prop="idocs:registrationNumber"/>
+            <field prop="idocs:registrationDate"/>
+        </view>
+        <view id="summary" kind="1-column">
+            <field prop="idocs:summary">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+                <region name="label" template="label">
+                    <param name="key">idocs_idocsModel.property.idocs_summary.title</param>
+                </region>
+            </field>
+        </view>
+        <view id="note" kind="1-column">
+            <field prop="idocs:note">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+                <region name="label" template="label">
+                    <param name="key">idocs_idocsModel.property.idocs_note.title</param>
+                </region>
+            </field>
+        </view>
+        <field prop="cm:content"/>
+    </view>
+
+    <view class="idocs:bankAccount">
+        <field prop="idocs:currencyEnabled"/>
+        <field assoc="idocs:legalEntity">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">legal-entities</param>
+            </region>
+        </field>
+        <field prop="idocs:bankTitle"/>
+        <field prop="idocs:bankTitleEng"/>
+        <field prop="idocs:bankId"/>
+        <field prop="idocs:accountNumber"/>
+        <field prop="idocs:swift"/>
+        <field prop="idocs:corresponentBankTitle"/>
+        <field prop="idocs:correspondentBankId"/>
+        <field prop="idocs:corresponentAccountNumber"/>
+    </view>
+
+    <view class="deputy:absenceReason">
+        <field prop="deputy:reason"/>
+    </view>
+
+    <view class="deputy:absenceEvent">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:comment"/>
+        <field assoc="deputy:user">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <!-- <field assoc="deputy:reasonOfAbsence">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
+            </region>
+        </field> -->
+    </view>
+
+    <view class="deputy:absenceEvent" id="currentUserAbsence">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:comment"/>
+        <field assoc="deputy:user">
+            <invariant on="value" language="javascript">
+                person
+            </invariant>
+        </field>
+        <!-- <field assoc="deputy:reasonOfAbsence">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">reasons-absence</param>
+                <param name="mode">alfresco</param>
+            </region>
+        </field> -->
+    </view>
+
+    <view class="deputy:selfAbsenceEvent">
+        <field prop="deputy:startAbsence"/>
+        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:autoAnswer"/>
+        <field assoc="deputy:user">
+            <invariant on="value" language="javascript">
+                person
+            </invariant>
+        </field>
+    </view>
+
+    <view class="idocs:legalForm">
+        <field prop="idocs:legalFormName"/>
+        <field prop="idocs:legalFormDescription"/>
+    </view>
+
+    <view class="idocs:personAttorney">
+        <field assoc="idocs:fullName"/>
+        <field prop="idocs:numberPass"/>
+        <field prop="idocs:whoIssuedPass"/>
+        <field prop="idocs:passIssueDate"/>
+    </view>
+
+    <view class="idocs:filesNomenclature">
+        <views mode="create" kind="1-column"/>
+        <views mode="edit" kind="1-column"/>
+
+        <field prop="idocs:fileIndex"/>
+        <field prop="idocs:fileName"/>
+        <field prop="idocs:fileYear"/>
+        <field prop="idocs:clauseNumber"/>
+    </view>
+
+    <view class="idocs:countryISO3166">
+        <field prop="cm:title"/>
+        <field prop="idocs:countryISO3166Alpha2"/>
+        <field prop="idocs:countryISO3166Alpha3"/>
+        <field prop="idocs:countryISO3166Number"/>
+    </view>
+
+</views>

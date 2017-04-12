@@ -4,17 +4,18 @@ define(["dojo/dom-class"], function(domClass) {
     visibilityByWindowSizeEventSubscription: function(elementId, size, execudeAfterDOMReady) {
       if (elementId && size) {
         var minWidth = size.minWidth || 0,
-            maxWidth = size.maxWidth || screen.width,
-            self = this;
-
+            maxWidth, self = this;
+        
         window.addEventListener("resize", function(event) {
-          self.visibilityByWindowSize(elementId, minWidth, maxWidth);
+            maxWidth = (size.maxWidth || window.innerWidth);
+            self.visibilityByWindowSize(elementId, minWidth, maxWidth);
         });
 
         if (execudeAfterDOMReady) {
           var readyStateCheckInterval = setInterval(function() {
             if (document.readyState === "complete") {
                 clearInterval(readyStateCheckInterval);
+                maxWidth = (size.maxWidth || window.innerWidth);
                 self.visibilityByWindowSize(elementId, minWidth, maxWidth);
             }
           }, 10);

@@ -25,8 +25,6 @@ import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.deputy.AvailabilityService;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
@@ -63,17 +61,14 @@ class NotAvailableTaskNotificationSender extends DelegateTaskNotificationSender 
 
     private AvailabilityService availabilityService;
 
-    private static Log logger = LogFactory.getLog(NotAvailableTaskNotificationSender.class);
-
     @Override
     public void sendNotification(DelegateTask task) {
         NotificationContext notificationContext = new NotificationContext();
         NodeRef template = getNotificationTemplate(task);
-        if(template == null || nodeService.exists(template)) {
-            logger.warn("Template not found or removed. NodeRef: " + template);
-            return;
+        if (template != null && nodeService.exists(template)) {
+            setBodyTemplate(notificationContext, template);
         }
-        setBodyTemplate(notificationContext, template);
+
         Map<String, Serializable> argsMap = getNotificationArgs(task);
         Map<String, String> answerByUnavailableUser = new HashMap<>();
         Map<String, ScriptNode> assigneesNodesByName = new HashMap<>();

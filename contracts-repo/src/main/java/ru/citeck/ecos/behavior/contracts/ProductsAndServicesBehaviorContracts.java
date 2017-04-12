@@ -51,7 +51,10 @@ import java.util.Objects;
  * @author Roman.Makarskiy on 04.04.2016.
  */
 public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies.OnCreateNodePolicy,
-        NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy {
+        NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnDeleteAssociationPolicy,
+        NodeServicePolicies.OnCreateAssociationPolicy {
+
+    private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
 
     private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
 
@@ -94,19 +97,25 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
                 new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
         this.policyComponent.bindClassBehaviour(
-                NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
+                NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
                 QName.createQName(namespace, type),
-                new JavaBehaviour(this, "beforeDeleteNode", Behaviour.NotificationFrequency.EVERY_EVENT)
+                new JavaBehaviour(this, "onDeleteAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                QName.createQName(namespace, type),
+                new JavaBehaviour(this, "onCreateAssociation", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
     }
 
     @Override
-    public void beforeDeleteNode(NodeRef nodeRef) {
-        if (!nodeService.exists(nodeRef)) {
+    public void onDeleteAssociation(AssociationRef associationRef) {
+        NodeRef pasEntityRef = associationRef.getSourceRef();
+        if (!nodeService.exists(pasEntityRef)) {
             return;
         }
-        updateTotalAmountInDocument(nodeRef, PaymentsModel.TYPE, PaymentsModel.PROP_PAYMENT_AMOUNT);
-        updateTotalAmountInDocument(nodeRef, ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
+        updateTotalAmountInDocument(pasEntityRef, PaymentsModel.TYPE, PaymentsModel.PROP_PAYMENT_AMOUNT);
+        updateTotalAmountInDocument(pasEntityRef, ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
                 ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
     }
 
@@ -130,6 +139,17 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         updateTotalAmountInDocument(nodeRef, ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
                 ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
 
+    }
+
+    @Override
+    public void onCreateAssociation(AssociationRef associationRef) {
+        NodeRef documentRef = associationRef.getSourceRef();
+        if (!nodeService.exists(documentRef)) {
+            return;
+        }
+        updateTotalAmountInDocument(documentRef, PaymentsModel.TYPE, PaymentsModel.PROP_PAYMENT_AMOUNT);
+        updateTotalAmountInDocument(documentRef, ContractsModel.TYPE_CONTRACTS_CLOSING_DOCUMENT,
+                ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
     }
 
     private BigDecimal getTotalAmount(NodeRef nodeRef) {

@@ -54,6 +54,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BatchEdit }
+     * 
+     */
+    public BatchEdit createBatchEdit() {
+        return new BatchEdit();
+    }
+
+    /**
      * Create an instance of {@link Header }
      * 
      */
@@ -67,6 +75,14 @@ public class ObjectFactory {
      */
     public Option createOption() {
         return new Option();
+    }
+
+    /**
+     * Create an instance of {@link Evaluator }
+     * 
+     */
+    public Evaluator createEvaluator() {
+        return new Evaluator();
     }
 
     /**

@@ -57,6 +57,12 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         return JavaScriptImplUtils.wrapNodes(activities, this);
     }
 
+    public ScriptNode getActivityByTitle(Object nodeRef, String title) {
+        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
+        NodeRef activity = caseActivityService.getActivityByTitle(nRef, title);
+        return JavaScriptImplUtils.wrapNode(activity, this);
+    }
+
     public ScriptNode getDocument(Object nodeRef) {
         NodeRef ref = JavaScriptImplUtils.getNodeRef(nodeRef);
         NodeRef parent = caseActivityService.getDocument(ref);
@@ -86,8 +92,12 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         caseActivityService.setIndex(JavaScriptImplUtils.getNodeRef(activityRef), index);
     }
 
-    public boolean hasActiveChildren(Object activityRef) {
-        return caseActivityService.hasActiveChildren(JavaScriptImplUtils.getNodeRef(activityRef));
+    public boolean hasActiveChildren(Object activity) {
+        return caseActivityService.hasActiveChildren(JavaScriptImplUtils.getNodeRef(activity));
+    }
+
+    public boolean isActive(Object activity) {
+        return caseActivityService.isActive(JavaScriptImplUtils.getNodeRef(activity));
     }
 
 

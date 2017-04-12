@@ -47,10 +47,10 @@
         </property>
     </bean>
 
-    <!--<bean id="idocs.module-component.script.add-case-status-aspect" parent="idocs.import-scripts.2-12-0">-->
-        <!--<property name="name" value="add-case-status-aspect" />-->
-        <!--<property name="description" value="Add caseStatus to old cases" />-->
-        <!--<property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-case-status-aspect.js"/>-->
-    <!--</bean>-->
+    <bean id="idocs.module-component.script.add-case-status-aspect" parent="idocs.import-scripts.2-12-0">
+        <property name="name" value="add-case-status-aspect" />
+        <property name="description" value="Add caseStatus to old cases" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/add-case-status-aspect.js"/>
+    </bean>
 
 </beans>

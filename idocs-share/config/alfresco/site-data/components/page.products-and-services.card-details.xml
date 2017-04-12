@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>products-and-services</region-id>
+    <url>/citeck/components/document-children</url>
+    <properties>
+        <nodeRef>{nodeRef}</nodeRef>
+        <destination>{nodeRef}</destination>
+        <header>header.products-and-services</header>
+        <contentType>pas:pasEntityCopied</contentType>
+        <assocType>pas:containsProductsAndServices</assocType>
+        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef={nodeRef}&amp;assocTypes=pas:containsProductsAndServices&amp;addAssocs=false"
+        </childrenUrl>
+        <columns>
+            [
+                {key: 'attributes["pas:order"]', label: Alfresco.util.message("products-and-services.table.header.order")},
+                {key: 'attributes["cm:title"]', label: Alfresco.util.message("products-and-services.table.header.order-line")},
+                <!--{key: 'attributes["pas:type"]', label: Alfresco.util.message("products-and-services.table.header.type")},-->
+                {key: 'attributes["pas:pricePerUnit"]', label: Alfresco.util.message("products-and-services.table.header.pricePerUnit")},
+                {key: 'attributes["pas:quantity"]', label: Alfresco.util.message("products-and-services.table.header.quantity")},
+                {key: 'attributes["pas:total"]', label: Alfresco.util.message("products-and-services.table.header.total")},
+                <!--{key: 'attributes["pas:entityUnit"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit"), formatter: Citeck.format.node()},-->
+                {key: 'attributes["pas:entityUnit"][0]["displayName"]', label: Alfresco.util.message("products-and-services.table.header.entitytUnit")},
+                {key: 'attributes["pas:currency"][0]["displayName"]', label: Alfresco.util.message("products-and-services.table.header.currency")},
+                {key: 'actions', label: Alfresco.util.message("products-and-services.table.header.actions"), formatter: Citeck.format.actions('products-and-services', 'nodeRef')}
+            ]
+        </columns>
+        <responseSchema>
+            {resultsList: 'targets', fields: [
+                {key: 'attributes["pas:order"]'},
+                {key: 'attributes["cm:title"]'},
+                {key: 'attributes["pas:type"]'},
+                {key: 'attributes["pas:pricePerUnit"]'},
+                {key: 'attributes["pas:quantity"]'},
+                {key: 'attributes["pas:total"]'},
+                {key: 'attributes["pas:entityUnit"][0]["displayName"]'},
+                {key: 'attributes["pas:currency"][0]["displayName"]'},
+                {key: 'nodeRef'}
+            ]}
+        </responseSchema>
+        <buttonsInHeader>onPanelButtonAssocsAdd, onPanelButtonDeleteAllAssoc</buttonsInHeader>
+        <twisterKey></twisterKey>
+        <destination>{nodeRef}</destination>
+        <assocType>pas:containsProductsAndServices</assocType>
+        <preloadSearchQuery>*</preloadSearchQuery>
+        <preloadSearchQueryEveryTime>true</preloadSearchQueryEveryTime>
+        <addAssocScript>/citeck/add-pas-assocs</addAssocScript>
+        <searchURL>Alfresco.constants.PROXY_URI + "citeck/search/simple?type=pas:pasEntityOriginal&amp;property=cm:title&amp;properties=cm:title&amp;replaceColon=_&amp;value=[[query]]"</searchURL>
+        <searchURLresults>nodes</searchURLresults>
+        <itemTitle>[[title]]</itemTitle>
+        <twisterKey>stages</twisterKey>
+    </properties>
+</component>

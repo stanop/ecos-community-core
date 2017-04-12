@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+    <view:reference view:pathref="cm:journals">
+        <cm:contains>
+            <journal:journal view:childName="journal:users-absence-events">
+                <view:properties>
+                    <sys:node-uuid>users-absence-events-journal</sys:node-uuid>
+                    <cm:name>users-absence-events</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.absence-events}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.absence-events}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalType>users-absence-events</journal:journalType>
+                </view:properties>
+                <journal:searchCriteria>
+                    <journal:criterion view:childName="journal:type">
+                        <view:properties>
+                            <journal:fieldQName>type</journal:fieldQName>
+                            <journal:predicate>type-equals</journal:predicate>
+                            <journal:criterionValue>{http://www.citeck.ru/model/deputy/1.0}selfAbsenceEvent</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                    <journal:criterion view:childName="journal:criterion-user">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/deputy/1.0}user</journal:fieldQName>
+                            <journal:predicate>assoc-contains</journal:predicate>
+                            <journal:criterionValue><![CDATA[#{person.nodeRef}]]></journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                    <journal:criterion view:childName="journal:criterion-absence-end">
+                        <view:properties>
+                            <journal:fieldQName>{http://www.citeck.ru/model/deputy/1.0}endAbsence</journal:fieldQName>
+                            <journal:predicate>date-greater-or-equal</journal:predicate>
+                            <journal:criterionValue>#{.now?datetime?iso_local}</journal:criterionValue>
+                        </view:properties>
+                    </journal:criterion>
+                </journal:searchCriteria>
+                <journal:createVariants>
+                    <journal:createVariant>
+                        <view:properties>
+                            <cm:name>default</cm:name>
+                            <cm:title>
+                                <view:mlvalue view:locale="en_US">${journal.absence-events.create-variant.title}
+                                </view:mlvalue>
+                                <view:mlvalue view:locale="ru_RU">${journal.absence-events.create-variant.title}
+                                </view:mlvalue>
+                            </cm:title>
+                            <journal:type>{http://www.citeck.ru/model/deputy/1.0}selfAbsenceEvent</journal:type>
+                            <journal:formId></journal:formId>
+                        </view:properties>
+                        <view:associations>
+                            <journal:destination>
+                                <view:reference view:pathref="/app:company_home/app:dictionary/cm:absence-events"/>
+                            </journal:destination>
+                        </view:associations>
+                    </journal:createVariant>
+                </journal:createVariants>
+            </journal:journal>
+        </cm:contains>
+    </view:reference>
+
+    <view:reference view:pathref="cm:journalLists">
+        <cm:contains>
+            <journal:journalsList view:childName="cm:global-absence">
+                <view:properties>
+                    <sys:node-uuid>journal-meta-l-absence-events</sys:node-uuid>
+                    <cm:name>global-absence</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.absence-events}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.absence-events}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+                <view:associations>
+                    <journal:journals>
+                        <view:reference view:pathref="cm:journals/journal:users-absence-events"/>
+                    </journal:journals>
+                </view:associations>
+            </journal:journalsList>
+        </cm:contains>
+    </view:reference>
+
+</view:view>

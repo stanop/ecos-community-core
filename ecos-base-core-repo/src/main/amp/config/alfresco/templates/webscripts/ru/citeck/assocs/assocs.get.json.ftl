@@ -15,18 +15,17 @@
                 "isContent": "${source.isContent}",
                 "typeDirect": "sources",
                 "title": "${source.title}",
-				"attributes": {
-                <#if source.source.properties??>
-                    <@search.propertiesJSON source.source.properties/>
-                </#if>
-                <#if source.source.associations??>
-                    <#if (source.source.associations?size > 0 && source.source.properties?? && source.source.properties?size > 0)>
-                        ,
+                "attributes": {
+                    <#if source.source.properties??>
+                        <@search.propertiesJSON source.source.properties/>
                     </#if>
-                        <@search.associationsJSON source.source.associations/>
-                </#if>
-				}
-
+                    <#if source.source.associations??>
+                        <#if (source.source.associations?size > 0 && source.source.properties?? && source.source.properties?size > 0)>
+                            ,
+                        </#if>
+                            <@search.associationsJSON source.source.associations/>
+                    </#if>
+                }
             }<#if source_has_next>,</#if>
             </#list>
         ],
@@ -38,17 +37,17 @@
                 "isContent": "${target.isContent}",
                 "typeDirect": "targets",
                 "title": "${target.title}",
-				"attributes": {
-                <#if target.target.properties??>
-                    <@search.propertiesJSON target.target.properties/>
-                </#if>
-                <#if target.target.associations??>
-                    <#if (target.target.associations?size > 0 && target.target.properties?? && target.target.properties?size > 0)>
-                        ,
+                "attributes": {
+                    <#if target.target.properties??>
+                        <@search.propertiesJSON target.target.properties />
                     </#if>
-                        <@search.associationsJSON target.target.associations/>
-                </#if>
-				}
+                    <#if target.target.associations??>
+                        <#if (target.target.associations?size > 0 && target.target.properties?? && target.target.properties?size > 0)>
+                            ,
+                        </#if>
+                            <@search.associationsJSON target.target.associations/>
+                    </#if>
+                }
             }<#if target_has_next>,</#if>
             </#list>
         ],
@@ -61,15 +60,15 @@
                 "typeDirect": "children",
                 "title": "${child.title}",
                 "attributes": {
-                <#if child.child.properties??>
-                    <@search.propertiesJSON child.child.properties/>
-                </#if>
-                <#if child.child.associations??>
-                    <#if (child.child.associations?size > 0 && child.child.properties?? && child.child.properties?size > 0)>
-                        ,
+                    <#if child.child.properties??>
+                        <@search.propertiesJSON child.child.properties/>
                     </#if>
-                        <@search.associationsJSON child.child.associations/>
-                </#if>
+                    <#if child.child.associations??>
+                        <#if (child.child.associations?size > 0 && child.child.properties?? && child.child.properties?size > 0)>
+                            ,
+                        </#if>
+                            <@search.associationsJSON child.child.associations/>
+                    </#if>
                 }
             }<#if child_has_next>,</#if>
             </#list>

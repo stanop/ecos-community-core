@@ -16,14 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals'],
-       function(jq, koutils, Journals) {
+define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'lib/knockout'],
+       function(jq, koutils, Journals, ko) {
 
 var PopupManager = Alfresco.util.PopupManager,
 	koclass = koutils.koclass,
 	JournalsWidget = koclass('JournalsWidget'),
 	JournalsPage = koclass('JournalsPage', JournalsWidget),
-	Record = koclass('Record');
+	Record = koclass('Record'),
+   	msg = Alfresco.util.message,
+	Dom = YAHOO.util.Dom;
 
 JournalsPage
 	// load filter method
@@ -55,22 +57,26 @@ JournalsPage
 
 	// actions support
 	.method('executeAction', function(action) {
-		var vms = this.selectedRecords(), 
+		var vms = this.selectedRecords(),
 			records = [];
-		for(var i in vms) {
-			var vm = vms[i],
-				loaded = vm.doclib.loaded(),
-				record = vm.doclib();
-			if(record) {
-				records.push(record);
-			} else if(!loaded) {
-				koutils.subscribeOnce(vm.doclib, _.partial(this.executeAction, action), this);
-				return;
-			} else {
-				throw new Error("doclib actions can be executed only on doclib nodes");
+		if (action.isDoclib()) {
+			for(var i in vms) {
+				var vm = vms[i],
+					loaded = vm.doclib.loaded(),
+					record = vm.doclib();
+				if(record) {
+					records.push(record);
+				} else if(!loaded) {
+					koutils.subscribeOnce(vm.doclib, _.partial(this.executeAction, action), this);
+					return;
+				} else {
+					throw new Error("doclib actions can be executed only on doclib nodes");
+				}
 			}
+		} else {
+			records = vms;
 		}
-		this.actionsRuntime[action.id()](records);
+		this.actionsRuntime[action.func()](records, action);
 	})
 
 	// add user interaction for save and remove methods:
@@ -244,15 +250,220 @@ YAHOO.extend(JournalsPageWidget, Journals, {
 _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 
 	// override for deleting multiple records
-	onActionDelete: function(doclib) {
-		if(_.isArray(doclib)) {
-			this.viewModel.removeRecords(_.map(doclib, function(doclib) {
-				return new Record(doclib.nodeRef);
-			}));
+	onActionDelete: function(record) {
+		if(_.isArray(record)) {
+			this.viewModel.removeRecords(record);
 		} else {
-			this.viewModel.removeRecord(new Record(doclib.nodeRef));
+			this.viewModel.removeRecord(record);
 		}
 	},
+
+	onBatchEdit: function(records, action) {
+
+		var editStatus = {}, ref;
+
+		var defaultValueMapping = {
+			"boolean": false,
+			"text": "",
+			"int": 0,
+			"double": 0,
+			"long": 0,
+			"float": 0,
+			"association": null,
+			"mltext": ""
+		};
+
+		var id = Alfresco.util.generateDomId();
+		var attribute = action.attribute();
+		var datatype = attribute.datatype().name();
+		var editValue = ko.observable(defaultValueMapping[datatype]);
+		var journalsPage = this;
+
+		var confirmPopup = function(text, onYes, onNo) {
+			Alfresco.util.PopupManager.displayPrompt({
+				title: Alfresco.util.message("message.confirm.title"),
+				text: text,
+				noEscape: true,
+				buttons: [
+					{
+						text: msg("actions.button.ok"),
+						handler: onYes
+					},
+					{
+						text: msg("actions.button.cancel"),
+						handler: onNo,
+						isDefault: true
+					}]
+			});
+		};
+
+		var setStatus = function (record, status) {
+			var recordAttributes = record.attributes();
+			editStatus[record.nodeRef()] = {
+				status: status,
+				title: recordAttributes["cm:title"] || recordAttributes["cm:name"]
+			};
+		};
+
+		var showResults = function (response) {
+			var panel = new YAHOO.widget.Panel(id + "-results-panel", {
+				width: "40em",
+				fixedcenter: YAHOO.env.ua.mobile === null ? "contained" : false,
+				constraintoviewport: true,
+				underlay: "shadow",
+				close: true,
+				modal: true,
+				visible: true,
+				draggable: true,
+				postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
+				hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
+				fireHideShowEvents: true
+			});
+
+			panel.setHeader("Batch edit results");
+
+			for (ref in editStatus) {
+				if (editStatus[ref].status == "PENDING") {
+					editStatus[ref].status = ((response || {})[ref] || {})[attribute.name()] || "RESPONSE_ERR";
+				}
+			}
+
+			var body = '<table>';
+			for (ref in editStatus) {
+				body += '<tr><td>' + editStatus[ref].title + '</td><td>' + editStatus[ref].status + '</td></tr>';
+			}
+			body += '</table>';
+			body += '<input id="' + id + '-close-results-btn" type="button" value="'+msg("button.ok")+'" />';
+
+			panel.setBody(body);
+			panel.render(document.body);
+
+			Dom.get(id + '-close-results-btn').onclick = function () {
+				panel.destroy();
+			}
+		};
+
+		var processRecords = function (records) {
+
+			var nodes = _.map(records, function(r) {return r.nodeRef();});
+			var attributes = {};
+			attributes[attribute.name()] = editValue();
+
+			Alfresco.util.Ajax.jsonPost({
+				url: Alfresco.constants.PROXY_URI + "api/journals/batch-edit",
+				dataObj: {
+					"nodes": nodes,
+					"attributes": attributes
+				},
+				successCallback: {
+					scope: this,
+					fn: function(response) {
+						journalsPage.viewModel.performSearch();
+						panel.destroy();
+						showResults(response.json);
+					}
+				},
+				failureCallback: {
+					scope: this,
+					fn: function(response) {
+						Alfresco.util.PopupManager.displayMessage({
+							text: msg("message.failure") + ':' + response.json.message,
+							displayTime: 4
+						});
+					}
+				}
+			});
+		};
+
+		var onSubmit = function () {
+			var filterByConfirmChange = function(records, idx, result, callback) {
+				if (idx >= records.length) {
+					callback(result);
+					return;
+				}
+				var recordAttributes = records[idx].attributes();
+				var value = recordAttributes[attribute.name()];
+				if (value) {
+					var fieldTitle = attribute.displayName();
+					var documentTitle = recordAttributes["cm:title"] || recordAttributes["cm:name"];
+					confirmPopup("В документе '" + documentTitle + "' значение поля '"
+								 + fieldTitle + "' равно '" + value
+								 + "'. Желаете его заменить?", function() {
+						this.destroy();
+						result.push(records[idx]);
+						filterByConfirmChange(records, idx + 1, result, callback);
+					}, function () {
+						this.destroy();
+						setStatus(records[idx], "CANCELLED");
+						filterByConfirmChange(records, idx + 1, result, callback);
+					})
+				} else {
+					result.push(records[idx]);
+					filterByConfirmChange(records, idx + 1, result, callback);
+				}
+				return result;
+			};
+
+			if (datatype != "association" || editValue() != null) {
+				if (action.settings().confirmChange == "true") {
+					filterByConfirmChange(records, 0, [], processRecords);
+				} else {
+					processRecords(records);
+				}
+			}
+		};
+
+		var panel = new YAHOO.widget.Panel(id, {
+			width: "40em",
+			fixedcenter: YAHOO.env.ua.mobile === null ? "contained" : false,
+			constraintoviewport: true,
+			underlay: "shadow",
+			close: true,
+			modal: true,
+			visible: true,
+			draggable: true,
+			postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
+			hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
+			fireHideShowEvents: true
+		});
+
+		panel.setHeader("Batch edit");
+
+		var body =
+			'<div id="batch-edit-div">' +
+				'<span>' + action.attribute().displayName() + '</span>' +
+				'<!-- ko component: { name: "filter-criterion-value", params: {\
+					fieldId: fieldId,\
+					datatype: action.attribute().datatype().name(),\
+					value: value,\
+					attribute: action.attribute\
+				}} --><!-- /ko -->' +
+				'<div class="form-buttons">'+
+					'<input id="' + id + '-form-submit" type="button" value="'+msg("button.send")+'" />' +
+					'<input id="' + id + '-form-cancel" type="button" value="'+msg("button.cancel")+'" />' +
+				'</div>' +
+			'</div>';
+
+		panel.setBody(body);
+		panel.render(document.body);
+		ko.applyBindings({
+			"action": action,
+			"fieldId": id + "-field",
+			"value": editValue
+		}, Dom.get("batch-edit-div"));
+
+		var submitBtn = document.getElementById(id + "-form-submit");
+		submitBtn.onclick = onSubmit;
+
+		var cancelBtn = document.getElementById(id + "-form-cancel");
+		cancelBtn.onclick = function () {
+			panel.destroy();
+		};
+
+		for (var i in records) {
+			setStatus(records[i], "PENDING");
+		}
+	}
 
 });
 

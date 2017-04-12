@@ -7,6 +7,10 @@
     border: none;
 }
 
+.document-assocs .assoclist + .assoclist {
+    margin-top: 15px;
+}
+
 .document-assocs .assoclist table {
     border: medium none;
     width: 100%;
@@ -14,14 +18,17 @@
 
 .document-assocs .assoclist table caption {
     text-align: left;
-}
-
-.document-assocs .assoclist thead {
-    display: none;
+    font-size: 100%;
+    font-style: normal;
+    padding: 5px 0 10px 0;
 }
 
 .document-assocs .assoclist tbody {
     outline: none;
+}
+
+.document-assocs .assoclist tbody.yui-dt-data tr {
+    border-top: 1px solid #CCC;
 }
 
 .document-assocs .assoclist .yui-dt table {
@@ -38,10 +45,21 @@
     padding: 4px 4px 4px 0;
 }
 
+.document-assocs .assoclist .yui-dt-liner:empty {
+    display: none;
+}
+
+
+/* actions */
+.document-assocs .assoclist .yui-dt-col-actions .yui-dt-liner .remove-assoc {
+    text-align: right;
+}
+
 .open-link:hover {
     text-decoration: underline !important;
     background: none !important;
 }
+
 .document-assocs .alfresco-twister .alfresco-twister-actions a {
     background-position: 0 center;
     background-repeat: no-repeat;

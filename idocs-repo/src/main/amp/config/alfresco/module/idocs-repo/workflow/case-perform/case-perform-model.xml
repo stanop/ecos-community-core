@@ -26,6 +26,19 @@
                 </property>
             </properties>
             <associations>
+                <!--performer for task-->
+                <association name="wfcp:performer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <!--performers for workflow-->
                 <association name="wfcp:performers">
                     <source>
                         <mandatory>false</mandatory>
@@ -60,6 +73,9 @@
                 </property>
                 <property name="wfcp:resultDate">
                     <type>d:date</type>
+                </property>
+                <property name="wfcp:comment">
+                    <type>d:text</type>
                 </property>
             </properties>
             <associations>
@@ -145,6 +161,33 @@
                 </property>
                 <property name="wfcp:outcomesWithMandatoryComment">
                     <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="wfcp:hasCaseRole">
+            <associations>
+                <association name="wfcp:caseRole">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="wfcp:hasPerformersSync">
+            <properties>
+                <property name="wfcp:syncWorkflowToRoles">
+                    <type>d:boolean</type>
+                </property>
+                <property name="wfcp:syncRolesToWorkflow">
+                    <type>d:boolean</type>
                 </property>
             </properties>
         </aspect>

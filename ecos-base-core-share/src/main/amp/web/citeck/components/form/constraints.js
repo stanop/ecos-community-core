@@ -338,6 +338,13 @@
                             fireHideShowEvents: true
                         });
 
+                        // hide dialog on click 'esc' button
+                        panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
+                            fn: panel.hide,
+                            scope: panel,
+                            correctScope: true
+                        }));
+
                         panel.setHeader(header);
                         panel.setBody(response.serverResponse.responseText);
                         panel.render(document.body);

@@ -33,6 +33,11 @@ public class AddParallelExecutionInstanceCmd extends NeedsActiveExecutionCmd<Boo
 
     @Override
     protected Boolean execute(CommandContext commandContext, ExecutionEntity processExecution) {
+        return addParallelExecution(processExecution, childExecutionId, additionalElements);
+    }
+
+    static boolean addParallelExecution(ExecutionEntity processExecution,
+                                        String childExecutionId, List<?> additionalElements) {
 
         ExecutionEntity execution = processExecution.findExecution(childExecutionId);
         if (execution == null) {
@@ -76,7 +81,7 @@ public class AddParallelExecutionInstanceCmd extends NeedsActiveExecutionCmd<Boo
         return true;
     }
 
-    private ActivityExecution createExecution(ExecutionEntity parent, boolean isExtraScopeNeeded) {
+    private static ActivityExecution createExecution(ExecutionEntity parent, boolean isExtraScopeNeeded) {
         ActivityExecution concurrentExecution = parent.createExecution();
         concurrentExecution.setActive(true);
         concurrentExecution.setConcurrent(true);
@@ -96,7 +101,7 @@ public class AddParallelExecutionInstanceCmd extends NeedsActiveExecutionCmd<Boo
         return concurrentExecution;
     }
 
-    private boolean isExtraScopeNeeded(ParallelMultiInstanceBehavior activityBehavior) {
+    private static boolean isExtraScopeNeeded(ParallelMultiInstanceBehavior activityBehavior) {
         // special care is needed when the behavior is an embedded subprocess (not very clean, but it works)
         AbstractBpmnActivityBehavior inner = activityBehavior.getInnerActivityBehavior();
         return inner instanceof SubProcessActivityBehavior;

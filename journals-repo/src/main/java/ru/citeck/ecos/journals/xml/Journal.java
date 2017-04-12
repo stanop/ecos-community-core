@@ -50,7 +50,7 @@ public class Journal {
 
     protected List<Option> option;
     @XmlElement(required = true)
-    protected Journal.Headers headers;
+    protected Headers headers;
     @XmlAttribute(name = "id", required = true)
     protected String id;
 
@@ -88,10 +88,10 @@ public class Journal {
      * 
      * @return
      *     possible object is
-     *     {@link Journal.Headers }
+     *     {@link Headers }
      *     
      */
-    public Journal.Headers getHeaders() {
+    public Headers getHeaders() {
         return headers;
     }
 
@@ -100,10 +100,10 @@ public class Journal {
      * 
      * @param value
      *     allowed object is
-     *     {@link Journal.Headers }
+     *     {@link Headers }
      *     
      */
-    public void setHeaders(Journal.Headers value) {
+    public void setHeaders(Headers value) {
         this.headers = value;
     }
 

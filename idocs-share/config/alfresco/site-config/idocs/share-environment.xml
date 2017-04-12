@@ -1,0 +1,33 @@
+<alfresco-config>
+
+    <!-- Global config section -->
+    <config replace="true">
+        <flags>
+            <!-- Developer debugging setting - DEBUG mode for client scripts in the browser -->
+            <client-debug>false</client-debug>
+            <!-- LOGGING can be toggled at runtime when in DEBUG mode (Ctrl, Ctrl, Shift, Shift). This flag automatically activates logging on page load. -->
+            <client-debug-autologging>false</client-debug-autologging>
+        </flags>
+    </config>
+
+    <config evaluator="string-compare" condition="WebFramework">
+        <web-framework>
+            <!-- Autowire Runtime Settings -->
+            <autowire>
+                <!-- Pick the mode: development, preview, production -->
+                <!-- Note: Share admin consoles will not work when the development mode
+                        is enabled, use production mode instead! -->
+                <mode>production</mode>
+            </autowire>
+            <defaults>
+                <theme>citeckTheme</theme>
+            </defaults>
+        </web-framework>
+    </config>
+
+   <!-- Disable the CSRF Token Filter -->
+   <config evaluator="string-compare" condition="CSRFPolicy" replace="true">
+      <filter/>
+   </config>
+   
+</alfresco-config>

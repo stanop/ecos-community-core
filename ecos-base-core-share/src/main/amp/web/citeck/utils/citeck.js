@@ -149,7 +149,7 @@ Citeck.utils.formatDocumentName = function(doc, plain_text)
     if(!doc) {
         return Alfresco.util.message("label.none");
     } else if(!plain_text) {
-		return '<a href="' + Alfresco.util.siteURL('document-details?nodeRef=' + doc.nodeRef) + '">' + doc.name + '</a>';
+        return '<a href="' + Alfresco.util.siteURL('card-details?nodeRef=' + doc.nodeRef) + '">' + doc.name + '</a>';
     } else {
         return doc.name;
     }

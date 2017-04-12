@@ -1,6 +1,7 @@
 /**
  * @author Roman Makarskiy
  */
+var status = "Complete";
 
 var parser = {
     parserScriptName: "xml-to-node-parser.js",
@@ -19,9 +20,9 @@ var parser = {
     createNodes: function(xmlData) {
         var xmlDataNode = search.findNode(xmlData);
 
-        if (!xmlDataNode) {
-            logger.error(this.parserScriptName + ": failed find xml data - " + xmlData);
-            return;
+        if (!xmlDataNode || xmlDataNode.typeShort != "xni:data") {
+            logger.warn(this.parserScriptName + ": failed find xml data - " + xmlData);
+            return false;
         }
 
         var content = xmlDataNode.content;
@@ -33,7 +34,7 @@ var parser = {
         var root = this.helper.getRootNodeByPath(path);
 
         if (!root) {
-            return;
+            return false;
         }
 
         var startTime = new Date().getTime();
@@ -44,28 +45,36 @@ var parser = {
         this.parserData.cmTitleRuFromProp = xml.cmTitle_RU_fromProp;
         this.parserData.cmTitleEnFromProp = xml.cmTitle_EN_fromProp;
 
-        var objects = xml.object;
-        var objCount = objects.length();
+        var objects = this.helper.getObjects(xml);
+        var objCount = objects.length;
 
         logger.warn(this.parserScriptName + " Start parse... type: " + type);
         logger.warn(this.parserScriptName + " Found " + objCount + " objects. Parse in progress...");
 
-        for each (var object in objects) {
-            var propObj = this.getProperties(object);
+        batchExecuter.processArray({
+            items: objects,
+            batchSize: 200,
+            threads: 4,
+            onNode: function(row) {
+                var propObj = parser.getProperties(row);
 
-            if (this.helper.uuidExists(propObj)) {
-                logger.error(this.parserScriptName + " Cannot create node, because node with uuid: '"
-                    + propObj['sys:node-uuid'] +"' already exists.");
-            } else if (this.helper.cmNameExists(path, propObj)) {
-                logger.error(this.parserScriptName + " Cannot create node, because node with cm:name - '"
-                    + propObj['cm:name'] +"' already exists.");
-            } else {
-                var createdNode = root.createNode(null, type, propObj, "cm:contains");
-                this.helper.fillNodeTitle(createdNode);
-                this.helper.fillAssocs(object, createdNode);
+                if (parser.helper.uuidExists(propObj)) {
+                    logger.warn(parser.parserScriptName + " Cannot create node, because node with uuid: '"
+                        + propObj['sys:node-uuid'] +"' already exists.");
+                    status = "Error";
+                } else if (parser.helper.cmNameExists(path, propObj)) {
+                    logger.warn(parser.parserScriptName + " Cannot create node, because node with cm:name - '"
+                        + propObj['cm:name'] +"' already exists.");
+                    status = "Error";
+                } else {
+                    var createdNode = root.createNode(null, type, propObj, "cm:contains");
+                    parser.helper.fillNodeTitle(createdNode);
+                    parser.helper.fillAssocs(row, createdNode);
+                }
             }
-        }
+        });
 
+        setStatusAsync(xmlDataNode, status);
         var endTime = new Date().getTime();
         var executedTime = endTime - startTime;
         logger.warn(this.parserScriptName + " Parse ends in " + this.helper.millisToMinAndSeconds(executedTime)
@@ -85,7 +94,10 @@ var parser = {
             var prop = properties.child(i);
             var propType = prop.name().toString().split('_').join(':');
             var propValue = prop.toString();
-            propObj[propType] = propValue;
+
+            if (propType != "cm:title:ru" && propType != "cm:title:en") {
+                propObj[propType] = propValue;
+            }
 
             if (!propValueForUuid) {
                 propValueForUuid = this.helper.getUuidValue(propValue, prop);
@@ -108,6 +120,13 @@ var parser = {
         return propObj;
     },
     helper: {
+        getObjects: function (xml) {
+            var objects = [];
+            for each (var i in xml.object) {
+                objects.push(i);
+            }
+            return objects;
+        },
         fillAssocs: function(obj, node) {
             var assocsData = obj.associations.association;
 
@@ -124,28 +143,35 @@ var parser = {
                         return;
                     }
 
-                    var groupName = assocData.cm_authority.name;
-                    var groupDisplayName = assocData.cm_authority.displayName;
-                    var createIfNotExists = assocData.cm_authority.createIfNotExists;
-
-                    var targetGroup = groups.getGroup(groupName);
-
+                    var targetGroup = this.createGroup(assocData.cm_authority);
                     if (!targetGroup) {
-                        if (createIfNotExists == 'true') {
-                            if (groupDisplayName.length() == 0) {
-                                groupDisplayName = groupName;
-                            }
-                            targetGroup = groups.createRootGroup(groupName, groupDisplayName)
-                        } else {
-                            logger.error(this.parserScriptName + " cannot create association with authority: "
-                                + groupName + ", because this authority doesn't exists and "
-                                + "parameter (createIfNotExists) not equals (true)")
-                            return;
-                        }
+                        logger.error(this.parserScriptName + " cannot create association with authority: "
+                            + assocData.cm_authority.name);
+                        return;
                     }
 
                     var groupNode = search.findNode(targetGroup.groupNodeRef);
                     node.createAssociation(groupNode, assocData.assocType);
+
+                    if (assocData.cm_authority.parent_groups.group.length() > 0) {
+                        var parentGroups = assocData.cm_authority.parent_groups.group;
+                        for each (var parentGroup in parentGroups) {
+                            var createdParentGroup = this.createGroup(parentGroup);
+                            if (createdParentGroup && !this.childGroupExists(createdParentGroup, targetGroup.shortName)) {
+                                createdParentGroup.addAuthority("GROUP_" + targetGroup.shortName);
+                            }
+                        }
+                    }
+
+                    if (assocData.cm_authority.child_groups.group.length() > 0) {
+                        var childGroups = assocData.cm_authority.child_groups.group;
+                        for each (var childGroup in childGroups) {
+                            var createdChildGroup = this.createGroup(childGroup);
+                            if (createdChildGroup && !this.childGroupExists(targetGroup, childGroup.name)) {
+                                targetGroup.addAuthority("GROUP_" + childGroup.name);
+                            }
+                        }
+                    }
 
                 } else {
                     if (assocData.assocType.length() == 0 || assocData.targetNodeType.length() == 0
@@ -175,6 +201,44 @@ var parser = {
                 }
 
             }
+        },
+        childGroupExists: function (group, childShortName) {
+            var childGroup = this.getChildGroupByNameOrNullNotFound(group, childShortName);
+            return childGroup != null;
+        },
+        getChildGroupByNameOrNullNotFound: function (group, childShortName) {
+            var maxItems = 200;
+            var skipCount = 0;
+            var childGroups = group.getChildGroups(maxItems, skipCount);
+
+            for each (var childGroup in childGroups) {
+                if (childGroup.shortName == childShortName) {
+                    return childGroup;
+                }
+            }
+            return null;
+        },
+        createGroup: function (groupObj) {
+            var groupName = groupObj.name;
+            var groupDisplayName = groupObj.displayName;
+            var createIfNotExists = groupObj.createIfNotExists;
+
+            var targetGroup = groups.getGroup(groupName);
+
+            if (!targetGroup) {
+                if (createIfNotExists == 'true') {
+                    if (groupDisplayName.length() == 0) {
+                        groupDisplayName = groupName;
+                    }
+                    targetGroup = groups.createRootGroup(groupName, groupDisplayName)
+                } else {
+                    logger.error(this.parserScriptName + " cannot fill group: "
+                        + groupName + ", because this group doesn't exists and "
+                        + "parameter (createIfNotExists) not equals (true)");
+                    return null;
+                }
+            }
+            return targetGroup;
         },
         fillNodeTitle: function (node) {
             if (parser.parserData.titles.en.length > 0) {
@@ -237,8 +301,9 @@ var parser = {
                     if (parser.parserData.uuidPrefix && parser.parserData.uuidPrefix.toString().length > 0) {
                         uuidValue = parser.parserData.uuidPrefix.toString();
                     }
-                    var correctUuid = propValue.split(' ').join('+').toLowerCase();
+                    var correctUuid = propValue.split(' ').join('-').toLowerCase();
                     correctUuid = correctUuid.split(".").join("");
+                    correctUuid = correctUuid.split("_").join("-");
                     correctUuid = correctUuid.split(",").join("");
 
                     uuidValue = uuidValue + correctUuid
@@ -293,3 +358,15 @@ var parser = {
         }
     }
 };
+
+function setStatusAsync(node, status) {
+    batchExecuter.processArray({
+        items: [node],
+        batchSize: 1,
+        threads: 1,
+        onNode: function(row) {
+            row.properties["xni:status"] = status;
+            row.save();
+        }
+    });
+}

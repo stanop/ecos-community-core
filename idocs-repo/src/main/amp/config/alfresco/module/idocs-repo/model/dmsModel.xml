@@ -685,7 +685,7 @@
 				<property name="dms:updateContent">
 					<title>Generate from template</title>
 					<type>d:boolean</type>
-					<default>true</default>
+					<default>false</default>
 					<constraints>
 						<constraint ref="dms:constraint:dmsTrueFalse" />
 					</constraints>

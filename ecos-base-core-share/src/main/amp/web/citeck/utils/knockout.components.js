@@ -43,6 +43,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.settings = this.attribute().settings();            
 
             if (this.datatype) {
+                var datatypeMapping = {
+                    'boolean': 'd:boolean'
+                };
+                var datatype = datatypeMapping[self.datatype] || self.datatype;
+
                 // prepare fake viewModel
                 this.fakeViewModel = {
                     "fieldId": this.fieldId,
@@ -64,6 +69,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }),
 
                     "nodetype": ko.observable(self.nodetype),
+                    "datatype": ko.observable(datatype),
 
                     "options": ko.observable([]),
                     "optionsText": function(o) { return o.attributes["cm:name"]; },
@@ -208,8 +214,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     });
                 } else if (this.datatype == "datetime") {
                     this.fakeViewModel.value = ko.computed({
-                        read: function() { return  new Date(self.value()); },
-                        write: function(newValue) { self.value(moment(newValue).format()); }
+                        read: function() {
+                            return self.value() ? new Date(self.value()) : null; 
+                        },
+                        write: function(newValue) {
+                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-ddTHH:mm") : null);
+                        }
                     })
                 }
 
@@ -431,6 +441,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             </div>'
     });
 
+    // TODO:
+    // - formatter for cell
+
     ko.components.register('journal', {
         viewModel: function(params) {
             if (!params.sourceElements && !params.journalType) {
@@ -500,6 +513,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     if (typeof value == "object") {
                         if (value instanceof Date) return value.toLocaleString();
                         if (isInvariantsObject(value)) return value.name;
+                        if (value.length && attr.labels()) {
+                            var array = value.map(function (item) {
+                                return attr.labels()[item] ? attr.labels()[item] : item;
+                            });
+                            return array.join(", ");
+                        }
                     }
 
                     return value;
@@ -510,9 +529,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.getTitle = function(data) {
                 return ko.computed(function() {
-                    var value = data.value(), title;
-                    if (isInvariantsObject(value)) title = value.properties["cm:title"];
-                    return title || (data.valueTitle() || data.textValue())
+                    var value = data.value(),
+                        invariantNodeName = function(object) {
+                            if (isInvariantsObject(object) && object.properties)
+                                return object.properties["cm:title"] || object.properties["cm:name"];
+                            return object;
+                        };
+
+                    if (data.multiple()) {
+                        var assemblyTitle = [];
+                        for (var v in value) {
+                            var tempTitle = invariantNodeName(value[v]);
+                            if (tempTitle) assemblyTitle.push(tempTitle);
+                        }
+                        if (assemblyTitle.length > 0) return assemblyTitle.join(", ");
+                    }
+                   
+                    return data.valueTitle() || data.textValue();
                 });
             };
         },
@@ -776,6 +809,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 case "int":
                 case "double":
                     templateName = "number";
+                    break;
+                case "boolean":
+                    templateName = "checkbox";
                     break;
                 case "mltext":
                 default:

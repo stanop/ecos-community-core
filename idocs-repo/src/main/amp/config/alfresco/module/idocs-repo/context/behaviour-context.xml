@@ -430,6 +430,31 @@
         </property>
     </bean>
 
+    <bean id="CopyDocumentChangePropertyBehaviour" class="ru.citeck.ecos.behavior.common.documentlibrary.CopyDocumentChangePropertyBehaviour"
+          abstract="true" init-method="init" depends-on="idocs.dictionaryBootstrap">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService" />
+        <property name="scriptService" ref="scriptService" />
+
+    </bean>
+
+    <bean id="idocs.ResetLifeCyclePropertyBehavoiur" parent="CopyDocumentChangePropertyBehaviour">
+        <property name="classNames">
+            <list>
+                <value>idocs:doc</value>
+            </list>
+        </property>
+        <property name="changedProperties">
+            <list>
+                <bean class="ru.citeck.ecos.behavior.common.documentlibrary.CopyDocumentChangePropertyBehaviour$ChangedProperty">
+                    <property name="condition" value="node.hasAspect('lc:hasState')" />
+                    <property name="propName" value="lc:state" />
+                    <property name="newPropValue" value="start" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <bean id="idocs.AddCurrentUserToObjectBehaviour"
           class="ru.citeck.ecos.behavior.common.AddCurrentUserBehaviour" abstract="true" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
@@ -725,6 +750,22 @@
     <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean class="ru.citeck.ecos.behavior.role.UpdateRoleBehaviour" init-method="init">
+        <property name="caseRoleService" ref="caseRoleService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformAssignees" init-method="init">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="ecos.splitChildrenBehaviour" class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour"
+          init-method="init" abstract="true">
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
 </beans>

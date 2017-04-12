@@ -6,6 +6,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.notification.utils.RecipientsUtils;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     private NodeService nodeService;
     private NamespaceService namespaceService;
     private TemplateService templateService;
+    private CaseStatusService caseStatusService;
 
     private String nodeVariable;
     private String templateEngine;
@@ -27,11 +29,13 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     private NodeRef targetRef;
     private Map<String, List<String>> recipients;
     private Map<String, List<String>> iCaseAspectConditions;
+    private List<String> excludeStatuses;
 
     private static final String ARG_TARGET_REF = "targetRef";
     private static final String ARG_NOTIFICATION_TYPE = "notificationType";
     private static final String ASSOC_RECIPIENTS_KEY = "assocRecipients";
     private static final String RECIPIENTS_FROM_ROLE_KEY = "recipientsFromRole";
+    private static final String EXCLUDE_RECIPIENTS = "excludeRecipients";
     private static final String INCLUDE_KEY = "include";
     private static final String EXCLUDE_KEY = "exclude";
 
@@ -41,6 +45,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     protected Collection<String> getNotificationRecipients(NodeRef item) {
         List<QName> assocRecipients = convertStringToQNameList(recipients.get(ASSOC_RECIPIENTS_KEY));
         List<String> assocRecipientsFromICaseRole = recipients.get(RECIPIENTS_FROM_ROLE_KEY);
+        List<String> excludeRecipient = recipients.get(EXCLUDE_RECIPIENTS);
         Set<String> finalRecipients = new HashSet<>();
         finalRecipients.addAll(super.getNotificationRecipients(item));
 
@@ -60,6 +65,13 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
             }
         }
 
+        if (excludeRecipient != null) {
+            Set<String> excludeRecipients = RecipientsUtils.getRecipientsToExclude(excludeRecipient, item, services);
+            if (!excludeRecipients.isEmpty()) {
+                finalRecipients.removeAll(excludeRecipients);
+            }
+        }
+
         return finalRecipients;
     }
 
@@ -70,13 +82,15 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
             HashMap<String, Object> model = new HashMap<>(1);
             model.put(nodeVariable, item);
             subject = templateService.processTemplateString(templateEngine, subjectTemplate, model);
+        } else {
+            subject = this.subject;
         }
         return subject;
     }
 
     public void sendNotification(NodeRef sourceRef, NodeRef targetRef, Map<String, List<String>> recipients,
                                  String notificationType, String subjectTemplate, boolean afterCommit) {
-        if (!aspectConditionIsFulfilled(sourceRef)) {
+        if (!aspectConditionIsFulfilled(sourceRef) || existExcludeStatus(sourceRef)) {
             return;
         }
 
@@ -160,6 +174,15 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         return true;
     }
 
+    private boolean existExcludeStatus(NodeRef iCase) {
+        if (!nodeService.exists(iCase)) {
+            logger.error("Cannot check exclude statuses, because node: " + iCase + " doesn't exists");
+            return false;
+        }
+        String status = caseStatusService.getStatus(iCase);
+        return !(excludeStatuses == null || !excludeStatuses.contains(status));
+    }
+
     public void setNodeVariable(String nodeVariable) {
         this.nodeVariable = nodeVariable;
     }
@@ -186,5 +209,13 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
 
     public void setiCaseAspectConditions(Map<String, List<String>> iCaseAspectConditions) {
         this.iCaseAspectConditions = iCaseAspectConditions;
+    }
+
+    public void setExcludeStatuses(List<String> excludeStatuses) {
+        this.excludeStatuses = excludeStatuses;
+    }
+
+    public void setCaseStatusService(CaseStatusService caseStatusService) {
+        this.caseStatusService = caseStatusService;
     }
 }

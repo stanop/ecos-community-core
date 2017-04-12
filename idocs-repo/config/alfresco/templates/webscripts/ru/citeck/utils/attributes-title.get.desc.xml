@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Attributes title</shortname>
+	<description>Get attributes title</description>
+	<url>/citeck/util/attributes/title?attributes={attributes}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

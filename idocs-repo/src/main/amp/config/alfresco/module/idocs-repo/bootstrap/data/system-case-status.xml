@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:icase="http://www.citeck.ru/model/icase/1.0">
+
+    <icase:caseStatus view:childName="cm:case-status-any">
+        <view:properties>
+            <sys:node-uuid>case-status-any</sys:node-uuid>
+            <cm:name>ANY</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">System status (Don't use it)</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Системный статус (Не использовать)</view:mlvalue>
+            </cm:title>
+        </view:properties>
+    </icase:caseStatus>
+
+</view:view>

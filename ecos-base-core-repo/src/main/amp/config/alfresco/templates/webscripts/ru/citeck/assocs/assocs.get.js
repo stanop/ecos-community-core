@@ -1,5 +1,5 @@
-(function()
-{
+(function() {
+    
     function checkContentType(node, contentTypes) {
         var result = false;
         for (var i = 0; i < contentTypes.length; i++) {
@@ -13,20 +13,34 @@
         }
         return result;
     }
-    var nodeRef = args['nodeRef'];
-    var assocTypes = args['assocTypes'];
-    var contentTypes = args['contentTypes'];
-    contentTypes = contentTypes == undefined ? [] : contentTypes.split(',');
-    var addAssocs = args['addAssocs']||"true";
+
+    function getTitle(attributeName, dictionaryService, messageService) {
+        var attQName = citeckUtils.createQName(attributeName);
+        var attribute = dictionaryService.getProperty(attQName);
+        if (!attribute) {
+            attribute = dictionaryService.getAssociation(attQName);
+        }
+        return attribute ? attribute.getTitle(messageService) : null;
+    }
+
+
+    var dictionaryService = services.get("dictionaryService"),
+        messageService = services.get("messageService");
+
+    var nodeRef = args['nodeRef'],
+        assocTypes = args['assocTypes'],
+        contentTypes = args['contentTypes'] == undefined ? [] : args['contentTypes'].split(','),
+        addAssocs = args['addAssocs']||"true";
+
     if (assocTypes == undefined) assocTypes = "";
     var assocs = [];
+
     if(nodeRef != null && nodeRef.length != 0) {
         for each(type in assocTypes.split(','))
             if (type != '' && nodeRef != null && nodeRef.length != 0){
                 var node = search.findNode(nodeRef);
                 if (node !== null) {
-                    var sourceAssocs = node.sourceAssocs[type];
-                    var sourceNodeRef = [];
+                    var sourceAssocs = node.sourceAssocs[type], sourceNodeRef = [];
                     if (sourceAssocs == undefined) {
                         sourceAssocs = "";
                     } else {

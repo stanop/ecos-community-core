@@ -18,6 +18,8 @@
  */
 package ru.citeck.ecos.journals;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+
 import java.io.InputStream;
 import java.util.Collection;
 
@@ -30,5 +32,6 @@ public interface JournalService {
     JournalType getJournalType(String id);
     
     Collection<JournalType> getAllJournalTypes();
-    
+
+    NodeRef getJournalRef(String id);
 }

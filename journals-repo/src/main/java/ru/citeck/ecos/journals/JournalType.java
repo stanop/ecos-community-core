@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.journals.xml.BatchEdit;
 
 public interface JournalType {
     
@@ -52,5 +53,7 @@ public interface JournalType {
     public boolean isAttributeSortable(QName attributeKey);
     
     public boolean isAttributeGroupable(QName attributeKey);
+
+    public List<JournalBatchEdit> getBatchEdit(QName attributeKey);
     
 }

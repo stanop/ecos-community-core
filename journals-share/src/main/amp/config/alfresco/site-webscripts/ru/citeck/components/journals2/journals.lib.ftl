@@ -78,21 +78,33 @@
 }
 </#macro>
 
-<#macro renderMultiActionsJSON actions>
+<#macro renderMultiActionsJSON>
 <#escape x as x?js_string>
 [
-	<#list actions as action>
+	<#assign multiActions = config.scoped["DocumentLibrary"]["multi-select"] />
+	<#list multiActions.children as action>
 	{
-	"id": "${action.id}",
-	"label": "${msg(action.label)}",
-	"permission": <#if action.permission??>"${action.permission}"<#else>null</#if>,
-	"requiredAspect": <#if action.hasAspect??>"${action.hasAspect}"<#else>null</#if>,
-	"forbiddenAspect": <#if action.notAspect??>"${action.notAspect}"<#else>null</#if>,
-	"syncMode": <#if action.syncMode??>"${action.syncMode}"<#else>null</#if>
+		"id": "${action.attributes.id}",
+		"func": "${action.attributes.function!action.attributes.id}",
+		"label": "${msg(action.attributes.label)}",
+		"isDoclib": ${msg(action.attributes.isDoclib!"true")},
+		"permission": <#if action.attributes.permission??>"${action.attributes.permission}"<#else>null</#if>,
+		"requiredAspect": <#if action.attributes.hasAspect??>"${action.attributes.hasAspect}"<#else>null</#if>,
+		"forbiddenAspect": <#if action.attributes.notAspect??>"${action.attributes.notAspect}"<#else>null</#if>,
+		"syncMode": <#if action.attributes.syncMode??>"${action.attributes.syncMode}"<#else>null</#if>,
+		"settings": <@renderActionOptions options=action.childrenMap['param']![] />
 	}<#if action_has_next>,</#if>
 	</#list>
 ]
 </#escape>
+</#macro>
+
+<#macro renderActionOptions options>
+{
+	<#list options as option>
+		"${option.attributes.name}": "${option.value}"<#if option_has_next>,</#if>
+	</#list>
+}
 </#macro>
 
 <#macro renderJournalTable>

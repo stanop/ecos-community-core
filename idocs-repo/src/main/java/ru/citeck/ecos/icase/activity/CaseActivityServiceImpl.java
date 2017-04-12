@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity;
 
+import com.google.common.collect.Lists;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -50,8 +51,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         onActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStoppedPolicy.class);
         onActivityResetDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityResetPolicy.class);
 
-        allowedTransitions.put(STATE_NOT_STARTED, Arrays.asList(STATE_STARTED));
-        allowedTransitions.put(STATE_STARTED, Arrays.asList(STATE_COMPLETED));
+        allowedTransitions.put(STATE_NOT_STARTED, Lists.newArrayList(STATE_STARTED));
+        allowedTransitions.put(STATE_STARTED, Lists.newArrayList(STATE_COMPLETED));
     }
 
     @Override
@@ -94,24 +95,6 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         policy.onCaseActivityStopped(activityRef);
     }
 
-    private boolean setState(NodeRef nodeRef, String state) {
-        if (!nodeService.exists(nodeRef)) {
-            return false;
-        }
-
-        String currentState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
-        if (currentState == null) {
-            currentState = STATE_NOT_STARTED;
-        }
-
-        List<String> transitions = allowedTransitions.get(currentState);
-        if (transitions != null && transitions.contains(state)) {
-            nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, state);
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public NodeRef getDocument(NodeRef activityRef) {
         ChildAssociationRef parent = nodeService.getPrimaryParent(activityRef);
@@ -134,7 +117,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type) {
-        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, type);
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
 
         if (children == null || children.isEmpty()) {
             return new ArrayList<>(0);
@@ -143,8 +126,10 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         List<Pair<NodeRef, Integer>> indexedChildren = new ArrayList<>(children.size());
         for (ChildAssociationRef child : children) {
             NodeRef childRef = child.getChildRef();
-            Integer index = (Integer) nodeService.getProperty(childRef, ActivityModel.PROP_INDEX);
-            indexedChildren.add(new Pair<>(childRef, index != null ? index : 0));
+            if (type.isMatch(nodeService.getType(childRef))) {
+                Integer index = (Integer) nodeService.getProperty(childRef, ActivityModel.PROP_INDEX);
+                indexedChildren.add(new Pair<>(childRef, index != null ? index : 0));
+            }
         }
 
         Collections.sort(indexedChildren, new Comparator<Pair<NodeRef, Integer>>() {
@@ -184,32 +169,35 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
+    public List<NodeRef> getStartedActivities(NodeRef nodeRef) {
+        List<NodeRef> startedActivities = new ArrayList<>();
+        for (NodeRef activiti : getActivities(nodeRef)) {
+            String status = (String) nodeService.getProperty(activiti, LifeCycleModel.PROP_STATE);
+            if (status != null && status.equals(STATE_STARTED)) {
+                startedActivities.add(activiti);
+            }
+        }
+        return startedActivities;
+    }
+
+    @Override
+    public NodeRef getActivityByTitle(NodeRef nodeRef, String title) {
+        for (NodeRef activiti : getActivities(nodeRef)) {
+            String actTitle = (String) nodeService.getProperty(activiti, ContentModel.PROP_TITLE);
+            if (actTitle.equals(title)) {
+                return activiti;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void reset(NodeRef nodeRef) {
         QName nodeType = nodeService.getType(nodeRef);
         if (dictionaryService.isSubClass(nodeType, ActivityModel.TYPE_ACTIVITY)) {
             resetActivity(nodeRef);
         } else {
             resetActivitiesInChildren(nodeRef);
-        }
-    }
-
-    private void resetActivity(NodeRef activityRef) {
-
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
-        nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
-
-        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
-        CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
-        policy.onCaseActivityReset(activityRef);
-
-        resetActivitiesInChildren(activityRef);
-    }
-
-    private void resetActivitiesInChildren(NodeRef nodeRef) {
-        List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
-        for (NodeRef activityRef : children) {
-            resetActivity(activityRef);
         }
     }
 
@@ -267,6 +255,69 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isActive(NodeRef activityRef) {
+        mandatoryNodeRef("activityRef", activityRef);
+        return STATE_STARTED.equals(getActivityState(activityRef));
+    }
+
+    private void resetActivity(NodeRef activityRef) {
+
+        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
+        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
+        nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
+
+        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
+        CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
+        policy.onCaseActivityReset(activityRef);
+
+        resetActivitiesInChildren(activityRef);
+    }
+
+    private void resetActivitiesInChildren(NodeRef nodeRef) {
+        List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
+        for (NodeRef activityRef : children) {
+            resetActivity(activityRef);
+        }
+    }
+
+    private boolean setState(NodeRef activityRef, String state) {
+        if (!nodeService.exists(activityRef)) {
+            return false;
+        }
+
+        String currentState = getActivityState(activityRef);
+
+        if (isRequiredReset(activityRef, currentState, state)) {
+            reset(activityRef);
+            currentState = getActivityState(activityRef);
+        }
+
+        if (!currentState.equals(state)) {
+
+            List<String> transitions = allowedTransitions.get(currentState);
+            if (transitions != null && transitions.contains(state)) {
+                nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, state);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isRequiredReset(NodeRef activityRef, String fromState, String toState) {
+        if (!STATE_NOT_STARTED.equals(fromState) && STATE_STARTED.equals(toState)) {
+            Boolean repeatable = (Boolean) nodeService.getProperty(activityRef, ActivityModel.PROP_REPEATABLE);
+            return Boolean.TRUE.equals(repeatable);
+        }
+        return false;
+    }
+
+    private String getActivityState(NodeRef activityRef) {
+        String state = (String) nodeService.getProperty(activityRef, LifeCycleModel.PROP_STATE);
+        return state != null ? state : STATE_NOT_STARTED;
     }
 
     private void mandatoryActivity(String paramName, NodeRef activityRef) {

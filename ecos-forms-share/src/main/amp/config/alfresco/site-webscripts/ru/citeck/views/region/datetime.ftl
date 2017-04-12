@@ -1,7 +1,7 @@
 <#assign labels   = { "month" :  msg("date-unit.single.month"), "year" : msg("date-unit.single.year"), "header": msg("date.select") }>
 <#assign buttons  = { "submit" :  msg("button.ok"), "cancel" : msg("button.cancel") }>
-<#assign format   = msg("date.format")>
-<#assign formatIE   = msg("date.formatIE")>
+<#assign format   = msg("datetime.format")>
+<#assign formatIE = msg("datetime.formatIE")>
 <#assign months   = msg("months.short")>
 <#assign days     = msg("days.short")>
 

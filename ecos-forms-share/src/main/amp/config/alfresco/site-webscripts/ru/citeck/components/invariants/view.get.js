@@ -46,12 +46,45 @@
 
         for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
 
+    }
+      
         defaultModel.view = {};
         for(var i in publicViewProperties) {
             var name = publicViewProperties[i];
             defaultModel.view[name] = view[name];
         }
 
+
+    if (view.template == "tabs") {
+        var groups = get(view, "view"),
+        attributesByGroups = map(groups, function(group) {
+            return map(getAttributes(group), function(attribute) { return attribute.attribute; })
+        });
+
+        // generate id
+        each(groups, function(group, index) {
+            group["genId"] = view["class"].replace(":", "_") + "-group-" + index;
+        });
+
+        var invariantSetByGroups = map(attributesByGroups, function(group) { return getInvariantSet(args, group) }),
+            viewScopedInvariantsByGroups = map(groups, function(group) { return getViewScopedInvariants(group) }),
+            invariantsByGroups = [];
+            
+        for (var fi = 0; fi < groups.length; fi++) {
+            invariantsByGroups.push(viewScopedInvariantsByGroups[fi].concat(invariantSetByGroups[fi].invariants));
+        }
+
+        model.attributesByGroups = attributesByGroups;
+        model.invariantsByGroups = invariantsByGroups;
+        model.groups = map(groups, function(group, index) {
+            return {
+                "id": group.id || group.genId,
+                "index": index,
+                "attributes": attributesByGroups[index],
+                "invariants": invariantsByGroups[index]
+            }
+        });
+    };
 
         model.view = view;
         model.canBeDraft = viewData.canBeDraft;
@@ -63,7 +96,7 @@
 
         model.classNames = invariantSet.classNames;
         model.defaultModel = defaultModel;
-
+  
         model.groups = map(groups, function(group, index) {
             return {
                 "id": group.id || group.genId,
@@ -80,8 +113,8 @@
 
 function prepareAttributeForMobileVersion(attribute) {
     var journalRegion = findBy(attribute.regions, "template", function(template) {
-        return /^(select-|)journal$/.test(template);
-    });
+            return /^(select-|)journal$/.test(template);
+        });
 
     if (journalRegion) {
         // change 'journal' or 'select-journal' to 'autocomplete'

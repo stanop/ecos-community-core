@@ -19,27 +19,34 @@
 package ru.citeck.ecos.journals;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.alfresco.model.ContentModel;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 
+import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
+import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
 import ru.citeck.ecos.utils.XMLUtils;
 
 class JournalServiceImpl implements JournalService {
 
     protected static final String SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
-    
+
+    private NodeService nodeService;
+    private ServiceRegistry serviceRegistry;
+
+    private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new TreeMap<>();
     
     @Override
@@ -51,7 +58,7 @@ class JournalServiceImpl implements JournalService {
                         getPrefixToUriMap(data.getImports().getImport()));
         
         for(Journal journal : data.getJournal()) {
-            this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver));
+            this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver, serviceRegistry));
         }
     }
 
@@ -83,4 +90,27 @@ class JournalServiceImpl implements JournalService {
         return new ArrayList<>(journalTypes.values());
     }
 
+    @Override
+    public NodeRef getJournalRef(String id) {
+        List<ChildAssociationRef> associationRefs = nodeService.getChildAssocs(journalsRoot.getNodeRef(),
+                                                                               ContentModel.ASSOC_CONTAINS,
+                                                                               RegexQNamePattern.MATCH_ALL);
+        for (ChildAssociationRef associationRef : associationRefs) {
+            NodeRef journalRef = associationRef.getChildRef();
+            String journalID = (String) nodeService.getProperty(journalRef, JournalsModel.PROP_JOURNAL_TYPE);
+            if (Objects.equals(journalID, id)) {
+                return journalRef;
+            }
+        }
+        return null;
+    }
+
+    public void setJournalsRoot(LazyNodeRef journalsRoot) {
+        this.journalsRoot = journalsRoot;
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+        this.nodeService = serviceRegistry.getNodeService();
+    }
 }

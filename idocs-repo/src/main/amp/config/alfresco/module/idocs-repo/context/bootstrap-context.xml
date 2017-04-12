@@ -497,6 +497,7 @@
 		</property>
 		<property name="bootstrapView">
 			<props>
+				<prop key="uuidBinding">UPDATE_EXISTING</prop>
 				<prop key="path">workspace://SpacesStore/category-document-type-root</prop>
 				<prop key="location">alfresco/module/idocs-repo/bootstrap/doctypes/passport-types.xml</prop>
 				<prop key="messages">alfresco/module/idocs-repo/bootstrap/doctypes/passport-types</prop>

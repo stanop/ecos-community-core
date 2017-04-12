@@ -90,7 +90,7 @@
         <view>
             <field prop="contracts:agreementNumber">
                 <region name="select" template="number-generate">
-                    <param name="template">supAgreement-number-template</param>
+                    <param name="template">agreement-number-template</param>
                     <param name="mode">checkbox</param>
                 </region>
                 <region name="label" template="label">

@@ -59,7 +59,7 @@ groups.createRootGroup("employee2", "Accountant");
 }
 orgstruct.createTypedGroup("role", "employee", "employee2");
 if(people.getPerson("griboedov") == null) {
-people.createPerson("griboedov", "Alexander", "Griboedov", "test@citeck.ru", "one two three", true);
+people.createPerson("griboedov", "Alexander", "Griboedov", "griboedov@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee2").addAuthority("griboedov");
 groups.getGroup("department1").addAuthority("GROUP_employee2");
@@ -68,7 +68,7 @@ groups.createRootGroup("manager2", "Chief Accountant");
 }
 orgstruct.createTypedGroup("role", "manager", "manager2");
 if(people.getPerson("esenin") == null) {
-people.createPerson("esenin", "Sergey", "Esenin", "test@citeck.ru", "one two three", true);
+people.createPerson("esenin", "Sergey", "Esenin", "esenin@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager2").addAuthority("esenin");
 groups.getGroup("department1").addAuthority("GROUP_manager2");
@@ -82,7 +82,7 @@ groups.createRootGroup("employee3", "Clerk");
 }
 orgstruct.createTypedGroup("role", "employee", "employee3");
 if(people.getPerson("nekrasov") == null) {
-people.createPerson("nekrasov", "Nikolay", "Nekrasov", "test@citeck.ru", "one two three", true);
+people.createPerson("nekrasov", "Nikolay", "Nekrasov", "nekrasov@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee3").addAuthority("nekrasov");
 groups.getGroup("department2").addAuthority("GROUP_employee3");
@@ -91,7 +91,7 @@ groups.createRootGroup("employee4", "Archivist");
 }
 orgstruct.createTypedGroup("role", "employee", "employee4");
 if(people.getPerson("leskov") == null) {
-people.createPerson("leskov", "Nikolay", "Leskov", "test@citeck.ru", "one two three", true);
+people.createPerson("leskov", "Nikolay", "Leskov", "leskov@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee4").addAuthority("leskov");
 groups.getGroup("department2").addAuthority("GROUP_employee4");
@@ -100,7 +100,7 @@ groups.createRootGroup("manager3", "Clerks department manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager3");
 if(people.getPerson("fonvisin") == null) {
-people.createPerson("fonvisin", "Denis", "Fonvisin", "test@citeck.ru", "one two three", true);
+people.createPerson("fonvisin", "Denis", "Fonvisin", "fonvisin@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager3").addAuthority("fonvisin");
 groups.getGroup("department2").addAuthority("GROUP_manager3");
@@ -118,7 +118,7 @@ groups.createRootGroup("employee8", "Legal expert");
 }
 orgstruct.createTypedGroup("role", "employee", "employee8");
 if(people.getPerson("karamzin") == null) {
-people.createPerson("karamzin", "Nikolay", "Karamzin", "test@test.ru", "one two three", true);
+people.createPerson("karamzin", "Nikolay", "Karamzin", "karamzin@test.ru", "one two three", true);
 }
 groups.getGroup("employee8").addAuthority("karamzin");
 groups.getGroup("department4").addAuthority("GROUP_employee8");
@@ -127,7 +127,7 @@ groups.createRootGroup("manager9", "Contract department manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager9");
 if(people.getPerson("pasternak") == null) {
-people.createPerson("pasternak", "Boris", "Pasternak", "test@citeck.ru", "one two three", true);
+people.createPerson("pasternak", "Boris", "Pasternak", "pasternak@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager9").addAuthority("pasternak");
 groups.getGroup("department4").addAuthority("GROUP_manager9");
@@ -137,7 +137,7 @@ groups.createRootGroup("employee7", "Lawyer");
 }
 orgstruct.createTypedGroup("role", "employee", "employee7");
 if(people.getPerson("gogol") == null) {
-people.createPerson("gogol", "Nikolay", "Gogol", "test@citeck.ru", "one two three", true);
+people.createPerson("gogol", "Nikolay", "Gogol", "gogol@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee7").addAuthority("gogol");
 groups.getGroup("department3").addAuthority("GROUP_employee7");
@@ -146,7 +146,7 @@ groups.createRootGroup("manager8", "Legal department manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager8");
 if(people.getPerson("pasternak") == null) {
-people.createPerson("pasternak", "Boris", "Pasternak", "test@citeck.ru", "one two three", true);
+people.createPerson("pasternak", "Boris", "Pasternak", "pasternak@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager8").addAuthority("pasternak");
 groups.getGroup("department3").addAuthority("GROUP_manager8");
@@ -164,7 +164,7 @@ groups.createRootGroup("manager6", "Economic security department manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager6");
 if(people.getPerson("lermontov") == null) {
-people.createPerson("lermontov", "Mikhail", "LermontovЛермонтов", "test@citeck.ru", "one two three", true);
+people.createPerson("lermontov", "Mikhail", "Lermontov", "lermontov@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager6").addAuthority("lermontov");
 groups.getGroup("department8").addAuthority("GROUP_manager6");
@@ -174,7 +174,7 @@ groups.createRootGroup("manager5", "Security service manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager5");
 if(people.getPerson("dostoyevsky") == null) {
-people.createPerson("dostoyevsky", "Fedor", "Dostoevskiy", "test@citeck.ru", "one two three", true);
+people.createPerson("dostoyevsky", "Fedor", "Dostoevskiy", "dostoyevsky@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager5").addAuthority("dostoyevsky");
 groups.getGroup("department5").addAuthority("GROUP_manager5");
@@ -188,7 +188,7 @@ groups.createRootGroup("employee5", "HR manager");
 }
 orgstruct.createTypedGroup("role", "employee", "employee5");
 if(people.getPerson("bunin") == null) {
-people.createPerson("bunin", "Ivan", "Bunin", "test@citeck.ru", "one two three", true);
+people.createPerson("bunin", "Ivan", "Bunin", "bunin@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee5").addAuthority("bunin");
 groups.getGroup("department6").addAuthority("GROUP_employee5");
@@ -197,7 +197,7 @@ groups.createRootGroup("manager4", "HR department director");
 }
 orgstruct.createTypedGroup("role", "manager", "manager4");
 if(people.getPerson("bulgakov") == null) {
-people.createPerson("bulgakov", "Mikhail", "Bulgakov", "test@citeck.ru", "one two three", true);
+people.createPerson("bulgakov", "Mikhail", "Bulgakov", "bulgakov@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager4").addAuthority("bulgakov");
 groups.getGroup("department6").addAuthority("GROUP_manager4");
@@ -211,7 +211,7 @@ groups.createRootGroup("employee6", "Economist");
 }
 orgstruct.createTypedGroup("role", "employee", "employee6");
 if(people.getPerson("nekrasov") == null) {
-people.createPerson("nekrasov", "Nikolay", "Nekrasov", "test@citeck.ru", "one two three", true);
+people.createPerson("nekrasov", "Nikolay", "Nekrasov", "nekrasov@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee6").addAuthority("nekrasov");
 groups.getGroup("department7").addAuthority("GROUP_employee6");
@@ -220,7 +220,7 @@ groups.createRootGroup("manager7", "Financial economic department manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager7");
 if(people.getPerson("fet") == null) {
-people.createPerson("fet", "Afanasiy", "Fet", "test@citeck.ru", "one two three", true);
+people.createPerson("fet", "Afanasiy", "Fet", "fet@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager7").addAuthority("fet");
 groups.getGroup("department7").addAuthority("GROUP_manager7");
@@ -234,7 +234,7 @@ groups.createRootGroup("employee1", "Technical specialist");
 }
 orgstruct.createTypedGroup("role", "employee", "employee1");
 if(people.getPerson("blok") == null) {
-people.createPerson("blok", "Alexander", "Blok", "test@citeck.ru", "one two three", true);
+people.createPerson("blok", "Alexander", "Blok", "blok@citeck.ru", "one two three", true);
 }
 groups.getGroup("employee1").addAuthority("blok");
 groups.getGroup("department9").addAuthority("GROUP_employee1");
@@ -243,7 +243,7 @@ groups.createRootGroup("manager10", "IT department manager");
 }
 orgstruct.createTypedGroup("role", "manager", "manager10");
 if(people.getPerson("ahmatova") == null) {
-people.createPerson("ahmatova", "Anna", "Akhmatova", "test@citeck.ru", "one two three", true);
+people.createPerson("ahmatova", "Anna", "Akhmatova", "ahmatova@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager10").addAuthority("ahmatova");
 groups.getGroup("department9").addAuthority("GROUP_manager10");
@@ -253,7 +253,7 @@ groups.createRootGroup("manager1", "CEO");
 }
 orgstruct.createTypedGroup("role", "director-general", "manager1");
 if(people.getPerson("pushkin") == null) {
-people.createPerson("pushkin", "Alexander", "Pushkin", "test@citeck.ru", "one two three", true);
+people.createPerson("pushkin", "Alexander", "Pushkin", "pushkin@citeck.ru", "one two three", true);
 }
 groups.getGroup("manager1").addAuthority("pushkin");
 groups.getGroup("company1").addAuthority("GROUP_manager1");

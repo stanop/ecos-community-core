@@ -2,12 +2,12 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
-	<bean id="idocs.module-component.main-journals-list" parent="idocs.import-spaces">
+	<!--<bean id="idocs.module-component.main-journals-list" parent="idocs.import-spaces">
 		<property name="name" value="main-journals-list" />
 		<property name="description" value="Main Journals List" />
 		<property name="sinceVersion" value="1.0.0" />
 		<property name="appliesFromVersion" value="1.0.0" />
-		<!-- property name="executeOnceOnly" value="false" / -->
+		&lt;!&ndash; property name="executeOnceOnly" value="false" / &ndash;&gt;
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -23,7 +23,7 @@
 				</props>
 			</list>
 		</property>
-	</bean>
+	</bean>-->
 
 	<bean id="idocs.module-component.main-journals.bank-accounts" parent="idocs.import-spaces">
 		<property name="name" value="bank-accounts-journal" />
@@ -34,7 +34,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -82,7 +82,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -130,7 +130,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -178,7 +178,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -226,7 +226,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -274,7 +274,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -322,7 +322,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -370,7 +370,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -417,7 +417,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -464,7 +464,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
@@ -511,7 +511,7 @@
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
-				<ref bean="idocs.module-component.main-journals-list" />
+				<!--<ref bean="idocs.module-component.main-journals-list" />-->
 			</list>
 		</property>
 		<property name="bootstrapViews">
