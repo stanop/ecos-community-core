@@ -1,9 +1,0 @@
-<webscript>
-	<shortname>Get specified deputy of specified role or user</shortname>
-	<description>Deputy Service: get specified deputy for specified role or user (404 if he/she is not deputy)</description>
-	<url>/api/deputy/{userName}</url>
-	<url>/api/deputy/{fullName}/deputies/{userName}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

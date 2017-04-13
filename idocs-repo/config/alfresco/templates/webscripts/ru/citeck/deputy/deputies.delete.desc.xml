@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Remove deputies for specified role or user</shortname>
-	<description>Deputy Service: remove deputies for specified role or user</description>
-    <url>/api/deputy/{fullName}/deputies?users={user1,user2,...}&amp;isAssistants={isAssistant?}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-</webscript>

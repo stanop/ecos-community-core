@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Role member or deputy</shortname>
-	<description>Deputy Service: get member or deputy for specified role</description>
-	<url>/api/deputy/{roleName}/members/{userName}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

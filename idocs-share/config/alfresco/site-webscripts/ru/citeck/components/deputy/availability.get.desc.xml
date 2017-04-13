@@ -1,5 +1,0 @@
-<webscript>
-    <shortname>availability</shortname>
-    <description>Redirect to add or edit form absenceHidden</description>
-    <url>/components/deputy/availability</url>
-</webscript>

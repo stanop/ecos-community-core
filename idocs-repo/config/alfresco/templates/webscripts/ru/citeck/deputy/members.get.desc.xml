@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Role members and deputies</shortname>
-	<description>Deputy Service: get members and deputies for specified role</description>
-	<url>/api/deputy/{roleName}/members?status={all,own,manage,deputy}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

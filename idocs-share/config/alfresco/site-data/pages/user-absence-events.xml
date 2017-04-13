@@ -1,9 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<page>
-    <title>User absence events</title>
-    <title-id>page.userAbsence.title</title-id>
-    <description>List of absence events</description>
-    <description-id>page.userAbsence.description</description-id>
-    <template-instance>user-absence-events</template-instance>
-    <authentication>user</authentication>
-</page>
