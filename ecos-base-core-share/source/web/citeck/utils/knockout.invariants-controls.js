@@ -555,8 +555,8 @@ ko.bindingHandlers.journalControl = {
     var settings = valueAccessor(),
         value    = settings.value,
         multiple = settings.multiple,
-        params   = allBindings().params();
-
+        params   = allBindings().params(),
+        removeSelection = params.removeSelection;
     // sorting
     var sortBy  = params.sortBy;
 
@@ -860,14 +860,23 @@ ko.bindingHandlers.journalControl = {
 
             // panel submit and cancel buttons
             Event.on(submitButtonId, "click", function(event) {
-                value(ko.utils.unwrapObservable(this.selectedElements));
+                if (selectedElements() && selectedElements().length) {
+                    value(removeSelection
+                        ? (multiple() ? value().concat(selectedElements()) : selectedElements())
+                        : ko.utils.unwrapObservable(selectedElements))
+                }
                 this.panel.hide();
-            }, { selectedElements: selectedElements, panel: panel }, true);
+            }, { selectedElements: removeSelection ? value() : selectedElements, panel: panel }, true);
 
             Event.on(cancelButtonId, "click", function(event) {
-                selectedElements(value());
                 this.hide();
             }, panel, true);
+
+            panel.hideEvent.subscribe(function() {
+                if (removeSelection) {
+                    selectedElements([]);
+                }
+            });
 
             // tabs listener
             Event.on(journalPickerHeaderId, "click", function(event) {
