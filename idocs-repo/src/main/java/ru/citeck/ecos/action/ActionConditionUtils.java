@@ -10,17 +10,11 @@ public final class ActionConditionUtils {
     public static final String ACTION_CONDITION_VARIABLES = "action-condition-variables";
     public static final String PROCESS_VARIABLES = "process";
 
-    private static final Map<String, Object> defaultVariables;
-
-    static {
-        defaultVariables = new HashMap<>();
-        defaultVariables.put(PROCESS_VARIABLES, new HashMap<String, Object>());
-    }
-
     public static Map<String,Object> getTransactionVariables() {
         Map<String, Object> variables = AlfrescoTransactionSupport.getResource(ActionConditionUtils.ACTION_CONDITION_VARIABLES);
         if (variables == null) {
-            variables = new HashMap<>(defaultVariables);
+            variables = new HashMap<>();
+            variables.put(PROCESS_VARIABLES, new HashMap<>());
             AlfrescoTransactionSupport.bindResource(ACTION_CONDITION_VARIABLES, variables);
         }
         return variables;

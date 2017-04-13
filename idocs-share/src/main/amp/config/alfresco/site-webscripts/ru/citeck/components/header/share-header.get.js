@@ -13,7 +13,7 @@ function getTokenMap()
         };
         
         // insert lastsite into tokens
-        var lastsite = getLastSite();
+        var lastsite = getLastSiteFromCookie();
         customTokenMap.lastsite = lastsite;
     }
     return customTokenMap;

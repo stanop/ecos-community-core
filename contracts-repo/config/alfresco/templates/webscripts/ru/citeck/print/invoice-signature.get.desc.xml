@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Print invoice to PDF with stamp</shortname>
-	<description>Print invoice to PDF</description>
-	<url>/citeck/print/invoice-signature?nodeRef={nodeRef}&amp;shiftUp={shiftUp}&amp;shiftRight={shiftRight}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

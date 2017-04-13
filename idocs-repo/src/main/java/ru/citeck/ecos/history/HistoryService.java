@@ -119,7 +119,18 @@ public class HistoryService {
                 }
                 properties.put(HistoryModel.PROP_DATE, now);
                 QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
-                NodeRef historyEvent = nodeService.createNode(getHistoryRoot(), ContentModel.ASSOC_CONTAINS, assocName, type, properties).getChildRef();
+
+                QName assocType;
+                NodeRef parentNode;
+                if (document == null) {
+                    parentNode = getHistoryRoot();
+                    assocType = ContentModel.ASSOC_CONTAINS;
+                } else {
+                    parentNode = document;
+                    assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
+                }
+
+                NodeRef historyEvent = nodeService.createNode(parentNode, assocType, assocName, type, properties).getChildRef();
 
                 if (initiator != null) {
                     if (!RepoUtils.isAssociated(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR, nodeService)) {

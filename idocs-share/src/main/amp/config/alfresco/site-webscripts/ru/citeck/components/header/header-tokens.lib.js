@@ -19,6 +19,21 @@ function getPrefs()
 }
 
 /**
+ * Cookie
+ */
+function getCookies() {
+  var cookies = {};
+  if (context.headers.cookie) {
+    context.headers.cookie.split("; ").forEach(function(cookie, index) {
+      var key = cookie.split("=")[0], value = cookie.split("=")[1];
+      cookies[key] = value;
+    });
+  }
+
+  return cookies;
+}
+
+/**
  * User sites
  */
 function getUserSites()
@@ -51,7 +66,7 @@ function is_site_member(site) {
 /**
  * Get the last visited site.
  */
-function getLastSite()
+function getLastSite(method)
 {
     // get current site:
     var site = page.url.templateArgs.site || "", 
@@ -65,14 +80,20 @@ function getLastSite()
     
     // if we are not on site:
     } else {
-    
+      switch (method) {
+        // take it from cookies:
+        case "cookie":
+          var cookies = getCookies();
+          lastsite = cookies["alf_lastsite"] || "";
+          break;
+
         // take it from preferences:
-        var prefs = getPrefs();
-        lastsite = eval('try{(prefs.' + PREF_LAST_SITE + ')}catch(e){}');
-        if (typeof lastsite != "string") {
-            lastsite = "";
-        }
-    
+        case "prefs":
+        default:
+          var prefs = getPrefs();
+          lastsite = eval('try{(prefs.' + PREF_LAST_SITE + ')}catch(e){}');
+          if (typeof lastsite != "string") { lastsite = ""; }
+      }
     }
     
     // if we are not member of last site
@@ -82,7 +103,7 @@ function getLastSite()
     }
     
     // if last site is not set yet
-    if(lastsite == "") {
+    if(!lastsite) {
         var sites = getUserSites();
         if(sites.length > 0) {
             // set the first site of user 
@@ -94,14 +115,22 @@ function getLastSite()
     }
 
     // update preferences
-    if(lastsite) {
+    if(method != "cookie" && lastsite) {
         remote.connect().post(
             "/api/people/" + encodeURIComponent(user.name) + "/preferences",
-            '{ org: { alfresco: { share: { sites: { last: "'+lastsite+'" } } } } }', 
+            '{ org: { alfresco: { share: { sites: { last: "' + lastsite + '" } } } } }', 
             "application/json"
         );
     }
     
     // finally return lastsite
     return lastsite;
+}
+
+function getLastSiteFromCookie() {
+  return getLastSite("cookie");
+}
+
+function getLastSiteFromPrefs() {
+  return getLastSite("prefs");
 }

@@ -80,7 +80,7 @@ public class DocumentNotificationSender extends AbstractNotificationSender<NodeR
 
 	@Override
 	protected Map<String, Serializable> getNotificationArgs(NodeRef item) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		args.put(ARG_DOCUMENT, item);
 		args.put(ARG_ADDITION, add);
 		String userName = authenticationService.getCurrentUserName();

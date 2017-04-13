@@ -169,29 +169,6 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
-    public List<NodeRef> getStartedActivities(NodeRef nodeRef) {
-        List<NodeRef> startedActivities = new ArrayList<>();
-        for (NodeRef activiti : getActivities(nodeRef)) {
-            String status = (String) nodeService.getProperty(activiti, LifeCycleModel.PROP_STATE);
-            if (status != null && status.equals(STATE_STARTED)) {
-                startedActivities.add(activiti);
-            }
-        }
-        return startedActivities;
-    }
-
-    @Override
-    public NodeRef getActivityByTitle(NodeRef nodeRef, String title) {
-        for (NodeRef activiti : getActivities(nodeRef)) {
-            String actTitle = (String) nodeService.getProperty(activiti, ContentModel.PROP_TITLE);
-            if (actTitle.equals(title)) {
-                return activiti;
-            }
-        }
-        return null;
-    }
-
-    @Override
     public void reset(NodeRef nodeRef) {
         QName nodeType = nodeService.getType(nodeRef);
         if (dictionaryService.isSubClass(nodeType, ActivityModel.TYPE_ACTIVITY)) {

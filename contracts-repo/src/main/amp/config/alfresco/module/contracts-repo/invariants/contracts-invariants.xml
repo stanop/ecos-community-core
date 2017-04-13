@@ -11,9 +11,6 @@
     </imports>
 
     <type name="contracts:agreement">
-        <property name="tk:type">
-            <invariant on="default" language="explicit">workspace://SpacesStore/contracts-cat-doctype-contract</invariant>
-        </property>
         <property name="parent">
             <invariant on="default" language="criteria">
                 <criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts" />
@@ -41,6 +38,11 @@
         <!-- <property name="contracts:agreementDate">
             <invariant on="value" language="javascript">node.properties["contracts:duration"].setFullYear(value.getFullYear() + 1)</invariant>
         </property> -->
+        <property name="contracts:agreementDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
+        </property>
+
         <property name="contracts:duration">
             <invariant on="default" language="javascript">
                 if (node.properties["contracts:agreementDate"] != null &amp;&amp; node.properties["contracts:duration"] == null) {
@@ -91,9 +93,8 @@
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
                     var currentDate = node.properties["payments:billDate"];
-
+                    var nextDay = new Date(currentDate);
                     var amtDay = 5;
-                    var nextDay = currentDate;
 
                     while (amtDay > 0) {
                         nextDay.setDate(nextDay.getDate() + 1);
@@ -112,6 +113,10 @@
         </association>
         <property name="payments:beneficiaryType">
             <invariant on="default" language="explicit">resident</invariant>
+        </property>
+        <property name="payments:billDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
         </property>
         <property name="payments:paymentAccount">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -134,6 +139,7 @@
             </invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
+            <invariant on="multiple" language="explicit">false</invariant> 
         </association>
         <property name="payments:paymentAmount">
             <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
@@ -180,6 +186,7 @@
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
+            <invariant on="multiple" language="explicit">false</invariant> 
         </association>
         <property name="payments:typePayment">
             <invariant on="default" language="explicit">advance</invariant>
@@ -203,6 +210,10 @@
             <invariant on="mandatory" language="explicit">true</invariant>
             <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
 </invariant> -->
+        </property>
+        <property name="contracts:closingDocumentDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
         </property>
         <property name="contracts:closingDocumentNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -243,9 +254,6 @@
         <!-- <association name="contracts:closingDocumentSigner">
            <invariant on="mandatory" language="javascript">node.assocs["contracts:closingDocumentPayment"] == false</invariant>
         </association> -->
-        <association name="pas:containsProductsAndServices">
-            <invariant on="value" language="javascript">node.assocs['contracts:closingDocumentPayment'][0].assocs['pas:containsProductsAndServices']</invariant>
-        </association>
     </type>
 
     <type name="contracts:supplementaryAgreement">
@@ -271,6 +279,10 @@
         </association>
         <property name="contracts:agreementNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="contracts:agreementDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
+            <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
         </property>
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>

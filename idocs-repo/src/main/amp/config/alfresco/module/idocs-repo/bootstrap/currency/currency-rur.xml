@@ -13,7 +13,7 @@
                 <view:mlvalue view:locale="en_US">Ruble</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">Рубль</view:mlvalue>
             </cm:title>
-            <idocs:currencyCode>RUR</idocs:currencyCode>
+            <idocs:currencyCode>RUB</idocs:currencyCode>
             <idocs:currencyName>Рубль</idocs:currencyName>
             <idocs:currencyShortName>руб.</idocs:currencyShortName>
         </view:properties>

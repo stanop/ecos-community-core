@@ -1560,10 +1560,7 @@
 							if (sData[d]) renderRequest(sData[d]);
 						}
 					} else { renderRequest(sData); }
-				}
-
-			};
-	},
+				},
 
 		// change property to another property if original is not exist
 		replaceable: function(attributeName, formatter, direction) {

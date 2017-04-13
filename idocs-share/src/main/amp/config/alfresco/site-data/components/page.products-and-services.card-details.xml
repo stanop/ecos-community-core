@@ -15,7 +15,7 @@
         <columns>
             [
                 {key: 'attributes["pas:order"]', label: Alfresco.util.message("products-and-services.table.header.order")},
-                {key: 'attributes["cm:title"]', label: Alfresco.util.message("products-and-services.table.header.title")},
+                {key: 'attributes["cm:title"]', label: Alfresco.util.message("products-and-services.table.header.order-line")},
                 <!--{key: 'attributes["pas:type"]', label: Alfresco.util.message("products-and-services.table.header.type")},-->
                 {key: 'attributes["pas:pricePerUnit"]', label: Alfresco.util.message("products-and-services.table.header.pricePerUnit")},
                 {key: 'attributes["pas:quantity"]', label: Alfresco.util.message("products-and-services.table.header.quantity")},

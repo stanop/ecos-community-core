@@ -1,7 +1,0 @@
-<webscript>
-	<shortname>get-region</shortname>
-	<description>Get some region from Citeck Ecos Form</description>
-	<url>/citeck/components/region/get-region</url>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-</webscript>

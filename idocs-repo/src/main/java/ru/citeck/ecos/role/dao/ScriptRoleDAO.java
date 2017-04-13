@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ICaseRoleModel;
+import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 import java.util.*;
 
@@ -16,7 +17,7 @@ import java.util.*;
  */
 public class ScriptRoleDAO extends AbstractRoleDAO {
 
-    private static final Log LOGGER = LogFactory.getLog(ScriptRoleDAO.class);
+    private static final Log logger = LogFactory.getLog(ScriptRoleDAO.class);
 
     private ScriptService scriptService;
     private AuthorityService authorityService;
@@ -41,32 +42,12 @@ public class ScriptRoleDAO extends AbstractRoleDAO {
 
         try {
             Object result = scriptService.executeScriptString(script, model);
-            return fillRoles(new HashSet<NodeRef>(), result);
+            return JavaScriptImplUtils.getAuthoritiesSet(result, authorityService);
         } catch (Exception e) {
-            LOGGER.warn(e);
+            logger.warn("Script role evaluation failed", e);
         }
 
         return Collections.emptySet();
-    }
-
-    private Set<NodeRef> fillRoles(Set<NodeRef> roles, Object value) {
-        if (value == null) {
-            return roles;
-        } else if (value instanceof NodeRef) {
-            roles.add((NodeRef) value);
-        } else if (value instanceof String) {
-            NodeRef nodeRef = authorityService.getAuthorityNodeRef((String) value);
-            if (nodeRef != null) {
-                roles.add(nodeRef);
-            } else {
-                LOGGER.warn("Authority with name '" + value + "' not found!");
-            }
-        } else if (value instanceof Collection) {
-            for (Object item : (Collection) value) {
-                fillRoles(roles, item);
-            }
-        }
-        return roles;
     }
 
     public void setScriptService(ScriptService scriptService) {

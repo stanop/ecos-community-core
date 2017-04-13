@@ -89,4 +89,10 @@ public interface CaseActivityService {
      * @param activityRef activity node reference. Mandatory parameter.
      */
     boolean hasActiveChildren(NodeRef activityRef);
+
+    /**
+     * Is activity active
+     * @param activityRef activity node reference. Mandatory parameter.
+     */
+    boolean isActive(NodeRef activityRef);
 }

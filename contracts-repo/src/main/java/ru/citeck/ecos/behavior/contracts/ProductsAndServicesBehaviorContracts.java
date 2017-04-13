@@ -56,8 +56,6 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
 
     private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
 
-    private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
-
     private NodeService nodeService;
     private PolicyComponent policyComponent;
     private String namespace;

@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Set;
@@ -30,7 +29,6 @@ import java.util.Set;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
-import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -43,8 +41,8 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.alfresco.service.cmr.repository.TemplateService;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 
 import ru.citeck.ecos.security.NodeOwnerDAO;
 
@@ -76,6 +74,8 @@ import ru.citeck.ecos.security.NodeOwnerDAO;
  */
 class ExecutionEntityNotificationSender extends AbstractNotificationSender<ExecutionEntity> {
 
+	private static final String DOCS_INFO_KEY = ExecutionEntityNotificationSender.class.getName() + ".docsInfo";
+
 	// template argument names:
 	public static final String ARG_TASK = "task";
 	public static final String ARG_TASK_ID = "id";
@@ -94,7 +94,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	protected WorkflowQNameConverter qNameConverter;
 	protected PersonService personService;
 	protected AuthenticationService authenticationService;
-	NodeRef docsInfo;
 	protected boolean sendToOwner;
 	private NodeOwnerDAO nodeOwnerDAO;
 	private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationSender.class);
@@ -168,7 +167,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 				properties.put(entry.getKey(), null);
 			}
 		}
-		workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, docsInfo);
+		workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, getDocsInfo());
 		return workflowInfo;
 	}
 
@@ -200,26 +199,26 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 				{
 					if(allowDocList==null)
 					{
-						docsInfo = node;
+						setDocsInfo(node);
 						break;
 					}
 					else
 					{
 						if(allowDocList.contains(qNameConverter.mapQNameToName(nodeService.getType(node))))
 						{
-							docsInfo = node;
+							setDocsInfo(node);
 							break;
 						}
 					}
 				}
 			}
-            if(docsInfo!=null && nodeService.exists(docsInfo))
+            if(getDocsInfo()!=null && nodeService.exists(getDocsInfo()))
             {
 				NotificationContext notificationContext = new NotificationContext();
 				NodeRef template = getNotificationTemplate(task);
 				if(template!=null && nodeService.exists(template))
 				{
-                    recipient.addAll(getRecipients(task, template, docsInfo));
+                    recipient.addAll(getRecipients(task, template, getDocsInfo()));
 					String from = null;
 					String notificationProviderName = EMailNotificationProvider.NAME;
 					if(subjectTemplates!=null)
@@ -229,11 +228,11 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 						if(subjectTemplates.containsKey(wfkey))
 						{
 							Map<String,String> taskSubjectTemplate = subjectTemplates.get(wfkey);
-							if(taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))))
+							if(taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))))
 							{
 								HashMap<String,Object> model = new HashMap<String,Object>(1);
-								model.put(nodeVariable, docsInfo);
-								subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(docsInfo))), model);
+								model.put(nodeVariable, getDocsInfo());
+								subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))), model);
 							}
 						}
 						else
@@ -271,7 +270,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
 		String tkey = (String)task.getVariableLocal("taskFormKey");
 		logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
-		return getNotificationTemplate(wfkey, tkey, nodeService.getType(docsInfo));
+		return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));
 	}
 
 	/**
@@ -356,4 +355,11 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		this.nodeVariable = nodeVariable;
 	}
 
+	private void setDocsInfo(NodeRef docsInfo) {
+		AlfrescoTransactionSupport.bindResource(DOCS_INFO_KEY, docsInfo);
+	}
+
+	private NodeRef getDocsInfo() {
+		return AlfrescoTransactionSupport.getResource(DOCS_INFO_KEY);
+	}
 }

@@ -18,7 +18,7 @@
 		</#if>
 	</#if>
 
-	<#include "../common/task-plain-response.ftl" />
+	<#include "../../../../../../../../../../../../config/alfresco/site-webscripts/ru/citeck/components/form/workflow/common/task-plain-response.ftl" />
 </@>
 
 <#function parseOutcomeLabels customOptions defaultOptions>

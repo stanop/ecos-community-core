@@ -1,7 +1,0 @@
-<webscript>
-  <shortname>Check if node is pending update</shortname>
-  <url>/citeck/node/check-pending-update?nodeRef={nodeRef}</url>
-  <format default="json"/>
-  <authentication>user</authentication>
-  <lifecycle>public_api</lifecycle>
-</webscript>

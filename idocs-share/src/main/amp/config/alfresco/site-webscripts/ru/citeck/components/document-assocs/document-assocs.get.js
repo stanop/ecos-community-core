@@ -23,10 +23,10 @@ function getAssocList(assocs, listName, defaultList) {
 
 (function() {
 
-	var nodeRef = args.nodeRef;
-	if(!nodeRef) {
-		return;
-	}
+    var nodeRef = args.nodeRef;
+    if(!nodeRef) {
+        return;
+    }
 
     var nodeDetails = AlfrescoUtil.getNodeDetails(nodeRef, model.site);
     var documentType = nodeDetails && nodeDetails.item && nodeDetails.item.node && nodeDetails.item.node.type;
@@ -46,9 +46,8 @@ function getAssocList(assocs, listName, defaultList) {
 
     // type scopes
     var typeConfigs = assocConfig.childrenMap["doctype"];
-	if(!typeConfigs) {
-        return;
-    }
+    if(!typeConfigs) { return; }
+
     for(var i = 0, ii = typeConfigs.size(); i < ii; i++) {
         var typeConfig = typeConfigs.get(i),
             typeConfigId = typeConfig.getAttribute("id");
@@ -59,12 +58,15 @@ function getAssocList(assocs, listName, defaultList) {
         addable = addable.concat(getAssocList(typeConfig, "addable", typeVisible));
         removeable = removeable.concat(getAssocList(typeConfig, "removeable", typeVisible));
     }
+   
+
+    if (args.columns) { model.columns = args.columns; }
+
+    model.nodeRef = nodeRef;
+    model.assocs = {
+        visible: visible,
+        addable: addable,
+        removeable: removeable
+    };
     
-	model.nodeRef = nodeRef;
-	model.assocs = {
-		visible: visible,
-		addable: addable,
-		removeable: removeable
-	};
-	
 })();

@@ -312,5 +312,4 @@ public interface DeputyServiceGeneric<RoleList, UserList, UserNameList> {
     public abstract boolean isUserAvailable(String userName);
 
 	public abstract boolean isCanDeleteDeputeOrAssistantFromRole(String roleFullName);
-
 }

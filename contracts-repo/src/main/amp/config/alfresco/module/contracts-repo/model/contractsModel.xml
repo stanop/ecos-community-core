@@ -88,6 +88,8 @@
 			<associations></associations>
 			<mandatory-aspects>
 				<aspect>contracts:agreementCommon</aspect>
+				<aspect>invariants:draftAspect</aspect>
+				<aspect>contracts:contractType</aspect>
 			</mandatory-aspects>
 		</type>
 		<type name="contracts:supplementaryAgreement">
@@ -96,6 +98,8 @@
 			<associations></associations>
 			<mandatory-aspects>
 				<aspect>contracts:agreementCommon</aspect>
+				<aspect>invariants:draftAspect</aspect>
+				<aspect>contracts:contractType</aspect>
 			</mandatory-aspects>
 		</type>
 
@@ -226,6 +230,7 @@
 				<aspect>dms:templateable</aspect>
 				<aspect>contracts:closingDocumentExtend</aspect>
 				<aspect>contracts:hasContractor</aspect>
+				<aspect>invariants:draftAspect</aspect>
 			</mandatory-aspects>
 		</type>
 
@@ -299,7 +304,7 @@
 				</property>
 				<property name="contracts:agreementAmount">
 					<title>Agreement Amount</title>
-					<type>d:float</type>
+					<type>d:double</type>
 				</property>
 				<property name="contracts:currency">
 					<title>Currency</title>
@@ -454,8 +459,6 @@
 				<aspect>contracts:hasContractor</aspect>
 				<aspect>icase:case</aspect>
 				<aspect>icase:hasDocuments</aspect>
-				<aspect>invariants:draftAspect</aspect>
-
 			</mandatory-aspects>
 		</aspect>
 		<aspect name="contracts:contractWith">

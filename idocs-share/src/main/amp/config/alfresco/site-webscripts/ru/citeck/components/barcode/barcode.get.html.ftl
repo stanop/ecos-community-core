@@ -31,7 +31,7 @@
 		<#if viewFormat == 'pdf'>
 			<embed src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}&rnd=${rnd}"></embed>
 		<#else>
-			<img src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}&rnd=${rnd}" />
+			<#--<img src="${barcodeURL?html}&output=${viewFormat}&scale=${viewScale}&margins=${viewMargins}&rnd=${rnd}" />-->
 		</#if>
 	</div>
 	<script type="text/javascript">//<![CDATA[

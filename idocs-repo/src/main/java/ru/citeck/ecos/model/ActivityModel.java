@@ -33,7 +33,9 @@ public class ActivityModel {
     public static final QName PROP_MANUAL_STARTED = QName.createQName(NAMESPACE, "manualStarted");
     public static final QName PROP_MANUAL_STOPPED = QName.createQName(NAMESPACE, "manualStopped");
     public static final QName PROP_INDEX = QName.createQName(NAMESPACE, "index");
-    
+    public static final QName PROP_REPEATABLE = QName.createQName(NAMESPACE, "repeatable");
+    public static final QName PROP_EXPECTED_PERFORM_TIME = QName.createQName(NAMESPACE, "expectedPerformTime");
+
     public static final QName ASPECT_HAS_ACTIVITIES = QName.createQName(NAMESPACE, "hasActivities");
     public static final QName ASPECT_SET_PLANNED_END_DATE = QName.createQName(NAMESPACE, "setPlannedEndDate");
     public static final QName ASSOC_ACTIVITIES = QName.createQName(NAMESPACE, "activities");

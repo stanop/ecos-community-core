@@ -19,7 +19,7 @@
           journal: <#if journalId??>"${journalId}"<#else>null</#if>,
           filter: <#if filterId??>"${filterId}"<#else>null</#if>,
           settings: <#if settingsId??>"${settingsId}"<#else>null</#if>,
-          multiActions: <@journals.renderMultiActionsJSON multiActions />,
+          multiActions: <@journals.renderMultiActionsJSON />,
         },
         cache: <@journals.renderCacheJSON />,
         pagingOptions: [${pagingOptions}]

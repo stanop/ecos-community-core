@@ -23,6 +23,7 @@ import ru.citeck.ecos.role.dao.RoleDAO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Set;
 public interface CaseRoleService {
 
     /**
-     * Get all roles in specified case
+     * Get all roles in specified case or empty list if caseRef is null or not exists
      * @return list of roles
      */
     List<NodeRef> getRoles(NodeRef caseRef);
@@ -40,6 +41,7 @@ public interface CaseRoleService {
     /**
      * Get role by name in specified case
      * @return role or null if role not found
+     * @throws IllegalArgumentException if name is null or empty
      */
     NodeRef getRole(NodeRef caseRef, String name);
 
@@ -91,6 +93,29 @@ public interface CaseRoleService {
      */
     void setAssignees(NodeRef roleRef, Collection<NodeRef> assignees);
 
+
+    /**
+     * Add role assignees
+     */
+    void addAssignees(NodeRef roleRef, NodeRef... assignees);
+
+    /**
+     * Add role assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void addAssignees(NodeRef caseRef, String roleName, NodeRef... assignees);
+
+    /**
+     * Add role assignees
+     */
+    void addAssignees(NodeRef roleRef, Collection<NodeRef> assignees);
+
+    /**
+     * Add role assignees
+     * @throws IllegalArgumentException if role with specified name not found in case
+     */
+    void addAssignees(NodeRef caseRef, String roleName, Collection<NodeRef> assignees);
+
     /**
      * Remove all assignees from role
      */
@@ -122,4 +147,44 @@ public interface CaseRoleService {
      * Register role DAO
      */
     void register(RoleDAO roleDAO);
+
+    /**
+     * Set assignee delegate for role. This delegate would be set
+     * as assignee in dynamic roles instead of specified assignee
+     *
+     * If result delegates is looped (e.g A->B->C->A),
+     * then these delegates will be removed as unnecessary
+     *
+     * @param assignee authority for replacement
+     * @param delegate authority which set instead of specified assignee
+     */
+    void setDelegate(NodeRef roleRef, NodeRef assignee, NodeRef delegate);
+
+    /**
+     * Set assignees delegates for role. This delegates would be set
+     * as assignees in dynamic roles instead of specified assignees
+     *
+     * If result delegates is looped (e.g A->B->C->A),
+     * then this delegates will removed as unnecessary
+     *
+     * @param delegates is a map where key is authority for replacement and value is
+     *                  authority which set instead of the authority in key
+     */
+    void setDelegates(NodeRef roleRef, Map<NodeRef, NodeRef> delegates);
+
+    /**
+     * Remove delegate for authority
+     * @param assignee authority
+     */
+    void removeDelegate(NodeRef roleRef, NodeRef assignee);
+
+    /**
+     * Remove all delegates for role
+     */
+    void removeDelegates(NodeRef roleRef);
+
+    /**
+     * Get delegates and fix corrupted data if needed
+     */
+    Map<NodeRef, NodeRef> getDelegates(NodeRef roleRef);
 }

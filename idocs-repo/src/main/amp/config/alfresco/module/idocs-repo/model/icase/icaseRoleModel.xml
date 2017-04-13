@@ -89,5 +89,13 @@
                 </association>
             </associations>
         </aspect>
+        
+        <aspect name="icaseRole:hasDelegates">
+            <properties>
+                <property name="icaseRole:delegates">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
     </aspects>
 </model>

@@ -1,1 +1,1 @@
-<#include "view/row-checkbox.ftl" />
+<#include "row-checkbox.ftl" />
