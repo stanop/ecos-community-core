@@ -116,6 +116,12 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
+    .init(function() {
+        var predicateId = this.resolve('predicate.id');
+        if (predicateId && predicateId.indexOf("boolean") != -1){
+            this.value("boolean");
+        }
+    })
 	;
 
 CreateVariant
@@ -384,6 +390,16 @@ Predicate
 PredicateList
 	.key('id', s)
 	.property('predicates', [ Predicate ])
+    .init(function() {
+        if (this.predicates() && this.predicates()[0].id().indexOf("boolean") != -1) {
+            var choosePredicate = new Predicate({
+                id: "choose",
+                label: Alfresco.util.message("form.select.label"),
+                needsValue: false
+            });
+            this.predicates().unshift(choosePredicate);
+        }
+    })
 	;
 
 FormInfo
