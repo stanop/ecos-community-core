@@ -52,6 +52,10 @@
                         <constraint ref="xni:constraint:status"/>
                     </constraints>
                 </property>
+                <property name="xni:tag">
+                    <title>Tag</title>
+                    <type>d:text</type>
+                </property>
             </properties>
             <associations>
                 <association name="xni:dependsOn">
