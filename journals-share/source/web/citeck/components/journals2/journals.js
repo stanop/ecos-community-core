@@ -117,18 +117,10 @@ Criterion
 		return result;
 	})
     .init(function() {
-    	if (this.predicate() && this.predicate().id().indexOf("boolean") != -1) {
+        var predicateId = this.resolve('predicate.id');
+        if (predicateId && predicateId.indexOf("boolean") != -1){
             this.value("boolean");
-            var predicates = this.resolve("field.datatype.predicateList.predicates");
-            var choosePredicate = new Predicate({
-                id: "choose",
-                label: Alfresco.util.message("form.select.label"),
-                needsValue: false
-            });
-            if (predicates.length && !_.find(predicates, choosePredicate)) {
-                predicates.unshift(choosePredicate);
-			}
-		}
+        }
     })
 	;
 
@@ -399,6 +391,16 @@ Predicate
 PredicateList
 	.key('id', s)
 	.property('predicates', [ Predicate ])
+    .init(function() {
+        if (this.predicates() && this.predicates()[0].id().indexOf("boolean") != -1) {
+            var choosePredicate = new Predicate({
+                id: "choose",
+                label: Alfresco.util.message("form.select.label"),
+                needsValue: false
+            });
+            this.predicates().unshift(choosePredicate);
+        }
+    })
 	;
 
 FormInfo
