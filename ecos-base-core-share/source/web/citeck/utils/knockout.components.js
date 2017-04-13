@@ -825,6 +825,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
     function prepareHTMLByTemplate(html) {
         var fixedHTML = html.replace("textInput: textValue", "value: value");
+        fixedHTML = fixedHTML.replace("textInput: textValidationValue", "value: value");
         fixedHTML = fixedHTML.replace("value: textValue", "value: value");
         fixedHTML = fixedHTML.replace("optionsText: function(item) { return getValueTitle(item) }", 
                                       "optionsText: optionsText, optionsValue: optionsValue");
