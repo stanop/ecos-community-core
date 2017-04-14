@@ -22,21 +22,21 @@
 
         <input id="${fieldId}" type="text" placeholder="${placeholder}" data-bind="value: ko.computed({
             read: function() {
-                return value() ? moment(value()).format('${mask}') : null;
+                return value() ? moment(value()).format('${mask}') : null; 
             },
             write: function(newValue) {
                 var dateWrapper = $root.rootObjects().moment(newValue, '${mask}');
                 value(dateWrapper.isValid() ? dateWrapper.toDate() : null)
             }
-        }), disable: protected">
+        }), disable: protected"> 
     <#else>
         <#assign type><#if mode == "browser">date<#else>text</#if></#assign>
-
+        
         <input id="${fieldId}" placeholder="${formatIE}" type="${type}"
-               data-bind="value: textValue, disable: protected"
+               data-bind="value: textValue, disable: protected" 
         />
     </#if>
-
+    
     <!-- ko ifnot: protected -->
         <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
             <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">

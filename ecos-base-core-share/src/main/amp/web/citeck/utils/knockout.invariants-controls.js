@@ -555,8 +555,8 @@ ko.bindingHandlers.journalControl = {
     var settings = valueAccessor(),
         value    = settings.value,
         multiple = settings.multiple,
-        params   = allBindings().params();
-
+        params   = allBindings().params(),
+        removeSelection = params.removeSelection;
     // sorting
     var sortBy  = params.sortBy;
 
@@ -741,9 +741,6 @@ ko.bindingHandlers.journalControl = {
                 return "800px";
             })();
 
-        event.stopPropagation();
-        event.preventDefault();
-
             panel = new YAHOO.widget.Panel(panelId, {
                 width:          optimalWidth,
                 visible:        false, 
@@ -863,14 +860,23 @@ ko.bindingHandlers.journalControl = {
 
             // panel submit and cancel buttons
             Event.on(submitButtonId, "click", function(event) {
-                value(ko.utils.unwrapObservable(this.selectedElements));
+                if (selectedElements() && selectedElements().length) {
+                    value(removeSelection
+                        ? (multiple() ? value().concat(selectedElements()) : selectedElements())
+                        : ko.utils.unwrapObservable(selectedElements))
+                }
                 this.panel.hide();
-            }, { selectedElements: selectedElements, panel: panel }, true);
+            }, { selectedElements: removeSelection ? value() : selectedElements, panel: panel }, true);
 
             Event.on(cancelButtonId, "click", function(event) {
-                selectedElements(value());
                 this.hide();
             }, panel, true);
+
+            panel.hideEvent.subscribe(function() {
+                if (removeSelection) {
+                    selectedElements([]);
+                }
+            });
 
             // tabs listener
             Event.on(journalPickerHeaderId, "click", function(event) {
@@ -1084,8 +1090,6 @@ ko.bindingHandlers.journalControl = {
 
             if (value()) selectedElements(multiple() ? value() : [ value() ]);
 
-            if (value()) selectedElements(multiple() ? value() : [ value() ]);
-
 
             if (!Citeck.mobile.isMobileDevice()) {
                 YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
@@ -1096,16 +1100,6 @@ ko.bindingHandlers.journalControl = {
                     };
                 });
             }
-
-    if (!Citeck.mobile.isMobileDevice()) {
-        YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
-            var itemsCount = args[1].mobileMode ? 5 : 10;
-            if (itemsCount != maxItems()) { 
-                pageNumber(1);
-                maxItems(itemsCount);
-            };
-        });
-    }
 
             // reload filterOptions request if was created new object
             YAHOO.Bubbling.on("object-was-created", function(layer, args) {
@@ -1784,6 +1778,7 @@ ko.bindingHandlers.fileUploadControl = {
                     $(openFileUploadDialogButton).removeAttr("disabled");
                 }
             });
+
             // disable upload button
             $(element).addClass("loading");
             $(openFileUploadDialogButton).attr("disabled", "disabled");
@@ -1867,10 +1862,6 @@ ko.bindingHandlers.orgstructControl = {
             allowedGroupType: "",
             rootGroup: ko.observable("_orgstruct_home_")
         };
-
-        // from fake model option
-        if (data.allowedAuthorityType && data.allowedAuthorityType())
-            options.allowedAuthorityType = data.allowedAuthorityType();
 
         // from fake model option
         if (data.allowedAuthorityType && data.allowedAuthorityType())

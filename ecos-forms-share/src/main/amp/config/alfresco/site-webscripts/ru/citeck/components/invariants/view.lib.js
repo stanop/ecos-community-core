@@ -19,8 +19,8 @@ function getAttributesRecursively(element, attributes) {
 function get(view, type) {
     var objects = [];
     for(var i in view.elements) {
-        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) {
-            objects.push(view.elements[i]);
+        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) { 
+            objects.push(view.elements[i]); 
         }
     }
     return objects;
@@ -51,12 +51,12 @@ function getInvariantsRecursively(element, invariants) {
 }
 
 function getWritePermission(nodeRef) {
-    if (!nodeRef) return;
+  if (!nodeRef) return;
 
-    var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
-        response = eval('(' + remote.call(serviceURI) + ')');
+  var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
+      response = eval('(' + remote.call(serviceURI) + ')'); 
 
-    return response;
+  return response;
 }
 
 function getViewData(args) {
@@ -97,6 +97,6 @@ function getViewData(args) {
     if(response.status != 200) {
         throw 'Can not get view from uri "' + serviceURI + '": ' + response.message;
     }
-
+    
     return viewData;
 }

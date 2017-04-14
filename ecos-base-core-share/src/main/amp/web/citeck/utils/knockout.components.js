@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Citeck LLC.
+ * Copyright (C) 2016 - 2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -825,6 +825,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
     function prepareHTMLByTemplate(html) {
         var fixedHTML = html.replace("textInput: textValue", "value: value");
+        fixedHTML = fixedHTML.replace("textInput: textValidationValue", "value: value");
         fixedHTML = fixedHTML.replace("value: textValue", "value: value");
         fixedHTML = fixedHTML.replace("optionsText: function(item) { return getValueTitle(item) }", 
                                       "optionsText: optionsText, optionsValue: optionsValue");
