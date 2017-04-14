@@ -1,12 +1,12 @@
-<#macro printNodes nodes>
+<#macro printNodes nodes excludeAttributes=[]>
     <#escape x as jsonUtils.encodeJSONString(x)>
         <#list nodes as node>
-            <@printNode node /><#if node_has_next>,</#if>
+            <@printNode node excludeAttributes/><#if node_has_next>,</#if>
         </#list>
     </#escape>
 </#macro>
 
-<#macro printNode node>
+<#macro printNode node excludeAttributes=[]>
     <#escape x as jsonUtils.encodeJSONString(x)>
         {
             "nodeRef": "${node.nodeRef}",
@@ -22,15 +22,17 @@
             "attributes": {
                 <#assign attributes = nodeService.getAttributes(node) />
                 <#list attributes?keys as key>
-                "${key}": <#if !(attributes[key]??)>
-                    null
-                <#elseif nodeService.isContentProperty(attributes[key])>
-                    <@printValue node.properties[key] />
-                <#elseif nodeService.isDateProperty(key)>
-                    <@printValue value=attributes[key] dateFormat="yyyy-MM-dd" />
-                <#else>
-                    <@printValue attributes[key] />
-                </#if><#if key_has_next>,</#if>
+                    <#if !excludeAttributes?seq_contains(key)>
+                        "${key}": <#if !(attributes[key]??)>
+                            null
+                        <#elseif nodeService.isContentProperty(attributes[key])>
+                            <@printValue node.properties[key] />
+                        <#elseif nodeService.isDateProperty(key)>
+                            <@printValue value=attributes[key] dateFormat="yyyy-MM-dd" />
+                        <#else>
+                            <@printValue attributes[key] />
+                        </#if><#if key_has_next>,</#if>
+                    </#if>
                 </#list>
             },
 			"permissions": {
