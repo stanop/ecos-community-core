@@ -41,28 +41,28 @@ public interface NodeInfoFactory {
 	 * Create empty node info object.
 	 * @return node info object.
 	 */
-	public NodeInfo createNodeInfo();
+	NodeInfo createNodeInfo();
 
 	/**
 	 * Create node info object, filled with information about specified node.
 	 * @param nodeRef specifies node
 	 * @return node info object.
 	 */
-	public NodeInfo createNodeInfo(NodeRef nodeRef);
+	NodeInfo createNodeInfo(NodeRef nodeRef);
 
 	/**
 	 * Create node info object, filled with information about specified workflow task.
 	 * @param task specifies task
 	 * @return node info object.
 	 */
-	public NodeInfo createNodeInfo(WorkflowTask task);
+	NodeInfo createNodeInfo(WorkflowTask task);
 
 	/**
 	 * Create node info object, filled with information about specified workflow instance.
 	 * @param workflow specifies workflow instance
 	 * @return node info object.
 	 */
-	public NodeInfo createNodeInfo(WorkflowInstance workflow);
+	NodeInfo createNodeInfo(WorkflowInstance workflow);
 	
     /**
      * Create node info object, filled with specified attributes.
@@ -71,7 +71,7 @@ public interface NodeInfoFactory {
      * 
      * @see NodeAttributeService
      */
-    public NodeInfo createNodeInfo(Map<QName, Object> attributes);
+	NodeInfo createNodeInfo(Map<QName, Object> attributes);
 
     /**
      * Set attributes in specified nodeInfo.
@@ -81,7 +81,7 @@ public interface NodeInfoFactory {
      * 
      * @see NodeAttributeService
      */
-    public void setAttributes(NodeInfo nodeInfo, Map<QName, Object> attributes);
+	void setAttributes(NodeInfo nodeInfo, Map<QName, Object> attributes);
 
 	/**
 	 * Updates node with information, specified in nodeInfo.
@@ -91,7 +91,7 @@ public interface NodeInfoFactory {
 	 * @param nodeInfo information to be persisted
 	 */
 	@Deprecated
-	public void persist(NodeRef nodeRef, NodeInfo nodeInfo);
+	void persist(NodeRef nodeRef, NodeInfo nodeInfo);
 
 	/**
 	 * Updates node with information, specified in nodeInfo.
@@ -101,7 +101,7 @@ public interface NodeInfoFactory {
 	 * @param full true to delete existing properties and associations
 	 */
 	@Deprecated
-	public void persist(NodeRef nodeRef, NodeInfo nodeInfo, boolean full);
+	void persist(NodeRef nodeRef, NodeInfo nodeInfo, boolean full);
 
 	/**
 	 * Creates or updates node with information, specified in nodeInfo.
@@ -111,6 +111,6 @@ public interface NodeInfoFactory {
 	 * @param full true to delete existing properties and associations
 	 * @return nodeRef, that was created or updated.
 	 */
-	public NodeRef persist(NodeInfo nodeInfo, boolean full);
+	NodeRef persist(NodeInfo nodeInfo, boolean full);
 
 }
