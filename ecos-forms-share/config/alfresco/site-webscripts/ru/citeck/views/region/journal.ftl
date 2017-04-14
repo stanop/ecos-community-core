@@ -43,6 +43,16 @@
     <#else>collapse</#if>
 </#assign>
 
+<#assign removeSelection>
+    <#if params.removeSelection??>
+        ${params.removeSelection}
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
+             config.scoped["InvariantControlsConfiguration"].journal?? &&
+             config.scoped["InvariantControlsConfiguration"]["journal"].attributes["removeSelection"]??>
+        ${config.scoped["InvariantControlsConfiguration"]["journal"].attributes["removeSelection"]}
+    <#else>true</#if>
+</#assign>
+
 <div id="${controlId}" class="journal-control" 
     data-bind="journalControl: { value: value, multiple: multiple, options: options }, params: function() {
       return {
@@ -50,7 +60,7 @@
         <#if params.searchBar??>searchBar: '${params.searchBar}',</#if>
         <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: '${params.defaultVisibleAttributes}',</#if>
         <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: '${params.defaultSearchableAttributes}',</#if>
-        
+        removeSelection: ${removeSelection?trim},
         mode: '${mode?trim}',
         dock: ${dock?trim},
         hightlightSelection: ${hightlightSelection?trim},

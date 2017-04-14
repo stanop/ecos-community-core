@@ -36,6 +36,7 @@ function getMaxItems()
 }
 
 var regionId = args['region-id'];
+var filter = args.filter;
 model.preferences = AlfrescoUtil.getPreferences("org.alfresco.share.mydocuments.dashlet." + regionId);
 model.filters = getFilters();
 model.maxItems = getMaxItems();
@@ -46,7 +47,7 @@ function main()
    model.prefFilter = model.preferences.filter;
    if (model.prefFilter == null)
    {
-      model.prefFilter = "recentlyModifiedByMe";
+      model.prefFilter = filter ? filter : "recentlyModifiedByMe";
    }
 
    model.prefSimpleView = model.preferences.simpleView;
