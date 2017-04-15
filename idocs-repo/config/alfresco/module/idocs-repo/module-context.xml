@@ -30,6 +30,7 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/security-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-cases-context-2.9.0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-templates-journals-context.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/jobs-context.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-11-1.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-12-0.xml" />
