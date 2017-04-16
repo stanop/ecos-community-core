@@ -2,18 +2,24 @@ package ru.citeck.ecos.job.status;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.search.impl.lucene.LuceneUtils;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.ISO8601DateFormat;
 import org.alfresco.util.ParameterCheck;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.utils.TimeUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,16 +31,19 @@ public class ChangeStatusByDateWork {
     private static final Log logger = LogFactory.getLog(ChangeStatusJob.class);
 
     private static final String TYPE_QUERY = "TYPE:\"%s\"";
+    private static final String ASPECT_QUERY = "ASPECT:\"%s\"";
     private static final String DATE_QUERY = "@%s:[MIN TO \"%s\"]";
     private static final String STATUS_FIELD = "@icase\\:caseStatusAssoc_added:";
 
-    private QName type;
+    private QName className;
+    private boolean classIsAspect;
 
     private List<String> includeStatuses = null;
     private List<String> excludeStatuses = null;
 
     private QName dateField;
-    private String dateOffset = "P0D";
+    private String dateOffset;
+    private int datePrecision;
 
     private String targetStatus;
 
@@ -42,12 +51,18 @@ public class ChangeStatusByDateWork {
     private SearchService searchService;
     private CaseStatusService caseStatusService;
     private ChangeStatusJobRegistry registry;
+    private DictionaryService dictionaryService;
 
     private boolean enabled = true;
 
     public void init() {
         ParameterCheck.mandatory("targetStatus", targetStatus);
+        ParameterCheck.mandatory("dateField", dateField);
+        ParameterCheck.mandatory("className", className);
         registry.registerWork(this);
+
+        datePrecision = TimeUtils.getDurationPrecision(dateOffset);
+        classIsAspect = dictionaryService.getClass(className).isAspect();
     }
 
     public List<NodeRef> queryNodes() {
@@ -91,15 +106,20 @@ public class ChangeStatusByDateWork {
     }
 
     private boolean checkType(NodeRef nodeRef) {
-        return type == null || type.equals(nodeService.getType(nodeRef));
+        if (classIsAspect) {
+            return nodeService.hasAspect(nodeRef, className);
+        } else {
+            return className.equals(nodeService.getType(nodeRef));
+        }
     }
 
     private boolean checkDate(NodeRef nodeRef, Date dateSearchValue) {
-        if (dateSearchValue == null) {
-            return true;
-        }
         Date nodeDate = (Date) nodeService.getProperty(nodeRef, dateField);
-        return nodeDate != null && nodeDate.getTime() < dateSearchValue.getTime();
+        if (nodeDate != null) {
+            nodeDate = DateUtils.truncate(nodeDate, datePrecision);
+            return nodeDate.getTime() <= dateSearchValue.getTime();
+        }
+        return false;
     }
 
     private boolean checkStatus(NodeRef nodeRef) {
@@ -153,7 +173,7 @@ public class ChangeStatusByDateWork {
                 sb.append(delimiter);
             }
             if (!required) {
-                sb.append(" NOT ");
+                sb.append("NOT ");
             }
             sb.append(STATUS_FIELD).append('"').append(statusRef).append('"');
         }
@@ -161,28 +181,26 @@ public class ChangeStatusByDateWork {
     }
 
     private String getDateQuery(Date date) {
-        return date != null ? String.format(DATE_QUERY, dateField, LuceneUtils.getLuceneDateString(date)) : "";
+        return String.format(DATE_QUERY, dateField, ISO8601DateFormat.format(date));
     }
 
     private Date getDateSearchValue() {
-        if (dateField != null) {
-            return dateOffset != null ? TimeUtils.getCurrentDateWithOffset(dateOffset) : new Date();
-        }
-        return null;
+        return TimeUtils.shiftDate(DateUtils.truncate(new Date(), datePrecision), dateOffset);
     }
 
     private String getTypeQuery() {
-        if (type != null) {
-            return String.format(TYPE_QUERY, type);
+        if (classIsAspect) {
+            return String.format(ASPECT_QUERY, className);
+        } else {
+            return String.format(TYPE_QUERY, className);
         }
-        return "";
     }
 
     @Override
     public String toString() {
-        return String.format("ChangeStatusData:[type:%s, includeStatuses:%s, excludeStatuses:%s, " +
+        return String.format("ChangeStatusData:[className:%s, includeStatuses:%s, excludeStatuses:%s, " +
                              "dateField:%s, offset:%s, targetStatus:%s]",
-                             type, includeStatuses, excludeStatuses, dateField, dateOffset, targetStatus);
+                             className, includeStatuses, excludeStatuses, dateField, dateOffset, targetStatus);
     }
 
     private NodeRef getStatus(String name) {
@@ -201,12 +219,8 @@ public class ChangeStatusByDateWork {
         return enabled;
     }
 
-    public void setType(QName type) {
-        this.type = type;
-    }
-
-    public QName getType() {
-        return type;
+    public void setClassName(QName className) {
+        this.className = className;
     }
 
     public void setIncludeStatuses(List<String> includeStatuses) {
@@ -243,6 +257,10 @@ public class ChangeStatusByDateWork {
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
     }
 
     public void setChangeStatusRegistry(ChangeStatusJobRegistry changeStatusRegistry) {

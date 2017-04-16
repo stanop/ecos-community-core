@@ -1,7 +1,10 @@
 package ru.citeck.ecos.utils;
 
 import org.alfresco.util.ISO8601DateFormat;
+import org.alfresco.util.ParameterCheck;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.poi.util.StringUtil;
 import org.joda.time.Interval;
 
 import java.util.ArrayList;
@@ -16,9 +19,14 @@ import java.util.regex.Pattern;
 public class TimeUtils {
 
     /**
-     * @param offset ISO 8601 Duration format with '-' at start if offset is negative. e.g. P10D - 10 days
+     * @param date date to shift
+     * @param offset ISO8601 Duration format with '-' at start if offset is negative.
+     *               e.g. P10D == 10 days, -PT10M == -10 minutes
      */
-    public static Date getCurrentDateWithOffset(String offset) {
+    public static Date shiftDate(Date date, String offset) {
+
+        ParameterCheck.mandatory("date", date);
+        if (StringUtils.isBlank(offset)) return date;
 
         String offsetExpression = offset;
         boolean isBackOffset = false;
@@ -27,8 +35,7 @@ public class TimeUtils {
             offsetExpression = offsetExpression.substring(1);
         }
 
-        Date currentDate = truncateByDurationPrecision(new Date(), offsetExpression);
-        String currentISODate = ISO8601DateFormat.format(currentDate);
+        String currentISODate = ISO8601DateFormat.format(date);
 
         Interval interval = Interval.parse(String.format("%s/%s", currentISODate, offsetExpression));
         if (isBackOffset) {
@@ -39,8 +46,16 @@ public class TimeUtils {
         }
     }
 
-    public static Date truncateByDurationPrecision(Date date, String durationExpression) {
-        return PrecisionByDuration.getPrecision(durationExpression).format(date);
+    /**
+     * @param duration - ISO8601 duration
+     * @return Calendar code of smallest field. e.g. P1Y1M1D -> Day, P1DT0H0M -> Minute
+     * @see Calendar
+     */
+    public static int getDurationPrecision(String duration) {
+        if (StringUtils.isBlank(duration)) {
+            return Calendar.MILLISECOND;
+        }
+        return PrecisionByDuration.getPrecision(duration).getField();
     }
 
     private static class PrecisionByDuration {
@@ -66,21 +81,22 @@ public class TimeUtils {
             return pattern.matcher(expression).find();
         }
 
-        public Date format(Date input) {
-            return DateUtils.truncate(input, field);
+        public int getField() {
+            return field;
         }
 
-        public static PrecisionByDuration getPrecision(String expression) {
-            if (!expression.startsWith("P")) {
-                throw new IllegalArgumentException("Duration expression must starts with 'P'. Expression: " + expression);
+        static PrecisionByDuration getPrecision(String duration) {
+            if (!duration.startsWith("P") && !duration.startsWith("-P")) {
+                throw new IllegalArgumentException("Duration must starts with 'P' or '-P'. " +
+                                                   "Duration: " + duration);
             }
             for (PrecisionByDuration precision : precisions) {
-                if (precision.matches(expression)) {
+                if (precision.matches(duration)) {
                     return precision;
                 }
             }
-            throw new IllegalArgumentException("Expression must contains at least one of " +
-                                               "Y, M, D, H, S symbols. expression: " + expression);
+            throw new IllegalArgumentException("Duration must contains at least one of " +
+                                               "Y, M, D, H, S symbols. Duration: " + duration);
         }
     }
 }

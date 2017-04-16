@@ -32,7 +32,9 @@
         <property name="nodeService" ref="nodeService" />
         <property name="searchService" ref="searchService" />
         <property name="caseStatusService" ref="caseStatusService" />
+        <property name="dictionaryService" ref="dictionaryService" />
         <property name="changeStatusRegistry" ref="ru.citeck.ecos.job.status.ChangeStatusJobRegistry" />
+        <property name="dateOffset" value="P0D" />
     </bean>
 
 </beans>
