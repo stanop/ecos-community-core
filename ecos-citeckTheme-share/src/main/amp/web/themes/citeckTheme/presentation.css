@@ -2139,10 +2139,6 @@ table td.thumbnail img
    margin: 0;
 }
 
-#alf-content {
-  padding: 15px 25px 0px 25px;
-}
-
 #bd {
     padding-bottom: 0;
 }
@@ -3960,7 +3956,18 @@ div#HEADER_USER_STATUS {
 /* END CUSTOMISE PAGE */
 
 
+#alf-hd h1.sub-title {
+  padding: 15px 40px;
+  border-top: 1px solid #ccc;
+  font-size: 22px;
+  font-weight: normal;
+  text-transform: uppercase;
+  margin: 0;
+}
 
+#alf-content {
+  padding: 15px 25px 0px 25px;
+}
 
 /* others */
 [rel="diff_stylesheet"].yui-u > div:not(:first-child) {
@@ -4003,6 +4010,22 @@ div#HEADER_USER_STATUS {
 #008c03 - green button
 */
 
+/* chrome hacks */
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+   #alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > 
+   span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
+      padding-bottom: 3px; 
+   }
+}
+
+/* firefox hacks */
+@-moz-document url-prefix() {
+   #alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > 
+   span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
+      position: relative;
+      top: -1px;
+   }
+}
 
 /* mobile fixes */
 
@@ -4092,6 +4115,41 @@ div#HEADER_USER_STATUS {
 }
 
 
+/* ONLY FOR IE */
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* initiate to static */
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].date-entry,
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].time-entry,
+  .share-form .form-container .form-fields .yui-u .form-field div.help-text,
+  .share-form .form-container .form-fields .yui-u .form-field > label,
+  .share-form .form-container .form-fields .yui-u .form-field > select,
+  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"],
+  .share-form .form-container .form-fields .yui-u .form-field > .format-info,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .show-picker,
+  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
+  .share-form .form-container .form-fields .yui-u .form-field > a,
+  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].date-entry,
+  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
+  .share-form .form-container .form-fields .form-field.alf-textarea div.help-text,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"],
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .dynamic-list,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > a,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field div.help-text
+  #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
+    position: static;
+  }
+}
+
+
 /* dynamic-tree */
 .yui-skin-citeckTheme .dynamic-tree-picker .dynamic-tree-list .item-buttons {
   right: -25px;
@@ -4162,39 +4220,41 @@ div#HEADER_USER_STATUS {
 }
 
 .yui-skin-citeckTheme .form-template-tabs .template-tabs .tabs-body {
-    padding-bottom: 5px;
+  padding-bottom: 5px;
 }
 
 
+/* tab-template in view mode */
 
-/* ie hacks */
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-    /* initiate to static */
-  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].date-entry,
-  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].time-entry,
-  .share-form .form-container .form-fields .yui-u .form-field div.help-text,
-  .share-form .form-container .form-fields .yui-u .form-field > label,
-  .share-form .form-container .form-fields .yui-u .form-field > select,
-  .share-form .form-container .form-fields .yui-u .form-field > input[type="text"],
-  .share-form .form-container .form-fields .yui-u .form-field > .format-info,
-  .share-form .form-container .form-fields .yui-u .form-field > .object-finder,
-  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .show-picker,
-  .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
-  .share-form .form-container .form-fields .yui-u .form-field > a,
-  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].date-entry,
-  .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
-  .share-form .form-container .form-fields .form-field.alf-textarea div.help-text,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"],
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .dynamic-list,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > a,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field div.help-text {
+.yui-skin-citeckTheme .invariants-form.view-form .template-tabs .tabs-body {
+  padding: 15px;
+}
+
+.yui-skin-citeckTheme .invariants-form.view-form .template-tabs .tabs-title li.tab-title.selected {
+  background-color: #fafafa;
+}
+
+.yui-skin-citeckTheme .orgstruct-console .toolbar.theme-bg-2 {
+  position: static;
+}
+
+.yui-skin-citeckTheme .orgstruct-console .toolbar .toolbar-buttons {
     position: static;
-  }
+    display: inline-block;
+    height: 20px;
+}
+
+/* template table */
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-label {
+     width: 100%;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-row .template-label {
+    width: 45.5%;
+}
+
+.yui-skin-citeckTheme .invariants-form .template-table .template-half-width .template-label,
+.yui-skin-citeckTheme .invariants-form .template-table .template-third-width .template-label {
+     min-height: 36px;
 }
