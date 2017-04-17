@@ -7,6 +7,7 @@
 	<template-instance>node-view</template-instance>
 	<authentication>user</authentication>
 	<components>
+		
 		<component>
 			<region-id>node-view</region-id>
 			<url>/citeck/components/node-view</url>
@@ -18,6 +19,7 @@
 				<runtimeKey>node-create</runtimeKey>
 			</properties>
 		</component>
+		
 		<component>
 			<region-id>node-view-mgr</region-id>
 			<url>/citeck/components/node-view-mgr</url>
@@ -28,5 +30,6 @@
 				<redirect>{redirect}</redirect>
 			</properties>
 		</component>
+	
 	</components>
 </page>
