@@ -1441,7 +1441,7 @@
                                         else
                                         {
                                             //Discard template, build link from scratch
-                                            link = $siteURL("document-details?nodeRef={nodeRef}", {
+                                            link = $siteURL("card-details?nodeRef={nodeRef}", {
                                                 nodeRef : item.nodeRef,
                                                 site : item.site
                                             });
@@ -1844,7 +1844,7 @@
                         else
                         {
                             //Discard template, build link from scratch
-                            link = $siteURL("document-details?nodeRef={nodeRef}", {
+                            link = $siteURL("card-details?nodeRef={nodeRef}", {
                                 nodeRef : item.nodeRef,
                                 site : item.site
                             });

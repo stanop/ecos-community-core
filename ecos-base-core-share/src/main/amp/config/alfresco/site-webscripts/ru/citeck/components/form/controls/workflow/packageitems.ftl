@@ -5,7 +5,7 @@
    <#local documentLinkResolver>
 function(item)
 {
-   return Alfresco.util.siteURL("document-details?nodeRef=" + item.nodeRef, { site: item.site });
+   return Alfresco.util.siteURL("card-details?nodeRef=" + item.nodeRef, { site: item.site });
 }
    </#local>
    <#local allowAddAction = false>

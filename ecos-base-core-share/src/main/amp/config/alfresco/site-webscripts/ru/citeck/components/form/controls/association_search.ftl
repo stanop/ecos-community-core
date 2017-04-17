@@ -50,9 +50,9 @@
         <#if field.control.params.showTargetLink??>
             showLinkToTarget: ${field.control.params.showTargetLink},
             <#if page?? && page.url.templateArgs.site??>
-                targetLinkTemplate: "${url.context}/page/site/${page.url.templateArgs.site!""}/document-details?nodeRef={nodeRef}",
+                targetLinkTemplate: "${url.context}/page/site/${page.url.templateArgs.site!""}/card-details?nodeRef={nodeRef}",
             <#else>
-                targetLinkTemplate: "${url.context}/page/document-details?nodeRef={nodeRef}",
+                targetLinkTemplate: "${url.context}/page/card-details?nodeRef={nodeRef}",
             </#if>
         </#if>
         <#if field.control.params.allowNavigationToContentChildren??>
