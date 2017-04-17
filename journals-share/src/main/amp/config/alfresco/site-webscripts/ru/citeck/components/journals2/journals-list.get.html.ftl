@@ -50,7 +50,7 @@
                     </#if>
 
                     <@journals.renderCurrentIds />
-                    multiActions: <@journals.renderMultiActionsJSON multiActions />
+                    multiActions: <@journals.renderMultiActionsJSON />,
                 },
                 cache: <@journals.renderCacheJSON />,
                 pagingOptions: [${pagingOptions}]
@@ -118,36 +118,6 @@
                                 <button data-bind="click: toggleSidebar"></button>
                             </span>          
                         </span>
-
-                        <#if additionalMenuItem?seq_contains("showSelectMenuItem")>
-                            <span class="selected-menu" data-bind="yuiButton: { type: 'menu', menu: '${toolbarId}-fileSelect-menu' }">
-                                <span class="first-child">
-                                    <button>${msg("menu.select")}</button>
-                                </span>
-                            </span>
-
-                            <div id="${toolbarId}-fileSelect-menu" class="yui-overlay yuimenu button-menu">
-                                <div class="bd file-select">
-                                    <ul>
-                                        <li class="yuimenuitem">
-                                            <a class="yuimenuitemlabel" data-bind="click: selectAllRecords">
-                                                <span class="selectAll">${msg("menu.select.all")}</span>
-                                            </a>
-                                        </li>
-                                        <li class="yuimenuitem">
-                                            <a class="yuimenuitemlabel" data-bind="click: selectInvertRecords">
-                                                <span class="selectInvert">${msg("menu.select.invert")}</span>
-                                            </a>
-                                        </li>
-                                        <li class="yuimenuitem">
-                                            <a class="yuimenuitemlabel" data-bind="click: deselectAllRecords">
-                                                <span class="selectNone">${msg("menu.selected-items.deselect-all")}</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </#if>
 
                         <@journals.renderCreateVariantsMenu id />
 

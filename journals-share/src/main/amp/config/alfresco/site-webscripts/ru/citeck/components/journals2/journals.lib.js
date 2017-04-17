@@ -97,42 +97,4 @@ function fillModel() {
 		model.settingsListJSON = loadSettingsList(journalType);
 	}
 
-	fillActions();
-}
-
-function fillActions() {
-	var multiActions = getScopedConfig("DocumentLibrary", "multi-select", "action", function(a) {return a.attributes;});
-	var hiddenActions = getScopedConfig("Journals", "hidden-actions", "action", function(a) {return a.attributes.id;});
-
-	var actions = [];
-
-	for (var i = 0; i < multiActions.length; i++) {
-		var action = multiActions[i];
-		if (hiddenActions.indexOf(action["id"]) == -1) {
-			actions.push(action);
-		}
-	}
-
-	model.multiActions = actions;
-}
-
-function getScopedConfig(scope, section, itemType, mapFunc) {
-	var scopeConfig = config.scoped[scope];
-	if (!scopeConfig) {
-		return [];
-	}
-	var sectionConfig = scopeConfig[section];
-	if (!sectionConfig) {
-		return [];
-	}
-	var itemsCollection = sectionConfig.childrenMap[itemType];
-	if (!itemsCollection) {
-		return [];
-	}
-	var result = [];
-	for (var i = 0; i < itemsCollection.size(); i++) {
-		var item = itemsCollection.get(i);
-		result.push(mapFunc? mapFunc(item) : item);
-	}
-	return result;
 }
