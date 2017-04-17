@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>node-header</shortname>
+    <description>Node header component - a header component which can handle both folders and documents and show correct version label</description>
+    <url>/components/node-details/vers-node-header</url>
+</webscript>

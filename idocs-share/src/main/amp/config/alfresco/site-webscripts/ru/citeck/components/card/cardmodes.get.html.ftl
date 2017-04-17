@@ -1,7 +1,3 @@
-<@markup id="css">
-	<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/card/cardmodes.css" />
-</@>
-
 <#assign id = args.htmlid?js_string />
 <#if nodeRef?? && modes?size != 0>
 	<#escape x as x?html>
