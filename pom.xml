@@ -39,7 +39,9 @@
        	<!-- should be empty for releases -->
        	<!-- and "-SNAPSHOT" for snapshots -->
         <!--<ecos.module.release>-SNAPSHOT</ecos.module.release>-->
-        <ecos.build.classifier>common</ecos.build.classifier>
+        <alfresco.version>5.1.2</alfresco.version>
+        <dependency.surf.version>6.10</dependency.surf.version>
+        <ecos.build.classifier>alfresco-${alfresco.version}</ecos.build.classifier>
 
         <st-override.version>3.1.a.0-SNAPSHOT</st-override.version>
         <ecos-citeckTheme.version>2.0.0.0-SNAPSHOT</ecos-citeckTheme.version>
@@ -62,7 +64,6 @@
           <alfresco.version>5.1.e</alfresco.version>
           <alfresco.rm.version>2.3</alfresco.rm.version>
           <alfresco.data.location>/absolute/path/to/alf_data_dev</alfresco.data.location> -->
-        <alfresco.version>5.1.2</alfresco.version>
         <alfresco.rm.version>2.4.b</alfresco.rm.version>
 
         <!-- This control the root logging level for all apps uncomment and change, defaults to WARN
@@ -76,7 +77,6 @@
 
         <!-- The Alfresco Share web application is accessible via this URL -->
         <share.client.url>http://localhost:8080/share</share.client.url>
-        <dependency.surf.version>6.10</dependency.surf.version>
     </properties>
 
     <distributionManagement>
