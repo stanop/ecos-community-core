@@ -272,6 +272,7 @@
             }, 3000);
 
             document.getElementById("xniTable").style.display = "none";
+            document.getElementById("inputForFilter").style.display = "none";
             document.getElementById("buttons").style.display = "none";
             document.getElementById("loadText").style.display = "block";
             document.getElementById("loader").style.display = "block";
@@ -279,6 +280,7 @@
 
         function loadingStop() {
             document.getElementById("xniTable").style.display = "";
+            document.getElementById("inputForFilter").style.display = "";
             document.getElementById("buttons").style.display = "";
             document.getElementById("loadText").style.display = "none";
             document.getElementById("loader").style.display = "none";
