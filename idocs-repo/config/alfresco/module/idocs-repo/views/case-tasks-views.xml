@@ -39,7 +39,16 @@
         <field prop="icaseTask:workflowDefinitionName">
             <region name="input" template="select"/>
         </field>
-        <field assoc="icaseTask:performer" />
+        <field assoc="icaseTask:performer">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                        parent = parent.parent;
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </field>
     </view>
     
     <view class="icaseTask:confirmTask">

@@ -49,16 +49,6 @@
                 message(value.replace("activiti$", "") + ".workflow.title")
             </invariant>
         </property>
-        <associations type="icaseTask:performer">
-            <invariant on="options" language="javascript" final="true">
-                (function() {
-                var parent = node.parent;
-                while(parent &amp;&amp; parent.isSubType("activ:activity"))
-                parent = parent.parent;
-                return parent.childAssocs["icaseRole:roles"] || [];
-                })()
-            </invariant>
-        </associations>
     </type>
 
     <type name="icaseTask:confirmTask">
