@@ -50,6 +50,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>1st-override-repo</artifactId>
+            <classifier>${ecos.build.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
@@ -125,6 +131,12 @@
                         <overlay>
                             <groupId>org.sharextras</groupId>
                             <artifactId>javascript-console-repo</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>1st-override-repo</artifactId>
+                            <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>

@@ -37,6 +37,18 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>1st-override-share</artifactId>
+            <classifier>${ecos.build.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-citeckTheme-share</artifactId>
+            <classifier>${ecos.build.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-share</artifactId>
             <classifier>${ecos.build.classifier}</classifier>
             <type>amp</type>
@@ -130,6 +142,18 @@
                         <overlay>
                             <groupId>org.sharextras</groupId>
                             <artifactId>javascript-console-share</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>1st-override-share</artifactId>
+                            <classifier>${ecos.build.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-citeckTheme-share</artifactId>
+                            <classifier>${ecos.build.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
