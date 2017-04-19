@@ -174,27 +174,41 @@ var parser = {
                     }
 
                 } else {
-                    if (assocData.assocType.length() == 0 || assocData.targetNodeType.length() == 0
-                        || assocData.propId.length() == 0 || assocData.propValue.length() == 0
-                        || assocData.targetNodePath.length() == 0) {
-                        logger.error(parser.parserScriptName
-                            + " fillAssocs(): one of mandatory parameter is empty. Method aborted.");
-                        return;
+                    var targetNode = null;
 
+                    if (assocData.uuid.length() > 0) {
+
+                        if (assocData.assocType.length() == 0) {
+                            logger.error(parser.parserScriptName + " cannot fill assocs from uuid: " + assocData.uuid
+                                + ", because assocType is empty.");
+                            return;
+                        }
+
+                        var uuid = assocData.uuid.toString().toLowerCase();
+                        targetNode = search.findNode("workspace://SpacesStore/" + uuid);
+                    } else {
+                        if (assocData.assocType.length() == 0 || assocData.targetNodeType.length() == 0
+                            || assocData.propId.length() == 0 || assocData.propValue.length() == 0
+                            || assocData.targetNodePath.length() == 0) {
+                            logger.error(parser.parserScriptName
+                                + " cannot fill assocs from propId, because one of mandatory parameter is empty");
+                            return;
+
+                        }
+
+                        var targetNodeRoot = this.getRootNodeByPath(assocData.targetNodePath);
+
+                        if (!targetNodeRoot) {
+                            return;
+                        }
+
+                        targetNode = this.getChildByProperty(targetNodeRoot, assocData.propId, assocData.propValue);
                     }
 
-                    var targetNodeRoot = this.getRootNodeByPath(assocData.targetNodePath);
-
-                    if (!targetNodeRoot) {
-                        return;
-                    }
-
-                    var targetNode = this.getChildByProperty(targetNodeRoot, assocData.propId, assocData.propValue);
-
-                    if (!targetNode) {
-                        logger.error(this.parserScriptName + " fillAssocs(): Cannot find target node. Information: " +
+                    if (!targetNode.exists()) {
+                        logger.error(this.parserScriptName + " targetNode does not exists. Information: " +
                             "\ntargetNodeRoot: " + targetNodeRoot.nodeRef + " prop id: "
-                            + assocData.propId + " prop value: " + assocData.propValue);
+                            + assocData.propId + " prop value: " + assocData.propValue + " uuid: " + assocData.uuid);
                     } else {
                         node.createAssociation(targetNode, assocData.assocType);
                     }
@@ -311,6 +325,7 @@ var parser = {
             }
             return uuidValue;
         },
+        /*TODO: fix a long search, while a large number of children*/
         getChildByProperty: function (parent, property, value) {
             var children = parent.children;
 
