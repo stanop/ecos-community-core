@@ -120,13 +120,13 @@ import java.util.*;
             Collection<String> modes = new ArrayList<>(2);
             modes.add(cardMode);
             modes.add(CardletService.ALL_MODES);
-            modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, CardletService.DEFAULT_MODE.equals(cardMode), true);
+            modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, false, true);
         }
 
         authorities.add("");
         String typeClause = "TYPE:\"" + CardletModel.TYPE_CARDLET + "\"";
-        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, true, true);
-        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, true, true);
+        String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, false, true);
+        String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, false, true);
         String query = typeClause + " AND " + modeClause + " AND " + documentClause + " AND " + authorityClause;
         if (logger.isDebugEnabled()) {
             logger.debug("Quering cardlets: " + query);
