@@ -950,16 +950,17 @@ ko.bindingHandlers.journalControl = {
 
                         var search = Dom.get(searchId);
                         if (search.value) {
-                            if (searchMinQueryLength && search.value.length < searchMinQueryLength) {
+                            var searchValue = search.value.trim();
+                            if (searchMinQueryLength && searchValue.length < searchMinQueryLength) {
                                 return false;
                             }
 
                             if (searchCriteria && searchCriteria.length > 0) {
                                 criteria(_.map(searchCriteria, function(item) {
-                                    return _.defaults({ value: search.value }, item);
+                                    return _.defaults({ value: searchValue }, item);
                                 }));
                             } else {
-                               criteria([{ attribute: "all", predicate: "string-contains", value: search.value }]); 
+                               criteria([{ attribute: "all", predicate: "string-contains", value: searchValue }]);
                             }
                         } else {
                             criteria([]);
