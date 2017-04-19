@@ -414,5 +414,36 @@
 				</component>
 			</components>
 		</module>
+		<module>
+			<id>forms/workflow-action-visibility</id>
+			<auto-deploy>true</auto-deploy>
+			<!--<evaluator type="config.module.evaluator">-->
+				<!--<params>-->
+					<!--<element>ModuleConfig.forms/workflow-action-visibility</element>-->
+				<!--</params>-->
+			<!--</evaluator>-->
+			<configurations>
+				<config evaluator="string-compare" condition="WorkflowControls">
+					<dependencies>
+						<js src="/citeck/modules/workflow-action/workflow-action.js" />
+					</dependencies>
+				</config>
+			</configurations>
+			<components>
+				<component>
+					<scope>page</scope>
+					<region-id>data-form</region-id>
+					<source-id>workflow-details</source-id>
+					<sub-components>
+						<sub-component id="workflow-controls" index="100">
+							<url>/citeck/dependencies-loader</url>
+							<properties>
+								<configName>WorkflowControls</configName>
+							</properties>
+						</sub-component>
+					</sub-components>
+				</component>
+			</components>
+		</module>
     </modules>
 </extension>
