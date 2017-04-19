@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <alfresco.version>5.1.2</alfresco.version>
+        <!--<alfresco.version>5.1.2</alfresco.version>-->
         <alfresco.rm.version>2.4.b</alfresco.rm.version>
         <!-- Used in share-config-custom.xml when testing.
              By default points to standard location (local) of Alfresco Repository -->
@@ -104,6 +104,7 @@
                 <configuration>
                     <!-- Bring in the MANIFEST.MF file from the original share.war, it contains version information
                          that is needed for it to operate properly -->
+                    <classifier>${ecos.build.classifier}</classifier>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
                         <manifestFile>${project.build.directory}/dependency/META-INF/MANIFEST.MF</manifestFile>

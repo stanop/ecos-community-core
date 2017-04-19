@@ -118,6 +118,7 @@
                                     <artifactId>repo</artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>
+                                    <classifier>${ecos.build.classifier}</classifier>
                                     <!-- Make sure webapp is loaded with context and everything,
                                          if set to 'false' then you will get 404 when trying to access the webapp from browser -->
                                     <asWebapp>true</asWebapp>
@@ -129,6 +130,7 @@
                                     <artifactId>share</artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>
+                                    <classifier>${ecos.build.classifier}</classifier>
                                     <asWebapp>true</asWebapp>
                                     <contextPath>/share</contextPath>
                                     <contextFile>${project.build.directory}/contexts/context-share.xml</contextFile>

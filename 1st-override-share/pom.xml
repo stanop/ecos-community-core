@@ -51,11 +51,13 @@
           <groupId>org.alfresco.surf</groupId>
           <artifactId>spring-surf</artifactId>
           <version>${dependency.surf.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>org.alfresco.surf</groupId>
           <artifactId>spring-surf-api</artifactId>
           <version>${dependency.surf.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--===============================================================

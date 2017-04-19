@@ -25,7 +25,7 @@
     </parent>
 
     <properties>
-        <alfresco.version>5.1.2</alfresco.version>
+        <!--<alfresco.version>${alfresco.version}</alfresco.version>-->
         <alfresco.rm.version>2.4.b</alfresco.rm.version>
         <!-- During development we set log root level to Debug,
             this will be applicable to the log configuration in
@@ -109,6 +109,7 @@
                         | explicitly mention it in the overlay section.
                         | NOTE: First-win resource strategy is used by the WAR plugin
                          -->
+                    <classifier>${ecos.build.classifier}</classifier>
                     <overlays>
                         <!-- Current project customizations. This is normally empty, since customizations come from the AMPs -->
                         <overlay/>
