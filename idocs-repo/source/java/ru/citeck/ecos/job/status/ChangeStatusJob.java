@@ -53,7 +53,11 @@ public class ChangeStatusJob extends AbstractScheduledLockedJob implements State
                 if (!works.isEmpty()) {
                     logger.info("Start status updating. Number of works: " + works.size());
                     for (int i = 0; i < works.size(); i++) {
-                        makeTransitions(serviceRegistry, works.get(i), i);
+                        try {
+                            makeTransitions(serviceRegistry, works.get(i), i);
+                        } catch (Exception e) {
+                            logger.error("Work #" + i + " failed", e);
+                        }
                     }
                 }
                 return null;
@@ -100,16 +104,25 @@ public class ChangeStatusJob extends AbstractScheduledLockedJob implements State
     private static class ChangeStatusWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
 
         private CaseStatusService caseStatusService;
-        private NodeRef toStatus;
+        private NodeRef toStatusRef;
+        private String toStatus;
 
         ChangeStatusWorker(CaseStatusService caseStatusService, String toStatus) {
             this.caseStatusService = caseStatusService;
-            this.toStatus = caseStatusService.getStatusByName(toStatus);
+            this.toStatus = toStatus;
+            this.toStatusRef = caseStatusService.getStatusByName(toStatus);
+            if (this.toStatusRef == null) {
+                throw new IllegalArgumentException("Status not found. Status: " + toStatus);
+            }
         }
 
         @Override
         public void process(NodeRef entry) throws Throwable {
-            caseStatusService.setStatus(entry, toStatus);
+            try {
+                caseStatusService.setStatus(entry, toStatusRef);
+            } catch (Exception e) {
+                throw new RuntimeException("Exception on change status. nodeRef: " + entry + " status: " + toStatus, e);
+            }
         }
     }
 
