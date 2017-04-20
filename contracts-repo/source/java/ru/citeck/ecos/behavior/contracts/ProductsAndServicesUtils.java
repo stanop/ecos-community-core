@@ -59,6 +59,7 @@ public class ProductsAndServicesUtils {
             nodeService.createAssociation(childNodeRef, currencyRef, ProductsAndServicesModel.ASSOC_CURRENCY);
 
             nodeService.createAssociation(nodeRef, childNodeRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
+            nodeService.removeAssociation(nodeRef, assocRef.getTargetRef(), ProductsAndServicesModel.ASSOC_CONTAINS_ORIG_PRODUCTS_AND_SERVICES);
         }
     }
 }
