@@ -123,6 +123,11 @@
                         <value>excludedPerformers</value>
                     </list>
                 </entry>
+                <entry key="activiti$registration">
+                    <list>
+                        <value>wfrg:autoNumberTemplate</value>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>

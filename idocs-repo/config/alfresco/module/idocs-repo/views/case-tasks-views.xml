@@ -39,13 +39,30 @@
         <field prop="icaseTask:workflowDefinitionName">
             <region name="input" template="select"/>
         </field>
-        <field assoc="icaseTask:performer" />
+        <field assoc="icaseTask:performer">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                        parent = parent.parent;
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </field>
     </view>
     
     <view class="icaseTask:confirmTask">
         <view class="icaseTask:task"/>
         <field assoc="icaseTask:confirmers">
             <region name="input" template="checkbox"/>
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                        parent = parent.parent;
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
         </field>
         <field prop="wfcf:skipCorrectTask" />
         <field prop="wfcf:canConfirmWithComments" />
@@ -62,6 +79,14 @@
         <view class="icaseTask:task"/>
         <field assoc="icaseTask:performers">
             <region name="input" template="checkbox"/>
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                        parent = parent.parent;
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
         </field>
         <field prop="wfperf:performerPermission">
             <region name="input" template="select"/>
