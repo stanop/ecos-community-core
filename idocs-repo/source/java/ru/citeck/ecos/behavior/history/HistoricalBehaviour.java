@@ -38,6 +38,7 @@ import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.history.HistoryService;
 
@@ -48,11 +49,13 @@ public class HistoricalBehaviour implements
 
 	private static final Serializable NODE_CREATED = "node.created";
 	private static final Serializable NODE_UPDATED = "node.updated";
+
+	private static final String VERSION_UPDATED_COMMENT = "node.version-update.comment";
+
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
 	private HistoryService historyService;
-		
-	
+
 	public void init() {
 		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, 
 				HistoryModel.ASPECT_HISTORICAL, new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
@@ -79,11 +82,15 @@ public class HistoricalBehaviour implements
 		if(!nodeService.exists(nodeRef)) {
 			return;
 		}
-		
+
 		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
 		eventProperties.put(HistoryModel.PROP_NAME, NODE_UPDATED);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 		eventProperties.put(HistoryModel.PROP_DOCUMENT_VERSION, nodeDetails.getProperties().get(ContentModel.PROP_VERSION_LABEL));
+		String comment = I18NUtil.getMessage(VERSION_UPDATED_COMMENT);
+		if (comment != null) {
+			eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
+		}
 		historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 	}
 
