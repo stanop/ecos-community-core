@@ -251,7 +251,7 @@
     </view>
 
     <view class="idocs:personAttorney">
-        <field assoc="idocs:fullName"/>
+        <field assoc="idocs:personFullName"/>
         <field prop="idocs:numberPass"/>
         <field prop="idocs:whoIssuedPass"/>
         <field prop="idocs:passIssueDate"/>
