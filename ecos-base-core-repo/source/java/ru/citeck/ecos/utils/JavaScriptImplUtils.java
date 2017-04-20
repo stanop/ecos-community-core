@@ -38,6 +38,7 @@ import org.mozilla.javascript.ScriptableObject;
 public class JavaScriptImplUtils {
 
     private static final Log LOGGER = LogFactory.getLog(JavaScriptImplUtils.class);
+    private static final ValueConverter valueConverter = new ValueConverter();
 
     public static ScriptNode wrapNode(String nodeRef,
             AlfrescoScopableProcessorExtension scopeProvider) {
@@ -244,15 +245,15 @@ public class JavaScriptImplUtils {
     }
 
     private static void fillAuthorities(Collection<NodeRef> collection, Object value, AuthorityService authorityService) {
+        fillAuthoritiesJava(collection, valueConverter.convertValueForJava(value), authorityService);
+    }
+
+    private static void fillAuthoritiesJava(Collection<NodeRef> collection, Object value, AuthorityService authorityService) {
         if (value == null) return;
 
         if (value instanceof NodeRef) {
 
             collection.add((NodeRef) value);
-
-        } else if (value instanceof ScriptNode) {
-
-            collection.add(((ScriptNode) value).getNodeRef());
 
         } else if (value instanceof String) {
 
@@ -271,7 +272,7 @@ public class JavaScriptImplUtils {
         } else if (value instanceof Collection) {
 
             for (Object item : (Collection) value) {
-                fillAuthorities(collection, item, authorityService);
+                fillAuthoritiesJava(collection, item, authorityService);
             }
         }
     }
