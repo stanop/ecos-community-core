@@ -17,6 +17,8 @@
                         <sys:node-uuid>idocs-income-number-template</sys:node-uuid>
                         <cm:name>idocs-income-number-template</cm:name>
                         <count:counterTemplate>idocsIncomeNumberTemplate</count:counterTemplate>
+                        <count:commonTemplate><![CDATA[<#assign incomingPrefix=(node.assocs["letters:nomenclature"][0].properties["idocs:fileIndex"])!""/>]]></count:commonTemplate>
+                        <count:numberTemplate><![CDATA[#{incomingPrefix}/#{count}]]></count:numberTemplate>
                     </view:properties>
                 </count:autonumberTemplate>
             </cm:contains>
@@ -28,6 +30,8 @@
                         <sys:node-uuid>idocs-outcome-number-template</sys:node-uuid>
                         <cm:name>idocs-outcome-number-template</cm:name>
                         <count:counterTemplate>idocsOutcomeNumberTemplate</count:counterTemplate>
+                        <count:commonTemplate><![CDATA[<#assign outcomingPrefix=(node.assocs["letters:outcomeNomenclature"][0].properties["idocs:fileIndex"])!""/>]]></count:commonTemplate>
+                        <count:numberTemplate><![CDATA[#{outcomingPrefix}/#{count}]]></count:numberTemplate>
                     </view:properties>
                 </count:autonumberTemplate>
             </cm:contains>

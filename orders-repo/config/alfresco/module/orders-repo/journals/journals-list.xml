@@ -20,7 +20,6 @@
 			<header key="orders:branch" default="true" />
 			<header key="orders:header" default="true" />
 			<header key="idocs:summary" default="false" />
-			<header key="orders:subject" default="false" />
 			<header key="orders:fingerboard" default="false" />
 			<header key="orders:projectNumber" default="true" />
 			<header key="orders:creationDate" default="false">
@@ -33,21 +32,13 @@
 			<header key="idocs:registrator" default="false" />
 			<header key="idocs:signatory" default="false" />
 			<header key="idocs:initiator" default="false" />
-			<header key="orders:fileCode" default="false" />
+			<header key="orders:fileCode" default="true" />
 			<header key="orders:expirationDate" default="false">
 				<option name="formatter">dateFormatter('dd.MM.yyyy')</option>
 			</header>
 			<header key="orders:appendixNumber" default="false" />
 			<header key="orders:placeOfOriginal" default="false" />
 
-		</headers>
-	</journal>
-
-	<journal id="orders-subject">
-		<option name="type">orders:subject</option>
-		<headers>
-			<header key="orders:subjectCode" default="true" />
-			<header key="orders:subjectName" default="true" />
 		</headers>
 	</journal>
 

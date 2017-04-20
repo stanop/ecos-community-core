@@ -14,7 +14,7 @@ fieldNames = [
     "prop_idocs_registrationDate",
     "assoc_idocs_signatory",
     "prop_orders_header",
-    "assoc_orders_subject",
+    "assoc_orders_fileCode",
     "prop_orders_expirationDate"
 ]/>
 
@@ -207,7 +207,7 @@ YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
     }/>
 
     <@forms.renderField field="assoc_idocs_initiator" extension = {
-        "disabled": true,
+        "disabled": false,
         "control": {
             "template": "/ru/citeck/components/form/controls/orgstruct-select.ftl",
             "params": {
@@ -216,26 +216,28 @@ YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
         }
     }/>
 
-    <#if registrator>
-        <@forms.renderField field="assoc_orders_fileCode" extension = {
-            "mandatory": true,
-            "control": {
-                "template": "/ru/citeck/components/form/controls/association_search.ftl",
-                "params": {
-                    "searchWholeRepo": "true"
-                }
+<#--<#if registrator>
+    <@forms.renderField field="assoc_orders_fileCode" extension = {
+        "mandatory": true,
+        "control": {
+            "template": "/ru/citeck/components/form/controls/association_search.ftl",
+            "params": {
+                "searchWholeRepo": "true"
             }
-        }/>
-    <#else>
-        <@forms.renderField field="assoc_orders_fileCode" extension = {
-            "control": {
-                "template": "/org/alfresco/components/form/controls/info.ftl"
-            }
-        }/>
-    </#if>
+        }
+    }/>
+<#else>
+    <@forms.renderField field="assoc_orders_fileCode" extension = {
+        "control": {
+            "template": "/org/alfresco/components/form/controls/info.ftl"
+        }
+    }/>
+</#if>-->
+
+    <@forms.renderField field="assoc_orders_fileCode" />
 
     <@forms.renderField field="assoc_orders_branch" extension = {
-        "disabled": true,
+        "disabled": false,
         "control": {
             "template": "/ru/citeck/components/form/controls/orgstruct-select.ftl",
             "params": {
@@ -262,15 +264,6 @@ YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
             "disabled": true
         }/>
     </#if>
-
-    <@forms.renderField field="assoc_orders_subject" extension = {
-        "control": {
-            "template": "/ru/citeck/components/form/controls/association_search.ftl",
-            "params": {
-                "searchWholeRepo": "true"
-            }
-        }
-    }/>
 
     <#if registrator>
         <@forms.renderField field="prop_orders_expirationDate" />

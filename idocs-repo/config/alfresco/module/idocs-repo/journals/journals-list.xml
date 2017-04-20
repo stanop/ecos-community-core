@@ -73,6 +73,7 @@
 		<headers>
 			<header key="idocs:fileIndex" default="true" />
 			<header key="idocs:fileName" default="true" />
+			<header key="idocs:fileYear" default="true" />
 		</headers>
 	</journal>
 	<journal id="currency">
