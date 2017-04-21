@@ -181,36 +181,70 @@
             margin: 4px 2px;
             cursor: pointer;
         }
+        #inputForFilter {
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 20px;
+            border: 1px solid #6678b1;
+        }
+
+        .input::-webkit-input-placeholder       {opacity: 1; transition: opacity 0.3s ease;}
+        .input::-moz-placeholder                {opacity: 1; transition: opacity 0.3s ease;}
+        .input:-moz-placeholder                 {opacity: 1; transition: opacity 0.3s ease;}
+        .input:-ms-input-placeholder            {opacity: 1; transition: opacity 0.3s ease;}
+        .input:focus::-webkit-input-placeholder {opacity: 0; transition: opacity 0.3s ease;}
+        .input:focus::-moz-placeholder          {opacity: 0; transition: opacity 0.3s ease;}
+        .input:focus:-moz-placeholder           {opacity: 0; transition: opacity 0.3s ease;}
+        .input:focus:-ms-input-placeholder      {opacity: 0; transition: opacity 0.3s ease;}
     </style>
+
     <script>
         var refreshLoadingDescriptionTimer;
 
-        function executeSelected() {
-            var formData = new FormData();
-            var elements = document.getElementsByName("checkbox");
-            var formDataIsEmpty = true;
+        function start() {
+            document.getElementById("loader").style.display = "block";
+            var loadingText = '<h2>Page is loading...</h2>';
+            setLoadingText(loadingText);
+            document.getElementById("loadText").style.display = "block";
+            initializationPage();
+        }
 
-            for (var i = 0; i < elements.length; i ++) {
-                if (elements[i].checked) {
-                    formData.append("nodeRef", elements[i].id);
-                    formDataIsEmpty = false;
-                }
-            }
-
-            if (formDataIsEmpty) {
-                popUpMessage('<h2>Cannot start execute</h2>', '<p>Select some data to start execute</p>');
-                return;
-            }
-
+        function initializationPage() {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", '${url.service}' + "execute/", true);
-            xhr.send(formData);
+            xhr.open("GET", '${url.context}' + "/s/citeck/node?nodeRef=workspace://SpacesStore/xni-parser-status" +
+                    "&props=xni:prsStatus,xni:activeParsingDescription", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState != 4) return;
+                if (xhr.status == 200) {
+                    var processStatus = JSON.parse(xhr.responseText);
+                    var status = processStatus.props["xni:prsStatus"];
+                    if (status == "Executing") {
+                        drawExecutingPage();
+                    }
+                    if (status == "Wait") {
+                        drawWaitingPage();
+                    }
+                }
+                if (xhr.status == 204) {
+                    return xhr.statusText;
+                }
+            };
+            xhr.send();
+        }
+
+        function drawExecutingPage() {
             loadingStart();
         }
+
+        function drawWaitingPage() {
+            loadingStop();
+        }
+
         function loadingStart() {
             refreshLoadingDescriptionTimer = setInterval(function() {
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", '${url.context}' + "/s/citeck/node?nodeRef=workspace://SpacesStore/xni-parser-status&props=xni:prsStatus,xni:activeParsingDescription", true);
+                xhr.open("GET", '${url.context}' + "/s/citeck/node?nodeRef=workspace://SpacesStore/xni-parser-status" +
+                        "&props=xni:prsStatus,xni:activeParsingDescription", true);
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState != 4) return;
                     if (xhr.status == 200) {
@@ -238,75 +272,24 @@
             }, 3000);
 
             document.getElementById("xniTable").style.display = "none";
+            document.getElementById("inputForFilter").style.display = "none";
             document.getElementById("buttons").style.display = "none";
             document.getElementById("loadText").style.display = "block";
             document.getElementById("loader").style.display = "block";
         }
+
         function loadingStop() {
             document.getElementById("xniTable").style.display = "";
+            document.getElementById("inputForFilter").style.display = "";
             document.getElementById("buttons").style.display = "";
             document.getElementById("loadText").style.display = "none";
             document.getElementById("loader").style.display = "none";
         }
+
         function setLoadingText(message) {
             if (message) document.getElementById("loadText").innerHTML = message;
         }
-    </script>
-    <script>
-        function start() {
-            document.getElementById("loader").style.display = "block";
-            var loadingText = '<h2>Page is loading...</h2>';
-            setLoadingText(loadingText);
-            document.getElementById("loadText").style.display = "block";
-            initializationPage();
-        }
 
-        function initializationPage() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", '${url.context}' + "/s/citeck/node?nodeRef=workspace://SpacesStore/xni-parser-status&props=xni:prsStatus,xni:activeParsingDescription", true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState != 4) return;
-                if (xhr.status == 200) {
-                    var processStatus = JSON.parse(xhr.responseText);
-                    var status = processStatus.props["xni:prsStatus"];
-                    if (status == "Executing") {
-                        drawExecutingPage();
-                    }
-                    if (status == "Wait") {
-                        drawWaitingPage();
-                    }
-                }
-                if (xhr.status == 204) {
-                    return xhr.statusText;
-                }
-            };
-            xhr.send();
-        }
-
-        function selectAll() {
-            var elements = document.getElementsByName("checkbox");
-            for (var i = 0; i < elements.length; i ++) {
-                var element = elements[i];
-                if (!element.checked && !element.readOnly) {
-                    element.checked = true;
-                }
-            }
-        }
-        function deSelectAll() {
-            var elements = document.getElementsByName("checkbox");
-            for (var i = 0; i < elements.length; i ++) {
-                var element = elements[i];
-                if (element.checked && !element.readOnly) {
-                    element.checked = false;
-                }
-            }
-        }
-        function drawWaitingPage() {
-            loadingStop();
-        }
-        function drawExecutingPage() {
-            loadingStart();
-        }
         function popUpMessage(topMsg, bodyMsg) {
             var modalContent = document.getElementById("modalContent");
             var topMessage = '<span class="close">&times;</span>';
@@ -332,6 +315,69 @@
                     location.reload();
                 }
             };
+        }
+
+
+        function selectAll() {
+            var elements = document.getElementsByName("checkbox");
+            for (var i = 0; i < elements.length; i ++) {
+                var element = elements[i];
+                var tdTable = element.parentElement.parentElement.parentElement;
+                if (!element.checked && !element.readOnly && tdTable.style.display != "none") {
+                    element.checked = true;
+                }
+            }
+        }
+
+        function deSelectAll() {
+            var elements = document.getElementsByName("checkbox");
+            for (var i = 0; i < elements.length; i ++) {
+                var element = elements[i];
+                if (element.checked && !element.readOnly) {
+                    element.checked = false;
+                }
+            }
+        }
+
+        function executeSelected() {
+            var formData = new FormData();
+            var elements = document.getElementsByName("checkbox");
+            var formDataIsEmpty = true;
+
+            for (var i = 0; i < elements.length; i ++) {
+                if (elements[i].checked) {
+                    formData.append("nodeRef", elements[i].id);
+                    formDataIsEmpty = false;
+                }
+            }
+
+            if (formDataIsEmpty) {
+                popUpMessage('<h2>Cannot start execute</h2>', '<p>Select some data to start execute</p>');
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", '${url.service}' + "execute/", true);
+            xhr.send(formData);
+            loadingStart();
+        }
+
+        function filter() {
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("inputForFilter");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("xniTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[3];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
         }
     </script>
 
@@ -359,12 +405,17 @@
     <input class="button" type="button" value="Select all" onclick="selectAll()">
     <input class="button" type="button" value="Deselect all" onclick="deSelectAll()">
 </div>
+
+<input class="input" type="text" id="inputForFilter" onkeyup="filter()" placeholder="Search for tag..."
+       title="Type in a tag" style="color: #6678b1">
+
 <table id="xniTable" class="moduletable" style="display: none">
     <thead>
     <tr>
         <th>Select</th>
         <th>Name</th>
         <th>NodeRef</th>
+        <th>Tag</th>
         <th>Status</th>
     </tr>
     </thead>
@@ -373,11 +424,13 @@
         <tr>
             <td>
                 <label>
-                    <input type="checkbox" name="checkbox" id="${obj.nodeRef}" <#if obj.properties["xni:status"] != "New">disabled readonly</#if>/>
+                    <input type="checkbox" name="checkbox" id="${obj.nodeRef}" <#if obj.properties["xni:status"]
+                    != "New">disabled readonly</#if>/>
                 </label>
             </td>
             <td>${obj.properties["cm:name"]}</td>
             <td>${obj.nodeRef}</td>
+            <td>${obj.properties["xni:tag"]!""}</td>
             <td><@printStatus obj = obj/></td>
         </tr>
         </#list>

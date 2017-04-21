@@ -23,6 +23,8 @@
                         <sys:node-uuid>internal-regNumber-template</sys:node-uuid>
                         <cm:name>internal-regNumber-template</cm:name>
                         <count:counterTemplate>internal-regNumber-template</count:counterTemplate>
+                        <count:commonTemplate><![CDATA[<#assign prefix=(node.assocs["orders:fileCode"][0].properties["idocs:fileIndex"])!""/>]]></count:commonTemplate>
+                        <count:numberTemplate><![CDATA[#{prefix}/#{count}]]></count:numberTemplate>
                         <!--count:commonTemplate><![CDATA[<#assign branch=node.properties["orders:branch"]/>  <#assign year=.now?string("yy")/>]]></count:commonTemplate>
                         <count:numberTemplate><![CDATA[Префикс/${branch}/${year}/${count}]]></count:numberTemplate-->
                     </view:properties>

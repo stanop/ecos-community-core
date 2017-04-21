@@ -96,7 +96,7 @@
                         <many>false</many>
                     </target>
                 </association>
-                <association name="orders:subject">
+                <!--<association name="orders:subject">
                     <title>Тематика</title>
                     <source>
                         <mandatory>false</mandatory>
@@ -107,7 +107,7 @@
                         <mandatory>false</mandatory>
                         <many>false</many>
                     </target>
-                </association>
+                </association> -->
                 <association name="orders:branch">
                     <source>
                         <mandatory>false</mandatory>
