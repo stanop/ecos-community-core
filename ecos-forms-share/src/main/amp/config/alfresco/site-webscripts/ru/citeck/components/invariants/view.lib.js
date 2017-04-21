@@ -95,7 +95,7 @@ function getViewData(args) {
     }
 
     if(response.status != 200) {
-        throw 'Can not get view from uri "' + serviceURI + '": ' + response.message;
+        throw 'Can not get view from uri "' + serviceURI + '". Response: ' + response;
     }
     
     return viewData;
