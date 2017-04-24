@@ -169,7 +169,7 @@
     <#escape x as jsonUtils.encodeJSONString(x)>
     {
         "title": "${createVariant.properties["cm:title"]!createVariant.properties["cm:name"]}",
-        "destination": "${createVariant.assocs["journal:destination"][0].nodeRef}",
+        "destination": <#if createVariant.assocs["journal:destination"]??>"${createVariant.assocs["journal:destination"][0].nodeRef}"<#else>null</#if>,
         "type": "${shortQName(createVariant.properties["journal:type"])}",
         "formId": "${createVariant.properties["journal:formId"]}",
         "canCreate": ${createVariant.assocs["journal:destination"][0].hasPermission("CreateChildren")?string("true","false")},
