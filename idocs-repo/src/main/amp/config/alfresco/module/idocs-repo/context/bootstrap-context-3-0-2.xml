@@ -40,7 +40,6 @@
         </property>
         <property name="bootstrapView">
             <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
                 <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
                 <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/users-absence-events-journal.xml
                 </prop>
