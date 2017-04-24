@@ -32,7 +32,7 @@
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="uuidBinding">UPDATE_EXISTING</prop>
+					<!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
 					<prop key="path">/</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/orgstruct/orgstruct-group-to-roles.xml</prop>
 					<prop key="messages">alfresco/module/idocs-repo/bootstrap/orgstruct/groups/group-clerks</prop>

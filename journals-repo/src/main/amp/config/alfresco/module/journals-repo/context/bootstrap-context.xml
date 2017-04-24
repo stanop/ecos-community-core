@@ -32,7 +32,7 @@
 		<property name="appliesFromVersion" value="1.0" />
 		<property name="bootstrapView">
 			<props>
-				<prop key="uuidBinding">UPDATE_EXISTING</prop>
+				<!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
 				<prop key="path">/cm:IDocsRoot</prop>
 				<prop key="location">alfresco/module/journals-repo/bootstrap/explicit/journals-meta-root.xml</prop>
 				<prop key="messages">alfresco/module/journals-repo/messages/journals-meta</prop>
@@ -54,7 +54,7 @@
         </property>
         <property name="bootstrapView">
             <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
                 <prop key="path">/cm:IDocsRoot</prop>
                 <prop key="location">alfresco/module/journals-repo/bootstrap/explicit/journals-meta-root-journal-settings.xml</prop>
                 <prop key="messages">alfresco/module/journals-repo/messages/journals-meta</prop>
@@ -111,7 +111,7 @@
         <property name="appliesFromVersion" value="1.0" />
         <property name="bootstrapView">
             <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
                 <prop key="path">/</prop>
                 <prop key="location">alfresco/module/journals-repo/bootstrap/explicit/attachments-root.xml</prop>
                 <prop key="encoding">UTF-8</prop>

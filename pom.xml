@@ -55,7 +55,7 @@
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <!--<ecos.build.finalName>${project.artifactId}-${project.version}-${ecos.build.classifier}</ecos.build.finalName>-->
         <ecos.build.finalName>${project.artifactId}-${project.version}</ecos.build.finalName>
-        <ecos.lib.file>${project.build.directory}/${ecos.build.finalName}.jar</ecos.lib.file>
+        <ecos.lib.file>${project.build.directory}/${ecos.build.finalName}-${ecos.build.classifier}.jar</ecos.lib.file>
         <copy.overwrite>false</copy.overwrite>
         <default.locale>en</default.locale>
 
