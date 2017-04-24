@@ -1,4 +1,3 @@
-
 <#if nodeRef?? && assocs??>
     <#assign el=args.htmlid?js_string>
     <#assign pickerId = el + "-picker">
@@ -57,7 +56,9 @@
 <div id="${el}" class="document-assocs document-details-panel">
     <h2 id="${el}-heading" class="thin dark">
         ${msg("header.assocs")}
-            <span id="${el}-create-button">&nbsp;</span>
+        <span id="${el}-heading-actions" class="alfresco-twister-actions">
+            <a id="${el}-create-button">&nbsp;</a>
+        </span>
     </h2>
     <div id="${el}-body" class="panel-body">
         <div id="${el}-message"></div>
@@ -82,10 +83,6 @@
 
 <script type="text/javascript">//<![CDATA[
 YAHOO.util.Event.onContentReady("${el}", function() {
-
-    var picker = new Citeck.widget.DynamicTreePicker("${pickerId}");
-    var childrenQuery = "branch=true&group=true&role=true&user=true";
-
     var model = {
         formats: {
             //actionGroupId is folder-picker or document-picker
@@ -158,7 +155,9 @@ YAHOO.util.Event.onContentReady("${el}", function() {
             "item": "{displayName}"
         },
     };
-    picker.setOptions({
+
+
+    var picker = new Citeck.widget.DynamicTreePicker("${pickerId}").setOptions({
         model: model,
         tree: {
             buttons: {
@@ -186,8 +185,7 @@ YAHOO.util.Event.onContentReady("${el}", function() {
         ]
     });
 
-    var component = new Citeck.widget.DocumentAssocs("${el}");
-    component.setOptions({
+    var component = new Citeck.widget.DocumentAssocs("${el}").setOptions({
         nodeRef: "${nodeRef?js_string}",
 
         <#if columns??>columns: ${columns},</#if>
@@ -198,7 +196,7 @@ YAHOO.util.Event.onContentReady("${el}", function() {
         createAssocPicker: picker
     }).setMessages(${messages});
 
-    Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssocs", {panel: "${el}-body"});
+    Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssocs", { panel: "${el}-body" });
 });
 //]]></script>
 
