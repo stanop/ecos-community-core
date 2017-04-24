@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:app="http://www.alfresco.org/model/application/1.0" 
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0"
+	xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+    <view:reference view:pathref="cm:journals">
+        <cm:contains>
+            <journal:journal view:childName="journal:files-nomenclature">
+                <view:properties>
+                    <sys:node-uuid>journal-files-nomenclature</sys:node-uuid>
+                    <cm:name>files-nomenclature</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.filesNomenclature.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.filesNomenclature.title_ru}</view:mlvalue>
+                    </cm:title>
+                    <journal:journalType>files-nomenclature</journal:journalType>
+                </view:properties>
+            </journal:journal>
+        </cm:contains>
+    </view:reference>
+</view:view>

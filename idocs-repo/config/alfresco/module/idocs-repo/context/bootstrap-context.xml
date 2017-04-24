@@ -537,8 +537,8 @@
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
                 <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
-                <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature.properties</prop>
-                <prop key="messages">alfresco/module/idocs-repo/messages/journals-nomenclature</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/journals-nomenclature.xml</prop>
+                <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature</prop>
                 <prop key="encoding">UTF-8</prop>
             </props>
         </property>
