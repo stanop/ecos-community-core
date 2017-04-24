@@ -2848,10 +2848,14 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    border: none; 
 }
 
+.share-form .form-container .caption {
+    left: 855px;
+    width: auto;
+}
+
 @media (min-width: 1010px) {
    .share-form .form-container .caption {
      position: absolute;
-     left: 840px;
      text-align: left;
    }
 }
