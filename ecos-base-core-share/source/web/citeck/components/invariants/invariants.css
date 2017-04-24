@@ -1790,50 +1790,60 @@
 }
 
 /* view-table */
+.invariants-form .template-wide .template-view-table,
+.invariants-form .template-wide .template-view-table .view-table-container,
 .invariants-form .template-table .template-view-table,
 .invariants-form .template-table .template-view-table .view-table-container {
   width: 100%;
 }
 
+.invariants-form .template-wide .template-view-table .view-table-container,
 .invariants-form .template-table .template-view-table .view-table-container {
   box-sizing: border-box;
   overflow: auto;
   padding: 10px;
 }
 
+.invariants-form:not(.view-form) .template-wide .template-view-table .view-table-container,
 .invariants-form:not(.view-form) .template-table .template-view-table .view-table-container {
   border: 1px solid #ccc;
   background-color: white;
 }
 
+.invariants-form .template-wide .template-view-table .view-table-container .value-item.highlighted,
 .invariants-form .template-table .template-view-table .view-table-container .value-item.highlighted {
   background-color: #F0F0F0;
 }
 
+.invariants-form .template-wide .template-view-table table,
 .invariants-form .template-table .template-view-table table {
   border-collapse: collapse;
   width: 100%;
 }
 
+.invariants-form .template-wide .template-view-table table thead tr th,
+.invariants-form .template-wide .template-view-table table tbody tr td,
 .invariants-form .template-table .template-view-table table thead tr th,
 .invariants-form .template-table .template-view-table table tbody tr td {
   padding: 5px 10px;
 }
 
+.invariants-form .template-wide .template-view-table table thead tr th:not(:last-child),
+.invariants-form .template-wide .template-view-table table tbody tr td:not(:last-child),
 .invariants-form .template-table .template-view-table table thead tr th:not(:last-child),
 .invariants-form .template-table .template-view-table table tbody tr td:not(:last-child) {
   border-right: 1px solid #ccc;
 }
 
+.invariants-form .template-wide .template-view-table table thead tr th,
 .invariants-form .template-table .template-view-table table thead tr th {
   border-bottom: 1px solid #ccc;
 }
 
+.invariants-form .template-wide .template-view-table table tbody tr td,
 .invariants-form .template-table .template-view-table table tbody tr td {
   border-top: 1px solid #ccc;
 }
-
-.invariants-form .template-table .template-view-table tr.view-time
 
 .invariants-form .template-table .template-row .template-view-table + .region-select-group {
   max-width: 100%;
