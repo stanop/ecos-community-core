@@ -50,7 +50,11 @@ public final class ItemsUpdateState {
         endUpdate(key, item, false);
     }
 
-    public void endUpdate(final Object key, final Object item, boolean afterTransaction) {
+    public void endUpdate(Object key, Object item, boolean afterTransaction) {
+        endUpdate(key, item, afterTransaction, true);
+    }
+
+    public void endUpdate(final Object key, final Object item, boolean afterTransaction, final boolean afterRollback) {
         if (!afterTransaction) {
             synchronized (items) {
                 ItemData data = items.get(item);
@@ -69,7 +73,9 @@ public final class ItemsUpdateState {
                 }
                 @Override
                 public void afterRollback() {
-                    endUpdate(key, item, false);
+                    if (afterRollback) {
+                        endUpdate(key, item, false);
+                    }
                 }
             });
         }

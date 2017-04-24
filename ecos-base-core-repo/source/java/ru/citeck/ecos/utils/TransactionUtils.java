@@ -9,8 +9,6 @@ import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.surf.util.I18NUtil;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 public class TransactionUtils {
@@ -28,11 +26,25 @@ public class TransactionUtils {
     }
 
     public static void doAfterCommit(final Runnable job) {
+        doAfterCommit(job, null);
+    }
+
+    public static void doAfterCommit(final Runnable job, final Runnable errorHandler) {
 
         final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         final Locale locale = I18NUtil.getLocale();
 
-        final Thread thread = new Thread(new Runnable() {
+        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+            @Override
+            public void afterCommit() {
+                prepareJobThread(job, errorHandler, currentUser, locale).start();
+            }
+        });
+    }
+
+    private static Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
+
+        return new Thread(new Runnable() {
 
             public void run() {
 
@@ -41,38 +53,32 @@ public class TransactionUtils {
 
                 AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
                     public Void doWork() throws Exception {
-                        transactionService.getRetryingTransactionHelper().doInTransaction(
-                                new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
-                                    public String execute() throws Exception {
-                                        try {
-                                            job.run();
-                                        } catch (Exception e) {
-                                            List<Class> retryClasses = Arrays.asList(RetryingTransactionHelper.RETRY_EXCEPTIONS);
-                                            if (!retryClasses.contains(e.getClass())) {
-                                                LOG.error("Exception", e);
-                                            }
-                                            throw e;
-                                        }
-                                        return null;
-                                    }
-                                }, false, true);
+                        try {
+                            doInTransaction(job);
+                        } catch (Exception e) {
+                            LOG.error("Exception while job running", e);
+                            if (errorHandler != null) {
+                                doInTransaction(errorHandler);
+                            }
+                        }
                         return null;
                     }
                 });
             }
         });
-
-        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
-            @Override
-            public void afterCommit() {
-                thread.start();
-            }
-        });
     }
 
+    private static void doInTransaction(final Runnable job) {
+        transactionService.getRetryingTransactionHelper().doInTransaction(
+                new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
+                    public String execute() throws Exception {
+                        job.run();
+                        return null;
+                    }
+                }, false, true);
+    }
 
     public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
         transactionService = serviceRegistry.getTransactionService();
     }
-
 }
