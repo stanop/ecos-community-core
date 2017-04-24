@@ -32,7 +32,7 @@
         <property name="appliesFromVersion" value="1.0" />
         <property name="bootstrapView">
             <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
                 <prop key="path">/</prop>
                 <prop key="location">alfresco/module/${project.artifactId}/bootstrap/explicit/idocs-root.xml</prop>
                 <prop key="encoding">UTF-8</prop>

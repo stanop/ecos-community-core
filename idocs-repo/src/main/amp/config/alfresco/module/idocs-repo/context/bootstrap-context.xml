@@ -419,7 +419,7 @@
 				</props>
 
                 <props>
-                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <!--<prop key="uuidBinding">UPDATE_EXISTING</prop>-->
                     <prop key="path">/</prop>
                     <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/enumeration-template.xml</prop>
                     <prop key="encoding">UTF-8</prop>
