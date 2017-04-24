@@ -1,4 +1,17 @@
 <#assign id=args.htmlid?js_string>
+
+
+<@markup id="css" >
+   <#-- CSS Dependencies -->
+   <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/document-versions-comparison/document-versions-comparison.css" group="document-versions-comparison" />
+</@>
+
+<@markup id="js">
+   <#-- JavaScript Dependencies -->
+   <@script type="text/javascript" src="${url.context}/res/citeck/components/document-versions-comparison/document-versions-comparison.js" group="document-versions-comparison" />
+</@>
+
+
 <#if nodeRefExists??>
     <div id="${id}" class="document-versions-comparison document-details-panel">
         <div id="${id}-body" class="panel-body">
@@ -15,12 +28,11 @@
     </div>
 </#if>
 
-<script type="text/javascript">//<![CDATA[
-YAHOO.util.Event.onContentReady("${id}", function() {
+<script type="text/javascript">
+    YAHOO.util.Event.onContentReady("${id}", function() {
 
-    var component = new Citeck.widget.DocumentVersionsComparison("${id}");
-    component.setOptions({
-        nodeRef: "${nodeRef?js_string}"
-    }).setMessages(${messages});
-});
-//]]></script>
+        new Citeck.widget.DocumentVersionsComparison("${id}").setOptions({
+            nodeRef: "${nodeRef?js_string}"
+        }).setMessages(${messages});
+    });
+</script>
