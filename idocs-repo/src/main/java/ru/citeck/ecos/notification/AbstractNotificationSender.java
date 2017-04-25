@@ -290,7 +290,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         NodeRef templateNode = findNode(query);
         if (templateNode != null)
             return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND @{4}:\"{5}\"";
+        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:"" AND @{4}:\"{5}\"";
         query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
                 DmsModel.PROP_NOTIFICATION_TYPE,
                 this.notificationType,
@@ -302,7 +302,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         templateNode = findNode(query);
         if (templateNode != null)
             return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ISNULL:\"{5}\"";
+        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ={5}:""";
         query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
                 DmsModel.PROP_NOTIFICATION_TYPE,
                 this.notificationType,
@@ -315,7 +315,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         templateNode = findNode(query);
         if (templateNode != null)
             return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND ISNULL:\"{4}\"";
+        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:"" AND ={4}:""";
         query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
                 DmsModel.PROP_NOTIFICATION_TYPE,
                 this.notificationType,
@@ -369,7 +369,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         NodeRef templateNode = findNode(query);
         if (templateNode != null)
             return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND @{4}:\"{5}\" AND @{6}:\"{7}\"";
+        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:"" AND @{4}:\"{5}\" AND @{6}:\"{7}\"";
         query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
                 DmsModel.PROP_NOTIFICATION_TYPE,
                 this.notificationType,
@@ -384,7 +384,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         templateNode = findNode(query);
         if (templateNode != null)
             return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ISNULL:\"{5}\" AND @{6}:\"{7}\"";
+        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ={5}:"" AND @{6}:\"{7}\"";
         query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
                 DmsModel.PROP_NOTIFICATION_TYPE,
                 this.notificationType,
@@ -398,7 +398,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         templateNode = findNode(query);
         if (templateNode != null)
             return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ISNULL:\"{3}\" AND ISNULL:\"{4}\" AND @{5}:\"{6}\"";
+        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:"" AND ={4}:"" AND @{5}:\"{6}\"";
         query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
                 DmsModel.PROP_NOTIFICATION_TYPE,
                 this.notificationType,
