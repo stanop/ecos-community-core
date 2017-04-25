@@ -567,7 +567,7 @@
                     <index enabled="true">
                         <atomic>true</atomic>
                         <stored>false</stored>
-                        <tokenised>both</tokenised>
+                        <tokenised>false</tokenised>
                     </index>
 					<constraints>
 						<constraint ref="dms:constraint:notification_types" />
