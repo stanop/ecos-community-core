@@ -454,7 +454,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 						} else if(object instanceof NodeRef) {
 							targets.add((NodeRef) object);
 						} else if(object instanceof String) {
-							targets.add(new NodeRef((String) value));
+							targets.add(new NodeRef((String) object));
 						} else {
 							logger.warn("Unsupported class for converting to nodeRef: " + object.getClass());
 						}
