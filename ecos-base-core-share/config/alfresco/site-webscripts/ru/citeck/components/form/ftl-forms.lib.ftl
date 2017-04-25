@@ -375,13 +375,49 @@ ${key} = somewhat
 
 <#macro renderFormsRuntime formId>
     <#if (args.formUI!'true') == 'true'>
-        <@formLib.renderFormsRuntime formId=formId />
         <script type="text/javascript">//<![CDATA[
             YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
                 var runtime = args[1].runtime;
                 if(runtime.formId != "${formId}") return;
+
+                // setup wait indicator
+                if (runtime.ajaxSubmit) {
+	                runtime.waitIndicator = new Citeck.UI.waitIndicator("${formId}-wi", {});                
+	                runtime.doBeforeFormSubmit = { 
+	                	fn: function(e, f) {
+	                		if (!this._beforeSubmitWasInvoked) {
+	                			var self = this;
+
+	                			this.originalAjaxSubmitHandlers = {
+	                				successCallback: this.ajaxSubmitHandlers.successCallback,
+									failureCallback: this.ajaxSubmitHandlers.failureCallback
+	                			};
+
+	                			var newAjaxSubmitHandlers = {};
+	                			["successCallback", "failureCallback"].forEach(function(fn) {
+	                				newAjaxSubmitHandlers[fn] = {
+	                					fn: function(response) {
+				                			this.waitIndicator.hide();
+				                			this.originalAjaxSubmitHandlers[fn].fn.call(this.originalAjaxSubmitHandlers[fn].scope, response);
+	                					},
+	                					scope: self
+	                				}
+	                			});
+				                this.setAJAXSubmit(this.ajaxSubmit, newAjaxSubmitHandlers);
+
+	                			this._beforeSubmitWasInvoked = true;
+	                		}
+
+	                		this.waitIndicator.show();
+	                	}, 
+	                	scope: runtime
+	                }
+                }
+
                 runtime.setShowSubmitStateDynamically(true);
             });
         //]]></script>
+
+        <@formLib.renderFormsRuntime formId=formId />
     </#if>
 </#macro>
