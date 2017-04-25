@@ -564,6 +564,7 @@
                 <property name="dms:notificationType">
                     <type>d:text</type>
                     <mandatory>true</mandatory>
+					<default></default>
                     <index enabled="true">
                         <atomic>true</atomic>
                         <stored>false</stored>
@@ -576,10 +577,12 @@
                 <property name="dms:taskName">
                     <type>d:text</type>
                     <mandatory>false</mandatory>
+					<default></default>
                 </property>
                 <property name="dms:workflowName">
                     <type>d:text</type>
                     <mandatory>false</mandatory>
+					<default></default>
                 </property>
                 <property name="dms:sendToOwner">
                     <type>d:boolean</type>
