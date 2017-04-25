@@ -383,6 +383,11 @@
 		</aspect>
 
 		<aspect name="icase:hasCaseStatus">
+			<properties>
+				<property name="icase:caseStatusChangedDateTime">
+					<type>d:datetime</type>
+				</property>
+			</properties>
 			<associations>
 				<association name="icase:caseStatusAssoc">
 					<source>
