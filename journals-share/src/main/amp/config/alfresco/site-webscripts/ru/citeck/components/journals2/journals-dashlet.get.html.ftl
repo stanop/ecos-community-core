@@ -1,4 +1,19 @@
 <#import "journals.lib.ftl" as journals />
+
+<@markup id="css" >
+	<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/journals2/journals.css" group="journals2" />
+	<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/journals2/journals-dashlet.css" group="journals2" />
+</@>
+
+<@markup id="js">
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals2" />
+	<@script type="text/javascript" src="${page.url.context}/res/components/form/date.js" group="journals2" />
+</@>
+
 <#assign id = args.htmlid?html />
 <#assign toolbarId = id + "-toolbar" />
 <#assign pagingOptions = args.pagingOptions!"10,30,50,100" />

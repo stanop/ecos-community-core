@@ -1,3 +1,11 @@
+<@markup id="css" >
+   <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/node-details/node-header.css" group="node-details" />
+</@>
+
+<@markup id="js">
+   <@script type="text/javascript" src="${page.url.context}/res/components/node-details/node-header-diff.js" group="node-details" />
+</@>
+
 <#if item??>
    <#include "../../include/alfresco-macros.lib.ftl" />
    <#assign id = args.htmlid?html>

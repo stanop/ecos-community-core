@@ -1,49 +1,16 @@
-<#--
-/**
- * Copyright (C) 2005-2012 Alfresco Software Limited.
- *
- * This file is part of Alfresco
- *
- * Alfresco is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Alfresco is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
- */
- 
-/**
- * Copyright (C) 2012 Marco Scapoli
- *
- * This file is part of Versions Difference Alfresco Plug-in.
- *
- *  Versions Difference Alfresco Plug-in is free software: you can redistribute 
- *  it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Versions Difference Alfresco Plug-in is distributed in the hope
- *  that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Versions Difference Alfresco Plug-in.
- *  If not, see <http://www.gnu.org/licenses/>.
- *
- *  Author  Marco Scapoli  <rianko@gmail.com>
- *  File    document-versions-diff.get.html.ftl
- **/
--->
-sss
+
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/document-details/document-versions-diff-custom.css" group="document-details" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/document-details/revert-version.css" group="document-details" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/document-details/historic-properties-viewer.css" group="document-details" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${page.url.context}/res/components/document-details/document-versions-diff-custom.js" group="document-details" />
+    <@script type="text/javascript" src="${page.url.context}/res/modules/document-details/revert-version.js" group="document-details" />
+    <@script type="text/javascript" src="${page.url.context}/res/modules/document-details/historic-properties-viewer.js" group="document-details" />
+</@>
+
 <#if allowNewVersionUpload??>
    <#if workingCopyVersion??>
       <!-- No version component is displayed since it is a working copy -->

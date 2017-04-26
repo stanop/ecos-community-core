@@ -1,1 +1,0 @@
-<@link rel="stylesheet" href="${page.url.context}/res/citeck/components/node-header/node-header.css" />

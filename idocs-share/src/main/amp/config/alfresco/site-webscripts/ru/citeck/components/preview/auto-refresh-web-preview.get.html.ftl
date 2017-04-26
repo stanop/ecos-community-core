@@ -1,3 +1,7 @@
+<@markup id="js">
+   <@script type="text/javascript" src="${url.context}/res/citeck/components/preview/auto-refresh-web-preview.js" group="preview" />
+</@>
+
 <#if node??>
    <#assign el=args.htmlid?html>
    <#if (node?exists)>

@@ -1,3 +1,7 @@
+<@markup id="js">
+	<@script type="text/javascript" src="${page.url.context}/res/citeck/components/start-specified-workflow/manager.js" group="start-specified-workflow" />
+</@>
+
 <#assign startWorkflowMessageId = "workflow.start." + args.workflowId />
 <#assign startWorkflowMessage = msg(startWorkflowMessageId) />
 <#if startWorkflowMessage == startWorkflowMessageId>

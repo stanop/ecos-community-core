@@ -1,3 +1,7 @@
+<@markup id="js">
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/barcode/barcode.js" group="barcode" />
+</@>
+
 <#assign id=args.htmlid?js_string />
 <#assign viewScale = args.viewScale!'3.0' />
 <#assign printScale = args.printScale!'1.5' />

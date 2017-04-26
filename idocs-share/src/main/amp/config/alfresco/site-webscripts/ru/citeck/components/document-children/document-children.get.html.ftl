@@ -1,3 +1,27 @@
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/dynamic-table.css" group="document-children" />
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.css" group="document-children" />
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/document-children/document-children.css" group="document-children" />
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" group="document-children" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${url.context}/res/lib/grouped-datatable.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/global-folder.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/copy-move-to.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/dynamic-table.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/document-children.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-panel.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-commands.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/orgstruct/form-dialogs.js" group="document-children" />
+</@>
+
 <#if nodeRef??>
 	<#assign dcid=params.htmlid?js_string />
 

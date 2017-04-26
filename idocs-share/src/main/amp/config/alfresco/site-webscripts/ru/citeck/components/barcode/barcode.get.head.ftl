@@ -1,1 +1,0 @@
-<@script type="text/javascript" src="${url.context}/res/citeck/components/barcode/barcode.js"></@script>

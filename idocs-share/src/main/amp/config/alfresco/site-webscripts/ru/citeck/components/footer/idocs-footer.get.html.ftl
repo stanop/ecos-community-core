@@ -1,3 +1,7 @@
+<@markup id="css" >
+    <@link rel="stylesheet" href="${page.url.context}/res/citeck/utils/footer.css" group="footer" />
+</@>
+
 <div class="footer footer-com">
     <span class="copyright">
         <a href="http://citeck.ru/">

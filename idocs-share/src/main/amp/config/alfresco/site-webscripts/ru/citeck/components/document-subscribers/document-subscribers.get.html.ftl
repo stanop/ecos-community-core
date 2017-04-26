@@ -1,3 +1,11 @@
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/document-subscribers/document-subscribers.css" group="document-subscribers" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/document-subscribers/document-subscribers.js" group="document-subscribers" />
+</@>
+
 <#assign id=args.htmlid?js_string>
 
 <div id="${id}" class="document-subscribers document-details-panel">

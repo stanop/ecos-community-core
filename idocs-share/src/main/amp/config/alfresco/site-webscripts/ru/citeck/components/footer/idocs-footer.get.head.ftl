@@ -1,1 +1,0 @@
-<@link rel="stylesheet" href="${page.url.context}/res/citeck/utils/footer.css" />

@@ -1,3 +1,7 @@
+<@markup id="js">
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/document-status/document-status.js" group="document-status" />
+</@>
+
 <#assign id=args.htmlid?js_string>
    <script type="text/javascript">//<![CDATA[
    new Citeck.widget.DocumentStatus("${id}").setOptions(

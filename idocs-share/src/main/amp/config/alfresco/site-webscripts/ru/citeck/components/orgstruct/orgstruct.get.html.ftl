@@ -1,5 +1,28 @@
 <#import "orgstruct.lib.ftl" as orgstructlib />
 
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/people-finder/people-finder.css" group="orgstruct" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/people-finder/group-finder.css" group="orgstruct" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.css" group="orgstruct" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/orgstruct-icons.css" group="orgstruct" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/console.css" group="orgstruct" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${page.url.context}/res/components/console/consoletool.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/people-finder.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/group-finder.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/modules/simple-dialog.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-toolbar.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/picker-dialogs.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/form-dialogs.js" group="orgstruct" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/console.js" group="orgstruct" />
+</@>
+
 <#assign el=args.htmlid?html>
 <#assign rootGroup = "_orgstruct_home_" />
 <script type="text/javascript">//<![CDATA[

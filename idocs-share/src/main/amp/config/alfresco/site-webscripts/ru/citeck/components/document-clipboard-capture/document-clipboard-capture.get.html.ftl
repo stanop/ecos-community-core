@@ -1,3 +1,7 @@
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/document-clipboard-capture/document-clipboard-capture.css" group="document-clipboard-capture" />
+</@>
+
 <#assign id=args.htmlid?js_string>
 
 <script>

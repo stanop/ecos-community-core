@@ -1,3 +1,13 @@
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/child-forms/child-forms.css" group="child-forms" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/child-forms/child-forms.js" group="child-forms" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-panel.js" group="child-forms" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-commands.js" group="child-forms" />
+</@>
+
 <#assign id=args.htmlid?js_string />
 
 <div id="${id}-panel" class="child-forms document-details-panel">
@@ -56,5 +66,5 @@
 		}).setMessages(${messages});
 		Alfresco.util.createTwister("${id}-heading", "${args.twisterKey!'child-forms'}");
 	</#escape>
-	//]]></script>
+	//]]></>
 </div>

@@ -1,5 +1,15 @@
 <#include "/ru/citeck/components/form/controls/common/dynamic-tree-picker.inc.ftl" />
 
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.css" group="dynamic-tree-picker"  />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="dynamic-tree-picker" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="dynamic-tree-picker" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="dynamic-tree-picker" />
+</@>
+
 <#assign id = args.htmlid />
 <#assign itemType = args.itemType!"item" />
 <#assign itemKey = args.itemKey!"id" />

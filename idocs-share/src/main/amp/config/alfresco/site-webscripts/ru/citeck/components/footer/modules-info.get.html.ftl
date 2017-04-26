@@ -1,3 +1,11 @@
+<@markup id="css" >
+    <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/footer/modules-info.css" group="footer" />
+</@>
+
+<@markup id="js">
+    <@script src="${page.url.context}/res/citeck/components/footer/modules-info.js" group="footer" />
+</@>
+
 <#assign el = args.htmlid />
 <div class="footer footer-com modules-info-footer">
     <div class="modules-info">

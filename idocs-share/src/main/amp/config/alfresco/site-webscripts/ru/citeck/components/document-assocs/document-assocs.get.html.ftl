@@ -1,8 +1,16 @@
-<#include "/org/alfresco/components/component.head.inc">
-<@script type="text/javascript" src="${page.url.context}/res/components/object-finder/object-finder.js"></@script>
-<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/object-finder/object-finder.css" />
-<@script type="text/javascript" src="${page.url.context}/res/citeck/components/document-assocs/document-assocs.js"></@script>
-<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/document-assocs/document-assocs.css" />
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/object-finder/object-finder.css" group="document-assocs" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/document-assocs/document-assocs.css" group="document-assocs"/>
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="document-assocs" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="document-assocs" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="document-assocs" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree-picker.js" group="document-assocs" />
+    <@script type="text/javascript" src="${page.url.context}/res/components/object-finder/object-finder.js" group="document-assocs" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/document-assocs/document-assocs.js" group="document-assocs" />
+</@>
 
 <#if nodeRef?? && assocs??>
     <#assign el=args.htmlid?js_string>

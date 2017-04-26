@@ -1,3 +1,11 @@
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/workflow/task-history.css" group="workflow" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/workflow/task-history.js" group="workflow" />
+</@>
+
 <#assign el=args.htmlid?js_string>
 
 <script type="text/javascript">//<![CDATA[

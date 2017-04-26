@@ -1,4 +1,6 @@
-<@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/templates/card-templates.css" />
+<@markup id="css" >
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/templates/card-templates.css" group="templates" />
+</@>
 
 <#assign el=args.htmlid?js_string>
 <#include "/org/alfresco/include/alfresco-macros.lib.ftl" />
