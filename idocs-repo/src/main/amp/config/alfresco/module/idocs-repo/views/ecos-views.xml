@@ -84,13 +84,4 @@
         <field prop="idocs:countryISO3166Number"/>
     </view>
 
-    <view class="idocs:filesNomenclature">
-        <views mode="create" kind="1-column" />
-        <views mode="edit" kind="1-column" />
-        <field prop="idocs:fileIndex"/>
-        <field prop="idocs:fileName"/>
-        <field prop="idocs:fileYear"/>
-        <field prop="idocs:clauseNumber"/>
-    </view>
-
 </views>

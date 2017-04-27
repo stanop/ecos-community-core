@@ -35,7 +35,7 @@
                         <control-param name="resultsList">presets</control-param>
                     </control>
                 </field>
-                <field id="cm:userStatus" label-id="orgstruct.comment.label">
+                <field id="cm:userStatus" label="Комментарий">
                     <control template="/org/alfresco/components/form/controls/textarea.ftl"/>
                 </field>
                 <field id="deputy:available">
