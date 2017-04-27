@@ -22,6 +22,23 @@
     margin: 0 0 10px 0;
 }
 
+/* inline-edit-mode-changer */
+
+.form-field-inline-mode-changer {
+  position: absolute;
+  right: 0;
+  font-size: 16px;
+  cursor: pointer;
+  color: #00B388;
+}
+
+.form-field-inline-mode-changer:hover {
+  color: #007367;
+}
+
+.form-field-inline-mode-changer.save-mode {
+  top: 7px;
+}
 
 /* loading-indicator */
 .invariants-form.loading,
@@ -342,8 +359,13 @@
   vertical-align: top;
 }
 
+.inline-edit-form .template-wide .template-block,
 .invariants-form .template-wide .template-block.with-help {
-  padding-right: 15px;
+  padding-right: 20px;
+}
+
+.inline-edit-form .template-wide .template-block.with-help {
+  padding-right: 35px;
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region {
@@ -431,9 +453,16 @@
   box-sizing: border-box;
 }
 
-.invariants-form:not(.view-form) .template-table .template-row.with-help,
-.invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
-  padding-right: 15px;
+.inline-edit-form .template-table .template-row,
+.inline-edit-form .template-table [class*="template-row-"],
+.invariants-form .template-table .template-row.with-help,
+.invariants-form .template-table [class*="template-row-"].with-help {
+  padding-right: 20px;
+}
+
+.inline-edit-form .template-table .template-row.with-help,
+.inline-edit-form .template-table [class*="template-row-"].with-help {
+  padding-right: 35px;
 }
 
 .invariants-form:not(.view-form) .template-table .template-row,
@@ -701,6 +730,14 @@
   width: calc(100% + 15px);
 }
 
+.inline-edit-form .template-table .template-row .template-textarea {
+  width: calc(100% + 20px);
+}
+
+.inline-edit-form .template-table .template-row.with-help .template-textarea {
+  width: calc(100% + 35px);
+}
+
 /* select */
 .invariants-form .template-table .template-row .template-select select {
   width: 100%;
@@ -745,6 +782,11 @@
   position: absolute;
   right: 2px;
   top: 7px;
+}
+
+.inline-edit-form .template-table .template-row .template-help,
+.inline-edit-form .template-table [class*="template-row-"] .template-help {
+  right: 20px;
 }
 
 .invariants-form .template-table [class*="template-row-"] .template-help {
