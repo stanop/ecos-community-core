@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>advanced-associations</region-id>
+    <url>/citeck/components/document-assocs</url>
+    <properties>
+        <nodeRef>{nodeRef}</nodeRef>
+        <columns>
+        	[
+        		{ attribute: "contracts:agreementNumber" },
+        		{ attribute: "cm:title", isLink: true },
+        		{ attribute: "contracts:agreementDate", formatter: Citeck.format.date() },
+        		{ attribute: "contracts:duration", formatter: Citeck.format.date() },
+        		{ attribute: "contracts:agreementAmount" },
+        		{ attribute: "contracts:agreementCurrency", formatter: Citeck.format.assocOrProps('idocs:currencyCode') },
+        		{ attribute: "icase:caseStatusAssoc", formatter: Citeck.format.assocOrProps('cm:title') }
+        	]
+        </columns>
+    </properties>
+</component>

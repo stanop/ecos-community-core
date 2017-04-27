@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>comment-notification</shortname>
+	<description>send comment notification</description>
+	<url>/api/citeck/comment-notification</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

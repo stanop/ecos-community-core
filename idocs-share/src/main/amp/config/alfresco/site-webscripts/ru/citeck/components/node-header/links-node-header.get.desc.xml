@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>links-node-header</shortname>
+    <description>Node header component - a header component which can handle both folders and documents and show correct links</description>
+    <url>/citeck/components/node-details/links-node-header</url>
+    <authentication>user</authentication>
+</webscript>

@@ -1,0 +1,1 @@
+relatedWorkflowService.deleteRelatedWorkflows(args['workflowId']);

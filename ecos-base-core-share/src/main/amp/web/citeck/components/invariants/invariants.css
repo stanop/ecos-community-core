@@ -1,0 +1,2151 @@
+/* ECOS INVARIANT FORM */
+
+.static {
+  background-color: #f0f0f0;
+}
+
+.ecos-form:not(.view-form) .form-fields {
+  padding: 15px 30px 15px 15px;
+}
+
+.static .ecos-form .form-fields {
+  padding: 15px 40px 0 40px;
+}
+
+.static .ecos-form .form-buttons {
+  padding: 15px 40px 15px 40px;
+  border-top: 1px solid #ccc;
+}
+
+.ecos-form .form-fields .form-field {
+    background-color: transparent;
+    margin: 0 0 10px 0;
+}
+
+
+/* loading-indicator */
+.invariants-form.loading,
+.invariants-form.submit-process {
+  position: relative;
+}
+
+.invariants-form.loading .form-fields {
+  height: 300px;
+}
+
+.invariants-form.loading .form-fields,
+.invariants-form.loading .form-buttons {
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.invariants-form.submit-process .loading-overlay,
+.invariants-form.loading .loading-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.invariants-form.submit-process .loading-overlay {
+  background-color: rgba(0,0,0,0.3);
+}
+
+.static .invariants-form.loading .loading-overlay {
+  background-color: white;
+}
+
+
+  background-color: rgba(0,0,0,0.3);
+}
+
+.static .invariants-form.loading .loading-overlay {
+  background-color: white;
+}
+
+
+.invariants-form .loading-container {
+  display: none;
+  position: absolute;
+  top: calc(50% - 135px);
+  left: calc(50% - 135px);
+  text-align: center;
+  z-index: 1010;
+}
+
+.invariants-form.loading .loading-container,
+.invariants-form.submit-process .loading-container {
+  display: block;
+}
+
+.invariants-form.submit-process .loading-container {
+  position: fixed;
+}
+
+/*.invariants-form.loading .loading-container {
+  display: block;
+}*/
+
+.loading-container .loading-indicator {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  border: 10px solid #2d3541;
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: cssload-spin 1100ms infinite linear;
+    -o-animation: cssload-spin 1100ms infinite linear;
+    -ms-animation: cssload-spin 1100ms infinite linear;
+    -webkit-animation: cssload-spin 1100ms infinite linear;
+    -moz-animation: cssload-spin 1100ms infinite linear;
+}
+
+.loading-container .loading-message,
+.loading-container .submit-process-message {
+  visibility: hidden;
+}
+
+.invariants-form.loading .loading-container .loading-message,
+.invariants-form.submit-process .loading-container .submit-process-message {
+  width: 180px;
+  position: absolute;
+  left: calc(50% - 80px);
+  top: calc(50% - 16px);
+  visibility: visible;
+}
+
+@keyframes cssload-spin {
+  100%{ transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-o-keyframes cssload-spin {
+  100%{ -o-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-ms-keyframes cssload-spin {
+  100%{ -ms-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-webkit-keyframes cssload-spin {
+  100%{ -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-moz-keyframes cssload-spin {
+  100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+
+/* select */
+.ecos-form .form-fields .form-field select {
+    background-color: white;
+}
+
+.ecos-form .form-fields .form-field select,
+.ecos-form .form-fields .form-field input[type="date"],
+.ecos-form .form-fields .form-field input[type="datetime-local"] {
+    padding: 4px 5px;
+    border-width: 1px;
+}
+
+/* textarea, input text, number */
+.ecos-form .form-fields .form-field textarea,
+.ecos-form .form-fields .form-field input[type="text"],
+.ecos-form .form-fields .form-field input[type="number"] {
+  padding: 5px;
+}
+
+.ecos-form .form-fields .form-field textarea {
+  max-width: 100%;
+  height: 30px;
+}
+
+
+/* BUTTONS */
+.ecos-form .form-buttons input {
+  font-weight: 900;
+  padding: 3px 10px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.ecos-form .form-field button {
+  padding: 3px 10px;
+  font-weight: 900;
+  background-color: white;
+  border: 2px solid #1c55da;
+  color: #1c55da;
+  cursor: pointer;
+}
+
+.ecos-form .form-field button:hover,
+.ecos-form .form-field button:focus {
+  color: white;
+  background-color: #1c55da;
+}
+
+.ecos-form .form-field button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  background-color: white;
+  cursor: default;
+}
+
+/* yui-button */
+.ecos-form .form-field .yui-button {
+  padding: 3px 3px;
+  background-color: white;
+  border: 2px solid #1c55da;
+  cursor: pointer;
+}
+
+.ecos-form .form-field .yui-button > .first-child > button {
+  padding: 0 7px;
+  font-weight: 900;
+  background: transparent;
+  border: none;
+  color: #1c55da;
+}
+
+.ecos-form .form-field .yui-button.yui-menu-button > .first-child {
+   background-image: url(images/arrow-down-blue.png);
+   background-repeat: no-repeat;
+   background-position: right center;
+}
+
+.ecos-form .form-field .yui-button.yui-menu-button.yui-button-hover > .first-child {
+   background-image: url(images/arrow-down-white.png);
+}
+
+.ecos-form .form-field .yui-button.yui-menu-button.yui-button-focus > .first-child {
+   background-image: url(images/arrow-up-white.png);
+}
+
+.ecos-form .form-field .yui-button-hover,
+.ecos-form .form-field .yui-button-focus,
+.ecos-form .form-field .yui-button.yui-button-hover .first-child button,
+.ecos-form .form-field .yui-button.yui-button-focus .first-child button {
+  color: white;
+  background-color: #1c55da;
+}
+
+/* submit */
+.ecos-form .form-buttons input[type="submit"] {
+  border: 2px solid #008c03;
+  color: #008c03;
+}
+
+.ecos-form .form-buttons input[type="submit"]:hover,
+.ecos-form .form-buttons input[type="submit"]:focus {
+  background-color: #008c03;
+  border-color: #008c03 !important;
+  color: white;
+}
+
+.ecos-form .form-buttons input[type="submit"]:disabled {
+  border-color: #ccc !important;
+  color: #aaa;
+  cursor: default;
+}
+
+
+/* cancel */
+.ecos-form .form-buttons input[type="button"] {
+  border: none;
+  color: #1c55da;
+}
+
+.ecos-form .form-buttons input[type="button"]:hover,
+.ecos-form .form-buttons input[type="button"]:focus {
+  color: red;
+}
+
+
+/* STATIC */
+
+.static .invariants-form .template-table {
+  margin-left: -40px;
+  width: 800px;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 800px) {
+  .static .invariants-form .template-table {
+    width: 100% !important;
+  } 
+}
+
+@media screen and (max-width: 825px) {
+  .yui-panel-container {
+    box-sizing: border-box;
+    width: 100% !important;
+    left: 0 !important;
+  }
+
+  .yui-panel-container .underlay {
+    display: none;
+  }
+
+  .yui-panel-container .yui-panel {
+    width: calc(100% - 20px) !important;
+    margin: 0 10px;
+  }
+}
+
+
+/* GLOBAL */
+
+/* mandatory */
+.invariants-form .template-mandatory {
+  color: green;
+}
+
+
+/* TEMPLATE WIDE */
+
+.invariants-form .template-wide {
+
+}
+
+.invariants-form .tab-body .template-wide {
+  padding: 0 40px;
+}
+
+/* fields */
+.invariants-form .template-wide .template-none,
+.invariants-form .template-wide .template-default {
+  margin: 0;
+  display: none;
+}
+
+.invariants-form .template-wide .template-blockset {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding-top: 15px;
+  margin-bottom: 15px;
+  clear: both;
+}
+
+.invariants-form .template-wide .template-blockset + .template-blockset {
+  border-top: none;
+  padding-top: 0;
+}
+
+.invariants-form .template-wide .template-blockset:after,
+.invariants-form .template-wide .template-blockset:before {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.invariants-form .template-wide .template-block,
+.invariants-form .template-wide .template-block-checkbox {
+  min-width: 200px;
+  width: 250px;
+  display: inline-block;
+  position: relative;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.invariants-form .template-wide .template-block.with-help {
+  padding-right: 15px;
+}
+
+.invariants-form .template-wide .template-block-checkbox .block-region {
+  display: inline-block;
+}
+
+.invariants-form .template-wide .template-block-checkbox .template-checkbox input {
+  position: relative;
+  top: 2px;
+}
+
+/* regions */
+.invariants-form .template-wide .template-block .block-region .form-region {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region-select .form-region  {
+  margin-right: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region .form-region.template-none, 
+.invariants-form .template-wide .template-block .block-region .form-region.template-default {
+  display: none;
+}
+
+.invariants-form .template-wide .template-block .block-region-input .form-region {
+  display: block;
+}
+
+
+/* specified regions */
+.invariants-form .template-wide .template-block.with-help .block-region-label,
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
+  width: calc(100% - 10px);
+}
+
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-mandatory {
+  float: right;
+  width: 10px;
+  text-align: right;
+}
+
+.invariants-form .template-wide .template-block .template-help {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+.invariants-form .template-wide .template-block .template-message span.validation-message {
+  margin-bottom: 10px;
+  margin-top: -3px;
+}
+
+.invariants-form .template-wide .template-block.invalid .template-message span.validation-message {
+  color: red;
+}
+
+.invariants-form .template-wide .template-block .template-view {
+  position: relative;
+}
+
+
+/* TEMPLATE TABLE */
+
+.invariants-form .template-table:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.invariants-form .template-wide .template-block.with-help {
+  padding-right: 15px;
+}
+
+.invariants-form .template-wide .template-block-checkbox .block-region {
+  display: inline-block;
+}
+
+.invariants-form .template-wide .template-block-checkbox .template-checkbox input {
+  position: relative;
+  top: 2px;
+}
+
+/* regions */
+.invariants-form .template-wide .template-block .block-region .form-region {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region-select .form-region  {
+  margin-right: 10px;
+}
+
+.invariants-form .template-wide .template-block .block-region .form-region.template-none, 
+.invariants-form .template-wide .template-block .block-region .form-region.template-default {
+  display: none;
+}
+
+.invariants-form .template-wide .template-block .block-region-input .form-region {
+  display: block;
+}
+
+
+/* specified regions */
+.invariants-form .template-wide .template-block.with-help .block-region-label,
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
+  width: calc(100% - 10px);
+}
+
+.invariants-form .template-wide .template-block .block-region-label.biglabel .template-mandatory {
+  float: right;
+  width: 10px;
+  text-align: right;
+}
+
+.invariants-form .template-wide .template-block .template-help {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+.invariants-form .template-wide .template-block .template-message span.validation-message {
+  margin-bottom: 10px;
+  margin-top: -3px;
+}
+
+.invariants-form .template-wide .template-block.invalid .template-message span.validation-message {
+  color: red;
+}
+
+.invariants-form .template-wide .template-block .template-view {
+  position: relative;
+}
+
+
+/* TEMPLATE TABLE */
+
+.invariants-form .template-table,
+.invariants-form .template-table .template-rowset {
+  position: relative;
+}
+
+.invariants-form .template-table .template-row,
+.invariants-form .template-table [class*="template-row-"] {
+  margin: 0 0 10px 0;
+  position: relative;
+  padding: 0 0 10px 0;
+
+  clear: both;
+
+  box-sizing: border-box;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row.with-help,
+.invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
+  padding-right: 15px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row,
+.invariants-form:not(.view-form) .template-table [class*="template-row-"],
+.invariants-form:not(.view-form) .template-table .template-single {
+  margin-left: 5%;
+  width: 95%;
+}
+
+
+/* one column */
+.invariants-form .template-table .template-row .form-region,
+.invariants-form .template-table [class*="template-row-"] .form-region {
+  display: inline-block;
+  vertical-align: text-top;
+}
+
+
+/* two column */
+.invariants-form .template-table .template-half-width,
+.invariants-form .template-table [class*="template-half-width-"] {
+  float: left;
+  position: relative;
+  margin-left: 5%;
+  width: 45%;
+
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+/* three column */
+.invariants-form .template-table .template-third-width,
+.invariants-form .template-table [class*="template-third-width-"] {
+  float: left;
+  position: relative;
+  margin-left: 5%;
+  width: 28.333%;
+
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+
+/* rowset */
+.invariants-form .template-table .template-rowset {
+  clear: both;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset:after {
+  margin-bottom: 10px;
+  height: 1px;
+  background-color: #ccc;
+  width: 95%;
+  margin-left: 5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset .template-rowset:last-child:after {
+  margin: 0;
+  height: 0;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset .template-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.invariants-form .template-table .template-rowset .title,
+.invariants-form .template-wide .template-blockset .title {
+  font-size: 18px;
+  color: #E97527;
+  margin-bottom: 10px;
+  font-family: Open Sans Bold, Arial, sans-serif;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset .title {
+  margin-left: 5%;
+}
+
+.invariants-form .template-table .template-rowset .template-half-width {
+  padding-bottom: 0 !important;
+  border-bottom: 0 !important;
+}
+
+
+/* tabs */
+.invariants-form:not(.view-form) .template-table .template-tabs {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  margin-left: 5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-tabs ul.tabs-title {
+  padding: 10px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-tabs .tabs-body {
+  width: 100%;
+  padding: 10px 10px 0 0;
+  box-sizing: border-box;
+}
+
+/* row field width */
+.invariants-form .template-table .template-row .template-select,
+.invariants-form .template-table .template-row .template-select2,
+.invariants-form .template-table .template-row .template-date,
+.invariants-form .template-table .template-row .template-datetime,
+.invariants-form .template-table .template-row .template-text,
+.invariants-form .template-table .template-row .template-auto-number,
+.invariants-form .template-table .template-row .template-autocomplete,
+.invariants-form .template-table .template-row .template-checkbox,
+.invariants-form .template-table .template-row .template-number,
+.invariants-form .template-table .template-row .template-free-content {
+  width: 54.5%;
+  float: right;
+}
+
+/* row field with help */
+.invariants-form .template-table .template-row.with-help .template-select,
+.invariants-form .template-table .template-row.with-help .template-select2,
+.invariants-form .template-table .template-row.with-help .template-date,
+.invariants-form .template-table .template-row.with-help .template-datetime,
+.invariants-form .template-table .template-row.with-help .template-text,
+.invariants-form .template-table .template-row.with-help .template-auto-number,
+.invariants-form .template-table .template-row.with-help .template-autocomplete,
+.invariants-form .template-table .template-row.with-help .template-checkbox,
+.invariants-form .template-table .template-row.with-help .template-number,
+.invariants-form .template-table .template-row .template-free-content {
+  width: 53.5%;
+}
+
+
+/* clearfix */
+.invariants-form .template-table .template-row:after,
+.invariants-form .template-table .template-rowset:after,
+.invariants-form .template-table .template-half-width:after,
+.invariants-form .template-table .template-third-width:after,
+.invariants-form .template-table [class*="template-row-"]:after,
+.invariants-form .template-table [class*="template-half-width-"]:after,
+.invariants-form .template-table [class*="template-third-width-"]:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+
+/* block min height */
+.form-region.template-textarea {
+  margin-bottom: -3px;
+}
+
+
+/* separator line */
+.invariants-form .template-table .template-row,
+.invariants-form .template-table [class*="template-row-"] {
+  border-bottom: 1px solid #ccc;
+}
+
+
+/* general */
+.invariants-form .template-textarea textarea,
+.invariants-form .template-text input[type="text"],
+.invariants-form .template-number input[type="number"],
+.invariants-form .template-datetime input[type="datetime-local"],
+.invariants-form .template-select select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* region select group */
+.static .invariants-form .template-table .template-row .region-select-group {
+  float: right;
+  width: 24.5%;
+  clear: right;
+  margin-top: 0;
+}
+
+.invariants-form .template-table .template-row .template-view + .region-select-group {
+  margin-top: -10px;
+}
+
+
+/* default */
+.invariants-form .template-table .region-select-group .template-default {
+  display: none;
+}
+
+
+/* mandatory */
+.invariants-form .template-table .template-mandatory {
+  position: absolute;
+  left: -15px;
+  top: 3px;
+}
+
+.invariants-form .template-table .template-row .template-mandatory {
+  top: 8px;
+}
+
+/* label */
+.invariants-form:not(.view-form) .template-table .template-row-checkbox .template-label {
+  width: 90%;
+  padding-right: 0;
+}
+
+.invariants-form:not(.view-form) .template-table .template-half-width-checkbox .template-label,
+.invariants-form:not(.view-form) .template-table .template-third-width-checkbox .template-label {
+  width: 89.5%;
+  display: inline-block;
+  padding-right: 0;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row .template-label {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.invariants-form .template-table .template-label {
+  float: left;
+  width: 45.5%;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-table .template-row.with-help .template-label {
+  width: 46.5%;
+}
+
+.invariants-form .template-table .template-half-width .template-label,
+.invariants-form .template-table .template-third-width .template-label {
+  margin-bottom: 10px;
+  float: none;
+}
+
+.invariants-form:not(.view-form) .template-table .template-label label {
+  font-family: Open Sans Bold, Arial, sans-serif;
+  line-height: normal;
+}
+
+.invariants-form:not(.view-form) .template-table .template-row .template-label label {
+  padding-bottom: 2px;
+  display: block;
+}
+
+
+/* label in view-mode */
+.invariants-form.view-form .template-table .template-label label {
+  padding: 0;
+  margin: 0;
+
+  color: #333;
+  line-height: normal;
+  font-family: Open Sans, Arial,  sans-serif;
+}
+
+
+/* textarea */
+.invariants-form .template-table .template-row .template-textarea {
+  width: 100%;
+  clear: left;
+  margin-top: 5px;
+}
+
+.invariants-form .template-table .template-row.with-help .template-textarea {
+  width: calc(100% + 15px);
+}
+
+/* select */
+.invariants-form .template-table .template-row .template-select select {
+  width: 100%;
+}
+
+
+/* select- */
+.invariants-form .template-table .template-row .region-select-group > .form-region {
+  float: left;
+  margin: 10px 10px 0 0;
+}
+
+.static .invariants-form .template-table .template-row .region-select-group > .form-region {
+  float: right;
+  margin: 10px 0 0 10px;
+}
+
+.invariants-form .template-table .template-row [class*="template-select-"] {
+  float: right;
+}
+
+.invariants-form .template-table .template-half-width [class*="template-select-"],
+.invariants-form .template-table .template-third-width [class*="template-select-"] {
+  margin-top: 10px;
+}
+
+.invariants-form .template-table .template-half-width [class*="template-select-"]:not(:only-of-type),
+.invariants-form .template-table .template-third-width [class*="template-select-"]:not(:only-of-type) {
+  float: left;
+  margin-right: 10px;
+}
+
+
+/* help */
+.invariants-form .template-table .template-help {
+  cursor: help;
+  font-weight: 900;
+}
+
+.invariants-form .template-table .template-row .template-help,
+.invariants-form .template-table [class*="template-row-"] .template-help {
+  position: absolute;
+  right: 2px;
+  top: 7px;
+}
+
+.invariants-form .template-table [class*="template-row-"] .template-help {
+  top: 2px;
+}
+
+.invariants-form .template-table .template-row .template-textarea + .template-help {
+  top: 1px;
+}
+
+.invariants-form .template-table .template-half-width .template-help,
+.invariants-form .template-table [class*="template-half-width-"] .template-help,
+.invariants-form .template-table .template-third-width .template-help,
+.invariants-form .template-table [class*="template-third-width-"] .template-help {
+  position: absolute;
+  right: 0;
+  top: 1px;
+}
+
+.invariants-form .template-table .template-row .template-number + .template-help {
+  position: static;
+  margin-left: 5px;
+}
+
+
+/* none */
+.invariants-form .template-table .template-row .template-none {
+  display: none;
+}
+
+
+/* checkbox */
+.invariants-form .template-table :not(.template-row) .template-checkbox {
+  float: left;
+  margin-right: 10px;
+}
+
+.invariants-form .template-table .template-checkbox .checkbox-option {
+  margin-right: 15px;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.invariants-form .template-table .form-field.template-row .template-checkbox,
+.invariants-form .template-table .form-field.template-half-width .template-checkbox,
+.invariants-form .template-table .form-field.template-third-width .template-checkbox {
+  margin-top: 7px;
+}
+
+.invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
+  display: block;
+}
+
+.invariants-form .template-table .template-checkbox input[type="checkbox"],
+.invariants-form .template-table .template-checkbox input[type="radio"] {
+  position: relative;
+  top: 3px;
+}
+
+.invariants-form .template-table .template-checkbox .checkbox-option * {
+  cursor: pointer;
+}
+
+.invariants-form .template-table .template-checkbox .checkbox-option label {
+  font: 13px/1.231 Open Sans,arial,helvetica,clean,sans-serif;
+}
+
+
+/* message */
+.invariants-form .template-table .template-message {
+    display: block !important;
+    clear: both;
+}
+
+.invariants-form .template-table .template-message span.validation-message {
+  margin-top: 10px;
+  display: inline-block;
+  line-height: 100%;
+}
+
+.invariants-form .template-table .template-row .template-message,
+.invariants-form .template-table [class*="template-row-"] .template-message {
+  margin-left: 45.5%;
+}
+
+.invariants-form .template-table .template-row.with-help .template-message,
+.invariants-form .template-table [class*="template-row-"].with-help .template-message {
+  margin-left: 46.5%;
+}
+
+.invariants-form .template-table .template-row > .template-textarea + .region-select-group + .template-help + .template-message {
+  position: static;
+  margin-left: 0;
+}
+
+
+/* date and datetime */
+.invariants-form .template-table .template-date a.calendar-link-button,
+.invariants-form .template-table .template-datetime a.calendar-link-button {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.invariants-form .template-table .template-date img.datepicker-icon,
+.invariants-form .template-table .template-datetime img.datepicker-icon {
+  position: relative;
+  top: 3px;
+}
+
+
+/* date */
+.invariants-form .template-table .template-row .template-date input {
+  width: 45%;
+}
+
+
+/* datetime */
+.invariants-form .template-table .template-row .template-datetime input[type="text"] {
+  width: 60%;
+}
+
+
+/* auto-number */
+.invariants-form .template-table .template-row .template-auto-number:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.invariants-form .template-table .template-row .template-auto-number input {
+  width: 45%;
+  margin-right: 10px;
+  float: left;
+}
+
+
+/* number-generate */
+.invariants-form .template-table .template-number-generate {
+  margin-top: 10px;
+}
+
+.invariants-form .template-table .template-row .template-number-generate {
+  float: right;
+  clear: right;
+}
+
+
+/* orgstruct-picker */
+.orgstruct-header {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.orgstruct-layout {
+  background-color: white;
+}
+
+.orgstruct-layout .selected-object {
+  padding: 10px 35px 10px 32px;
+  position: relative;
+  line-height: normal;
+  cursor: pointer;
+
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+.orgstruct-layout .selected-object:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+}
+
+.orgstruct-layout .selected-object:after {
+  content: "";
+  display: block;
+
+  position: absolute;
+  right: 10px;
+  top: 13px;
+
+  background-image: url(images/remove.png);
+  background-position: center;
+  background-repeat: no-repeat;
+
+  width: 12px;
+  height: 12px;
+}
+
+.orgstruct-layout .selected-object:hover {
+  color: red;
+}
+
+.orgstruct-layout .selected-object:hover:after {
+  background-image: url(images/remove-active.png);
+}
+
+.orgstruct-header .orgstruct-search {
+  position: relative;
+}
+
+.orgstruct-header .orgstruct-search input[type="text"].search-input {
+  padding: 5px 10px 5px 30px;
+  border-radius: 10px;
+}
+
+.orgstruct-header .orgstruct-search .search-icon {
+  background-image: url(images/search.png);
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  top: 4px;
+  background-position: center;
+  background-repeat: no-repeat;
+  left: 4px;
+  background-size: 15px;
+}
+
+.orgstruct-tree {
+  height: 250px;
+  overflow-y: auto;
+}
+
+.orgstruct-tree > .ygtvitem > .ygtvchildren > .ygtvitem {
+  padding: 5px 10px;
+}
+
+.orgstruct-tree > .ygtvitem > .ygtvchildren > .ygtvitem:not(:first-child) {
+  border-top: 1px solid #ccc;
+}
+
+.orgstruct-tree .ygtvtable {
+  width: 100%;
+}
+
+.orgstruct-tree .ygtvcontent {
+  padding: 5px 0;
+  text-align: left;
+  cursor: default;
+}
+
+.orgstruct-tree .selectable .ygtvrow .ygtvcontent {
+  padding-right: 25px;
+
+  background-image: url(images/add.png);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.orgstruct-tree .selectable .ygtvrow:hover .ygtvcontent {
+  background-image: url(images/add-active.png);
+}
+
+.orgstruct-tree .selectable .ygtvrow .ygtvcontent.selected {
+  background-image: none;
+}
+
+.orgstruct-tree .ygtvcontent .ygtvlabel {
+  display: block;
+  cursor: default;
+  margin: 0;
+  padding-left: 21px;
+  line-height: normal;
+
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-USER .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-USER {
+  background-image: url(images/user.png)
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-GROUP .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-GROUP {
+  background-image: url(images/group.png)
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-GROUP.groupType-BRANCH .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-GROUP.groupType-BRANCH {
+  background-image: url(images/branch.png)
+}
+
+.orgstruct-tree .ygtvcontent.authorityType-GROUP.groupType-ROLE .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-GROUP.groupType-ROLE {
+  background-image: url(images/role.png)
+}
+
+.orgstruct-tree .ygtvtable.selectable .ygtvrow:hover .ygtvcontent,
+.orgstruct-tree .ygtvtable.selectable .ygtvrow:hover .ygtvcontent .ygtvlabel {
+  color: red;
+  cursor: pointer;
+}
+
+.orgstruct-tree .ygtvdepthcell,
+.orgstruct-tree .ygtvtn,
+.orgstruct-tree .ygtvln {
+  width: 15px;
+}
+
+.orgstruct-tree .ygtvtp, .orgstruct-tree .ygtvlp,
+.orgstruct-tree .ygtvtph, .orgstruct-tree .ygtvlph,
+.orgstruct-tree .ygtvtm, .orgstruct-tree .ygtvlm,
+.orgstruct-tree .ygtvtmh, .orgstruct-tree .ygtvlmh,
+.orgstruct-tree .ygtvloading {
+  background-position: left;
+  background-repeat: no-repeat;
+  width: 10px;
+}
+
+.orgstruct-tree .ygtvtp,
+.orgstruct-tree .ygtvlp,
+.orgstruct-tree .ygtvtph,
+.orgstruct-tree .ygtvlph {
+   background-image: url(images/yui-twister-close.png);
+}
+.orgstruct-tree .ygtvtm,
+.orgstruct-tree .ygtvlm,
+.orgstruct-tree .ygtvtmh,
+.orgstruct-tree .ygtvlmh {
+   background-image: url(images/yui-twister-open.png);
+}
+
+.orgstruct-tree .ygtvloading {
+  background-image: url(images/small-loading.gif);
+}
+
+.orgstruct-tree .ygtvfocus,
+.orgstruct-tree .ygtvfocus .ygtvlabel {
+  background-color: transparent;
+}
+
+.orgstruct-control-objects {
+  float: left;
+  width: 72.5%;
+  position: relative;
+}
+
+.orgstruct-control-objects .selected-object-list li.selected-object {
+  line-height: 200%;
+}
+
+
+/* autocomplete */
+.autocomplete-control {
+  position: relative;
+}
+
+.autocomplete-control .autocomplete-select,
+.autocomplete-control .autocomplete-container {
+  background-color: white;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.autocomplete-control .autocomplete-select {
+  height: 30px;
+  padding: 4px 35px 4px 7px;
+  line-height: normal;
+  color: black;
+  position: relative;
+}
+
+.autocomplete-control .autocomplete-select.disabled {
+  color: #aaa;
+}
+
+.autocomplete-control .autocomplete-select:not(.disabled):hover {
+  border-color: #aaa;
+}
+
+.autocomplete-control .autocomplete-select:not(.disabled):focus {
+  border-color: #1c55da;
+}
+
+.autocomplete-control .autocomplete-select .autocomplete-value {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: default;
+}
+
+.autocomplete-control .autocomplete-select a.clear-button {
+  height: 28px;
+  width: 9px;
+  position: absolute;
+  top: 0px;
+  right: 18px;
+  text-indent: -9999px;
+  cursor: pointer;
+
+  background-image: url(images/remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 9px;
+}
+
+.autocomplete-control .autocomplete-select .autocomplete-twister {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 28px;
+  width: 18px;
+
+  background-image: url(images/autocomplete-closed-twister.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 7px;
+}
+
+.autocomplete-control .autocomplete-select.opened .autocomplete-twister {
+  background-image: url(images/autocomplete-opened-twister.jpg);
+}
+
+.autocomplete-control .autocomplete-select.disabled .autocomplete-twister {
+  background-image: url(images/autocomplete-disabled-close-twister.jpg);
+}
+
+.autocomplete-control .autocomplete-container {
+  position: absolute;
+  padding: 7px;
+  z-index: 5;
+  border-top: none;
+  box-shadow: 0 0 25px -5px gray;
+}
+
+.autocomplete-container .autocomplete-search-container {
+  position: relative;
+}
+
+.autocomplete-container .autocomplete-search-container .help-message {
+  margin-bottom: 7px;
+}
+
+.autocomplete-container .autocomplete-search-container input.autocomplete-search {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 7px;
+  padding-right: 30px !important;
+}
+
+.autocomplete-container .autocomplete-search-container .loading-indicator {
+  background-color: white;
+  background-image: url(images/spinner.gif);
+  background-position: center;
+  background-repeat: no-repeat;
+
+  right: 1px;
+  bottom: 1px;
+  width: 28px;
+  height: 28px;
+
+  position: absolute;
+  border-radius: 5px;
+}
+
+
+.autocomplete-container ul.autocomplete-list {
+  margin-top: 7px;
+}
+
+.autocomplete-container ul.autocomplete-list a {
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+  line-height: normal;
+}
+
+.autocomplete-container ul.autocomplete-list li.selected a {
+  font-weight: 900;
+  color: red;
+}
+
+.autocomplete-container .emplty-message {
+    margin-top: 7px;
+    color: #777;
+}
+
+.autocomplete-container .autocomplete-more {
+    text-align: center;
+    border-top: 1px solid #ccc;
+    margin-bottom: -7px;
+    margin-top: 7px;
+}
+
+.autocomplete-container .autocomplete-more a {
+    display: block;
+    width: calc(100% + 14px);
+    margin-left: -7px;
+    padding: 0 0 7px 0;
+    letter-spacing: 5px;
+}
+
+.autocomplete-container span.autocomplete-message.empty-message {
+    padding-top: 5px;
+    display: inline-block;
+}
+
+/* select2 */
+.select2-control {
+  position: relative;
+}
+
+.select2-control .select2-select,
+.select2-control .select2-container {
+  background-color: white;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.select2-control .select2-select {
+  height: 30px;
+  padding: 4px 35px 4px 7px;
+  line-height: normal;
+  color: black;
+  position: relative;
+}
+
+.select2-control .select2-select.disabled {
+  color: #aaa;
+}
+
+.select2-control .select2-select:not(.disabled):hover {
+  border-color: #aaa;
+}
+
+.select2-control .select2-select:not(.disabled):focus {
+  border-color: #1c55da;
+}
+
+.select2-control .select2-select .select2-value {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: default;
+}
+
+.select2-control .select2-select a.clear-button {
+  height: 28px;
+  width: 9px;
+  position: absolute;
+  top: 0px;
+  right: 18px;
+  text-indent: -9999px;
+  cursor: pointer;
+
+  background-image: url(images/remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 9px;
+}
+
+.select2-control .select2-select .select2-twister {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 28px;
+  width: 18px;
+
+  background-image: url(images/autocomplete-closed-twister.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 7px;
+}
+
+.select2-control .select2-select.opened .select2-twister {
+  background-image: url(images/autocomplete-opened-twister.jpg);
+}
+
+.select2-control .select2-select.disabled .select2-twister {
+  background-image: url(images/autocomplete-disabled-close-twister.jpg);
+}
+
+.select2-control .select2-container {
+  position: absolute;
+  padding: 7px;
+  z-index: 5;
+  border-top: none;
+  box-shadow: 0 0 25px -5px gray;
+}
+
+.select2-container .select2-search-container {
+  position: relative;
+}
+
+.select2-container .select2-search-container .help-message {
+  margin-bottom: 7px;
+}
+
+.select2-container .select2-search-container input.select2-search {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 7px;
+  padding-right: 30px !important;
+}
+
+.select2-container ul.select2-list {
+  margin-top: 7px;
+}
+
+.select2-container ul.select2-list a {
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+  line-height: normal;
+}
+
+.select2-container ul.select2-list li.selected a {
+  font-weight: 900;
+  color: red;
+}
+
+.select2-container .emplty-message {
+    margin-top: 7px;
+    color: #777;
+}
+
+.select2-container .select2-more {
+    text-align: center;
+    border-top: 1px solid #ccc;
+    margin-bottom: -7px;
+    margin-top: 7px;
+}
+
+.select2-container .select2-more a {
+    display: block;
+    width: calc(100% + 14px);
+    margin-left: -7px;
+    padding: 0 0 7px 0;
+    letter-spacing: 5px;
+}
+
+.select2-container span.select2-message.empty-message {
+    padding-top: 5px;
+    display: inline-block;
+}
+
+
+
+/* file-upload */
+.invariants-form .template-table .form-field:not(.template-row) .template-file-upload {
+  margin: 10px 10px 0 0;
+}
+
+.invariants-form .template-table .template-row .template-file-upload {
+  float: right;
+}
+
+.invariants-form .template-table .template-file-upload .file-upload-control.loading button.file-upload-open-dialog-button {
+  color: transparent;
+  background-image: url(images/loading.gif);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+
+/* create-object */
+.invariants-form .template-table .create-variants {
+  background-color: white;
+  position: absolute;
+  box-shadow: 0 0 5px 0px gray;
+  padding: 7px;
+  z-index: 5;
+}
+
+.invariants-form .template-table .create-variants .create-variant {
+  padding: 5px;
+  line-height: normal;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.invariants-form .template-table .create-variants .create-variant:hover {
+  color: red;
+  background-color: #f0f0f0;
+}
+
+.invariants-form .template-table .create-variants .create-variant.default {
+  font-weight: 900;
+}
+
+
+/* journal */
+.journal-picker-header {
+  padding: 5px 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.journal-picker-header .yui-menu-button {
+  margin-bottom: 3px;
+}
+
+.journal-picker-header .yui-menu-button button {
+  margin-right: 0;
+}
+
+.journal-picker-header:after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.journal-picker-header a.journal-tab-button {
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 200%;
+}
+
+.journal-picker-header button {
+  background: none;
+  border: none;
+  margin-right: 10px;
+  cursor: pointer;
+  line-height: 200%;
+  color: #1c55da;
+  font-weight: 900;
+}
+
+.journal-picker-header a.journal-tab-button:hover,
+.journal-picker-header a.journal-tab-button.selected,
+.journal-picker-header button:hover,
+.journal-picker-header button.selected {
+  color: red;
+}
+
+.journal-picker-header button:disabled {
+  color: #ccc !important;
+  cursor: default;
+}
+
+.journal-picker-header .journal-search {
+  float: right;
+  width: 30%;
+}
+
+.journal-picker-header .journal-search input.journal-search-input {
+  padding: 3px 5px;
+  border-radius: 7px;
+  width: 100%;
+}
+
+.journal-capture {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+}
+
+.journal-container {
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow-x: auto;
+}
+
+.journal-container {
+  height: 371px;
+}
+
+.journal-container.selected-elements {
+  height: 92px;
+  overflow-y: auto;
+}
+
+.journal-container .loading {
+    position: absolute;
+    z-index: 10;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+
+    background-image: url(../journals2/images/loading.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.journal-container .journal {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.journal-container .journal table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.journal-container .journal tr.journal-element.selected,
+.journal-container .journal tr.journal-element.selected td:hover {
+  background-color: #f0fceb;
+}
+
+.journal-container .journal th,
+.journal-container .journal tr.journal-element td {
+  padding: 7px 0 7px 15px;
+}
+
+.journal-container .journal th {
+    white-space: nowrap;
+}
+
+.journal-container .journal th:last-child,
+.journal-container .journal tr.journal-element td:last-child {
+    padding-right: 15px;
+}
+
+.journal-container .journal .journal-element td {
+  border-top: 1px solid #ccc;
+}
+
+.journal-container .journal .journal-element:hover td {
+  background-color: #f0f0f0;
+}
+
+.journal-container .journal .journal-element td:last-child {
+  padding-right: 15px;
+}
+
+.journal-container .journal .journal-element td.actions a {
+  cursor: pointer;
+}
+
+
+.journal-pagination {
+  padding: 7px 15px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.journal-pagination span.page-label {
+  margin: 0 10px;
+}
+
+.journal-pagination span.next-page,
+.journal-pagination span.previous-page {
+  color: #aaa;
+}
+
+
+.filter-criteria-actions {
+  padding: 0 15px;
+  overflow: hidden;
+  border-top: 1px solid #ccc;
+}
+
+.filter-criteria-actions > ul {
+  float: right;
+  padding: 0;
+}
+
+.filter-criteria-actions li.filter-criteria-option {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 4px;
+}
+
+.filter-criteria-actions a.filter-criteria-button {
+  line-height: 200%;
+  cursor: pointer;
+}
+
+.filter-criteria-actions li.filter-criteria-option .filter-criteria-variants {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 0 5px 2px gray;
+  padding: 7px;
+  min-width: 150px;
+  z-index: 10;
+}
+
+.filter-criteria-actions li.filter-criteria-option .filter-criteria-variants a.filter-criterion {
+  width: 100%;
+  display: block;
+  line-height: normal;
+  cursor: pointer;
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+.filter-criteria-actions li.filter-criteria-option .filter-criteria-variants a.filter-criterion:hover {
+  background-color: #f0f0f0;
+}
+
+.selected-filter-criteria-container {
+  padding: 10px 15px;
+  max-height: 443px;
+  overflow-y: auto;
+}
+
+.collapse .selected-filter-criteria-container {
+  max-height: 135px;
+}
+
+.full .filter-page,
+.create-page {
+  height: 371px;
+  overflow: auto;
+}
+
+.full.dock .filter-page,
+.dock .create-page {
+  height: 501px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table {
+  width: 100%;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td:not(:last-child) {
+  padding-right: 10px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-actions {
+  width: 5%;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-field {
+  width: 30%;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate {
+  width: 30%;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate select {
+  width: 100%;
+  background-color: white;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector {
+  width: 35%;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .criterion-value-field-input {
+    margin-right: 10px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .criterion-value-field-input, 
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .criterion-value-field-view {
+    display: inline-block;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate select,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="number"],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector select {
+  width: 100%;
+  background-color: white;
+  box-sizing: border-box;
+  padding: 4px 5px;
+}
+
+
+/* date & time */
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].date-entry,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].time-entry {
+  width: 30%;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"].time-entry {
+  margin-left: 15px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .format-info,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .help-icon,
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .help-text {
+  display: none;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .datepicker {
+  position: absolute;
+  z-index: 10;
+  display: none;
+  margin-top: -1px;
+}
+
+/* object-finder */
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .object-finder-items {
+  margin: 0;
+  float: left;
+  min-height: 26px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .object-finder-items > div {
+  margin-top: 3px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .object-finder-items img {
+  vertical-align: -3px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .show-picker {
+  float: right;
+  clear: none;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .show-picker .yui-button button {
+  line-height: 125%;
+}
+
+
+/* view */
+.invariants-form:not(.view-form) .template-table .template-row .template-view {
+  padding-top: 5px;
+  width: 30%;
+  box-sizing: border-box;
+  float: left;
+}
+
+.invariants-form .template-view span.value-item {
+  display: block;
+  line-height: normal;
+  padding-right: 29px;
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.invariants-form .template-view span.value-item span.value-item-text {
+  display: block;
+  overflow: hidden;
+}
+
+.invariants-form .template-view span.value-item .value-item-actions {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+}
+
+/* in view-mode */
+.invariants-form.view-form .template-table .template-view,
+.invariants-form.view-form .template-table .template-select,
+.invariants-form.view-form .template-table .template-free-content {
+  font-family: Open Sans Bold, Arial, sans-serif;
+  float: right;
+  width: 54.5%;
+}
+
+/* view-table */
+.invariants-form .template-table .template-view-table,
+.invariants-form .template-table .template-view-table .view-table-container {
+  width: 100%;
+}
+
+.invariants-form .template-table .template-view-table .view-table-container {
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 10px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-view-table .view-table-container {
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.invariants-form .template-table .template-view-table .view-table-container .value-item.highlighted {
+  background-color: #F0F0F0;
+}
+
+.invariants-form .template-table .template-view-table table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.invariants-form .template-table .template-view-table table thead tr th,
+.invariants-form .template-table .template-view-table table tbody tr td {
+  padding: 5px 10px;
+}
+
+.invariants-form .template-table .template-view-table table thead tr th:not(:last-child),
+.invariants-form .template-table .template-view-table table tbody tr td:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.invariants-form .template-table .template-view-table table thead tr th {
+  border-bottom: 1px solid #ccc;
+}
+
+.invariants-form .template-table .template-view-table table tbody tr td {
+  border-top: 1px solid #ccc;
+}
+
+.invariants-form .template-table .template-view-table tr.view-time
+
+.invariants-form .template-table .template-row .template-view-table + .region-select-group {
+  max-width: 100%;
+}
+
+
+/* view-actions */
+.invariants-form .template-view span.value-item .value-item-actions a,
+.invariants-form .template-view-table tr.value-item td.value-item-actions a {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.invariants-form .template-view span.value-item .value-item-actions a.edit-value-item,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.edit-value-item {
+  background-image: url(images/edit.png);
+}
+
+.invariants-form .template-view span.value-item .value-item-actions a.edit-value-item:hover,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.edit-value-item:hover {
+  background-image: url(images/edit-active.png);
+}
+
+.invariants-form .template-view span.value-item .value-item-actions a.delete-value-item,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item {
+  background-image: url(images/remove.png);
+  background-size: 10px;
+}
+
+.invariants-form .template-view span.value-item .value-item-actions a.delete-value-item:hover,
+.invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item:hover {
+  background-image: url(images/remove-active.png);
+}
+
+
+@media screen and (max-width: 1000px) {
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-view,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-select,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-date,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-datetime,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-text,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-textarea,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-auto-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-autocomplete,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-checkbox,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-free-content {
+    width: 100%;
+    float: none;
+    max-width: 100%;
+  }
+
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label {
+    margin-bottom: 10px;
+  }
+}
+
+
+/* TEMPLATE TABS */
+.static .invariants-form .template-tabs .template-table {
+    margin-left: 0;
+    max-width: 100%;
+}
+
+.invariants-form .template-tabs {
+  border: 1px solid #ccc;
+}
+
+.invariants-form .template-tabs .tabs-body {
+  padding: 15px 0;
+}
+
+.invariants-form .template-tabs .tabs-title {
+  position: relative;
+  overflow: hidden;
+  height: 27px;
+  padding: 0px 30px;
+}
+
+.invariants-form .template-tabs .tabs-title ul {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  height: 27px;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title:not(.selected) {
+  cursor: pointer;  
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false],
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false]:hover {
+  cursor: default;
+  opacity: 0.5;
+  font-weight: normal !important;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs {
+  position: absolute;
+  height: 27px;
+  width: 30px;
+  padding: 7px 0 0px 0;
+  top: 0px;
+  border: 1px solid #ccc;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-left {
+  left: 0;
+  cursor: w-resize;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-right {
+  right: 0;
+  cursor: e-resize;
+}
+
+
+/* template-tabs in VIEW mode */
+
+.invariants-form.view-form .template-tabs .tabs-body {
+  padding: 10px;
+}
+
+
+@media screen and (max-width: 1000px) {
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-view,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-select,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-date,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-datetime,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-text,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-textarea,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-auto-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-autocomplete,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-checkbox,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-number,
+  .invariants-form.view-form .template-table [class*="template-row"] .template-free-content {
+    width: 100%;
+    float: none;
+    max-width: 100%;
+  }
+
+  .invariants-form.view-form .template-table [class*="template-row"] .template-label {
+    margin-bottom: 10px;
+  }
+}
+
+
+/* TEMPLATE TABS */
+.static .invariants-form .template-tabs .template-table {
+    margin-left: 0;
+}
+
+.invariants-form .template-tabs {
+  border: 1px solid #ccc;
+}
+
+.invariants-form .template-tabs .tabs-body {
+  padding: 15px 0;
+}
+
+.invariants-form .template-tabs .tabs-title {
+  position: relative;
+  overflow: hidden;
+  height: 27px;
+  padding: 0px 30px;
+}
+
+.invariants-form .template-tabs .tabs-title ul {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  height: 27px;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title:not(.selected) {
+  cursor: pointer;  
+}
+
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false],
+.invariants-form .template-tabs .tabs-title li.tab-title[data-activity=false]:hover {
+  cursor: default;
+  opacity: 0.5;
+  font-weight: normal !important;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs {
+  position: absolute;
+  height: 27px;
+  width: 30px;
+  padding: 7px 0 0px 0;
+  top: 0px;
+  border: 1px solid #ccc;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-left {
+  left: 0;
+  cursor: w-resize;
+}
+
+.invariants-form .template-tabs .tabs-title span.scroll-tabs.scroll-right {
+  right: 0;
+  cursor: e-resize;
+}
+
+/* VALIDATION */
+
+/* invalid */
+.invariants-form .template-table .invalid .template-message {
+  color: red;
+}
+
+.invariants-form .template-table .invalid .form-region:not(.template-autocomplete) input,
+.invariants-form .template-table .invalid .form-region:not(.template-select2) input,
+.invariants-form .template-table .invalid textarea,
+.invariants-form .template-table .invalid select {
+  border-color: red !important;
+}

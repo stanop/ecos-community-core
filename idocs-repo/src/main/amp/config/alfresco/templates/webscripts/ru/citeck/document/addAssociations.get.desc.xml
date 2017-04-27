@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>AddAssociations</shortname>
+  <description>AddAssociations to agreement</description>
+  <url>/acm/addAssociations</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

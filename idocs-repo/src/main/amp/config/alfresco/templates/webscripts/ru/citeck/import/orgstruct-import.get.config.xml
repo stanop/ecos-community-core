@@ -1,0 +1,13 @@
+<config>
+	<recordName>record</recordName>
+	<groupTypes>
+		<groupType id="company"     shortName="{type}{index}" displayName="{name}"            xmlField="level3"   groupType="branch" groupSubtype="company"     scope="global" />
+		<groupType id="department"  shortName="{type}{index}" displayName="{name}, {parent}" xmlField="level4"   groupType="branch" groupSubtype="department"  scope="company" />
+		<groupType id="division"    shortName="{type}{index}" displayName="{name}, {parent}" xmlField="level5"   groupType="branch" groupSubtype="division"    scope="department" />
+		<groupType id="subdivision" shortName="{type}{index}" displayName="{name}, {parent}" xmlField="division" groupType="branch" groupSubtype="subdivision" scope="division,department,company" merge="true" />
+		<groupType id="role"        shortName="{type}{index}" displayName="{name}, {parent}" xmlField="position" groupType="role"   groupSubtype="role"        scope="subdivision,division,department,company" />
+	</groupTypes>
+	<userTypes>
+		<userType id="user" xmlField="FIO" alfField="org:fullName" scope="role" />
+	</userTypes>
+</config>

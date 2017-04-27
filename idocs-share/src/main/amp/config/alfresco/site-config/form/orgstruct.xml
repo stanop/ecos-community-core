@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<alfresco-config>
+
+	<config>
+		<forms>
+			<constraint-handlers>
+				<constraint type="org.alfresco.repo.dictionary.constraint.AuthorityNameConstraint" validation-handler="Alfresco.forms.validation.authorityName" event="keyup" />
+			</constraint-handlers>
+		</forms>
+	</config>
+
+    <config evaluator="model-type" condition="cm:authorityContainer">
+        <forms>
+            <form>
+				<field-visibility>
+                    <show id="cm:authorityName" />
+                    <show id="cm:authorityDisplayName" />
+				</field-visibility>
+				<appearance>
+                    <field id="cm:authorityName" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/group-name.ftl" />
+					</field>
+                    <field id="cm:authorityDisplayName" mandatory="true" />
+				</appearance>
+            </form>
+            <form id="branch">
+                <field-visibility>
+                    <show id="cm:authorityName" />
+                    <show id="cm:authorityDisplayName" />
+                    <show id="org:branchType" force="true" />
+                </field-visibility>
+				<appearance>
+                    <field id="cm:authorityName" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/group-name.ftl" />
+					</field>
+                    <field id="cm:authorityDisplayName" mandatory="true" />
+					<field id="org:branchType" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/orgmeta/branch</control-param>
+							<control-param name="titleField">title</control-param>
+							<control-param name="valueField">name</control-param>
+						</control>
+					</field>
+				</appearance>
+            </form>
+            <form id="role">
+                <field-visibility>
+                    <show id="cm:authorityName" />
+                    <show id="cm:authorityDisplayName" />
+                    <show id="org:roleType" force="true" />
+					<show id="deputy:managedByMembers" force="true" />
+                </field-visibility>
+				<appearance>
+                    <field id="cm:authorityName" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/group-name.ftl" />
+					</field>
+                    <field id="cm:authorityDisplayName" mandatory="true" />
+					<field id="org:roleType" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/orgmeta/role</control-param>
+							<control-param name="titleField">title</control-param>
+							<control-param name="valueField">name</control-param>
+						</control>
+					</field>
+				</appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="cm:authorityContainer">
+        <forms>
+            <form id="orgstruct">
+				<field-visibility>
+                    <show id="cm:authorityName" />
+                    <show id="cm:authorityDisplayName" />
+				</field-visibility>
+				<appearance>
+                    <field id="cm:authorityName" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/group-name.ftl" />
+					</field>
+                    <field id="cm:authorityDisplayName" mandatory="true" />
+				</appearance>
+            </form>
+			<form id="branch">
+				<field-visibility>
+                    <show id="cm:authorityName" />
+                    <show id="cm:authorityDisplayName" />
+                    <show id="org:branchType" force="true" />
+				</field-visibility>
+				<appearance>
+                    <field id="cm:authorityName" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/group-name.ftl" />
+					</field>
+                    <field id="cm:authorityDisplayName" mandatory="true" />
+					<field id="org:branchType" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/orgmeta/branch</control-param>
+							<control-param name="titleField">title</control-param>
+							<control-param name="valueField">name</control-param>
+						</control>
+					</field>
+				</appearance>
+			</form>
+            <form id="role">
+				<field-visibility>
+                    <show id="cm:authorityName" />
+                    <show id="cm:authorityDisplayName" />
+                    <show id="org:roleType" force="true" />
+					<show id="deputy:managedByMembers" force="true" />
+				</field-visibility>
+				<appearance>
+                    <field id="cm:authorityName" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/group-name.ftl" />
+					</field>
+                    <field id="cm:authorityDisplayName" mandatory="true" />
+					<field id="org:roleType" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/orgmeta/role</control-param>
+							<control-param name="titleField">title</control-param>
+							<control-param name="valueField">name</control-param>
+						</control>
+					</field>
+				</appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="aspect" condition="org:branch">
+        <forms>
+            <form id="orgstruct">
+                <field-visibility>
+                    <show id="org:branchType" />
+                </field-visibility>
+				<appearance>
+					<field id="org:branchType" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/orgmeta/branch</control-param>
+							<control-param name="titleField">title</control-param>
+							<control-param name="valueField">name</control-param>
+						</control>
+					</field>
+				</appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="aspect" condition="org:role">
+        <forms>
+            <form id="orgstruct">
+                <field-visibility>
+                    <show id="org:roleType" />
+					<show id="deputy:managedByMembers" force="true" />
+                </field-visibility>
+				<appearance>
+					<field id="org:roleType" mandatory="true">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/proxy/alfresco/api/orgmeta/role</control-param>
+							<control-param name="titleField">title</control-param>
+							<control-param name="valueField">name</control-param>
+						</control>
+					</field>
+				</appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="aspect" condition="org:branchIndex">
+        <forms>
+            <form id="orgstruct">
+                <field-visibility>
+                    <show id="org:branchIndex" />
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+	<config evaluator="model-type" condition="org:simpleBranchType">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="org:customAspect" />
+                </field-visibility>
+				<appearance>
+                    <field id="cm:title" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl" />
+					</field>
+                    <field id="org:customAspect">
+						<control template="/ru/citeck/components/form/controls/dictionary/aspect.ftl" />
+					</field>
+				</appearance>
+            </form>
+        </forms>
+	</config>
+	
+	<config evaluator="model-type" condition="org:simpleRoleType">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="org:roleIsManager" />
+                    <show id="org:customAspect" />
+               </field-visibility>
+				<appearance>
+                    <field id="cm:title" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl" />
+					</field>
+                    <field id="org:customAspect">
+						<control template="/ru/citeck/components/form/controls/dictionary/aspect.ftl" />
+					</field>
+				</appearance>
+            </form>
+        </forms>
+	</config>
+	
+    <config evaluator="aspect" condition="org:branchType">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="org:customAspect" force="true" />
+                </field-visibility>
+				<appearance>
+                    <field id="cm:name" read-only="true" />
+                    <field id="cm:title" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl" />
+					</field>
+                    <field id="org:customAspect">
+						<control template="/ru/citeck/components/form/controls/dictionary/aspect.ftl" />
+					</field>
+				</appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="aspect" condition="org:roleType">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="org:roleIsManager" />
+                    <show id="org:customAspect" force="true" />
+                </field-visibility>
+				<appearance>
+                    <field id="cm:name" read-only="true" />
+                    <field id="cm:title" mandatory="true">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl" />
+					</field>
+                    <field id="org:customAspect">
+						<control template="/ru/citeck/components/form/controls/dictionary/aspect.ftl" />
+					</field>
+				</appearance>
+            </form>
+        </forms>
+    </config>
+	
+	<config evaluator="model-type" condition="cm:person">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="cm:userName" />
+					<show id="cm:firstName" />
+					<show id="cm:lastName" />
+					<show id="cm:email" />
+					<show id="deputy:available" force="true" />
+					<show id="org:preset" force="true" />
+				</field-visibility>
+				<appearance>
+					<field id="cm:email" mandatory="true"/>
+					<field id="org:preset">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/service/citeck/presets/user.json</control-param>
+							<control-param name="titleField">name</control-param>
+							<control-param name="valueField">id</control-param>
+							<control-param name="resultsList">presets</control-param>
+						</control>
+					</field>
+                    <field id="deputy:available">
+                        <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
+                    </field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="node-type" condition="cm:person">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="cm:userName" />
+					<show id="cm:firstName" />
+					<show id="cm:lastName" />
+					<show id="cm:email" />
+					<show id="deputy:available" force="true" />
+					<show id="org:preset" force="true" />
+				</field-visibility>
+				<appearance>
+                    <field id="cm:userName" read-only="true" />
+					<field id="cm:email" mandatory="true"/>
+					<field id="org:preset">
+						<control template="/ru/citeck/components/form/controls/select.ftl">
+							<control-param name="optionsUrl">/share/service/citeck/presets/user.json</control-param>
+							<control-param name="titleField">name</control-param>
+							<control-param name="valueField">id</control-param>
+							<control-param name="resultsList">presets</control-param>
+						</control>
+					</field>
+                    <field id="deputy:available">
+                        <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
+                    </field>
+				</appearance>
+			</form>
+			<form id="info">
+				<field-visibility>
+					<show id="cm:userName" />
+					<show id="cm:firstName" />
+					<show id="cm:lastName" />
+					<show id="cm:email" />
+					<show id="deputy:available" force="true" />
+				</field-visibility>
+				<appearance>
+                    <field id="cm:userName" read-only="true" />
+                    <field id="deputy:available">
+                        <control template="/ru/citeck/components/form/controls/checkbox-checked-default.ftl"/>
+                    </field>
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+</alfresco-config>

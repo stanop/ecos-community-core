@@ -176,6 +176,16 @@
 						<many>false</many>
 					</target>
 				</association>
+				<association name="letters:outcomeNomenclature">
+					<source>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>idocs:filesNomenclature</class>
+						<many>false</many>
+					</target>
+				</association>
 			</associations>
 			<mandatory-aspects>
 				<aspect>letters:outcomeType</aspect>

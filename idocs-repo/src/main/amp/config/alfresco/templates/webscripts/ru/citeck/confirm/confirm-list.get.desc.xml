@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Get confirmation list for document</shortname>
+	<description>Get confirmation list for document</description>
+	<url>/citeck/confirm/confirm-list?nodeRef={nodeRef}</url>
+	<format default="html">argument</format>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

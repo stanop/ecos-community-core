@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get list of xni data</shortname>
+    <description>Get a list of xnl to note importer data</description>
+    <url>/import/xml-to-node/</url>
+    <format default="html">any</format>
+    <authentication>admin</authentication>
+    <transaction>required</transaction>
+</webscript>

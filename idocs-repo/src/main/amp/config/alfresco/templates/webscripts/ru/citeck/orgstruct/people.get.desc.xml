@@ -1,0 +1,32 @@
+<webscript>
+  <shortname>All users</shortname>
+  <description>All users in orgstruct format</description>
+  <url>/api/orgstruct/people</url>
+  <url>/api/orgstruct/people/</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction allow="readonly">required</transaction>
+  <responses>
+    <response>
+	  <format>json</format>
+	  <type>
+        <![CDATA[
+		[
+			{
+				authorityType: ... "USER"
+				shortName: ...
+				fullName: ...
+				displayName: ...
+				... // custom attributes
+				nodeRef: ...
+			},
+			{
+				...
+			},
+			...
+		]
+        ]]>
+	  </type>
+	</response>
+  </responses>
+</webscript>

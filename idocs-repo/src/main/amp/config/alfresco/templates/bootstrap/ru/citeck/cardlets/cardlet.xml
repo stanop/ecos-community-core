@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:cm="http://www.alfresco.org/model/content/1.0"
+	xmlns:sys="http://www.alfresco.org/model/system/1.0"
+	xmlns:cardlet="http://www.citeck.ru/model/cardlet/1.0">
+    <cardlet:cardlet view:childName="${cardlet.allowedTypeShort}-${cardlet.regionId}-${cardlet.regionColumn}-${cardlet.regionPosition}">
+        <view:properties>
+            <cardlet:regionId>${cardlet.regionId}</cardlet:regionId>
+            <cardlet:regionColumn>${cardlet.regionColumn}</cardlet:regionColumn>
+            <cardlet:regionPosition>${cardlet.regionPosition}</cardlet:regionPosition>
+            <cardlet:allowedType>${cardlet.allowedType}</cardlet:allowedType>
+            <cardlet:condition>${cardlet.condition}</cardlet:condition>
+    
+            <!-- mobile parameters -->
+            <cardlet:availableInMobile>${cardlet.availableInMobile}</cardlet:availableInMobile>
+            <cardlet:positionIndexInMobile>${cardlet.positionIndexInMobile}</cardlet:positionIndexInMobile>
+        </view:properties>
+    </cardlet:cardlet>
+</view:view>
+

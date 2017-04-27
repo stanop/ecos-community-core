@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="cardlet:cardletModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Cardlet Model (dynamic document card components)</description>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/cardlet/1.0" prefix="cardlet" />
+	</namespaces>
+	<constraints>
+		<constraint name="cardlet:constraint:cardletRegionColumn" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>disabled</value>
+					<value>top</value>
+					<value>left</value>
+					<value>right</value>
+					<value>bottom</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+	<types>
+
+		<type name="cardlet:cardlet">
+			<parent>dl:dataListItem</parent>
+			<properties>
+
+				<!-- parameters for mobile version -->
+				<property name="cardlet:availableInMobile">
+					<title>Available in mobile version</title>
+					<type>d:boolean</type>
+					<default>true</default>
+				</property>
+
+				<property name="cardlet:positionIndexInMobile">
+					<title>Position Index for mobile version</title>
+					<type>d:int</type>
+					<default>-1</default>
+				</property>
+				<!-- end of parameters for mobile version -->
+
+			
+				<property name="cardlet:cardMode">
+					<title>Card mode</title>
+					<type>d:text</type>
+					<default></default>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>false</stored>
+						<tokenised>false</tokenised>
+					</index>
+				</property>
+			
+				<property name="cardlet:regionId">
+					<title>Region Id</title>
+					<type>d:text</type>
+                    <mandatory>true</mandatory>
+				</property>
+				
+				<property name="cardlet:regionColumn">
+					<title>Regions block</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<constraints>
+						<constraint ref="cardlet:constraint:cardletRegionColumn" />
+						<!--constraint type="LIST">
+							<parameter name="allowedValues">
+								<list>
+									<value>disabled</value>
+									<value>top</value>
+									<value>left</value>
+									<value>right</value>
+									<value>bottom</value>
+								</list>
+							</parameter>
+						</constraint-->
+					</constraints>
+				</property>
+				
+				<property name="cardlet:regionPosition">
+					<title>Position in block</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+			
+			<mandatory-aspects>
+				<aspect>cardlet:scoped</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="cardlet:cardMode">
+			<parent>dl:dataListItem</parent>
+			<properties>
+				<property name="cardlet:cardModeId">
+					<title>Card mode id</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="cardlet:cardModeOrder">
+					<title>Card mode order</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+				<aspect>cardlet:scoped</aspect>
+			</mandatory-aspects>
+		</type>
+	
+	</types>
+	
+	<aspects>
+	
+		<aspect name="cardlet:scoped">
+			<properties>
+				<property name="cardlet:allowedType">
+					<title>Allowed class</title>
+					<description>Type or aspect, for which cardlet is allowed</description>
+					<type>d:qname</type>
+				</property>
+				
+				<property name="cardlet:allowedAuthorities">
+					<title>Allowed authorities</title>
+					<type>d:text</type>
+					<multiple>true</multiple>
+					<default></default>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<tokenised>false</tokenised>
+					</index>
+				</property>
+				
+				<property name="cardlet:condition">
+					<title>Extra condition</title>
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+	
+	</aspects>
+    
+</model>

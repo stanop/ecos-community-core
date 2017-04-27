@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+    </imports>
+
+    <view class="icase:caseStatus">
+        <field prop="cm:name">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+</views>

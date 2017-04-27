@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>subcategories</shortname>
+    <description>Get subcategories</description>
+    <url>/citeck/subcategories?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

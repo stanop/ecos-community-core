@@ -1,0 +1,10 @@
+<webscript>
+    <shortname>Get class definitions with full type QName</shortname>
+    <description>Gets the collection of class definitions - parameters classfilter , namespaceprefix, name and get
+        aspect properties or not.
+    </description>
+    <url>/api/fullChildrenClasses?cf={classFilter?}&amp;ctbp={childrenTypeByParent?}&amp;n={name?}&amp;wap={withAspectProperties?}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

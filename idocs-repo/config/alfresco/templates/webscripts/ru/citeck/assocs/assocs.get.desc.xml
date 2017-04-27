@@ -1,9 +1,0 @@
-<webscript>
-    <shortname>assocs</shortname>
-    <description>Get associations</description>
-    <url>/citeck/assocs?nodeRef={nodeRef}&amp;assocTypes={assocTypes}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction>required</transaction>
-    <lifecycle>public_api</lifecycle>
-</webscript>

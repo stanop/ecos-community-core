@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="activ:activityModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Case management in iDocs. Activity description</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+    </namespaces>
+
+    <types>
+        <type name="activ:activity">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="activ:plannedStartDate">
+                    <title>The planned start date</title>
+                    <type>d:datetime</type>
+                </property>
+                <property name="activ:plannedEndDate">
+                    <title>The planned end date</title>
+                    <type>d:datetime</type>
+                </property>
+                <property name="activ:actualStartDate">
+                    <title>The actual start date</title>
+                    <type>d:datetime</type>
+                    <protected>true</protected>
+                </property>
+                <property name="activ:actualEndDate">
+                    <title>The actual end date</title>
+                    <type>d:datetime</type>
+                    <protected>true</protected>
+                </property>
+                <property name="activ:expectedPerformTime">
+                    <title>Expected perform time</title>
+                    <type>d:int</type>
+                </property>
+                <property name="activ:manualStarted">
+                    <title>Manual started</title>
+                    <type>d:boolean</type>
+                    <mandatory>true</mandatory>
+                    <default>false</default>
+                </property>
+                <property name="activ:manualStopped">
+                    <title>Manual stopped</title>
+                    <type>d:boolean</type>
+                    <mandatory>true</mandatory>
+                    <default>false</default>
+                </property>
+                <property name="activ:index">
+                    <type>d:int</type>
+                    <default>999999</default>
+                </property>
+                <property name="activ:repeatable">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+                <aspect>activ:hasState</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+
+        <aspect name="activ:hasActivities">
+            <associations>
+                <child-association name="activ:activities">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>activ:activity</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                    <propagateTimestamps>true</propagateTimestamps>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="activ:hasState">
+            <parent>lc:hasState</parent>
+            <overrides>
+                <property name="lc:state">
+                    <default>Not started</default>
+                </property>
+            </overrides>
+        </aspect>
+
+        <aspect name="activ:setPlannedEndDate">
+            <properties>
+                <property name="activ:daysNumberToPlannedEndDate">
+                    <type>d:int</type>
+                    <default>0</default>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
+</model>

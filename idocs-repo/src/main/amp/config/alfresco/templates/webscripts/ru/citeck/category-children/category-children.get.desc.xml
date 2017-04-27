@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Category Children</shortname>
+  <description>Get children for category</description>
+  <url>/api/citeck/category/children?nodeRef={nodeRef}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <lifecycle>public_api</lifecycle>
+</webscript>

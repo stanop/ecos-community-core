@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <!-- lifecycle document checker -->
+    <bean id="LifeCycleDocumentCheckerJob" class="org.alfresco.util.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailBean">
+                <property name="jobClass">
+                    <value>ru.citeck.ecos.lifecycle.LifeCycleDocumentChecker</value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="lifeCycleService" value-ref="lifeCycleService" />
+                        <entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="enabled" value="#{ '${job.lifecycle-document-checker.enabled}' == 'true'}" />
+        <property name="scheduler" ref="schedulerFactory" />
+        <property name="cronExpression">
+            <value>${job.lifecycle-document-checker.cronExpression}</value>
+        </property>
+    </bean>
+</beans>

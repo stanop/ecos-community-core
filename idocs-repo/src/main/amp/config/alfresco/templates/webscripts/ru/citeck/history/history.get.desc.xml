@@ -1,0 +1,11 @@
+<webscript>
+    <shortname>history</shortname>
+    <description>Gets history about user, document, workflow, task</description>
+    <url>/citeck/history?user={userNodeRef}&amp;limitDate={limitDate?}</url>
+    <url>/citeck/history?document={documentNodeRef}</url>
+    <url>/citeck/history?workflowId={workflowInstanceId}</url>
+    <url>/citeck/history?taskId={taskInstanceId}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

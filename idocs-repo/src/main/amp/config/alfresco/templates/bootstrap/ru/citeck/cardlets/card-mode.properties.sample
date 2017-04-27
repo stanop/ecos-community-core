@@ -1,0 +1,22 @@
+# card mode identifier ([a-z-]+)
+cardmode.id=
+
+# card mode title (short localized name)
+cardmode.title_en=
+cardmode.title_ru=
+
+# card mode description (long localized description)
+cardmode.description_en=
+cardmode.description_ru=
+
+# arbitrary string to order card modes, e.g. a5, b71, ...
+cardmode.order=
+
+# allowed node type - full qname, e.g. {http://www.alfresco.org/model/content/1.0}content
+cardmode.allowedType=
+
+# the same as allowedType, but short qname (to form cardlet's childname)
+cardmode.allowedTypeShort=
+
+# condition in javascript (empty condition allows)
+cardmode.condition=

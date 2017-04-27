@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--==============================================================-->
+    <!--                            utils                             -->
+    <!--==============================================================-->
+
+    <bean id="resourceResolver" class="ru.citeck.ecos.utils.ResourceResolver"/>
+    <!-- transfer bean factory -->
+    <bean class="ru.citeck.ecos.utils.ConvertUtils" />
+
+    <!-- big number encoder exposed to JavaScript - encodes big numbers for indexing -->
+    <bean id="bigNumberEncoder" class="ru.citeck.ecos.utils.BigNumberEncoderJS" parent="baseJavaScriptExtension">
+        <property name="extensionName">
+            <value>bigNumberEncoder</value>
+        </property>
+    </bean>
+
+    <bean id="CiteckUtilsJS" class="ru.citeck.ecos.utils.CiteckUtilsJS" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="citeckUtils" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <!--==============================================================-->
+    <!--                             node                             -->
+    <!--==============================================================-->
+
+    <bean name="nodeInfoFactory" class="ru.citeck.ecos.node.NodeInfoFactoryImpl" init-method="init">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="contentService" ref="contentService" />
+        <property name="nodeAttributeService" ref="nodeAttributeService" />
+    </bean>
+
+    <bean name="NodeInfoFactory" class="ru.citeck.ecos.node.NodeInfoFactoryImpl" init-method="init">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <!--==============================================================-->
+    <!--                            search                            -->
+    <!--==============================================================-->
+
+    <bean id="criteriaParser" class="ru.citeck.ecos.search.SearchCriteriaParser">
+        <property name="criteriaFactory" ref="searchCriteriaFactory"/>
+    </bean>
+
+    <bean id="luceneQueryBuilder" class="ru.citeck.ecos.search.LuceneQuery">
+        <property name="namespaceService" ref="NamespaceService" />
+        <property name="associationIndexPropertyRegistry" ref="AssociationIndexPropertyRegistry" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="searchService" ref="searchService" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="criteriaSearchService" class="ru.citeck.ecos.search.CriteriaSearchService">
+        <property name="searchService" ref="SearchService"/>
+        <property name="queryBuilders">
+            <list value-type="ru.citeck.ecos.search.SearchQueryBuilder">
+                <ref bean="luceneQueryBuilder"/>
+            </list>
+        </property>
+        <property name="dictionaryService" ref="DictionaryService" />
+        <property name="namespaceService" ref="NamespaceService" />
+        <property name="associationIndexPropertyRegistry" ref="AssociationIndexPropertyRegistry" />
+        <property name="sortFieldChanger" ref="sortFieldChanger"/>
+    </bean>
+
+    <bean id="criteriaSearchServiceJS" class="ru.citeck.ecos.search.CriteriaSearchServiceJS" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="criteriaSearch" />
+        <property name="searchService" ref="criteriaSearchService" />
+        <property name="parser" ref="criteriaParser" />
+    </bean>
+
+    <bean id="AssociationIndexPropertyRegistry" class="ru.citeck.ecos.search.AssociationIndexPropertyRegistry">
+    </bean>
+
+    <bean id="AssociationIndexPropertyRegistrar" class="ru.citeck.ecos.search.AssociationIndexPropertyRegistrar" abstract="true" init-method="init">
+        <constructor-arg index="0" ref="AssociationIndexPropertyRegistry" />
+        <property name="namespaceService" ref="NamespaceService" />
+    </bean>
+
+    <bean id="sortFieldChanger" class="ru.citeck.ecos.search.SortFieldChanger">
+        <property name="changeFieldMap">
+            <map>
+                <entry key="pecatt:number" value="pecatt:numberSort" />
+                <entry key="pecattdl:registryIndividualNumber" value="pecattdl:registryIndividualNumberSort" />
+            </map>
+        </property>
+    </bean>
+
+    <!--==============================================================-->
+    <!--                             form                             -->
+    <!--==============================================================-->
+
+    <bean id="FormNodeBuilderRegistry"
+          class="ru.citeck.ecos.form.FormNodeBuilderRegistry">
+        <property name="dictionaryService" ref="DictionaryService" />
+        <property name="namespaceService" ref="NamespaceService" />
+    </bean>
+
+    <bean id="AbstractFormNodeBuilder"
+          class="ru.citeck.ecos.form.AbstractFormNodeBuilder"
+          abstract="true" init-method="init">
+        <property name="registry" ref="FormNodeBuilderRegistry" />
+    </bean>
+
+    <bean id="DefaultFormNodeBuilder"
+          class="ru.citeck.ecos.form.DefaultFormNodeBuilder"
+          parent="AbstractFormNodeBuilder">
+        <property name="typeName" value="cm:cmobject" />
+        <property name="nodeService" ref="NodeService" />
+        <property name="namespaceService" ref="NamespaceService" />
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="searchService" ref="searchService"/>
+    </bean>
+
+    <bean id="AuthorityFormNodeBuilder"
+          class="ru.citeck.ecos.form.AuthorityFormNodeBuilder"
+          parent="AbstractFormNodeBuilder">
+        <property name="typeName" value="cm:authorityContainer" />
+        <property name="authorityService" ref="AuthorityService" />
+    </bean>
+
+    <bean id="PersonFormNodeBuilder"
+          class="ru.citeck.ecos.form.PersonFormNodeBuilder"
+          parent="AbstractFormNodeBuilder">
+        <property name="typeName" value="cm:person" />
+        <property name="authorityService" ref="AuthorityService" />
+        <property name="personService" ref="PersonService" />
+    </bean>
+
+    <!-- Form Filters -->
+    <bean id="FileUploadSupportCreateFilter" class="ru.citeck.ecos.form.FileUploadFormFilterImpl" parent="baseFormFilter">
+        <property name="filterRegistry" ref="typeFilterRegistry" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="contentService" ref="contentService" />
+        <property name="mimetypeService" ref="mimetypeService" />
+        <property name="versionService" ref="versionService" />
+        <property name="checkOutCheckInService" ref="checkOutCheckInService" />
+    </bean>
+
+    <bean id="FileUploadSupportEditFilter" class="ru.citeck.ecos.form.FileUploadFormFilterImpl" parent="baseFormFilter">
+        <property name="filterRegistry" ref="nodeFilterRegistry" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="contentService" ref="contentService" />
+        <property name="mimetypeService" ref="mimetypeService" />
+        <property name="versionService" ref="versionService" />
+        <property name="checkOutCheckInService" ref="checkOutCheckInService" />
+    </bean>
+
+    <!-- bean id="FileUploadSizeLimits" class="ru.citeck.ecos.form.FileUploadSizeRegistrar"
+            init-method="init" >
+        <property name="filters">
+            <list>
+                <ref bean= "FileUploadSupportCreateFilter"/>
+                <ref bean= "FileUploadSupportEditFilter"/>
+            </list>
+        </property>
+        <property name="sizeLimits">
+            <map>
+                <entry key="..." value="..." />
+            </map>
+        </property>
+    </bean -->
+
+    <!-- Supplimentary Files Form Filters -->
+    <bean id="ChildAssociationsFilesCreateFilter" class="ru.citeck.ecos.form.ChildAssociationsFormFilterImpl" parent="baseFormFilter" >
+        <property name="filterRegistry" ref="typeFilterRegistry" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="removeSecondaryAssocs" value="true"/>
+    </bean>
+
+    <bean id="ChildAssociationsFilesEditFilter" class="ru.citeck.ecos.form.ChildAssociationsFormFilterImpl" parent="baseFormFilter" >
+        <property name="filterRegistry" ref="nodeFilterRegistry" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="removeSecondaryAssocs" value="true"/>
+    </bean>
+
+    <bean id="ChildAssocsFormRegistrar" class="ru.citeck.ecos.form.ChildAssociationsRegistrar" init-method="init" abstract="true">
+        <property name="childAssociationsFormFilters" >
+            <list>
+                <ref bean="ChildAssociationsFilesCreateFilter" />
+                <ref bean="ChildAssociationsFilesEditFilter" />
+            </list>
+        </property>
+        <!-- fill this with necessary qnames
+        <property name="associations">
+            <list>
+                <value>...</value>
+            </list>
+        </property>
+        -->
+    </bean>
+
+    <!--<bean id="SupplimentaryFilesRegistrar" class="ru.citeck.ecos.form.ChildAssociationsRegistrar" init-method="init">
+        <property name="childAssociationsFormFilters" >
+            <list>
+                <ref bean="ChildAssociationsFilesCreateFilter" />
+                <ref bean="ChildAssociationsFilesEditFilter" />
+            </list>
+        </property>
+        <property name="associations">
+            <list>
+                <value>dms:supplementaryFiles</value>
+            </list>
+        </property>
+    </bean>-->
+
+    <!-- Custom type form processor -->
+    <bean id="typeFormProcessor"
+          class="ru.citeck.ecos.form.TypeFormProcessor"
+          parent="baseFormProcessor">
+        <property name="matchPattern" value="type" />
+        <property name="filterRegistry" ref="typeFilterRegistry" />
+        <property name="builderRegistry" ref="FormNodeBuilderRegistry" />
+    </bean>
+
+    <bean id="duplicatorFormProcessor"
+          class="ru.citeck.ecos.form.DuplicatorFormProcessor"
+          parent="baseFormProcessor">
+        <property name="matchPattern" value="duplicate-node" />
+        <property name="filterRegistry" ref="duplicatorFilterRegistry" />
+        <!--property name="builderRegistry" ref="FormNodeBuilderRegistry" /-->
+    </bean>
+
+    <!--==============================================================-->
+    <!--                         miscellaneous                        -->
+    <!--==============================================================-->
+
+    <!-- script service registry -->
+    <bean id="ServiceRegistryJS" class="ru.citeck.ecos.service.script.ServiceRegistryJS" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="services" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="TemplateNodeService"
+          class="ru.citeck.ecos.template.TemplateNodeService"
+          parent="baseTemplateImplementation">
+        <property name="extensionName" value="nodeService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="duplicatorFilterRegistry" class="org.alfresco.repo.forms.processor.FilterRegistry" />
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="ru.citeck.ecos.utils.TransactionUtils.setServiceRegistry"/>
+        <property name="arguments">
+            <list>
+                <ref bean="ServiceRegistry"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>

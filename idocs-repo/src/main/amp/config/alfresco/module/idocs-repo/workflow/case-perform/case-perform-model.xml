@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="wfcp:casePerformModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <author>Citeck</author>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/workflow/case-perform/1.0" prefix="wfcp" />
+    </namespaces>
+
+    <types>
+        <type name="wfcp:performTask">
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="wfcp:performOutcome">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <!--performer for task-->
+                <association name="wfcp:performer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <!--performers for workflow-->
+                <association name="wfcp:performers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+            <overrides>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.citeck.ru/model/workflow/case-perform/1.0}performOutcome</default>
+                </property>
+                <property name="bpm:packageActionGroup">
+                    <default></default>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfcp:basePerformData</aspect>
+                <aspect>cwf:optionalTaskAspect</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="wfcp:performResult">
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="wfcp:resultOutcome">
+                    <type>d:text</type>
+                </property>
+                <property name="wfcp:resultDate">
+                    <type>d:date</type>
+                </property>
+                <property name="wfcp:comment">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="wfcp:resultPerson">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="wfcp:resultPerformer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="wfcp:performCaseTask">
+            <parent>icaseTask:task</parent>
+            <associations>
+                <association name="wfcp:performersRoles">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+            <overrides>
+                <property name="icaseTask:workflowDefinitionName">
+                    <default>activiti$case-perform</default>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>wfcp:basePerformData</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="wfcp:hasPerformResults">
+            <associations>
+                <child-association name="wfcp:performResults">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>wfcp:performResult</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="wfcp:basePerformData">
+            <properties>
+                <property name="wfcp:performOutcomes">
+                    <type>d:text</type>
+                </property>
+                <property name="wfcp:formKey">
+                    <type>d:text</type>
+                    <default>wfcp:performTask</default>
+                </property>
+                <property name="wfcp:abortOutcomes">
+                    <type>d:text</type>
+                </property>
+                <property name="wfcp:outcomesWithMandatoryComment">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="wfcp:hasCaseRole">
+            <associations>
+                <association name="wfcp:caseRole">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="wfcp:hasPerformersSync">
+            <properties>
+                <property name="wfcp:syncWorkflowToRoles">
+                    <type>d:boolean</type>
+                </property>
+                <property name="wfcp:syncRolesToWorkflow">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

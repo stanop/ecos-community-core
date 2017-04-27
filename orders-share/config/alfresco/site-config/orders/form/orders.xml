@@ -25,10 +25,10 @@
 					<field id="tk:kind">
 						<control template="/ru/citeck/components/form/controls/select.ftl">
 							<control-param name="optionsUrl">/share/proxy/alfresco/citeck/subcategories?nodeRef=workspace://SpacesStore/orders-cat-doctype-internal</control-param>
-							<control-param name="titleField">name</control-param>
+							<control-param name="titleField">title</control-param>
 							<control-param name="valueField">nodeRef</control-param>
 							<control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
-							<control-param name="responseSchema">{ resultsList: 'nodes', fields: [ {key:'nodeRef'}, {key:'name'} ] }</control-param>
+							<control-param name="responseSchema">{ resultsList: 'nodes', fields: [ {key:'nodeRef'}, {key:'title'} ] }</control-param>
 						</control>
 					</field>
 					<field id="orders:branch">

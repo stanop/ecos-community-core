@@ -15,7 +15,7 @@
 
     <bean id="orders.subjects.NamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="orders:subject" />
-        <property name="nameTemplate" value="#{'$'}{node.properties['orders:subjectName']!} (#{'$'}{node.properties['orders:subjectCode']!})" />
+        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fileIndex']!} (#{'$'}{node.properties['idocs:fileName']!})" />
     </bean>
     
     <bean id="orders.internal.projectNumber.EnumerationBiehaviour" parent="EnumerationBehaviour" depends-on="orders.dictionaryBootstrap">

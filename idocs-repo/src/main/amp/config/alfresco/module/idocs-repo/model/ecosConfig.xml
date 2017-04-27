@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="config:config" xmlns="http://www.alfresco.org/model/dictionary/1.0"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+
+	<description>Ecos Config</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/config/1.0" prefix="config" />
+	</namespaces>
+
+	<types>
+		<type name="config:ecosConfig">
+			<parent>dl:dataListItem</parent>
+			<properties>
+				<property name="config:key">
+					<title>Key</title>
+					<description>Configuration Key</description>
+					<type>d:text</type>
+				</property>
+				<property name="config:value">
+					<title>Value</title>
+					<type>d:any</type>
+				</property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+			</mandatory-aspects>
+		</type>
+
+	</types>
+	
+</model>

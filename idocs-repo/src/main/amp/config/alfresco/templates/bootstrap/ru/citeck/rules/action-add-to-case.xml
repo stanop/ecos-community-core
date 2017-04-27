@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+	xmlns:act="http://www.alfresco.org/model/action/1.0">
+	<view:reference view:pathref=".">
+	<view:associations>
+	<act:actions>
+	
+	<act:action view:childName="act:actions">
+		<view:properties>
+			<act:definitionName>add-to-case</act:definitionName>
+			<act:executeAsynchronously>false</act:executeAsynchronously>
+			<act:executionActionStatus>New</act:executionActionStatus>
+		</view:properties>
+	</act:action>
+
+	</act:actions>
+	</view:associations>
+	</view:reference>
+</view:view>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+	<imports>
+		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+	</imports>
+
+	<type name="icase:template">
+		<property name="icase:caseEcosType">
+			<invariant on="options" language="criteria">
+				<criterion attribute="type" predicate="type-equals" value="cm:category" />
+				<criterion attribute="parent" predicate="parent-equals" value="workspace://SpacesStore/category-document-type-root" />
+			</invariant>
+		</property>
+		<property name="icase:caseEcosKind">
+			<invariant on="options" language="javascript">
+				(function() {
+					var type = node.properties["icase:caseEcosType"];
+					if (!type) {
+						return [];
+					}
+					return type.childAssocs["cm:subcategories"] || [];
+				})()
+			</invariant>
+		</property>
+		<property name="icase:caseType">
+			<invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
+		</property>
+	</type>
+
+</invariants>

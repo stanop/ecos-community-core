@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>light-search</shortname>
+    <description>It is allow to easily perform a search query</description>
+    <url>/citeck/light-search</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

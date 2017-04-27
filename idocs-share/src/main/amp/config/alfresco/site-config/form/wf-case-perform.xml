@@ -1,0 +1,11 @@
+<alfresco-config>
+
+    <config evaluator="task-type" condition="wfcp:performTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

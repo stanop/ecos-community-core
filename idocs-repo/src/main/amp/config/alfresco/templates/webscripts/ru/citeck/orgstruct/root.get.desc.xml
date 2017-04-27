@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Org.Struct root groups</shortname>
+  <url>/api/orgstruct/root</url>
+  <url>/api/orgstruct/root/?group={group?}&amp;branch={branch?}&amp;role={role?}&amp;user={user?}&amp;filter={filter?}&amp;recurse={recurse?}</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

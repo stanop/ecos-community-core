@@ -1,0 +1,153 @@
+.yui-dt .yui-dt-rec .actions-cell
+{
+	visibility: hidden;
+}
+
+.yui-dt .yui-dt-rec:hover .actions-cell
+{
+	visibility: visible;
+}
+
+.yui-dt .actions-cell.loading
+{
+	background: url(icons/column-loading.gif) 50% 50% no-repeat;
+}
+
+.yui-dt .action-set a > span
+{
+	display: none;
+}
+
+.yui-dt a.dynamic-table-action-link,
+.yui-dt a.simple-link
+{
+	background-position: 4px 1px;
+	background-repeat: no-repeat;
+	border: 1px solid transparent;
+	min-height: 16px;
+	padding: 2px 0 2px 24px;
+}
+
+.yui-dt .action-set > div {
+	display: inline;
+	vertical-align: middle;
+}
+
+.yui-dt div.action-set .highlighted {
+	background-color: #fff;
+	border: 1px solid #2b6eb5;
+	text-decoration: none;
+}
+
+.yui-dt div.action-set a {
+   background-repeat: no-repeat;
+   background-position: center;
+}
+
+.yui-dt div.action-set .document-view-details a {
+   background-image: url(icons/view-details.png) !important;
+}
+
+.yui-dt div.action-set .document-view-details a:hover {
+   background-image: url(icons/view-details-active.png) !important;
+}
+
+.yui-dt div.action-set .document-edit-properties a {
+   background-image: url(icons/edit-properties.png) !important;
+}
+
+.yui-dt div.action-set .document-edit-properties a:hover {
+   background-image: url(icons/edit-properties-active.png) !important;
+}
+
+.yui-dt div.action-set .document-delete a {
+   background-image: url(icons/remove.png) !important;
+}
+
+.yui-dt div.action-set .document-delete a:hover {
+   background-image: url(icons/remove-active.png) !important;
+}
+
+.yui-dt div.action-set .document-download a {
+  background-image: url(icons/download.png) !important;
+}
+
+.yui-dt div.action-set .document-download a:hover {
+  background-image: url(icons/download-active.png) !important;
+}
+
+.yui-dt div.action-set .document-delete-case-item a {
+  background-image: url(icons/delete-case.png) !important;
+}
+
+.yui-dt div.action-set .document-delete-case-item a:hover {
+  background-image: url(icons/delete-case-active.png) !important;
+}
+
+.yui-dt div.action-set .document-start-stage a {
+	background-image: url(icons/start.png) !important;
+}
+
+.yui-dt div.action-set .document-start-stage a:hover {
+	background-image: url(icons/start-active.png) !important;
+}
+
+.yui-dt div.action-set .document-start-task a {
+	background-image: url(icons/start.png) !important;
+}
+
+.yui-dt div.action-set .document-start-task a:hover {
+	background-image: url(icons/start-active.png) !important;
+}
+
+.yui-dt div.action-set .document-stop-stage a {
+	background-image: url(icons/stop.png) !important;
+}
+
+.yui-dt div.action-set .document-stop-stage a:hover {
+	background-image: url(icons/stop-active.png) !important;
+}
+
+.yui-dt div.action-set .export-case-template a {
+	background-image: url(../../../themes/citeckTheme/images/upload.png) !important;
+}
+
+.yui-dt div.action-set .export-case-template a:hover {
+	background-image: url(../../../themes/citeckTheme/images/upload-active.png) !important;
+}
+
+.yui-dt div.action-set .import-case-template a {
+	background-image: url(../../../themes/citeckTheme/images/download.png) !important;
+}
+
+.yui-dt div.action-set .import-case-template a:hover {
+	background-image: url(../../../themes/citeckTheme/images/download-active.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties a {
+	background-image: url(icons/edit-properties.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties a:hover {
+	background-image: url(icons/edit-properties-active.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties-cardlet a {
+	background-image: url(icons/edit-properties.png) !important;
+}
+
+.yui-dt div.action-set .role-edit-properties-cardlet a:hover {
+	background-image: url(icons/edit-properties-active.png) !important;
+}
+
+.requestDeleteRemote-checkBox
+{
+	margin-top: 10px;
+}
+
+.requestDeleteRemote-text
+{
+	position: relative;
+	right: -5px;
+	top: -2px;
+}

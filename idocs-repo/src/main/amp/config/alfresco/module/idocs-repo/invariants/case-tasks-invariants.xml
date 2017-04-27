@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <import uri="http://www.citeck.ru/model/workflow/confirm/1.0" prefix="wfcf" />
+        <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
+        <import uri="http://www.citeck.ru/model/workflow/case-perform/1.0" prefix="wfcp" />
+    </imports>
+
+    <associations type="icaseRole:role">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </associations>
+
+    <type name="icaseTask:task">
+        <associations type="icaseRole:role">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                        parent = parent.parent;
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </associations>
+    </type>
+
+    <type name="icaseTask:simpleTask">
+        <property name="icaseTask:workflowDefinitionName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="explicit">
+                <item>activiti$print</item>
+                <item>activiti$scan</item>
+                <item>activiti$sign</item>
+                <item>activiti$correction</item>
+                <item>activiti$registration</item>
+                <item>activiti$normative-control</item>
+                <item>activiti$prolongation</item>
+                <item>activiti$simple-affirm</item>
+                <item>activiti$simple-payment</item>
+                <item>activiti$move-to-archive</item>
+                <item>activiti$contractor-approval</item>
+            </invariant>
+            <invariant on="value-title" language="javascript">
+                message(value.replace("activiti$", "") + ".workflow.title")
+            </invariant>
+        </property>
+    </type>
+
+    <type name="icaseTask:confirmTask">
+        <property name="wfcf:confirmersPermission">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="explicit">
+                <item>Consumer</item>
+                <item>Contributor</item>
+                <item>Editor</item>
+                <item>Collaborator</item>
+            </invariant>
+        </property>
+        <property name="wfcf:partialConfirmsCount">
+            <invariant on="relevant" language="javascript">node.properties["wfcf:terminateOnPartialConfirms"]</invariant>
+            <invariant on="mandatory" language="javascript">node.properties["wfcf:terminateOnPartialConfirms"]</invariant>
+        </property>
+    </type>
+
+    <type name="icaseTask:performTask">
+        <property name="wfperf:performerPermission">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="explicit">
+                <item>Consumer</item>
+                <item>Contributor</item>
+                <item>Editor</item>
+                <item>Collaborator</item>
+            </invariant>
+        </property>
+        <property name="wfperf:controllerPermission">
+            <invariant on="relevant" language="javascript">node.properties["wfperf:enableControl"]</invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="explicit">
+                <item>Consumer</item>
+                <item>Contributor</item>
+                <item>Editor</item>
+                <item>Collaborator</item>
+            </invariant>
+        </property>
+        <association name="icaseTask:controller">
+            <invariant on="relevant" language="javascript">node.properties["wfperf:enableControl"]</invariant>
+        </association>
+    </type>
+
+    <type name="wfcp:performCaseTask">
+        <associations type="wfcp:performersRoles">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                var parent = node.parent;
+                while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                parent = parent.parent;
+                return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </associations>
+    </type>
+
+    <aspect name="wfcp:basePerformData">
+        <property name="wfcp:formKey">
+            <invariant on="options" language="javascript">dictionary.getSubTypes("wfcp:performTask")</invariant>
+        </property>
+        <property name="wfcp:performOutcomes">
+            <invariant on="mandatory" language="javascript">node.properties['wfcp:formKey'] == 'wfcp:performTask'</invariant>
+        </property>
+    </aspect>
+
+</invariants>

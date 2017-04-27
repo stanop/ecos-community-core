@@ -1,1 +1,0 @@
-<input id="${fieldId}" type="text" data-bind="textInput: textValue, disable: protected" />

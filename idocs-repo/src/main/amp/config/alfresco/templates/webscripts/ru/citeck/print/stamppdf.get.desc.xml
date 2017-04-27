@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Print any document to PDF with barcode</shortname>
+	<description>Print any document to PDF</description>
+	<url>/citeck/print/printpdf-barcode?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

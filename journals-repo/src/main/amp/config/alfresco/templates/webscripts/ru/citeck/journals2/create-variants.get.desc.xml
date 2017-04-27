@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Create variants</shortname>
+    <description>Create variants available at site</description>
+    <url>/api/journals/create-variants/site/{site}</url>
+    <url>/api/journals/create-variants/journal/{journal}</url>
+    <url>/api/journals/create-variants/nodetype/{nodetype}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="history:historyModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <description>History model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/history/1.0" prefix="history"/>
+        <namespace uri="http://www.citeck.ru/model/event/1.0" prefix="event"/>
+    </namespaces>
+
+    <types>
+        <type name="history:basicEvent">
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="event:date">
+                    <type>d:datetime</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="event:name">
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+            <associations>
+                <association name="event:initiator">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+    </types>
+    
+    <aspects>
+        <!-- marker aspect to mark documents, that get some default history records -->
+        <!-- e.g. create, update, ... -->
+        <aspect name="history:historical">
+        </aspect>
+        
+        <aspect name="history:documentEvent">
+            <properties>
+                <property name="event:documentVersion">
+                    <type>d:text</type>
+                </property>
+                <property name="event:propertyName">
+                    <type>d:qname</type>
+                </property>
+                <property name="event:propertyValue">
+                    <type>d:text</type>
+                </property>
+				<property name="event:targetNodeKind">
+					<type>d:category</type>
+				</property>
+				<property name="event:targetNodeType">
+					<type>d:category</type>
+				</property>
+            </properties>
+            <associations>
+                <association name="event:document">
+                    <source>
+                        <mandatory>true</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:cmobject</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="event:case">
+                    <source>
+                        <mandatory>true</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:cmobject</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        
+        <aspect name="history:workflowEvent">
+            <properties>
+                <property name="event:workflowInstanceId">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="event:workflowType">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="event:workflowDescription">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="history:taskEvent">
+            <properties>
+                <property name="event:taskInstanceId">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="event:taskType">
+                    <type>d:qname</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="event:taskOutcome">
+                    <type>d:text</type>
+                </property>
+                <property name="event:taskComment">
+                    <type>d:text</type>
+                </property>
+                <property name="event:taskPooledActors">
+                    <type>d:noderef</type>
+                    <multiple>true</multiple>
+                </property>
+                <property name="event:taskAttachments">
+                    <type>d:noderef</type>
+                    <multiple>true</multiple>
+                </property>
+                <property name="event:taskRole">
+                    <type>d:text</type>
+                </property>
+                <property name="event:caseTask">
+                    <type>d:noderef</type>
+                </property>
+            </properties>
+        </aspect>
+        
+		<aspect name="event:additionalProperties">
+			<properties>
+				<property name="event:additionalProperties">
+					<type>d:any</type>
+				</property>
+			</properties>
+		</aspect>
+
+        <aspect name="history:eventContainedAspect">
+            <associations>
+                <child-association name="history:eventContained">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>sys:base</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+    </aspects>
+</model>

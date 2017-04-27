@@ -5,7 +5,7 @@ fieldNames = [
     "prop_tk_kind",
     "assoc_idocs_signatory",
     "prop_orders_header",
-    "assoc_orders_subject",
+    "assoc_orders_fileCode",
     "prop_idocs_summary",
     "assoc_idocs_initiator",
     "assoc_orders_branch"
@@ -23,7 +23,7 @@ fieldNames = [
     <@forms.renderField field="prop_tk_kind" />
 
     <@forms.renderField field="prop_orders_creationDate" extension = {
-        "disabled": true,
+        "disabled": false,
         "control" : {
             "template" : "/ru/citeck/components/form/controls/date.ftl",
             "params": {
@@ -93,7 +93,7 @@ fieldNames = [
                 "searchQuery" : "user=true&default=false"
             }
         },
-        "disabled": true
+        "disabled": false
     }/>
 
     <script type="text/javascript">// <![CDATA[
@@ -105,7 +105,7 @@ fieldNames = [
                 if (event.eventGroup && event.eventGroup.id == branchCtrlId) {
                     var branchCtrl = Alfresco.util.ComponentManager.get(branchCtrlId);
                     if (branchCtrl) {
-                        var uri = Alfresco.constants.PROXY_URI_RELATIVE + "api/delegate/currentUserBranches";
+                        var uri = Alfresco.constants.PROXY_URI_RELATIVE + "api/deputy/currentUserBranches";
                         Alfresco.util.Ajax.jsonGet({
                             url: uri,
                             successCallback: {
@@ -139,7 +139,7 @@ fieldNames = [
     // ]]></script>
 
     <@forms.renderField field="assoc_orders_branch" extension = {
-        "disabled": true
+        "disabled": false
     }/>
 
     <@forms.renderField field="prop_orders_header" />
@@ -151,7 +151,7 @@ fieldNames = [
         }
     }/>
 
-    <@forms.renderField field="assoc_orders_subject" />
+    <@forms.renderField field="assoc_orders_fileCode" />
     
     <@forms.renderField field="prop_dms_updateContent" extension = {
         "force" : true,

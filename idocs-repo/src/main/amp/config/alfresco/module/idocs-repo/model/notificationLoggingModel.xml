@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="notlog:notificationLoggingModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Custom notification logging model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/notification-logging/1.0" prefix="notlog"/>
+    </namespaces>
+	
+	<constraints>
+		<constraint name="notlog:constraint:event_types" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>NotificationForTask</value>
+					<value>Other</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+	
+	<types>
+        <type name="notlog:notificationLogItem">
+            <title>Notification Logging Item</title>
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="notlog:notificationDate">
+                    <title>Event Date</title>
+                    <type>d:date</type>
+                </property>
+                <property name="notlog:eventType">
+                    <title>Event Type</title>
+                    <type>d:text</type>
+                </property>
+                <property name="notlog:isNotificationSent">
+                    <title>Is Notification Sent</title>
+                    <type>d:boolean</type>
+                </property>
+                <property name="notlog:notificationRecipient">
+                    <type>d:noderef</type>
+					<multiple>true</multiple>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>false</stored>
+						<tokenised>false</tokenised>
+					</index>
+                </property>
+                <property name="notlog:notificationEmail">
+                    <title>Email</title>
+                    <type>d:text</type>
+                </property>
+                <property name="notlog:notificationSubject">
+                    <title>Notification Subject</title>
+                    <type>d:text</type>
+                </property>
+                <property name="notlog:notificationDocument">
+                    <type>d:noderef</type>
+					<multiple>true</multiple>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>false</stored>
+						<tokenised>false</tokenised>
+					</index>
+                </property>
+                <property name="notlog:notificationTask">
+                    <type>d:noderef</type>
+					<multiple>true</multiple>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>false</stored>
+						<tokenised>false</tokenised>
+					</index>
+                </property>
+                <property name="notlog:wokflowId">
+                    <title>Wokflow Id</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+		</type>
+	</types>
+</model>

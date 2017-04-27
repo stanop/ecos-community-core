@@ -1,0 +1,639 @@
+.default-create-variant
+{
+	font-weight: bold;
+}
+
+.yui-overlay.button-menu {
+	position: absolute;
+	visibility: hidden;
+}
+
+/* table styles */
+
+.content-table {
+	width: 100%;
+	margin-top: 5px;
+	overflow: auto;
+}
+
+.content-table > table
+{
+	width: 100%;
+}
+
+.content-table table tbody tr:hover
+{
+    cursor: pointer;
+}
+
+.content-table tr > td > div.yui-dt-liner 
+{
+	min-height: 20px;
+}
+
+.content-message
+{
+	display: block;
+	margin: 1em;
+	font-size: 110%;
+	font-weight: bold;
+}
+
+.toolbar .content-message
+{
+	margin: 5px;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+.yui-dt-col-actions,
+.yui-dt-col-attributesactions {
+	min-width: 125px;
+    width: 10%;
+}
+
+.loading .content-table > * {
+    display: none;
+}
+
+.loading .content-table {
+  height: 200px;
+  width: 100%;
+  background-image: url("images/loading.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.loading .dashlet .content-table {
+    height: 150px;
+}
+
+/* criteria styles (journals-page, journals-selector) */
+
+.filter-criteria {
+	display: table;
+	vertical-align: middle;
+}
+
+.filter-criteria .criterion {
+	display: table-row;
+	vertical-align: middle;
+}
+
+.filter-criteria .criterion .criterion-actions,
+.filter-criteria .criterion .criterion-field,
+.filter-criteria .criterion .criterion-predicate,
+.filter-criteria .criterion .criterion-value {
+	display: table-cell;
+	vertical-align: top;
+	padding: 0 5px;
+}
+
+.filter-criteria .criterion .criterion-field,
+.filter-criteria .criterion .criterion-predicate,
+.filter-criteria .criterion .criterion-value {
+	min-width: 200px;
+}
+
+.filter-criteria .criterion .criterion-predicate select {
+	width: 100%;
+	padding: 2px 5px;
+}
+
+.filter-criteria .criterion .criterion-field {
+	padding: 4px;
+}
+
+.criterion-predicate.does-not-need-value + .criterion-value {
+	display: none;
+}
+
+/* criteria form field */
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input {
+    margin-right: 10px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input, 
+.filter-criteria .criterion .criterion-value .criterion-value-field-view {
+    display: inline-block;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input {
+	width: 100%;
+	padding: 3px 5px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime input,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date input {
+	width: auto;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select {
+    background-color: white;
+    
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input select,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="date"],
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="datetime-local"] {
+  	padding: 2px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="text"],
+.filter-criteria .criterion .criterion-value .criterion-value-field-input input[type="number"] {
+  	padding: 3px;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date a.calendar-link-button,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime a.calendar-link-button {
+  	display: inline-block;
+  	cursor: pointer;
+}
+
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-date img.datepicker-icon,
+.filter-criteria .criterion .criterion-value .criterion-value-field-input .template-datetime img.datepicker-icon {
+  	position: relative;
+  	top: -1px;
+}
+
+/* toolbar styles (journals-page, journals-dashlet) */
+
+.toolbar,
+.toolbar-menu {
+	min-height: 26px;
+	overflow-x: auto;
+}
+
+.toolbar h2
+{
+	padding-top: 3px;
+}
+
+.toolbar .align-right
+{
+	float: right;
+}
+
+.toolbar .yui-pg-container {
+	display: inline-block;
+	margin: 0 15px;
+	vertical-align: top;
+}
+
+div.toolbar.flat-button span.yui-checkbox-button-checked,
+div.toolbar.flat-button span.yui-checkbox-button-checked.yui-checkbox-button-hover
+{
+	background-color: #EEE;
+	border-top: 1px solid #CCC;
+	border-bottom: 1px solid #EEE;
+}
+
+div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
+{
+	background-color: #EEE;
+	border-left: 1px solid #CCC;
+	border-right: 1px solid #CCC;
+}
+
+.toolbar-menu
+{
+	background-color: #EEE;
+	padding: 5px;
+}
+
+.toolbar .yui-button,
+.toolbar .yui-button .first-child,
+.toolbar-menu .yui-button,
+.toolbar-menu .yui-button .first-child
+{
+	background-color: transparent;
+}
+
+/*.toolbar .yui-button-disabled,
+.toolbar-menu .yui-button-disabled
+{
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}*/
+
+/*.toolbar .yui-button
+{
+	margin-left: 1px;
+}*/
+
+.toolbar .yuimenuitem
+{
+    padding: 2px 0px;
+}
+
+.toolbar .yuimenuitem span {
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 26px;
+}
+
+/* copy */
+.toolbar .onActionCopyTo {
+   background-image: url(images/copy.png);
+}
+
+.toolbar .yuimenuitem-selected .onActionCopyTo {
+   background-image: url(images/copy-active.png);
+}
+
+/* move */
+.toolbar .onActionMoveTo {
+   background-image: url(images/move.png);
+}
+
+.toolbar .yuimenuitem-selected .onActionMoveTo {
+   background-image: url(images/move-active.png);
+}
+
+/* delete */
+.toolbar .onActionDelete {
+   background-image: url(images/delete.png);
+}
+
+.toolbar .yuimenuitem-selected .onActionDelete {
+   background-image: url(images/delete-active.png);
+}
+
+/* assign workflow */
+.toolbar .onActionAssignWorkflow {
+   background-image: url(images/assign-workflow.png);
+}
+
+.toolbar .yuimenuitem-selected .onActionAssignWorkflow {
+   background-image: url(images/assign-workflow-active.png);
+}
+
+/* download */
+.toolbar .onActionDownload {
+   background-image: url(images/download.png);
+}
+
+.toolbar .yuimenuitem-selected .onActionDownload {
+   background-image: url(images/download-active.png);
+}
+
+
+/* deselect all */
+.toolbar .onActionDeselectAll {
+   background-image: url(images/cross.png);
+}
+.toolbar .yuimenuitem-selected .onActionDeselectAll {
+   background-image: url(images/cross-active.png);
+}
+
+
+.toolbar .onActionManagePermissions
+{
+   background-image: url(images/document-manage-permissions-16.png);
+}
+
+.toolbar .onActionCloudSync
+{
+   background-image: url(images/document-cloud-sync-16.png);
+}
+
+.toolbar .onActionCloudSyncRequest
+{
+   background-image: url(images/document-request-sync-16.png);
+}
+
+
+.toolbar .bd ul:not(:last-child):after {
+  content: "";
+  display: block;
+  width: calc(100% + 14px);
+  height: 1px;
+  background-color: #ccc;
+  margin: 7px -7px 0 -7px;
+}
+
+.toolbar .bd ul:not(:last-child) {
+	margin-bottom: 7px;
+}
+
+
+/* button styles */
+
+.toolbar-menu .icon-buttons .yui-button button,
+.toolbar-menu .icon-buttons .yui-button a {
+	line-height: 100%;
+}
+
+.icon-buttons .yui-button {
+	margin-right: 10px;
+}
+
+.icon-buttons .yui-button span.first-child {
+  padding: 5px;
+}
+
+.dashlet .toolbar.icon-buttons .yui-button.fullscreen .first-child,
+.dashlet .toolbar.icon-buttons .yui-button.update .first-child {
+  padding: 0;
+}
+
+.icon-buttons .yui-button span.first-child *:empty {
+	min-width: 0px;
+	padding: 0 10px;
+}
+
+.icon-buttons .yui-button span.first-child button:empty {
+	width: 20px;
+	height: 20px;
+}
+
+
+/* journal  */
+.toolbar .yui-button.journal-select span.first-child button {
+	background-image: url(images/journals.png);
+}
+
+.toolbar .yui-button.journal-select.yui-button-hover span.first-child button,
+.toolbar .yui-button.journal-select.yui-button-active span.first-child button {
+  background-image: url(images/journals-active.png);
+}
+
+
+/* filter button */
+.toolbar .yui-button.filter span.first-child button, 
+.toolbar .yui-button.filter-select span.first-child button {
+	background-image: url(images/filter.png);
+}
+
+.toolbar .yui-button.yui-button-hover.filter span.first-child button,
+.toolbar .yui-button.yui-button-hover.filter-select span.first-child button,
+.toolbar .yui-button.yui-button-active.filter-select span.first-child button {
+	background-image: url(images/filter-active.png);
+}
+
+.toolbar .yui-button.yui-button-checked.filter span.first-child button, 
+.toolbar .yui-button.yui-button-checked.filter-select span.first-child button {
+	background-image: url(images/filter-checked.png);
+}
+
+
+/* settings button */
+.toolbar .yui-button.settings span.first-child button, 
+.toolbar .yui-button.settings-select span.first-child button {
+	background-image: url(images/settings.png);
+}
+
+.toolbar .yui-button.yui-button-hover.settings span.first-child button {
+	background-image: url(images/settings-active.png);
+}
+
+.toolbar .yui-button.yui-button-checked.settings span.first-child button {
+	background-image: url(images/settings-checked.png);
+}
+
+
+/* refresh button */
+.toolbar .yui-button.update span.first-child button {
+	background-image: url(images/refresh.png);
+}
+
+.toolbar .yui-button.yui-button-hover.update span.first-child button {
+	background-image: url(images/refresh-active.png);
+}
+
+/* selected-menu button */
+.toolbar .yui-button.selected-menu span.first-child button {
+    background-image: url(images/journals.png);
+}
+
+.toolbar .yui-button.selected-menu.yui-button-hover span.first-child button,
+.toolbar .yui-button.selected-menu.yui-button-active span.first-child button  {
+    background-image: url(images/journals-active.png);
+}
+
+.toolbar .yui-button.selected-menu.yui-button-disabled span.first-child button  {
+    background-image: url(images/journals-disabled.png);
+}
+
+/* export button */
+.toolbar .yui-button.report span.first-child button {
+    background-image: url(images/export.png);
+}
+
+.toolbar .yui-button.report.yui-button-hover span.first-child button,
+.toolbar .yui-button.report.yui-button-active span.first-child button  {
+    background-image: url(images/export-active.png);
+}
+
+.toolbar .yui-button.report.yui-button-disabled span.first-child button  {
+    background-image: url(images/export-disabled.png);
+}
+
+
+/* fullscreen button */
+.toolbar .yui-button.fullscreen,
+.toolbar .yui-button.fullscreen span.first-child a {
+  padding: 0;
+  margin: 0; 
+}
+
+.toolbar .yui-button.fullscreen span.first-child a {
+	background-image: url(images/fullscreen.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+}
+
+.toolbar .yui-button.fullscreen.yui-button-hover span.first-child a {
+  background-image: url(images/fullscreen-active.png);
+}
+
+.toolbar .yui-button.selected-menu span.first-child *
+{
+	padding-left: 10px;
+}
+
+
+/*  menu button */
+.toolbar.icon-buttons .yui-button.yui-menu-button span.first-child,
+.toolbar-menu .icon-buttons .yui-button.yui-menu-button span.first-child {
+	background-image: url(images/twister-close.png);
+    background-repeat: no-repeat;
+    background-position: right center;
+    padding-right: 20px;
+}
+
+.toolbar.icon-buttons .yui-button.yui-button.yui-menu-button.yui-menu-button-hover span.first-child,
+.toolbar-menu .icon-buttons .yui-button.yui-button.yui-menu-button.yui-menu-button-hover span.first-child {
+	background-image: url(images/twister-close-active.png);
+}
+
+.toolbar.icon-buttons .yui-button.yui-button.yui-menu-button.yui-menu-button-active span.first-child,
+.toolbar-menu .icon-buttons .yui-button.yui-button.yui-menu-button.yui-menu-button-active span.first-child {
+	background-image: url(images/twister-open.png);
+}
+
+.toolbar.icon-buttons .yui-button.yui-button-disabled.yui-menu-button.yui-menu-button-disabled span.first-child, 
+.toolbar-menu .icon-buttons .yui-button.yui-button-disabled.yui-menu-button.yui-menu-button-disabled span.first-child {
+	background-image: url(images/twister-disabled.png);
+}
+
+
+.toolbar.icon-buttons .yui-button span.first-child button:not(:empty),
+.toolbar-menu .icon-buttons .yui-button span.first-child button:not(:empty) {
+  padding: 0 0 0 20px;
+  line-height: 150%;
+  background-position: left center;
+}
+
+.toolbar.icon-buttons .yui-button span.first-child button,
+.toolbar-menu .icon-buttons .yui-button span.first-child button {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.toolbar-menu .icon-buttons .yui-button span.first-child button {
+    color: #1c55da;
+}
+
+/* toggle sidebar */
+.toolbar.icon-buttons .yui-button.sidebar-toggle {
+	display: none;
+}
+
+.toolbar.icon-buttons .yui-button.sidebar-toggle span.first-child button {
+	background-image: url(/share/res/citeck/images/treeline-gray-20.png);
+}
+
+/* add criteria and create filter */
+
+.toolbar.icon-buttons .yui-button.create span.first-child button,
+.toolbar-menu .icon-buttons .yui-button.add span.first-child button {
+	background-image: url(images/create.png);
+}
+
+.toolbar.icon-buttons .yui-button.yui-button-hover.create span.first-child button,
+.toolbar-menu .icon-buttons .yui-button.yui-button-hover.add span.first-child button,
+.toolbar.icon-buttons .yui-button.yui-button-active.create span.first-child button,
+.toolbar-menu .icon-buttons .yui-button.yui-button-active.add span.first-child button {
+	background-image: url(images/create-active.png);
+}
+
+.toolbar.icon-buttons .yui-button.yui-button-disabled.create span.first-child button,
+.toolbar-menu .icon-buttons .yui-button.yui-button-disabled.add span.first-child button {
+	background-image: url(images/create-disabled.png);
+}
+
+/* apply criteria */
+.toolbar-menu .icon-buttons .yui-button.apply span.first-child button {
+	background-image: url(images/apply-criteria.png);
+}
+
+.toolbar-menu .icon-buttons .yui-button.yui-button-hover.apply span.first-child button {
+	background-image: url(images/apply-criteria-active.png);
+}
+
+.toolbar-menu .icon-buttons .yui-button.yui-button-disabled.apply span.first-child button {
+	background-image: url(images/apply-criteria-disabled.png);
+}
+
+
+/* remove criteria */
+.toolbar-menu .icon-buttons .yui-button.reset span.first-child button {
+	background-image: url(images/remove-criteria.png);
+}
+
+.toolbar-menu .icon-buttons .yui-button.yui-button-hover.reset span.first-child button {
+	background-image: url(images/remove-criteria-active.png);
+}
+
+.toolbar-menu .icon-buttons .yui-button.yui-button-disabled.reset span.first-child button {
+	background-image: url(images/remove-criteria-disabled.png);
+}
+
+
+/* save filter */
+.toolbar-menu .icon-buttons .yui-button.save span.first-child button {
+	background-image: url(images/save.png);
+}
+
+.toolbar-menu .icon-buttons .yui-button.yui-button-hover.save span.first-child button {
+	background-image: url(images/save-active.png);
+}
+
+.toolbar-menu .icon-buttons .yui-button.yui-button-disabled.save span.first-child button {
+	background-image: url(images/save-disabled.png);
+}
+
+/* settings checkbox */
+
+.toolbar-menu .checkbox-option {
+  display: inline-block;
+  min-width: 250px;
+}
+
+
+a.criterion-remove,
+a.remove {
+	background: 50% 50% url(images/cross.png) no-repeat;
+	display: inline-block;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	padding: 4px;
+}
+
+a.criterion-remove:hover,
+a.remove:hover {
+    background: 50% 50% url(images/cross-active.png) no-repeat;
+}
+
+/* paginator styles */
+
+.rows-per-page-label
+{
+	margin-left: 50px;
+}
+
+select.yui-pg-rpp-options
+{
+	width: 5em;
+}
+
+/* dialog options */
+
+.yui-panel .form-container
+{
+	background-color: white;
+}
+
+.yui-panel .form-container .form-buttons
+{
+	text-align: center;
+	padding: 0.5em;
+}
+
+/* journal selection menu */
+
+.journals-menu {
+	margin: 15px;
+}
+
+.journals-menu .journal {
+	display: inline-block;
+	width: 33%;
+	min-width: 200px;
+	padding: 10px 0;
+	text-align: center;
+    border: 1px solid transparent; 
+}
+
+.journals-menu .journal:hover {
+	border-color: #ccc;
+	cursor: pointer;
+}
+
+

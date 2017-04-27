@@ -1,0 +1,472 @@
+<alfresco-config>
+    <config evaluator="model-type" condition="journal:journal">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalType" />
+                    <show id="journal:searchCriteria" />
+                    <show id="journal:createVariants" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                        </control>
+                    </field>
+                    <field id="journal:journalType">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <control-param name="valueField">journalType</control-param>
+                            <control-param name="titleField">journalType</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="responseSchema">[ {key:'journalType'}, {key:'journalType'} ]</control-param>
+                        </control>
+                    </field>
+                    <field id="journal:searchCriteria">
+                        <control template="/ru/citeck/components/form/controls/table-children.ftl">
+                            <control-param name="columns">[
+                                {key: "actions", label: "QName", formatter: Citeck.format.dynamicTableShortQName()},
+                                {key: 'actions', label: 'Predicate', formatter: Citeck.format.dynamicTablePredicate()},
+                                {key: "journal_criterionValue", label: "Value", resizeable: false},
+                                {key: 'actions', label: 'Actions', formatter: Citeck.format.actionsNonContent({panelID: "search-criteria",})},
+                                ]
+                            </control-param>
+                            <control-param name="responseSchema">{
+                                resultsList: "props", fields: [
+                                {key: "journal_fieldQName"},{key: "journal_predicate"},{key: "journal_criterionValue"},{key: "nodeRef"},
+                                ]}
+                            </control-param>
+                            <control-param name="destNode">workspace://SpacesStore/attachments-root</control-param>
+                            <control-param name="showAddButton">true</control-param>
+                        </control>
+                    </field>
+                    <field id="journal:createVariants">
+                        <control template="/ru/citeck/components/form/controls/table-children.ftl">
+                            <control-param name="columns">[
+                                {key: "cm_title", label: "Title", resizeable: false},
+                                {key: "journal_type", label: "Type", resizeable: false},
+                                {key: "journal_formId", label: "Form ID", resizeable: false},
+                                {key: "journal_isDefault", label: "Is Default", resizeable: false},
+                                {key: 'actions', label: 'Actions', formatter: Citeck.format.actionsNonContent({panelID: "create-variants",})},
+                                ]
+                            </control-param>
+                            <control-param name="responseSchema">{
+                                resultsList: "props", fields: [
+                                {key: "cm_created"}, {key: "cm_creator"}, {key: "cm_modified"}, {key: "cm_modifier"},
+                                {key: "cm_name"}, {key: "cm_title"}, {key: "journal_destination_added"},
+                                {key: "journal_formId"}, {key: "journal_isDefault"}, {key: "journal_type"},
+                                {key: "nodeRef"}, {key: "sys_locale"}, {key: "sys_node-dbid"}, {key: "sys_node-uuid"},
+                                {key: "sys_store-identifier"}, {key: "sys_store-protocol"},
+                                ]}
+                            </control-param>
+                            <control-param name="destNode">workspace://SpacesStore/attachments-root</control-param>
+                            <control-param name="showAddButton">true</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalType" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:name">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="cm:title">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="journal:journalType">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <control-param name="valueField">journalType</control-param>
+                            <control-param name="titleField">journalType</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="responseSchema">[ {key:'journalType'}, {key:'journalType'} ]</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="journal:journal">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalType" />
+                    <show id="journal:searchCriteria" />
+                    <show id="journal:createVariants" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                        </control>
+                    </field>
+                    <field id="journal:journalType">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <control-param name="valueField">journalType</control-param>
+                            <control-param name="titleField">journalType</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSARRAY</control-param>
+                            <control-param name="responseSchema">[ {key:'journalType'}, {key:'journalType'} ]</control-param>
+                        </control>
+                    </field>
+                    <field id="journal:searchCriteria">
+                        <control template="/ru/citeck/components/form/controls/table-children.ftl">
+                            <control-param name="columns">[
+                                {key: "actions", label: "QName", formatter: Citeck.format.dynamicTableShortQName()},
+                                {key: 'actions', label: 'Predicate', formatter: Citeck.format.dynamicTablePredicate()},
+                                {key: "journal_criterionValue", label: "Value", resizeable: false},
+                                {key: 'actions', label: 'Actions', formatter: Citeck.format.actionsNonContent({panelID: "search-criteria",})},
+                                ]
+                            </control-param>
+                            <control-param name="responseSchema">{
+                                resultsList: "props", fields: [
+                                    {key: "journal_fieldQName"},{key: "journal_predicate"},{key: "journal_criterionValue"},{key: "nodeRef"},
+                                ]}
+                            </control-param>
+                            <control-param name="destNode">workspace://SpacesStore/attachments-root</control-param>
+                            <control-param name="showAddButton">true</control-param>
+                        </control>
+                    </field>
+                    <field id="journal:createVariants">
+                        <control template="/ru/citeck/components/form/controls/table-children.ftl">
+                            <control-param name="columns">[
+                                {key: "cm_title", label: "Title", resizeable: false},
+                                {key: "journal_type", label: "Type", resizeable: false},
+                                <!--{key: "journal_destination_added", label: "Destination", resizeable: false},-->
+                                {key: "journal_formId", label: "Form ID", resizeable: false},
+                                {key: "journal_isDefault", label: "Is Default", resizeable: false},
+                                {key: 'actions', label: 'Actions', formatter: Citeck.format.actionsNonContent({
+                                    panelID: "create-variants",
+                                })},
+                                ]
+                            </control-param>
+                            <control-param name="responseSchema">{
+                                resultsList: "props", fields: [
+                                    {key: "cm_created"}, {key: "cm_creator"}, {key: "cm_modified"}, {key: "cm_modifier"},
+                                    {key: "cm_name"}, {key: "cm_title"}, {key: "journal_destination_added"},
+                                    {key: "journal_formId"}, {key: "journal_isDefault"}, {key: "journal_type"},
+                                    {key: "nodeRef"}, {key: "sys_locale"}, {key: "sys_node-dbid"}, {key: "sys_node-uuid"},
+                                    {key: "sys_store-identifier"}, {key: "sys_store-protocol"},
+                                ]}
+                            </control-param>
+                            <control-param name="destNode">workspace://SpacesStore/attachments-root</control-param>
+                            <control-param name="showAddButton">true</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="journal:criterion">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/journal/criterion.ftl" />
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="journal:fieldQName" />
+                    <show id="journal:predicate" />
+                    <show id="journal:criterionValue" />
+                </field-visibility>
+                <appearance>
+                    <field id="journal:fieldQName">
+                        <control template="/ru/citeck/components/form/controls/select.ftl">
+                            <control-param name="optionsUrl">/alfresco/service/search/search-attributes</control-param>
+                            <control-param name="titleField">shortName</control-param>
+                            <control-param name="valueField">fullName</control-param>
+                            <control-param name="responseType">YAHOO.util.DataSource.TYPE_JSON</control-param>
+                            <control-param name="responseSchema">{ resultsList: 'attributes', fields: [ {key:'shortName'}, {key:'fullName'}] }</control-param>
+                            <control-param name="sortKey">shortName</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="journal:criterion">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/journal/criterion.ftl" />
+                <view-form template="/ru/citeck/components/form/journal/criterion.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="journal:filter">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalTypes" />
+                    <show id="journal:searchCriteria" />
+                    <show id="cm:creator" />
+                    <show id="cm:created" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                        </control>
+                    </field>
+                    <field id="journal:journalTypes">
+                        <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
+                            <control-param name="itemType">d:text</control-param>
+                            <control-param name="itemKey">journalType</control-param>
+                            <control-param name="itemTitle">{journalType}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <!-- <control-param name="rootURLresults">journals</control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalType}</control-param>
+                            <control-param name="itemURLresults">journals.0</control-param>
+                            <control-param name="searchURL">/share/proxy/alfresco/api/journals/types?filter={query}</control-param>
+                            <control-param name="searchURLresults">journals</control-param> -->
+                        </control>
+                    </field>
+                    <field id="journal:searchCriteria">
+                        <control template="/ru/citeck/components/form/controls/table-children.ftl">
+                            <control-param name="columns">[
+                                {key: "journal_fieldQName", label: "QName", resizeable: false},
+                                {key: 'actions', label: 'Predicate', formatter: Citeck.format.dynamicTablePredicate()},
+                                {key: "journal_criterionValue", label: "Value", resizeable: false},
+                                {key: 'actions', label: 'Actions', formatter: Citeck.format.actionsNonContent({panelID: "search-criteria",})},
+                                ]
+                            </control-param>
+                            <control-param name="responseSchema">{
+                                resultsList: "props", fields: [
+                                {key: "journal_fieldQName"},{key: "journal_predicate"},{key: "journal_criterionValue"},{key: "nodeRef"},
+                                ]}
+                            </control-param>
+                            <control-param name="destNode">workspace://SpacesStore/attachments-root</control-param>
+                            <control-param name="showAddButton">true</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="journal:filter">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalTypes" />
+                    <show id="journal:searchCriteria" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+
+                    <field id="journal:journalTypes">
+                        <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
+                            <control-param name="itemType">d:text</control-param>
+                            <control-param name="itemKey">journalType</control-param>
+                            <control-param name="itemTitle">{journalType}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <!-- <control-param name="rootURLresults">journals</control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalType}</control-param>
+                            <control-param name="itemURLresults">journals.0</control-param>
+                            <control-param name="searchURL">/share/proxy/alfresco/api/journals/types?filter={query}</control-param>
+                            <control-param name="searchURLresults">journals</control-param> -->
+                        </control>
+                    </field>
+                    <field id="journal:searchCriteria">
+                        <control template="/ru/citeck/components/form/controls/table-children.ftl">
+                            <control-param name="columns">[
+                                {key: "journal_fieldQName", label: "QName", resizeable: false},
+                                <!-- {key: "journal_predicate", label: "Predicate", resizeable: false}, -->
+                                {key: 'actions', label: 'Predicate', formatter: Citeck.format.dynamicTablePredicate()},
+                                {key: "journal_criterionValue", label: "Value", resizeable: false},
+                                {key: 'actions', label: 'Actions', formatter: Citeck.format.actionsNonContent({panelID: "search-criteria",})},
+                                ]
+                            </control-param>
+                            <control-param name="responseSchema">{
+                                resultsList: "props", fields: [
+                                {key: "journal_fieldQName"}, {key: "journal_predicate"}, {key: "journal_criterionValue"}, {key: "nodeRef"},
+                                ]}
+                            </control-param>
+                            <control-param name="destNode">workspace://SpacesStore/attachments-root</control-param>
+                            <control-param name="showAddButton">true</control-param>
+                        </control>
+                    </field>
+
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="journal:settings">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalTypes" />
+                    <show id="journal:visibleAttributes" />
+                    <show id="cm:creator" />
+                    <show id="cm:created" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="journal:journalTypes">
+                        <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
+                            <control-param name="itemType">d:text</control-param>
+                            <control-param name="itemKey">journalType</control-param>
+                            <control-param name="itemTitle">{journalType}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <!-- <control-param name="rootURLresults">journals</control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalId}</control-param>
+                            <control-param name="itemURLresults">journals.0</control-param>
+                            <control-param name="searchURL">/share/proxy/alfresco/api/journals/types?filter={query}</control-param>
+                            <control-param name="searchURLresults">journals</control-param> -->
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="journal:settings">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journalTypes" />
+                    <show id="journal:visibleAttributes" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="journal:journalTypes">
+                        <control template="/ru/citeck/components/form/controls/key-value-select.ftl">
+                            <control-param name="itemType">d:text</control-param>
+                            <control-param name="itemKey">journalType</control-param>
+                            <control-param name="itemTitle">{journalType}</control-param>
+                            <control-param name="rootURL">/share/proxy/alfresco/api/journals/maptypes</control-param>
+                            <!-- <control-param name="rootURLresults">journals</control-param>
+                            <control-param name="itemURL">/share/proxy/alfresco/api/journals/types/{journalId}</control-param>
+                            <control-param name="itemURLresults">journals.0</control-param>
+                            <control-param name="searchURL">/share/proxy/alfresco/api/journals/types?filter={query}</control-param>
+                            <control-param name="searchURLresults">journals</control-param> -->
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="journal:journalsList">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journals" />
+                    <show id="cm:modified" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                        </control>
+                    </field>
+                    <field id="journal:journals">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl"></control>
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journals" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:name">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="cm:title">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
+                    </field>
+                    <field id="journal:journals">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="journal:journalsList">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name" />
+                    <show id="cm:title" />
+                    <show id="journal:journals" />
+                    <show id="journal:default" />
+                    <show id="cm:modified" />
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title" mandatory="true">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl">
+                        </control>
+                    </field>
+                    <field id="journal:journals">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl">
+                        </control>
+                    </field>
+                    <field id="journal:default">
+                        <control template="/ru/citeck/components/form/controls/association_search.ftl"></control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="journal:createVariant">
+        <forms>
+            <form>
+                <create-form template="/ru/citeck/components/form/journal/createVariant.ftl" />
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="journal:destination" />
+                    <show id="journal:type" />
+                    <show id="journal:formId" />
+                </field-visibility>
+                <appearance>
+                    <field id="journal:type">
+                        <control template="/ru/citeck/components/form/controls/dictionary/type.ftl">
+                            <control-param name="valueFieldName">prefixedName</control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="journal:createVariant">
+        <forms>
+            <form>
+                <edit-form template="/ru/citeck/components/form/journal/createVariant.ftl" />
+                <view-form template="/ru/citeck/components/form/journal/createVariant.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

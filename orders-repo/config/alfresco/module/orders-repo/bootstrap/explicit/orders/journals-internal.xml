@@ -302,8 +302,6 @@
                 <view:associations>
                     <journal:journals>
                         <view:reference view:pathref="cm:journals/journal:orders-internal" />
-                        <view:reference view:pathref="cm:journals/journal:orders-subject" />
-                        <view:reference view:pathref="cm:journals/journal:files-nomenclature" />
                     </journal:journals>
                 </view:associations>
             </journal:journalsList>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE permissions >
+<!--PUBLIC '-//ALFRECSO//DTD PERMISSIONS//EN' 'permissionSchema.dtd' -->
+
+<permissions>
+
+	<namespaces>
+		<namespace uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+		<namespace uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+		<namespace uri="http://www.alfresco.org/model/wcmmodel/1.0" prefix="wcm"/>
+		<namespace uri="http://www.alfresco.org/model/wcmappmodel/1.0" prefix="wca"/>
+	</namespaces>
+
+	<permissionSet type="cm:content" expose="selected">
+	
+		<permissionGroup name="Coordinator" extends="true" expose="true"/>
+		<permissionGroup name="Collaborator" extends="true" expose="true"/>
+		<permissionGroup name="Contributor" extends="true" expose="true"/>
+		<permissionGroup name="Editor" extends="true" expose="true"/>
+		<permissionGroup name="Consumer" extends="true" expose="true"/>
+		<permissionGroup name="RecordAdministrator" extends="true" expose="false"/>
+
+		<!-- this permission group is intended to be restricted -->
+		<!-- so that only read permissions are left -->
+		<permissionGroup name="AllExceptRead" requiresType="false" expose="false">
+
+            <!-- Bugfix #2792: If these manager permissions uncommented then bug reproduced-->
+
+            <!-- permission groups that allow full control -->
+			<!--<includePermissionGroup type="sys:base"    permissionGroup="FullControl" />-->
+			<!--<includePermissionGroup type="cm:cmobject" permissionGroup="Administrator" />-->
+			<!--<includePermissionGroup type="cm:cmobject" permissionGroup="Coordinator" />-->
+
+			<!-- all permission groups, except read -->
+			<!--<includePermissionGroup type="sys:base" permissionGroup="Read" />-->
+			<includePermissionGroup type="sys:base" permissionGroup="Write" />
+			<includePermissionGroup type="sys:base" permissionGroup="Delete" />
+			<includePermissionGroup type="sys:base" permissionGroup="AddChildren" />
+			<includePermissionGroup type="sys:base" permissionGroup="Execute" />
+			<includePermissionGroup type="sys:base" permissionGroup="CreateAssociations" />
+			<includePermissionGroup type="sys:base" permissionGroup="DeleteAssociations" />
+			<includePermissionGroup type="sys:base" permissionGroup="ChangePermissions" />
+		</permissionGroup>
+
+		<!-- this permission group is used to give all CRUD operations on the node and its children -->
+		<!-- but it does not include permission management -->
+		<!-- to be able to delete children it should include DeleteNode permission -->
+		<!-- one can restrict deleting the root document by applying sys:undeleteable aspect -->
+		<permissionGroup name="NodeManager" requiresType="false" expose="true">
+			<includePermissionGroup type="sys:base" permissionGroup="AddChildren" />
+			<includePermissionGroup type="sys:base" permissionGroup="Read" />
+			<includePermissionGroup type="sys:base" permissionGroup="Write" />
+			<includePermissionGroup type="sys:base" permissionGroup="Delete" />
+			<includePermissionGroup type="sys:base" permissionGroup="ReadPermissions" />
+			<includePermissionGroup type="cm:lockable" permissionGroup="CheckOut" />
+		</permissionGroup>
+
+	</permissionSet>
+	
+</permissions>

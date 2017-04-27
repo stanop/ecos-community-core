@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+    <!-- common configs -->
+
+    <bean id="common-messages" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>webscripts.messages.webscripts</value>
+                <value>alfresco.messages.common</value>
+                <value>alfresco.messages.slingshot</value>
+                <value>alfresco.site-messages.idocs.datatable-property</value>
+                <value>alfresco.site-messages.idocs.related-workflows</value>
+                <value>alfresco.site-messages.idocs.passports</value>
+                <value>alfresco.site-messages.idocs.orgstruct-console</value>
+                <value>alfresco.site-messages.idocs.supplementary-files</value>
+                <value>alfresco.site-messages.idocs.idocs</value>
+                <value>alfresco.site-messages.idocs.associations</value>
+                <value>alfresco.site-messages.idocs.document-history</value>
+                <value>alfresco.site-messages.idocs.document-tasks</value>
+                <value>alfresco.site-messages.idocs.acts-temp</value>
+                <value>alfresco.site-messages.idocs.invoices</value>
+                <value>alfresco.site-messages.idocs.workflows</value>
+                <value>alfresco.site-messages.idocs.task-edit-header</value>
+                <value>alfresco.site-messages.idocs.cardlets</value>
+                <value>alfresco.site-messages.idocs.case-roles</value>
+                <value>alfresco.site-messages.idocs.case-tasks</value>
+                <value>alfresco.site-messages.idocs.products-and-services</value>
+                <value>alfresco.site-messages.idocs.idocs-site-presets</value>
+                <value>alfresco.site-messages.idocs.override</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dependency.handler" parent="dependency.handler.abstract" class="org.springframework.extensions.surf.DependencyHandler">
+      <property name="debugSuffices">
+        <list>
+          <value>.js.uncompressed</value> <!-- dojo -->
+          <value>-debug</value> <!-- yui 2 -->
+          <value>_src</value> <!-- tiny mce -->
+          <value></value> <!-- regular source files -->
+          <value>.min</value> <!-- include minified files in case source is absent -->
+          <value>-min</value>
+          <value>-minified</value>
+        </list>
+      </property>
+      <property name="productionSuffices">
+        <list>
+          <value>.min</value> <!-- maven minification -->
+          <value>-min</value> <!-- ant minification -->
+          <value>-minified</value> <!-- this is also used -->
+          <value></value> <!-- fallback -->
+        </list>
+      </property>
+    </bean>
+
+	<!-- override page view resolver -->
+	<bean id="pageViewResolver" class="ru.citeck.ecos.share.mvc.IDocsPageViewResolver" parent="abstractWebFrameworkViewResolver" />
+
+	<!-- override user factory -->
+	<!-- decorated user factory -->
+	<bean id="user.factory" name="decorated.user.factory" class="ru.citeck.ecos.share.user.DecoratedUserFactory" parent="webframework.factory.user.slingshot" />
+
+	<bean id="user.decorator" class="ru.citeck.ecos.share.user.AbstractUserDecorator" abstract="true" init-method="register">
+		<property name="userFactory" ref="decorated.user.factory" />
+	</bean>
+
+	<bean id="property.user.decorator" class="ru.citeck.ecos.share.user.PropertyUserDecorator" parent="user.decorator" abstract="true" />
+
+	<!-- add preset property to user -->
+	<bean id="preset.user.decorator" parent="property.user.decorator">
+		<property name="propertyName" value="preset" />
+		<property name="jsonPath">
+			<list>
+				<value>data</value>
+				<value>properties</value>
+				<value>{http://www.citeck.ru/model/orgstruct/1.0}preset</value>
+			</list>
+		</property>
+	</bean>
+
+    <!-- add available property to user -->
+    <bean id="available.user.decorator" parent="property.user.decorator">
+        <property name="propertyName" value="available" />
+        <property name="jsonPath">
+            <list>
+                <value>data</value>
+                <value>properties</value>
+                <value>{http://www.citeck.ru/model/deputy/1.0}available</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- add property nodeRef to user -->
+    <bean id="noderef.user.decorator" parent="property.user.decorator">
+        <property name="propertyName" value="nodeRef" />
+        <property name="jsonPath">
+            <list>
+                <value>data</value>
+                <value>nodeRef</value>
+            </list>
+        </property>
+    </bean>
+
+	<!-- dependencies webscript -->
+	<bean id="webscript.ru.citeck.components.dependencies.dependencies.get"
+		class="ru.citeck.ecos.webscripts.DependenciesGet"
+		parent="webscript">
+		<property name="configService" ref="web.config" />
+	</bean>
+
+	<!-- webscript-messages webscript -->
+	<bean id="webscript.ru.citeck.components.dependencies.webscript-messages.get"
+		class="ru.citeck.ecos.webscripts.WebscriptMessagesGet"
+		parent="webscript">
+		<property name="registry" ref="webscripts.registry" />
+	</bean>
+
+	<!-- modules-info webscript -->
+	<bean id="webscript.ru.citeck.service.modules.modules-info.get"
+		class="ru.citeck.ecos.webscripts.ModulesInfoGet"
+		parent="webscript">
+		<property name="resourceResolver" ref="resourceResolver" />
+	</bean>
+
+	<!-- global 'messages' object -->
+	<bean id="slingshot.scriptprocessor.messages" parent="baseScriptExtension" class="ru.citeck.ecos.webscripts.MessagesProcessorExtension">
+		<property name="extensionName" value="messages" />
+	</bean>
+
+</beans>

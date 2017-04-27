@@ -1,0 +1,167 @@
+/*
+ * Item icons 
+ */
+
+.ygtvcell.GROUP
+{
+	background-image: url(icons/group-16.png);
+}
+
+.ygtvcell.GROUP-branch
+{
+	background-image: url(icons/branch-16.png);
+}
+
+.ygtvcell.GROUP-role
+{
+	background-image: url(icons/role-16.png);
+}
+
+.ygtvcell.GROUP-role.role-manager-true
+{
+	background-image: url(icons/role-manager-16.png);
+}
+
+.ygtvcell.groupType-branch
+{
+	background-image: url(icons/branch-16.png);
+}
+
+.ygtvcell.groupType-role
+{
+	background-image: url(icons/role-16.png);
+}
+
+.ygtvcell.branchType
+{
+	background-image: url(icons/branch-16.png);
+}
+
+.ygtvcell.roleType
+{
+	background-image: url(icons/role-16.png);
+}
+
+.ygtvcell.USER.available-true
+{
+	background-image: url(icons/user-16.png);
+}
+
+.ygtvcell.USER.available-false
+{
+    background-image: url(icons/user-unavailable-16.png);
+}
+
+.ygtvcell.deputy-true.available-true
+{
+	background-image: url(icons/user-deputy-16.png);
+}
+
+.ygtvcell.deputy-true.available-true.isAssistant-true.deputy-true-isAssistant-true {
+    background-image: url(icons/user-deputy-assistant-16.png);
+}
+
+.ygtvcell.deputy-false.available-true.deputy-false-isAssistant-true {
+    background-image: url(icons/user-deputy-assistant-16.png);
+}
+.ygtvcell.deputy-true.available-false
+{
+	background-image: url(icons/user-deputy-unavailable-16.png);
+}
+
+.ygtvcell.deputy-true.available-false.isAssistant-true {
+    background-image: url(icons/user-deputy-assistant-unavailable-16.png);
+}
+
+.ygtvcell.deputy-false.available-true
+{
+	background-image: url(icons/user-member-16.png);
+}
+
+.ygtvcell.deputy-false.available-false
+{
+	background-image: url(icons/user-member-unavailable-16.png);
+}
+
+/*
+ * Action buttons icons
+ */
+
+button.createGroup
+{
+   background-image: url(icons/group-new-16.png);
+}
+
+button.createBranch
+{
+   background-image: url(icons/branch-new-16.png);
+}
+
+button.createRole
+{
+   background-image: url(icons/role-new-16.png);
+}
+
+button.createBranchType
+{
+   background-image: url(icons/plus-16.png);
+}
+
+button.createRoleType
+{
+   background-image: url(icons/plus-16.png);
+}
+
+button.addGroup
+{
+   background-image: url(icons/group-add-16.png);
+}
+
+button.addUser
+{
+   background-image: url(icons/user-add-16.png);
+}
+
+button.addAssistant {
+    background-image: url(icons/user-deputy-assistant-add-16.png);
+}
+
+button.addDeputy
+{
+   background-image: url(icons/user-deputy-add-16.png);
+}
+
+button.editItem
+{
+   background-image: url(icons/edit-16.png);
+}
+
+button.deleteItem
+{
+   background-image: url(icons/delete-16.png);
+}
+
+button.search
+{
+   background-image: url(icons/search-16.png);
+}
+
+button.resetSearch
+{
+   background-image: url(icons/delete-16.png);
+}
+
+button.convertToGroup
+{
+   background-image: url(icons/group-convert-16.png);
+}
+
+button.convertToBranch
+{
+   background-image: url(icons/branch-convert-16.png);
+}
+
+button.convertToRole
+{
+   background-image: url(icons/role-convert-16.png);
+}

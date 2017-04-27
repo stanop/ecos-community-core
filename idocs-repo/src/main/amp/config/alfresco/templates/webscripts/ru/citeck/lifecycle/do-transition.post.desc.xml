@@ -1,0 +1,7 @@
+<webscript>
+<shortname>Do transition</shortname>
+<description>Do transition</description>
+<url>/api/lifecycle/do-transition?nodeRef={nodeRef}</url>
+<format default="json">argument</format>
+<authentication>user</authentication>
+</webscript>

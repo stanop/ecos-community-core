@@ -1,0 +1,9 @@
+<webscript>
+	<description>It returns info about content</description>
+	<shortname>Get content info (with content data)</shortname>
+	<url>/citeck/node-content?nodeRef={nodeRef}&amp;contentData={true|false}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

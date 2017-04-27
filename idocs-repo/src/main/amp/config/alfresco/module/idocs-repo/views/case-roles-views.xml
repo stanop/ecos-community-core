@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+    </imports>
+
+    <view class="icaseRole:role" id="case">
+        <field prop="icaseRole:varName">
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field assoc="icaseRole:assignees">
+            <region name="input" template="view">
+                <param name="attribute">cm:title</param>
+            </region>
+            <region name="select" template="select-orgstruct"/>
+        </field>
+    </view>
+
+    <view class="icaseRole:scriptRole" id="case">
+        <field prop="icaseRole:varName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:script">
+            <region name="input" template="textarea">
+                <param name="height">120px</param>
+                <param name="validation">false</param>
+            </region>
+        </field>
+    </view>
+
+    <!--<view class="icaseRole:role" mode="create" id="case">-->
+        <!--<field prop="cm:name">-->
+            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
+        <!--</field>-->
+        <!--<field prop="cm:title">-->
+            <!--<invariant on="mandatory" language="explicit">true</invariant>-->
+        <!--</field>-->
+        <!--<field prop="icaseRole:isReferenceRole">-->
+            <!--<invariant on="value" language="explicit">true</invariant>-->
+            <!--&lt;!&ndash;<invariant on="relevant" language="javascript">false</invariant>&ndash;&gt;-->
+        <!--</field>-->
+    <!--</view>-->
+
+    <view class="icaseRole:role" id="journal">
+        <field prop="icaseRole:varName"/>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:isReferenceRole">
+            <invariant on="value" language="explicit">true</invariant>
+            <!--<invariant on="relevant" language="javascript">false</invariant>-->
+        </field>
+    </view>
+
+    <view class="icaseRole:role" mode="create" id="journal">
+        <field prop="icaseRole:varName">
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseRole:isReferenceRole">
+            <invariant on="value" language="explicit">true</invariant>
+            <!--<invariant on="relevant" language="javascript">false</invariant>-->
+        </field>
+    </view>
+
+    <view class="icaseRole:role" mode="edit" id="journal">
+        <field prop="icaseRole:varName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+</views>

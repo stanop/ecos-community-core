@@ -1,0 +1,284 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<bean id="webscript.ru.citeck.workflow.tasks.overdue-tasks.get"
+		class="ru.citeck.ecos.webscripts.workflow.OverDueTaskGeneration"
+		parent="webscript">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.workflow.tasks.user-tasks.get"
+		class="ru.citeck.ecos.webscripts.workflow.tasks.UserWorkflowTasksWebscript"
+		parent="webscript">
+		<property name="shareApp"
+			value="${share.protocol}://${share.host}:${share.port}/${share.context}" />
+		<property name="workflowService" ref="WorkflowService" />
+
+	</bean>
+
+	<bean id="webscript.ru.citeck.modules.modules-info.get"
+		class="ru.citeck.ecos.webscripts.modules.ModulesInfoGet"
+		parent="webscript">
+		<property name="moduleService" ref="ModuleService" />
+	</bean>
+
+	<!--==============================================================-->
+	<!--                    Document WebScripts                       -->
+	<!--==============================================================-->
+
+	<bean id="webscript.ru.citeck.document.supplementary-files.get"
+		class="ru.citeck.ecos.webscripts.document.SupplementaryFilesGet"
+		parent="webscript">
+		<property name="nodeService" ref="NodeService" />
+        <property name="dao" ref="supplementaryFilesDAO" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.document.deleteAssociation.get"
+		class="ru.citeck.ecos.webscripts.document.DeleteAssociation"
+		parent="webscript">
+        <property name="dao" ref="supplementaryFilesDAO" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.document.addAssociations.get"
+		class="ru.citeck.ecos.webscripts.document.AddAssociations"
+		parent="webscript">
+        <property name="dao" ref="supplementaryFilesDAO" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.document.addOrRemoveAssociation.get"
+		class="ru.citeck.ecos.webscripts.document.AddOrRemoveAssociation"
+		parent="webscript">
+        <property name="dao" ref="supplementaryFilesDAO" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.document.getDocumentAspects.get"
+	      class="ru.citeck.ecos.webscripts.document.GetDocumentAspects"
+	      parent="webscript">
+		<property name="nodeService" ref="NodeService" />
+	</bean>
+
+    <bean id="webscript.ru.citeck.document-registration.register.post"
+          class="ru.citeck.ecos.webscripts.documentregistration.RegisterPost"
+          parent="webscript">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="nodeInfoFactory" ref="NodeInfoFactory" />
+    </bean>
+
+    <bean id="webscript.ru.citeck.print.metadata-printpdf.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <bean parent="dbp.select-template">
+                    <property name="nodeExpr" value="${args.nodeRef}" />
+                    <property name="templateType" value="${args.templateType!}" />
+                    <property name="variable" value="template" />
+                </bean>
+                <bean parent="dbp.template">
+                    <property name="template" value="${template}" />
+                    <property name="engine">
+                        <value><![CDATA[<#assign engine=companyhome.nodeByReference[template].properties['dms:templateProcessor']>${engine}]]></value>
+                    </property>
+                    <property name="mimetype">
+                        <value><![CDATA[<#assign mimetype=companyhome.nodeByReference[template].properties['cm:content'].mimetype>${mimetype}]]></value>
+                    </property>
+                    <property name="encoding">
+                        <value><![CDATA[<#assign encoding=companyhome.nodeByReference[template].properties['cm:content'].encoding>${encoding}]]></value>
+                    </property>
+                </bean>
+				<bean parent="dbp.model">
+					<property name="model">
+						<map>
+							<entry key="filename">
+								<value>[#ftl /][#compress]
+								[#assign template = companyhome.nodeByReference[template] /]
+								[#assign filenameTemplate = (template.properties['dms:filenameTemplate']!template.properties['dms:templateType'])?interpret /]
+								[@filenameTemplate /]
+								[/#compress]</value>
+							</entry>
+						</map>
+					</property>
+				</bean>
+                <bean parent="dbp.switch">
+					<property name="expression" value="${args.format!'original'}" />
+					<property name="cases">
+						<map>
+							<entry key="pdf"  value-ref="dbp.transform.pdf" />
+							<entry key="doc"  value-ref="dbp.transform.doc" />
+							<entry key="docx" value-ref="dbp.transform.docx" />
+							<entry key="html" value-ref="dbp.transform.html" />
+						</map>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="webscript.ru.citeck.workflow.inactive-instances-for-node.get"
+		class="ru.citeck.ecos.webscripts.workflow.InactiveWorkflowInstancesForNodeGet"
+		parent="abstractWorkflowWebScript"></bean>
+
+    <bean id="webscript.ru.citeck.templates.card-templates.get"
+           class="ru.citeck.ecos.webscripts.templates.CardTemplatesGet"
+           parent="webscript">
+        <property name="cardTemplateService" ref="CardTemplateService" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
+    <bean id="webscript.ru.citeck.templates.card-template-types.get"
+          class="ru.citeck.ecos.webscripts.templates.CardTemplateTypesGet"
+          parent="webscript">
+        <property name="cardTemplateService" ref="CardTemplateService" />
+    </bean>
+
+    <bean id="webscript.ru.citeck.node.nodeByPath.get"
+          class="ru.citeck.ecos.webscripts.node.NodeByPathGet"
+          parent="webscript">
+        <property name="searchService" ref="searchService"/>
+    </bean>
+
+	<bean id="webscript.ru.citeck.security.findgroup.get"
+		class="ru.citeck.ecos.webscripts.authority.AlfrescoAuthorityFinder"
+		parent="webscript">
+		<property name="authorityService" ref="authorityService" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.security.checkBelongsUserToGroup.get"
+	      class="ru.citeck.ecos.webscripts.authority.CheckBelongsUserToGroup"
+	      parent="webscript">
+		<property name="authorityService" ref="authorityService" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.workflow.document-assignee.get"
+	      class="ru.citeck.ecos.webscripts.workflow.DocumentAssignee"
+	      parent="webscript">
+		<property name="workflowService" ref="WorkflowService" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.bootstrap.export.get"
+		class="ru.citeck.ecos.webscripts.bootstrap.ExportGet"
+		parent="webscript">
+		<property name="exporterService" ref="ExporterService" />
+		<property name="mimetypeService" ref="MimetypeService" />
+	</bean>
+
+	<bean id="webscript.ru.citeck.ecos.confirm.confirm-list.get"
+		class="ru.citeck.ecos.webscripts.confirm.ConfirmListGet"
+		parent="webscript" depends-on="idocs.workflowBootstrap">
+		<property name="confirmList" ref="confirm-list"/>
+	</bean>
+
+    <bean id="webscript.ru.citeck.ecos.confirm.confirm.post"
+          class="ru.citeck.ecos.webscripts.confirm.ConfirmPost"
+          parent="webscript">
+        <property name="nodeService" ref="NodeService"/>
+        <property name="confirmService" ref="ConfirmService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.confirm.update-considerable.get"
+          class="ru.citeck.ecos.webscripts.confirm.UpdateConsiderableGet"
+          parent="webscript">
+        <property name="confirmService" ref="ConfirmService"/>
+        <property name="nodeService" ref="NodeService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.repository.dictionary.childrenClassesWithFullQname.get"
+          class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.repository.dictionary.fullChildrenClasses.get"
+          class="ru.citeck.ecos.dictionary.EcosDictionaryClassesGet"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.print.stampdoc.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <bean parent="dbp.content">
+                    <property name="nodeRef" value="${args.nodeRef}" />
+                </bean>
+                <bean parent="dbp.transform.pdf" />
+                <bean parent="dbp.doc.stamp.above">
+                    <property name="transformCalculator" ref="dbp.transform.upper.left" />
+                    <property name="stampProcessors">
+                        <list>
+                            <bean parent="dbp.pdf.barcode">
+                                <property name="barcodeName" value="Barcode.code39" />
+                                <property name="barcodeInput" value="${args.type}" />
+                                <property name="margins" value="40,40,40,40" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="appendStringFrom" value="${args.idfrom}" />
+                    <property name="appendStringTo" value="${args.idto}" />
+                    <property name="leftMargin" value="40" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.print.signature.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <bean parent="dbp.content">
+                    <property name="nodeRef" value="${args.nodeRef}" />
+                </bean>
+                <bean parent="dbp.transform.pdf" />
+                <bean parent="dbp.pdf.signature.under">
+                    <property name="transformCalculator" ref="dbp.transform.upper.right" />
+                    <property name="stampProcessors">
+                        <list>
+                            <bean parent="dbp.content">
+                                <property name="nodeRef" value="workspace://SpacesStore/idocs-watermark-signature" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="findString" value="_________" />
+                    <property name="positionFindString" value="end" />
+                    <property name="shiftRight" value="${args.shiftRight}" />
+                    <property name="shiftUp" value="${args.shiftUp}" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.node.path-details.get"
+            class="ru.citeck.ecos.webscripts.node.PathDetailsGet"
+            parent="webscript">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="searchService" ref="searchService"/>
+        <property name="permissionService" ref="PermissionService"/>
+        <property name="fileFolderService" ref="FileFolderService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.history.history.get"
+            class="ru.citeck.ecos.webscripts.history.HistoryGet"
+            parent="webscript">
+        <property name="historyService" ref="historyService"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.tasks.document-tasks.get" class="ru.citeck.ecos.webscripts.tasks.DocumentTasksGet"
+            parent="webscript">
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+	<bean id="webscript.ru.citeck.passports.passports.get" class="ru.citeck.ecos.webscripts.passports.PassportsGet"
+			parent="webscript">
+		<!-- note that private services are used -->
+		<!-- to return basic information about private data -->
+        <property name="nodeService" ref="nodeService"/>
+        <property name="personService" ref="personService"/>
+	</bean>
+
+	<bean id="webscript.ru.citeck.calendar.business-calendar.get" class="ru.citeck.ecos.webscripts.calendar.BusinessCalendarGet"
+			parent="webscript">
+		<property name="searchService" ref="searchService"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>history</region-id>
+    <sub-components>
+        <sub-component id="document-history" index="50">
+            <url>/citeck/components/document-children</url>
+            <properties>
+                <header>dochist.header</header>
+                <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/history/document?nodeRef={nodeRef}&amp;events=node.created,node.updated,assoc.removed,assoc.added,task.complete,user.action,status.changed"
+                </childrenUrl>
+                <columns>[{key: 'attributes["event:date"]', label: Alfresco.util.message("dochist.header.date"), formatter: Citeck.format.datetime()},
+                    {key: 'attributes["event:name"]', label: Alfresco.util.message("dochist.header.name"), formatter: Citeck.format.message('dochist.')},
+                    {key: 'attributes["event:documentVersion"]', label: Alfresco.util.message("dochist.header.version")},
+                    {key: 'attributes["event:initiator"][0]', label: Alfresco.util.message("dochist.header.person"), formatter: Citeck.format.node()},
+                    {key: 'attributes["taskOriginalOwner"]', label: Alfresco.util.message("dochist.header.fromName"),
+                    formatter: Citeck.format.node()},
+                    {key: 'attributes["event:taskPooledActors"][0]', label: Alfresco.util.message("dochist.header.group"), formatter: Citeck.format.node()},
+                    {key: 'attributes["event:taskType"]', label: Alfresco.util.message("dochist.header.task"), formatter: Citeck.format.typeName('shortQName')},
+                    {key: 'attributes["event:taskOutcome"]', label: Alfresco.util.message("dochist.header.outcome"), formatter: Citeck.format.taskHistoryOutcome()},
+                    {key: 'attributes["event:taskComment"]', label: Alfresco.util.message("dochist.header.comment")}]</columns>
+                <responseSchema>{resultsList: 'history', fields: [{key: 'attributes["event:name"]'}, 
+                    {key: 'attributes["event:date"]'}, 
+                    {key: 'attributes["event:documentVersion"]'},
+                    {key: 'attributes["event:initiator"][0]'},
+                    {key: 'attributes["taskOriginalOwner"]'},
+                    {key: 'attributes["event:taskPooledActors"][0]'},
+                    {key: 'attributes["event:taskType"]'}, 
+                    {key: 'attributes["event:taskOutcome"]'},
+                    {key: 'attributes["event:taskComment"]'},
+                    {key: 'attributes'}]}
+                </responseSchema>
+                <twisterKey>history</twisterKey>
+            </properties>
+        </sub-component>
+    </sub-components>
+</component>

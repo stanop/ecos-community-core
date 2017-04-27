@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Set confirmation status for document</shortname>
+	<description>Set confirmation status for document</description>
+	<url>/citeck/confirm?nodeRef={nodeRef}&amp;decision={decision}</url>
+	<format default="json">argument</format>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

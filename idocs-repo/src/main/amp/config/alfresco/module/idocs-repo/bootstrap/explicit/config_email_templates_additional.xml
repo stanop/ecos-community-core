@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:dms="http://www.citeck.ru/model/content/dms/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0">
+    <dms:notificationTemplate view:childName="cm:unavailable-complete-notification.html.ftl">
+        <view:properties>
+            <sys:node-uuid>unavailable-complete-notification</sys:node-uuid>
+            <cm:name>unavailable-complete-notification.html.ftl</cm:name>
+            <dms:notificationType>complete_task</dms:notificationType>
+            <dms:sendToAssignee>true</dms:sendToAssignee>
+            <cm:title>Один из участников отсутствует в офисе</cm:title>
+            <cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit\notification\unavailable-complete-notification.html.ftl|mimetype=text/plain|encoding=UTF-8</cm:content>
+            <dms:subjectTemplate>
+                <![CDATA[<#if (task.description)?? && task.description != ''>#{task.description}<#elseif (task.name)??>#{task.name}</#if><#if workflow.documents??><#if workflow.documents?is_sequence><#if workflow.documents?size &gt; 0>, документ - #{workflow.documents[0].properties['cm:name']!''}</#if></#if></#if>]]>
+            </dms:subjectTemplate>
+            <dms:notSearchable>true</dms:notSearchable>
+        </view:properties>
+    </dms:notificationTemplate>
+    <dms:notificationTemplate view:childName="cm:unavailable-assign-notification.html.ftl">
+        <view:properties>
+            <sys:node-uuid>unavailable-assign-notification</sys:node-uuid>
+            <cm:name>unavailable-assign-notification.html.ftl</cm:name>
+            <dms:notificationType>assign_task</dms:notificationType>
+            <dms:sendToInitiator>true</dms:sendToInitiator>
+            <cm:title>Один из участников отсутствует в офисе</cm:title>
+            <cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit\notification\unavailable-complete-notification.html.ftl|mimetype=text/plain|encoding=UTF-8</cm:content>
+            <dms:subjectTemplate>
+                <![CDATA[<#if (task.description)?? && task.description != ''>#{task.description}<#elseif (task.name)??>#{task.name}</#if><#if workflow.documents??><#if workflow.documents?is_sequence><#if workflow.documents?size &gt; 0>, документ - #{workflow.documents[0].properties['cm:name']!''}</#if></#if></#if>]]>
+            </dms:subjectTemplate>
+            <dms:notSearchable>true</dms:notSearchable>
+        </view:properties>
+    </dms:notificationTemplate>
+</view:view>

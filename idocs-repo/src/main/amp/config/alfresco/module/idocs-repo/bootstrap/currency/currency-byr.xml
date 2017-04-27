@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0">
+
+    <idocs:currency view:childName="cm:currency-byr">
+        <view:properties>
+            <sys:node-uuid>currency-byr</sys:node-uuid>
+            <cm:name>Белорусский рубль</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Belarussian Ruble</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Белорусский рубль</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BYR</idocs:currencyCode>
+            <idocs:currencyName>Белорусский рубль</idocs:currencyName>
+            <idocs:currencyShortName>Br</idocs:currencyShortName>
+        </view:properties>
+    </idocs:currency>
+
+</view:view>
