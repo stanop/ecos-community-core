@@ -1,5 +1,6 @@
 package ru.citeck.ecos.behavior.role;
 
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies.OnUpdatePropertiesPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnDeleteAssociationPolicy;
@@ -14,6 +15,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.CaseRoleService;
 
@@ -63,7 +65,7 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
     @Override
     public void onCreateAssociation(AssociationRef associationRef) {
         NodeRef caseRef = associationRef.getSourceRef();
-        if (nodeService.exists(caseRef)) {
+        if (isValidCase(caseRef)) {
             caseRoleService.updateRoles(associationRef.getSourceRef());
         }
     }
@@ -71,14 +73,14 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
     @Override
     public void onDeleteAssociation(AssociationRef associationRef) {
         NodeRef caseRef = associationRef.getSourceRef();
-        if (nodeService.exists(caseRef)) {
+        if (isValidCase(caseRef)) {
             caseRoleService.updateRoles(caseRef);
         }
     }
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> map, Map<QName, Serializable> map1) {
-        if (nodeService.exists(nodeRef)) {
+        if (isValidCase(nodeRef)) {
             caseRoleService.updateRoles(nodeRef);
         }
     }
@@ -86,9 +88,14 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
     @Override
     public void onCreateNode(ChildAssociationRef childAssociationRef) {
         NodeRef caseRef = childAssociationRef.getChildRef();
-        if (nodeService.exists(caseRef)) {
+        if (isValidCase(caseRef)) {
             caseRoleService.updateRoles(childAssociationRef.getChildRef());
         }
+    }
+    
+    private boolean isValidCase(NodeRef caseRef) {
+        return caseRef != null && nodeService.exists(caseRef)
+               && !nodeService.hasAspect(caseRef, ICaseModel.ASPECT_CASE_TEMPLATE);
     }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
