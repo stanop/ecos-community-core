@@ -7,6 +7,7 @@ import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.CaseRoleService;
 
@@ -25,7 +26,6 @@ public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdateProperti
     private CaseRoleService caseRoleService;
 
     public void init() {
-
         this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
                 ICaseRoleModel.TYPE_ROLE,
@@ -34,9 +34,12 @@ public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdateProperti
     }
 
     @Override
-    public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        if (nodeService.exists(nodeRef)) {
-            caseRoleService.updateRole(nodeRef);
+    public void onUpdateProperties(NodeRef roleRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        if (nodeService.exists(roleRef)) {
+            NodeRef parentRef = nodeService.getPrimaryParent(roleRef).getParentRef();
+            if (nodeService.hasAspect(parentRef, ICaseModel.ASPECT_CASE)) {
+                caseRoleService.updateRole(roleRef);
+            }
         }
     }
 
