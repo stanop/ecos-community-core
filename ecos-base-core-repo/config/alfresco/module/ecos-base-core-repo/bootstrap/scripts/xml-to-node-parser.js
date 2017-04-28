@@ -205,7 +205,7 @@ var parser = {
                         targetNode = this.getChildByProperty(targetNodeRoot, assocData.propId, assocData.propValue);
                     }
 
-                    if (!targetNode.exists()) {
+                    if (targetNode == null || !targetNode.exists()) {
                         logger.error(this.parserScriptName + " targetNode does not exists. Information: " +
                             "\ntargetNodeRoot: " + targetNodeRoot.nodeRef + " prop id: "
                             + assocData.propId + " prop value: " + assocData.propValue + " uuid: " + assocData.uuid);
