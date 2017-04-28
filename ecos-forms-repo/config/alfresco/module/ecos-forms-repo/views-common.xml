@@ -81,7 +81,7 @@
 			<region name="message" template="message" />
 		</fields>
 	</views>
-	
+<!-- 
 	<views mode="view">
 		<fields any="true">
 			<region name="mandatory" template="mandatory" />
@@ -89,8 +89,7 @@
 			<region name="input" template="view" />
 		</fields>
 	</views>
-	
-	
+ -->
 	<!-- field-type to region-template mapping -->
 	
 	<views any="true">

@@ -699,6 +699,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('info', AttributeInfo)
         .property('node', Node)
         .property('persisted', b)
+        .property('inlineEditVisibility', b)
 
         .shortcut('name', 'info.name')
         .shortcut('type', 'info.type')
@@ -808,6 +809,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        .load('inlineEditVisibility', function() { this.inlineEditVisibility(false) })
+        
+        .method('inlineEditChanger', function(data, event) {
+            if (this.inlineEditVisibility()) {
+                if (this.newValue() != null) {
+                    this.node().thisclass.save(this.node(), { });
+                    this.newValue(null); 
+                }
+            }
+
+            // change visibility mode
+            this.inlineEditVisibility(!this.inlineEditVisibility());
+        })
         .method('convertValue', function(value, multiple) {
             var isArray = _.isArray(value),
                 instantiate = _.partial(koutils.instantiate, _, this.valueClass());

@@ -1,5 +1,11 @@
+<#macro renderTemplate name="default" mode="" params={}>
+	<#assign element = { "template": name, "type": "region", "params": params } />
+	<@renderElement element />
+</#macro>
+
 <#macro renderElement element>
 	<#assign template = element.template!"default" />
+	<#assign inlineEdit = (view.params.inlineEdit!"false") == "true" />
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
@@ -24,9 +30,10 @@
 			</#if>
 		</#assign>
 	</#if>
+	
 
 	<div class="form-${element.type} template-${template}"
-		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
+		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }"</#if>
 
 		<#-- custom width for field -->
 		<#if element.type == "field" && wideBlockWidth?has_content>
@@ -45,12 +52,23 @@
 
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
-	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
-	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+
+	<#assign inlineEdit = (view.params.inlineEdit!"false") == "true" />
+	<#assign withoutMode = element.type == "region" && inlineEdit />
+
+	<#if !withoutMode>
+		<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
+		<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+	</#if>
+
 	<#assign file>/ru/citeck/views/${element.type}/${template}.ftl</#assign>
 	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
-	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/default.ftl</#assign>
-	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+
+	<#if !withoutMode>
+		<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/default.ftl</#assign>
+		<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+	</#if>
+
 	<#assign file>/ru/citeck/views/${element.type}/default.ftl</#assign>
 	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 </#macro>
@@ -64,13 +82,15 @@
 </#macro>
 
 <#macro renderViewContainer view id>
-	<#assign loadIndicator = view.params.loadIndicator!"true">
-	<#assign loadIndicator = loadIndicator == "true">
-		
-	<#assign formMode = view.mode?string + "-form">
-	<#assign formTemplate = "form-template-" + view.template?string>
+	<#assign loadIndicator = (view.params.loadIndicator!"true") == "true" />
+	<#assign inlineEdit = (view.params.inlineEdit!"false") == "true" />
 
-	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if>"
+	<#assign formMode = view.mode?string + "-form" />
+	<#assign formTemplate = "form-template-" + view.template?string />
+
+	<#assign viewMode = view.mode?string == "view" />
+
+	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit && viewMode>inline-edit-form</#if>"
 		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess }">
 
 		<#if loadIndicator>

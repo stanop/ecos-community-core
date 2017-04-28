@@ -4509,22 +4509,30 @@ div#HEADER_USER_STATUS {
 }
 
 .yui-skin-citeckTheme .orgstruct-console .toolbar .toolbar-buttons {
-    position: static;
-    display: inline-block;
-    height: 20px;
+  position: static;
+  display: inline-block;
+  height: 20px;
 }
 
 /* template table */
 
 .yui-skin-citeckTheme .invariants-form .template-table .template-label {
-     width: 100%;
+  width: 100%;
 }
 
 .yui-skin-citeckTheme .invariants-form .template-table .template-row .template-label {
-    width: 45.5%;
+  width: 45.5%;
 }
 
 .yui-skin-citeckTheme .invariants-form .template-table .template-half-width .template-label,
 .yui-skin-citeckTheme .invariants-form .template-table .template-third-width .template-label {
-     min-height: 36px;
+  min-height: 36px;
+}
+
+.yui-skin-citeckTheme .invariants-form .form-field-inline-mode-changer {
+  color: #1c55da;
+}
+
+.yui-skin-citeckTheme .invariants-form .form-field-inline-mode-changer:hover {
+  color: red;
 }
