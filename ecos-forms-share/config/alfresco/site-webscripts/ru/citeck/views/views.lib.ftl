@@ -33,7 +33,7 @@
 	
 
 	<div class="form-${element.type} template-${template}"
-		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
+		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }"</#if>
 
 		<#-- custom width for field -->
 		<#if element.type == "field" && wideBlockWidth?has_content>

@@ -812,7 +812,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('inlineEditVisibility', function() { this.inlineEditVisibility(false) })
         
         .method('inlineEditChanger', function(data, event) {
-            if (this.inlineEditVisibility()) { this.node().thisclass.save(this.node(), { }); }
+            if (this.inlineEditVisibility()) {
+                if (this.newValue() != null)
+                    this.node().thisclass.save(this.node(), { }); 
+            }
+
+            // change visibility mode
             this.inlineEditVisibility(!this.inlineEditVisibility());
         })
         .method('convertValue', function(value, multiple) {
