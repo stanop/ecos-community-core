@@ -30,7 +30,6 @@
   top: 0;
   font-size: 16px;
   cursor: pointer;
-  color: #00B388;
   visibility: hidden;
 }
 
@@ -46,10 +45,6 @@
 
 .form-field.inline-edit .form-field-inline-mode-changer {
   visibility: visible;
-}
-
-.form-field-inline-mode-changer:hover {
-  color: #007367;
 }
 
 .template-row .form-field-inline-mode-changer.save-mode {
@@ -500,8 +495,8 @@
 
 .inline-edit-form .template-table .template-row,
 .inline-edit-form .template-table [class*="template-row-"],
-.invariants-form .template-table .template-row.with-help,
-.invariants-form .template-table [class*="template-row-"].with-help {
+.invariants-form:not(.view-form) .template-table .template-row.with-help,
+.invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
   padding-right: 20px;
 }
 
@@ -691,6 +686,8 @@
 
 .inline-edit-form .template-table .template-row .region-select-group {
   width: 54.5%;
+  display: inline-block;
+  float: right;
 }
 
 .inline-edit-form .template-table .template-row.with-help .region-select-group {
