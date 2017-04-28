@@ -65,10 +65,14 @@ iframe:hover {
             <input type="submit" name="submit" value="Refresh Web Scripts" />
         </form>
         <form id="reset-repo-cache-form" style="display: inline-block">
-            <label><input type="checkbox" name="journals" />Journals</label>
-            <label><input type="checkbox" name="views" />Views</label>
-            <label><input type="checkbox" name="invariants" />Invariants</label>
-            <label><input type="checkbox" name="case-templates" />Case templates</label>
+            <div style="margin-left: 10px; margin-right: 10px; display: inline-block; width: 350px; vertical-align: middle">
+                <label><input type="checkbox" name="journals" />Journals</label>
+                <label><input type="checkbox" name="views" />Views</label>
+                <label><input type="checkbox" name="invariants" />Invariants</label>
+                <label><input type="checkbox" name="case-templates" />Case templates</label>
+                <label><input type="checkbox" name="fields-perm-matrix" />Fields permissions matrix</label>
+                <label><input type="checkbox" name="perm-matrix" />Permissions matrix</label>
+            </div>
             <input class="submit-button" type="button" value="Reload Selected" onclick="resetServicesCache()" />
         </form>
     </div>
