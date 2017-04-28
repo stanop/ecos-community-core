@@ -27,13 +27,14 @@
 .form-field-inline-mode-changer {
   position: absolute;
   right: 0;
+  top: 0;
   font-size: 16px;
   cursor: pointer;
   color: #00B388;
   visibility: hidden;
 }
 
-.form-field:hover .form-field-inline-mode-changer {
+.form-field:not(.inline-edit):hover .form-field-inline-mode-changer {
   visibility: visible;
 
   -webkit-animation: fadein 1s;
@@ -43,11 +44,15 @@
   animation: fadein 1s;
 }
 
+.form-field.inline-edit .form-field-inline-mode-changer {
+  visibility: visible;
+}
+
 .form-field-inline-mode-changer:hover {
   color: #007367;
 }
 
-.form-field-inline-mode-changer.save-mode {
+.template-row .form-field-inline-mode-changer.save-mode {
   top: 7px;
 }
 

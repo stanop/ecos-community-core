@@ -813,8 +813,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         
         .method('inlineEditChanger', function(data, event) {
             if (this.inlineEditVisibility()) {
-                if (this.newValue() != null)
-                    this.node().thisclass.save(this.node(), { }); 
+                if (this.newValue() != null) {
+                    this.node().thisclass.save(this.node(), { });
+                    this.newValue(null); 
+                }
             }
 
             // change visibility mode
