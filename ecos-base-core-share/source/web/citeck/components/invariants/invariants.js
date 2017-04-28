@@ -813,9 +813,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         
         .method('inlineEditChanger', function(data, event) {
             if (this.inlineEditVisibility()) {
-                if (this.newValue() != null) {
+                if (this.newValue() != null && this.newValue() != this.persistedValue()) {
                     this.node().thisclass.save(this.node(), { });
-                    this.newValue(null); 
                 }
             }
 
@@ -1513,6 +1512,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.resolve('impl.permissions.' + permission, false) == true;
         })
 
+        // TODO:
+        // - after save reset only needed attributes
+
         .save(koutils.simpleSave({
             url: function(node) {
                 var baseUrl = Alfresco.constants.PROXY_URI + "citeck/invariants/view?";
@@ -1542,6 +1544,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             },
             onSuccess: function(node, result) {
                 node.impl().inSubmitProcess(false);
+
+                node.impl().attributes().forEach(function(attribute) {
+                    attribute.persisted.reload();
+                    attribute.persistedValue.reload();
+                });
             },
             onFailure: function(node, message) {
                 node.impl().inSubmitProcess(false);
