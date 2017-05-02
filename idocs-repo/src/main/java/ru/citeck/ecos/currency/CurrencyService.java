@@ -21,6 +21,8 @@ public interface CurrencyService {
 
     Currency getCurrencyByCode(String code);
 
+    Currency getCurrencyByNumberCode(Integer code);
+
     BigDecimal transferFromOneCurrencyToOther(Currency from,
                                               Currency to,
                                               BigDecimal money);

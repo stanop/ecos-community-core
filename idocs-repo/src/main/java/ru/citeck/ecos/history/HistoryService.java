@@ -20,31 +20,23 @@ package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
-import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Provides manipulations with history
@@ -143,41 +135,38 @@ public class HistoryService {
                 if (document != null) {
                     nodeService.createAssociation(historyEvent, document, HistoryModel.ASSOC_DOCUMENT);
                     persistAdditionalProperties(historyEvent, document);
-					List<ChildAssociationRef> parents = nodeService.getParentAssocs(document);
-					for(ChildAssociationRef parent : parents)
-					{
-						NodeRef parentCase = parent.getParentRef();
-						if(nodeService.hasAspect(parentCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(parentCase, ICaseModel.ASPECT_SUBCASE))
-						{
-							nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
-						}
-					}
-					List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
-					for(AssociationRef source : sources)
-					{
-						NodeRef sourceCase = source.getSourceRef();
-						if(nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_SUBCASE))
-						{
-							nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
-						}
-					}
+                    List<ChildAssociationRef> parents = nodeService.getParentAssocs(document);
+                    for (ChildAssociationRef parent : parents) {
+                        NodeRef parentCase = parent.getParentRef();
+                        if (nodeService.hasAspect(parentCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(parentCase, ICaseModel.ASPECT_SUBCASE)) {
+                            nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
+                        }
+                    }
+                    List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
+                    for (AssociationRef source : sources) {
+                        NodeRef sourceCase = source.getSourceRef();
+                        if (nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_SUBCASE)) {
+                            nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
+                        }
+                    }
                 }
                 return historyEvent;
             }
         });
     }
-    
+
     /**
      * Add property that will be persisted within history.
-     * @param nodeRef some node
-     * @param sourceProp property of node, that we wish to persist in history
+     *
+     * @param nodeRef     some node
+     * @param sourceProp  property of node, that we wish to persist in history
      * @param historyProp property of history events, that will contain property value
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void addHistoricalProperty(NodeRef nodeRef, QName sourceProp, QName historyProp) {
         Object oldValue = nodeService.getProperty(nodeRef, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
         HashMap<QName, QName> propertyMapping = new HashMap<QName, QName>();
-        if(oldValue != null && oldValue instanceof Map) {
+        if (oldValue != null && oldValue instanceof Map) {
             propertyMapping.putAll((Map) oldValue);
         }
         propertyMapping.put(sourceProp, historyProp);
@@ -210,6 +199,16 @@ public class HistoryService {
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
         parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:document_added:\"" + document + "\"");
+        parameters.addSort("@event:date", true);
+        ResultSet query = searchService.query(parameters);
+        return query.getNodeRefs();
+    }
+
+    public List<NodeRef> getAllEventsByDocumentAndEventName(NodeRef document, String eventName) {
+        SearchParameters parameters = new SearchParameters();
+        parameters.addStore(storeRef);
+        parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
+        parameters.setQuery("@" + PROPERTY_PREFIX + "\\:document_added:\"" + document + "\" AND @" + PROPERTY_PREFIX + "\\:name:\"" + eventName + "\"");
         parameters.addSort("@event:date", true);
         ResultSet query = searchService.query(parameters);
         return query.getNodeRefs();
@@ -270,13 +269,13 @@ public class HistoryService {
 
     private void persistAdditionalProperties(NodeRef historyEvent, NodeRef document) {
         Object mapping = nodeService.getProperty(document, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
-        if(mapping == null) {
+        if (mapping == null) {
             return;
         }
         @SuppressWarnings("unchecked")
         Map<QName, QName> propertyMapping = (Map<QName, QName>) mapping;
         Map<QName, Serializable> additionalProperties = new HashMap<QName, Serializable>(propertyMapping.size());
-        for(QName documentProp : propertyMapping.keySet()) {
+        for (QName documentProp : propertyMapping.keySet()) {
             QName historyProp = propertyMapping.get(documentProp);
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }

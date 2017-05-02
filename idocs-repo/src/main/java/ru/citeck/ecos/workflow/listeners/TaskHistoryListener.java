@@ -26,7 +26,6 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -35,8 +34,8 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.deputy.DeputyService;
+import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.history.HistoryService;
-import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -58,9 +57,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
 	
 	static {
 		eventNames = new HashMap<String, String>(3);
-		eventNames.put(TaskListener.EVENTNAME_CREATE, "task.create");
-		eventNames.put(TaskListener.EVENTNAME_ASSIGNMENT, "task.assign");
-		eventNames.put(TaskListener.EVENTNAME_COMPLETE, "task.complete");
+		eventNames.put(TaskListener.EVENTNAME_CREATE, HistoryEventType.TASK_CREATE);
+		eventNames.put(TaskListener.EVENTNAME_ASSIGNMENT, HistoryEventType.TASK_ASSIGN);
+		eventNames.put(TaskListener.EVENTNAME_COMPLETE, HistoryEventType.TASK_COMPLETE);
 	}
 	
 	private NodeService nodeService;

@@ -216,6 +216,7 @@
                     <show id="idocs:currencyName"/>
                     <show id="idocs:currencyShortName"/>
                     <show id="idocs:currencyRate"/>
+                    <show id="idocs:currencyNumberCode"/>
                 </field-visibility>
             </form>
         </forms>
@@ -229,6 +230,7 @@
                     <show id="cm:title" force="true"/>
                     <show id="idocs:currencyShortName"/>
                     <show id="idocs:currencyRate"/>
+                    <show id="idocs:currencyNumberCode"/>
                 </field-visibility>
                 <appearance>
                     <field id="cm:title">

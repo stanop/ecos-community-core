@@ -24,6 +24,7 @@ public class CurrencyDAO {
 
     private Map<NodeRef, Currency> currencyNodeRef;
     private Map<String, Currency> currencyStorage = null;
+    private Map<Integer, Currency> currencyByNumberCodeStorage;
 
     public Map<String, Currency> readAllCurrencies() {
         SearchParameters parameters = new SearchParameters();
@@ -34,21 +35,25 @@ public class CurrencyDAO {
 
         Map<String, Currency> result = new HashMap<>();
         currencyNodeRef = new HashMap<>();
-
+        currencyByNumberCodeStorage = new HashMap<>();
         for (ResultSetRow resultSetRow : resultSet) {
             NodeRef node = resultSetRow.getNodeRef();
             if(!nodeService.exists(node)) {
                 continue;
             }
             Currency currency = new Currency();
+            currency.setNodeRef(node);
             currency.setCode((String) nodeService.getProperty(node,
                     IdocsModel.PROP_CURRENCY_CODE));
+            currency.setNumberCode((Integer) nodeService.getProperty(node,
+                    IdocsModel.PROP_CURRENCY_NUMBER_CODE));
             BigDecimal rate = (nodeService.getProperty(node, IdocsModel.PROP_CURRENCY_RATE) != null)
                     ? new BigDecimal(String.valueOf(nodeService.getProperty(node, IdocsModel.PROP_CURRENCY_RATE)))
                     : BigDecimal.ONE;
             currency.setRate(rate);
             result.put(currency.getCode(), currency);
             currencyNodeRef.put(node, currency);
+            currencyByNumberCodeStorage.put(currency.getNumberCode(), currency);
         }
 
         currencyStorage = result;
@@ -79,5 +84,12 @@ public class CurrencyDAO {
             readAllCurrencies();
         }
         return currencyNodeRef.get(nodeRef);
+    }
+
+    public Currency getCurrencyByNumberCode(Integer numberCode) {
+        if (currencyByNumberCodeStorage == null) {
+            readAllCurrencies();
+        }
+        return currencyByNumberCodeStorage.get(numberCode);
     }
 }

@@ -1117,6 +1117,15 @@
             </properties>
         </aspect>
 
+        <aspect name="idocs:currencyNumberCode">
+            <properties>
+                <property name="idocs:currencyNumberCode">
+                    <title>Цифровой код валюты</title>
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="idocs:hasAttorneys">
             <associations>
                 <association name="idocs:docAttorneys">
@@ -1198,6 +1207,42 @@
                     <title>Использовать счет как валютный</title>
                     <type>d:boolean</type>
                     <default>false</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasSignRequired">
+            <properties>
+                <property name="idocs:signOurRequired">
+                    <type>d:boolean</type>
+                </property>
+                <property name="idocs:signCARequired">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasTotalAndVAT">
+            <properties>
+                <property name="idocs:totalSum">
+                    <title>Invoice total sum</title>
+                    <type>d:double</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="idocs:vatPart">
+                    <title>Invoice VAT</title>
+                    <type>d:double</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasComment">
+            <properties>
+                <property name="idocs:comment">
+                    <title>Comment</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
                 </property>
             </properties>
         </aspect>
