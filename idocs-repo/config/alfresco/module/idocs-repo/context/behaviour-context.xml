@@ -789,5 +789,13 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
+    <bean id="ecos.notification-logging.split-children" parent="ecos.splitChildrenBehaviour">
+        <property name="node" value="/cm:IDocsRoot/cm:notification-logging-root" />
+        <property name="splitBehaviour">
+            <bean class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour.DateSplit" />
+        </property>
+        <property name="order" value="400" />
+    </bean>
+
 </beans>
 
