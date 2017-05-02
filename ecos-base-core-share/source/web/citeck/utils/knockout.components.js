@@ -470,9 +470,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             Citeck.utils.concatOptions(this.options, params.options);
 
             
-            if (!this.loading) { 
-                this.loading = this.options.loading; 
-            }
+            if (!this.loading) { this.loading = this.options.loading; }
+            if (!this.columns) { this.columns = null; }
 
             // methods
             this.selected = function(data) {

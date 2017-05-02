@@ -1527,18 +1527,54 @@ ko.components.register("autocomplete", {
 ko.components.register("select2", {
     viewModel: function(params) {
         var self = this;
-        kocomponents.initializeParameters.call(this, params);
+        kocomponents.initializeParameters.call(this, params);      
 
-        this.labels = {
-            label: Alfresco.util.message("autocomplete.label"),
-            help: Alfresco.util.message("autocomplete.help"),
-            empty: Alfresco.util.message("autocomplete.empty"),
-            more: Alfresco.util.message("autocomplete.more")
-        }
+        this.id = this.element.id;
+
+        if (this.id.indexOf("legal") != -1) console.log("select2", this, params);
+
+        this._listMode = self.mode == "list";
+        this._tableMode = self.mode == "table";
 
         if (this.forceOptions) {
             this.forceOptions = this.forceOptions();
             this.forceOptions.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
+        }
+
+        if (this._tableMode) {
+            [this.defaultVisibleAttributes, this.defaultSearchableAttributes].forEach(function(dav) {
+                if (dav) dav = _.map(dav.split(","), function(a) { return trim(a); })
+            });
+
+            this.journalType = this.journalTypeId ? new JournalType(this.journalTypeId) : null;
+            if (!this.journalType) { /* so, it is fail */ }
+        }
+
+
+        // localization
+        var localization = this.localization = {
+            select: Alfresco.util.message("button.select"),
+
+            // table
+            title: Alfresco.util.message("form.select.label"),
+            search: Alfresco.util.message("journal.search"),
+            filterTab: Alfresco.util.message("journal.filter"),
+            createTab: Alfresco.util.message("journal.create"),
+            selectedElements: Alfresco.util.message("journal.selected-elements"),
+            applyCriteria: Alfresco.util.message("journal.apply-criteria"),
+            addFilterCriterion: Alfresco.util.message("journal.add-filter-criterion"),
+            submitButton: Alfresco.util.message("button.ok"),
+            cancelButton: Alfresco.util.message("button.cancel"),
+            nextPageLabel: Alfresco.util.message("journal.pagination.next-page-label"),
+            nextPageTitle: Alfresco.util.message("journal.pagination.next-page-title"),
+            previousPageLabel: Alfresco.util.message("journal.pagination.previous-page-label"),
+            previousPageTitle: Alfresco.util.message("journal.pagination.previous-page-title"),
+
+            // list
+            label: Alfresco.util.message("autocomplete.label"),
+            help: Alfresco.util.message("autocomplete.help"),
+            empty: Alfresco.util.message("autocomplete.empty"),
+            more: Alfresco.util.message("autocomplete.more")
         }
 
         // private methods
@@ -1557,17 +1593,18 @@ ko.components.register("select2", {
 
         this.hasMore = ko.observable(false);
         this.count = ko.observable(this.step);
+        this.maxItems = ko.observable($("body").hasClass("mobile") ? 5 : 10);
+
+        this.additionalOptions = ko.observable([]);
 
         // computed
         this.label = ko.pureComputed(function() {
-            return self.value() ?
-                   self.getValueTitle(self.value())() :
-                   self.labels.label;
+            return self.value() ? self.getValueTitle(self.value())() : self.localization.label;
         });
-
+      
         this.visibleOptions = ko.pureComputed(function() {
             var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
-
+               
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
@@ -1599,6 +1636,9 @@ ko.components.register("select2", {
 
         // extends
         this.searchQuery.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
+
+        // TODO:
+        // - highlighted for multiple elements
 
         // subscription and events
         this.containerVisibility.subscribe(function() { self.searchFocused(true); });
@@ -1667,71 +1707,194 @@ ko.components.register("select2", {
             self.count(self.count() + self.step);
         };
 
-        // blur
-        $("body").click(function(event, a) {
-            var node = event.target, body = document.getElementById("Share");
 
-            while (node != body) {
-                if (node == self.element) return;
-                node = node.parentNode;
+        // journalPicker variables
+        this.panel;
+        this.selectedElements = ko.observableArray();
+        this.selectedFilterCriteria = ko.observableArray();
+
+        this._criteriaListShow = ko.observable(false);
+
+        this.journalPicker = function(data, event) {
+            console.log("click on journalPicker button", data, event, this);
+
+            if (!data.panel) {
+                // Auto-fit width
+                var optimalWidth = (function() {
+                    var maxContainerWidth = screen.width - 200,
+                        countOfAttributes = (function() {
+                            if (data.defaultVisibleAttributes) return data.defaultVisibleAttributes.length;
+                            if (data.journalType.defaultAttributes()) return data.journalType.defaultAttributes().length;
+                        })();
+
+                    if (countOfAttributes > 5) {
+                        var potentialWidth = 150 * countOfAttributes;
+                        return (potentialWidth >= maxContainerWidth ? maxContainerWidth : potentialWidth) + "px";
+                    }
+
+                    return "800px";
+                })();
+
+                // initialize panel
+                data.panel = new YAHOO.widget.Panel(data.id + "-panel", {
+                    width:          optimalWidth,
+                    visible:        false, 
+                    fixedcenter:    true,  
+                    draggable:      true,
+                    modal:          true,
+                    zindex:         5,
+                    close:          true
+                });
+
+                // hide dialog on click 'esc' button
+                data.panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
+                    fn: data.panel.hide,
+                    scope: data.panel,
+                    correctScope: true
+                }));
+
+                // build panel header, footer and body
+                data.panel.setHeader(data.localization.title);
+                data.panel.setBody('\
+                    <div class="journal-picker-header collapse">\
+                        <div class="journal-search">\
+                            <input type="search" class="journal-search-input" data-bind="\
+                                textInput: searchQuery,\
+                                attr: { placeholder: labels.search }\
+                            " />\
+                        </div>\
+                    </div>\
+                    <div class="journal-picker-page-container">\
+                        <div class="elements-page">\
+                            <div class="journal-container">\
+                                <!-- ko component: { name: \'journal\',\
+                                    params: {\
+                                        sourceElements: elements,\
+                                        targetElements: selectedElements,\
+                                        journalType: journalType,\
+                                        afterSelectionCallback: afterSelectionCallback,\
+                                        options: {\
+                                            multiple: multiple\
+                                        },\
+                                    }\
+                                } --><!-- /ko -->\
+                            </div>\
+                        </div>\
+                    </div>\
+                ');
+                data.panel.setFooter('\
+                    <div class="buttons">\
+                        <input type="submit" data-bind="value: labels.submitButton, click: submit, clickBubble: false" >\
+                        <input type="button" data-bind="value: labels.cancelButton, click: cancel, clickBubble: false" >\
+                    </div>\
+                ');
+
+                data.panel.render(document.body);
+
+
+                // bindings
+                ko.applyBindings({
+                    // header
+                    labels: data.localization,
+                    searchQuery: data.searchQuery,
+
+                    // body
+                    elements: data.visibleOptions,
+                    selectedElements: data.selectedElements,
+                    multiple: data.multiple,
+                    journalType: data.journalType,
+                    afterSelectionCallback: function(data, event) {
+                        if (!data.multiple() && event.type == "dblclick") { data.value(data); data.panel.hide(); }
+                    }
+                }, data.panel.body);
+
+                ko.applyBindings({
+                    labels: data.localization,
+                    submit: function(el, data) {
+                        data.value(ko.utils.unwrapObservable(selectedElements));
+                        data.panel.hide();
+                    },
+                    cancel: function(el, data) { data.panel.hide(); }
+                }, data.panel.footer);
+
+                // if (data.value()) data.selectedElements(data.multiple() ? data.value() : [ data.value() ]);
             }
+            
+            data.panel.show();
+        }
 
-            self.containerVisibility(false);
-        });
+        // blur
+        if (this._listMode) {
+            $("body").click(function(event, a) {
+                var node = event.target, body = document.getElementById("Share");
+
+                while (node && node != body) {
+                    if (node == self.element) return;
+                    node = node.parentNode;
+                }
+
+                self.containerVisibility(false);
+            });
+        }
     },
     template:
-       '<!-- ko if: disabled -->\
-            <div class="select2-select disabled" tabindex="0">\
-                <span class="select2-value" data-bind="text: label"></span>\
-                <div class="select2-twister"></div>\
-            </div>\
-        <!-- /ko -->\
-        <!-- ko ifnot: disabled -->\
-            <div class="select2-select" tabindex="0"\
-                data-bind="\
-                    event: { mousedown: toggleContainer, keydown: keyManagment }, mousedownBubble: false,\
-                    css: { opened: containerVisibility },\
-                    hasFocus: componentFocused">\
-                <span class="select2-value" data-bind="text: label"></span>\
-                <!-- ko if: value -->\
-                    <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
-                <!-- /ko -->\
-                <div class="select2-twister"></div>\
-            </div>\
-        <!-- /ko -->\
-        <!-- ko if: containerVisibility -->\
-            <div class="select2-container">\
-                <div class="select2-search-container">\
-                    <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
-                        <div class="help-message" data-bind="text: labels.help"></div>\
-                    <!-- /ko -->\
-                    <input type="text" class="select2-search" data-bind="\
-                        textInput: searchQuery,\
-                        event: { keydown: keyAction },\
-                        keydownBubble: false,\
-                        attr: { placeholder: labels.help },\
-                        hasFocus: searchFocused">\
+       '<!-- ko if: _listMode -->\
+            <!-- ko if: disabled -->\
+                <div class="select2-select disabled" tabindex="0">\
+                    <span class="select2-value" data-bind="text: label"></span>\
+                    <div class="select2-twister"></div>\
                 </div>\
-                <!-- ko if: visibleOptions -->\
-                    <!-- ko if: visibleOptions().length > 0 -->\
-                        <ul class="select2-list" data-bind="foreach: visibleOptions">\
-                            <li data-bind="\
-                                event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
-                                css: { selected: $parent.highlightedElement() == $data }">\
-                                <a data-bind="text: $component.optionTitle($data)"></a>\
-                            </li>\
-                        </ul>\
+            <!-- /ko -->\
+            <!-- ko ifnot: disabled -->\
+                <div class="select2-select" tabindex="0"\
+                    data-bind="\
+                        event: { mousedown: toggleContainer, keydown: keyManagment }, mousedownBubble: false,\
+                        css: { opened: containerVisibility },\
+                        hasFocus: componentFocused">\
+                    <span class="select2-value" data-bind="text: label"></span>\
+                    <!-- ko if: value -->\
+                        <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
                     <!-- /ko -->\
-                    <!-- ko if: visibleOptions().length == 0 -->\
-                        <span class="select2-message empty-message" data-bind="text: labels.empty"></span>\
-                    <!-- /ko -->\
-                <!-- /ko -->\
-                <!-- ko if: hasMore -->\
-                    <div class="select2-more">\
-                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    <div class="select2-twister"></div>\
+                </div>\
+            <!-- /ko -->\
+            <!-- ko if: containerVisibility -->\
+                <div class="select2-container">\
+                    <div class="select2-search-container">\
+                        <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
+                            <div class="help-message" data-bind="text: localization.help"></div>\
+                        <!-- /ko -->\
+                        <input type="text" class="select2-search" data-bind="\
+                            textInput: searchQuery,\
+                            event: { keydown: keyAction },\
+                            keydownBubble: false,\
+                            attr: { placeholder: localization.help },\
+                            hasFocus: searchFocused">\
                     </div>\
-                <!-- /ko -->\
-            </div>\
+                    <!-- ko if: visibleOptions -->\
+                        <!-- ko if: visibleOptions().length > 0 -->\
+                            <ul class="select2-list" data-bind="foreach: visibleOptions">\
+                                <li data-bind="\
+                                    event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
+                                    css: { selected: $parent.highlightedElement() == $data }">\
+                                    <a data-bind="text: $component.optionTitle($data)"></a>\
+                                </li>\
+                            </ul>\
+                        <!-- /ko -->\
+                        <!-- ko if: visibleOptions().length == 0 -->\
+                            <span class="select2-message empty-message" data-bind="text: localization.empty"></span>\
+                        <!-- /ko -->\
+                    <!-- /ko -->\
+                    <!-- ko if: hasMore -->\
+                        <div class="select2-more">\
+                            <a data-bind="click: more, attr: { title: localization.more }">...</a>\
+                        </div>\
+                    <!-- /ko -->\
+                </div>\
+            <!-- /ko -->\
+        <!-- /ko -->\
+        <!-- ko if: _tableMode -->\
+            <button class="select2-control-button" data-bind="disable: disabled, text: localization.select, click: journalPicker"></button>\
         <!-- /ko -->'
 });
 
