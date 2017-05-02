@@ -35,8 +35,10 @@ public class Utils {
 			int dot_index = fileName.lastIndexOf(".");
 			if (dot_index > -1) {
 				fileName = fileName.substring(0, dot_index) + "." + fileExtension;
-			}
-		}
+            } else {
+                fileName = fileName + "." + fileExtension;
+            }
+        }
 			
 		String contentDisposition = isInline ? "inline; " : "attachment; ";
 		String agent = request.getHeader("USER-AGENT").toLowerCase();
