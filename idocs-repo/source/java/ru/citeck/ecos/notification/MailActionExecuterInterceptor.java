@@ -18,36 +18,30 @@
  */
 package ru.citeck.ecos.notification;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.model.ContentModel;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Date;
-
-import ru.citeck.ecos.model.WorkflowMirrorModel;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowService;
+import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.mail.MailSendException;
 import ru.citeck.ecos.model.NotificationLoggingModel;
+import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
-import org.alfresco.service.cmr.security.AuthorityService;
-import org.alfresco.service.namespace.QName;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.springframework.mail.MailSendException;
-import org.alfresco.service.cmr.workflow.WorkflowService;
-import org.alfresco.service.cmr.workflow.WorkflowInstance;
-import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 
-import org.alfresco.service.namespace.RegexQNamePattern;
+import java.io.Serializable;
+import java.util.*;
 
 public class MailActionExecuterInterceptor implements MethodInterceptor {
     
@@ -59,8 +53,13 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	private NodeRef notificationLoggingRoot;
 	private QName notificationLoggingAssoc;
     private WorkflowService workflowService;
+	private boolean enabled = false;
 
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+
+		if (!isEnabled()) {
+			return null;
+		}
 
 		if("execute".equals(methodInvocation.getMethod().getName()))
 		{
@@ -244,8 +243,12 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 		}
 		return emails;
 	}
-	
-    public void setNodeService(NodeService nodeService) {
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
 	
@@ -272,5 +275,8 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 
 	public void setNotificationLoggingAssoc(QName notificationLoggingAssoc) {
 		this.notificationLoggingAssoc = notificationLoggingAssoc;
+	}
+
+	public void setEnabled(String enabled) {
 	}
 }

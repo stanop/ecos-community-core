@@ -442,7 +442,8 @@
 		<property name="extensionName" value="processDefinitionVersion" />
 		<property name="workflowService" ref="WorkflowService" />
 	</bean>
-	
+
+	<!--default off-->
 	<bean id="mailActionExecuterInterceptor" class="ru.citeck.ecos.notification.MailActionExecuterInterceptor">
 		<!--property name="mailService" ref="mailService" /-->
 		<property name="nodeService" ref="NodeService" />
@@ -452,6 +453,7 @@
 		<property name="notificationLoggingRoot" value="workspace://SpacesStore/notification-logging-root" />
 		<property name="notificationLoggingAssoc" value="{http://www.alfresco.org/model/content/1.0}contains" />
 		<property name="workflowService" ref="WorkflowService" />
+		<!--<property name="enabled" value="true"/>-->
 	</bean>
 	
 	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
