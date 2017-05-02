@@ -1,6 +1,5 @@
 package ru.citeck.ecos.icase;
 
-import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -12,6 +11,7 @@ import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -45,7 +45,7 @@ public class CaseStatusServiceImpl implements CaseStatusService {
                 nodeService.removeAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_CASE_STATUS);
             }
             nodeService.createAssociation(caseRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);
-
+            nodeService.setProperty(caseRef, ICaseModel.PROP_CASE_STATUS_CHANGED_DATETIME, new Date());
             Set<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(caseStatusRef, nodeService));
             CaseStatusPolicies.OnCaseStatusChangedPolicy changedPolicy;
             changedPolicy = onCaseStatusChangedPolicyDelegate.get(caseStatusRef, classes);

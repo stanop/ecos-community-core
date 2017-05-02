@@ -296,9 +296,13 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 			throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
 		}
 
-		// create node 
-		ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, 
-			QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate()), nodeType);
+		// create node
+		QName parentAssocName = nodeInfo.getParentAssocName();
+		if (parentAssocName == null) {
+			parentAssocName = QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate());
+		}
+
+		ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, parentAssocName, nodeType);
 		
 		nodeRef = childAssocRef.getChildRef();
 		persist(nodeRef, nodeInfo, full);

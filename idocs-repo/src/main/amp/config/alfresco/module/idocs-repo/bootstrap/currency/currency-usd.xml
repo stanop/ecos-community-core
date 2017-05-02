@@ -16,6 +16,7 @@
             <idocs:currencyCode>USD</idocs:currencyCode>
             <idocs:currencyName>Доллар США</idocs:currencyName>
             <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>840</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 

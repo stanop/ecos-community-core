@@ -1,0 +1,779 @@
+<alfresco-config>
+
+    <config>
+        <forms>
+            <dependencies>
+                <js src="/citeck/components/form/date-picker-custom.js"/>
+            </dependencies>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="idocs:powerOfAttorney">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:legalEntity"/>
+                    <show id="idocs:registrationDate"/>
+                    <show id="idocs:subjectAttorney"/>
+                    <show id="idocs:dateAttorney"/>
+                    <show id="idocs:registrationNumber" for-mode="view"/>
+                    <show id="idocs:issued"/>
+                    <show id="idocs:whoIssued"/>
+                    <show id="idocs:issueInitiator"/>
+                    <show id="idocs:duration"/>
+                    <show id="idocs:pagesNumber"/>
+                    <show id="idocs:appendixPagesNumber"/>
+                    <show id="idocs:documentStatus" for-mode="view"/>
+                    <!--<show id="idocs:controller"/>-->
+                    <show id="idocs:note"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                    <field id="idocs:legalEntity">
+                        <control
+                                template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                            <control-param name="searchWholeRepo">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <!--<field id="idocs:controller">-->
+                    <!--<control-->
+                    <!--template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+	<control-param name="flatButtonMode">true</control-param>
+</control>-->
+                    <!--</field>-->
+                    <field id="idocs:issued">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:whoIssued">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:issueInitiator">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="model-type" condition="idocs:powerOfAttorney">
+        <forms>
+            <form>
+                <create-form
+                        template="/ru/citeck/templates/multipart-form.ftl"/>
+                <field-visibility>
+                    <show id="idocs:legalEntity"/>
+                    <show id="idocs:subjectAttorney"/>
+                    <show id="idocs:dateAttorney"/>
+                    <show id="idocs:issued"/>
+                    <show id="idocs:whoIssued"/>
+                    <show id="idocs:issueInitiator"/>
+                    <show id="idocs:duration"/>
+                    <show id="idocs:pagesNumber"/>
+                    <show id="idocs:appendixPagesNumber"/>
+                    <!--<show id="idocs:controller"/>-->
+                    <show id="idocs:note"/>
+                    <show id="cm:content" force="true"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                    <field id="idocs:legalEntity">
+                        <control
+                                template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                            <control-param name="searchWholeRepo">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <!--<field id="idocs:controller">-->
+                    <!--<control-->
+                    <!--template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+	<control-param name="flatButtonMode">true</control-param>
+</control>-->
+                    <!--</field>-->
+                    <field id="idocs:issued">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:whoIssued">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:issueInitiator">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="cm:content" mandatory="true">
+                        <control
+                                template="/ru/citeck/components/form/controls/fileUpload.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="idocs:legalEntity"/>
+                    <show id="idocs:registrationDate"/>
+                    <show id="idocs:issued"/>
+                    <show id="idocs:whoIssued"/>
+                    <show id="idocs:issueInitiator"/>
+                    <show id="idocs:dateAttorney"/>
+                    <show id="idocs:registrationNumber"/>
+                    <show id="idocs:subjectAttorney"/>
+                    <show id="idocs:documentStatus"/>
+                    <show id="idocs:note"/>
+                </field-visibility>
+                <appearance>
+                    <field id="idocs:legalEntity">
+                        <control
+                                template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                            <control-param name="searchWholeRepo">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:issued">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:whoIssued">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:issueInitiator">
+                        <control
+                                template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:registrationDate">
+                        <control
+                                template="/org/alfresco/components/form/controls/daterange.ftl"/>
+                    </field>
+                    <field id="idocs:registrationNumber">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:dateAttorney">
+                        <control
+                                template="/org/alfresco/components/form/controls/daterange.ftl"/>
+                    </field>
+                    <field id="idocs:subjectAttorney">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:documentStatus">
+                        <control
+                                template="/ru/citeck/components/form/controls/select-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:note">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="idocs:currency">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:currencyCode"/>
+                    <show id="idocs:currencyName"/>
+                    <show id="idocs:currencyShortName"/>
+                    <show id="idocs:currencyRate"/>
+                    <show id="idocs:currencyNumberCode"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    
+    <config evaluator="model-type" condition="idocs:currency">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:currencyCode"/>
+                    <show id="cm:title" force="true"/>
+                    <show id="idocs:currencyShortName"/>
+                    <show id="idocs:currencyRate"/>
+                    <show id="idocs:currencyNumberCode"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="budget:item">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="budget:itemCode"/>
+                    <show id="budget:itemName"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    
+    <config evaluator="model-type" condition="budget:item">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="budget:itemCode"/>
+                    <show id="budget:itemName"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="pas:pasEntityOriginal">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:title"/>
+                    <show id="pas:pricePerUnit"/>
+                    <show id="pas:entityUnit"/>
+                    <show id="pas:type"/>
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    
+    <config evaluator="model-type" condition="pas:pasEntityOriginal">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:title"/>
+                    <show id="pas:pricePerUnit"/>
+                    <show id="pas:entityUnit"/>
+                    <show id="pas:type"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+    
+    <!-- Catalog -->
+    <config evaluator="node-type" condition="idocs:legalEntity">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:juridicalAddress"/>
+                    <show id="idocs:postAddress"/>
+                    <show id="idocs:okpo"/>
+                    <show id="idocs:ogrn"/>
+                    <show id="idocs:inn"/>
+                    <show id="idocs:kpp"/>
+                    <show id="idocs:generalDirector"/>
+                    <show id="idocs:accountantGeneral"/>
+                    <show id="idocs:phoneNumber"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="idocs:legalEntity">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:juridicalAddress"/>
+                    <show id="idocs:postAddress"/>
+                    <show id="idocs:okpo"/>
+                    <show id="idocs:ogrn"/>
+                    <show id="idocs:inn"/>
+                    <show id="idocs:kpp"/>
+                    <show id="idocs:generalDirector"/>
+                    <show id="idocs:accountantGeneral"/>
+                    <show id="idocs:phoneNumber"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:juridicalAddress"/>
+                    <show id="idocs:postAddress"/>
+                    <show id="idocs:okpo"/>
+                    <show id="idocs:ogrn"/>
+                    <show id="idocs:inn"/>
+                    <show id="idocs:kpp"/>
+                    <show id="idocs:generalDirector"/>
+                    <show id="idocs:accountantGeneral"/>
+                    <show id="idocs:phoneNumber"/>
+                </field-visibility>
+                <appearance>
+                    <field id="idocs:code">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:fullOrganizationName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:shortOrganizationName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:juridicalAddress">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:postAddress">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:okpo">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:ogrn">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:inn">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:kpp">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:generalDirector">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="searchQuery">user=true&amp;default=false</control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:accountantGeneral">
+                        <control template="/ru/citeck/components/form/controls/orgstruct-select.ftl">
+                            <control-param name="searchQuery">user=true&amp;default=false</control-param>
+                        </control>
+                    </field>
+                    <field id="idocs:phoneNumber">
+                        <control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <!--<config evaluator="node-type" condition="idocs:documentType">-->
+        <!--<forms>-->
+            <!--<form>-->
+                <!--<field-visibility>-->
+                    <!--<show id="idocs:typeName"/>-->
+                    <!--<show id="idocs:kindName"/>-->
+                    <!--<show id="idocs:documentTemplate"/>-->
+                <!--</field-visibility>-->
+            <!--</form>-->
+        <!--</forms>-->
+    <!--</config>-->
+    <!--<config evaluator="model-type" condition="idocs:documentType">-->
+        <!--<forms>-->
+            <!--<form>-->
+                <!--<field-visibility>-->
+                    <!--<show id="idocs:typeName"/>-->
+                    <!--<show id="idocs:kindName"/>-->
+                    <!--<show id="idocs:documentTemplate"/>-->
+                <!--</field-visibility>-->
+            <!--</form>-->
+            <!--<form id="search">-->
+                <!--<field-visibility>-->
+                    <!--<show id="idocs:typeName"/>-->
+                    <!--<show id="idocs:kindName"/>-->
+                <!--</field-visibility>-->
+                <!--<appearance>-->
+                    <!--<field id="idocs:typeName">-->
+                        <!--<control-->
+                                <!--template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>-->
+                    <!--</field>-->
+                    <!--<field id="idocs:kindName">-->
+                        <!--<control-->
+                                <!--template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>-->
+                    <!--</field>-->
+                <!--</appearance>-->
+            <!--</form>-->
+        <!--</forms>-->
+    <!--</config>-->
+
+    <config evaluator="node-type" condition="idocs:contractor">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:juridicalAddress"/>
+                    <show id="idocs:postAddress"/>
+                    <show id="idocs:inn"/>
+                    <show id="idocs:kpp"/>
+                    <show id="idocs:phone"/>
+                    <show id="idocs:fax"/>
+                    <show id="idocs:email"/>
+                    <show id="idocs:CEOname"/>
+                    <show id="idocs:contacts"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                    <field id="idocs:contacts">
+                        <control
+                                template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                            <control-param name="searchWholeRepo">true
+                            </control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="idocs:contractor">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:juridicalAddress"/>
+                    <show id="idocs:postAddress"/>
+                    <show id="idocs:inn"/>
+                    <show id="idocs:kpp"/>
+                    <show id="idocs:phone"/>
+                    <show id="idocs:fax"/>
+                    <show id="idocs:email"/>
+                    <show id="idocs:CEOname"/>
+                    <show id="idocs:contacts"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                    <field id="idocs:contacts">
+                        <control
+                                template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                            <control-param name="searchWholeRepo">true
+                            </control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:juridicalAddress"/>
+                    <show id="idocs:postAddress"/>
+                    <show id="idocs:inn"/>
+                    <show id="idocs:kpp"/>
+                    <show id="idocs:phone"/>
+                    <show id="idocs:fax"/>
+                    <show id="idocs:email"/>
+                    <show id="idocs:CEOname"/>
+                    <show id="idocs:contacts"/>
+                </field-visibility>
+                <appearance>
+                    <field id="idocs:fullOrganizationName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:shortOrganizationName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:juridicalAddress">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:postAddress">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:inn">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:kpp">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:phone">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:fax">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:email">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:CEOname">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:contacts">
+                        <control
+                                template="/ru/citeck/components/form/controls/association_search.ftl">
+                            <control-param name="flatButtonMode">true
+                            </control-param>
+                            <control-param name="searchWholeRepo">true
+                            </control-param>
+                        </control>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="idocs:contact">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:firstName"/>
+                    <show id="idocs:lastName"/>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:patronymicName"/>
+                    <show id="idocs:position"/>
+                    <show id="idocs:phone"/>
+                    <show id="idocs:fax"/>
+                    <show id="idocs:email"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="idocs:contact">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:firstName"/>
+                    <show id="idocs:lastName"/>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:patronymicName"/>
+                    <show id="idocs:position"/>
+                    <show id="idocs:phone"/>
+                    <show id="idocs:fax"/>
+                    <show id="idocs:email"/>
+                </field-visibility>
+                <appearance>
+                    <set id=""
+                         template="/ru/citeck/components/form/2-column-set.ftl"/>
+                </appearance>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="idocs:firstName"/>
+                    <show id="idocs:lastName"/>
+                    <show id="idocs:fullOrganizationName"/>
+                    <show id="idocs:shortOrganizationName"/>
+                    <show id="idocs:patronymicName"/>
+                    <show id="idocs:position"/>
+                    <show id="idocs:phone"/>
+                    <show id="idocs:fax"/>
+                    <show id="idocs:email"/>
+                </field-visibility>
+                <appearance>
+                    <field id="idocs:firstName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:lastName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:fullOrganizationName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:shortOrganizationName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:patronymicName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:position">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:phone">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:fax">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:email">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="idocs:filesNomenclature">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:fileIndex"/>
+                    <show id="idocs:fileName"/>
+                    <show id="dms:storagePeriod" force="true" />
+                </field-visibility>
+            </form>
+        </forms>
+    </config>
+    <config evaluator="model-type" condition="idocs:filesNomenclature">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="idocs:fileIndex"/>
+                    <show id="idocs:fileName"/>
+                    <show id="dms:storagePeriod" force="true" />
+                </field-visibility>
+            </form>
+            <form id="search">
+                <field-visibility>
+                    <show id="idocs:fileIndex"/>
+                    <show id="idocs:fileName"/>
+                    <show id="dms:storagePeriod" force="true" />
+                </field-visibility>
+                <appearance>
+                    <field id="idocs:fileIndex">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                    <field id="idocs:fileName">
+                        <control
+                                template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="node-type" condition="idocs:addressByParts">
+   		<forms>
+   			<form>
+   				<field-visibility>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" />
+   					<show id="idocs:streetName" />
+   					<show id="idocs:house" />
+   					<show id="idocs:addressExtraInfo" />
+   				</field-visibility>
+                   <appearance>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" mandatory="true" />
+   					<show id="idocs:streetName" mandatory="true" />
+   					<show id="idocs:house" mandatory="true" />
+   					<show id="idocs:addressExtraInfo" />
+                   </appearance>
+   			</form>
+   		</forms>
+   	</config>
+
+   	<config  evaluator="model-type" condition="idocs:addressByParts">
+   		<forms>
+   			<form>
+   				<field-visibility>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" />
+   					<show id="idocs:streetName" />
+   					<show id="idocs:house" />
+   					<show id="idocs:addressExtraInfo" />
+   				</field-visibility>
+                   <appearance>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" mandatory="true" />
+   					<show id="idocs:streetName" mandatory="true" />
+   					<show id="idocs:house" mandatory="true" />
+   					<show id="idocs:addressExtraInfo" />
+                   </appearance>
+   			</form>
+   			<form id="filters">
+   				<field-visibility>
+   					<show id="idocs:countryName" />
+   					<show id="idocs:postCode" />
+   					<show id="idocs:regionName" />
+   					<show id="idocs:districtName" />
+   					<show id="idocs:cityName" />
+   					<show id="idocs:streetName" />
+   					<show id="idocs:house" />
+   				</field-visibility>
+   			</form>
+   		</forms>
+   	</config>
+
+</alfresco-config>

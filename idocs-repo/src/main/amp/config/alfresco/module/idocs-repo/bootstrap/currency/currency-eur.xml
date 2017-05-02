@@ -16,6 +16,7 @@
             <idocs:currencyCode>EUR</idocs:currencyCode>
             <idocs:currencyName>Евро</idocs:currencyName>
             <idocs:currencyShortName>€</idocs:currencyShortName>
+            <idocs:currencyNumberCode>978</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 

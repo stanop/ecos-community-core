@@ -572,6 +572,7 @@
             if (!urlTemplate) urlTemplate = '';
             return function (elCell, oRecord, oColumn, sData) {
                 if (sData) {
+                	if (!_.isObject(sData)) sData = { data: sData };
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
                     var label = YAHOO.lang.substitute(labelTemplate, sData);
                     elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" '

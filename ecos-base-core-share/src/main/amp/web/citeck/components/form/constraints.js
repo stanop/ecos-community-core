@@ -302,7 +302,8 @@
             header = params.title || msg("actions.document.dialog-form"),
             destination = params.destination || "",
             destinationAssoc = params.destinationAssoc || "",
-            forceOldDialog = params.forceOldDialog || false;
+            forceOldDialog = params.forceOldDialog || false,
+            width = params.width || "40em";
 
         var newDialog = function() {
             var dataObj = 
@@ -325,7 +326,7 @@
                 successCallback: {
                     fn: function(response) {
                         var panel = new YAHOO.widget.Panel(id, {
-                            width: "40em",
+                            width: width,
                             fixedcenter: YAHOO.env.ua.mobile === null ? "contained" : false,
                             constraintoviewport: true,
                             underlay: "shadow",

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="ru.citeck.ecos.job.status.ChangeStatusJob" class="org.alfresco.util.CronTriggerBean">
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass">
+					<value>ru.citeck.ecos.job.status.ChangeStatusJob</value>
+				</property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="serviceRegistry" value-ref="ServiceRegistry"/>
+						<entry key="changeStatusJobRegistry" value-ref="ru.citeck.ecos.job.status.ChangeStatusJobRegistry" />
+						<entry key="jobLockService" value-ref="jobLockService" />
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="scheduler" ref="schedulerFactory"/>
+		<property name="cronExpression" value="${job.change-status-job.cronExpression}" />
+		<property name="enabled" value="${job.change-status-job.enabled}"/>
+	</bean>
+
+    <bean id="ru.citeck.ecos.job.status.ChangeStatusJobRegistry" class="ru.citeck.ecos.job.status.ChangeStatusJobRegistry" />
+
+    <bean id="ru.citeck.ecos.job.status.ChangeStatusWork" class="ru.citeck.ecos.job.status.ChangeStatusByDateWork"
+          init-method="init" abstract="true">
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchService" ref="searchService" />
+        <property name="caseStatusService" ref="caseStatusService" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="changeStatusRegistry" ref="ru.citeck.ecos.job.status.ChangeStatusJobRegistry" />
+        <property name="dateOffset" value="P0D" />
+    </bean>
+
+</beans>

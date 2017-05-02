@@ -16,6 +16,7 @@
             <idocs:currencyCode>BYR</idocs:currencyCode>
             <idocs:currencyName>Белорусский рубль</idocs:currencyName>
             <idocs:currencyShortName>Br</idocs:currencyShortName>
+            <idocs:currencyNumberCode>933</idocs:currencyNumberCode>
         </view:properties>
     </idocs:currency>
 

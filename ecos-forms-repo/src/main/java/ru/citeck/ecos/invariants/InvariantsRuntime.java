@@ -29,6 +29,7 @@ import org.apache.commons.collections.map.CompositeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.mozilla.javascript.Undefined;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.utils.ConvertUtils;
@@ -308,9 +309,18 @@ class InvariantsRuntime {
         private Object getInvariantValue() { return getFeatureValue(Feature.VALUE, null); }
         
         public Object getInvariantDefault() { return getFeatureValue(Feature.DEFAULT, null); }
-        public Object getDefaultValue() { return this.convertValue(this.getInvariantDefault(), this.isMultiple()); }
+        public Object getDefaultValue() {
+            Object result = this.getInvariantDefault();
+            if (result instanceof Undefined) {
+                throw new IllegalStateException("Invariant on='default' return nothing. Attribute: " + name);
+            }
+            return this.convertValue(result, this.isMultiple());
+        }
         private Object getRawValue() {
             Object invariantValue = getInvariantValue();
+            if (invariantValue instanceof Undefined) {
+                throw new IllegalStateException("Invariant on='value' return nothing. Attribute: " + name);
+            }
             if(invariantValue != null) return invariantValue;
             if(persisted) return getPersistedValue();
             return getDefaultValue();

@@ -50,6 +50,7 @@ public class NodeInfo implements Serializable
 	private NodeRef nodeRef;
 	private NodeRef parent;
 	private QName parentAssoc;
+	private QName parentAssocName;
 	private Map<QName,Serializable> properties;
 	private Map<QName,List<NodeRef>> targetAssocs;
 	private Map<QName,List<NodeRef>> sourceAssocs;
@@ -104,7 +105,15 @@ public class NodeInfo implements Serializable
 	public void setParentAssoc(QName parentAssoc) {
 		this.parentAssoc = parentAssoc;
 	}
-	
+
+	public QName getParentAssocName() {
+		return parentAssocName;
+	}
+
+	public void setParentAssocName(QName parentAssocName) {
+		this.parentAssocName = parentAssocName;
+	}
+
 	public Map<QName,Serializable> getProperties() {
 		return properties;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -43,12 +43,14 @@
 
 		this.state = {};
 		this.defaultData = {
-				items: [],
-				startIndex: 0,
-				totalRecords: 0 };
+			items: [],
+			startIndex: 0,
+			totalRecords: 0
+		};
 		this.defaultResponseSchema = {
-				resultsList: "items",
-				fields: [] };
+			resultsList: "items",
+			fields: [] 
+		};
 		this.defaultResponseType = YAHOO.util.DataSource.TYPE_JSON;
 		this.defaultColumnConfig = [];
 		this.model = model;
@@ -175,10 +177,19 @@
                 this.loadData(parent._item_children_);
         },
 
+        getSelectedRecords: function() {
+        	var self = this;
+        	return _.map(self.widgets.table.getSelectedRows(), function(item) {
+        		return self.widgets.table.getRecord(item);
+        	});
+        },
+
         /**
          * when on ready
          * */
 		onReady: function() {
+			var self = this;
+
             this._setupDataSource();
             this._setupDataTable();
 
@@ -193,8 +204,48 @@
 			this.loaded = true;
 			this._updateColumns();
 			this._updateResponseSchema();
-			if (this.deferredItems)
-				this.loadData(this.deferredItems);
+			if (this.deferredItems) this.loadData(this.deferredItems);
+
+
+			var table = this.widgets.table;
+
+			// SELECTION
+			if (this.config.selection == "checkbox") {
+				table.subscribe("checkboxClickEvent", function(event) {
+					if (event.target.checked) {
+						table.selectRow(event.target);
+					} else { table.unselectRow(event.target) }
+				});
+
+				$("input[id*='select-all']:checkbox", table.getTheadEl()).on("change", function(event) {
+					var checked = event.target.checked,
+						selector = ":checkbox" + (checked ? ":not(:checked)" : ":checked");
+					$(selector, table.getBody()).trigger("click");
+				});
+			};
+
+			// PREVIEW
+			if (this.config.preview) {
+				var cell = cell = this.config.previewByClickOnCell || "cm_title";
+				table.subscribe("cellClickEvent", function(args) {
+					if (args.target.headers.indexOf(cell) != -1) {
+						var record = table.getRecord(args.target),
+							preview = Alfresco.util.ComponentManager.get(record.getId());
+
+						if (!preview) {
+							preview = new Citeck.UI.preview(record.getId(), { nodeRef: record.getData().nodeRef, renderImmediately: true });
+							Alfresco.util.ComponentManager.register(preview);
+						}
+
+						preview.show();
+					}
+				});
+			}
+
+			// BEFORE RENDER
+			if (this.config.beforeRender) {
+				table.subscribe("beforeRenderEvent", this.config.beforeRender);
+			}
 		},
 
 		/**
@@ -310,13 +361,15 @@
 
 		_setupDataTable: function() {
 			var table = this.widgets.table = new YAHOO.widget.GroupedDataTable(
-					this.id,
-					this.defaultColumnConfig,
-					this.widgets.dataSource,
-					{
-						groupBy: this.config.groupBy
-					});
-			table.doBeforeSortColumn = this.bind(function(column, dir) {
+				this.id,
+				this.defaultColumnConfig,
+				this.widgets.dataSource,
+				{
+					groupBy: this.config.groupBy
+				}
+			);
+
+ 			table.doBeforeSortColumn = this.bind(function(column, dir) {
 				this.fireEvent("sortColumnChange", {
 					column: column.key,
 					desc: dir == YAHOO.widget.DataTable.CLASS_DESC
@@ -448,7 +501,6 @@
          * ON READY
          * */
         onReady: function() {
-
             var _this_id = this.fieldId,
                 _added_id = this.id + "-added",
                 _rem_id = this.id + "-removed";
@@ -832,13 +884,39 @@
 		},
 
 		_initTable: function() {
-			var table = this.widgets.tableView = new Citeck.widget.DynamicTable(
-					this.id + "-view", this.model, this.name);
-			table.setConfig({
-				columns: this.options.columns,
-				responseSchema: this.options.responseSchema
-			});
-			table.setContext("selected-items", "none");
+			var self = this,
+				tableView = this.widgets.tableView = new Citeck.widget.DynamicTable(this.id + "-view", this.model, this.name),
+				config = { responseSchema: this.options.responseSchema, columns: this.options.columns };
+
+			if (this.options.selection == "checkbox") {
+				config.columns.unshift({
+					key: "checkbox-selection",
+					label: '<input type="checkbox" id="' + this.id + '-select-all"/>',
+		            formatter: function(elCell, oRecord) {
+		            	var checked = this.getSelectedRows().indexOf(oRecord.getId()) != -1,
+		            		disabled = oRecord.getData().disabled;
+
+		            	elCell.innerHTML = '<input type="checkbox" ' +  (checked && !disabled ? 'checked' : '') + '' + (disabled ? 'disabled' : '') +  ' />';
+		            },
+					resizeable: false 
+				});
+				
+				config.selection = this.options.selection
+			}
+
+			if (this.options.preview) {
+				config.preview = this.options.preview;
+
+				if (this.options.previewByClickOnCell)
+					config.previewByClickOnCell = this.options.previewByClickOnCell;
+			}
+
+			if (this.options.beforeRender) {
+				config.beforeRender = this.options.beforeRender;
+			}
+
+			tableView.setConfig(config);
+			tableView.setContext("selected-items", "none");
 		},
 
         _updateFields: function() {

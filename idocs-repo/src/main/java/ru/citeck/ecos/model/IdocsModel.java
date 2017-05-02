@@ -67,15 +67,22 @@ public final class IdocsModel {
     public static final QName PROP_HOUSE = QName.createQName(IDOCS_NAMESPACE, "house");
     public static final QName PROP_ADDRESS_EXTRA_INFO = QName.createQName(IDOCS_NAMESPACE, "addressExtraInfo");
     public static final QName PROP_CURRENCY_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCode");
+    public static final QName PROP_CURRENCY_NUMBER_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyNumberCode");
     public static final QName PROP_CURRENCY_RATE = QName.createQName(IDOCS_NAMESPACE, "currencyRate");
     public static final QName PROP_CURRENCY_NAME_RU = QName.createQName(IDOCS_NAMESPACE, "currencyNameRu");
     public static final QName PROP_CURRENCY_CATALOG_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCatalogCode");
     public static final QName PROP_DIADOC_BOX_ID = QName.createQName(IDOCS_NAMESPACE, "diadocBoxId");
     public static final QName PROP_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "contractor");
+    public static final QName PROP_SIGN_OUR_REQUIRED = QName.createQName(IDOCS_NAMESPACE, "signOurRequired");
+    public static final QName PROP_SIGN_CA_REQUIRED = QName.createQName(IDOCS_NAMESPACE, "signCARequired");
+    public static final QName PROP_TOTAL_SUM = QName.createQName(IDOCS_NAMESPACE, "totalSum");
+    public static final QName PROP_VAT_PART = QName.createQName(IDOCS_NAMESPACE, "vatPart");
+    public static final QName PROP_COMMENT = QName.createQName(IDOCS_NAMESPACE, "comment");
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
     public static final QName ASSOC_ACCOUNTANT_GENERAL = QName.createQName(IDOCS_NAMESPACE, "accountantGeneral");
     public static final QName ASSOC_DOC_ATTORNEYS = QName.createQName(IDOCS_NAMESPACE, "docAttorneys");
     public static final QName ASSOC_SIGNER = QName.createQName(IDOCS_NAMESPACE, "signatory");
+    public static final QName ASSOC_CURRENCY_DOCUMENT = QName.createQName(IDOCS_NAMESPACE, "currencyDocument");
 
 }

@@ -4,12 +4,15 @@
 <#assign formatIE = msg("datetime.formatIE")>
 <#assign months   = msg("months.short")>
 <#assign days     = msg("days.short")>
+<#assign params = viewScope.region.params!{} />
+<#assign mode   = params.mode!"browser" />
 
 <div id="${fieldId}-datetime-control" class="datetime-control" 
     data-bind="component: { name: 'datetime', params: {
         fieldId: $element.id,
         protected: protected,
-        value: value, 
+        value: value,
+        mode: $data.mode && $data.mode() || '${mode}',
         localization: {
             format: '${format}',
             formatIE: '${formatIE}',

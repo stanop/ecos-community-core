@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -98,7 +98,7 @@ Criterion
 	.computed('shortModel', function() {
 		return {
 			field: this.field().name(),
-		   		predicate: this.predicate().id(),
+			predicate: this.predicate().id(),
 			value: this.value()
 		};
 	})
@@ -116,6 +116,12 @@ Criterion
 		result['value_' + id] = this.value();
 		return result;
 	})
+    .init(function() {
+        var predicateId = this.resolve('predicate.id');
+        if (predicateId && predicateId.indexOf("boolean") != -1){
+            this.value("boolean");
+        }
+    })
 	;
 
 CreateVariant
@@ -271,7 +277,8 @@ Filter
 	})
 	.computed('usableCriteria', function() {
 		return _.filter(this.criteria(), function(criterion) {
-			if (criterion.value() || criterion.predicate().id().indexOf("empty") != -1) return true;
+			if (criterion.predicate().id().indexOf("choose") == -1 &&
+				(criterion.value() || criterion.predicate().id().indexOf("empty") != -1)) return true;
 			return false;
 		});
 	})
@@ -384,6 +391,16 @@ Predicate
 PredicateList
 	.key('id', s)
 	.property('predicates', [ Predicate ])
+    .init(function() {
+        if (this.predicates() && this.predicates()[0].id().indexOf("boolean") != -1) {
+            var choosePredicate = new Predicate({
+                id: "choose",
+                label: Alfresco.util.message("form.select.label"),
+                needsValue: false
+            });
+            this.predicates().unshift(choosePredicate);
+        }
+    })
 	;
 
 FormInfo
@@ -398,6 +415,10 @@ Record
 	.property('aspects', [s])
 	.property('isDocument', b)
 	.property('isContainer', b)
+
+	.property('selected', b)
+	.load('selected', function() { this.selected(false) })
+
 	.computed('isDoclibNode', function() {
 		if(this.isDocument() === true || this.isContainer() === true) {
 			return true;
@@ -408,17 +429,6 @@ Record
 		return null;
 	})
 	.property('doclib', o) // document library record data
-	.computed('selected', {
-		read: function() {
-			if(!this._selected) {
-				this._selected = ko.observable(false);
-			}
-			return this._selected();
-		},
-		write: function(selected) {
-			this._selected(selected);
-		}
-	})
     .method('hasAspect', function(aspect) {
         return _.contains(this.aspects(), aspect);
     })
@@ -679,7 +689,7 @@ JournalsWidget
 		// init selected column
 		columns.unshift(new ActionsColumn({
 			id: 'selected',
-			label: '',
+			label: '<input type="checkbox" data-action="select-all" />',
 			formatter: formatters.checkbox('selected')
 		}));
 		return columns;

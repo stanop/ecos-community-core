@@ -213,6 +213,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         }
                     });
                 } else if (this.datatype == "datetime") {
+                    this.fakeViewModel.mode = ko.observable("alfresco");
                     this.fakeViewModel.value = ko.computed({
                         read: function() {
                             return self.value() ? new Date(self.value()) : null; 

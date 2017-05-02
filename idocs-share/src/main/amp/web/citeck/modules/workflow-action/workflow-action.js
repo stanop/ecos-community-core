@@ -36,7 +36,7 @@ if (Alfresco.component.WorkflowDetailsActions) {
 
     function setButtonVisibility(isAdmin) {
         var isWorkflowActive = $workflow.isActive;
-        var isInitiator = $workflow.initiator.userName == Alfresco.constants.USERNAME;
+        var isInitiator = $workflow.initiator && $workflow.initiator.userName == Alfresco.constants.USERNAME;
 
         if ((isInitiator || isAdmin) && isWorkflowActive) {
             Dom.removeClass($id + "-cancel-button", "hidden");

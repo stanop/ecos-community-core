@@ -231,7 +231,7 @@ define(['lib/knockout'], function(ko) {
 							case "object": 
 								return failureCallback.fn.call(failureCallback.scope, message);
 							default:
-								return fail(message);
+                                return fail(message.substring(message.indexOf("\n") + 1));
 							}
 						}
 					}
