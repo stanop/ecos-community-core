@@ -53,7 +53,7 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	private NodeRef notificationLoggingRoot;
 	private QName notificationLoggingAssoc;
     private WorkflowService workflowService;
-	private boolean enabled = false;
+	private boolean enabled;
 
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
 
@@ -273,6 +273,7 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 		this.notificationLoggingAssoc = notificationLoggingAssoc;
 	}
 
-	public void setEnabled(String enabled) {
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }
