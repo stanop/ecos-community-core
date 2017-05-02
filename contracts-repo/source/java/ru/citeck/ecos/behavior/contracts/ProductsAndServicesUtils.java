@@ -37,7 +37,13 @@ public class ProductsAndServicesUtils {
             nodeProps.put(ContentModel.PROP_DESCRIPTION, nodeService.getProperty(assocRef.getTargetRef(), ContentModel.PROP_DESCRIPTION));
             nodeProps.put(ProductsAndServicesModel.PROP_PRICE_PER_UNIT, nodeService.getProperty(assocRef.getTargetRef(), ProductsAndServicesModel.PROP_PRICE_PER_UNIT));
             nodeProps.put(ProductsAndServicesModel.PROP_TYPE, nodeService.getProperty(assocRef.getTargetRef(), ProductsAndServicesModel.PROP_TYPE));
-            nodeProps.put(ProductsAndServicesModel.PROP_QUANTITY, "1");
+
+            if (nodeService.getProperty(assocRef.getTargetRef(), ProductsAndServicesModel.PROP_QUANTITY) != null) {
+                nodeProps.put(ProductsAndServicesModel.PROP_QUANTITY, nodeService.getProperty(assocRef.getTargetRef(), ProductsAndServicesModel.PROP_QUANTITY));
+            } else {
+                nodeProps.put(ProductsAndServicesModel.PROP_QUANTITY, "1");
+            }
+
             nodeProps.put(ProductsAndServicesModel.PROP_TOTAL, nodeService.getProperty(assocRef.getTargetRef(), ProductsAndServicesModel.PROP_PRICE_PER_UNIT));
 
             ChildAssociationRef childAssocRef = nodeService.createNode(
