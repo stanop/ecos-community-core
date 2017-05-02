@@ -57,11 +57,7 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
 
-		if (!isEnabled()) {
-			return null;
-		}
-
-		if("execute".equals(methodInvocation.getMethod().getName()))
+		if("execute".equals(methodInvocation.getMethod().getName()) && isEnabled())
 		{
 			boolean isSent = false;
 			Object[] args = methodInvocation.getArguments();
