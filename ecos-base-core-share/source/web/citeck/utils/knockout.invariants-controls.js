@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Citeck LLC.
+ * Copyright (C) 2015-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -28,6 +28,8 @@ var $html = Alfresco.util.encodeHTML,
 
 var Event = YAHOO.util.Event,
     Dom = YAHOO.util.Dom;
+
+var JournalType = koclass('JournalType');
 
 
 // TODO: refactoring
@@ -544,7 +546,7 @@ ko.bindingHandlers.dateControl = {
 // JOURNAL
 // -------------
 
-var JournalType = koclass('JournalType');
+
 
 ko.bindingHandlers.journalControl = {
   init: function(element, valueAccessor, allBindings, data, context) {
@@ -1455,7 +1457,7 @@ ko.components.register("autocomplete", {
                 if (node == self.element) {
                     return;
                 }
-    
+                
                 node = node.parentNode;
             }
 
@@ -1531,8 +1533,6 @@ ko.components.register("select2", {
 
         this.id = this.element.id;
 
-        if (this.id.indexOf("legal") != -1) console.log("select2", this, params);
-
         this._listMode = self.mode == "list";
         this._tableMode = self.mode == "table";
 
@@ -1577,27 +1577,46 @@ ko.components.register("select2", {
             more: Alfresco.util.message("autocomplete.more")
         }
 
+
         // private methods
-        this.optionTitle = function(option) {
+        // ---------------
+
+        this._optionTitle = function(option) {
             if (self.optionsText) return self.optionsText(option);
             return self.getValueTitle(option);
         };
 
+        this._addValues = function(values) {
+            self.value(self.multiple() ? _.union(self.value(), values) : values[0]);
+        }
+
+
         // observables
+        // -----------
+
         this.containerVisibility = ko.observable(false);
         this.highlightedElement = ko.observable();
         this.searchQuery = ko.observable();
-
-        this.componentFocused = ko.observable(false);
-        this.searchFocused = ko.observable(true);
 
         this.hasMore = ko.observable(false);
         this.count = ko.observable(this.step);
         this.maxItems = ko.observable($("body").hasClass("mobile") ? 5 : 10);
 
+        // for list mode
+        this.componentFocused = ko.observable(false);
+        this.searchFocused = ko.observable(true);
+
+        // for table mode
+        this.panel;
+        this.selectedElements = ko.observableArray();
+        this.selectedFilterCriteria = ko.observableArray();
         this.additionalOptions = ko.observable([]);
+        this._criteriaListShow = ko.observable(false);
+
 
         // computed
+        // --------
+
         this.label = ko.pureComputed(function() {
             return self.value() ? self.getValueTitle(self.value())() : self.localization.label;
         });
@@ -1608,7 +1627,7 @@ ko.components.register("select2", {
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
-                        labelString  = self.optionTitle(option)();
+                        labelString  = self._optionTitle(option)();
 
                     if (labelString) {
                         labelString = labelString.toLowerCase();
@@ -1634,18 +1653,29 @@ ko.components.register("select2", {
             return preparedOptions;
         });
 
+
         // extends
+        // -------
+
         this.searchQuery.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
+
+
+        // subscription and events
+        // -----------------------
 
         // TODO:
         // - highlighted for multiple elements
 
-        // subscription and events
-        this.containerVisibility.subscribe(function() { self.searchFocused(true); });
-        this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
         this.searchQuery.subscribe(function() { self.count(self.step); });
+        if (this._listMode) {
+            this.containerVisibility.subscribe(function() { self.searchFocused(true); });
+            this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        }
+
 
         // public methods
+        // --------------
+
         this.clear = function(data, event) { if (event.which == 1) self.value(null) };
         this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
 
@@ -1707,14 +1737,6 @@ ko.components.register("select2", {
             self.count(self.count() + self.step);
         };
 
-
-        // journalPicker variables
-        this.panel;
-        this.selectedElements = ko.observableArray();
-        this.selectedFilterCriteria = ko.observableArray();
-
-        this._criteriaListShow = ko.observable(false);
-
         this.journalPicker = function(data, event) {
             console.log("click on journalPicker button", data, event, this);
 
@@ -1753,7 +1775,7 @@ ko.components.register("select2", {
                     correctScope: true
                 }));
 
-                // build panel header, footer and body
+                // build panel header, body and footer
                 data.panel.setHeader(data.localization.title);
                 data.panel.setBody('\
                     <div class="journal-picker-header collapse">\
@@ -1772,10 +1794,10 @@ ko.components.register("select2", {
                                         sourceElements: elements,\
                                         targetElements: selectedElements,\
                                         journalType: journalType,\
+                                        columns: columns,\
+                                        hightlightSelection: true,\
                                         afterSelectionCallback: afterSelectionCallback,\
-                                        options: {\
-                                            multiple: multiple\
-                                        },\
+                                        options: { multiple: multiple },\
                                     }\
                                 } --><!-- /ko -->\
                             </div>\
@@ -1793,6 +1815,8 @@ ko.components.register("select2", {
 
 
                 // bindings
+                // --------
+
                 ko.applyBindings({
                     // header
                     labels: data.localization,
@@ -1803,21 +1827,28 @@ ko.components.register("select2", {
                     selectedElements: data.selectedElements,
                     multiple: data.multiple,
                     journalType: data.journalType,
+                    columns: data.defaultVisibleAttributes,
                     afterSelectionCallback: function(data, event) {
-                        if (!data.multiple() && event.type == "dblclick") { data.value(data); data.panel.hide(); }
+                        if (!self.multiple() && event.type == "dblclick") {
+                            self._addValues([ data ]); 
+                            self.panel.hide();
+                            self.selectedElements.removeAll();
+                        }
                     }
                 }, data.panel.body);
 
                 ko.applyBindings({
                     labels: data.localization,
                     submit: function(el, data) {
-                        data.value(ko.utils.unwrapObservable(selectedElements));
-                        data.panel.hide();
+                        self._addValues(ko.utils.unwrapObservable(self.selectedElements));
+                        self.panel.hide();
+                        self.selectedElements.removeAll();
                     },
-                    cancel: function(el, data) { data.panel.hide(); }
+                    cancel: function(el, data) { 
+                        data.panel.hide();
+                        self.selectedElements.removeAll();
+                    }
                 }, data.panel.footer);
-
-                // if (data.value()) data.selectedElements(data.multiple() ? data.value() : [ data.value() ]);
             }
             
             data.panel.show();
@@ -1877,7 +1908,7 @@ ko.components.register("select2", {
                                 <li data-bind="\
                                     event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
                                     css: { selected: $parent.highlightedElement() == $data }">\
-                                    <a data-bind="text: $component.optionTitle($data)"></a>\
+                                    <a data-bind="text: $component._optionTitle($data)"></a>\
                                 </li>\
                             </ul>\
                         <!-- /ko -->\

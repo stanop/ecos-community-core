@@ -23,7 +23,7 @@
 
 			disabled: protected,
 			multiple: multiple,
-			multipleValues: multipleValues,
+			value: value,
 
 			options: options,
 

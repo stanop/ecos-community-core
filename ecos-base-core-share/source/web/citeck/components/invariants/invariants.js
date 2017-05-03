@@ -929,8 +929,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             })
         })
         .method('push', function(data) {
-            // TODO:
-            // - push object to multipleValue
+            if (this.single()) { 
+                this.value(data); 
+            } else {
+                var currentValues = this.value();
+                currentValues.push(data);
+                this.value(currentValues);
+            }
         })
         .method('getValueJSON', function(value) {
             if(value == null) return null;

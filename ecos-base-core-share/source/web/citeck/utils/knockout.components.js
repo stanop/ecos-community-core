@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Citeck LLC.
+ * Copyright (C) 2016 - 2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -558,7 +558,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             <div class="journal">\
                 <table>\
                     <thead>\
-                        <!-- ko if: columns ? true : false -->\
+                        <!-- ko if: columns -->\
                             <tr data-bind="foreach: columns">\
                                 <!-- ko if: $component.journalType.attribute($data) -->\
                                     <!-- ko with: $component.journalType.attribute($data) -->\
@@ -567,14 +567,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 <!-- /ko -->\
                             </tr>\
                         <!-- /ko -->\
-                        <!-- ko ifnot: columns ? true : false -->\
+                        <!-- ko ifnot: columns -->\
                             <tr data-bind="foreach: $component.journalType.defaultAttributes">\
                                 <th data-bind="text: displayName"></th>\
                             </tr>\
                         <!-- /ko -->\
                     </thead>\
                     <tbody data-bind="foreach: sourceElements">\
-                        <!-- ko if: $component.columns ? true : false -->\
+                        <!-- ko if: $component.columns -->\
                             <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                    foreach: $component.columns,\
                                                                    click: $component.selectElement, clickBubble: false,\
@@ -594,7 +594,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 <!-- /ko -->\
                             </tr>\
                         <!-- /ko -->\
-                        <!-- ko ifnot: $component.columns ? true : false -->\
+                        <!-- ko ifnot: $component.columns -->\
                             <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                    foreach: $component.journalType.defaultAttributes,\
                                                                    click: $component.selectElement, clickBubble: false,\
