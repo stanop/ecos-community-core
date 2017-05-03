@@ -4,10 +4,12 @@
 <#assign optionParameters = [ "optionsText", "optionsValue" ]>
 
 <#-- createVariant & virtualParent -->
-<#assign createVariantsVisibility = params.createVariantsVisibility!"false" />
+<#assign createVariantsVisibility = params.createVariantsVisibility!"true" />
 <#assign createVariantsSource>
-	<#if params.createVariantsSource?? || params.journalType??>
-		${params.createVariantsSource!"journal-create-variants"}
+	<#if params.createVariantsSource??>
+		${params.createVariantsSource}
+	<#elseif params.journalTypeId??>
+		journal-create-variants
 	<#else>create-views</#if>
 </#assign>
 <#assign virtualParent = params.virtualParent!"false" />
@@ -21,6 +23,7 @@
 <div id="${controlId}" class="journal2-control" data-bind='component: { name: "select2", params: {
 			element: $element,
 
+			name: name,
 			disabled: protected,
 			multiple: multiple,
 			value: value,

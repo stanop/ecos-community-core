@@ -558,7 +558,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             <div class="journal">\
                 <table>\
                     <thead>\
-                        <!-- ko if: columns -->\
+                        <!-- ko if: columns ? true : false -->\
                             <tr data-bind="foreach: columns">\
                                 <!-- ko if: $component.journalType.attribute($data) -->\
                                     <!-- ko with: $component.journalType.attribute($data) -->\
@@ -567,14 +567,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 <!-- /ko -->\
                             </tr>\
                         <!-- /ko -->\
-                        <!-- ko ifnot: columns -->\
+                        <!-- ko ifnot: columns ? true : false -->\
                             <tr data-bind="foreach: $component.journalType.defaultAttributes">\
                                 <th data-bind="text: displayName"></th>\
                             </tr>\
                         <!-- /ko -->\
                     </thead>\
                     <tbody data-bind="foreach: sourceElements">\
-                        <!-- ko if: $component.columns -->\
+                        <!-- ko if: $component.columns ? true : false -->\
                             <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                    foreach: $component.columns,\
                                                                    click: $component.selectElement, clickBubble: false,\
@@ -594,7 +594,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 <!-- /ko -->\
                             </tr>\
                         <!-- /ko -->\
-                        <!-- ko ifnot: $component.columns -->\
+                        <!-- ko ifnot: $component.columns ? true : false -->\
                             <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                    foreach: $component.journalType.defaultAttributes,\
                                                                    click: $component.selectElement, clickBubble: false,\

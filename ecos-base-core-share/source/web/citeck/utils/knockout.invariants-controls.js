@@ -1623,6 +1623,10 @@ ko.components.register("select2", {
       
         this.visibleOptions = ko.pureComputed(function() {
             var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
+
+            if (self.additionalOptions().length) {
+                preparedOptions = _.union(preparedOptions, self.additionalOptions()); 
+            }
                
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
@@ -1737,6 +1741,11 @@ ko.components.register("select2", {
             self.count(self.count() + self.step);
         };
 
+        var elementsPageId          = this.id + "-panel-elementsPage",
+            filterPageId            = this.id + "-panel-filterPage",
+            createPageId            = this.id + "-panel-createPage",
+            journalPickerHeaderId   = this.id + "-panel-journalPickerHeader";
+
         this.journalPicker = function(data, event) {
             console.log("click on journalPicker button", data, event, this);
 
@@ -1778,7 +1787,17 @@ ko.components.register("select2", {
                 // build panel header, body and footer
                 data.panel.setHeader(data.localization.title);
                 data.panel.setBody('\
-                    <div class="journal-picker-header collapse">\
+                    <div class="journal-picker-header collapse" id="' + journalPickerHeaderId + '">\
+                        <!-- ko if: createVariantsVisibility -->\
+                            <!-- ko component: { name: "createObjectButton", params: {\
+                                scope: scope,\
+                                source: createVariantsSource,\
+                                callback: callback,\
+                                buttonTitle: labels.createTab,\
+                                virtualParent: virtualParent,\
+                                journalType: journalType\
+                            }} --><!-- /ko -->\
+                        <!-- /ko -->\
                         <div class="journal-search">\
                             <input type="search" class="journal-search-input" data-bind="\
                                 textInput: searchQuery,\
@@ -1787,7 +1806,7 @@ ko.components.register("select2", {
                         </div>\
                     </div>\
                     <div class="journal-picker-page-container">\
-                        <div class="elements-page">\
+                        <div class="elements-page" id="' + elementsPageId + '">\
                             <div class="journal-container">\
                                 <!-- ko component: { name: \'journal\',\
                                     params: {\
@@ -1802,6 +1821,7 @@ ko.components.register("select2", {
                                 } --><!-- /ko -->\
                             </div>\
                         </div>\
+                        <div class="create-page hidden" id="' + createPageId + '"></div>\
                     </div>\
                 ');
                 data.panel.setFooter('\
@@ -1821,6 +1841,61 @@ ko.components.register("select2", {
                     // header
                     labels: data.localization,
                     searchQuery: data.searchQuery,
+                    createVariantsVisibility: data.createVariantsVisibility,
+                    callback: function(variant) {
+                        var scCallback = function(node) {
+                            // clear create page
+                            var createPage = Dom.get(createPageId);
+                            Dom.addClass(createPage, "hidden");
+                            createPage.innerHTML = "";
+
+                            // show elements page
+                            var elementsPage = Dom.get(elementsPageId);
+                            Dom.removeClass(elementsPage, "hidden");
+
+                            // change tab selection
+                            var buttons = Dom.getElementsBy(function(element) {
+                                return element.className.indexOf("selected") != -1
+                              }, "button", journalPickerHeaderId);
+
+                            _.each(buttons, function(element) {
+                                element.classList.remove("selected");
+                            });
+                        };
+
+                        Citeck.forms.formContent(variant.type(), variant.formId(), {
+                            response: function(response) {
+                                Dom.get(createPageId).innerHTML = response;
+
+                                // hide other pages and remove selection from other tabs
+                                // Dom.removeClass(elementsTabId, "selected");
+                                // Dom.removeClass(filterTabId, "selected");
+                                Dom.addClass(elementsPageId, "hidden");
+                                // Dom.addClass(filterPageId, "hidden");
+
+                                // show create page and hightlight tab
+                                Dom.removeClass(createPageId, "hidden");
+                                var createButton = Dom.getElementsBy(function(el) {
+                                    return el.tagName == "BUTTON";
+                                }, "button", journalPickerHeaderId);
+                                Dom.addClass(createButton, "selected");
+                            },
+
+                            submit: function(node) {
+                                self.additionalOptions(_.union(self.additionalOptions(), [node ]));
+                                scCallback(node);
+                            },
+                            cancel: scCallback
+                        }, 
+                        { 
+                            destination: variant.destination(),
+                            fieldId: data.name()
+                        });
+
+                    },
+                    virtualParent: data.virtualParent,
+                    createVariantsSource: data.createVariantsSource,
+                    scope: data,
 
                     // body
                     elements: data.visibleOptions,
@@ -1834,7 +1909,9 @@ ko.components.register("select2", {
                             self.panel.hide();
                             self.selectedElements.removeAll();
                         }
-                    }
+                    },
+                    createPageVisibility: data._createPageVisibility,
+                    elementPageVisibility: data._elementPageVisibility
                 }, data.panel.body);
 
                 ko.applyBindings({
@@ -1845,7 +1922,7 @@ ko.components.register("select2", {
                         self.selectedElements.removeAll();
                     },
                     cancel: function(el, data) { 
-                        data.panel.hide();
+                        self.panel.hide();
                         self.selectedElements.removeAll();
                     }
                 }, data.panel.footer);
@@ -1867,6 +1944,7 @@ ko.components.register("select2", {
                 self.containerVisibility(false);
             });
         }
+
     },
     template:
        '<!-- ko if: _listMode -->\
