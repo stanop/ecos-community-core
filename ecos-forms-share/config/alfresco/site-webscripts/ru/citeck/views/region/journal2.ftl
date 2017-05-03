@@ -35,7 +35,6 @@
 			<#-- table mode parameters -->
 	        <#if params.journalTypeId??>journalTypeId: "${params.journalTypeId}",</#if>
 	        <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: "${params.defaultVisibleAttributes}",</#if>
-	        <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: "${params.defaultSearchableAttributes}",</#if>
 
 			<#-- list mode parameters -->
 			searchPredicat: "${searchPredicat}",

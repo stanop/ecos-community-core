@@ -1542,9 +1542,8 @@ ko.components.register("select2", {
         }
 
         if (this._tableMode) {
-            [this.defaultVisibleAttributes, this.defaultSearchableAttributes].forEach(function(dav) {
-                if (dav) dav = _.map(dav.split(","), function(a) { return trim(a); })
-            });
+            if (this.defaultVisibleAttributes)
+                this.defaultVisibleAttributes =  _.map(this.defaultVisibleAttributes.split(","), function(a) { return trim(a); })
 
             this.journalType = this.journalTypeId ? new JournalType(this.journalTypeId) : null;
             if (!this.journalType) { /* so, it is fail */ }
@@ -1762,7 +1761,8 @@ ko.components.register("select2", {
                     var maxContainerWidth = screen.width - 200,
                         countOfAttributes = (function() {
                             if (data.defaultVisibleAttributes) return data.defaultVisibleAttributes.length;
-                            if (data.journalType.defaultAttributes()) return data.journalType.defaultAttributes().length;
+                            if (data.journalType) return data.journalType.defaultAttributes().length;
+                            return 1;
                         })();
 
                     if (countOfAttributes > 5) {
