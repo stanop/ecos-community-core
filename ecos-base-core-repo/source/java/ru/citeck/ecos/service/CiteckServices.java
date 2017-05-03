@@ -49,5 +49,6 @@ public interface CiteckServices {
 
     public QName NODE_INFO_FACTORY = QName.createQName(CITECK_NAMESPACE, "NodeInfoFactory");
 	public QName CASE_STATUS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseStatusService");
+	public QName CASE_ROLE_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseRoleService");
 
 }

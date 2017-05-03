@@ -65,7 +65,7 @@ public class HistoryUtils {
             }
         }
         if (constraint == null) {
-            return "";
+            return "—";
         }
         if (DataTypeDefinition.DATE.equals(dictionaryService.getProperty(qName).getDataType().getName())) {
             return new SimpleDateFormat("dd/MM/yyyy").format(constraint);
@@ -291,13 +291,13 @@ public class HistoryUtils {
                     + HistoryUtils.getChangeValue(added.getTargetRef(), nodeService);
         } else if (added != null) {
             return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
-                    + ": -> "
+                    + ": — -> "
                     + HistoryUtils.getChangeValue(added.getTargetRef(), nodeService);
         } else if (removed != null) {
             return HistoryUtils.getAssocKeyValue(removed.getTypeQName(), dictionaryService)
                     + ": "
                     + HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService)
-                    + " -> ";
+                    + " -> —";
         } else {
             return "Something went wrong... Contact the administrator.";
         }
@@ -312,14 +312,14 @@ public class HistoryUtils {
                     + HistoryUtils.getChangeValue(added.getChildRef(), nodeService);
         } else if (added != null) {
             return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
-                    + ": -> "
+                    + ": — -> "
                     + HistoryUtils.getChangeValue(added.getChildRef(), nodeService);
         } else if (removed != null) {
             String deletedName = nodeRefName.isEmpty() ? HistoryUtils.getChangeValue(removed.getChildRef(), nodeService) : nodeRefName;
             return HistoryUtils.getAssocKeyValue(removed.getTypeQName(), dictionaryService)
                     + ": "
                     + deletedName
-                    + " -> ";
+                    + " -> —";
         } else {
             return "Something went wrong... Contact the administrator.";
         }
