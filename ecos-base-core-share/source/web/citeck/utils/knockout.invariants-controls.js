@@ -1600,7 +1600,7 @@ ko.components.register("select2", {
 
         this.hasMore = ko.observable(false);
         this.count = ko.observable(this.step);
-        this.maxItems = ko.observable($("body").hasClass("mobile") ? 5 : 10);
+        this.page = ko.observable(1);
 
         // for list mode
         this.componentFocused = ko.observable(false);
@@ -1648,9 +1648,19 @@ ko.components.register("select2", {
                 });
             }
 
-            if (self.count() < preparedOptions.length) {
-                self.hasMore(true);
-                return preparedOptions.slice(0, self.count());
+            // pagination for list
+            if (self._listMode) {
+                if (self.count() < preparedOptions.length) {
+                    self.hasMore(true);
+                    return preparedOptions.slice(0, self.count());
+                }
+            }
+
+            // pagination for table
+            if (self._tableMode) {
+                var startIndex = self.step * self.page() - self.step, endIndex = self.step * self.page();
+                if (self.step * self.page() < preparedOptions.length) self.hasMore(true);
+                return preparedOptions.slice(startIndex, endIndex);
             }
 
             self.hasMore(false);
@@ -1666,9 +1676,6 @@ ko.components.register("select2", {
 
         // subscription and events
         // -----------------------
-
-        // TODO:
-        // - highlighted for multiple elements
 
         this.searchQuery.subscribe(function() { self.count(self.step); });
         if (this._listMode) {
@@ -1816,9 +1823,36 @@ ko.components.register("select2", {
                                         columns: columns,\
                                         hightlightSelection: true,\
                                         afterSelectionCallback: afterSelectionCallback,\
-                                        options: { multiple: multiple },\
+                                        options: { multiple: multiple, pagination: false },\
                                     }\
                                 } --><!-- /ko -->\
+                                <div class="journal-pagination">\
+                                    <span class="previous-page">\
+                                        <!-- ko if: page() - 1 > 0 -->\
+                                            <a data-bind="click: previousPage,\
+                                                          text: labels.previousPageLabel,\
+                                                          attr: { title: labels.previousPageTitle }"><--</a>\
+                                        <!-- /ko -->\
+                                        <!-- ko ifnot: page() - 1 > 0 -->\
+                                            <!-- ko text: labels.previousPageLabel --><!-- /ko -->\
+                                        <!-- /ko -->\
+                                    </span>\
+                                    <span class="page-label">\
+                                        <span class="start-page" data-bind="text: page() * maxItems - maxItems + 1"></span>\
+                                        <span class="dash">-</span>\
+                                        <span class="end-page" data-bind="text: page() * maxItems"></span>\
+                                    </span>\
+                                    <span class="next-page">\
+                                        <!-- ko if: hasMore -->\
+                                            <a data-bind="click: nextPage,\
+                                                          text: labels.nextPageLabel,\
+                                                          attr: { title: labels.nextPageTitle }">--></a>\
+                                        <!-- /ko -->\
+                                        <!-- ko ifnot: hasMore -->\
+                                            <!-- ko text: labels.nextPageLabel --><!-- /ko -->\
+                                        <!-- /ko -->\
+                                    </span>\
+                                </div>\
                             </div>\
                         </div>\
                         <div class="create-page hidden" id="' + createPageId + '"></div>\
@@ -1834,8 +1868,8 @@ ko.components.register("select2", {
                 data.panel.render(document.body);
 
 
-                // bindings
-                // --------
+                // bindings for journal panel of table mode
+                // ----------------------------------------
 
                 ko.applyBindings({
                     // header
@@ -1896,6 +1930,13 @@ ko.components.register("select2", {
                     virtualParent: data.virtualParent,
                     createVariantsSource: data.createVariantsSource,
                     scope: data,
+
+                    // pagination
+                    maxItems: data.step,
+                    page: data.page,
+                    hasMore: data.hasMore,
+                    previousPage: function(data, event) { data.page(data.page() - 1); },
+                    nextPage: function(data, event) { data.page(data.page() + 1); },
 
                     // body
                     elements: data.visibleOptions,
