@@ -24,6 +24,7 @@
 			element: $element,
 
 			name: name,
+			nodetype: nodetype,
 			disabled: protected,
 			multiple: multiple,
 			value: value,
@@ -35,6 +36,7 @@
 			<#-- table mode parameters -->
 	        <#if params.journalTypeId??>journalTypeId: "${params.journalTypeId}",</#if>
 	        <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: "${params.defaultVisibleAttributes}",</#if>
+	        <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: "${params.defaultSearchableAttributes}",</#if>
 
 			<#-- list mode parameters -->
 			searchPredicat: "${searchPredicat}",
@@ -51,16 +53,6 @@
 					return ko.computed(function() { return ${params.options}; });
 				},
 			</#if>
-
-			<#list optionParameters as op>
-				<#if params[op]??>
-					${op}: function(option) {
-						return ko.computed(function() {
-							return ${params[op]};
-						})
-					},
-				</#if>
-			</#list>
 
 			getValueTitle: function(value) {
 				return ko.computed(function() {

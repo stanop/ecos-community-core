@@ -324,6 +324,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             var self = this;
             initializeParameters.call(this, params);
 
+            console.log(this);
+
+            if (!this.journalType) {
+                _.each(this.selectedFilterCriteria(), function(c) {
+                    c.displayName = c.title;
+                });
+
+                // TODO:
+                // - get predicates for non-journal objects
+            }
+
             self.remove = function(data, event) {
                 self.selectedFilterCriteria.remove(data);
             };
@@ -379,6 +390,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
         viewModel: function(params) {
             var self = this;
             initializeParameters.call(this, params);
+
+            console.log(this)
      
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
