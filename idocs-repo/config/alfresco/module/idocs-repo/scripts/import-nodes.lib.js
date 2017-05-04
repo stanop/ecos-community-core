@@ -53,13 +53,6 @@ function _getOrCreateNode(parent, name, type) {
 function _setProp(node, prop, value) {
 
     if (value !== null && typeof value === 'object') {
-        var toConvert = ["ru", "ru_RU"];
-        for (var i in toConvert) {
-            var locale = toConvert[i];
-            if (value[locale]) {
-                value[locale] = citeckUtils.toUTF8(value[locale]);
-            }
-        }
         return citeckUtils.setMLText(node, prop, value);
     } else if (typeof value == 'string' || value instanceof String) {
         node.properties[prop] = value;
