@@ -1658,7 +1658,7 @@ ko.components.register("select2", {
             // pagination for table
             if (self._tableMode) {
                 var startIndex = self.step * self.page() - self.step, endIndex = self.step * self.page();
-                if (self.step * self.page() < preparedOptions.length) self.hasMore(true);
+                self.hasMore(self.step * self.page() < preparedOptions.length);
                 return preparedOptions.slice(startIndex, endIndex);
             }
 

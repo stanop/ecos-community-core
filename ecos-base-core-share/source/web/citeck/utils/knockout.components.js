@@ -557,7 +557,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                         if (attributeName) {
                             attribute = firstElement.attribute(attributeName);
-                            if (attribute) return attribute.value();
+                            if (attribute) return attribute.title();
                         } else {
                             title = firstElement.attribute("cm:title");
                             name = firstElement.attribute("cm:name");
@@ -600,11 +600,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         <tr data-bind="if: !$component.journalType && !$component.columns">\
                             <th data-bind="text: $component.getDefaultHeaderTitle()"></th>\
                         </tr>\
-                        <tr data-bind="if: !$component.journalType && $component.columns">\
+                         <!-- ko if: !$component.journalType && $component.columns -->\
                             <tr data-bind="foreach: columns">\
                                 <th data-bind="text: $component.getDefaultHeaderTitle($data)"></th>\
                             </tr>\
-                        </tr>\
+                        <!-- /ko -->\
                         <tr data-bind="if: $component.journalType && !columns">\
                             <!-- ko foreach:  $component.journalType.defaultAttributes -->\
                                 <th data-bind="text: displayName"></th>\
