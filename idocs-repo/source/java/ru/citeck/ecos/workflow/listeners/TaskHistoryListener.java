@@ -242,7 +242,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		namespaceService = serviceRegistry.getNamespaceService();
 		authorityService = serviceRegistry.getAuthorityService();
 		deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
-		caseRoleService = (CaseRoleService) serviceRegistry.getService(CiteckServices.CASE_ROLE_SERVICE);
+		caseRoleService = (CaseRoleService) serviceRegistry.getService(QName.createQName("", "caseRoleService"));
 		
 		qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
