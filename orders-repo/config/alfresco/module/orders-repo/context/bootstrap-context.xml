@@ -59,28 +59,6 @@
         </property>
     </bean>
 
-    <bean id="orders.module-component.journals-subject" parent="orders.import-spaces">
-        <property name="name" value="journals-subject" />
-        <property name="description" value="Subject Journals" />
-        <property name="sinceVersion" value="0.1" />
-        <property name="appliesFromVersion" value="0.1" />
-        <!--<property name="executeOnceOnly" value="false" />-->
-        <property name="dependsOn">
-            <list>
-                <ref bean="orders.documentFolders" />
-            </list>
-        </property>
-        <property name="bootstrapView">
-            <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
-                <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
-                <prop key="location">alfresco/module/orders-repo/bootstrap/explicit/orders/journals-subject.xml</prop>
-                <prop key="messages">alfresco/module/orders-repo/messages/journals-subject</prop>
-                <prop key="encoding">UTF-8</prop>
-            </props>
-        </property>
-    </bean>
-
     <bean id="orders.module-component.journals-internal" parent="orders.import-spaces">
         <property name="name" value="journals-internal" />
         <property name="description" value="Internals Journals" />
@@ -90,7 +68,6 @@
         <property name="dependsOn">
             <list>
                 <ref bean="orders.documentFolders" />
-                <ref bean="orders.module-component.journals-subject" />
             </list>
         </property>
         <property name="bootstrapView">
@@ -127,11 +104,9 @@
         </property>
     </bean>
 
-    <bean id="orders.categoryBootstrap" parent="spacesStoreImporter" singleton="true"
-            depends-on="orders.spacesBootstrap">
-        <property name="useExistingStore">
-            <value>true</value>
-        </property>
+    <bean id="orders.categoryBootstrap" parent="orders.import-spaces">
+        <property name="name" value="orders-doctype-categories" />
+        <property name="description" value="Doctype categories" />
         <property name="bootstrapViews">
             <list>
                 <props>
@@ -149,6 +124,26 @@
     <bean id="orders.orders-lifecycle" parent="idocs.import-lifecycle.csv">
         <property name="location" value="alfresco/module/orders-repo/lifecycle/orders-lifecycle.csv" />
         <property name="entityType" value="orders:internal" />
+    </bean>
+
+    <bean id="orders.module-component.default-orders-content-template" parent="orders.import-spaces">
+        <property name="name" value="default-orders-content-template" />
+        <property name="description" value="default-orders-content-template" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.categoryBootstrap" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:templates</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/orders-content-template.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
     </bean>
 
 </beans>

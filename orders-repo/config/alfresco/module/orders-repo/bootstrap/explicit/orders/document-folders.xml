@@ -34,20 +34,4 @@
         </cm:contains>
     </view:reference>
 
-    <view:reference view:pathref="cm:dataLists">
-        <cm:contains>
-            <dl:dataList view:childName="cm:subjects">
-                <view:properties>
-                    <sys:node-uuid>orders-subject-folder</sys:node-uuid>
-                    <cm:name>orders-subject-folder</cm:name>
-                    <cm:title>
-                        <view:mlvalue view:locale="en_US">${documents.subject.title_en}</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">${documents.subject.title_ru}</view:mlvalue>
-                    </cm:title>
-                    <dl:dataListItemType>orders:subject</dl:dataListItemType>
-                </view:properties>
-            </dl:dataList>
-        </cm:contains>
-    </view:reference>
-
 </view:view>

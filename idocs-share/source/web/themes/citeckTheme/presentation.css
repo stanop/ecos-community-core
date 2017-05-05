@@ -2848,10 +2848,14 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    border: none; 
 }
 
+.share-form .form-container .caption {
+    left: 855px;
+    width: auto;
+}
+
 @media (min-width: 1010px) {
    .share-form .form-container .caption {
      position: absolute;
-     left: 840px;
      text-align: left;
    }
 }
@@ -3198,6 +3202,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 /* reset blocks and controls */
 .share-form .form-container .form-fields .yui-u .form-field > label,
+.yui-skin-citeckTheme .share-form .form-container .form-fields .yui-u .form-field > label:not([for*="workflowDueDate-cntrl-date"]),
 .share-form .form-container .form-fields .yui-u .form-field > select,
 .share-form .form-container .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
 .share-form .form-container .form-fields .yui-u .form-field > .format-info,
@@ -3206,7 +3211,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry, .time-entry),
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
@@ -3217,6 +3222,10 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    max-width: none;
    clear: both;
    width: 100% !important;
+}
+
+.yui-skin-citeckTheme .share-form .form-container .form-fields div[id*="workflowDueDate"] .yui-u .form-field > label[for*="workflowDueDate-cntrl-date"] {
+    margin-top: 7px;
 }
 
 .share-form .form-container .form-fields .yui-u .form-field div.auto-manual-select {
@@ -3256,6 +3265,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 .share-form .form-container .form-fields .yui-g .yui-u .form-field input[type="text"],
+.yui-skin-citeckTheme .share-form .form-container .form-fields div[id*="workflowDueDate"] .yui-g .yui-u .form-field input[type="text"]:not(.date-entry, .time-entry),
 .share-form .form-container .form-fields .yui-g .yui-u .form-field input[type="file"] {
   width: 100%;
   float: none;
@@ -3300,14 +3310,24 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    padding-bottom: 10px; 
 }
 
+.yui-skin-citeckTheme .share-form .form-container div[id*="workflowDueDate"] .yui-g .yui-u.first,
 .share-form .form-container .form-fields .yui-u .form-field > input[type="text"].number,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].number {
   position: initial;
   width: 100%;
 }
 
-.share-form .form-container .form-fields .yui-u .form-field > input[type="text"].date-entry,
-.share-form .form-container .form-fields .yui-u .form-field > input[type="text"].time-entry,
+.yui-skin-citeckTheme .share-form .form-container div[id*="workflowDueDate"] .yui-g .yui-u.first .form-field .format-info {
+    width: 49.5%;
+    right: 0.5%;
+}
+
+.yui-skin-citeckTheme .share-form .form-container div[id*="workflowDueDate"] .yui-g .yui-u.first .form-field .format-info .time-format {
+    margin-left: 32%;
+}
+
+.share-form .form-container .form-fields .yui-u .form-field > input[type="text"].date-entry:not([id*="workflowDueDate-cntrl"]),
+.share-form .form-container .form-fields .yui-u .form-field > input[type="text"].time-entry:not([id*="workflowDueDate-cntrl"]),
 .share-form .form-container .form-fields .form-field .yui-u input[type="text"].date-entry,
 .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
@@ -3355,11 +3375,15 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   margin-left: 20px;
 }
 
-.share-form .form-container .form-fields .yui-u .form-field > a,
+.share-form .form-container .form-fields .yui-u .form-field > a:not([id*="workflowDueDate-cntrl-icon"]),
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > a {
     float: left;
     margin: 5px 0 0 5px;
     position: initial;
+}
+
+.yui-skin-citeckTheme .share-form .form-container .form-fields div[id*="workflowDueDate"] .yui-u .form-field > a[id*="workflowDueDate-cntrl-icon"] {
+    right: 24%;
 }
 
 .share-form .form-container .form-fields .yui-u .form-field > span.help-icon,

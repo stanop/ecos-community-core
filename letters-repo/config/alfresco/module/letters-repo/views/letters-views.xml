@@ -99,6 +99,15 @@
 			<field prop="letters:receiver" />
 		</view>
 
+		<view>
+			<field prop="idocs:registrationNumber">
+				<invariant on="protected" language="explicit">true</invariant>
+			</field>
+			<field prop="idocs:registrationDate">
+				<invariant on="protected" language="explicit">true</invariant>
+			</field>
+		</view>
+
 		<field prop="idocs:summary" />
 		<field prop="idocs:note" />
 
@@ -140,6 +149,13 @@
 		
 		<field assoc="letters:subdivision" />
 		<field prop="letters:receiver" />
+
+		<field prop="idocs:registrationNumber">
+			<invariant on="protected" language="explicit">true</invariant>
+		</field>
+		<field prop="idocs:registrationDate">
+			<invariant on="protected" language="explicit">true</invariant>
+		</field>
 	</view>
 	
 	<view class="letters:income" id="register">
@@ -174,12 +190,13 @@
 					<param name="journalType">letters-income</param>
 				</region>
 			</field>
-			<field assoc="idocs:legalEntity">
-				<region name="select" template="select-journal">
-                    <param name="journalType">legal-entities</param>
-                </region>
-                <region name="input" template="view" />
-            </field>
+			<field assoc="letters:outcomeNomenclature">
+				<region name="input" template="view" />
+				<region name="select" id="select" template="select-journal">
+					<param name="journalType">files-nomenclature</param>
+				</region>
+				<region name="select" id="create" template="select-create-object" />
+			</field>
 		</view>
 
 		<view>
@@ -187,12 +204,20 @@
 			<field assoc="idocs:signatory" />
 		</view>
 
+		<view>
+		<field assoc="idocs:legalEntity">
+			<region name="select" template="select-journal">
+				<param name="journalType">legal-entities</param>
+			</region>
+			<region name="input" template="view" />
+		</field>
 		<field assoc="letters:addressee">
 			<region name="input" template="view" />
 			<region name="select" id="select" template="select-journal">
 				<param name="journalType">idocs-contractor</param>
 			</region>
 		</field>
+		</view>
 
 		<field prop="idocs:summary" />
 		<field prop="idocs:note" />
@@ -221,22 +246,40 @@
 				<param name="journalType">letters-income</param>
 			</region>
 		</field>
-		<field assoc="idocs:legalEntity">
-			<region name="select" template="select-journal">
-                <param name="journalType">legal-entities</param>
-            </region>
-            <region name="input" template="view" />
-        </field>
+		<field assoc="letters:outcomeNomenclature">
+			<region name="input" template="view" />
+			<region name="select" id="select" template="select-journal">
+				<param name="journalType">files-nomenclature</param>
+			</region>
+			<region name="select" id="create" template="select-create-object" />
+		</field>
 
 		<field assoc="idocs:performer" />
 		<field assoc="idocs:signatory" />
 
+		<field assoc="idocs:legalEntity">
+			<region name="select" template="select-journal">
+				<param name="journalType">legal-entities</param>
+			</region>
+			<region name="input" template="view" />
+		</field>
 		<field assoc="letters:addressee">
 			<region name="input" template="view" />
 			<region name="select" id="select" template="select-journal">
 				<param name="journalType">idocs-contractor</param>
 			</region>
 		</field>
+
+			<field prop="idocs:registrationNumber">
+				<region name="select" template="number-generate">
+					<param name="template">idocs-income-number-template</param>
+				</region>
+				<invariant on="mandatory" language="explicit">true</invariant>
+			</field>
+			<field prop="idocs:registrationDate">
+				<invariant on="mandatory" language="explicit">true</invariant>
+				<invariant on="default" language="javascript">new Date()</invariant>
+			</field>
 	</view>
 	
 </views>
