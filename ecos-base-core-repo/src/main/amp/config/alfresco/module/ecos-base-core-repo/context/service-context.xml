@@ -281,4 +281,8 @@
         </property>
     </bean>
 
+    <bean name="abstractAddAssociationIndexProperties" class="ru.citeck.ecos.dictionary.AddAssociationIndexProperties" abstract="true" >
+        <property name="registry" ref="AssociationIndexPropertyRegistry" />
+    </bean>
+
 </beans>

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING/DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="ecos.core.associationIndexing" class="ru.citeck.ecos.behavior.AssociationIndexing" abstract="true">
+        <property name="nodeService">
+            <ref bean="nodeService"/>
+        </property>
+        <property name="lockService">
+            <ref bean="LockService"/>
+        </property>
+        <property name="policyComponent">
+            <ref bean="policyComponent"/>
+        </property>
+        <property name="behaviourFilter">
+            <ref bean="policyBehaviourFilter"/>
+        </property>
+        <property name="registry" ref="AssociationIndexPropertyRegistry"/>
+    </bean>
+
+</beans>
+

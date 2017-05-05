@@ -3,21 +3,8 @@
 <beans>
 
     <!-- behaviors -->
-    <bean id="associationIndexing" class="ru.citeck.ecos.behavior.AssociationIndexing"
-          init-method="init">
-        <property name="nodeService">
-            <ref bean="nodeService"/>
-        </property>
-        <property name="lockService">
-            <ref bean="LockService"/>
-        </property>
-        <property name="policyComponent">
-            <ref bean="policyComponent"/>
-        </property>
-        <property name="behaviourFilter">
-            <ref bean="policyBehaviourFilter"/>
-        </property>
-        <property name="registry" ref="AssociationIndexPropertyRegistry" />
+    <bean id="associationIndexing" parent="ecos.core.associationIndexing" init-method="init">
+        <property name="typeQname" value="{http://www.alfresco.org/model/content/1.0}cmobject" />
     </bean>
 
     <bean id="CountChildAssociations" class="ru.citeck.ecos.behavior.common.CountChildAssociations"

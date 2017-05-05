@@ -18,13 +18,8 @@
  */
 package ru.citeck.ecos.behavior;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnDeleteAssociationPolicy;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -41,40 +36,45 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociationPolicy,
-		NodeServicePolicies.OnDeleteAssociationPolicy {
-	private static Log logger = LogFactory.getLog(AssociationIndexing.class);
 
-	private NodeService nodeService;
-	private LockService lockService;
-	private PolicyComponent policyComponent;
-	private BehaviourFilter behaviourFilter;
-	private AssociationIndexPropertyRegistry registry;
+public class AssociationIndexing implements OnCreateAssociationPolicy,
+        OnDeleteAssociationPolicy {
+    private static Log logger = LogFactory.getLog(AssociationIndexing.class);
 
-	public void init() {
-		this.policyComponent.bindAssociationBehaviour(
+    private NodeService nodeService;
+    private LockService lockService;
+    private PolicyComponent policyComponent;
+    private BehaviourFilter behaviourFilter;
+    private AssociationIndexPropertyRegistry registry;
+    private String typeQname;
+
+    public void init() {
+        QName type = QName.createQName(typeQname);
+        this.policyComponent.bindAssociationBehaviour(
                 OnCreateAssociationPolicy.QNAME,
-                ContentModel.TYPE_CMOBJECT,
-				new JavaBehaviour(this, "onCreateAssociation", NotificationFrequency.TRANSACTION_COMMIT)
+                type,
+                new JavaBehaviour(this, "onCreateAssociation", NotificationFrequency.TRANSACTION_COMMIT)
         );
-		this.policyComponent.bindAssociationBehaviour(
+        this.policyComponent.bindAssociationBehaviour(
                 OnDeleteAssociationPolicy.QNAME,
-                ContentModel.TYPE_CMOBJECT,
-				new JavaBehaviour(this, "onDeleteAssociation", NotificationFrequency.TRANSACTION_COMMIT)
+                type,
+                new JavaBehaviour(this, "onDeleteAssociation", NotificationFrequency.TRANSACTION_COMMIT)
         );
-	}
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setLockService(LockService lockService) {
-		this.lockService = lockService;
-	}
+    public void setLockService(LockService lockService) {
+        this.lockService = lockService;
+    }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
@@ -84,9 +84,13 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
         this.behaviourFilter = behaviourFilter;
     }
 
-	public void setRegistry(AssociationIndexPropertyRegistry registry) {
-	    this.registry = registry;
-	}
+    public void setRegistry(AssociationIndexPropertyRegistry registry) {
+        this.registry = registry;
+    }
+
+    public void setTypeQname(String typeQname) {
+        this.typeQname = typeQname;
+    }
 
     @Override
     public void onDeleteAssociation(AssociationRef nodeAssocRef) {
@@ -130,30 +134,30 @@ public class AssociationIndexing implements NodeServicePolicies.OnCreateAssociat
 
             LockStatus lockStatus = lockService.getLockStatus(node);
             switch(lockStatus) {
-            case NO_LOCK:
-            case LOCK_EXPIRED:
-                setIndexProperty(node, propQName, nodeRefs);
-                break;
-            case LOCK_OWNER:
-                LockType lockType = lockService.getLockType(node);
-                if (lockType != null) {
-                    try {
-                        // new method not present in 4.2.c: unlock(nodeRef, unlockChildren, allowCheckedOut)
-                        Method unlock = LockService.class.getMethod("unlock", NodeRef.class, boolean.class, boolean.class);
-                        unlock.invoke(lockService, node, false, true);
-                    } catch(NoSuchMethodException e) {
-                        lockService.unlock(node);
-                    } catch (Exception e) {
-                        throw AlfrescoRuntimeException.create(e, "Unexpected exception during unlock");
-                    }
+                case NO_LOCK:
+                case LOCK_EXPIRED:
                     setIndexProperty(node, propQName, nodeRefs);
-                    lockService.lock(node, lockType);
-                } else {
-                    logger.error("Node is locked, but lock type is null: " + node);
-                }
-                break;
-            default:
-                logger.error("Can not update index property, because node is locked");
+                    break;
+                case LOCK_OWNER:
+                    LockType lockType = lockService.getLockType(node);
+                    if (lockType != null) {
+                        try {
+                            // new method not present in 4.2.c: unlock(nodeRef, unlockChildren, allowCheckedOut)
+                            Method unlock = LockService.class.getMethod("unlock", NodeRef.class, boolean.class, boolean.class);
+                            unlock.invoke(lockService, node, false, true);
+                        } catch(NoSuchMethodException e) {
+                            lockService.unlock(node);
+                        } catch (Exception e) {
+                            throw AlfrescoRuntimeException.create(e, "Unexpected exception during unlock");
+                        }
+                        setIndexProperty(node, propQName, nodeRefs);
+                        lockService.lock(node, lockType);
+                    } else {
+                        logger.error("Node is locked, but lock type is null: " + node);
+                    }
+                    break;
+                default:
+                    logger.error("Can not update index property, because node is locked");
             }
 
         } finally {
