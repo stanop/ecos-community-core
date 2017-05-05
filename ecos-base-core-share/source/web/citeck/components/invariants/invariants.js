@@ -40,6 +40,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         Feature = koclass('invariants.Feature'),
         AttributeInfo = koclass('invariants.AttributeInfo'),
         Attribute = koclass('invariants.Attribute'),
+        Predicate = koclass('invariants.Predicate'),
         Node = koclass('invariants.Node'),
         NodeImpl = koclass('invariants.NodeImpl'),
         QName = koclass('invariants.QName'),
@@ -662,13 +663,44 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         }
     });
 
+    Predicate
+        .key('id', s)
+        .property('label', s)
+        .property('needsValue', b)
+    ;
+
     AttributeInfo
         .key('name', s)
         .property('type', s) // one of: property, association, child-association, ...
         .property('nodetype', s)
         .property('datatype', s)
         .property('javaclass', s)
+        .property('predicates', [ Predicate ])
+
         .load('*', koutils.bulkLoad(attributeLoader, 'name'))
+        .load('predicates', function(attributeInfo) {
+            var datatype = attributeInfo.datatype();
+            if (datatype.indexOf(":") != -1) { datatype = datatype.split(":")[1]; }
+
+            YAHOO.util.Connect.asyncRequest('GET',
+                Alfresco.constants.URL_PAGECONTEXT + "search/search-predicates?datatype=" + datatype, {
+                    success: function(response) {
+                        var result = JSON.parse(response.responseText),
+                            predicates = [];
+
+                        for (var i in result.predicates) {
+                            predicates.push(new Predicate(result.predicates[i]))
+                        };
+
+                        this.predicates(predicates);
+                    },
+
+                    failure: function(response) { /* error */ },
+
+                    scope: attributeInfo
+                }
+            );
+        })
 
         // auxiliary variables
         .property('_options', [ Node ])
@@ -705,6 +737,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .shortcut('type', 'info.type')
         .shortcut('nodetype', 'info.nodetype')
         .shortcut('datatype', 'info.datatype')
+        .shortcut('predicates', 'info.predicates')
         .shortcut('javaclass', 'info.javaclass')
         .shortcut('default', 'defaultValue', null)
 

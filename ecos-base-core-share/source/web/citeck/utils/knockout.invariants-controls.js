@@ -1526,6 +1526,9 @@ ko.components.register("autocomplete", {
 // SELECT 2
 // ---------------
 
+// TODO:
+// - load filters only if it requered
+
 ko.components.register("select2", {
     viewModel: function(params) {
         var self = this;
@@ -1865,8 +1868,6 @@ ko.components.register("select2", {
             journalPickerHeaderId   = this.id + "-panel-journalPickerHeader";
 
         this.journalPicker = function(data, event) {
-            console.log("click on journalPicker button", data, event);
-
             if (!data.panel) {
                 // Auto-fit width
                 var optimalWidth = (function() {
