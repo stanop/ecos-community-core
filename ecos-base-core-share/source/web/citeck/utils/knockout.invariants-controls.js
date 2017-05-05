@@ -1526,6 +1526,9 @@ ko.components.register("autocomplete", {
 // SELECT 2
 // ---------------
 
+// TODO:
+// - load filters only if it requered
+
 ko.components.register("select2", {
     viewModel: function(params) {
         var self = this;
@@ -1544,6 +1547,9 @@ ko.components.register("select2", {
         if (this._tableMode) {
             if (this.defaultVisibleAttributes)
                 this.defaultVisibleAttributes =  _.map(this.defaultVisibleAttributes.split(","), function(a) { return trim(a); })
+
+            if (this.defaultSearchableAttributes)
+                this.defaultSearchableAttributes =  _.map(this.defaultSearchableAttributes.split(","), function(a) { return trim(a); })
 
             this.journalType = this.journalTypeId ? new JournalType(this.journalTypeId) : null;
             if (!this.journalType) { /* so, it is fail */ }
@@ -1607,14 +1613,44 @@ ko.components.register("select2", {
 
         // for table mode
         this.panel;
+        this.criteria = ko.observable([]);
         this.selectedElements = ko.observableArray();
         this.selectedFilterCriteria = ko.observableArray();
         this.additionalOptions = ko.observable([]);
         this._criteriaListShow = ko.observable(false);
+        this._filterVisibility = ko.observable(false);
 
 
         // computed
         // --------
+
+        // get default searchable attributes
+        this.searchableAttributes = ko.computed(function() {
+            if (this.journalType) {
+                return this.journalType.searchableAttributes();
+            } else if (this.options().length) {
+                return this.options()[0].impl().attributes();;
+            }
+
+            return [];
+        }, this, { deferEvaluation: true });
+
+        // get default filter criteria
+        this.defaultCriteria = ko.computed(function() {
+            if (this.journalType) {
+                if (this.defaultSearchableAttributes) return this.journalType.attributes();
+                return this.journalType.defaultAttributes();
+            } else if (this.options().length) {
+                var firstElement = this.options()[0].impl();
+                if (this.defaultSearchableAttributes) return firstElement.attributes();
+
+                var title = firstElement.attribute("cm:title");
+                if (title) return [ title ];
+                return [ firstElement.attribute("cm:name") ];
+            }
+
+            return [];
+        }, this, { deferEvaluation: true });
 
         this.label = ko.pureComputed(function() {
             return self.value() ? self.getValueTitle(self.value())() : self.localization.label;
@@ -1625,6 +1661,59 @@ ko.components.register("select2", {
 
             if (self.additionalOptions().length) {
                 preparedOptions = _.union(preparedOptions, self.additionalOptions()); 
+            }
+
+            if (self.criteria().length) {
+                self.criteria().forEach(function(criterion) {
+                    preparedOptions = _.filter(preparedOptions, function(option) {
+                        var attribute = option.impl().attribute(criterion.attribute),
+                            attributeValue = attribute.value();
+
+                        if (criterion.predicate.indexOf("not-equals") != -1) {
+                            return attributeValue != criterion.value;
+                        } else if (criterion.predicate.indexOf("equals") != -1) {
+                            return attributeValue == criterion.value;
+                        } else if (criterion.predicate.indexOf("not-empty") != -1) {
+                            return !_.isEmpty(attributeValue);
+                        } else if (criterion.predicate.indexOf("empty") != -1) {
+                            return _.isEmpty(attributeValue);
+                        } else if (criterion.predicate.indexOf("not-contains") != -1) {
+                            return attributeValue.indexOf(criterion.value) == -1;
+                        } else if (criterion.predicate.indexOf("contains") != -1) {
+                            return attributeValue.indexOf(criterion.value) != -1;
+                        } else if (criterion.predicate.indexOf("not-empty") != -1) {
+                            return !_.isEmpty(attributeValue);
+                        } else if (criterion.predicate.indexOf("empty") != -1) {
+                            return _.isEmpty(attributeValue);
+                        }                    
+                        
+                        switch (criterion.predicate) {
+                            case "boolean-true":
+                                return attributeValue === true;
+                            case "boolean-false":
+                                return attributeValue === false;
+
+                            case "string-starts-with":
+                                return attributeValue.startsWith(criterion.value);
+                            case "string-ends-with":
+                                return attributeValue.endsWith(criterion.value);
+
+                            case "date-greater-or-equal":
+                                return new Date(attributeValue) >= new Date(criterion.value);
+                            case "date-less-or-equal":
+                                return new Date(attributeValue) <= new Date(criterion.value);
+
+                            case "number-less-than":
+                                return attributeValue < Number(criterion.value);
+                            case "number-less-or-equal":
+                                return attributeValue <= Number(criterion.value);
+                            case "number-greater-than":
+                                return attributeValue > Number(criterion.value);
+                            case "number-greater-or-equal":
+                                return attributeValue >= Number(criterion.value);
+                        }
+                    })
+                });
             }
                
             if (self.searchQuery()) {
@@ -1677,9 +1766,35 @@ ko.components.register("select2", {
         // -----------------------
 
         this.searchQuery.subscribe(function() { self.count(self.step); });
+        
         if (this._listMode) {
             this.containerVisibility.subscribe(function() { self.searchFocused(true); });
             this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        }
+
+        if (this._tableMode) {
+            // add default criteria to selectedFilterCriteria
+            koutils.subscribeOnce(ko.computed(function() {
+                self.selectedFilterCriteria.removeAll();
+                var dc = self.defaultCriteria();
+
+                if (self.defaultSearchableAttributes) {
+                    var validAttributes = [];
+                    for (var i = 0; i < dc.length; i++) {
+                        if (self.defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
+                    }
+                    dc = validAttributes;
+                }
+
+                if (dc.length) {
+                    for (var i in dc) {
+                        var newCriterion = _.clone(dc[i]);
+                        newCriterion.value = ko.observable();
+                        newCriterion.predicateValue = ko.observable();
+                        self.selectedFilterCriteria.push(newCriterion);
+                    }
+                }
+            }), self.defaultCriteria.dispose);
         }
 
 
@@ -1748,13 +1863,12 @@ ko.components.register("select2", {
         };
 
         var elementsPageId          = this.id + "-panel-elementsPage",
+            filterTabId             = this.id + "-panel-filterTab",
             filterPageId            = this.id + "-panel-filterPage",
             createPageId            = this.id + "-panel-createPage",
             journalPickerHeaderId   = this.id + "-panel-journalPickerHeader";
 
         this.journalPicker = function(data, event) {
-            console.log("click on journalPicker button", data, event, this);
-
             if (!data.panel) {
                 // Auto-fit width
                 var optimalWidth = (function() {
@@ -1795,6 +1909,7 @@ ko.components.register("select2", {
                 data.panel.setHeader(data.localization.title);
                 data.panel.setBody('\
                     <div class="journal-picker-header collapse" id="' + journalPickerHeaderId + '">\
+                        <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
                         <!-- ko if: createVariantsVisibility -->\
                             <!-- ko component: { name: "createObjectButton", params: {\
                                 scope: scope,\
@@ -1813,6 +1928,47 @@ ko.components.register("select2", {
                         </div>\
                     </div>\
                     <div class="journal-picker-page-container">\
+                        <div class="filter-page hidden" id="' + filterPageId + '">\
+                            <!-- ko if: filterVisibility -->\
+                                <div class="selected-filter-criteria-container">\
+                                    <!-- ko component: { name: \'filter-criteria-table\',\
+                                        params: {\
+                                            htmlId: htmlId,\
+                                            itemId: itemId,\
+                                            journalType: journalType,\
+                                            selectedFilterCriteria: selectedFilterCriteria,\
+                                            defaultFilterCriteria: defaultFilterCriteria\
+                                        }\
+                                    } --> <!-- /ko -->\
+                                </div>\
+                                <div class="filter-criteria-actions">\
+                                    <ul>\
+                                        <li class="filter-criteria-option">\
+                                            <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria, text: labels.applyCriteria"></a>\
+                                        </li>\
+                                        <li class="filter-criteria-option">\
+                                            <a class="filter-criteria-button" data-bind="click: addFilterCriterion, text: labels.addFilterCriterion"></a>\
+                                            <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
+                                                <!-- ko if: journalType -->\
+                                                    <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
+                                                        <li class="filter-criteria-list-option">\
+                                                            <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
+                                                        </li>\
+                                                    </ul>\
+                                                <!-- /ko -->\
+                                                <!-- ko ifnot: journalType -->\
+                                                    <ul class="filter-criteria-list" data-bind="foreach: defaultSearchableAttributes">\
+                                                        <li class="filter-criteria-list-option">\
+                                                            <a class="filter-criterion" data-bind="text: title, click: $root.selectFilterCriterion"></a>\
+                                                        </li>\
+                                                    </ul>\
+                                                <!-- /ko -->\
+                                            </div>\
+                                        </li>\
+                                    </ul>\
+                                </div>\
+                            <!-- /ko -->\
+                        </div>\
                         <div class="elements-page" id="' + elementsPageId + '">\
                             <div class="journal-container">\
                                 <!-- ko component: { name: \'journal\',\
@@ -1903,9 +2059,9 @@ ko.components.register("select2", {
 
                                 // hide other pages and remove selection from other tabs
                                 // Dom.removeClass(elementsTabId, "selected");
-                                // Dom.removeClass(filterTabId, "selected");
+                                Dom.removeClass(filterTabId, "selected");
                                 Dom.addClass(elementsPageId, "hidden");
-                                // Dom.addClass(filterPageId, "hidden");
+                                Dom.addClass(filterPageId, "hidden");
 
                                 // show create page and hightlight tab
                                 Dom.removeClass(createPageId, "hidden");
@@ -1930,6 +2086,69 @@ ko.components.register("select2", {
                     virtualParent: data.virtualParent,
                     createVariantsSource: data.createVariantsSource,
                     scope: data,
+
+                    // filters
+                    htmlId: data.id,
+                    itemId: data.nodetype,
+                    criteriaListShow: data._criteriaListShow,
+                    filterVisibility: data._filterVisibility,
+                    selectedFilterCriteria: data.selectedFilterCriteria,
+                    defaultFilterCriteria: data.defaultFilterCriteria,
+                    defaultSearchableAttributes: data.searchableAttributes,
+                    selectFilterCriterion: function(data, event) {
+                        // clone criterion and add value observables
+                        var newCriterion = _.clone(data);
+                        newCriterion.value = ko.observable();
+                        newCriterion.predicateValue = ko.observable();
+                        
+                        if (self.selectedFilterCriteria.indexOf(newCriterion) != -1)
+                            self.selectedFilterCriteria.push(newCriterion);
+
+                        // hide drop-down menu
+                        self._criteriaListShow(!self._criteriaListShow());
+                    },
+                    applyCriteria: function(data, event) {                       
+                        if (self.selectedFilterCriteria().length == 0) {
+                            self.criteria([]);
+                            return;
+                        } 
+
+                        self.criteria(_.map(_.filter(self.selectedFilterCriteria(), function(c) {
+                            if (c.predicateValue().indexOf("empty") != -1) return c.predicateValue() && c.name();
+                            return c.value() && c.predicateValue() && c.name();
+                        }), function(c) {
+                            return { attribute: c.name(), predicate: c.predicateValue(), value: c.value() }; 
+                        }));
+                    },
+                    addFilterCriterion: function(data, event) {
+                        self._criteriaListShow(!self._criteriaListShow());
+                    },
+                    filter: function(data, event) {
+                        var filterTab = Dom.get(filterTabId);
+
+                        var filterPage = Dom.get(filterPageId), 
+                            elementsPage = Dom.get(elementsPageId),
+                            createPage = Dom.get(createPageId);
+
+                        if ($(elementsPage).hasClass("hidden")) {
+                            $(createPage).addClass("hidden");
+                            $(elementsPage).removeClass("hidden");
+                        }
+
+                        data.filterVisibility(true);
+
+                        // clear tab selection
+                        var buttons = Dom.getElementsBy(function(element) {
+                            return element.className.indexOf("selected") != -1
+                          }, "button", journalPickerHeaderId);
+
+                        _.each(buttons, function(element) {
+                          element.classList.remove("selected");
+                        });
+
+                        $(filterTab).toggleClass("selected");
+                        $(filterPage).toggleClass("hidden");
+                    },
 
                     // pagination
                     maxItems: data.step,

@@ -38,9 +38,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.html = ko.observable("");
             this._value = ko.observable(null);
 
-            this.nodetype = this.attribute().nodetype();
-            this.journalType = this.attribute().journalType();
-            this.settings = this.attribute().settings();            
+            this.nodetype = this.attribute().nodetype ? this.attribute().nodetype() : null;
+            this.journalType = this.attribute().journalType ? this.attribute().journalType() : null;
+            this.settings = this.attribute().settings ? this.attribute().settings() : null;            
 
             if (this.datatype) {
                 var datatypeMapping = {
@@ -330,7 +330,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.getAttribute = function (data) {
                 return ko.computed(function() {
-                    return self.journalType.attribute(data.name());
+                    if (self.journalType) return self.journalType.attribute(data.name());
+                    return data;
                 });
             };
             this.getJournalOptionsType = function (data) {
@@ -350,25 +351,46 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     <!-- ko foreach: selectedFilterCriteria -->\
                         <tr class="criterion">\
                             <td class="criterion-actions"><a class="remove-criterion" data-bind="click: $component.remove">X</a></td>\
-                            <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
-                            <td class="criterion-predicate" data-bind="with: datatype">\
-                                <select data-bind="options: predicates,\
-                                                   optionsText: \'label\',\
-                                                   optionsValue: \'id\',\
-                                                   value: $parent.predicateValue"></select>\
-                            </td>\
-                            <td class="criterion-value-selector">\
-                                <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
-                                    <!-- ko component: { name: "filter-criterion-value", params: {\
-                                        fieldId: $component.htmlId + "-criterion-" + $index(),\
-                                        labels: labels(),\
-                                        datatype: resolve(\'datatype.name\', null),\
-                                        value: value,\
-                                        attribute: $component.getAttribute($data),\
-                                        journalOptionsType: $component.getJournalOptionsType($data)\
-                                    }} --><!-- /ko -->\
-                                <!-- /ko -->\
-                            </td>\
+                            <!-- ko if: $component.journalType -->\
+                                <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
+                                <td class="criterion-predicate" data-bind="with: datatype">\
+                                    <select data-bind="options: predicates,\
+                                                       optionsText: \'label\',\
+                                                       optionsValue: \'id\',\
+                                                       value: $parent.predicateValue"></select>\
+                                </td>\
+                                <td class="criterion-value-selector">\
+                                    <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
+                                        <!-- ko component: { name: "filter-criterion-value", params: {\
+                                            fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                            labels: labels(),\
+                                            datatype: resolve(\'datatype.name\', null),\
+                                            value: value,\
+                                            attribute: $component.getAttribute($data),\
+                                            journalOptionsType: $component.getJournalOptionsType($data)\
+                                        }} --><!-- /ko -->\
+                                    <!-- /ko -->\
+                                </td>\
+                            <!-- /ko -->\
+                            <!-- ko ifnot: $component.journalType -->\
+                                <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: title"></span></td>\
+                                <td class="criterion-predicate">\
+                                    <select data-bind="options: predicates,\
+                                                       optionsText: \'label\',\
+                                                       optionsValue: \'id\',\
+                                                       value: predicateValue"></select>\
+                                </td>\
+                                <td class="criterion-value-selector">\
+                                    <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
+                                        <!-- ko component: { name: "filter-criterion-value", params: {\
+                                            fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                            datatype: resolve(\'datatype\', null),\
+                                            value: value,\
+                                            attribute: $component.getAttribute($data),\
+                                        }} --><!-- /ko -->\
+                                    <!-- /ko -->\
+                                </td>\
+                            <!-- /ko -->\
                         </tr>\
                     <!-- /ko -->\
                 </tbody>\
@@ -379,7 +401,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
         viewModel: function(params) {
             var self = this;
             initializeParameters.call(this, params);
-     
+
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
             };
