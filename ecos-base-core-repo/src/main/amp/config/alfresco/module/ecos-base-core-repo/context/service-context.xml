@@ -25,6 +25,26 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
+    <bean id="idocs.core.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="propertyEditorRegistrars">
+            <list>
+                <bean class="ru.citeck.ecos.spring.MapPropertyEditorRegistrar">
+                    <property name="propertyEditors">
+                        <map>
+                            <entry key="ru.citeck.ecos.utils.LazyNodeRef">
+                                <bean id="LazyNodeRefPropertyEditor" class="ru.citeck.ecos.spring.LazyNodeRefPropertyEditor">
+                                    <property name="nodeServiceName" value="nodeService" />
+                                    <property name="searchServiceName" value="searchService" />
+                                    <property name="namespaceServiceName" value="namespaceService" />
+                                </bean>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <!--==============================================================-->
     <!--                             node                             -->
     <!--==============================================================-->

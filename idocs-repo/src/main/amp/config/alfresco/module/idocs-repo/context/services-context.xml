@@ -32,13 +32,6 @@
         <entry key="java.util.Date">
             <bean id="DatePropertyEditor" class="ru.citeck.ecos.spring.DatePropertyEditor" />
         </entry>
-        <entry key="ru.citeck.ecos.utils.LazyNodeRef">
-            <bean id="LazyNodeRefPropertyEditor" class="ru.citeck.ecos.spring.LazyNodeRefPropertyEditor">
-                <property name="nodeServiceName" value="nodeService" />
-                <property name="searchServiceName" value="searchService" />
-                <property name="namespaceServiceName" value="namespaceService" />
-            </bean>
-        </entry>
     </util:map>
 
     <bean id="idocs.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
