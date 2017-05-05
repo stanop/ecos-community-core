@@ -1618,6 +1618,7 @@ ko.components.register("select2", {
         this.selectedFilterCriteria = ko.observableArray();
         this.additionalOptions = ko.observable([]);
         this._criteriaListShow = ko.observable(false);
+        this._filterVisibility = ko.observable(false);
 
 
         // computed
@@ -1928,43 +1929,45 @@ ko.components.register("select2", {
                     </div>\
                     <div class="journal-picker-page-container">\
                         <div class="filter-page hidden" id="' + filterPageId + '">\
-                            <div class="selected-filter-criteria-container">\
-                                <!-- ko component: { name: \'filter-criteria-table\',\
-                                    params: {\
-                                        htmlId: htmlId,\
-                                        itemId: itemId,\
-                                        journalType: journalType,\
-                                        selectedFilterCriteria: selectedFilterCriteria,\
-                                        defaultFilterCriteria: defaultFilterCriteria\
-                                    }\
-                                } --> <!-- /ko -->\
-                            </div>\
-                            <div class="filter-criteria-actions">\
-                                <ul>\
-                                    <li class="filter-criteria-option">\
-                                        <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria, text: labels.applyCriteria"></a>\
-                                    </li>\
-                                    <li class="filter-criteria-option">\
-                                        <a class="filter-criteria-button" data-bind="click: addFilterCriterion, text: labels.addFilterCriterion"></a>\
-                                        <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
-                                            <!-- ko if: journalType -->\
-                                                <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
-                                                    <li class="filter-criteria-list-option">\
-                                                        <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
-                                                    </li>\
-                                                </ul>\
-                                            <!-- /ko -->\
-                                            <!-- ko ifnot: journalType -->\
-                                                <ul class="filter-criteria-list" data-bind="foreach: defaultSearchableAttributes">\
-                                                    <li class="filter-criteria-list-option">\
-                                                        <a class="filter-criterion" data-bind="text: title, click: $root.selectFilterCriterion"></a>\
-                                                    </li>\
-                                                </ul>\
-                                            <!-- /ko -->\
-                                        </div>\
-                                    </li>\
-                                </ul>\
-                            </div>\
+                            <!-- ko if: filterVisibility -->\
+                                <div class="selected-filter-criteria-container">\
+                                    <!-- ko component: { name: \'filter-criteria-table\',\
+                                        params: {\
+                                            htmlId: htmlId,\
+                                            itemId: itemId,\
+                                            journalType: journalType,\
+                                            selectedFilterCriteria: selectedFilterCriteria,\
+                                            defaultFilterCriteria: defaultFilterCriteria\
+                                        }\
+                                    } --> <!-- /ko -->\
+                                </div>\
+                                <div class="filter-criteria-actions">\
+                                    <ul>\
+                                        <li class="filter-criteria-option">\
+                                            <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria, text: labels.applyCriteria"></a>\
+                                        </li>\
+                                        <li class="filter-criteria-option">\
+                                            <a class="filter-criteria-button" data-bind="click: addFilterCriterion, text: labels.addFilterCriterion"></a>\
+                                            <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
+                                                <!-- ko if: journalType -->\
+                                                    <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
+                                                        <li class="filter-criteria-list-option">\
+                                                            <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
+                                                        </li>\
+                                                    </ul>\
+                                                <!-- /ko -->\
+                                                <!-- ko ifnot: journalType -->\
+                                                    <ul class="filter-criteria-list" data-bind="foreach: defaultSearchableAttributes">\
+                                                        <li class="filter-criteria-list-option">\
+                                                            <a class="filter-criterion" data-bind="text: title, click: $root.selectFilterCriterion"></a>\
+                                                        </li>\
+                                                    </ul>\
+                                                <!-- /ko -->\
+                                            </div>\
+                                        </li>\
+                                    </ul>\
+                                </div>\
+                            <!-- /ko -->\
                         </div>\
                         <div class="elements-page" id="' + elementsPageId + '">\
                             <div class="journal-container">\
@@ -2088,6 +2091,7 @@ ko.components.register("select2", {
                     htmlId: data.id,
                     itemId: data.nodetype,
                     criteriaListShow: data._criteriaListShow,
+                    filterVisibility: data._filterVisibility,
                     selectedFilterCriteria: data.selectedFilterCriteria,
                     defaultFilterCriteria: data.defaultFilterCriteria,
                     defaultSearchableAttributes: data.searchableAttributes,
@@ -2130,6 +2134,8 @@ ko.components.register("select2", {
                             $(createPage).addClass("hidden");
                             $(elementsPage).removeClass("hidden");
                         }
+
+                        data.filterVisibility(true);
 
                         // clear tab selection
                         var buttons = Dom.getElementsBy(function(element) {
