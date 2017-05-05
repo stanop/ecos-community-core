@@ -1,7 +1,18 @@
 <#assign params = viewScope.region.params!{} />
-<#assign controlId = fieldId + "-select2Control">
+<#assign controlId = fieldId + "-journal2Control">
 
 <#assign optionParameters = [ "optionsText", "optionsValue" ]>
+
+<#-- createVariant & virtualParent -->
+<#assign createVariantsVisibility = params.createVariantsVisibility!"true" />
+<#assign createVariantsSource>
+	<#if params.createVariantsSource??>
+		${params.createVariantsSource}
+	<#elseif params.journalTypeId??>
+		journal-create-variants
+	<#else>create-views</#if>
+</#assign>
+<#assign virtualParent = params.virtualParent!"false" />
 
 <#-- predicats: startsWith, contains -->
 <#assign searchPredicat = params.searchPredicat!"contains">
@@ -9,20 +20,30 @@
 <#-- step: 10, 15, 20 ...  -->
 <#assign step = params.step!"10">
 
-<div id="${controlId}" class="select2-control" data-bind='component: { name: "select2", params: {
+<div id="${controlId}" class="journal2-control" data-bind='component: { name: "select2", params: {
 			element: $element,
 
+			name: name,
 			disabled: protected,
 			multiple: multiple,
 			value: value,
 
 			options: options,
 
-			mode: "list",
+			mode: "table",
+
+			<#-- table mode parameters -->
+	        <#if params.journalTypeId??>journalTypeId: "${params.journalTypeId}",</#if>
+	        <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: "${params.defaultVisibleAttributes}",</#if>
 
 			<#-- list mode parameters -->
 			searchPredicat: "${searchPredicat}",
 			step: ${step},
+
+	        <#-- Create Object parameters -->
+	        createVariantsVisibility: ${createVariantsVisibility},
+	        createVariantsSource: "${createVariantsSource?trim}",
+	        virtualParent: ${virtualParent},
 
 			<#if params.options??>
 				forceOptions: function() {

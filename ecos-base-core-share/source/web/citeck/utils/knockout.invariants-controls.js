@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Citeck LLC.
+ * Copyright (C) 2015-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -28,6 +28,8 @@ var $html = Alfresco.util.encodeHTML,
 
 var Event = YAHOO.util.Event,
     Dom = YAHOO.util.Dom;
+
+var JournalType = koclass('JournalType');
 
 
 // TODO: refactoring
@@ -544,7 +546,7 @@ ko.bindingHandlers.dateControl = {
 // JOURNAL
 // -------------
 
-var JournalType = koclass('JournalType');
+
 
 ko.bindingHandlers.journalControl = {
   init: function(element, valueAccessor, allBindings, data, context) {
@@ -1455,7 +1457,7 @@ ko.components.register("autocomplete", {
                 if (node == self.element) {
                     return;
                 }
-    
+                
                 node = node.parentNode;
             }
 
@@ -1527,51 +1529,108 @@ ko.components.register("autocomplete", {
 ko.components.register("select2", {
     viewModel: function(params) {
         var self = this;
-        kocomponents.initializeParameters.call(this, params);
+        kocomponents.initializeParameters.call(this, params);      
 
-        this.labels = {
-            label: Alfresco.util.message("autocomplete.label"),
-            help: Alfresco.util.message("autocomplete.help"),
-            empty: Alfresco.util.message("autocomplete.empty"),
-            more: Alfresco.util.message("autocomplete.more")
-        }
+        this.id = this.element.id;
+
+        this._listMode = self.mode == "list";
+        this._tableMode = self.mode == "table";
 
         if (this.forceOptions) {
             this.forceOptions = this.forceOptions();
             this.forceOptions.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
         }
 
+        if (this._tableMode) {
+            if (this.defaultVisibleAttributes)
+                this.defaultVisibleAttributes =  _.map(this.defaultVisibleAttributes.split(","), function(a) { return trim(a); })
+
+            this.journalType = this.journalTypeId ? new JournalType(this.journalTypeId) : null;
+            if (!this.journalType) { /* so, it is fail */ }
+        }
+
+
+        // localization
+        var localization = this.localization = {
+            select: Alfresco.util.message("button.select"),
+
+            // table
+            title: Alfresco.util.message("form.select.label"),
+            search: Alfresco.util.message("journal.search"),
+            filterTab: Alfresco.util.message("journal.filter"),
+            createTab: Alfresco.util.message("journal.create"),
+            selectedElements: Alfresco.util.message("journal.selected-elements"),
+            applyCriteria: Alfresco.util.message("journal.apply-criteria"),
+            addFilterCriterion: Alfresco.util.message("journal.add-filter-criterion"),
+            submitButton: Alfresco.util.message("button.ok"),
+            cancelButton: Alfresco.util.message("button.cancel"),
+            nextPageLabel: Alfresco.util.message("journal.pagination.next-page-label"),
+            nextPageTitle: Alfresco.util.message("journal.pagination.next-page-title"),
+            previousPageLabel: Alfresco.util.message("journal.pagination.previous-page-label"),
+            previousPageTitle: Alfresco.util.message("journal.pagination.previous-page-title"),
+
+            // list
+            label: Alfresco.util.message("autocomplete.label"),
+            help: Alfresco.util.message("autocomplete.help"),
+            empty: Alfresco.util.message("autocomplete.empty"),
+            more: Alfresco.util.message("autocomplete.more")
+        }
+
+
         // private methods
-        this.optionTitle = function(option) {
+        // ---------------
+
+        this._optionTitle = function(option) {
             if (self.optionsText) return self.optionsText(option);
             return self.getValueTitle(option);
         };
 
+        this._addValues = function(values) {
+            self.value(self.multiple() ? _.union(self.value(), values) : values[0]);
+        }
+
+
         // observables
+        // -----------
+
         this.containerVisibility = ko.observable(false);
         this.highlightedElement = ko.observable();
         this.searchQuery = ko.observable();
 
+        this.hasMore = ko.observable(false);
+        this.count = ko.observable(this.step);
+        this.page = ko.observable(1);
+
+        // for list mode
         this.componentFocused = ko.observable(false);
         this.searchFocused = ko.observable(true);
 
-        this.hasMore = ko.observable(false);
-        this.count = ko.observable(this.step);
+        // for table mode
+        this.panel;
+        this.selectedElements = ko.observableArray();
+        this.selectedFilterCriteria = ko.observableArray();
+        this.additionalOptions = ko.observable([]);
+        this._criteriaListShow = ko.observable(false);
+
 
         // computed
-        this.label = ko.pureComputed(function() {
-            return self.value() ?
-                   self.getValueTitle(self.value())() :
-                   self.labels.label;
-        });
+        // --------
 
+        this.label = ko.pureComputed(function() {
+            return self.value() ? self.getValueTitle(self.value())() : self.localization.label;
+        });
+      
         this.visibleOptions = ko.pureComputed(function() {
             var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
 
+            if (self.additionalOptions().length) {
+                preparedOptions = _.union(preparedOptions, self.additionalOptions()); 
+            }
+               
             if (self.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
-                        labelString  = self.optionTitle(option)();
+                        labelString  = self._optionTitle(option)();
 
                     if (labelString) {
                         labelString = labelString.toLowerCase();
@@ -1588,24 +1647,45 @@ ko.components.register("select2", {
                 });
             }
 
-            if (self.count() < preparedOptions.length) {
-                self.hasMore(true);
-                return preparedOptions.slice(0, self.count());
+            // pagination for list
+            if (self._listMode) {
+                if (self.count() < preparedOptions.length) {
+                    self.hasMore(true);
+                    return preparedOptions.slice(0, self.count());
+                }
+            }
+
+            // pagination for table
+            if (self._tableMode) {
+                var startIndex = self.step * self.page() - self.step, endIndex = self.step * self.page();
+                self.hasMore(self.step * self.page() < preparedOptions.length);
+                return preparedOptions.slice(startIndex, endIndex);
             }
 
             self.hasMore(false);
             return preparedOptions;
         });
 
+
         // extends
+        // -------
+
         this.searchQuery.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
 
+
         // subscription and events
-        this.containerVisibility.subscribe(function() { self.searchFocused(true); });
-        this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        // -----------------------
+
         this.searchQuery.subscribe(function() { self.count(self.step); });
+        if (this._listMode) {
+            this.containerVisibility.subscribe(function() { self.searchFocused(true); });
+            this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
+        }
+
 
         // public methods
+        // --------------
+
         this.clear = function(data, event) { if (event.which == 1) self.value(null) };
         this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
 
@@ -1667,71 +1747,304 @@ ko.components.register("select2", {
             self.count(self.count() + self.step);
         };
 
-        // blur
-        $("body").click(function(event, a) {
-            var node = event.target, body = document.getElementById("Share");
+        var elementsPageId          = this.id + "-panel-elementsPage",
+            filterPageId            = this.id + "-panel-filterPage",
+            createPageId            = this.id + "-panel-createPage",
+            journalPickerHeaderId   = this.id + "-panel-journalPickerHeader";
 
-            while (node != body) {
-                if (node == self.element) return;
-                node = node.parentNode;
+        this.journalPicker = function(data, event) {
+            console.log("click on journalPicker button", data, event, this);
+
+            if (!data.panel) {
+                // Auto-fit width
+                var optimalWidth = (function() {
+                    var maxContainerWidth = screen.width - 200,
+                        countOfAttributes = (function() {
+                            if (data.defaultVisibleAttributes) return data.defaultVisibleAttributes.length;
+                            if (data.journalType) return data.journalType.defaultAttributes().length;
+                            return 1;
+                        })();
+
+                    if (countOfAttributes > 5) {
+                        var potentialWidth = 150 * countOfAttributes;
+                        return (potentialWidth >= maxContainerWidth ? maxContainerWidth : potentialWidth) + "px";
+                    }
+
+                    return "800px";
+                })();
+
+                // initialize panel
+                data.panel = new YAHOO.widget.Panel(data.id + "-panel", {
+                    width:          optimalWidth,
+                    visible:        false, 
+                    fixedcenter:    true,  
+                    draggable:      true,
+                    modal:          true,
+                    zindex:         5,
+                    close:          true
+                });
+
+                // hide dialog on click 'esc' button
+                data.panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
+                    fn: data.panel.hide,
+                    scope: data.panel,
+                    correctScope: true
+                }));
+
+                // build panel header, body and footer
+                data.panel.setHeader(data.localization.title);
+                data.panel.setBody('\
+                    <div class="journal-picker-header collapse" id="' + journalPickerHeaderId + '">\
+                        <!-- ko if: createVariantsVisibility -->\
+                            <!-- ko component: { name: "createObjectButton", params: {\
+                                scope: scope,\
+                                source: createVariantsSource,\
+                                callback: callback,\
+                                buttonTitle: labels.createTab,\
+                                virtualParent: virtualParent,\
+                                journalType: journalType\
+                            }} --><!-- /ko -->\
+                        <!-- /ko -->\
+                        <div class="journal-search">\
+                            <input type="search" class="journal-search-input" data-bind="\
+                                textInput: searchQuery,\
+                                attr: { placeholder: labels.search }\
+                            " />\
+                        </div>\
+                    </div>\
+                    <div class="journal-picker-page-container">\
+                        <div class="elements-page" id="' + elementsPageId + '">\
+                            <div class="journal-container">\
+                                <!-- ko component: { name: \'journal\',\
+                                    params: {\
+                                        sourceElements: elements,\
+                                        targetElements: selectedElements,\
+                                        journalType: journalType,\
+                                        columns: columns,\
+                                        hightlightSelection: true,\
+                                        afterSelectionCallback: afterSelectionCallback,\
+                                        options: { multiple: multiple, pagination: false },\
+                                    }\
+                                } --><!-- /ko -->\
+                                <div class="journal-pagination">\
+                                    <span class="previous-page">\
+                                        <!-- ko if: page() - 1 > 0 -->\
+                                            <a data-bind="click: previousPage,\
+                                                          text: labels.previousPageLabel,\
+                                                          attr: { title: labels.previousPageTitle }"><--</a>\
+                                        <!-- /ko -->\
+                                        <!-- ko ifnot: page() - 1 > 0 -->\
+                                            <!-- ko text: labels.previousPageLabel --><!-- /ko -->\
+                                        <!-- /ko -->\
+                                    </span>\
+                                    <span class="page-label">\
+                                        <span class="start-page" data-bind="text: page() * maxItems - maxItems + 1"></span>\
+                                        <span class="dash">-</span>\
+                                        <span class="end-page" data-bind="text: page() * maxItems"></span>\
+                                    </span>\
+                                    <span class="next-page">\
+                                        <!-- ko if: hasMore -->\
+                                            <a data-bind="click: nextPage,\
+                                                          text: labels.nextPageLabel,\
+                                                          attr: { title: labels.nextPageTitle }">--></a>\
+                                        <!-- /ko -->\
+                                        <!-- ko ifnot: hasMore -->\
+                                            <!-- ko text: labels.nextPageLabel --><!-- /ko -->\
+                                        <!-- /ko -->\
+                                    </span>\
+                                </div>\
+                            </div>\
+                        </div>\
+                        <div class="create-page hidden" id="' + createPageId + '"></div>\
+                    </div>\
+                ');
+                data.panel.setFooter('\
+                    <div class="buttons">\
+                        <input type="submit" data-bind="value: labels.submitButton, click: submit, clickBubble: false" >\
+                        <input type="button" data-bind="value: labels.cancelButton, click: cancel, clickBubble: false" >\
+                    </div>\
+                ');
+
+                data.panel.render(document.body);
+
+
+                // bindings for journal panel of table mode
+                // ----------------------------------------
+
+                ko.applyBindings({
+                    // header
+                    labels: data.localization,
+                    searchQuery: data.searchQuery,
+                    createVariantsVisibility: data.createVariantsVisibility,
+                    callback: function(variant) {
+                        var scCallback = function(node) {
+                            // clear create page
+                            var createPage = Dom.get(createPageId);
+                            Dom.addClass(createPage, "hidden");
+                            createPage.innerHTML = "";
+
+                            // show elements page
+                            var elementsPage = Dom.get(elementsPageId);
+                            Dom.removeClass(elementsPage, "hidden");
+
+                            // change tab selection
+                            var buttons = Dom.getElementsBy(function(element) {
+                                return element.className.indexOf("selected") != -1
+                              }, "button", journalPickerHeaderId);
+
+                            _.each(buttons, function(element) {
+                                element.classList.remove("selected");
+                            });
+                        };
+
+                        Citeck.forms.formContent(variant.type(), variant.formId(), {
+                            response: function(response) {
+                                Dom.get(createPageId).innerHTML = response;
+
+                                // hide other pages and remove selection from other tabs
+                                // Dom.removeClass(elementsTabId, "selected");
+                                // Dom.removeClass(filterTabId, "selected");
+                                Dom.addClass(elementsPageId, "hidden");
+                                // Dom.addClass(filterPageId, "hidden");
+
+                                // show create page and hightlight tab
+                                Dom.removeClass(createPageId, "hidden");
+                                var createButton = Dom.getElementsBy(function(el) {
+                                    return el.tagName == "BUTTON";
+                                }, "button", journalPickerHeaderId);
+                                Dom.addClass(createButton, "selected");
+                            },
+
+                            submit: function(node) {
+                                self.additionalOptions(_.union(self.additionalOptions(), [node ]));
+                                scCallback(node);
+                            },
+                            cancel: scCallback
+                        }, 
+                        { 
+                            destination: variant.destination(),
+                            fieldId: data.name()
+                        });
+
+                    },
+                    virtualParent: data.virtualParent,
+                    createVariantsSource: data.createVariantsSource,
+                    scope: data,
+
+                    // pagination
+                    maxItems: data.step,
+                    page: data.page,
+                    hasMore: data.hasMore,
+                    previousPage: function(data, event) { data.page(data.page() - 1); },
+                    nextPage: function(data, event) { data.page(data.page() + 1); },
+
+                    // body
+                    elements: data.visibleOptions,
+                    selectedElements: data.selectedElements,
+                    multiple: data.multiple,
+                    journalType: data.journalType,
+                    columns: data.defaultVisibleAttributes,
+                    afterSelectionCallback: function(data, event) {
+                        if (!self.multiple() && event.type == "dblclick") {
+                            self._addValues([ data ]); 
+                            self.panel.hide();
+                            self.selectedElements.removeAll();
+                        }
+                    },
+                    createPageVisibility: data._createPageVisibility,
+                    elementPageVisibility: data._elementPageVisibility
+                }, data.panel.body);
+
+                ko.applyBindings({
+                    labels: data.localization,
+                    submit: function(el, data) {
+                        self._addValues(ko.utils.unwrapObservable(self.selectedElements));
+                        self.panel.hide();
+                        self.selectedElements.removeAll();
+                    },
+                    cancel: function(el, data) { 
+                        self.panel.hide();
+                        self.selectedElements.removeAll();
+                    }
+                }, data.panel.footer);
             }
+            
+            data.panel.show();
+        }
 
-            self.containerVisibility(false);
-        });
+        // blur
+        if (this._listMode) {
+            $("body").click(function(event, a) {
+                var node = event.target, body = document.getElementById("Share");
+
+                while (node && node != body) {
+                    if (node == self.element) return;
+                    node = node.parentNode;
+                }
+
+                self.containerVisibility(false);
+            });
+        }
+
     },
     template:
-       '<!-- ko if: disabled -->\
-            <div class="select2-select disabled" tabindex="0">\
-                <span class="select2-value" data-bind="text: label"></span>\
-                <div class="select2-twister"></div>\
-            </div>\
-        <!-- /ko -->\
-        <!-- ko ifnot: disabled -->\
-            <div class="select2-select" tabindex="0"\
-                data-bind="\
-                    event: { mousedown: toggleContainer, keydown: keyManagment }, mousedownBubble: false,\
-                    css: { opened: containerVisibility },\
-                    hasFocus: componentFocused">\
-                <span class="select2-value" data-bind="text: label"></span>\
-                <!-- ko if: value -->\
-                    <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
-                <!-- /ko -->\
-                <div class="select2-twister"></div>\
-            </div>\
-        <!-- /ko -->\
-        <!-- ko if: containerVisibility -->\
-            <div class="select2-container">\
-                <div class="select2-search-container">\
-                    <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
-                        <div class="help-message" data-bind="text: labels.help"></div>\
-                    <!-- /ko -->\
-                    <input type="text" class="select2-search" data-bind="\
-                        textInput: searchQuery,\
-                        event: { keydown: keyAction },\
-                        keydownBubble: false,\
-                        attr: { placeholder: labels.help },\
-                        hasFocus: searchFocused">\
+       '<!-- ko if: _listMode -->\
+            <!-- ko if: disabled -->\
+                <div class="select2-select disabled" tabindex="0">\
+                    <span class="select2-value" data-bind="text: label"></span>\
+                    <div class="select2-twister"></div>\
                 </div>\
-                <!-- ko if: visibleOptions -->\
-                    <!-- ko if: visibleOptions().length > 0 -->\
-                        <ul class="select2-list" data-bind="foreach: visibleOptions">\
-                            <li data-bind="\
-                                event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
-                                css: { selected: $parent.highlightedElement() == $data }">\
-                                <a data-bind="text: $component.optionTitle($data)"></a>\
-                            </li>\
-                        </ul>\
+            <!-- /ko -->\
+            <!-- ko ifnot: disabled -->\
+                <div class="select2-select" tabindex="0"\
+                    data-bind="\
+                        event: { mousedown: toggleContainer, keydown: keyManagment }, mousedownBubble: false,\
+                        css: { opened: containerVisibility },\
+                        hasFocus: componentFocused">\
+                    <span class="select2-value" data-bind="text: label"></span>\
+                    <!-- ko if: value -->\
+                        <a class="clear-button" data-bind="event: { mousedown: clear }, mousedownBubble: false">x</a>\
                     <!-- /ko -->\
-                    <!-- ko if: visibleOptions().length == 0 -->\
-                        <span class="select2-message empty-message" data-bind="text: labels.empty"></span>\
-                    <!-- /ko -->\
-                <!-- /ko -->\
-                <!-- ko if: hasMore -->\
-                    <div class="select2-more">\
-                        <a data-bind="click: more, attr: { title: labels.more }">...</a>\
+                    <div class="select2-twister"></div>\
+                </div>\
+            <!-- /ko -->\
+            <!-- ko if: containerVisibility -->\
+                <div class="select2-container">\
+                    <div class="select2-search-container">\
+                        <!-- ko ifnot: Citeck.HTML5.supportAttribute("placeholder") -->\
+                            <div class="help-message" data-bind="text: localization.help"></div>\
+                        <!-- /ko -->\
+                        <input type="text" class="select2-search" data-bind="\
+                            textInput: searchQuery,\
+                            event: { keydown: keyAction },\
+                            keydownBubble: false,\
+                            attr: { placeholder: localization.help },\
+                            hasFocus: searchFocused">\
                     </div>\
-                <!-- /ko -->\
-            </div>\
+                    <!-- ko if: visibleOptions -->\
+                        <!-- ko if: visibleOptions().length > 0 -->\
+                            <ul class="select2-list" data-bind="foreach: visibleOptions">\
+                                <li data-bind="\
+                                    event: { mousedown: $parent.selectItem }, mousedownBubble: false,\
+                                    css: { selected: $parent.highlightedElement() == $data }">\
+                                    <a data-bind="text: $component._optionTitle($data)"></a>\
+                                </li>\
+                            </ul>\
+                        <!-- /ko -->\
+                        <!-- ko if: visibleOptions().length == 0 -->\
+                            <span class="select2-message empty-message" data-bind="text: localization.empty"></span>\
+                        <!-- /ko -->\
+                    <!-- /ko -->\
+                    <!-- ko if: hasMore -->\
+                        <div class="select2-more">\
+                            <a data-bind="click: more, attr: { title: localization.more }">...</a>\
+                        </div>\
+                    <!-- /ko -->\
+                </div>\
+            <!-- /ko -->\
+        <!-- /ko -->\
+        <!-- ko if: _tableMode -->\
+            <button class="select2-control-button" data-bind="disable: disabled, text: localization.select, click: journalPicker"></button>\
         <!-- /ko -->'
 });
 
