@@ -30,12 +30,12 @@
             <auto-deploy>true</auto-deploy>
             <configurations>
 				<config evaluator="string-compare" condition="CiteckDependencies">
-					<dependencies>
-						<js src="/lib/underscore.js" />
-						<js src="/citeck/utils/citeck.js" />
-						<css src="/citeck/utils/citeck.css" />
-                        <js src="/citeck/components/dynamic-tree/cell-formatters.js"/>
-					</dependencies>
+            <dependencies>
+                <js src="/lib/underscore.js"/>
+                <js src="/citeck/utils/citeck.js"/>
+                <css src="/citeck/utils/citeck.css"/>
+                <js src="/citeck/components/dynamic-tree/cell-formatters.js?t=1493171975"/>
+            </dependencies>
 				</config>
             </configurations>
             <components>

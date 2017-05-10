@@ -341,11 +341,16 @@
 			};
 		},
 
-		code: function(labels, tdClassPrefix, trClassPrefix) {
+		labelByCode: function(labels) {
+			return function(el, oRecord, oColumn, sData) {
+				return labels[sData] || sData || "";
+			}
+		},
+		_code: function(labelByCode, tdClassPrefix, trClassPrefix) {
 			return function(el, oRecord, oColumn, sData) {
 				var td = el.parentElement,
 					tr = td.parentElement;
-				el.innerHTML = labels[sData] || sData || "";
+				el.innerHTML = labelByCode(el, oRecord, oColumn, sData);
 				if(tdClassPrefix) {
 					Dom.addClass(td, tdClassPrefix + sData);
 				}
@@ -353,6 +358,10 @@
 					Dom.addClass(tr, trClassPrefix + sData);
 				}
 			}
+		},
+		code: function(labels, tdClassPrefix, trClassPrefix) {
+			var labelByCode = Citeck.format.labelByCode(labels);
+			return _code(labelByCode, tdClassPrefix, trClassPrefix);
 		},
 
 		multiple: function(singleFormatter) {
@@ -1551,17 +1560,10 @@
 						for (var d = 0; d < sData.length; d++) {
 							if (sData[d]) renderRequest(sData[d]);
 						}
-					} else { renderRequest(sData); }
-				} 
-
-					};
-
-					if (sData instanceof Array) {
-						for (var d = 0; d < sData.length; d++) {
-							if (sData[d]) renderRequest(sData[d]);
-						}
-					} else { renderRequest(sData); }
-				},
+					} else {renderRequest(sData);}
+				}
+			};
+		},
 
 		// change property to another property if original is not exist
 		replaceable: function(attributeName, formatter, direction) {
@@ -1585,6 +1587,67 @@
 
 				elCell.innerHTML = sData;
 				return
+			}
+		},
+
+		transformUseLabel: function(labelByCode, formatter) {
+			return function(elCell, oRecord, oColumn, sData) {
+				if(YAHOO.lang.isArray(sData)) {
+					var texts = [];
+					for (var i = 0, ii = sData.length; i < ii; i++) {
+						texts[i] = labelByCode(elCell, oRecord, oColumn, sData[i]);
+					}
+					formatter(elCell, oRecord, oColumn, texts);
+				} else {
+					var text = labelByCode(elCell, oRecord, oColumn, sData);
+					formatter(elCell, oRecord, oColumn, text);
+				}
+			};
+		},
+		truncateVertical: function(target) {
+			if (!target) target = 3;
+			return function(elCell, oRecord, oColumn, sData) {
+				if(YAHOO.lang.isArray(sData)) {
+					var texts = [];
+					for (var i = 0, ii = sData.length; i < ii; i++) {
+						texts[i] = sData[i];
+					}
+					if (sData.length > target) {
+						elCell.innerHTML = '<div class="truncatedInfo">'
+							+ '<div>'
+							+ sData.slice(0, target).reduce(function (resultStr, text) {
+								return resultStr += (resultStr && text ? ",<br />" : "") + text;
+							}, "")
+							+ ',<br /> ...'
+							+ '</div>'
+
+							+ '<div class="untruncatedInfo">'
+							+ sData.reduce(function (resultStr, text) {
+								return resultStr += (resultStr && text ? ",<br />" : "") + text;
+							}, "")
+							+ '</div>'
+							+ '</div>';
+					} else {
+						elCell.innerHTML = sData.reduce(function (resultStr, text) {
+							return resultStr += (resultStr && text ? ",<br />" : "") + text;
+						}, "");
+					}
+				} else {
+					elCell.innerHTML = sData;
+				}
+			};
+		},
+
+		truncate: function (target) {
+			if (!target) target = 100;
+			return function (elCell, oRecord, oColumn, sData) {
+				if (sData) {
+					var result = sData;
+					if (result.length > target) {
+						result = result.slice(0, target - 3) + "...";
+					}
+					elCell.innerHTML = result;
+				}
 			}
 		}
 

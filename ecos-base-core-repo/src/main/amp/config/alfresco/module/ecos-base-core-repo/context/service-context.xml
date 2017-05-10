@@ -285,4 +285,12 @@
         <property name="registry" ref="AssociationIndexPropertyRegistry" />
     </bean>
 
+    <bean id="ecos-base-core-resourceBundles" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.module.${project.artifactId}.messages.ecos-base-core</value>
+            </list>
+        </property>
+    </bean>
+
 </beans>

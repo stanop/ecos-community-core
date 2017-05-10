@@ -427,4 +427,53 @@ public class DictionaryUtils {
         }
         return result;
     }
+
+    public static Set<ConstraintDefinition> getConstraintsForProperty(QName type, QName property, DictionaryService dictionaryService) {
+        ParameterCheck.mandatory("type", type);
+        ParameterCheck.mandatory("property", property);
+
+        PropertyDefinition basePropertyDefinition = dictionaryService.getProperty(property);
+        QName containerName = basePropertyDefinition.getContainerClass().getName();
+
+        Collection<QName> classesWithProp = dictionaryService.getSubTypes(containerName, true);
+        classesWithProp.addAll(dictionaryService.getSubAspects(containerName, true));
+
+        ClassDefinition typeDefinition = dictionaryService.getType(type);
+        List<ConstraintDefinition> constraints = Collections.emptyList();
+        while (typeDefinition != null && constraints.isEmpty()) {
+            if (classesWithProp.contains(typeDefinition.getName())) {
+                PropertyDefinition propDef = dictionaryService.getProperty(typeDefinition.getName(), property);
+                if (propDef != null) {
+                    constraints = propDef.getConstraints();
+                }
+            }
+            if (constraints.isEmpty()) {
+                QName aspectWithProp = getParentClassContainsProperty(classesWithProp, typeDefinition.getDefaultAspects(false));
+                if (aspectWithProp != null) {
+                    PropertyDefinition propDef = dictionaryService.getProperty(aspectWithProp, property);
+                    if (propDef != null) {
+                        constraints = propDef.getConstraints();
+                    }
+                }
+            }
+            typeDefinition = typeDefinition.getParentClassDefinition();
+        }
+
+        Set<ConstraintDefinition> result = new HashSet<>();
+        if (!constraints.isEmpty()) {
+            result.addAll(constraints);
+        }
+        return result;
+    }
+
+    private static QName getParentClassContainsProperty(Collection<QName> classesWithProperty, List<AspectDefinition> aspects) {
+        for (QName classQName : classesWithProperty) {
+            for (AspectDefinition typeAspect : aspects) {
+                if (typeAspect.getName().equals(classQName)) {
+                    return classQName;
+                }
+            }
+        }
+        return null;
+    }
 }
