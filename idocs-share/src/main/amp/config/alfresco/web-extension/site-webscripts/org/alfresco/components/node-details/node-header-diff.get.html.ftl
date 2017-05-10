@@ -1,9 +1,9 @@
 <@markup id="css" >
-   <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/node-details/node-header.css" group="node-details" />
+   <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/node-details/node-header.css" group="node-details" />
 </@>
 
 <@markup id="js">
-   <@script type="text/javascript" src="${page.url.context}/res/components/node-details/node-header-diff.js" group="node-details" />
+   <@script type="text/javascript" src="${url.context}/res/components/node-details/node-header.js" group="node-details" />
 </@>
 
 <#if item??>
