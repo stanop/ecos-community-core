@@ -83,12 +83,16 @@ public class TaskHistoryListener extends AbstractTaskListener {
 	@Override
 	protected void notifyImpl(DelegateTask task) {
 
-		// event
 		String eventName = eventNames.get(task.getEventName());
 		if(eventName == null) {
 			logger.warn("Unsupported activiti task event: " + task.getEventName());
 			return;
 		}
+        NodeRef document = ListenerUtils.getDocument(task.getExecution(), nodeService);
+        if (document == null) {
+            return;
+        }
+
 		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>();
 		// task type
 		QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY), namespaceService);
@@ -120,14 +124,10 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		// pooled actors
 		ArrayList<NodeRef> pooledActors = ListenerUtils.getPooledActors(task, authorityService);
 
-		// document
-		NodeRef document = ListenerUtils.getDocument(task.getExecution(), nodeService);
-
 		// additional properties if any
 		Map<QName, Serializable> additionalProperties = getAdditionalProperties(task.getExecution());
 
 		// persist it
-
         if(additionalProperties != null) {
             eventProperties.putAll(additionalProperties);
         }
