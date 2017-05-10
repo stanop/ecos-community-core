@@ -32,13 +32,6 @@
         <entry key="java.util.Date">
             <bean id="DatePropertyEditor" class="ru.citeck.ecos.spring.DatePropertyEditor" />
         </entry>
-        <entry key="ru.citeck.ecos.utils.LazyNodeRef">
-            <bean id="LazyNodeRefPropertyEditor" class="ru.citeck.ecos.spring.LazyNodeRefPropertyEditor">
-                <property name="nodeServiceName" value="nodeService" />
-                <property name="searchServiceName" value="searchService" />
-                <property name="namespaceServiceName" value="namespaceService" />
-            </bean>
-        </entry>
     </util:map>
 
     <bean id="idocs.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
@@ -158,52 +151,55 @@
 		<property name="implId" value="${constant-maker.impl}" />
 	</bean>
 
-    <!-- custom dictionary models processing -->
-    <!--<bean id="alfrescoDictionaryDAO" class="org.alfresco.repo.dictionary.DictionaryDAOImpl">-->
-        <!--<constructor-arg index="0">-->
-            <!--<ref bean="namespaceDAO" />-->
-        <!--</constructor-arg>-->
-        <!--<property name="tenantService">-->
-            <!--<ref bean="tenantService"/>-->
-        <!--</property>-->
-        <!--<property name="dictionaryRegistryCache">-->
-            <!--<ref bean="compiledModelsCache"/>-->
-        <!--</property>-->
-        <!--<property name="defaultAnalyserResourceBundleName">-->
-            <!--<value>alfresco/module/idocs-repo/model/dataTypeAnalyzers</value>-->
-        <!--</property>-->
-    <!--</bean>-->
+	<!-- custom dictionary models processing -->
+	<bean id="alfrescoDictionaryDAO" class="org.alfresco.repo.dictionary.DictionaryDAOImpl" lazy-init="true">
+		<property name="tenantService">
+			<ref bean="tenantService"/>
+		</property>
+		<property name="dictionaryRegistryCache">
+			<ref bean="compiledModelsCache"/>
+		</property>
+		<property name="defaultAnalyserResourceBundleName">
+			<value>alfresco/module/idocs-repo/model/dataTypeAnalyzers</value>
+		</property>
+	</bean>
 
-    <!--<bean id="dictionaryDAO" class="org.springframework.aop.framework.ProxyFactoryBean">-->
-        <!--<property name="target" ref="alfrescoDictionaryDAO" />-->
-        <!--<property name="interceptorNames">-->
-            <!--<list>-->
-                <!--<value>AddBigNumberIndexProperties</value>-->
-                <!--<value>AddAssociationIndexProperties</value>-->
-                <!--<value>AddDefaultPropertiesTokenisation</value>-->
-            <!--</list>-->
-        <!--</property>-->
-    <!--</bean>-->
+	<bean id="dictionaryDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyTargetClass" value="true"/>
+		<property name="targetSource">
+			<bean class="org.alfresco.config.NonBlockingLazyInitTargetSource">
+				<property name="targetBeanName">
+					<idref bean="alfrescoDictionaryDAO"/>
+				</property>
+			</bean>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>AddBigNumberIndexProperties</value>
+				<value>AddAssociationIndexProperties</value>
+				<value>AddDefaultPropertiesTokenisation</value>
+			</list>
+		</property>
+	</bean>
 
-    <!-- interceptor, that automatically adds index properties for each big number property -->
-    <bean name="AddBigNumberIndexProperties" class="ru.citeck.ecos.dictionary.AddBigNumberIndexProperties" />
+	<!-- interceptor, that automatically adds index properties for each big number property -->
+	<bean name="AddBigNumberIndexProperties" class="ru.citeck.ecos.dictionary.AddBigNumberIndexProperties" />
 
-    <!-- interceptor, that automatically adds index properties for each association -->
-    <bean name="AddAssociationIndexProperties" class="ru.citeck.ecos.dictionary.AddAssociationIndexProperties" init-method="init">
-        <property name="registry" ref="AssociationIndexPropertyRegistry" />
-        <property name="acceptedAuthors">
-            <set>
-                <value>citeck</value>
-                <value>Citeck</value>
-            </set>
-        </property>
-        <property name="acceptedAssocs">
-            <set>
-                <value>bpm:package</value>
-                <value>bpm:pooledActors</value>
-            </set>
-        </property>
-    </bean>
+	<!-- interceptor, that automatically adds index properties for each association -->
+	<bean name="AddAssociationIndexProperties" parent="abstractAddAssociationIndexProperties" init-method="init">
+		<property name="acceptedAuthors">
+			<set>
+				<value>citeck</value>
+				<value>Citeck</value>
+			</set>
+		</property>
+		<property name="acceptedAssocs">
+			<set>
+				<value>bpm:package</value>
+				<value>bpm:pooledActors</value>
+			</set>
+		</property>
+	</bean>
 
     <!-- interceptor, that automatically adds indexing to properties, that do not have indexing -->
     <bean name="AddDefaultPropertiesTokenisation" class="ru.citeck.ecos.dictionary.AddDefaultPropertiesTokenisation">

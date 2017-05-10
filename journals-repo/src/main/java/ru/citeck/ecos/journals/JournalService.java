@@ -23,7 +23,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import java.io.InputStream;
 import java.util.Collection;
 
-public interface JournalService {
+interface JournalService {
     
     public static final String JOURNALS_CONTAINER = "journals";
 

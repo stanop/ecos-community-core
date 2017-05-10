@@ -23,6 +23,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
     var koValue = function(value) {
         return typeof value == "function" ? value() : value;
     };
+    var getSortPairs = function(obj) {
+        var keys = Object.keys(obj);
+        var pairs = [];
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (_.has(obj, key)) pairs.push([key, _.unescape(obj[key])]);
+        }
+        pairs.sort(function(a, b) {
+            var s1 = a[1], s2 = b[1];
+            if (s1 > s2) return 1;
+            if (s1 < s2) return -1;
+            return 0;
+        });
+        return pairs;
+    };
 
     var Get = YAHOO.util.Get;
     var Node = koutils.koclass('invariants.Node');
@@ -61,6 +76,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                     "title": ko.computed(function() {
                         var displayName = function () {
+                            if (self.journalType) {
+                                if (self.journalType.id() == 'cm-person') {
+                                    return Citeck.utils.formatUserName(
+                                        {
+                                            userName: self._value().properties["cm:userName"],
+                                            firstName: self._value().properties["cm:firstName"],
+                                            lastName: self._value().properties["cm:lastName"]
+                                        }, true);
+                                }
+                            }
                             return self._value().properties["cm:title"] ? self._value().properties["cm:title"]
                                 : self._value().properties["cm:name"];
                         };
@@ -188,7 +213,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }
                 } else if (this.labels) {
                     this.templateName = "select";
-                    this.fakeViewModel.options(_.pairs(this.labels));
+                    this.fakeViewModel.options(getSortPairs(this.labels));
                     this.fakeViewModel.optionsText = function(o) { return o[1]; };
                     this.fakeViewModel.optionsValue = function(o) { return o[0]; } 
                 } else if (this.datatype == "category" && this.journalType && this.attribute().name() == "tk:kind") {

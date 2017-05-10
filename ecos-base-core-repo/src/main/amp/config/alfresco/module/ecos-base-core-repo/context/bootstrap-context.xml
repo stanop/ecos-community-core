@@ -54,7 +54,7 @@
     <bean id="ecos-base-core.module-component.script.check-and-create-dataLists-folder" parent="ecos-base-core.import-scripts.1-1-0-0">
         <property name="name" value="check-and-create-dataLists-folder" />
         <property name="description" value="Check if dataLists folder exists, then create it if doesn't" />
-        <property name="bootstrapScript" value="alfresco/module/ecos-base-core-repo/bootstrap/scripts/check-and-create-dataLists-folder.js"/>
+        <property name="bootstrapScript" value="alfresco/module/${project.artifactId}/bootstrap/scripts/check-and-create-dataLists-folder.js"/>
     </bean>
     
 </beans>

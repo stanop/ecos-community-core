@@ -31,10 +31,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Query builder for Lucene search
@@ -71,6 +68,8 @@ public class LuceneQuery implements SearchQueryBuilder {
     private NodeService nodeService;
 
     private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
+    private Map<String, String> journalStaticQuery = new HashMap<>();
+
 
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
@@ -558,4 +557,7 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
     }
 
+    public void registerJournalStaticQuery(String journalId, String subQuery) {
+        journalStaticQuery.put(journalId, subQuery);
+    }
 }
