@@ -103,6 +103,28 @@
 			</div>
 		</#if>
 
+		<#if inlineEdit>
+			<#-- TODO: scrollTo attribute field by click on 'invalid-attribute-name' -->
+
+			<!-- ko if: node.loaded() && node().impl.loaded() -->
+				<!-- ko with: resolve("node.impl") -->
+					<!-- ko if: invalid -->
+						<div class="form-errors">
+							<div class="invalid-attributes">
+								<span>${msg('message.invalid-attributes.form-errors')}:</span>
+								<ul class="invalid-attributes-list" data-bind="foreach: invalidAttributes()">
+									<li class="invalid-attribute">
+										<span class="invalid-attribute-name" data-bind="text: title"></span>:
+										<span class="invalid-attribute-message" data-bind="text: validationMessage"></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					<!-- /ko -->
+				<!-- /ko -->
+			<!-- /ko -->
+		</#if>
+
 		<!-- ko API: rootObjects -->
 			<div class="form-fields" data-bind="with: node().impl">
 				<!-- ko if: attributes().length != 0 -->

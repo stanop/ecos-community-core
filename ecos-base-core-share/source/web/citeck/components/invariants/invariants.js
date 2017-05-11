@@ -846,14 +846,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('inlineEditVisibility', function() { this.inlineEditVisibility(false) })
         
         .method('inlineEditChanger', function(data, event) {
-            if (this.inlineEditVisibility()) {
+            // save node if it valid
+            if (this.inlineEditVisibility() && data.valid()) {
                 if (this.newValue() != null && this.newValue() != this.persistedValue()) {
-                    this.node().thisclass.save(this.node(), { });
+                    if (this.resolve("node.impl.valid")) this.node().thisclass.save(this.node(), { });
                 }
             }
 
             // change visibility mode
-            this.inlineEditVisibility(!this.inlineEditVisibility());
+            if (!this.inlineEditVisibility() || data.valid())
+                this.inlineEditVisibility(!this.inlineEditVisibility());
         })
         .method('convertValue', function(value, multiple) {
             var isArray = _.isArray(value),
@@ -1347,6 +1349,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
 
+        .method('_filterAttributes', function(filterBy) {
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr[filterBy]();
+            })
+        })
+
         .method('attribute', function(name) {
             return _.find(this.attributes() || [], function(attr) {
                 return attr.name() == name;
@@ -1368,9 +1376,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
         .method('changedAttributes', function() {
-            return _.filter(this.attributes() || [], function(attr) {
-                return attr.changed();
-            });
+            return this._filterAttributes("changed");
+        })
+        .method('invalidAttributes', function() {
+            return this._filterAttributes("invalid");
         })
 
         .property('_attributes', o)
