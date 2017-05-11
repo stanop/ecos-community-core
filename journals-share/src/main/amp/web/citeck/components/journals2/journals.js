@@ -951,6 +951,16 @@ JournalsWidget
 			return true;
 	})
 
+	.method('selectAllRecords', function() {
+		_.each(this.records(), function(record) {
+			record.selected(true);
+		});
+	})
+	.method('selectInvertRecords', function() {
+		_.each(this.records(), function(record) {
+			record.selected(!record.selected());
+		});
+	})
 	.method('deselectAllRecords', function() {
 		_.each(this.records(), function(record) {
 			record.selected(false);
@@ -1103,7 +1113,7 @@ JournalsList
 JournalType
 	.load('filters', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/filters?journalType={id}",
-		resultsMap: { filters: 'filters' },
+		resultsMap: { filters: 'filters' }
 	}))
 	.load('settings', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/settings?journalType={id}",

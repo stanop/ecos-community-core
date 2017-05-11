@@ -279,7 +279,15 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
    background-image: url(images/download-active.png);
 }
 
-
+.toolbar .selectAll {
+	background-image: url(../../../components/documentlibrary/images/select-all-16.png);
+}
+.toolbar .selectInvert {
+	background-image: url(../../../components/documentlibrary/images/select-invert-16.png);
+}
+.toolbar .selectNone {
+	background-image: url(../../../components/documentlibrary/images/select-none-16.png);
+}
 /* deselect all */
 .toolbar .onActionDeselectAll {
    background-image: url(images/cross.png);

@@ -98,3 +98,24 @@ function fillModel() {
 	}
 
 }
+
+function getScopedConfig(scope, section, itemType, mapFunc) {
+	var scopeConfig = config.scoped[scope];
+	if (!scopeConfig) {
+		return [];
+	}
+	var sectionConfig = scopeConfig[section];
+	if (!sectionConfig) {
+		return [];
+	}
+	var itemsCollection = sectionConfig.childrenMap[itemType];
+	if (!itemsCollection) {
+		return [];
+	}
+	var result = [];
+	for (var i = 0; i < itemsCollection.size(); i++) {
+		var item = itemsCollection.get(i);
+		result.push(mapFunc? mapFunc(item) : item);
+	}
+	return result;
+}

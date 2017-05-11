@@ -7,6 +7,7 @@
         <property name="resourceBundles">
             <list>
                 <value>alfresco.site-messages.ecos-forms.invariants</value>
+                <value>alfresco.site-messages.ecos-forms.ecos-forms</value>
             </list>
         </property>
     </bean>
