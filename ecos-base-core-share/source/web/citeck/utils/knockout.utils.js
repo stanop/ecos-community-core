@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -210,11 +210,13 @@ define(['lib/knockout'], function(ko) {
 					successCallback: {
 						fn: function(response) {
 							var result = response.json;
+
 							if(config.toResult) result = config.toResult(result);
 							if(config.onSuccess) config.onSuccess(viewModel, result);
+
 							if(typeof callback == "function") {
 								callback(result);
-							} else {
+							} else if (callback.fn && typeof callback.fn == "function") {
 								callback.fn.call(callback.scope, result);
 							}
 						}
@@ -223,15 +225,17 @@ define(['lib/knockout'], function(ko) {
 						fn: function(response) {
 							// somehow response.json is not available for failure response
 							var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+							
 							var message = config.toFailureMessage && config.toFailureMessage(json) || "Failure response for request: " + url;
 							if(config.onFailure) config.onFailure(viewModel, message);
+							
 							switch(typeof failureCallback) {
-							case "function": 
-								return failureCallback(message);
-							case "object": 
-								return failureCallback.fn.call(failureCallback.scope, message);
-							default:
-                                return fail(message.substring(message.indexOf("\n") + 1));
+								case "function": 
+									return failureCallback(message);
+								case "object": 
+									return failureCallback.fn.call(failureCallback.scope, message);
+								default:
+	                                return fail(message.substring(message.indexOf("\n") + 1));
 							}
 						}
 					}

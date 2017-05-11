@@ -731,6 +731,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('info', AttributeInfo)
         .property('node', Node)
         .property('persisted', b)
+
         .property('inlineEditVisibility', b)
 
         .shortcut('name', 'info.name')
@@ -1348,6 +1349,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.model({ _attributes: model.attributes })
             }
         })
+        .method('changedAttributes', function() {
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr.changed();
+            });
+        })
 
         .property('_attributes', o)
         .computed('attributes', {
@@ -1550,9 +1556,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.resolve('impl.permissions.' + permission, false) == true;
         })
 
-        // TODO:
-        // - after save reset only needed attributes
-
         .save(koutils.simpleSave({
             url: function(node) {
                 var baseUrl = Alfresco.constants.PROXY_URI + "citeck/invariants/view?";
@@ -1583,9 +1586,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             onSuccess: function(node, result) {
                 node.impl().inSubmitProcess(false);
 
-                node.impl().attributes().forEach(function(attribute) {
-                    attribute.persisted.reload();
-                    attribute.persistedValue.reload();
+                node.impl().changedAttributes().forEach(function(attribute) {
+                    // newValue as persistedValue
+                    // persisited by default as 'true' after save
+                    attribute.persistedValue(attribute.newValue());
+                    attribute.persisted(true);
+
+                    // reset new value
+                    attribute.reset();
                 });
             },
             onFailure: function(node, message) {
