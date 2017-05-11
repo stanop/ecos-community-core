@@ -329,7 +329,7 @@ Attribute
 	.shortcut('labels', '_info.labels', {})
 
 	.init(function() {
-		this.model({ _info: this.name() });
+		this.model({ _info: {name: this.name(), attribute: this} });
         var self = this;
 		_.each(this.batchEdit(), function (a) {
 			a.attribute(self);
@@ -345,6 +345,18 @@ AttributeInfo
 	.property('labels', o)
 	.property('nodetype', s)
 	.property('journalType', JournalType)
+	.property('attribute', Attribute)
+
+	.method('customDisplayName', function() {
+		var optionLabel = null;
+		if (this.attribute().settings()) {
+			optionLabel = this.attribute().settings().customLabel;
+		}
+		if (optionLabel) {
+			return Alfresco.util.message(optionLabel);
+		}
+		return this.displayName();
+	})
 	;
 
 Datatype
@@ -449,7 +461,7 @@ Column
 	})
 	.property('formatter', o)
 	.property('sortable', b)
-	.shortcut('label', '_info.displayName')
+	.shortcut('label', '_info.customDisplayName')
 	.shortcut('datatype', '_info.datatype.name')
 	.shortcut('labels', '_info.labels')
 	;
@@ -632,8 +644,11 @@ JournalsWidget
 		// init columns
 		var columns = _.map(visibleAttributes, function(attr) {
 			var options = journalType ? journalType.attribute(attr.name()) : null,
-			    formatter = options ? options.settings().formatter : null,
+			    formatter = null,
 			    includeLink = false;
+			if (options) {
+				formatter = options.settings().formatter;
+			}
 
 			if(formatter) {
 		    formatter = formatters.loadedFormatter(formatter);
@@ -916,7 +931,7 @@ JournalsWidget
 							for (var i = 0; i < visibleAttributes.length; i++) {
 								reportColumns.push({
 									attribute: visibleAttributes[i].name._value(),
-									title: visibleAttributes[i].displayName._value()
+									title: visibleAttributes[i].displayName()
 								});
 							}
 						}
