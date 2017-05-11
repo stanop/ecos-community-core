@@ -1293,6 +1293,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('unchanged', function() {
             return !this.changed();
         })
+
+        // Computed 'data' is deprecated. Will soon be deleted.
+        // Use 'allData' or 'changedData'
         .computed('data', function() {
             var attributes = {};
 
@@ -1305,6 +1308,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 attributes: attributes
             };
         })
+
         .computed('changedData', function() {
             var attributes = {};
 
@@ -1602,8 +1606,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return response.message;
             },
             onSuccess: function(node, result) {
-                node.impl().inSubmitProcess(false);
-
                 if (node.impl().runtime() && node.impl().runtime().inlineEdit()) {
                     node.impl().changedAttributes().forEach(function(attribute) {
                         // newValue as persistedValue
@@ -1615,8 +1617,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         attribute.reset();
                     });
                 }
+
+                node.impl().inSubmitProcess(false);
             },
             onFailure: function(node, message) {
+                if (node.impl().runtime() && node.impl().runtime().inlineEdit()) {
+                    node.impl().changedAttributes().forEach(function(attribute) {
+                        // reset old and new value
+                        attribute.reset(true);
+                    });
+                }
+
                 node.impl().inSubmitProcess(false);
             }
         }))
