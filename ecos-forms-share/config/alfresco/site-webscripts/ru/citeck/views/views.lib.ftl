@@ -254,6 +254,8 @@
 		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
 		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
+		<#assign inlineEdit = view.params.inlineEdit!"false" />
+		<#assign viewMode = view.mode?string == "view" />
 
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
@@ -266,6 +268,7 @@
 					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
 					preloadInvariants: ${preloadInvariants},
+					<#if viewMode>inlineEdit: ${inlineEdit},</#if>
 
 					node: {
 						key: "${runtimeKey}",

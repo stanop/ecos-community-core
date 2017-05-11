@@ -731,6 +731,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('info', AttributeInfo)
         .property('node', Node)
         .property('persisted', b)
+
         .property('inlineEditVisibility', b)
 
         .shortcut('name', 'info.name')
@@ -1292,13 +1293,29 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('unchanged', function() {
             return !this.changed();
         })
+
+        // Computed 'data' is deprecated. Will soon be deleted.
+        // Use 'allData' or 'changedData'
         .computed('data', function() {
             var attributes = {};
-            _.each(this.attributes(), function(attr) {
-                if(attr.relevant()) {
-                    attributes[attr.name()] = attr.jsonValue();
-                }
+
+            _.each(this.runtime() && this.runtime().inlineEdit() ? this.changedAttributes() : this.attributes(), function(attr) {
+                if(attr.relevant()) { attributes[attr.name()] = attr.jsonValue(); }
             });
+
+            return {
+                nodeRef: this.nodeRef(),
+                attributes: attributes
+            };
+        })
+
+        .computed('changedData', function() {
+            var attributes = {};
+
+            _.each(this.changedAttributes(), function(attr) {
+                if(attr.relevant()) { attributes[attr.name()] = attr.jsonValue(); }
+            });
+
             return {
                 nodeRef: this.nodeRef(),
                 attributes: attributes
@@ -1306,11 +1323,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .computed('allData', function() {
             var attributes = {};
+
             _.each(this.attributes(), function(attr) {
                 if(attr.relevant()) {
                     attributes[attr.name()] = attr.jsonValue();
                 }
             });
+
             return {
                 nodeRef: this.nodeRef(),
                 attributes: attributes
@@ -1347,6 +1366,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(model.attributes) {
                 this.model({ _attributes: model.attributes })
             }
+        })
+        .method('changedAttributes', function() {
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr.changed();
+            });
         })
 
         .property('_attributes', o)
@@ -1550,9 +1574,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.resolve('impl.permissions.' + permission, false) == true;
         })
 
-        // TODO:
-        // - after save reset only needed attributes
-
         .save(koutils.simpleSave({
             url: function(node) {
                 var baseUrl = Alfresco.constants.PROXY_URI + "citeck/invariants/view?";
@@ -1564,14 +1585,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             },
             toRequest: function(node) {
                 node.impl().inSubmitProcess(true);
-                var data = {
-                    view: node.impl().defaultModel().view(),
-                    attributes: node.impl().data().attributes
-                };
-                var isDraft = node.impl().isDraft();
+
+                var inlineEdit = node.impl().runtime() && node.impl().runtime().inlineEdit(),
+                    data = {
+                        view: node.impl().defaultModel().view(),
+                        attributes: inlineEdit ? node.impl().changedData().attributes : node.impl().allData().attributes
+                    },
+                    isDraft = node.impl().isDraft();
+
                 if (_.isBoolean(isDraft)) {
                     data['isDraft'] = isDraft;
                 }
+
                 return data;
             },
             toResult: function(response) {
@@ -1581,14 +1606,28 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return response.message;
             },
             onSuccess: function(node, result) {
-                node.impl().inSubmitProcess(false);
+                if (node.impl().runtime() && node.impl().runtime().inlineEdit()) {
+                    node.impl().changedAttributes().forEach(function(attribute) {
+                        // newValue as persistedValue
+                        // persisited by default as 'true' after save
+                        attribute.persistedValue(attribute.newValue());
+                        attribute.persisted(true);
 
-                node.impl().attributes().forEach(function(attribute) {
-                    attribute.persisted.reload();
-                    attribute.persistedValue.reload();
-                });
+                        // reset new value
+                        attribute.reset();
+                    });
+                }
+
+                node.impl().inSubmitProcess(false);
             },
             onFailure: function(node, message) {
+                if (node.impl().runtime() && node.impl().runtime().inlineEdit()) {
+                    node.impl().changedAttributes().forEach(function(attribute) {
+                        // reset old and new value
+                        attribute.reset(true);
+                    });
+                }
+
                 node.impl().inSubmitProcess(false);
             }
         }))
@@ -1824,15 +1863,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('node', Node)
         .property('parent', Runtime)
         .property('invariantSet', GroupedInvariantSet)
+        .property('inlineEdit', b)
+        .property('loadAttributesMethod', s)
+        .property('loadGroupIndicator', b)
+        .property('_loading', b)
+
         .constant('rootObjects', rootObjects)
 
-        .property('loadAttributesMethod', s)
-        .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
+        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
 
-        .property('loadGroupIndicator', b)
-        .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
-
-        .property('_loading', b)
         .computed('loaded', function() {
             if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
               var attributes = this.resolve("node.impl.attributes");
@@ -1852,7 +1891,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return false;
         })
 
-        .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
+        .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
+        .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
 
         .method('deleteNode', function(nodeRef, callback) {
             YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
