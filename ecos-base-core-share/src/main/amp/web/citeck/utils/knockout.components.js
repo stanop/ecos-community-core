@@ -57,6 +57,62 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.journalType = this.attribute().journalType();
             this.settings = this.attribute().settings();            
 
+            this.drawFilterCriterionValueComponent = function() {
+                Alfresco.util.Ajax.request({
+                    url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
+                                                            + self.fieldId + "&template=" + self.templateName,
+                    successCallback: {
+                        scope: this,
+                        fn: function(response) {
+                            self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
+                        }
+                    }
+                });
+            };
+
+            this.fillSelectControl = function(documentType) {
+                var query = {
+                    skipCount: 0,
+                    maxItems: 50,
+                    field_1: "type",
+                    predicate_1: "type-equals",
+                    value_1: "cm:category",
+                    field_2: "parent",
+                    predicate_2: "parent-equals",
+                    value_2: documentType
+                };
+
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                    dataObj: query,
+                    successCallback: {
+                        fn: function(response) {
+                            var result = _.map(response.json.results, function(node) {
+                                return new Node(node);
+                            });
+                            var temporaryArray = [];
+
+                            for (var i = 0; i < result.length; i ++) {
+                                var currentObj = result[i];
+                                var displayName = currentObj.properties['cm:title']
+                                    ? currentObj.properties['cm:title'] : currentObj.properties['cm:name'];
+                                var nodeRef = currentObj.nodeRef;
+                                temporaryArray.push([nodeRef, displayName]);
+                            }
+                            if (temporaryArray.length > 0) {
+                                selectData(temporaryArray);
+                            }
+                        }
+                    }
+                });
+
+                var selectData = ko.observable([]);
+                selectData.subscribe(function() {
+                    self.fakeViewModel.options(selectData());
+                    self.drawFilterCriterionValueComponent();
+                });
+            };
+
             if (this.datatype) {
                 var datatypeMapping = {
                     'boolean': 'd:boolean'
@@ -232,7 +288,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         successCallback: {
                             fn: function(response) {
                                 if (response.json.defaultValue != null) {
-                                    fillSelectControl(response.json.defaultValue);
+                                    self.fillSelectControl(response.json.defaultValue);
                                 }
                             }
                         }
@@ -249,63 +305,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     })
                 }
 
-                drawFilterCriterionValueComponent();
-
-                function fillSelectControl(documentType) {
-                    var query = {
-                        skipCount: 0,
-                        maxItems: 50,
-                        field_1: "type",
-                        predicate_1: "type-equals",
-                        value_1: "cm:category",
-                        field_2: "parent",
-                        predicate_2: "parent-equals",
-                        value_2: documentType
-                    };
-
-                    Alfresco.util.Ajax.jsonPost({
-                        url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                        dataObj: query,
-                        successCallback: {
-                            fn: function(response) {
-                                var result = _.map(response.json.results, function(node) {
-                                    return new Node(node);
-                                });
-                                var temporaryArray = [];
-
-                                for (var i = 0; i < result.length; i ++) {
-                                    var currentObj = result[i];
-                                    var displayName = currentObj.properties['cm:title']
-                                        ? currentObj.properties['cm:title'] : currentObj.properties['cm:name'];
-                                    var nodeRef = currentObj.nodeRef;
-                                    temporaryArray.push([nodeRef, displayName]);
-                                }
-                                if (temporaryArray.length > 0) {
-                                    selectData(temporaryArray);
-                                }
-                            }
-                        }
-                    });
-
-                    var selectData = ko.observable([]);
-                    selectData.subscribe(function() {
-                        self.fakeViewModel.options(selectData());
-                        drawFilterCriterionValueComponent();
-                    });
-                }
-
-                function drawFilterCriterionValueComponent() {
-                    Alfresco.util.Ajax.request({
-                        url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
-                                                                + self.fieldId + "&template=" + self.templateName,
-                        successCallback: {
-                            scope: this,
-                            fn: function(response) {
-                                self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
-                            }
-                        }
-                    });
-                }
+                this.drawFilterCriterionValueComponent();
             }
 
             this.valueContainerId = this.fieldId + "-value";
