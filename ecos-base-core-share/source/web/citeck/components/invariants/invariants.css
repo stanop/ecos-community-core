@@ -427,22 +427,29 @@
   vertical-align: top;
 }
 
+.invariants-form .template-wide .template-block.with-help,
+.invariants-form .template-wide .template-block-checkbox.with-help {
+  padding-right: 15px;
+}
+
 .inline-edit-form .template-wide .template-block,
-.invariants-form .template-wide .template-block.with-help {
+.inline-edit-form .template-wide .template-block-checkbox {
   padding-right: 20px;
 }
 
-.inline-edit-form .template-wide .template-block.with-help {
+.inline-edit-form .template-wide .template-block.with-help,
+.inline-edit-form .template-wide .template-block-checkbox.with-help {
   padding-right: 35px;
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region {
   display: inline-block;
+  float: left;
 }
 
 .invariants-form .template-wide .template-block-checkbox .template-checkbox input {
   position: relative;
-  top: 2px;
+  top: 0px;
 }
 
 /* regions */
@@ -466,29 +473,37 @@
 
 
 /* specified regions */
-.invariants-form .template-wide .template-block.with-help .block-region-label,
-.invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
-  width: calc(100% - 10px);
+.invariants-form .template-wide .template-block .block-region-label {
+  width: 100%;
 }
 
-.invariants-form .template-wide .template-block .block-region-label.biglabel .template-mandatory {
-  float: right;
-  width: 10px;
-  text-align: right;
-}
-
-.invariants-form .template-wide .template-block .template-help {
+.invariants-form .template-wide .template-help,
+.invariants-form .template-wide .template-help {
   position: absolute;
   right: 0px;
   top: 0px;
 }
 
-.invariants-form .template-wide .template-block .template-message span.validation-message {
+.invariants-form .template-wide .template-block-checkbox .block-region-input {
+  width: 15px;
+  margin-right: 5px;
+}
+
+.invariants-form .template-wide .template-block-checkbox .block-region-label {
+  width: calc(100% - 20px);
+}
+
+.invariants-form .template-wide .template-message span.validation-message {
   margin-bottom: 10px;
   margin-top: -3px;
 }
 
-.invariants-form .template-wide .template-block.invalid .template-message span.validation-message {
+.invariants-form .template-wide .template-block-checkbox .template-message {
+  padding-top: 10px;
+  clear: both;
+}
+
+.invariants-form .template-wide .invalid .template-message span.validation-message {
   color: red;
 }
 
@@ -521,10 +536,13 @@
   box-sizing: border-box;
 }
 
-.inline-edit-form .template-table .template-row,
-.inline-edit-form .template-table [class*="template-row-"],
 .invariants-form:not(.view-form) .template-table .template-row.with-help,
 .invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
+  padding-right: 15px;
+}
+
+.inline-edit-form .template-table .template-row,
+.inline-edit-form .template-table [class*="template-row-"] {
   padding-right: 20px;
 }
 
@@ -849,9 +867,15 @@
 
 
 /* help */
-.invariants-form .template-table .template-help {
+.invariants-form .template-help {
   cursor: help;
   font-weight: 900;
+}
+
+.invariants-form .template-table .template-help {
+  position: absolute;
+  right: 0;
+  top: 1px;
 }
 
 .invariants-form .template-table .template-row .template-help,
@@ -871,15 +895,6 @@
 }
 
 .invariants-form .template-table .template-row .template-textarea + .template-help {
-  top: 1px;
-}
-
-.invariants-form .template-table .template-half-width .template-help,
-.invariants-form .template-table [class*="template-half-width-"] .template-help,
-.invariants-form .template-table .template-third-width .template-help,
-.invariants-form .template-table [class*="template-third-width-"] .template-help {
-  position: absolute;
-  right: 0;
   top: 1px;
 }
 
