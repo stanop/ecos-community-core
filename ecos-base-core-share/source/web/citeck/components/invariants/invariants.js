@@ -848,6 +848,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('showEditableField', function(data, event) {
             if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
         })
+        .method('inlineEditChanger', function(data, event) {
+            // save node if it valid
+            if (this.inlineEditVisibility() && data.valid()) {
+                if (this.newValue() != null && this.newValue() != this.persistedValue()) {
+                    if (this.resolve("node.impl.valid")) {
+                        this.node().thisclass.save(this.node(), { });
+
+                        // hide inline edit form for all attributes after save node
+                        _.each(this.node().impl().attributes(), function(attr) {
+                            if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
+                        })
+
+                        return;
+                    }
+                }
+            }
+
+            // change visibility mode
+            if (!this.inlineEditVisibility() || data.valid())
+                this.inlineEditVisibility(!this.inlineEditVisibility());
+        })
         .method('convertValue', function(value, multiple) {
             var isArray = _.isArray(value),
                 instantiate = _.partial(koutils.instantiate, _, this.valueClass());
