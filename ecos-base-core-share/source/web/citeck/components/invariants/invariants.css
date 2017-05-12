@@ -22,6 +22,33 @@
     margin: 0 0 10px 0;
 }
 
+/* form-errors */
+
+.ecos-form .form-errors {
+  color: red;
+  border: 1px solid red;
+  margin: 0 -10px 10px -10px;
+  padding: 10px;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list {
+  margin-top: 5px;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li {
+  list-style-type: disc;
+  list-style-position: inside;
+  cursor: pointer;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li .invalid-attribute-name {
+  text-decoration: underline;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li:hover .invalid-attribute-name {
+  text-decoration: none;
+}
+
 /* inline-edit-mode-changer */
 
 .form-field-inline-mode-changer {
@@ -90,6 +117,7 @@
   height: 300px;
 }
 
+.invariants-form.loading .form-errors,
 .invariants-form.loading .form-fields,
 .invariants-form.loading .form-buttons {
   visibility: hidden;
