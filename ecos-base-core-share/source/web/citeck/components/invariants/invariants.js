@@ -1903,6 +1903,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
         .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
 
+        .method('scrollToFormField', function(data, event) {
+            var field = $(".form-field[data-attribute-name='" + data.name() + "']");
+            if (field) $('html,body').animate({ scrollTop: field.offset().top - 10 }, 500 );
+        })
+
         .method('deleteNode', function(nodeRef, callback) {
             YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
         })

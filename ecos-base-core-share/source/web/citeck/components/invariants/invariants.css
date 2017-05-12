@@ -38,6 +38,15 @@
 .ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li {
   list-style-type: disc;
   list-style-position: inside;
+  cursor: pointer;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li .invalid-attribute-name {
+  text-decoration: underline;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li:hover .invalid-attribute-name {
+  text-decoration: none;
 }
 
 /* inline-edit-mode-changer */
