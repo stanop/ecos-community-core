@@ -242,6 +242,7 @@ define(['lib/knockout'], function(ko) {
 
 		bulkLoad: function(loader, key, field) {
 			return function(viewModel) {
+				loader.url = koutils.renderTemplate(loader.url, viewModel);
 				loader.load(viewModel[key](), function(id, model) {
 					viewModel.model(field ? _.object([field],[model]) : model);
 				});

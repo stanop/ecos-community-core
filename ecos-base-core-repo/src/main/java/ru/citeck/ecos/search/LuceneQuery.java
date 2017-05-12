@@ -19,7 +19,9 @@
 package ru.citeck.ecos.search;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.search.adaptor.lucene.QueryConstants;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -386,11 +388,31 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private void buildEqualsTerm(String field, String value) {
-            StringBuilder term = new StringBuilder();
-            term.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
-            queryElement.setQueryPart(term.toString());
-            if (shouldAppendQuery) {
-                query.append(term);
+            if (FieldType.ALL.name().equals(field)) {
+                Collection<QName> contentAttributes = dictionaryService.getAllProperties(DataTypeDefinition.TEXT);
+                StringBuilder allQuery = new StringBuilder();
+
+                for (QName qname : contentAttributes) {
+                    allQuery.append(QueryConstants.PROPERTY_FIELD_PREFIX).append(escape(qname.toPrefixString()))
+                            .append(SEPARATOR).append(QUOTE)
+                            .append(value)
+                            .append(QUOTE).append(OR);
+                }
+                int allQueryLength = allQuery.length();
+                if (allQueryLength > 0) {
+                    int orLength = OR.length();
+                    allQuery.delete(allQueryLength - orLength, allQueryLength);
+                    query.append(OPENING_ROUND_BRACKET)
+                            .append(allQuery)
+                            .append(CLOSING_ROUND_BRACKET);
+                }
+            } else {
+                StringBuilder term = new StringBuilder();
+                term.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
+                queryElement.setQueryPart(term.toString());
+                if (shouldAppendQuery) {
+                    query.append(term);
+                }
             }
         }
 

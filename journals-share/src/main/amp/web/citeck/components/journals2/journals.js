@@ -424,7 +424,14 @@ Record
 	.key('nodeRef', s)
 	.property('attributes', o)
 	.property('permissions', o)
-	.property('aspects', [s])
+	.computed('aspects', function() {
+		var resAspectList = this.attributes()['attr:aspects'];
+		var aspectList = [];
+		for (var i = 0; i < resAspectList.length; i++) {
+			aspectList.push(resAspectList[i].shortQName);
+		}
+		return aspectList;
+	})
 	.property('isDocument', b)
 	.property('isContainer', b)
 
@@ -630,6 +637,12 @@ JournalsWidget
 				recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
 				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
 
+		if (!linkSupplied) {
+			linkSupplied = !!(_.find(visibleAttributes, function(attr) {
+				return recordLinkAttribute.indexOf(attr.name()) >= 0;
+			}));
+		}
+
 		// set priority attribute to the first
 		var priorityAttribute = recordPriorityAttribute.split(",").map(function(attr) { return attr.trim() }).reverse();
 		for(var pa in priorityAttribute) {
@@ -644,23 +657,29 @@ JournalsWidget
 		// init columns
 		var columns = _.map(visibleAttributes, function(attr) {
 			var options = journalType ? journalType.attribute(attr.name()) : null,
-			    formatter = null,
-			    includeLink = false;
+				formatter = null,
+				includeLink = false,
+				withoutMultiple = false,
+				labelByCode = null;
 			if (options) {
 				formatter = options.settings().formatter;
+				withoutMultiple = options.settings().withoutMultiple;
+			}
+			if (attr.labels()) {
+				labelByCode = formatters.labelByCode(attr.labels());
 			}
 
-			if(formatter) {
-		    formatter = formatters.loadedFormatter(formatter);
-			} else if(attr.labels()) {
-		    var classPrefix = attr.name().replace(/\W/g, '_') + "-";
-		    formatter = formatters.code(attr.labels(), classPrefix, classPrefix);
-		    includeLink = !linkSupplied;
-			} else if(attr.datatype()) {
-		    formatter = defaultFormatters[attr.datatype().name()];
-		    if(!formatter) includeLink = !linkSupplied;
+			if (formatter) {
+				formatter = formatters.loadedFormatter(formatter);
+			} else if (labelByCode) {
+				var classPrefix = attr.name().replace(/\W/g, '_') + "-";
+				formatter = formatters._code(labelByCode, classPrefix, classPrefix);
+				includeLink = !linkSupplied;
+			} else if (attr.datatype()) {
+				formatter = defaultFormatters[attr.datatype().name()];
+				if (!formatter) includeLink = !linkSupplied;
 			} else {
-		    formatter = formatters.loading();
+				formatter = formatters.loading();
 			}
 
 			if (recordLinkAttribute) {
@@ -672,7 +691,11 @@ JournalsWidget
 				linkSupplied = true;
 			}
 
-			if(formatter) formatter = formatters.multiple(formatter);
+			if(!withoutMultiple && formatter) {
+				formatter = formatters.multiple(formatter);
+			} else if (labelByCode) {
+				formatter = formatters.transformUseLabel(labelByCode, formatter);
+			}
 
 			return {
 				id: attr.name(),
