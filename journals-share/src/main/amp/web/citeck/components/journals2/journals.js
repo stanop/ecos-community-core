@@ -906,7 +906,7 @@ JournalsWidget
 			if (journal.criteria.loaded()) {
 				var filter = this.currentFilter();
 				if (filter) {
-					var filterCriteria = filter.criteria();
+					var filterCriteria = filter.usableCriteria();
 					if (filter.criteria.loaded()) {
 						var query = _.reduce(_.flatten([
 							journalCriteria,
