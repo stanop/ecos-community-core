@@ -845,11 +845,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .load('inlineEditVisibility', function() { this.inlineEditVisibility(false) })
         
+        .method('showEditableField', function(data, event) {
+            if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
+        })
         .method('inlineEditChanger', function(data, event) {
             // save node if it valid
             if (this.inlineEditVisibility() && data.valid()) {
                 if (this.newValue() != null && this.newValue() != this.persistedValue()) {
-                    if (this.resolve("node.impl.valid")) this.node().thisclass.save(this.node(), { });
+                    if (this.resolve("node.impl.valid")) {
+                        this.node().thisclass.save(this.node(), { });
+
+                        // hide inline edit form for all attributes after save node
+                        _.each(this.node().impl().attributes(), function(attr) {
+                            if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
+                        })
+
+                        return;
+                    }
                 }
             }
 
@@ -2140,6 +2152,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
 
         onReady: function() {
+            var self = this;
+
             if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
                 $(window).resize(function() {
                    $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
@@ -2157,6 +2171,33 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 });
 
                 $(window).resize();
+            }
+
+            if (this.options.model.inlineEdit) {
+                // TODO: 
+                // - если открыт хотя бы один атрибут
+
+                $("body").click(function(e, a) {
+                    var node = self.runtime.node();
+
+                    if (node.resolve("impl.valid")) {
+                        var form = $("#" + self.options.model.key);
+                        if (!form.is(e.target) && form.has(e.target).length == 0) {
+                            // save node if it valid
+                            var inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
+                            if (inlineEditingAttributes.length) {
+                                if (_.any(inlineEditingAttributes, function(attr) {
+                                    return attr.newValue() != null && attr.newValue() != attr.persistedValue();
+                                })) node.thisclass.save(node, { });
+                            }
+                            
+                            // close all valid inline editing attributes
+                            _.each(node.impl().attributes(), function(attr) {
+                                if (attr.inlineEditVisibility() && attr.valid()) attr.inlineEditVisibility(false);
+                            });
+                        }
+                    }
+                });
             }
 
             // define attributes from first group as forced
