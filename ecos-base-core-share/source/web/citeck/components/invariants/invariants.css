@@ -38,15 +38,6 @@
 .ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li {
   list-style-type: disc;
   list-style-position: inside;
-  cursor: pointer;
-}
-
-.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li .invalid-attribute-name {
-  text-decoration: underline;
-}
-
-.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li:hover .invalid-attribute-name {
-  text-decoration: none;
 }
 
 /* inline-edit-mode-changer */
@@ -427,13 +418,9 @@
   vertical-align: top;
 }
 
-.inline-edit-form .template-wide .template-block,
+.inline-edit-form .template-wide .template-block.with-help,
 .invariants-form .template-wide .template-block.with-help {
   padding-right: 20px;
-}
-
-.inline-edit-form .template-wide .template-block.with-help {
-  padding-right: 35px;
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region {
@@ -521,16 +508,11 @@
   box-sizing: border-box;
 }
 
-.inline-edit-form .template-table .template-row,
-.inline-edit-form .template-table [class*="template-row-"],
+.inline-edit-form .template-table .template-row.with-help,
+.inline-edit-form .template-table [class*="template-row-"].with-help,
 .invariants-form:not(.view-form) .template-table .template-row.with-help,
 .invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
   padding-right: 20px;
-}
-
-.inline-edit-form .template-table .template-row.with-help,
-.inline-edit-form .template-table [class*="template-row-"].with-help {
-  padding-right: 35px;
 }
 
 .invariants-form:not(.view-form) .template-table .template-row,
@@ -803,17 +785,11 @@
   margin-top: 5px;
 }
 
+.inline-edit-form .template-table .template-row.with-help .template-textarea,
 .invariants-form .template-table .template-row.with-help .template-textarea {
   width: calc(100% + 15px);
 }
 
-.inline-edit-form .template-table .template-row .template-textarea {
-  width: calc(100% + 20px);
-}
-
-.inline-edit-form .template-table .template-row.with-help .template-textarea {
-  width: calc(100% + 35px);
-}
 
 /* select */
 .invariants-form .template-table .template-row .template-select select {
@@ -859,11 +835,6 @@
   position: absolute;
   right: 2px;
   top: 7px;
-}
-
-.inline-edit-form .template-table .template-row .template-help,
-.inline-edit-form .template-table [class*="template-row-"] .template-help {
-  right: 20px;
 }
 
 .invariants-form .template-table [class*="template-row-"] .template-help {
