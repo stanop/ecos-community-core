@@ -32,6 +32,11 @@
     <bean id="idocs.module-component.nomenclature-cardlets.document-journal" parent="idocs.import-spaces.3-0-3">
         <property name="name" value="nomenclature-cardlets document-journal" />
         <property name="description" value="nomenclature-cardlets document-journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets"/>
+            </list>
+        </property>
         <property name="bootstrapViews">
             <list>
                 <props>
