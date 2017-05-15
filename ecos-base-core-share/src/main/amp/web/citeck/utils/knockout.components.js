@@ -58,12 +58,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.settings = this.attribute().settings();            
 
             this.drawFilterCriterionValueComponent = function() {
+              if (self.templateName == 'checkbox') {
+                  return;
+              }
                 Alfresco.util.Ajax.request({
                     url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
-                                                            + self.fieldId + "&template=" + self.templateName,
+                    + self.fieldId + "&template=" + self.templateName,
                     successCallback: {
                         scope: this,
-                        fn: function(response) {
+                        fn: function (response) {
                             self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
                         }
                     }
