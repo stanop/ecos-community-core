@@ -104,6 +104,7 @@
                                 <artifact>
                                     <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
                                     <type>jar</type>
+                                    <classifier>${ecos.build.classifier}</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>
