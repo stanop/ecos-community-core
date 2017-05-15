@@ -41,7 +41,7 @@
         <!--<ecos.module.release>-SNAPSHOT</ecos.module.release>-->
         <alfresco.version>5.1.2</alfresco.version>
         <dependency.surf.version>6.10</dependency.surf.version>
-        <ecos.build.classifier>alfresco-${alfresco.version}</ecos.build.classifier>
+        <ecos.build.classifier>alfresco-${alfresco.version}-master</ecos.build.classifier>
 
         <st-override.version>3.1.a.0-SNAPSHOT</st-override.version>
         <ecos-citeckTheme.version>2.0.0.0-SNAPSHOT</ecos-citeckTheme.version>
