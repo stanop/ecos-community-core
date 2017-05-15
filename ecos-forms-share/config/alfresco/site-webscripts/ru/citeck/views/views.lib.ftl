@@ -103,7 +103,7 @@
 			</div>
 		</#if>
 
-		<#if inlineEdit>
+		<#if viewMode && inlineEdit>
 			<!-- ko if: node.loaded() && node().impl.loaded() -->
 				<!-- ko with: resolve("node.impl") -->
 					<!-- ko if: invalid -->
