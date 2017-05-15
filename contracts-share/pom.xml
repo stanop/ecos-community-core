@@ -156,28 +156,29 @@
                 </executions>
             </plugin>
 
-<!--
+            <!-- plugin to install and deploy jar -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>${maven-deploy-plugin.version}</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>deploy-file</goal>
+                            <goal>attach-artifact</goal>
                         </goals>
                         <configuration>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                            <url>${project.distributionManagement.repository.url}</url>
-                            <classifier>${ecos.build.classifier}</classifier>
-                            <file>${ecos.lib.file}</file>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
+                                    <type>jar</type>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
--->
+
         </plugins>
     </build>
 </project>

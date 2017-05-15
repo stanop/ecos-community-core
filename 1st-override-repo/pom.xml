@@ -58,20 +58,24 @@
 
     <build>
         <plugins>
-
+            <!-- plugin to install and deploy jar -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>install-file</goal>
+                            <goal>attach-artifact</goal>
                         </goals>
                         <configuration>
-                            <packaging>jar</packaging>
-                            <classifier>${ecos.build.classifier}</classifier>
-                            <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
+                                    <type>jar</type>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>
@@ -102,32 +106,7 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>jar-file</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <configuration>
-                            <packaging>jar</packaging>
-                            <url>${project.distributionManagement.snapshotRepository.url}</url>
-                            <repositoryId>citeck-snapshots</repositoryId>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <classifier>${ecos.build.classifier}</classifier>
-                            <file>${project.build.directory}/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
-                            <updateReleaseInfo>false</updateReleaseInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
--->
+
         </plugins>
     </build>
 

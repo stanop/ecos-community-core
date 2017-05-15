@@ -18,3 +18,5 @@ target/*
 alf_data_dev
 syntax: regexp
 desktop\.ini
+repo/overlays/*
+share/overlays/*
