@@ -48,28 +48,34 @@
             <@valueText />
         </#if>
 
-        <#if !isViewMode || inlineEdit>
+        <#if isViewMode && inlineEdit>
             <!--ko if: $parent.inlineEditVisibility -->
-                <span class="value-item-actions" data-bind="ifnot: $parent.protected()">
-            
-                <#if editable?trim == "all" || (editable?trim == "admin" && user.isAdmin)>
-                    <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Write") -->
-                        <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }), clickBubble: false"></a>
-                    <!-- /ko -->
-                </#if>
+        </#if>
 
-                <#if completeDelete>
-                    <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
-                        <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.destroy.bind($parent, $index(), $data.nodeRef), clickBubble: false"></a>
-                    <!-- /ko -->
-                    <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
-                        <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
-                    <!-- /ko -->
-                <#else>
+        <#if !isViewMode || inlineEdit>
+            <span class="value-item-actions" data-bind="ifnot: $parent.protected()">
+        
+            <#if editable?trim == "all" || (editable?trim == "admin" && user.isAdmin)>
+                <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Write") -->
+                    <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }), clickBubble: false"></a>
+                <!-- /ko -->
+            </#if>
+
+            <#if completeDelete>
+                <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
+                    <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.destroy.bind($parent, $index(), $data.nodeRef), clickBubble: false"></a>
+                <!-- /ko -->
+                <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Delete") -->
                     <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
-                </#if>
+                <!-- /ko -->
+            <#else>
+                <a class="delete-value-item" title="${msg('button.delete')}" data-bind="click: $parent.remove.bind($parent, $index()), clickBubble: false"></a>
+            </#if>
 
-                </span>
+            </span>
+        </#if>
+
+        <#if isViewMode && inlineEdit>
             <!-- /ko -->
         </#if>
     </span>
