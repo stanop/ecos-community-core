@@ -32,7 +32,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.util.*;
@@ -48,7 +47,7 @@ public class ListenerUtils {
     }
 
     public static NodeRef getWorkflowPackage(WorkflowTask task) {
-        return (NodeRef) task.getProperties().get(BpmModel.TYPE_BPM_PACKAGE);
+        return (NodeRef) task.getProperties().get(WorkflowModel.TYPE_PACKAGE);
     }
 
     public static NodeRef getDocument(VariableScope execution, NodeService nodeService) {

@@ -30,7 +30,6 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import ru.citeck.ecos.deputy.AuthorityHelper;
-import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.security.GrantPermissionService;
 
 import java.util.HashSet;
@@ -300,7 +299,7 @@ public class GrantWorkflowPackageHelper {
 
 	// get task permission provider
 	private String getTaskPermissionProvider(WorkflowTask task) {
-		return TASK_PROVIDER_PREFIX + task.getProperties().get(BpmModel.PROPERTY_TASK_ID);
+		return TASK_PROVIDER_PREFIX + task.getProperties().get(WorkflowModel.PROP_TASK_ID);
 	}
 
 	// get process permission provider
