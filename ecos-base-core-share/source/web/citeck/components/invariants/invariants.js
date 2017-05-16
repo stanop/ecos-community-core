@@ -1355,7 +1355,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             // existing nodes:
             if(impl.isPersisted()) {
                 Citeck.utils.nodeInfoLoader.load(impl.nodeRef(), function(nodeRef, model) {
-                    impl.updateModel(model);
+                    if (model) impl.updateModel(model);
                 });
             }
         })
@@ -1382,9 +1382,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(full) this._attributes.reload();
         })
         .method('updateModel', function(model) {
-            this.model(_.omit(model, 'attributes'));
-            if(model.attributes) {
-                this.model({ _attributes: model.attributes })
+            if (model) {
+                this.model(_.omit(model, 'attributes'));
+
+                if(model.attributes) {
+                    this.model({ _attributes: model.attributes })
+                }
             }
         })
         .method('changedAttributes', function() {
