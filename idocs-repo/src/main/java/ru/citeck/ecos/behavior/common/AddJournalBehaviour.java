@@ -62,6 +62,9 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
     public void onCreateNode(ChildAssociationRef childAssocRef) {
 
         NodeRef nodeRef = childAssocRef.getChildRef();
+        if (!nodeService.exists(nodeRef)) {
+            return;
+        }
         String typeSite = (String)nodeService.getProperty(nodeRef, SiteModel.PROP_SITE_PRESET);
 
         if(checkTypeSite){
