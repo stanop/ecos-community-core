@@ -1920,6 +1920,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .method('scrollToFormField', function(data, event) {
             var field = $(".form-field[data-attribute-name='" + data.name() + "']");
+            if (!data.inlineEditVisibility()) data.inlineEditVisibility(true);
             if (field) $('html,body').animate({ scrollTop: field.offset().top - 10 }, 500 );
         })
 
@@ -2177,9 +2178,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             if (this.options.model.inlineEdit) {
-                // TODO: 
-                // - если открыт хотя бы один атрибут
-
                 $("body").click(function(e, a) {
                     var node = self.runtime.node();
 
@@ -2199,6 +2197,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                                 if (attr.inlineEditVisibility() && attr.valid()) attr.inlineEditVisibility(false);
                             });
                         }
+                    } else {
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: Alfresco.util.message("message.invalid-node.form")
+                        });
                     }
                 });
             }
