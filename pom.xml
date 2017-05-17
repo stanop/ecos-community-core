@@ -429,7 +429,7 @@
                 <!-- While running in rapid dev mode with -Prun, we don't want amp web resources
                     to be added to the war, so we can load them directly from the AMP project (see
                     runner/tomcat/context-*.xml for more details) -->
-                <maven.alfresco.includeWebResources>true</maven.alfresco.includeWebResources>
+                <maven.alfresco.includeWebResources>false</maven.alfresco.includeWebResources>
             </properties>
         </profile>
         <profile>
