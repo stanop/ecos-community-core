@@ -26,7 +26,7 @@ var parser = {
         }
 
         var content = xmlDataNode.content;
-        var xml = new XML(content);
+        var xml = new XML(content.replaceAll("(?s)<\\?xml .*?\\?>\\s*", ""));
 
         var path = xml.path;
         var type = xml.type;
