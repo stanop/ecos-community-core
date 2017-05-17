@@ -17,10 +17,22 @@
         <itextpdf.version>5.1.1</itextpdf.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>batch-executer-mvn-repo</id>
+            <url>https://raw.github.com/ciber/alfresco-js-batch-executer/mvn-repo/</url>
+        </repository>
+    </repositories>
+
     <!-- Following dependencies are needed for compiling Java code in src/main/java;
           <scope>provided</scope> is inherited for each of the following;
           for more info, please refer to alfresco-platform-distribution POM -->
     <dependencies>
+        <dependency>
+            <groupId>nl.ciber.alfresco</groupId>
+            <artifactId>batch-executer</artifactId>
+            <version>0.9</version>
+        </dependency>
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-repository</artifactId>
