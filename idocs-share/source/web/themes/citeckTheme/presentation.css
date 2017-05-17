@@ -2197,6 +2197,12 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    padding: 0;
 }
 
+#HEADER_SITE_MENU:before {
+    font: 20px FontAwesome;
+    content: '\f013'; /* cog */
+    color: #fff;
+}
+
 /* only for left-widgets */
 
 #alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem {
@@ -2236,7 +2242,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 #alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-active button.alf-header-js-wrapper-button,
 #alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused .alf-menu-arrow,
-#alf-hd .alf-header .right-widgets .dijitMenuBar.dijitMenuActive .alf-menu-arrow {
+#alf-hd .alf-header .right-widgets .dijitMenuBar.dijitMenuActive .dijitMenuItem.dijitMenuItemSelected .alf-menu-arrow {
    background-image: url(images/open-menu-tringle.png);
    background-position: center right;
 }
@@ -3661,6 +3667,10 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 div#HEADER_USER_STATUS {
   margin-top: 7px;
+}
+
+.yui-skin-citeckTheme #share-header {
+   min-height: 40px;
 }
 
 #bd .yui-gc > .yui-u .document-details-panel .panel-body h3:not(:first-child) {
