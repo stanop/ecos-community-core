@@ -43,9 +43,9 @@
         </dependency>
         <!-- Demonstrating the dependency / installation of the repo AMP developed in the 'repo-amp' module -->
         <dependency>
-            <groupId>org.sharextras</groupId>
+            <groupId>de.fmaul</groupId>
             <artifactId>javascript-console-repo</artifactId>
-            <version>0.6.0</version>
+            <version>0.6</version>
             <type>amp</type>
         </dependency>
         <dependency>
@@ -129,7 +129,7 @@
                         </overlay>
                         <!-- Add / sort your AMPs here -->
                         <overlay>
-                            <groupId>org.sharextras</groupId>
+                            <groupId>de.fmaul</groupId>
                             <artifactId>javascript-console-repo</artifactId>
                             <type>amp</type>
                         </overlay>
