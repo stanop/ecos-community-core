@@ -16,7 +16,6 @@ target/*
 *.log
 *.todo
 alf_data_dev
+*/overlays/**
 syntax: regexp
 desktop\.ini
-repo/overlays/*
-share/overlays/*
