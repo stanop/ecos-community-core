@@ -850,9 +850,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('inlineEditChanger', function(data, event) {
             // save node if it valid
-            if (this.inlineEditVisibility() && data.valid()) {
-                if (this.newValue() != null && this.newValue() != this.persistedValue()) {
-                    if (this.resolve("node.impl.valid")) {
+            if (this.resolve("node.impl.valid")) {
+                if (this.inlineEditVisibility()) {
+                    if (this.newValue() != null && this.newValue() != this.persistedValue()) {
                         this.node().thisclass.save(this.node(), { });
 
                         // hide inline edit form for all attributes after save node
@@ -866,8 +866,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             // change visibility mode
-            if (!this.inlineEditVisibility() || data.valid())
-                this.inlineEditVisibility(!this.inlineEditVisibility());
+            if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
         })
         .method('convertValue', function(value, multiple) {
             var isArray = _.isArray(value),
@@ -2179,28 +2178,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             if (this.options.model.inlineEdit) {
                 $("body").click(function(e, a) {
-                    var node = self.runtime.node();
+                    var node = self.runtime.node(),
+                        form = $("#" + self.options.model.key),
+                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");;
 
-                    if (node.resolve("impl.valid")) {
-                        var form = $("#" + self.options.model.key);
-                        if (!form.is(e.target) && form.has(e.target).length == 0) {
+                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
+                        if (node.resolve("impl.valid")) {
                             // save node if it valid
-                            var inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
-                            if (inlineEditingAttributes.length) {
-                                if (_.any(inlineEditingAttributes, function(attr) {
-                                    return attr.newValue() != null && attr.newValue() != attr.persistedValue();
-                                })) node.thisclass.save(node, { });
-                            }
+                            if (_.any(inlineEditingAttributes, function(attr) {
+                                return attr.newValue() != null && attr.newValue() != attr.persistedValue();
+                            })) node.thisclass.save(node, { });
                             
                             // close all valid inline editing attributes
                             _.each(node.impl().attributes(), function(attr) {
                                 if (attr.inlineEditVisibility() && attr.valid()) attr.inlineEditVisibility(false);
                             });
+                        } else {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message("message.invalid-node.form")
+                            });   
                         }
-                    } else {
-                        Alfresco.util.PopupManager.displayMessage({
-                            text: Alfresco.util.message("message.invalid-node.form")
-                        });
                     }
                 });
             }

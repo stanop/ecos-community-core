@@ -91,7 +91,7 @@
 	<#assign viewMode = view.mode?string == "view" />
 
 	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit && viewMode>inline-edit-form</#if>"
-		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess }">
+		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess, invalid: resolve('node.impl.invalid') }">
 
 		<#if loadIndicator>
 			<div class="loading-overlay">

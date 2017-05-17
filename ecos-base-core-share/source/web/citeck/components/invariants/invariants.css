@@ -93,7 +93,7 @@
   visibility: visible;
 }
 
-.form-field.inline-edit.invalid .form-field-inline-mode-changer.save-mode {
+.ecos-form.invalid .form-field-inline-mode-changer.save-mode {
   color: lightgray;
   cursor: default;
 }
