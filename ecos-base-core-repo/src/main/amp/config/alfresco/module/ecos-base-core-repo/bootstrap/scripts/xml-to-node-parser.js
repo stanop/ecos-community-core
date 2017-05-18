@@ -54,7 +54,8 @@ var parser = {
         batchExecuter.processArray({
             items: objects,
             batchSize: 200,
-            threads: 4,
+            //TODO: Fix multi threads import. In Alfresco 5 multithreaded javascript batch processor does not work correctly - SQL Duplicate key exception.
+            threads: 1,
             onNode: function(row) {
                 var propObj = parser.getProperties(row);
 
@@ -205,7 +206,7 @@ var parser = {
                         targetNode = this.getChildByProperty(targetNodeRoot, assocData.propId, assocData.propValue);
                     }
 
-                    if (!targetNode.exists()) {
+                    if (!targetNode || !targetNode.exists()) {
                         logger.error(this.parserScriptName + " targetNode does not exists. Information: " +
                             "\ntargetNodeRoot: " + targetNodeRoot.nodeRef + " prop id: "
                             + assocData.propId + " prop value: " + assocData.propValue + " uuid: " + assocData.uuid);
