@@ -5,12 +5,12 @@
     <name>1st-override-repo</name>
     <description>1st-override-repo</description>
     <packaging>amp</packaging>
-    <version>3.1.a.0-SNAPSHOT</version>
+    <version>3.1.0.0-SNAPSHOT</version>
 
     <parent>
         <groupId>ru.citeck.ecos</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.1.a-SNAPSHOT</version>
+        <version>3.1.0.0-SNAPSHOT</version>
     </parent>
     
     <properties>
