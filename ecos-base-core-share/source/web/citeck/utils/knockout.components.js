@@ -436,7 +436,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     </div>\
                     <div class="criterion-field" data-bind="with: field">\
                         <input type="hidden" data-bind="attr: { name: \'field_\' + $parent.id() }, value: name" />\
-                        <label data-bind="text: displayName"></label>\
+                        <label data-bind="text: customDisplayName()"></label>\
                     </div>\
                     <div class="criterion-predicate">\
                         <!-- ko if: resolve(\'field.datatype.predicates.length\', 0) == 0 -->\

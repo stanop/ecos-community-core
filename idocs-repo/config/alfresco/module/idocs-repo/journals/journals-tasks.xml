@@ -22,10 +22,12 @@
 			<header key="bpm:priority" default="true">
 				<option name="formatter">workflowPriority</option>
 			</header>
-			<header key="wfm:taskType" default="true">
-				<option name="formatter">typeName('shortQName')</option>
+			<!--<header key="wfm:taskType" default="true">-->
+				<!--<option name="formatter">typeName('shortQName')</option>-->
+			<!--</header>-->
+			<header key="bpm:description" default="true">
+				<option name="customLabel">journal.task.bpm_description.title</option>
 			</header>
-			<header key="bpm:description" default="true" />
 			<header key="cwf:senderName" default="true" searchable="false" />
 			<header key="cwf:sender" visible="false" />
 			<header key="wfm:assignee" />
@@ -57,10 +59,12 @@
 			<header key="bpm:priority" default="true">
 				<option name="formatter">workflowPriority</option>
 			</header>
-			<header key="wfm:taskType" default="true">
-				<option name="formatter">typeName('shortQName')</option>
+			<!--<header key="wfm:taskType" default="true">-->
+				<!--<option name="formatter">typeName('shortQName')</option>-->
+			<!--</header>-->
+			<header key="bpm:description" default="true">
+				<option name="customLabel">journal.task.bpm_description.title</option>
 			</header>
-			<header key="bpm:description" default="true" />
 			<header key="cwf:senderName" default="true" searchable="false" />
 			<header key="cwf:sender" visible="false" />
 			<header key="wfm:assignee" default="true" />
@@ -92,10 +96,12 @@
 			<header key="bpm:priority" default="true">
 				<option name="formatter">workflowPriority</option>
 			</header>
-			<header key="wfm:taskType" default="true">
-				<option name="formatter">typeName('shortQName')</option>
+			<!--<header key="wfm:taskType" default="true">-->
+				<!--<option name="formatter">typeName('shortQName')</option>-->
+			<!--</header>-->
+			<header key="bpm:description" default="true">
+				<option name="customLabel">journal.task.bpm_description.title</option>
 			</header>
-			<header key="bpm:description" default="true" />
 			<header key="cwf:senderName" default="true" searchable="false" />
 			<header key="cwf:sender" visible="false" />
 			<header key="bpm:pooledActors" />
@@ -126,10 +132,12 @@
 			<header key="bpm:priority" default="true">
 				<option name="formatter">workflowPriority</option>
 			</header>
-			<header key="wfm:taskType" default="true">
-				<option name="formatter">typeName('shortQName')</option>
+			<!--<header key="wfm:taskType" default="true">-->
+				<!--<option name="formatter">typeName('shortQName')</option>-->
+			<!--</header>-->
+			<header key="bpm:description" default="true">
+				<option name="customLabel">journal.task.bpm_description.title</option>
 			</header>
-			<header key="bpm:description" default="true" />
 			<header key="cwf:senderName" searchable="false" />
 			<header key="cwf:sender" visible="false" />
 			<header key="wfm:assignee" default="true" />
@@ -164,10 +172,12 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
-                <option name="formatter">typeName('shortQName')</option>
-            </header>
-            <header key="bpm:description" default="true"/>
+            <!--<header key="wfm:taskType" default="true">-->
+                <!--<option name="formatter">typeName('shortQName')</option>-->
+            <!--</header>-->
+			<header key="bpm:description" default="true">
+				<option name="customLabel">journal.task.bpm_description.title</option>
+			</header>
             <header key="cwf:senderName" searchable="false"/>
             <header key="cwf:sender" visible="false" />
             <header key="wfm:assignee" default="true"/>
