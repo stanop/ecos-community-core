@@ -10,6 +10,9 @@
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/folder-details/folder-details-panel.css" />
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/document-details/document-details-panel.css" />
    <@templateHtmlEditorAssets />
+
+    <#include "/org/alfresco/components/form/form.css.ftl"/>
+    <#include "/org/alfresco/components/form/form.js.ftl"/>
 </@>
 
 <#macro renderRegions regions>

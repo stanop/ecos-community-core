@@ -1,12 +1,4 @@
 <@standalone>
-    <@markup id="css" >
-        <#include "/org/alfresco/components/form/form.css.ftl"/>
-    </@>
-
-    <@markup id="js">
-        <#include "/org/alfresco/components/form/form.js.ftl"/>
-    </@>
-
 
     <@markup id="widgets">
         <@createWidgets/>
