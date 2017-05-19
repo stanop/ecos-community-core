@@ -46,6 +46,13 @@
   visibility: visible;
 }
 
+.yui-skin-uedmsTheme .inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
+    content: "\f06a";
+    font-family: FontAwesome;
+    border: none;
+    font-size: 16px;
+}
+
 .inline-edit-form .template-table .template-row.invalid:not(.inline-edit):hover:before {
   visibility: hidden;
 }

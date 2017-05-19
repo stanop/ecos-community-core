@@ -849,24 +849,31 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
         })
         .method('inlineEditChanger', function(data, event) {
+            var isDraft = this.node().properties["invariants:isDraft"];
+
             // save node if it valid
-            if (this.resolve("node.impl.valid")) {
-                if (this.inlineEditVisibility()) {
-                    if (this.newValue() != null && this.newValue() != this.persistedValue()) {
+            if (this.inlineEditVisibility()) {
+                if (this.newValue() != null && this.newValue() != this.persistedValue()) {
+                    if (isDraft || this.resolve("node.impl.valid")) {
                         this.node().thisclass.save(this.node(), { });
 
-                        // hide inline edit form for all attributes after save node
-                        _.each(this.node().impl().attributes(), function(attr) {
-                            if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
-                        })
-
-                        return;
+                        if (isDraft) {
+                            data.inlineEditVisibility(false);
+                        } else {
+                            // hide inline edit form for all attributes after save node
+                            _.each(this.node().impl().attributes(), function(attr) {
+                                if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
+                            });
+                        }
                     }
+                    
+                    return;
                 }
             }
+            
 
             // change visibility mode
-            if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
+            this.inlineEditVisibility(!this.inlineEditVisibility());
         })
         .method('convertValue', function(value, multiple) {
             var isArray = _.isArray(value),
@@ -1914,6 +1921,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return false;
         })
 
+        .computed('invalid', function() {
+            return !this.node().properties["invariants:isDraft"] && this.resolve('node.impl.invalid');
+        })
+
         .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
         .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
 
@@ -2179,11 +2190,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (this.options.model.inlineEdit) {
                 $("body").click(function(e, a) {
                     var node = self.runtime.node(),
+                        isDraft = node.properties["invariants:isDraft"],
                         form = $("#" + self.options.model.key),
-                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");;
+                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
 
                     if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
-                        if (node.resolve("impl.valid")) {
+                        if (isDraft || node.resolve("impl.valid")) {
                             // save node if it valid
                             if (_.any(inlineEditingAttributes, function(attr) {
                                 return attr.newValue() != null && attr.newValue() != attr.persistedValue();
@@ -2191,7 +2203,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                             
                             // close all valid inline editing attributes
                             _.each(node.impl().attributes(), function(attr) {
-                                if (attr.inlineEditVisibility() && attr.valid()) attr.inlineEditVisibility(false);
+                                if (attr.inlineEditVisibility() && (isDraft || attr.valid())) attr.inlineEditVisibility(false);
                             });
                         } else {
                             Alfresco.util.PopupManager.displayMessage({
