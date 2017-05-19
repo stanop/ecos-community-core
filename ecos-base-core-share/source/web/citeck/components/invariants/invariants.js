@@ -2212,8 +2212,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if ((!this.options.model.invariantSet.forcedInvariants || this.options.model.invariantSet.forcedInvariants.length < 1) && 
                 (!this.options.model.node.classNames || this.options.model.node.classNames.length < 1)) {
                 var invariantsURL = Alfresco.constants.PROXY_URI + "/citeck/invariants";
-                if (this.options.model.node.nodeRef) { invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef; }
-                else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
+                if (this.options.model.node.nodeRef) { 
+                    invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef;
+                    if (this.options.model.inlineEdit) invariantsURL += "&inlineEdit=true"
+                } else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
                 invariantsURL += "&attributes=" + this.options.model.node.forcedAttributes.join(",");
 
                 Alfresco.util.Ajax.jsonGet({
