@@ -852,18 +852,22 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var isDraft = this.node().properties["invariants:isDraft"];
 
             // save node if it valid
-            if (this.resolve("node.impl.valid")) {
-                if (this.inlineEditVisibility()) {
-                    if (this.newValue() != null && this.newValue() != this.persistedValue()) {
+            if (this.inlineEditVisibility()) {
+                if (this.newValue() != null && this.newValue() != this.persistedValue()) {
+                    if (isDraft || this.resolve("node.impl.valid")) {
                         this.node().thisclass.save(this.node(), { });
 
-                        // hide inline edit form for all attributes after save node
-                        _.each(this.node().impl().attributes(), function(attr) {
-                            if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
-                        })
-
-                        return;
+                        if (isDraft) {
+                            data.inlineEditVisibility(false);
+                        } else {
+                            // hide inline edit form for all attributes after save node
+                            _.each(this.node().impl().attributes(), function(attr) {
+                                if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
+                            });
+                        }
                     }
+                    
+                    return;
                 }
             }
             
@@ -1915,6 +1919,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             return false;
+        })
+
+        .computed('invalid', function() {
+            return !this.node().properties["invariants:isDraft"] && this.resolve('node.impl.invalid');
         })
 
         .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
