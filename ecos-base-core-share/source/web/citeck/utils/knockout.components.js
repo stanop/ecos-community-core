@@ -138,7 +138,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                 this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype);
 
-                if (this.datatype == "association" && this.nodetype && this.journalType) {
+                if (this.datatype == "association" && this.nodetype) {
                     if (this.value() && Citeck.utils.isNodeRef(this.value().toString())) {
                         this._value(new Node(this.value()));
                     }
@@ -149,13 +149,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             if (newValue) {
                                 var object = newValue instanceof Array ? newValue[0] : newValue,
                                     node = isInvariantsObject(object) ? object : new Node(object);
+
                                 self._value(node);
                             } else { self._value(newValue); }
                             
                         }
                     });
 
-                    if (this.templateName == "journal") {
+                    if (this.templateName == "journal" && this.journalType) {
                         this.fakeViewModel.cache.result.extend({ notify: 'always' });
 
                         this.fakeViewModel.journalType = this.journalType;
