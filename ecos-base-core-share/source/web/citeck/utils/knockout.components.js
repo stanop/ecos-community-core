@@ -317,9 +317,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }"></div>'
     });
 
-    // TODO:
-    // - refactoring 'filter-criteria' and 'list-of-selected-criterion'. Combine methods
-
     ko.components.register('filter-criteria-table', {
         viewModel: function(params) {
             var self = this;

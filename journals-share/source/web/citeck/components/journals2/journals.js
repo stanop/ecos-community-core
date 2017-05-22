@@ -347,6 +347,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function (ko, koutils) {
         .property('labels', o)
         .property('nodetype', s)
         .property('attribute', Attribute)
+        .property('journalType', JournalType)
         .method('customDisplayName', function () {
             var optionLabel = null;
             if (this.attribute().settings()) {
@@ -1328,10 +1329,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function (ko, koutils) {
     var rateLimit = {rateLimit: {timeout: 5, method: "notifyWhenChangesStop"}};
 
     JournalsWidget
-//	.extend('*', { logChange: true })
-//	.extend('columns', { rateLimit: 0 })
-//	.extend('records', { rateLimit: 0 })
-//	.extend('*', { rateLimit: 0 })
+//  .extend('*', { logChange: true })
+//  .extend('columns', { rateLimit: 0 })
+//  .extend('records', { rateLimit: 0 })
+//  .extend('*', { rateLimit: 0 })
     ;
 
     AttributeInfo
