@@ -26,6 +26,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
+import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -37,15 +38,18 @@ import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
 public class InvariantsGet extends DeclarativeWebScript {
+    final private static Logger logger = Logger.getLogger(InvariantsGet.class);
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_NODEREF = "nodeRef";
     private static final String PARAM_ASPECTS = "aspects";
     private static final String PARAM_ATTRIBUTES = "attributes";
     private static final String PARAM_MODE = "mode";
+    private static final String PARAM_INLINE_EDIT = "inlineEdit";
     private static final String MODEL_INVARIANTS = "invariants";
     private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
+    private static final String MODE_EDIT = "edit";
     
     private InvariantService invariantService;
     private NamespacePrefixResolver prefixResolver;
@@ -61,6 +65,19 @@ public class InvariantsGet extends DeclarativeWebScript {
         String aspectsParam = req.getParameter(PARAM_ASPECTS);
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
         String modeParam = req.getParameter(PARAM_MODE);
+        String inlineEditParam = req.getParameter(PARAM_INLINE_EDIT);
+
+        // Change current form's mode to "edit", when inlineEdit parameter is true.
+        if (inlineEditParam != null && !inlineEditParam.isEmpty()) {
+            try {
+                boolean isInlineEdit = Boolean.parseBoolean(inlineEditParam);
+                if (isInlineEdit) {
+                    modeParam = MODE_EDIT;
+                }
+            } catch (Exception e) {
+                logger.warn("Incorrect inlineEdit parameter's value: " + inlineEditParam);
+            }
+        }
 
         Set<QName> classNames = new LinkedHashSet<>();
         

@@ -27,8 +27,11 @@ function get(view, type) {
 }
 
 function getInvariantSet(args, attributes) {
-    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
-        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : '') + (args.mode ? '&mode=' + args.mode : ''));
+    var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
+                                              (attributes && attributes.length ? '&attributes=' + attributes.join(',') : '') + 
+                                              (args.mode ? '&mode=' + args.mode : '') + 
+                                              (args.inlineEdit ? '&inlineEdit=' + args.inlineEdit : '');
+    var response = remote.call(urlTemplate);
     return eval('(' + response + ')');
 }
 

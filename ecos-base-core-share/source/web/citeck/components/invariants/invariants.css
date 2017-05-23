@@ -31,6 +31,32 @@
   padding: 10px;
 }
 
+.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
+  content: "!";
+  color: red;
+  display: block;
+  width: 16px;
+  padding-left: 6px;
+  border: 1px solid red;
+  right: 0;
+  border-radius: 100%;
+  box-sizing: border-box;
+  top: 1px;
+  position: absolute;
+  visibility: visible;
+}
+
+.yui-skin-uedmsTheme .inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
+    content: "\f06a";
+    font-family: FontAwesome;
+    border: none;
+    font-size: 16px;
+}
+
+.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):hover:before {
+  visibility: hidden;
+}
+
 .ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list {
   margin-top: 5px;
 }
@@ -72,6 +98,11 @@
 
 .form-field.inline-edit .form-field-inline-mode-changer {
   visibility: visible;
+}
+
+.ecos-form.invalid .form-field-inline-mode-changer.save-mode {
+  color: lightgray;
+  cursor: default;
 }
 
 .template-row .form-field-inline-mode-changer.save-mode {

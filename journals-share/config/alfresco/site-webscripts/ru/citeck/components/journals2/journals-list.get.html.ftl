@@ -253,7 +253,7 @@
                                     <!-- ko component: { name: "checkbox-radio", params: {
                                         options: journal().type().visibleAttributes,
                                         value: _settings().visibleAttributes,
-                                        optionText: function(option) { return option.displayName },
+                                        optionText: function(option) { if (option.customDisplayName) {return option.customDisplayName()} return option.displayName },
                                         multiple: true
                                     }} --><!-- /ko -->
                                 </#if>

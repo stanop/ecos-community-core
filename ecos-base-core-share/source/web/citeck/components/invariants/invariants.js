@@ -849,25 +849,31 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
         })
         .method('inlineEditChanger', function(data, event) {
+            var isDraft = this.node().properties["invariants:isDraft"];
+
             // save node if it valid
-            if (this.inlineEditVisibility() && data.valid()) {
+            if (this.inlineEditVisibility()) {
                 if (this.newValue() != null && this.newValue() != this.persistedValue()) {
-                    if (this.resolve("node.impl.valid")) {
+                    if (isDraft || this.resolve("node.impl.valid")) {
                         this.node().thisclass.save(this.node(), { });
 
-                        // hide inline edit form for all attributes after save node
-                        _.each(this.node().impl().attributes(), function(attr) {
-                            if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
-                        })
-
-                        return;
+                        if (isDraft) {
+                            data.inlineEditVisibility(false);
+                        } else {
+                            // hide inline edit form for all attributes after save node
+                            _.each(this.node().impl().attributes(), function(attr) {
+                                if (attr.inlineEditVisibility()) attr.inlineEditVisibility(false);
+                            });
+                        }
                     }
+                    
+                    return;
                 }
             }
+            
 
             // change visibility mode
-            if (!this.inlineEditVisibility() || data.valid())
-                this.inlineEditVisibility(!this.inlineEditVisibility());
+            this.inlineEditVisibility(!this.inlineEditVisibility());
         })
         .method('convertValue', function(value, multiple) {
             var isArray = _.isArray(value),
@@ -1915,11 +1921,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return false;
         })
 
+        .computed('invalid', function() {
+            return !this.node().properties["invariants:isDraft"] && this.resolve('node.impl.invalid');
+        })
+
         .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
         .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
 
         .method('scrollToFormField', function(data, event) {
             var field = $(".form-field[data-attribute-name='" + data.name() + "']");
+            if (!data.inlineEditVisibility()) data.inlineEditVisibility(true);
             if (field) $('html,body').animate({ scrollTop: field.offset().top - 10 }, 500 );
         })
 
@@ -2177,27 +2188,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             if (this.options.model.inlineEdit) {
-                // TODO: 
-                // - если открыт хотя бы один атрибут
-
                 $("body").click(function(e, a) {
-                    var node = self.runtime.node();
+                    var node = self.runtime.node(),
+                        isDraft = node.properties["invariants:isDraft"],
+                        form = $("#" + self.options.model.key),
+                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
 
-                    if (node.resolve("impl.valid")) {
-                        var form = $("#" + self.options.model.key);
-                        if (!form.is(e.target) && form.has(e.target).length == 0) {
+                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
+                        if (isDraft || node.resolve("impl.valid")) {
                             // save node if it valid
-                            var inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
-                            if (inlineEditingAttributes.length) {
-                                if (_.any(inlineEditingAttributes, function(attr) {
-                                    return attr.newValue() != null && attr.newValue() != attr.persistedValue();
-                                })) node.thisclass.save(node, { });
-                            }
+                            if (_.any(inlineEditingAttributes, function(attr) {
+                                return attr.newValue() != null && attr.newValue() != attr.persistedValue();
+                            })) node.thisclass.save(node, { });
                             
                             // close all valid inline editing attributes
                             _.each(node.impl().attributes(), function(attr) {
-                                if (attr.inlineEditVisibility() && attr.valid()) attr.inlineEditVisibility(false);
+                                if (attr.inlineEditVisibility() && (isDraft || attr.valid())) attr.inlineEditVisibility(false);
                             });
+                        } else {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message("message.invalid-node.form")
+                            });   
                         }
                     }
                 });
@@ -2213,8 +2224,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if ((!this.options.model.invariantSet.forcedInvariants || this.options.model.invariantSet.forcedInvariants.length < 1) && 
                 (!this.options.model.node.classNames || this.options.model.node.classNames.length < 1)) {
                 var invariantsURL = Alfresco.constants.PROXY_URI + "/citeck/invariants";
-                if (this.options.model.node.nodeRef) { invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef; }
-                else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
+                if (this.options.model.node.nodeRef) { 
+                    invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef;
+                    if (this.options.model.inlineEdit) invariantsURL += "&inlineEdit=true"
+                } else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
                 invariantsURL += "&attributes=" + this.options.model.node.forcedAttributes.join(",");
 
                 Alfresco.util.Ajax.jsonGet({
