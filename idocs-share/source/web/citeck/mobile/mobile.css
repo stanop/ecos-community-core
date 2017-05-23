@@ -83,6 +83,7 @@
 }
 
 .mobile #HEADER_MOBILE_MENU,
+.mobile #HEADER_SITE_MENU,
 .mobile #HEADER_USER_MENU {
     margin: 0;
 }
@@ -103,7 +104,8 @@
 }
 
 .mobile .dijitPopup[id*="HEADER_MOBILE_MENU"],
-.mobile .dijitPopup[id*="HEADER_USER_MENU"] {
+.mobile .dijitPopup[id*="HEADER_USER_MENU"],
+.mobile .dijitPopup[id*="HEADER_SITE_MENU"] {
     width: 100%;
     box-sizing: border-box;
     left: 0 !important;
@@ -111,7 +113,8 @@
 }
 
 .mobile .dijitPopup[id*="HEADER_MOBILE_MENU"] .alf-header-menu-bar,
-.mobile .dijitPopup[id*="HEADER_USER_MENU"] .alf-header-menu-bar  {
+.mobile .dijitPopup[id*="HEADER_USER_MENU"] .alf-header-menu-bar,
+.mobile .dijitPopup[id*="HEADER_SITE_MENU"] .alf-header-menu-bar {
     box-shadow: none;
     border: none;
     border-radius: 0;
