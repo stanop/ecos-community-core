@@ -125,7 +125,7 @@ userMenu.config.widgets = [
         config: {
             id: "HEADER_USER_MENU",
             label: user.fullName,
-            style: "padding-left: 10px;",
+            style: isMobile ? "padding-left: 5px;" : "padding-left: 10px;",
             widgets: [{
                 name: "alfresco/menus/AlfMenuGroup",
                 config: {
@@ -135,7 +135,9 @@ userMenu.config.widgets = [
         }
     }
 ];
-if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
+
+// delete the Title Bar everywhere (exept for Edit Page and Create Page)
+if (shareVerticalLayout && shareVerticalLayout.config.widgets.length && page.id.indexOf("edit") == -1 && page.id.indexOf("create") == -1) {
     shareVerticalLayout.config.widgets = shareVerticalLayout.config.widgets.filter(function(item) {
         return item.id !== "HEADER_TITLE_BAR"
     })
@@ -150,23 +152,27 @@ if (navigationMenu && navigationMenu.config.widgets.length) {
     for (var w in navigationMenu.config.widgets) {
         if (navigationMenu.config.widgets[w].id == "HEADER_SITE_MORE_PAGES" && navigationMenu.config.widgets[w].config.widgets.length) {
             navigationMenu.config.widgets = navigationMenu.config.widgets.concat(
-                navigationMenu.config.widgets[w].config.widgets[0].config.widgets.map(function (widget) {
-                    widget.name = "alfresco/menus/AlfMenuBarItem";
+                navigationMenu.config.widgets[w].config.widgets[0].config.widgets.map(function(widget) {
+                    widget.name = "alfresco/header/AlfMenuItem";
                     return widget;
                 }));
             navigationMenu.config.widgets.splice(w, 1);
         }
     }
+    navigationMenu.config.widgets = navigationMenu.config.widgets.map(function(item) {
+        item.name = "alfresco/header/AlfMenuItem";
+        return item;
+    });
     siteMenuItems = siteMenuItems.concat(navigationMenu.config.widgets);
 }
 
 if (titleMenu && titleMenu.config.widgets.length) {
-    titleMenu.config.widgets = titleMenu.config.widgets.map(function (item) {
+    titleMenu.config.widgets = titleMenu.config.widgets.map(function(item) {
         if(item.id == "HEADER_SITE_CONFIGURATION_DROPDOWN") {
             item.name = "alfresco/menus/AlfMenuGroup";
             item.config.label = msg.get("header.menu.siteConfig.altText");
             if (item.config.widgets.length) {
-                item.config.widgets = item.config.widgets.map(function (widget) {
+                item.config.widgets = item.config.widgets.map(function(widget) {
                     widget.name = "alfresco/header/AlfMenuItem";
                     return widget;
                 })
@@ -189,7 +195,7 @@ if (siteMenuItems.length) {
         config: {
             id: "HEADER_SITE_MENU",
             label: "",
-            style: "padding: 10px 5px 10px 5px;",
+            style: isMobile ? "padding-left: 5px; padding-right: 5px" :  "padding-left: 10px; padding-right: 10px",
             widgets: siteMenuItems
         }
     })
@@ -514,7 +520,8 @@ appMenu.config.widgets.unshift(
         name: "alfresco/header/AlfMenuBarPopup",
         config: {
             id: "HEADER_MOBILE_MENU",
-            widgets: [HEADER_MOBILE_MENU_VARIANTS]
+            widgets: [HEADER_MOBILE_MENU_VARIANTS],
+            style: "padding-right: 5px;"
         }
     },
    buildLogo(isMobile)
@@ -686,8 +693,8 @@ function buildLogo(isMobile) {
         id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
         name: "alfresco/logo/citeckLogo",
         config: {
+            id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
             logoClasses: "alfresco-logo-only",
-            style: "display: inline-block; cursor: pointer; vertical-align: middle; margin: 0;" + (isMobile ? "padding: 10px 6px 10px 6px;" : "padding: 9px 10px 10px 15px;"),
             currentTheme: theme,
             logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
             targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
