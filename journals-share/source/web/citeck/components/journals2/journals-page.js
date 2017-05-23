@@ -376,7 +376,7 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 		};
 
 		var onSubmit = function () {
-			var filterByConfirmChange = function(records, idx, result, callback) {
+			var filterByConfirmChange = function(records, idx, result, callback, changeExistingValue) {
 				if (idx >= records.length) {
 					callback(result);
 					return;
@@ -384,31 +384,44 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 				var recordAttributes = records[idx].attributes();
 				var value = recordAttributes[attribute.name()];
 				if (value) {
-					var fieldTitle = attribute.displayName();
-					var documentTitle = recordAttributes["cm:title"] || recordAttributes["cm:name"];
-					confirmPopup("В документе '" + documentTitle + "' значение поля '"
-								 + fieldTitle + "' равно '" + value
-								 + "'. Желаете его заменить?", function() {
-						this.destroy();
-						result.push(records[idx]);
-						filterByConfirmChange(records, idx + 1, result, callback);
-					}, function () {
-						this.destroy();
-						setStatus(records[idx], "CANCELLED");
-						filterByConfirmChange(records, idx + 1, result, callback);
-					})
+                    if (changeExistingValue) {
+                        var fieldTitle = attribute.displayName();
+                        var documentTitle = recordAttributes["cm:title"] || recordAttributes["cm:name"];
+                        confirmPopup("В документе '" + documentTitle + "' значение поля '"
+                            + fieldTitle + "' равно '" + value
+                            + "'. Желаете его заменить?", function () {
+                            this.destroy();
+                            result.push(records[idx]);
+                            filterByConfirmChange(records, idx + 1, result, callback, changeExistingValue);
+                        }, function () {
+                            this.destroy();
+                            setStatus(records[idx], "CANCELLED");
+                            filterByConfirmChange(records, idx + 1, result, callback, changeExistingValue);
+                        })
+                    } else {
+                        setStatus(records[idx], "SKIPPED");
+                        filterByConfirmChange(records, idx + 1, result, callback, changeExistingValue);
+                    }
 				} else {
 					result.push(records[idx]);
-					filterByConfirmChange(records, idx + 1, result, callback);
+					filterByConfirmChange(records, idx + 1, result, callback, changeExistingValue);
 				}
 				return result;
 			};
 
 			if (datatype != "association" || editValue() != null) {
 				if (action.settings().confirmChange == "true") {
-					filterByConfirmChange(records, 0, [], processRecords);
+                    if (action.settings().changeExistsValue == 'false') {
+                        filterByConfirmChange(records, 0, [], processRecords, false);
+                    } else {
+                        filterByConfirmChange(records, 0, [], processRecords, true);
+                    }
 				} else {
-					processRecords(records);
+                    if (action.settings().changeExistsValue == 'false') {
+                        filterByConfirmChange(records, 0, [], processRecords, false);
+                    } else {
+                        processRecords(records);
+                    }
 				}
 			}
 		};
@@ -473,4 +486,4 @@ _.extend(JournalsPageWidget.prototype, Alfresco.doclib.Actions.prototype, {
 
 return JournalsPageWidget;
 
-})
+});

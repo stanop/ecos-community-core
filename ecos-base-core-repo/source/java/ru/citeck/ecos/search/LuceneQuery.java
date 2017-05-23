@@ -99,7 +99,7 @@ public class LuceneQuery implements SearchQueryBuilder {
 
     @Override
     public boolean supports(String language) {
-        return SearchService.LANGUAGE_LUCENE.equals(language) || SearchService.LANGUAGE_FTS_ALFRESCO.equals(language);
+        return SearchService.LANGUAGE_LUCENE.equals(language);
     }
 
     private class QueryBuilder {

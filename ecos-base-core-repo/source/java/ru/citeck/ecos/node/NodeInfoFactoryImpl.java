@@ -18,37 +18,12 @@
  */
 package ru.citeck.ecos.node;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.ContentData;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.ContentWriter;
-import org.alfresco.service.cmr.repository.MimetypeService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
@@ -58,10 +33,14 @@ import org.alfresco.util.GUID;
 import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.*;
 
 class NodeInfoFactoryImpl implements NodeInfoFactory 
 {
@@ -458,7 +437,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 						} else if(object instanceof NodeRef) {
 							targets.add((NodeRef) object);
 						} else if(object instanceof String) {
-							targets.add(new NodeRef((String) value));
+							targets.add(new NodeRef((String) object));
 						} else {
 							logger.warn("Unsupported class for converting to nodeRef: " + object.getClass());
 						}

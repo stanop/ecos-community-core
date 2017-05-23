@@ -2766,8 +2766,12 @@ function updatedControlValue(valueObject, ulSelected, tree) {
 
         if (typeof valueObject == "object") {
             if (valueObject instanceof Array) {
-               for (var i in valueObject) {
-                    valueArray.push(valueObject[i].nodeRef)
+                for (var i in valueObject) {
+                    if (_.isObject(valueObject[i]) && valueObject[i].toString().indexOf("invariatns.Node") != -1) {
+                        valueArray.push(valueObject[i].nodeRef)
+                    } else if (_.isString(valueObject[i]) && Citeck.utils.isNodeRef(valueObject[i])) {
+                        valueArray.push(valueObject[i]);
+                    }
                 }
             } else {
                 valueArray.push(valueObject.nodeRef);
@@ -2779,9 +2783,7 @@ function updatedControlValue(valueObject, ulSelected, tree) {
         }
 
         for (var i in valueArray) {
-            YAHOO.util.Connect.asyncRequest(
-                "GET", 
-                Alfresco.constants.PROXY_URI + "api/orgstruct/authority?nodeRef=" + valueArray[i], 
+            YAHOO.util.Connect.asyncRequest("GET", Alfresco.constants.PROXY_URI + "api/orgstruct/authority?nodeRef=" + valueArray[i], 
                 {
                     success: function(response) {
                         var results = YAHOO.lang.JSON.parse(response.responseText);

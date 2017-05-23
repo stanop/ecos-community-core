@@ -62,12 +62,20 @@ public class UserInGroupEvaluator extends ActionConditionEvaluatorAbstractBase {
             @Override
             public Boolean doWork() throws Exception {
                 if ((userName != null) && (groupName != null)) {
+                    String[] groupNames = groupName.split(",");
                     NodeRef personRef = personService.personExists(userName) ? personService.getPerson(userName) : null;
 
                     if (personRef != null) {
                         Set<String> userAuthorities = authorityService.getAuthoritiesForUser(userName);
-                        if ((userAuthorities != null) && (userAuthorities.contains(groupName)))
-                            return true;
+                        boolean isUserInGroup = false;
+                        if (userAuthorities != null) {
+                            for (String groupName : groupNames) {
+                                isUserInGroup = isUserInGroup || userAuthorities.contains(groupName.trim());
+                            }
+                            return isUserInGroup;
+                        }
+//                        if ((userAuthorities != null) && (userAuthorities.contains(groupName)))
+//                            return true;
                     }
                 }
 

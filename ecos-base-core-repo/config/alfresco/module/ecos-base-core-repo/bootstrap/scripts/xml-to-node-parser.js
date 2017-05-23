@@ -226,7 +226,7 @@ var parser = {
             var childGroups = group.getChildGroups(maxItems, skipCount);
 
             for each (var childGroup in childGroups) {
-                if (childGroup.shortName == childShortName) {
+                if ((childGroup.shortName + "") == (childShortName + "")) {
                     return childGroup;
                 }
             }
