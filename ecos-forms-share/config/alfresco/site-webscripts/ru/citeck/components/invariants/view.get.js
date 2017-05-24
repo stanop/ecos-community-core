@@ -11,8 +11,8 @@
     var view = viewData.view,
         attributes = getAttributes(view);
 
-    // extend args with view.params
-    for (var p in view.params) { args[p] = view.params[p]; }
+    // extend args with view.params for inlineEdit parameters
+    if (view.params.inlineEdit) args.inlineEdit = view.params.inlineEdit;
 
     if (model.isMobile) {
         for (var a = 0; a < attributes.length; a++) {
