@@ -6,6 +6,7 @@ const STATUS_PERMISSION_DENIED = "PERMISSION_DENIED";
 
     var nodes = json.get('nodes'),
         attrs = json.get('attributes'),
+        options = json.get('options'),
         permService = services.get("attributesPermissionService");
 
     if (!exists("nodes", nodes) ||
@@ -15,6 +16,9 @@ const STATUS_PERMISSION_DENIED = "PERMISSION_DENIED";
     }
 
     var results = {};
+    if (options.skipInStatuses) {
+        Alfresco.logger.error(options.skipInStatuses);
+    }
     for (var i = 0; i < nodes.length(); i++) {
         var node = search.findNode(nodes.get(i));
         var changeResult  = {};

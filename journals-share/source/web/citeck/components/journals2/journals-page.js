@@ -346,7 +346,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                     }
                 };
 
-                var processRecords = function (records) {
+                var processRecords = function (records, options) {
 
                     var nodes = _.map(records, function (r) {
                         return r.nodeRef();
@@ -358,7 +358,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                         url: Alfresco.constants.PROXY_URI + "api/journals/batch-edit",
                         dataObj: {
                             "nodes": nodes,
-                            "attributes": attributes
+                            "attributes": attributes,
+                            "options": options
                         },
                         successCallback: {
                             scope: this,
@@ -380,19 +381,14 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                     });
                 };
 
-                // var toBoolean = function (value) {
-                //     switch (false) {
-                //         case value.toLowerCase() !== 'true':
-                //             return true;
-                //         case value.toLowerCase() !== 'false':
-                //             return false;
-                //     }
-                // };
-
                 var onSubmit = function () {
                     var filterByOptions = function (records, idx, result, callback, options) {
                         if (idx >= records.length) {
-                            callback(result);
+                            var repoOptions = {};
+                            if (options.skipInStatuses) {
+                                repoOptions.skipInStatuses = options.skipInStatuses;
+                            }
+                            callback(result, repoOptions);
                             return;
                         }
                         var recordAttributes = records[idx].attributes();
@@ -445,7 +441,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                         var options = {
                             confirmChange: false,
                             skipEmptyValues: false,
-                            changeExistsValue: true
+                            changeExistsValue: true,
+                            skipInStatuses: ""
                         };
                         var useFilter = false;
                         var confirmChange = action.settings().confirmChange;
@@ -474,6 +471,13 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                 options.changeExistsValue = false;
                             }
                             useFilter = true;
+                        }
+                        var skipInStatusesValue = action.settings().skipInStatuses;
+                        if (skipInStatusesValue) {
+                            if (skipInStatusesValue.length > 0) {
+                                var statusesArray = skipInStatusesValue.split(",");
+                                options.skipInStatuses = statusesArray;
+                            }
                         }
 
                         if (useFilter) {
