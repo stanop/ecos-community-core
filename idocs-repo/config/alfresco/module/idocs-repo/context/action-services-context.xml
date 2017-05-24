@@ -71,6 +71,11 @@
         <property name="evaluator" ref="compare-property-value" />
     </bean>
 
+    <bean id="user-in-roles" class="ru.citeck.ecos.action.evaluator.UserInRolesEvaluator" parent="action-condition-evaluator">
+        <property name="personService" ref="personService" />
+        <property name="caseRoleService" ref="caseRoleService" />
+    </bean>
+
     <!-- Node Actions Services -->
     <bean id="nodeActionsService" class="ru.citeck.ecos.action.NodeActionsService" />
 
