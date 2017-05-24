@@ -137,9 +137,17 @@ userMenu.config.widgets = [
 ];
 
 // delete the Title Bar everywhere (exept for Edit Page and Create Page)
-if (shareVerticalLayout && shareVerticalLayout.config.widgets.length && page.id.indexOf("edit") == -1 && page.id.indexOf("create") == -1) {
+if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
     shareVerticalLayout.config.widgets = shareVerticalLayout.config.widgets.filter(function(item) {
-        return item.id !== "HEADER_TITLE_BAR"
+        if (item.id == "HEADER_TITLE_BAR" && (page.id.indexOf("edit") != -1 || page.id.indexOf("create") != -1 || page.id.indexOf("start") != -1)) {
+            item.config.widgets = item.config.widgets.filter(function(item) {
+                return item.id == "HEADER_TITLE"
+            });
+            return item;
+        } else {
+            return item.id !== "HEADER_TITLE_BAR"
+        }
+
     })
 }
 
