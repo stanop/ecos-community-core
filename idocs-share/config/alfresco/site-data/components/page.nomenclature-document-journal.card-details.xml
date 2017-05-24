@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+  <scope>page</scope>
+  <source-id>card-details</source-id>
+    <region-id>nomenclature-document-journal</region-id>
+    <url>/citeck/components/document-journal</url>
+    <properties>
+        <journalsListId>nomenclature-docs</journalsListId>
+        <sendNodeRef>false</sendNodeRef>
+    </properties>
+</component>

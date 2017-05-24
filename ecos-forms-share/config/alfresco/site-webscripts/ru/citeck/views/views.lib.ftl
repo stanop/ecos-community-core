@@ -5,7 +5,7 @@
 
 <#macro renderElement element>
 	<#assign template = element.template!"default" />
-	<#assign inlineEdit = (view.params.inlineEdit!"false") == "true" />
+	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
@@ -53,7 +53,7 @@
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
 
-	<#assign inlineEdit = (view.params.inlineEdit!"false") == "true" />
+	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 	<#assign withoutMode = element.type == "region" && inlineEdit />
 
 	<#if !withoutMode>
@@ -83,7 +83,7 @@
 
 <#macro renderViewContainer view id>
 	<#assign loadIndicator = (view.params.loadIndicator!"true") == "true" />
-	<#assign inlineEdit = (view.params.inlineEdit!"false") == "true" />
+	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 
 	<#assign formMode = view.mode?string + "-form" />
 	<#assign formTemplate = "form-template-" + view.template?string />
@@ -274,7 +274,7 @@
 		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
 		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
-		<#assign inlineEdit = view.params.inlineEdit!"false" />
+		<#assign inlineEdit = view.params.inlineEdit!"true" />
 		<#assign viewMode = view.mode?string == "view" />
 
 		<#escape x as x?js_string>

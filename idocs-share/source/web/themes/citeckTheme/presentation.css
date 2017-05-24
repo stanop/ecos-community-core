@@ -2236,7 +2236,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 #alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-active button.alf-header-js-wrapper-button,
 #alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused .alf-menu-arrow,
-#alf-hd .alf-header .right-widgets .dijitMenuBar.dijitMenuActive .alf-menu-arrow {
+#alf-hd .alf-header .right-widgets .dijitMenuBar.dijitMenuActive .dijitMenuItem.dijitMenuItemSelected .alf-menu-arrow {
    background-image: url(images/open-menu-tringle.png);
    background-position: center right;
 }
@@ -2320,7 +2320,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 #alf-hd .widgets > .left-and-right {
-  height: 75px;
+  height: 45px;
   padding: 0 30px 0 40px;
   overflow: hidden;
 }
@@ -2334,7 +2334,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .widgets > .left-and-right > div,
 #alf-hd .widgets > .left-and-right > div > .left-widgets,
 #alf-hd .widgets > .left-and-right > div > .right-widgets {
-  height: 75px;
+  height: 45px;
 }
 
 #alf-hd .widgets > .left-and-right .left-widgets .horizontal-widget,
@@ -2349,14 +2349,25 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
   -ms-transform: translateY(-50%);
 }
 
-.alfresco-share .logo {
-    border: medium none;
-    margin: 0 10px 7px 0;
-    padding: 0;
+.yui-skin-citeckTheme #HEADER_MOBILE_LOGO {
+    padding: 10px 5px;
 }
 
-.alfresco-share .logo img {
-  max-height: 48px !important;
+.yui-skin-citeckTheme #HEADER_LOGO {
+    padding: 8px 13px 10px 16px;
+}
+
+.yui-skin-citeckTheme.alfresco-share .logo {
+    border: medium none;
+}
+
+.yui-skin-citeckTheme.alfresco-share .logo img {
+  max-height: 20px !important;
+}
+
+#HEADER_SITE_DOCUMENTLIBRARY_text,
+#HEADER_SITE_JOURNALS_text {
+    width: 90%;
 }
 
 .alfresco-share .alf-menu-title,
@@ -3661,6 +3672,10 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 div#HEADER_USER_STATUS {
   margin-top: 7px;
+}
+
+.yui-skin-citeckTheme #share-header {
+   min-height: 40px;
 }
 
 #bd .yui-gc > .yui-u .document-details-panel .panel-body h3:not(:first-child) {

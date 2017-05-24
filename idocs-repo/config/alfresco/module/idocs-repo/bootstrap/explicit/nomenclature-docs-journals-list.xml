@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:journal="http://www.citeck.ru/model/journals/1.0">
+
+    <view:reference view:pathref="cm:journalLists">
+        <cm:contains>
+            <journal:journalsList view:childName="cm:global-absence">
+                <view:properties>
+                    <sys:node-uuid>journal-meta-l-nomenclature-docs</sys:node-uuid>
+                    <cm:name>nomenclature-docs</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${journal.nomenclature-docs}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.nomenclature-docs}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+                <view:associations>
+                    <journal:journals>
+                        <view:reference view:pathref="cm:journals/journal:orders-internal" />
+                        <view:reference view:pathref="cm:journals/cm:income" />
+                        <view:reference view:pathref="cm:journals/cm:outcome" />
+                    </journal:journals>
+                </view:associations>
+            </journal:journalsList>
+        </cm:contains>
+    </view:reference>
+
+</view:view>

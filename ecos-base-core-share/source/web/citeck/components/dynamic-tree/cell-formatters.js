@@ -1580,8 +1580,39 @@
 				elCell.innerHTML = sData;
 				return
 			}
-		}
+		},
 
+        downloadSign: function(attributeName) {
+            return function (elCell, oRecord) {
+                var linkValue = oRecord.getData(attributeName),
+                    signLink = document.createElement('a');
+                signLink.className = "document-link";
+                signLink.onclick = function(event) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    if (!linkValue) {
+                        Alfresco.util.PopupManager.displayPrompt({
+                            title: Alfresco.util.message("actions.sign.download.title"),
+                            text: Alfresco.util.message("actions.sign.download.text"),
+                            noEscape: true,
+                            buttons: [
+                                {
+                                    text: Alfresco.util.message("actions.button.ok"),
+                                    handler: function empt_ok() {
+                                        this.destroy();
+                                    },
+                                    isDefault: true
+                                }]
+                        });
+                    } else {
+                        var redirection = Alfresco.constants.PROXY_URI + "/acm/getDecodeESign?nodeRef=" + linkValue.nodeRef;
+                        window.location = redirection;
+                    }
+                };
+                signLink.href = '#';
+                signLink.text = Alfresco.util.message("button.financial-request-documents.download-sign");
+                elCell.appendChild(signLink);
+            }
+        }
 	});
-
 })();
