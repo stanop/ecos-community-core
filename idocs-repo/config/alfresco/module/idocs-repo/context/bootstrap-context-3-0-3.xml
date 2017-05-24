@@ -43,7 +43,8 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.nomenclature-docs-journals-list" parent="idocs.import-spaces.3-0-3"
+    <!-- TODO: depends on order -->
+    <!--<bean id="idocs.module-component.nomenclature-docs-journals-list" parent="idocs.import-spaces.3-0-3"
           depends-on="idocs.dictionaryBootstrap">
         <property name="name" value="nomenclature-docs-journals-list"/>
         <property name="description" value="Nomenclature Docs Journals List"/>
@@ -64,6 +65,6 @@
                 <prop key="encoding">UTF-8</prop>
             </props>
         </property>
-    </bean>
+    </bean>-->
 
 </beans>
