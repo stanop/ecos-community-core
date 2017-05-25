@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -303,19 +303,15 @@
             destination = params.destination || "",
             destinationAssoc = params.destinationAssoc || "",
             forceOldDialog = params.forceOldDialog || false,
-            width = params.width || "40em";
+            width = params.width || "500px",
+            height = params.height || "auto";
 
         var newDialog = function() {
-            var dataObj = 
-                {
-                    htmlid: viewId,
-                    mode: mode,
-                    viewId: formId
-                };
+            var dataObj = { htmlid: viewId, mode: mode, viewId: formId };
             dataObj[paramName] = itemId;
+
             for(var name in params) {
-                if(params[name] != null) 
-                    dataObj['param_' + name] = params[name];
+                if(params[name] != null) dataObj['param_' + name] = params[name];
             }
 
             Alfresco.util.Ajax.request({
@@ -327,13 +323,11 @@
                     fn: function(response) {
                         var panel = new YAHOO.widget.Panel(id, {
                             width: width,
-                            fixedcenter: YAHOO.env.ua.mobile === null ? "contained" : false,
+                            height: height,
+                            fixedcenter:  true,
                             constraintoviewport: true,
-                            underlay: "shadow",
                             close: true,
                             modal: true,
-                            visible: true,
-                            draggable: true,
                             postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
                             hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
                             fireHideShowEvents: true
@@ -348,6 +342,10 @@
 
                         panel.setHeader(header);
                         panel.setBody(response.serverResponse.responseText);
+
+                        // additional styel for panel with fixed size
+                        if (height != "auto") { panel.body.classList.add("fixed-size"); }
+
                         panel.render(document.body);
 
                         var onSubmit = function(layer, args) {
@@ -394,7 +392,8 @@
 
             var editDetails = new Alfresco.module.SimpleDialog(id);
             editDetails.setOptions({
-                    width: "40em",
+                    width: width,
+                    height: height,
                     templateUrl: templateUrl,
                     actionUrl: null,
                     destroyOnHide: true,
