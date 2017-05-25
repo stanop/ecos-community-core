@@ -95,6 +95,7 @@ define(["dojo/_base/declare",
             targetUrl: null,
 
             buildRendering: function alfresco_logo_Logo__buildRendering() {
+                this.templateString = '<div class="logo alfresco-logo-Logo"><a href="' + this.targetUrl + '"><img src= "' + this.logoSrc + '" style="display: block;"></a></div>';
                 if (this.logoSrc) {
                     this.imgNodeStyle = "display: block;";
                 }
@@ -102,20 +103,6 @@ define(["dojo/_base/declare",
                     this.cssNodeStyle = "display: block";
                 }
                 this.inherited(arguments);
-            },
-
-            postCreate: function alfresco_logo_Logo__postCreate() {
-                domClass.add(this.domNode, "alfresco-logo-Logo");
-                var self = this;
-                this.domNode.addEventListener("click", function(event) {
-                    event.stopPropagation();
-                    if (self.targetUrl) {
-                        self.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: self.targetUrl, type: self.targetUrlType, target: self.targetUrlLocation});
-                    } else {
-                        self.alfLog("error", "An AlfMenuItem was clicked but did not define a 'targetUrl' or 'publishTopic' or 'clickEvent' attribute", event);
-                    }
-                }, false);
-                    this.inherited(arguments);
             }
         });
     }
