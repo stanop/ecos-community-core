@@ -38,6 +38,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         DefaultModel = koclass('invariants.DefaultModel'),
         Message = koclass('invariants.Message'),
         Feature = koclass('invariants.Feature'),
+        AttributeSet = koclass('invariants.AttributeSet'),
         AttributeInfo = koclass('invariants.AttributeInfo'),
         Attribute = koclass('invariants.Attribute'),
         Predicate = koclass('invariants.Predicate'),
@@ -667,7 +668,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .key('id', s)
         .property('label', s)
         .property('needsValue', b)
-    ;
+        ;
+
+    AttributeSet
+        .key('id', s)
+        .property('attributes', [ Attribute ])
+        .property('sets', [ AttributeSet ])
+        ;
 
     AttributeInfo
         .key('name', s)
@@ -1258,6 +1265,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('groups', [ Group ])
+        .property('sets', [ AttributeSet ])
 
         .shortcut('typeShort', 'type')
 
@@ -2187,33 +2195,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 $(window).resize();
             }
 
-            if (this.options.model.inlineEdit) {
-                $("body").click(function(e, a) {
-                    var node = self.runtime.node(),
-                        isDraft = node.properties["invariants:isDraft"],
-                        form = $("#" + self.options.model.key),
-                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
-
-                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
-                        if (isDraft || node.resolve("impl.valid")) {
-                            // save node if it valid
-                            if (_.any(inlineEditingAttributes, function(attr) {
-                                return attr.newValue() != null && attr.newValue() != attr.persistedValue();
-                            })) node.thisclass.save(node, { });
-                            
-                            // close all valid inline editing attributes
-                            _.each(node.impl().attributes(), function(attr) {
-                                if (attr.inlineEditVisibility() && (isDraft || attr.valid())) attr.inlineEditVisibility(false);
-                            });
-                        } else {
-                            Alfresco.util.PopupManager.displayMessage({
-                                text: Alfresco.util.message("message.invalid-node.form")
-                            });   
-                        }
-                    }
-                });
-            }
-
             // define attributes from first group as forced
             if (this.options.model.loadAttributesMethod == "clickOnGroup") {
                 this.options.model.invariantSet.forcedInvariants = this.options.model.node.groups[0].invariants;
@@ -2248,6 +2229,33 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 });
             } else {
                 this.initRuntime();
+            }
+
+            if (this.options.model.inlineEdit) {
+                $("body").click(function(e, a) {
+                    var node = self.runtime.node(),
+                        isDraft = node.properties["invariants:isDraft"],
+                        form = $("#" + self.options.model.key),
+                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
+
+                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
+                        if (isDraft || node.resolve("impl.valid")) {
+                            // save node if it valid
+                            if (_.any(inlineEditingAttributes, function(attr) {
+                                return attr.newValue() != null && attr.newValue() != attr.persistedValue();
+                            })) node.thisclass.save(node, { });
+                            
+                            // close all valid inline editing attributes
+                            _.each(node.impl().attributes(), function(attr) {
+                                if (attr.inlineEditVisibility() && (isDraft || attr.valid())) attr.inlineEditVisibility(false);
+                            });
+                        } else {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message("message.invalid-node.form")
+                            });   
+                        }
+                    }
+                });
             }
         },
 

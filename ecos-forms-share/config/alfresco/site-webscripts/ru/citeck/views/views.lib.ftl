@@ -309,6 +309,7 @@
 								</#list>
 							</#if>
 						],
+						sets: <@views.renderValue attributeSet />,
 
 						<#if loadAttributesMethod != "clickOnGroup">
 							forcedAttributes: <@views.renderValue attributes />,

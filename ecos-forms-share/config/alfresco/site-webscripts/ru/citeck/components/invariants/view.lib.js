@@ -26,6 +26,37 @@ function get(view, type) {
     return objects;
 }
 
+function getAttributeSet(view) {
+    var sets = [];
+    for (var i in view.elements) {
+        if (view.elements[i].type == "view" && view.elements[i].template.indexOf("set") != -1) {
+            sets.push(buildAttributeSet(view.elements[i]));
+        }
+    }
+    return sets;
+}
+
+function buildAttributeSet(view) {
+    var attributeSet = { attributes: [], sets: [], id: "" };
+
+    for (var i in view.elements) {
+        var element = view.elements[i];
+        if (element.type == "field") {
+            attributeSet.attributes.push(element.attribute);
+        } else if (element.type == "view" && element.template.indexOf("set") != -1) {
+            attributeSet.sets.push(buildAttributeSet(element));
+        }
+    }
+
+    attributeSet.id = (function() {
+        var identificator = attributeSet.attributes.join("_");
+        identificator += "_" + attributeSet.attributes.length + "_" + attributeSet.sets.length;
+        return identificator;
+    })();
+
+    return attributeSet;
+}
+
 function getInvariantSet(args, attributes) {
     var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
                                               (attributes && attributes.length ? '&attributes=' + attributes.join(',') : '') + 
