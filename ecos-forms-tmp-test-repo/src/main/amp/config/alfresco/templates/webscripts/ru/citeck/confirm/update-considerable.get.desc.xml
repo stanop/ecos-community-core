@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>Update considerable</shortname>
-    <description>Update considerable property for document</description>
-    <url>/citeck/confirm/update-considerable?nodeRef={nodeRef}</url>
-    <format></format>
-    <authentication>user</authentication>
-    <transaction>required</transaction>
-</webscript>

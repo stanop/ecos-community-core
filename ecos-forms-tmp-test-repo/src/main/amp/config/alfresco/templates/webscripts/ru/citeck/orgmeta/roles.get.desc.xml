@@ -1,7 +1,0 @@
-<webscript>
-  <shortname>Deprecated web script</shortname>
-  <url>/api/orgmeta/deprecated/role/</url>
-  <format default="json">argument</format>
-  <authentication>user</authentication>
-  <transaction allow="readonly">required</transaction>
-</webscript>

@@ -1,9 +1,0 @@
-<webscript>
-  <shortname>Edit Route</shortname>
-  <description>Edit route</description>
-  <url>/api/citeck/routes</url>
-  <format default="json"/>
-  <authentication>user</authentication>
-  <transaction>required</transaction>
-  <lifecycle>public_api</lifecycle>
-</webscript>

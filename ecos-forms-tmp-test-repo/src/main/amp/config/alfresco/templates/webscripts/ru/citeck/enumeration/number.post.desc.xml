@@ -1,9 +1,0 @@
-<webscript>
-	<shortname>Generate number</shortname>
-	<description>Generate number via enumeration template, json body specifies model</description>
-	<url>/citeck/enumeration/number?template={template}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<!-- TODO allow="readonly" -->
-	<transaction>required</transaction>
-</webscript>

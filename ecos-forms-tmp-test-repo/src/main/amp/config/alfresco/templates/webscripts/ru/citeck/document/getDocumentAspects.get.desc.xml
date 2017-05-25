@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>getDocumentAspects</shortname>
-	<description>Get All Document Aspects</description>
-	<url>/acm/getDocumentAspects</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-</webscript>

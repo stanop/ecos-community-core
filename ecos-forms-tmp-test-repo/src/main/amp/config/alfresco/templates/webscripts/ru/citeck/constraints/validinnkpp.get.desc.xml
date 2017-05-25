@@ -1,7 +1,0 @@
-<webscript>
-  <shortname>Validation INN and KPP fields</shortname>
-  <description>Validation INN and KPP fields</description>
-  <url>/sample/validinnkpp/search?inn={searchTerm};kpp={searchTerm};uuid=${searchTerm}</url>
-  <authentication>guest</authentication>
-  <transaction>required</transaction>
-</webscript>

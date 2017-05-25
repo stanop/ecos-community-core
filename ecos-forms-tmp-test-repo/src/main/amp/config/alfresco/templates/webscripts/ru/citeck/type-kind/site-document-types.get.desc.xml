@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>site-document-types</shortname>
-    <description>Get site document types</description>
-    <url>/citeck/site/document-types?site={site}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
-</webscript>

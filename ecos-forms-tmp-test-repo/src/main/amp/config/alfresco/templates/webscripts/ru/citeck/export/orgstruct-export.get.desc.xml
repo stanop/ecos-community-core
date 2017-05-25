@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Export Orgstruct</shortname>
-	<description>Export Orgstruct</description>
-	<url>/citeck/orgstruct-export?password={password?}</url>
-	<format default="js">argument</format>
-	<authentication runAs="admin">user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

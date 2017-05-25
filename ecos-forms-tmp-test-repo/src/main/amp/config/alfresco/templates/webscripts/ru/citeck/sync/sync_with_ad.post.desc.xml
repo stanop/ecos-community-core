@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>simple search</shortname>
-	<url>/citeck/sync-with-ad?mode={full|diff}&amp;forceUpdate={forceUpdate}</url>
-	<format default="json"/>
-	<authentication>admin</authentication>
-	<transaction>none</transaction>
-	<lifecycle>draft</lifecycle>
-</webscript>

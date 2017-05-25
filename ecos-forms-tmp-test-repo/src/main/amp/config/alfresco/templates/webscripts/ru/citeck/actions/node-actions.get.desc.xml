@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>User actions</shortname>
-    <description>Get server user actions for document state</description>
-    <url>/api/node-action-service/get-actions?nodeRef={nodeRef}</url>
-    <format default="json">argument</format>
-    <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
-</webscript>

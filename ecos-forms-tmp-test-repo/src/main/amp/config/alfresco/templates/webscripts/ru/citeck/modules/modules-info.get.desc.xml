@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>installed modules info</shortname>
-    <description>Returns info about installed modules</description>
-    <url>/modules/info</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction>required</transaction>
-</webscript>

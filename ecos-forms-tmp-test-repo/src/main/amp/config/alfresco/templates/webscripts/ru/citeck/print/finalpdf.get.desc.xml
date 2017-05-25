@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Print any document to PDF with final watermark</shortname>
-	<description>Print any document to PDF with final watermark</description>
-	<url>/citeck/print/finalpdf?nodeRef={nodeRef}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

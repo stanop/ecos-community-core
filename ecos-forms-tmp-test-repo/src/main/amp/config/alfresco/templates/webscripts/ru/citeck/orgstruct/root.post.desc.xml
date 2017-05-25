@@ -1,7 +1,0 @@
-<webscript>
-  <shortname>Deprecated Web Scrpt</shortname>
-  <url>/api/orgstruct/deprecated/root/</url>
-  <format default="json">argument</format>
-  <authentication>user</authentication>
-  <transaction allow="readonly">required</transaction>
-</webscript>

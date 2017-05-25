@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>cardlets for the document</shortname>
-	<url>/citeck/cardlets?nodeRef={nodeRef}</url>
-	<url>/citeck/card/cardlets?nodeRef={nodeRef}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

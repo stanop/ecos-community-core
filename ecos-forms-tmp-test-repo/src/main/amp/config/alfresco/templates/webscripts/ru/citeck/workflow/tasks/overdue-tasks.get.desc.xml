@@ -1,8 +1,0 @@
-<webscript>
-  <shortname>Get overdue workflow tasks</shortname>
-  <description>Get overdue workflow tasks</description>
-  <url>/acm/workflow/overduetasks</url>
-  <format default="json">argument</format>
-  <authentication>user</authentication>
-  <transaction>required</transaction>
-</webscript>

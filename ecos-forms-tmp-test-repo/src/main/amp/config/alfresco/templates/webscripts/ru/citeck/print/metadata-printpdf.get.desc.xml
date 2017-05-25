@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>Print document metadata to PDF</shortname>
-    <description>Print document metadata to PDF</description>
-    <url>/citeck/print/metadata-printpdf?nodeRef={nodeRef}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
-</webscript>

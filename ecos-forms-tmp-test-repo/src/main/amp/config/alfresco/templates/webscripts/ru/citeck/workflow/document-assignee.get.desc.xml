@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Get document assignees</shortname>
-	<description>Get document assignees</description>
-	<url>/acm/document-assignee?nodeRef={nodeRef?}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-</webscript>

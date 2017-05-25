@@ -1,21 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <artifactId>ecos-base-core-repo</artifactId>
+    <version>2.0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <name>ecos-base-core-repo</name>
     <description>ecos-base-core-repo</description>
-    <packaging>amp</packaging>
-    <version>2.0.0.1-SNAPSHOT</version>
+
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ru.citeck.ecos</groupId>
+        <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
         <version>3.1.0.0-SNAPSHOT</version>
     </parent>
-    
+
     <properties>
-        <itextpdf.version>5.1.1</itextpdf.version>
     </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>nl.ciber.alfresco</groupId>
+            <artifactId>batch-executer</artifactId>
+            <version>0.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+    </build>
 
     <repositories>
         <repository>
@@ -24,133 +59,4 @@
         </repository>
     </repositories>
 
-    <!-- Following dependencies are needed for compiling Java code in src/main/java;
-          <scope>provided</scope> is inherited for each of the following;
-          for more info, please refer to alfresco-platform-distribution POM -->
-    <dependencies>
-        <dependency>
-            <groupId>nl.ciber.alfresco</groupId>
-            <artifactId>batch-executer</artifactId>
-            <version>0.9</version>
-        </dependency>
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-repository</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-repository</artifactId>
-            <version>${alfresco.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-remote-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Uncomment if you are using RM (Records Management) module, brings in RM related classes -->
-        <!--
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-rm</artifactId>
-            <version>${alfresco.rm.version}</version>
-            <classifier>classes</classifier>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-            <version>${itextpdf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.alfresco.cmis.client</groupId>
-            <artifactId>alfresco-opencmis-extension</artifactId>
-            <version>1.0</version>
-            <!--<version>${dependency.opencmis.version}</version>-->
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <!-- plugin to install and deploy jar -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
-                                    <type>jar</type>
-                                    <classifier>${ecos.build.classifier}</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <executions>
-                    <execution>
-                        <id>copy-file</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/amp/lib</directory>
-                                    <includes>
-                                        <include>${ecos.build.finalName}-${ecos.build.classifier}.jar</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-        </plugins>
-    </build>
-
-    <profiles>
-
-        <!--
-            Brings in the extra Enterprise specific repository classes,
-            if the 'enterprise' profile has been activated, needs to be activated manually. -->
-        <profile>
-            <id>enterprise</id>
-            <dependencies>
-                <dependency>
-                    <groupId>${alfresco.groupId}</groupId>
-                    <artifactId>alfresco-enterprise-repository</artifactId>
-                    <version>${alfresco.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <!-- If we are running in embedded Tomcat skip unit tests -->
-        <profile>
-            <id>run</id>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
-        </profile>
-    </profiles>
 </project>

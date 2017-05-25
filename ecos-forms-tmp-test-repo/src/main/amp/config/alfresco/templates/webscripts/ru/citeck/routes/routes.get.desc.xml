@@ -1,9 +1,0 @@
-<webscript>
-  <shortname>Get Route</shortname>
-  <description>Get route or routes</description>
-  <url>/api/citeck/routes</url>
-  <url>/api/citeck/routes?nodeRef={nodeRef}</url>
-  <format default="json"/>
-  <authentication>user</authentication>
-  <lifecycle>public_api</lifecycle>
-</webscript>

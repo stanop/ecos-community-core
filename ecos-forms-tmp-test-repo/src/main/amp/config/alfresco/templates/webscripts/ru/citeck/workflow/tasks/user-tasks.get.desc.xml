@@ -1,8 +1,0 @@
-<webscript>
-  <shortname>User workflow tasks</shortname>
-  <description>User workflow tasks fetching webscript</description>
-  <url>/acm/workflow/{username}/tasks</url>
-  <format default="json">argument</format>
-  <authentication>guest</authentication>
-  <transaction>required</transaction>
-</webscript>

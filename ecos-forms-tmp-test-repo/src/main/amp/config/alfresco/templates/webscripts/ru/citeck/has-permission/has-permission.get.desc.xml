@@ -1,9 +1,0 @@
-<webscript>
-    <shortname>has-permission</shortname>
-    <description>Checks if a user has the specified permission on a node</description>
-    <url>/citeck/has-permission?nodeRef={nodeRef}&amp;permission={permission}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction>required</transaction>
-    <lifecycle>public_api</lifecycle>
-</webscript>

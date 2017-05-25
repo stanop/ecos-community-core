@@ -1,7 +1,0 @@
-<webscript>
-    <shortname>Create transition table</shortname>
-    <description>Create transition table</description>
-    <url>/api/lifecycle/create-transition-table?nodeRef={nodeRef}&amp;type={type}&amp;lcformat={lcformat}</url>
-    <format default="json">argument</format>
-    <authentication>user</authentication>
-</webscript>

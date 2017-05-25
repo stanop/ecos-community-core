@@ -1,5 +1,0 @@
-rule.name=name of rule
-rule.title=title of rule
-rule.disabled=false
-rule.executeAsynchronously=false
-rule.applyToChildren=false

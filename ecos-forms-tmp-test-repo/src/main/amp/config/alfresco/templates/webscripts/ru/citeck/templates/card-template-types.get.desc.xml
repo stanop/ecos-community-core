@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>Get all cardTemplates types</shortname>
-    <description>Get all cardTemplates types</description>
-    <url>/citeck/templates/card-template-types</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction>required</transaction>
-</webscript>

@@ -1,8 +1,0 @@
-<webscript>
-  <shortname>is-related-workflows-complete</shortname>
-  <url>/api/related-workflows/is-related-workflows-complete?taskId={taskIdentifier}</url>
-  <format default="json"/>
-  <authentication>user</authentication>
-  <transaction>required</transaction>
-  <lifecycle>public_api</lifecycle>
-</webscript>

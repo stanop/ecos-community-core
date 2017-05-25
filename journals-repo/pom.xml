@@ -1,215 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>journals-repo</artifactId>
+    <version>2.0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <name>journals-repo</name>
     <description>journals-repo</description>
-    <packaging>amp</packaging>
-    <version>2.0.0.1-SNAPSHOT</version>
+
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ru.citeck.ecos</groupId>
+        <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
         <version>3.1.0.0-SNAPSHOT</version>
     </parent>
 
-    <!-- 
-        SDK properties have sensible defaults in the SDK parent,
-        but you can override the properties below to use another version.
-        For more available properties see the alfresco-sdk-parent POM.
-       -->
     <properties>
-        <!-- The following are default values for data location and Alfresco Community version.
-             Uncomment if you need to change (Note. current default version for Enterprise edition is 5.1)
-          <alfresco.version>5.1.e</alfresco.version>
-          <alfresco.data.location>/absolute/path/to/alf_data_dev</alfresco.data.location> -->
-
-        <!-- This control the root logging level for all apps uncomment and change, defaults to WARN
-            <app.log.root.level>WARN</app.log.root.level>
-        -->
-
-        <!-- Set the enviroment to use, this controls which properties will be picked in src/test/properties
-             for embedded run, defaults to the 'local' environment. See SDK Parent POM for more info.
-        <env>local</env>
-        -->
-        <war.directory.4tests>${project.build.directory}/alfresco-${alfresco.version}-war</war.directory.4tests>
     </properties>
 
     <dependencies>
 
-        <!-- Following dependencies are needed for compiling Java code in src/main/java;
-             <scope>provided</scope> is inherited for each of the following;
-             for more info, please refer to alfresco-platform-distribution POM -->
         <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-repository</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-repository</artifactId>
-            <version>${alfresco.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-remote-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-share-services</artifactId>
-            <version>${alfresco.version}</version>
-            <classifier>classes</classifier>
-            <scope>test</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-base-core-repo</artifactId>
+            <classifier>${build.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${ecos.build.classifier}</classifier>
-            <scope>provided</scope>
+            <artifactId>ecos-forms-repo</artifactId>
+            <classifier>${build.classifier}</classifier>
         </dependency>
+
     </dependencies>
 
     <build>
-
         <plugins>
-            <!-- plugin to install and deploy jar -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/amp/lib/${ecos.build.finalName}-${ecos.build.classifier}.jar</file>
-                                    <type>jar</type>
-                                    <classifier>${ecos.build.classifier}</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-<!--
-                    <execution>
-                        <id>locate-depend-amp</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>ecos-base-core-repo</artifactId>
-                                    <version>${ecos-base-core.version}</version>
-                                    <classifier>${ecos.build.classifier}</classifier>
-                                    <type>amp</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/depend.amp</outputDirectory>
-                        </configuration>
-                    </execution>
--->
-                    <execution>
-                        <id>unpack-alfresco-war</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${alfresco.groupId}</groupId>
-                                    <artifactId>alfresco</artifactId>
-                                    <version>${alfresco.version}</version>
-                                    <type>war</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${war.directory.4tests}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.alfresco.maven.plugin</groupId>
-                <artifactId>alfresco-maven-plugin</artifactId>
-                <version>2.2.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>install-amps</id>
-                        <goals>
-                            <goal>install</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!--<ampLocation>${project.build.directory}/depend.amp</ampLocation>-->
-                    <ampLocation>${project.basedir}/../ecos-base-core-repo/target/ecos-base-core-repo-${ecos-base-core.version}-${ecos.build.classifier}.amp</ampLocation>
-                    <warLocation>${war.directory.4tests}</warLocation>
-                </configuration>
-            </plugin>
-
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-a-jar</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>maven-assembly-plugin</artifactId>
             </plugin>
--->
+
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <additionalClasspathElements>
-                        <additionalClasspathElement>${war.directory.4tests}/WEB-INF/classes</additionalClasspathElement>
-                    </additionalClasspathElements>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
 
         </plugins>
     </build>
 
-    <profiles>
-        <!--
-            Brings in the extra Enterprise specific repository classes,
-            if the 'enterprise' profile has been activated, needs to be activated manually.
-            -->
-        <profile>
-            <id>enterprise</id>
-            <dependencies>
-                <dependency>
-                    <groupId>${alfresco.groupId}</groupId>
-                    <artifactId>alfresco-enterprise-repository</artifactId>
-                    <version>${alfresco.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>

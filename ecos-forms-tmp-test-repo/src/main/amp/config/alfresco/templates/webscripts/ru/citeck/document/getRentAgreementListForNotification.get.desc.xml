@@ -1,9 +1,0 @@
-<webscript>
-	<shortname>getRentAgreementListForNotification</shortname>
-	<description>List of rent agreements for user notification</description>
-	<url>/acm/getRentAgreementListForNotification</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-	<lifecycle>public_api</lifecycle>
-</webscript>

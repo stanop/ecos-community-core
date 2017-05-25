@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<webscript>
-	<shortname>Attribute values</shortname>
-	<description>Get values of specified attributes for specified nodes</description>
-	<url>/citeck/attributes/values</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

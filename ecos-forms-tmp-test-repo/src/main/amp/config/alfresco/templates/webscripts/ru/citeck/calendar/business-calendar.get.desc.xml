@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>business-calendar</shortname>
-	<description>Get calendar date</description>
-	<url>/citeck/calendar/business-calendar?currentDate={currentDate?}&amp;addField={addField}&amp;addAmount={addAmount}</url>
-    <format default="json"/>
-    <authentication runas="admin">user</authentication>
-    <transaction>required</transaction>
-</webscript>

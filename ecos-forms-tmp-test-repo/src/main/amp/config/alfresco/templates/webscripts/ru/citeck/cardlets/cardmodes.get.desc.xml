@@ -1,7 +1,0 @@
-<webscript>
-	<shortname>card modes for the document</shortname>
-	<url>/citeck/card/modes?nodeRef={nodeRef}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

@@ -1,9 +1,0 @@
-<webscript>
-    <shortname>products-and-services-assocs</shortname>
-    <description>Add association to products and services</description>
-    <url>/citeck/add-pas-assocs?sourceRef={sourceRef}&amp;targetRef={targetRef}&amp;assocTypes={assocTypes}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction>required</transaction>
-    <lifecycle>public_api</lifecycle>
-</webscript>

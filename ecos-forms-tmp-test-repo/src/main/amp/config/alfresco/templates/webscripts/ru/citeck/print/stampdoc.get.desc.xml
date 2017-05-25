@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Add barcode to document</shortname>
-	<description>Add barcode to document</description>
-	<url>/citeck/print/doc-barcode?nodeRef={nodeRef}&amp;type={type}&amp;idfrom={idfrom}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

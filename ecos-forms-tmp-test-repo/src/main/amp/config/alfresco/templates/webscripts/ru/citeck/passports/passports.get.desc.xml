@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Get all passports of user</shortname>
-	<description>Get all passports of user (if passport is not accessible, only nodeRef and created date is returned)</description>
-	<url>/citeck/passports?userName={userName}</url>
-	<format default="json">argument</format>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

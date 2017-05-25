@@ -1,8 +1,0 @@
-<webscript>
-  <shortname>Org.Struct group subtype</shortname>
-  <description>Get info about specified group subtype</description>
-  <url>/api/orgmeta/{type}/{name}</url>
-  <format default="json">argument</format>
-  <authentication>user</authentication>
-  <transaction allow="readonly">required</transaction>
-</webscript>

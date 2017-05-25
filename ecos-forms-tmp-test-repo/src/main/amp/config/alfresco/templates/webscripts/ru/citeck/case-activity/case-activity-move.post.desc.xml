@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>ActivitiesMove</shortname>
-	<description>Move case activities to new parent and set new index</description>
-	<url>/citeck/cases/activities/move?activityRef={activityRef}&amp;parentRef={parentRef}&amp;index={index}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction>required</transaction>
-</webscript>

@@ -1,8 +1,0 @@
-<webscript>
-	<shortname>Confirmers</shortname>
-	<description>It return list of confirmers for specified document.</description>
-	<url>/citeck/confirm/mandatory-confirmers?nodeRef={nodeRef}</url>
-	<format default="json"/>
-	<authentication>user</authentication>
-	<transaction allow="readonly">required</transaction>
-</webscript>

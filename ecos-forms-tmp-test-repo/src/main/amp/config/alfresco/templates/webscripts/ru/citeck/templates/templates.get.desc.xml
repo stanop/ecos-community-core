@@ -1,8 +1,0 @@
-<webscript>
-  <shortname>Get all available templates</shortname>
-  <description>Get all available templates</description>
-  <url>/acm/templates</url>
-  <format default="json"></format>
-  <authentication>user</authentication>
-  <transaction>required</transaction>
-</webscript>

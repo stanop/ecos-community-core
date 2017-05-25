@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>document-tasks</shortname>
-    <description>Gets active tasks of current user for document</description>
-    <url>/citeck/tasks/document?nodeRef={nodeRef}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
-</webscript>

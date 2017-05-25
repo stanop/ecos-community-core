@@ -14,6 +14,7 @@ build.properties
 target/*
 */$*
 *.log
+*.log.*
 *.todo
 alf_data_dev
 */overlays/**
