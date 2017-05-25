@@ -710,6 +710,22 @@
         </plugins>
     </build>
 
+    <modules>
+        <module>1st-override-repo</module>
+        <module>1st-override-share</module>
+        <module>ecos-citeckTheme-share</module>
+        <module>ecos-base-core-repo</module>
+        <module>ecos-base-core-share</module>
+        <module>journals-repo</module>
+        <module>journals-share</module>
+        <module>ecos-forms-repo</module>
+        <module>ecos-forms-share</module>
+        <module>idocs-repo</module>
+        <module>idocs-share</module>
+        <module>contracts-repo</module>
+        <module>contracts-share</module>
+    </modules>
+
     <repositories>
         <repository>
             <id>alfresco-public</id>
@@ -743,22 +759,6 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
-    <modules>
-        <module>1st-override-repo</module>
-        <module>1st-override-share</module>
-        <module>ecos-citeckTheme-share</module>
-        <module>ecos-base-core-repo</module>
-        <module>ecos-base-core-share</module>
-        <module>journals-repo</module>
-        <module>journals-share</module>
-        <module>ecos-forms-repo</module>
-        <module>ecos-forms-share</module>
-        <module>idocs-repo</module>
-        <module>idocs-share</module>
-        <module>contracts-repo</module>
-        <module>contracts-share</module>
-    </modules>
 
     <!-- Deployment configuration -->
     <distributionManagement>
