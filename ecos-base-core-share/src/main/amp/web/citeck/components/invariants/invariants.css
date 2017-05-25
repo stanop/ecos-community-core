@@ -22,6 +22,121 @@
     margin: 0 0 10px 0;
 }
 
+/* form-errors */
+
+.ecos-form .form-errors {
+  color: red;
+  border: 1px solid red;
+  margin: 0 -10px 10px -10px;
+  padding: 10px;
+}
+
+.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
+  content: "!";
+  color: red;
+  display: block;
+  width: 16px;
+  padding-left: 6px;
+  border: 1px solid red;
+  right: 0;
+  border-radius: 100%;
+  box-sizing: border-box;
+  top: 1px;
+  position: absolute;
+  visibility: visible;
+}
+
+.yui-skin-uedmsTheme .inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
+    content: "\f06a";
+    font-family: FontAwesome;
+    border: none;
+    font-size: 16px;
+}
+
+.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):hover:before {
+  visibility: hidden;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list {
+  margin-top: 5px;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li {
+  list-style-type: disc;
+  list-style-position: inside;
+  cursor: pointer;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li .invalid-attribute-name {
+  text-decoration: underline;
+}
+
+.ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li:hover .invalid-attribute-name {
+  text-decoration: none;
+}
+
+/* inline-edit-mode-changer */
+
+.form-field-inline-mode-changer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 16px;
+  cursor: pointer;
+  visibility: hidden;
+}
+
+.form-field:not(.inline-edit):hover .form-field-inline-mode-changer {
+  visibility: visible;
+
+  -webkit-animation: fadein 1s;
+  -moz-animation: fadein 1s;
+  -ms-animation: fadein 1s;
+  -o-animation: fadein 1s;
+  animation: fadein 1s;
+}
+
+.form-field.inline-edit .form-field-inline-mode-changer {
+  visibility: visible;
+}
+
+.ecos-form.invalid .form-field-inline-mode-changer.save-mode {
+  color: lightgray;
+  cursor: default;
+}
+
+.template-row .form-field-inline-mode-changer.save-mode {
+  top: 7px;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
 
 /* loading-indicator */
 .invariants-form.loading,
@@ -33,6 +148,7 @@
   height: 300px;
 }
 
+.invariants-form.loading .form-errors,
 .invariants-form.loading .form-fields,
 .invariants-form.loading .form-buttons {
   visibility: hidden;
@@ -350,17 +466,29 @@
   vertical-align: top;
 }
 
-.invariants-form .template-wide .template-block.with-help {
+.invariants-form .template-wide .template-block.with-help,
+.invariants-form .template-wide .template-block-checkbox.with-help {
   padding-right: 15px;
+}
+
+.inline-edit-form .template-wide .template-block,
+.inline-edit-form .template-wide .template-block-checkbox {
+  padding-right: 20px;
+}
+
+.inline-edit-form .template-wide .template-block.with-help,
+.inline-edit-form .template-wide .template-block-checkbox.with-help {
+  padding-right: 35px;
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region {
   display: inline-block;
+  float: left;
 }
 
 .invariants-form .template-wide .template-block-checkbox .template-checkbox input {
   position: relative;
-  top: 2px;
+  top: 0px;
 }
 
 /* regions */
@@ -384,29 +512,36 @@
 
 
 /* specified regions */
-.invariants-form .template-wide .template-block.with-help .block-region-label,
-.invariants-form .template-wide .template-block .block-region-label.biglabel .template-label {
-  width: calc(100% - 10px);
+.invariants-form .template-wide .template-block .block-region-label {
+  width: 100%;
 }
 
-.invariants-form .template-wide .template-block .block-region-label.biglabel .template-mandatory {
-  float: right;
-  width: 10px;
-  text-align: right;
-}
-
-.invariants-form .template-wide .template-block .template-help {
+.invariants-form .template-wide .template-help {
   position: absolute;
   right: 0px;
   top: 0px;
 }
 
-.invariants-form .template-wide .template-block .template-message span.validation-message {
+.invariants-form .template-wide .template-block-checkbox .block-region-input {
+  width: 15px;
+  margin-right: 5px;
+}
+
+.invariants-form .template-wide .template-block-checkbox .block-region-label {
+  width: calc(100% - 20px);
+}
+
+.invariants-form .template-wide .template-message span.validation-message {
   margin-bottom: 10px;
   margin-top: -3px;
 }
 
-.invariants-form .template-wide .template-block.invalid .template-message span.validation-message {
+.invariants-form .template-wide .template-block-checkbox .template-message {
+  padding-top: 10px;
+  clear: both;
+}
+
+.invariants-form .template-wide .invalid .template-message span.validation-message {
   color: red;
 }
 
@@ -509,6 +644,16 @@
 .invariants-form:not(.view-form) .template-table .template-row.with-help,
 .invariants-form:not(.view-form) .template-table [class*="template-row-"].with-help {
   padding-right: 15px;
+}
+
+.inline-edit-form .template-table .template-row,
+.inline-edit-form .template-table [class*="template-row-"] {
+  padding-right: 20px;
+}
+
+.inline-edit-form .template-table .template-row.with-help,
+.inline-edit-form .template-table [class*="template-row-"].with-help {
+  padding-right: 35px;
 }
 
 .invariants-form:not(.view-form) .template-table .template-row,
@@ -686,10 +831,19 @@
   margin-top: 0;
 }
 
-.invariants-form .template-table .template-row .template-view + .region-select-group {
+.invariants-form:not(.view-form) .template-table .template-row .template-view + .region-select-group {
   margin-top: -10px;
 }
 
+.inline-edit-form .template-table .template-row .region-select-group {
+  width: 54.5%;
+  display: inline-block;
+  float: right;
+}
+
+.inline-edit-form .template-table .template-row.with-help .region-select-group {
+  width: 53.5%;
+}
 
 /* default */
 .invariants-form .template-table .region-select-group .template-default {
@@ -733,7 +887,7 @@
   box-sizing: border-box;
 }
 
-.invariants-form .template-table .template-row.with-help .template-label {
+.invariants-form:not(.view-form) .template-table .template-row.with-help .template-label {
   width: 46.5%;
 }
 
@@ -776,6 +930,14 @@
   width: calc(100% + 15px);
 }
 
+.inline-edit-form .template-table .template-row .template-textarea {
+  width: calc(100% + 20px);
+}
+
+.inline-edit-form .template-table .template-row.with-help .template-textarea {
+  width: calc(100% + 35px);
+}
+
 /* select */
 .invariants-form .template-table .template-row .template-select select {
   width: 100%;
@@ -810,9 +972,15 @@
 
 
 /* help */
-.invariants-form .template-table .template-help {
+.invariants-form .template-help {
   cursor: help;
   font-weight: 900;
+}
+
+.invariants-form .template-table .template-help {
+  position: absolute;
+  right: 0;
+  top: 1px;
 }
 
 .invariants-form .template-table .template-row .template-help,
@@ -822,20 +990,16 @@
   top: 7px;
 }
 
+.inline-edit-form .template-table .template-row .template-help,
+.inline-edit-form .template-table [class*="template-row-"] .template-help {
+  right: 20px;
+}
+
 .invariants-form .template-table [class*="template-row-"] .template-help {
   top: 2px;
 }
 
 .invariants-form .template-table .template-row .template-textarea + .template-help {
-  top: 1px;
-}
-
-.invariants-form .template-table .template-half-width .template-help,
-.invariants-form .template-table [class*="template-half-width-"] .template-help,
-.invariants-form .template-table .template-third-width .template-help,
-.invariants-form .template-table [class*="template-third-width-"] .template-help {
-  position: absolute;
-  right: 0;
   top: 1px;
 }
 
@@ -1864,51 +2028,67 @@
   width: 54.5%;
 }
 
+.inline-edit-form .template-table .with-help .template-view,
+.inline-edit-form .template-table .with-help .template-select,
+.inline-edit-form .template-table .with-help .template-free-content {
+  width: 53.5%;
+}
+
 /* view-table */
+.invariants-form .template-wide .template-view-table,
+.invariants-form .template-wide .template-view-table .view-table-container,
 .invariants-form .template-table .template-view-table,
 .invariants-form .template-table .template-view-table .view-table-container {
   width: 100%;
 }
 
+.invariants-form .template-wide .template-view-table .view-table-container,
 .invariants-form .template-table .template-view-table .view-table-container {
   box-sizing: border-box;
   overflow: auto;
   padding: 10px;
 }
 
+.invariants-form:not(.view-form) .template-wide .template-view-table .view-table-container,
 .invariants-form:not(.view-form) .template-table .template-view-table .view-table-container {
   border: 1px solid #ccc;
   background-color: white;
 }
 
+.invariants-form .template-wide .template-view-table .view-table-container .value-item.highlighted,
 .invariants-form .template-table .template-view-table .view-table-container .value-item.highlighted {
   background-color: #F0F0F0;
 }
 
+.invariants-form .template-wide .template-view-table table,
 .invariants-form .template-table .template-view-table table {
   border-collapse: collapse;
   width: 100%;
 }
 
+.invariants-form .template-wide .template-view-table table thead tr th,
+.invariants-form .template-wide .template-view-table table tbody tr td,
 .invariants-form .template-table .template-view-table table thead tr th,
 .invariants-form .template-table .template-view-table table tbody tr td {
   padding: 5px 10px;
 }
 
+.invariants-form .template-wide .template-view-table table thead tr th:not(:last-child),
+.invariants-form .template-wide .template-view-table table tbody tr td:not(:last-child),
 .invariants-form .template-table .template-view-table table thead tr th:not(:last-child),
 .invariants-form .template-table .template-view-table table tbody tr td:not(:last-child) {
   border-right: 1px solid #ccc;
 }
 
+.invariants-form .template-wide .template-view-table table thead tr th,
 .invariants-form .template-table .template-view-table table thead tr th {
   border-bottom: 1px solid #ccc;
 }
 
+.invariants-form .template-wide .template-view-table table tbody tr td,
 .invariants-form .template-table .template-view-table table tbody tr td {
   border-top: 1px solid #ccc;
 }
-
-.invariants-form .template-table .template-view-table tr.view-time
 
 .invariants-form .template-table .template-row .template-view-table + .region-select-group {
   max-width: 100%;

@@ -16,29 +16,6 @@
         <version>3.1.0.0-SNAPSHOT</version>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-        </repository>
-    </repositories>
-
-    <!-- Deployment configuration -->
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>${releases.repo.url}</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>${snapshots.repo.url}</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <build>
         <plugins>
 

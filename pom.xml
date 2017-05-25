@@ -760,4 +760,16 @@
         <module>contracts-share</module>
     </modules>
 
+    <!-- Deployment configuration -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>${releases.repo.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${snapshots.repo.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>

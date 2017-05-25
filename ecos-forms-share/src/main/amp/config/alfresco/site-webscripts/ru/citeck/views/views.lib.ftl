@@ -1,5 +1,11 @@
+<#macro renderTemplate name="default" mode="" params={}>
+	<#assign element = { "template": name, "type": "region", "params": params } />
+	<@renderElement element />
+</#macro>
+
 <#macro renderElement element>
 	<#assign template = element.template!"default" />
+	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
@@ -24,9 +30,10 @@
 			</#if>
 		</#assign>
 	</#if>
+	
 
 	<div class="form-${element.type} template-${template}"
-		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description }"</#if>
+		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }" data-attribute-name="${element.attribute}"</#if>
 
 		<#-- custom width for field -->
 		<#if element.type == "field" && wideBlockWidth?has_content>
@@ -45,12 +52,23 @@
 
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
-	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
-	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+
+	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
+	<#assign withoutMode = element.type == "region" && inlineEdit />
+
+	<#if !withoutMode>
+		<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
+		<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+	</#if>
+
 	<#assign file>/ru/citeck/views/${element.type}/${template}.ftl</#assign>
 	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
-	<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/default.ftl</#assign>
-	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+
+	<#if !withoutMode>
+		<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/default.ftl</#assign>
+		<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
+	</#if>
+
 	<#assign file>/ru/citeck/views/${element.type}/default.ftl</#assign>
 	<#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 </#macro>
@@ -64,14 +82,16 @@
 </#macro>
 
 <#macro renderViewContainer view id>
-	<#assign loadIndicator = view.params.loadIndicator!"true">
-	<#assign loadIndicator = loadIndicator == "true">
-		
-	<#assign formMode = view.mode?string + "-form">
-	<#assign formTemplate = "form-template-" + view.template?string>
+	<#assign loadIndicator = (view.params.loadIndicator!"true") == "true" />
+	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 
-	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if>"
-		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess }">
+	<#assign formMode = view.mode?string + "-form" />
+	<#assign formTemplate = "form-template-" + view.template?string />
+
+	<#assign viewMode = view.mode?string == "view" />
+
+	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit && viewMode>inline-edit-form</#if>"
+		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess, invalid: invalid }">
 
 		<#if loadIndicator>
 			<div class="loading-overlay">
@@ -81,6 +101,26 @@
 					<div class="submit-process-message">${msg('message.submit-process.form')}</div>
 				</div>
 			</div>
+		</#if>
+
+		<#if viewMode && inlineEdit>
+			<!-- ko if: node.loaded() && node().impl.loaded() -->
+				<!-- ko with: resolve("node.impl") -->
+					<!-- ko if: invalid -->
+						<div class="form-errors">
+							<div class="invalid-attributes">
+								<span>${msg('message.invalid-attributes.form-errors')}:</span>
+								<ul class="invalid-attributes-list" data-bind="foreach: invalidAttributes()">
+									<li class="invalid-attribute" data-bind="click: $root.scrollToFormField, clickBubble: false">
+										<span class="invalid-attribute-name" data-bind="text: title"></span>:
+										<span class="invalid-attribute-message" data-bind="text: validationMessage"></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					<!-- /ko -->
+				<!-- /ko -->
+			<!-- /ko -->
 		</#if>
 
 		<!-- ko API: rootObjects -->
@@ -234,6 +274,8 @@
 		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
 		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
+		<#assign inlineEdit = view.params.inlineEdit!"true" />
+		<#assign viewMode = view.mode?string == "view" />
 
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
@@ -246,6 +288,7 @@
 					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
 					preloadInvariants: ${preloadInvariants},
+					<#if viewMode>inlineEdit: ${inlineEdit},</#if>
 
 					node: {
 						key: "${runtimeKey}",

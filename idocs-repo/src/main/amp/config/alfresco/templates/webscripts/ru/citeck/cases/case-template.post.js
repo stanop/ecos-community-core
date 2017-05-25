@@ -47,6 +47,19 @@
     var template = caseTemplateRoot.createNode(null, "icase:template", templateProperties, "cm:contains");
     caseService.copyCaseToTemplate(proto, template);
 
+    var inStream, bytes, content;
+
+    bytes = services.get("cmmnExportService").exportCase(template.nodeRef);
+
+    inStream = new Packages.java.io.ByteArrayInputStream(bytes);
+    content = template.properties['cm:content'];
+    content.setMimetype("text/xml");
+    content.write(inStream);
+    template.save();
+
+    inStream = new Packages.java.io.ByteArrayInputStream(bytes);
+    services.get("cmmnImportService").importCase(inStream);
+
     model.success = true;
     model.template = template;
 })()

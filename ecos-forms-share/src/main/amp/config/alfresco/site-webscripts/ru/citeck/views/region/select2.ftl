@@ -3,9 +3,6 @@
 
 <#assign optionParameters = [ "optionsText", "optionsValue" ]>
 
-<#-- mode: list, table -->
-<#assign mode = params.mode!"list">
-
 <#-- predicats: startsWith, contains -->
 <#assign searchPredicat = params.searchPredicat!"contains">
 
@@ -21,7 +18,9 @@
 
 			options: options,
 
-			mode: "${mode}",
+			mode: "list",
+
+			<#-- list mode parameters -->
 			searchPredicat: "${searchPredicat}",
 			step: ${step},
 

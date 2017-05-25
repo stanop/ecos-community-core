@@ -37,6 +37,7 @@
 	
 	<properties type="d:boolean">
 		<invariant on="value-title" language="javascript">value ? "Да" : "Нет"</invariant>
+		<invariant on="default" language="javascript">false</invariant>
 	</properties>
 	
 	<properties type="d:date">

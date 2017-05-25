@@ -32,6 +32,13 @@
         <entry key="java.util.Date">
             <bean id="DatePropertyEditor" class="ru.citeck.ecos.spring.DatePropertyEditor" />
         </entry>
+        <entry key="ru.citeck.ecos.utils.LazyNodeRef">
+            <bean id="LazyNodeRefPropertyEditor" class="ru.citeck.ecos.spring.LazyNodeRefPropertyEditor">
+                <property name="nodeServiceName" value="nodeService" />
+                <property name="searchServiceName" value="searchService" />
+                <property name="namespaceServiceName" value="namespaceService" />
+            </bean>
+        </entry>
     </util:map>
 
     <bean id="idocs.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
@@ -152,7 +159,10 @@
 	</bean>
 
 	<!-- custom dictionary models processing -->
-	<bean id="alfrescoDictionaryDAO" class="org.alfresco.repo.dictionary.DictionaryDAOImpl" lazy-init="true">
+	<bean id="alfrescoDictionaryDAO" class="org.alfresco.repo.dictionary.DictionaryDAOImpl">
+		<constructor-arg index="0">
+			<ref bean="namespaceDAO" />
+		</constructor-arg>
 		<property name="tenantService">
 			<ref bean="tenantService"/>
 		</property>
@@ -163,16 +173,9 @@
 			<value>alfresco/module/idocs-repo/model/dataTypeAnalyzers</value>
 		</property>
 	</bean>
-
+	
 	<bean id="dictionaryDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="proxyTargetClass" value="true"/>
-		<property name="targetSource">
-			<bean class="org.alfresco.config.NonBlockingLazyInitTargetSource">
-				<property name="targetBeanName">
-					<idref bean="alfrescoDictionaryDAO"/>
-				</property>
-			</bean>
-		</property>
+		<property name="target" ref="alfrescoDictionaryDAO" />
 		<property name="interceptorNames">
 			<list>
 				<value>AddBigNumberIndexProperties</value>
@@ -181,12 +184,13 @@
 			</list>
 		</property>
 	</bean>
-
+	
 	<!-- interceptor, that automatically adds index properties for each big number property -->
 	<bean name="AddBigNumberIndexProperties" class="ru.citeck.ecos.dictionary.AddBigNumberIndexProperties" />
 
 	<!-- interceptor, that automatically adds index properties for each association -->
-	<bean name="AddAssociationIndexProperties" parent="abstractAddAssociationIndexProperties" init-method="init">
+	<bean name="AddAssociationIndexProperties" class="ru.citeck.ecos.dictionary.AddAssociationIndexProperties" init-method="init">
+		<property name="registry" ref="AssociationIndexPropertyRegistry" />
 		<property name="acceptedAuthors">
 			<set>
 				<value>citeck</value>
@@ -200,17 +204,17 @@
 			</set>
 		</property>
 	</bean>
-
-    <!-- interceptor, that automatically adds indexing to properties, that do not have indexing -->
-    <bean name="AddDefaultPropertiesTokenisation" class="ru.citeck.ecos.dictionary.AddDefaultPropertiesTokenisation">
-        <property name="defaultMode" value="BOTH" />
-        <property name="modes">
-            <map value-type="org.alfresco.repo.dictionary.IndexTokenisationMode">
-                <entry key="d:noderef" value="FALSE" />
-                <entry key="d:category" value="FALSE" />
-            </map>
-        </property>
-    </bean>
+	
+	<!-- interceptor, that automatically adds indexing to properties, that do not have indexing -->
+	<bean name="AddDefaultPropertiesTokenisation" class="ru.citeck.ecos.dictionary.AddDefaultPropertiesTokenisation">
+		<property name="defaultMode" value="BOTH" />
+		<property name="modes">
+			<map value-type="org.alfresco.repo.dictionary.IndexTokenisationMode">
+				<entry key="d:noderef" value="FALSE" />
+				<entry key="d:category" value="FALSE" />
+			</map>
+		</property>
+	</bean>
 
 	<bean id="ScriptDictionaryService" class="ru.citeck.ecos.dictionary.DictionaryServiceJSImpl" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="dictionary" />
@@ -438,7 +442,8 @@
 		<property name="extensionName" value="processDefinitionVersion" />
 		<property name="workflowService" ref="WorkflowService" />
 	</bean>
-	
+
+	<!--default off-->
 	<bean id="mailActionExecuterInterceptor" class="ru.citeck.ecos.notification.MailActionExecuterInterceptor">
 		<!--property name="mailService" ref="mailService" /-->
 		<property name="nodeService" ref="NodeService" />
@@ -448,6 +453,7 @@
 		<property name="notificationLoggingRoot" value="workspace://SpacesStore/notification-logging-root" />
 		<property name="notificationLoggingAssoc" value="{http://www.alfresco.org/model/content/1.0}contains" />
 		<property name="workflowService" ref="WorkflowService" />
+		<property name="enabled" value="${mail.action-executer-interceptor}"/>
 	</bean>
 	
 	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">

@@ -53,9 +53,65 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.html = ko.observable("");
             this._value = ko.observable(null);
 
-            this.nodetype = this.attribute().nodetype();
-            this.journalType = this.attribute().journalType();
-            this.settings = this.attribute().settings();            
+            this.nodetype = this.attribute().nodetype ? this.attribute().nodetype() : null;
+            this.journalType = this.attribute().journalType ? this.attribute().journalType() : null;
+            this.settings = this.attribute().settings ? this.attribute().settings() : null;
+
+            this.drawFilterCriterionValueComponent = function() {
+                Alfresco.util.Ajax.request({
+                    url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
+                                                            + self.fieldId + "&template=" + self.templateName,
+                    successCallback: {
+                        scope: this,
+                        fn: function(response) {
+                            self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
+                        }
+                    }
+                });
+            };
+
+            this.fillSelectControl = function(documentType) {
+                var query = {
+                    skipCount: 0,
+                    maxItems: 50,
+                    field_1: "type",
+                    predicate_1: "type-equals",
+                    value_1: "cm:category",
+                    field_2: "parent",
+                    predicate_2: "parent-equals",
+                    value_2: documentType
+                };
+
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                    dataObj: query,
+                    successCallback: {
+                        fn: function(response) {
+                            var result = _.map(response.json.results, function(node) {
+                                return new Node(node);
+                            });
+                            var temporaryArray = [];
+
+                            for (var i = 0; i < result.length; i ++) {
+                                var currentObj = result[i];
+                                var displayName = currentObj.properties['cm:title']
+                                    ? currentObj.properties['cm:title'] : currentObj.properties['cm:name'];
+                                var nodeRef = currentObj.nodeRef;
+                                temporaryArray.push([nodeRef, displayName]);
+                            }
+                            if (temporaryArray.length > 0) {
+                                selectData(temporaryArray);
+                            }
+                        }
+                    }
+                });
+
+                var selectData = ko.observable([]);
+                selectData.subscribe(function() {
+                    self.fakeViewModel.options(selectData());
+                    self.drawFilterCriterionValueComponent();
+                });
+            };
 
             this.drawFilterCriterionValueComponent = function() {
               if (self.templateName == 'checkbox') {
@@ -166,7 +222,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                 this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype);
 
-                if (this.datatype == "association" && this.nodetype && this.journalType) {
+                if (this.datatype == "association" && this.nodetype) {
                     if (this.value() && Citeck.utils.isNodeRef(this.value().toString())) {
                         this._value(new Node(this.value()));
                     }
@@ -177,13 +233,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             if (newValue) {
                                 var object = newValue instanceof Array ? newValue[0] : newValue,
                                     node = isInvariantsObject(object) ? object : new Node(object);
+
                                 self._value(node);
                             } else { self._value(newValue); }
                             
                         }
                     });
 
-                    if (this.templateName == "journal") {
+                    if (this.templateName == "journal" && this.journalType) {
                         this.fakeViewModel.cache.result.extend({ notify: 'always' });
 
                         this.fakeViewModel.journalType = this.journalType;
@@ -344,9 +401,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }"></div>'
     });
 
-    // TODO:
-    // - refactoring 'filter-criteria' and 'list-of-selected-criterion'. Combine methods
-
     ko.components.register('filter-criteria-table', {
         viewModel: function(params) {
             var self = this;
@@ -358,7 +412,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.getAttribute = function (data) {
                 return ko.computed(function() {
-                    return self.journalType.attribute(data.name());
+                    if (self.journalType) return self.journalType.attribute(data.name());
+                    return data;
                 });
             };
             this.getJournalOptionsType = function (data) {
@@ -378,25 +433,46 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     <!-- ko foreach: selectedFilterCriteria -->\
                         <tr class="criterion">\
                             <td class="criterion-actions"><a class="remove-criterion" data-bind="click: $component.remove">X</a></td>\
-                            <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
-                            <td class="criterion-predicate" data-bind="with: datatype">\
-                                <select data-bind="options: predicates,\
-                                                   optionsText: \'label\',\
-                                                   optionsValue: \'id\',\
-                                                   value: $parent.predicateValue"></select>\
-                            </td>\
-                            <td class="criterion-value-selector">\
-                                <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
-                                    <!-- ko component: { name: "filter-criterion-value", params: {\
-                                        fieldId: $component.htmlId + "-criterion-" + $index(),\
-                                        labels: labels(),\
-                                        datatype: resolve(\'datatype.name\', null),\
-                                        value: value,\
-                                        attribute: $component.getAttribute($data),\
-                                        journalOptionsType: $component.getJournalOptionsType($data)\
-                                    }} --><!-- /ko -->\
-                                <!-- /ko -->\
-                            </td>\
+                            <!-- ko if: $component.journalType -->\
+                                <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
+                                <td class="criterion-predicate" data-bind="with: datatype">\
+                                    <select data-bind="options: predicates,\
+                                                       optionsText: \'label\',\
+                                                       optionsValue: \'id\',\
+                                                       value: $parent.predicateValue"></select>\
+                                </td>\
+                                <td class="criterion-value-selector">\
+                                    <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
+                                        <!-- ko component: { name: "filter-criterion-value", params: {\
+                                            fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                            labels: labels(),\
+                                            datatype: resolve(\'datatype.name\', null),\
+                                            value: value,\
+                                            attribute: $component.getAttribute($data),\
+                                            journalOptionsType: $component.getJournalOptionsType($data)\
+                                        }} --><!-- /ko -->\
+                                    <!-- /ko -->\
+                                </td>\
+                            <!-- /ko -->\
+                            <!-- ko ifnot: $component.journalType -->\
+                                <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: title"></span></td>\
+                                <td class="criterion-predicate">\
+                                    <select data-bind="options: predicates,\
+                                                       optionsText: \'label\',\
+                                                       optionsValue: \'id\',\
+                                                       value: predicateValue"></select>\
+                                </td>\
+                                <td class="criterion-value-selector">\
+                                    <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
+                                        <!-- ko component: { name: "filter-criterion-value", params: {\
+                                            fieldId: $component.htmlId + "-criterion-" + $index(),\
+                                            datatype: resolve(\'datatype\', null),\
+                                            value: value,\
+                                            attribute: $component.getAttribute($data),\
+                                        }} --><!-- /ko -->\
+                                    <!-- /ko -->\
+                                </td>\
+                            <!-- /ko -->\
                         </tr>\
                     <!-- /ko -->\
                 </tbody>\
@@ -407,7 +483,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
         viewModel: function(params) {
             var self = this;
             initializeParameters.call(this, params);
-     
+
             this.remove = function(data, event) {
                 self.filter().criteria.remove(data);
             };
@@ -475,7 +551,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
     ko.components.register('journal', {
         viewModel: function(params) {
-            if (!params.sourceElements && !params.journalType) {
+            if (!params.sourceElements) {
                 throw new Error("Required parameters are missing");
                 return;
             }
@@ -498,9 +574,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             Citeck.utils.concatOptions(this.options, params.options);
 
             
-            if (!this.loading) { 
-                this.loading = this.options.loading; 
-            }
+            if (!this.loading) { this.loading = this.options.loading; }
+            if (!this.columns) { this.columns = null; }
 
             // methods
             this.selected = function(data) {
@@ -577,6 +652,45 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     return data.valueTitle() || data.textValue();
                 });
             };
+
+            this.getDefaultHeaderTitle = function(attributeName) {
+                return ko.computed(function() {
+                    if (self.sourceElements().length) {
+                        var firstElement = self.sourceElements()[0].impl(),
+                        attribute, title, name;
+
+                        if (attributeName) {
+                            attribute = firstElement.attribute(attributeName);
+                            if (attribute) return attribute.title();
+                        } else {
+                            title = firstElement.attribute("cm:title");
+                            name = firstElement.attribute("cm:name");
+
+                            if (title) return title.title();
+                            return name.title();
+                        }
+                    }
+
+                    return null;
+                });
+            };
+
+            this.getDefaultTitle = function(element, attributeName) {
+                return ko.computed(function() {
+                    if (attributeName) {
+                        var attribute = element.impl().attribute(attributeName);
+                        if (attribute) return attribute.value()
+                    } else {
+                        var title = element.impl().attribute("cm:title"),
+                            name = element.impl().attribute("cm:name");
+
+                        if (title) return title.value();
+                        return name.value();
+                    }
+
+                    return null;
+                });
+            };
         },
           
 
@@ -587,7 +701,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             <div class="journal">\
                 <table>\
                     <thead>\
-                        <!-- ko if: columns ? true : false -->\
+                        <tr data-bind="if: !$component.journalType && !$component.columns">\
+                            <th data-bind="text: $component.getDefaultHeaderTitle()"></th>\
+                        </tr>\
+                         <!-- ko if: !$component.journalType && $component.columns -->\
+                            <tr data-bind="foreach: columns">\
+                                <th data-bind="text: $component.getDefaultHeaderTitle($data)"></th>\
+                            </tr>\
+                        <!-- /ko -->\
+                        <tr data-bind="if: $component.journalType && !columns">\
+                            <!-- ko foreach:  $component.journalType.defaultAttributes -->\
+                                <th data-bind="text: displayName"></th>\
+                            <!-- /ko -->\
+                        </tr>\
+                        <!-- ko if: $component.journalType && columns -->\
                             <tr data-bind="foreach: columns">\
                                 <!-- ko if: $component.journalType.attribute($data) -->\
                                     <!-- ko with: $component.journalType.attribute($data) -->\
@@ -596,34 +723,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 <!-- /ko -->\
                             </tr>\
                         <!-- /ko -->\
-                        <!-- ko ifnot: columns ? true : false -->\
-                            <tr data-bind="foreach: $component.journalType.defaultAttributes">\
-                                <th data-bind="text: displayName"></th>\
-                            </tr>\
-                        <!-- /ko -->\
                     </thead>\
                     <tbody data-bind="foreach: sourceElements">\
-                        <!-- ko if: $component.columns ? true : false -->\
+                        <tr class="journal-element" data-bind="if: !$component.journalType && !$component.columns,\
+                                                               attr: { id: nodeRef },\
+                                                               click: $component.selectElement, clickBubble: false,\
+                                                               event: { dblclick: $component.selectElement },\
+                                                               css: { selected: $component.selected($data) }">\
+                            <td data-bind="text: $component.getDefaultTitle($data)"></td>\
+                        </tr>\
+                        <!-- ko if: !$component.journalType && $component.columns -->\
                             <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                    foreach: $component.columns,\
                                                                    click: $component.selectElement, clickBubble: false,\
                                                                    event: { dblclick: $component.selectElement },\
                                                                    css: { selected: $component.selected($data) }">\
-                               <!-- ko if: $component.journalType.attribute($data) ? true : false -->\
-                                    <!-- ko with: $component.journalType.attribute($data) -->\
-                                        <!-- ko if: $parents[1].properties[$data.name()] -->\
-                                            <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
-                                        <!-- /ko -->\
-                                        <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
-                                            <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
-                                                <td data-bind="text: $component.getTitle($data)"></td>\
-                                            <!-- /ko -->\
-                                        <!-- /ko -->\
-                                    <!-- /ko -->\
-                                <!-- /ko -->\
+                               <td data-bind="text: $component.getDefaultTitle($parent, $data)"></td>\
                             </tr>\
                         <!-- /ko -->\
-                        <!-- ko ifnot: $component.columns ? true : false -->\
+                        <!-- ko if: $component.journalType && !$component.columns -->\
                             <tr class="journal-element" data-bind="attr: { id: nodeRef },\
                                                                    foreach: $component.journalType.defaultAttributes,\
                                                                    click: $component.selectElement, clickBubble: false,\
@@ -635,6 +753,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 <!-- ko ifnot: $parent.properties[$data.name()] -->\
                                     <!-- ko with: $parent.impl().attribute($data.name()) -->\
                                         <td data-bind="text: $component.getTitle($data)"></td>\
+                                    <!-- /ko -->\
+                                <!-- /ko -->\
+                            </tr>\
+                        <!-- /ko -->\
+                        <!-- ko if: $component.journalType && $component.columns -->\
+                            <tr class="journal-element" data-bind="attr: { id: nodeRef },\
+                                                                   foreach: $component.columns,\
+                                                                   click: $component.selectElement, clickBubble: false,\
+                                                                   event: { dblclick: $component.selectElement },\
+                                                                   css: { selected: $component.selected($data) }">\
+                               <!-- ko if: $component.journalType.attribute($data) -->\
+                                    <!-- ko with: $component.journalType.attribute($data) -->\
+                                        <!-- ko if: $parents[1].properties[$data.name()] -->\
+                                            <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                        <!-- /ko -->\
+                                        <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
+                                            <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
+                                                <td data-bind="text: $component.getTitle($data)"></td>\
+                                            <!-- /ko -->\
+                                        <!-- /ko -->\
                                     <!-- /ko -->\
                                 <!-- /ko -->\
                             </tr>\

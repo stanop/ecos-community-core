@@ -1,4 +1,3 @@
-
 var language = "lucene";
 var data = criteriaSearch.query(requestbody.getContent(), language);
 

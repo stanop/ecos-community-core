@@ -7,6 +7,7 @@ import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.model.Repository;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
@@ -236,13 +237,20 @@ public class CasePerformUtils {
         return null;
     }
 
-    void setPerformer(TaskEntity task, NodeRef performer) {
+    void setPerformer(TaskEntity task, final NodeRef performer) {
         String performerKey = toString(CasePerformModel.ASSOC_PERFORMER);
-        NodeRef currentPerformer = (NodeRef) task.getVariable(performerKey);
-        NodeRef caseRoleRef = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_CASE_ROLE));
+        final NodeRef currentPerformer = (NodeRef) task.getVariable(performerKey);
+        final NodeRef caseRoleRef = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_CASE_ROLE));
         if (caseRoleRef != null) {
-            caseRoleService.setDelegate(caseRoleRef, currentPerformer, performer);
-            caseRoleService.updateRole(caseRoleRef);
+            AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+                @Override
+                public Void doWork() throws Exception {
+                    caseRoleService.setDelegate(caseRoleRef, currentPerformer, performer);
+                    caseRoleService.updateRole(caseRoleRef);
+                    return null;
+                    }
+            });
+
             Set<NodeRef> assignees = caseRoleService.getAssignees(caseRoleRef);
             if (assignees.contains(performer)) {
                 task.setVariableLocal(performerKey, performer);

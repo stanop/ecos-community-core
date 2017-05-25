@@ -27,8 +27,11 @@ function get(view, type) {
 }
 
 function getInvariantSet(args, attributes) {
-    var response = remote.call('/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
-        (attributes && attributes.length ? "&attributes=" + attributes.join(',') : '') + (args.mode ? '&mode=' + args.mode : ''));
+    var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
+                                              (attributes && attributes.length ? '&attributes=' + attributes.join(',') : '') + 
+                                              (args.mode ? '&mode=' + args.mode : '') + 
+                                              (args.inlineEdit ? '&inlineEdit=' + args.inlineEdit : '');
+    var response = remote.call(urlTemplate);
     return eval('(' + response + ')');
 }
 
@@ -95,7 +98,7 @@ function getViewData(args) {
     }
 
     if(response.status != 200) {
-        throw 'Can not get view from uri "' + serviceURI + '". Response: ' + response;
+        throw 'Can not get view from uri "' + serviceURI + '": ' + response.message;
     }
     
     return viewData;

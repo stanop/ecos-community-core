@@ -18,6 +18,10 @@ var header = getWidget("SHARE_HEADER"),
     appMenu = getWidget("HEADER_APP_MENU_BAR"),
     userMenu = getWidget("HEADER_USER_MENU_BAR"),
     search = getWidget("HEADER_SEARCH"),
+    shareVerticalLayout = getWidget("SHARE_VERTICAL_LAYOUT"),
+    titleMenu = getWidget("HEADER_TITLE_MENU"),
+    navigationMenu = getWidget("HEADER_NAVIGATION_MENU_BAR"),
+    customizeUserDashboard = getWidget("HEADER_CUSTOMIZE_USER_DASHBOARD"),
 
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie();
 
@@ -114,26 +118,101 @@ if (!context.externalAuthentication) {
 }
 
 // USER MENU
-userMenu.config.widgets = [{
-  id: "HEADER_USER_MENU",
-  name: "alfresco/header/AlfMenuBarPopup",
-  config: {
-    id: "HEADER_USER_MENU",
-    label: user.fullName,
-    widgets: [{
-      name: "alfresco/menus/AlfMenuGroup",
-      config: {
-        widgets: userMenuItems
-      }
-    }]
-  }
-}];
+userMenu.config.widgets = [
+    {
+        id: "HEADER_USER_MENU",
+        name: "alfresco/header/AlfMenuBarPopup",
+        config: {
+            id: "HEADER_USER_MENU",
+            label: user.fullName,
+            style: isMobile ? "padding-left: 5px;" : "padding-left: 10px;",
+            widgets: [{
+                name: "alfresco/menus/AlfMenuGroup",
+                config: {
+                    widgets: userMenuItems
+                }
+            }]
+        }
+    }
+];
 
+// delete the Title Bar everywhere (exept for Edit Page and Create Page)
+if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
+    shareVerticalLayout.config.widgets = shareVerticalLayout.config.widgets.filter(function(item) {
+        if (item.id == "HEADER_TITLE_BAR" && (page.id.indexOf("edit") != -1 || page.id.indexOf("create") != -1 || page.id.indexOf("start") != -1)) {
+            item.config.widgets = item.config.widgets.filter(function(item) {
+                return item.id == "HEADER_TITLE"
+            });
+            return item;
+        } else {
+            return item.id !== "HEADER_TITLE_BAR"
+        }
+
+    })
+}
+
+if (customizeUserDashboard) {
+    customizeUserDashboard.name = "alfresco/header/AlfMenuItem";
+    customizeUserDashboard.config.label = msg.get("customize_dashboard.label");
+}
+var siteMenuItems = [];
+if (navigationMenu && navigationMenu.config.widgets.length) {
+    for (var w in navigationMenu.config.widgets) {
+        if (navigationMenu.config.widgets[w].id == "HEADER_SITE_MORE_PAGES" && navigationMenu.config.widgets[w].config.widgets.length) {
+            navigationMenu.config.widgets = navigationMenu.config.widgets.concat(
+                navigationMenu.config.widgets[w].config.widgets[0].config.widgets.map(function(widget) {
+                    widget.name = "alfresco/header/AlfMenuItem";
+                    return widget;
+                }));
+            navigationMenu.config.widgets.splice(w, 1);
+        }
+    }
+    navigationMenu.config.widgets = navigationMenu.config.widgets.map(function(item) {
+        item.name = "alfresco/header/AlfMenuItem";
+        return item;
+    });
+    siteMenuItems = siteMenuItems.concat(navigationMenu.config.widgets);
+}
+
+if (titleMenu && titleMenu.config.widgets.length) {
+    titleMenu.config.widgets = titleMenu.config.widgets.map(function(item) {
+        if(item.id == "HEADER_SITE_CONFIGURATION_DROPDOWN") {
+            item.name = "alfresco/menus/AlfMenuGroup";
+            item.config.label = msg.get("header.menu.siteConfig.altText");
+            if (item.config.widgets.length) {
+                item.config.widgets = item.config.widgets.map(function(widget) {
+                    widget.name = "alfresco/header/AlfMenuItem";
+                    return widget;
+                })
+            }
+
+        }
+        if(item.id == "HEADER_SITE_INVITE") {
+            item.name = "alfresco/header/AlfMenuItem";
+            item.config.label = msg.get("header.menu.invite.altText");
+        }
+        return item;
+    });
+    siteMenuItems = siteMenuItems.concat(titleMenu.config.widgets);
+}
+
+if (siteMenuItems.length) {
+    userMenu.config.widgets.unshift({
+        id: "HEADER_SITE_MENU",
+        name: "alfresco/header/AlfMenuBarPopup",
+        config: {
+            id: "HEADER_SITE_MENU",
+            label: "",
+            style: isMobile ? "padding-left: 5px; padding-right: 5px" :  "padding-left: 10px; padding-right: 10px",
+            widgets: siteMenuItems
+        }
+    })
+}
 
 // APP MENU ITEMS
 var createSiteClickEvent = function(event, element) {
   Alfresco.module.getCreateSiteInstance().show(); 
-}
+};
  
 var HEADER_HOME = {
       id: "HEADER_HOME",
@@ -290,7 +369,7 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
               publishTopic: "ALF_LOGGING_STATUS_CHANGE",
               checked: errorEnabled
             }
-          },
+          }
         ]
       }
     },
@@ -318,7 +397,6 @@ appMenu.config.widgets = [];
 
 // BUILD DESKTOP MENU
 if (!isMobile) {
-  appMenu.config.widgets.push(HEADER_HOME);
   appMenu.config.widgets.push({
     id: "HEADER_SITES",
     name: "alfresco/header/AlfMenuBarPopup",
@@ -349,7 +427,7 @@ if (!isMobile) {
       label: "header.create-variants.label",
       widgets: [ HEADER_CREATE_VARIANTS ]
     }
-  })
+  });
   appMenu.config.widgets.push(HEADER_JOURNALS);
   appMenu.config.widgets.push(HEADER_DOCUMENTLIBRARY);
   appMenu.config.widgets.push({
@@ -374,13 +452,10 @@ if (!isMobile) {
         widgets: loggingWidgetItems
       }
     });
-  };
+  }
 }
 
 // BUILD MOBILE MENU
-var HEADER_MOBILE_HOME = toMobileWidget(HEADER_HOME);
-HEADER_MOBILE_HOME.name = "alfresco/menus/AlfMenuItem";
-
 var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
 HEADER_MOBILE_JOURNALS.name = "alfresco/menus/AlfMenuItem";
 HEADER_MOBILE_JOURNALS.config.movable = null;
@@ -405,10 +480,8 @@ var HEADER_MOBILE_MENU_VARIANTS = {
   config: {
     id: "HEADER_MOBILE_MENU_VARIANTS",
     widgets: [
-      HEADER_MOBILE_HOME,
       HEADER_MOBILE_JOURNALS,
       HEADER_MOBILE_DOCUMENTLIBRARY,
-
       {
         id: "HEADER_MOBILE_SITES",
         name: "alfresco/menus/AlfMenuGroup",
@@ -449,14 +522,18 @@ if (loggingWidgetItems) {
   });
 }
 
-appMenu.config.widgets.unshift({
-   id: "HEADER_MOBILE_MENU",
-   name: "alfresco/header/AlfMenuBarPopup",
-   config: {
-      id: "HEADER_MOBILE_MENU",
-      widgets: [ HEADER_MOBILE_MENU_VARIANTS ]
-   }
-});
+appMenu.config.widgets.unshift(
+    {
+        id: "HEADER_MOBILE_MENU",
+        name: "alfresco/header/AlfMenuBarPopup",
+        config: {
+            id: "HEADER_MOBILE_MENU",
+            widgets: [HEADER_MOBILE_MENU_VARIANTS],
+            style: "padding-right: 5px;"
+        }
+    },
+   buildLogo(isMobile)
+);
 
 // ---------------------
 // TITLE MENU
@@ -618,6 +695,20 @@ function buildCreateVariantsForSite(sitename) {
 
   return buildItems(createVariantsPresets, "CREATE_VARIANT");
 }
+
+function buildLogo(isMobile) {
+    return {
+        id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
+        name: "alfresco/logo/citeckLogo",
+        config: {
+            id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
+            logoClasses: "alfresco-logo-only",
+            currentTheme: theme,
+            logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
+            targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
+        }
+    };
+};
 
 
 model.__alf_current_site__ = currentSite;

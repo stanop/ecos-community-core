@@ -9,7 +9,7 @@
 
 <@formLib.renderFormContainer formId=formId>
 
-<div class="set">
+<div class="set" id="workflowDueDate">
 	<div class="set-title">${msg("workflow.set.general")}</div>
 	<@forms.renderField field="prop_bpm_workflowDescription" extension=extensions.controls.textarea + {
 		"label": msg("workflow.submit-perform-task.assignment")
