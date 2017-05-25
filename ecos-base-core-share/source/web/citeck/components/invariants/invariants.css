@@ -508,7 +508,6 @@
   width: 100%;
 }
 
-.invariants-form .template-wide .template-help,
 .invariants-form .template-wide .template-help {
   position: absolute;
   right: 0px;
@@ -1954,8 +1953,8 @@
   width: 54.5%;
 }
 
-.inline-edit-form .template-table .with-help .template-view, 
-.inline-edit-form .template-table .with-help .template-select, 
+.inline-edit-form .template-table .with-help .template-view,
+.inline-edit-form .template-table .with-help .template-select,
 .inline-edit-form .template-table .with-help .template-free-content {
   width: 53.5%;
 }
