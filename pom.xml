@@ -79,7 +79,7 @@
         <attorneys.classifier>common</attorneys.classifier>
         <module.attorneys.version>2.1.0.0-SNAPSHOT</module.attorneys.version>
 
-        <build.classifier>com-${alfresco.platform.version}</build.classifier>
+        <build.classifier>${alfresco.platform.version}-com</build.classifier>
 
     </properties>
 
@@ -93,7 +93,7 @@
                 <alfresco.platform.artifactId>alfresco-enterprise</alfresco.platform.artifactId>
                 <alfresco.surf.version>6.10</alfresco.surf.version>
                 <maven.alfresco.edition>enterprise</maven.alfresco.edition>
-                <build.classifier>ent-${alfresco.platform.version}</build.classifier>
+                <build.classifier>${alfresco.platform.version}-ent</build.classifier>
             </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
