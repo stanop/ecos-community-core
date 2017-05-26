@@ -679,9 +679,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 node: node
             });
         }, true)
+        .constructor([ Object, Node], function(data, node, parentSet) {
+            return new AttributeSet({
+                id: data.id,
+                _attributes: data.attributes,
+                _sets: data.sets,
+                node: node,
+                parentSet: parentSet
+            });
+        }, true)
 
         .key('id', s)
         .property('node', Node)
+        .property('parentSet', AttributeSet)
 
         .property('_attributes', o)
         .property('_sets', o)
@@ -695,7 +705,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('sets', function() {
             var self = this;
             return this._sets().map(function(as) {
-                return new AttributeSet(as, self.node());
+                return new AttributeSet(as, self.node(), self);
             });
         })
         .computed('relevant', function() {
@@ -1415,9 +1425,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             });
         })
         .method('set', function(name) {
-            return _.find(this.sets() || [], function(set) {
-                return attr.id() == name;
-            });
+            var findSetRecursively = function(sets, setId) {
+                for (var s = 0; s < sets.length; s++) {
+                    if (sets[s].id() == setId) return sets[s];
+                    if (sets[s].sets().length) {
+                        var findedSet = findSetRecursively(sets[s].sets(), setId);
+                        if (findedSet) return findedSet;
+                    }
+                }
+
+                return null;
+            };
+
+            return findSetRecursively(this.sets(), name);
         })
         .method('group', function(id) {
             return _.find(this.groups() || [], function(group) {
@@ -2280,6 +2300,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             } else {
                 this.initRuntime();
             }
+
+            console.log("runtime node impl", this.runtime.node().impl());
 
             if (this.options.model.inlineEdit) {
                 $("body").click(function(e, a) {

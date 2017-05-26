@@ -31,9 +31,14 @@
 		</#assign>
 	</#if>
 	
-
 	<div class="form-${element.type} template-${template}"
-		<#if element.attribute??>data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }" data-attribute-name="${element.attribute}"</#if>
+		<#if element.attribute??>
+			data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }"
+			data-attribute-name="${element.attribute}"
+		</#if>
+		<#if element.type == "view" && element.template?contains("set")>
+			data-bind="css: { hidden: set('${element.params.setId}').irrelevant() }"
+		</#if>
 
 		<#-- custom width for field -->
 		<#if element.type == "field" && wideBlockWidth?has_content>

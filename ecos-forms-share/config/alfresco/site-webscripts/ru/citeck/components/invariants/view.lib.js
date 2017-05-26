@@ -16,7 +16,7 @@ function getAttributesRecursively(element, attributes) {
     }
 }
 
-function get(view, type) {
+function get(view, type, template) {
     var objects = [];
     for(var i in view.elements) {
         if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) { 
@@ -31,6 +31,7 @@ function getAttributeSet(view) {
     for (var i in view.elements) {
         if (view.elements[i].type == "view" && view.elements[i].template.indexOf("set") != -1) {
             sets.push(buildAttributeSet(view.elements[i]));
+            buildAttributeSetId(view.elements[i]);
         }
     }
     return sets;
@@ -55,6 +56,19 @@ function buildAttributeSet(view) {
     })();
 
     return attributeSet;
+}
+
+function buildAttributeSetId(view) {
+    var attributes = [], setsCount = 0;
+    for (var i in view.elements) {
+        if (view.elements[i].type == "field") { attributes.push(view.elements[i].attribute); }
+        else if (view.elements[i].type == "view" && element.template.indexOf("set") != -1) { 
+            buildAttributeSetId(view.elements[i]);
+            setsCount++;
+        }
+    }
+
+    view.params.setId = attributes.join("_") + "_" + attributes.length + "_" + setsCount;
 }
 
 function getInvariantSet(args, attributes) {
