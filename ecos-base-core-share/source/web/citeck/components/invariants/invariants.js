@@ -679,7 +679,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 node: node
             });
         }, true)
-        .constructor([ Object, Node], function(data, node, parentSet) {
+        .constructor([ Object, Node, AttributeSet], function(data, node, parentSet) {
             return new AttributeSet({
                 id: data.id,
                 _attributes: data.attributes,
@@ -709,7 +709,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             });
         })
         .computed('relevant', function() {
-            return _.every(this.attributes(), function(attr) { return attr.relevant(); });
+            var a_relevant = _.every(this.attributes(), function(attr) { return attr.relevant(); }),
+                s_relevant = _.every(this.sets(), function(set) { return set.relevant(); });
+            return a_relevant && s_relevant;
         })
         .computed('irrelevant', function() {
             return !this.relevant();
