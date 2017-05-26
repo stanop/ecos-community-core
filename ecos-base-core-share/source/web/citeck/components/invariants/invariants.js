@@ -671,9 +671,39 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         ;
 
     AttributeSet
+        .constructor([ Object, Node], function(data, node) {
+            return new AttributeSet({
+                id: data.id,
+                _attributes: data.attributes,
+                _sets: data.sets,
+                node: node
+            });
+        }, true)
+
         .key('id', s)
-        .property('attributes', [ Attribute ])
-        .property('sets', [ AttributeSet ])
+        .property('node', Node)
+
+        .property('_attributes', o)
+        .property('_sets', o)
+
+        .computed('attributes', function() {
+            var self = this, attributes = self.resolve('node.impl.attributes', []);
+            return _.filter(attributes, function(attr) {
+                return _.contains(self._attributes(), attr.name());
+            });
+        })
+        .computed('sets', function() {
+            var self = this;
+            return this._sets().map(function(as) {
+                return new AttributeSet(as, self.node());
+            });
+        })
+        .computed('relevant', function() {
+            return _.every(this.attributes(), function(attr) { return attr.relevant(); });
+        })
+        .computed('irrelevant', function() {
+            return !this.relevant();
+        })
         ;
 
     AttributeInfo
@@ -1265,7 +1295,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('groups', [ Group ])
-        .property('sets', [ AttributeSet ])
 
         .shortcut('typeShort', 'type')
 
@@ -1380,10 +1409,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr[filterBy]();
             })
         })
-
         .method('attribute', function(name) {
             return _.find(this.attributes() || [], function(attr) {
                 return attr.name() == name;
+            });
+        })
+        .method('set', function(name) {
+            return _.find(this.sets() || [], function(set) {
+                return attr.id() == name;
             });
         })
         .method('group', function(id) {
@@ -1409,6 +1442,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('invalidAttributes', function() {
             return this._filterAttributes("invalid");
+        })
+
+        .property('_sets', o)
+        .computed('sets', {
+            read: function() {
+                var node = this.node(), sets = [], createdNames = {};
+                var processSetName = function(data) {
+                    if(!createdNames[data.id]) {
+                        createdNames[data.id] = true;
+                        sets.push(new AttributeSet(data, node));
+                    }
+                };
+
+                _.each(this._sets(), processSetName);
+                return sets;
+            },
+            pure: true
         })
 
         .property('_attributes', o)
