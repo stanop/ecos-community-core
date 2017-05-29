@@ -709,12 +709,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             });
         })
         .computed('relevant', function() {
-            var a_relevant = _.every(this.attributes(), function(attr) { return attr.relevant(); }),
-                s_relevant = _.every(this.sets(), function(set) { return set.relevant(); });
-            return a_relevant && s_relevant;
+            return !this.irrelevant();
         })
         .computed('irrelevant', function() {
-            return !this.relevant();
+            var a_irrelevant = _.every(this.attributes(), function(attr) { return attr.irrelevant(); }),
+                s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
+            return a_irrelevant && s_irrelevant;
         })
         ;
 
@@ -2302,8 +2302,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             } else {
                 this.initRuntime();
             }
-
-            console.log("runtime node impl", this.runtime.node().impl());
 
             if (this.options.model.inlineEdit) {
                 $("body").click(function(e, a) {
