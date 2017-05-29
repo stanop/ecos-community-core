@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="idocs.import-spaces.3-1-0" parent="idocs.import-spaces" abstract="true">
+		<property name="sinceVersion" value="3.1.0" />
+		<property name="appliesFromVersion" value="3.1.0" />
+	</bean>
+
+    <bean id="idocs.import-scripts.3-1-0" parent="idocs.import-scripts" abstract="true">
+        <property name="sinceVersion" value="3.1.0" />
+        <property name="appliesFromVersion" value="3.1.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.null-to-empty-migration" parent="idocs.import-scripts.3-1-0">
+        <property name="name" value="null-to-empty-migration.js" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/scripts/null-to-empty-migration.js"/>
+    </bean>
+
+</beans>

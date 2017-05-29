@@ -443,6 +443,26 @@
                     </executions>
                 </plugin>
 
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>yuicompressor-maven-plugin</artifactId>
+                    <version>1.2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>compress</goal>
+                            </goals>
+                            <configuration>
+                                <excludes>
+                                    <exclude>config/**</exclude>
+                                    <exclude>*-min.js</exclude>
+                                    <exclude>*-min.css</exclude>
+                                </excludes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
@@ -678,13 +698,6 @@
                 <groupId>org.alfresco.maven.plugin</groupId>
                 <artifactId>alfresco-maven-plugin</artifactId>
                 <version>${alfresco.sdk.version}</version>
-            </plugin>
-
-            <!-- Compress JavaScript files and store as *-min.js -->
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.4.0</version>
             </plugin>
 
             <plugin>
