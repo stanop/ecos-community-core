@@ -688,7 +688,7 @@ Citeck.UI.previewDependencies = function() {
             "res/components/preview/StrobeMediaPlayback.css",
             "res/components/preview/Image.css"
         ],
-        deps = _.map(_.filter(sources, function(s) {
+        deps = _.map(_.filter(sources, function(src) {
             var pathname = src.split(/\.(js|css)/)[0];
             return $("head").html().indexOf(pathname) == -1;
         }), function(src) {
@@ -697,7 +697,7 @@ Citeck.UI.previewDependencies = function() {
 
     deps.forEach(function(src) {
         var node;
-        if (/\.js&/.test(src)) {
+        if (/\.js/.test(src)) {
             node = document.createElement('script');
             node.setAttribute("type","text/javascript");
             node.setAttribute("src", src);
