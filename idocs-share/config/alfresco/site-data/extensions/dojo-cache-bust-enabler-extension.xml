@@ -1,0 +1,16 @@
+<extension>
+  <modules>
+    <module>
+      <id>DOJO_Cache_Bust_Enabler</id>
+      <auto-deploy>true</auto-deploy>
+      <evaluator type="default.extensibility.evaluator"/>
+
+      <customizations>
+         <customization>
+            <targetPackageRoot>dojo</targetPackageRoot>
+            <sourcePackageRoot>ru.citeck.dojo.cache</sourcePackageRoot>
+         </customization>
+      </customizations>
+    </module>
+  </modules>
+</extension>
