@@ -324,7 +324,7 @@
                         var panel = new YAHOO.widget.Panel(id, {
                             width: width,
                             height: height,
-                            fixedcenter:  true,
+                            fixedcenter:  "contained",
                             constraintoviewport: true,
                             close: true,
                             modal: true,
@@ -342,12 +342,6 @@
 
                         panel.setHeader(header);
                         panel.setBody(response.serverResponse.responseText);
-
-                        panel.subscribe("render", function() {
-                            if (window.innerHeight < panel.element.offsetHeight) {
-                                panel.cfg.config.fixedcenter.value = "contained";
-                            }
-                        });
 
                         // additional style for panel with fixed size
                         if (height != "auto") { panel.body.classList.add("fixed-size"); }
