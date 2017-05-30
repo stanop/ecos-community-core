@@ -17,7 +17,7 @@
 				<ref bean="idocs.module-component.main-journals.currency" />
 			</list>
 		</property>
-		<property name="executeOnceOnly" value="false" />
+		<property name="executeOnceOnly" value="true" />
 		<property name="bootstrapViews">
 			<list>
 				<props>

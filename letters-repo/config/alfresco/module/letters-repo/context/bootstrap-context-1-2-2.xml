@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="letters.import-spaces.1-2-2" abstract="true" parent="letters.import-spaces.1-0-0">
+        <property name="sinceVersion" value="1.2.2" />
+        <property name="appliesFromVersion" value="1.2.2" />
+    </bean>
+
+    <bean id="letters.absence-list.journals.income-outcome" parent="letters.import-spaces.1-2-2">
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/absence/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/letters-repo/bootstrap/journals/income</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/absence/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/letters-repo/bootstrap/journals/outcome</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

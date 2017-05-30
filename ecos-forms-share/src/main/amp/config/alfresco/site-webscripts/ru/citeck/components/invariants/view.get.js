@@ -9,7 +9,8 @@
     if(!viewData) return;
 
     var view = viewData.view,
-        attributes = getAttributes(view);
+        attributes = getAttributes(view),
+        attributeSet = getAttributeSet(view);
 
     // extend args with view.params for inlineEdit parameters
     if (view.params.inlineEdit) args.inlineEdit = view.params.inlineEdit;
@@ -28,7 +29,7 @@
         viewScopedInvariants = getViewScopedInvariants(view);
     }
 
-    
+   
     // ATTENTION: this view model should comply to repository NodeView interface!
     var defaultModel = {},
         publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
@@ -42,7 +43,6 @@
         var name = publicViewProperties[i];
         defaultModel.view[name] = view[name];
     }
-
 
     if (view.template == "tabs") {
         var groups = get(view, "view"),
@@ -74,6 +74,8 @@
             }
         });
     };
+
+    model.attributeSet = attributeSet;
 
     model.view = view;
     model.canBeDraft = viewData.canBeDraft;

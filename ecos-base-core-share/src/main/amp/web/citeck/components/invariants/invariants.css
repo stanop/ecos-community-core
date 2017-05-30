@@ -22,6 +22,19 @@
     margin: 0 0 10px 0;
 }
 
+/* fixed size for nested form */
+
+.fixed-size .ecos-form {
+  height: inherit;
+}
+
+.fixed-size .ecos-form .form-fields {
+  overflow: auto;
+  height: calc(100% - 37px);
+  box-sizing: border-box;
+}
+
+
 /* form-errors */
 
 .ecos-form .form-errors {
@@ -843,6 +856,14 @@
 
 .inline-edit-form .template-table .template-row.with-help .region-select-group {
   width: 53.5%;
+}
+
+/* none */
+
+.invariants-form .template-table .template-none {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* default */

@@ -38,6 +38,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         DefaultModel = koclass('invariants.DefaultModel'),
         Message = koclass('invariants.Message'),
         Feature = koclass('invariants.Feature'),
+        AttributeSet = koclass('invariants.AttributeSet'),
         AttributeInfo = koclass('invariants.AttributeInfo'),
         Attribute = koclass('invariants.Attribute'),
         Predicate = koclass('invariants.Predicate'),
@@ -667,7 +668,55 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .key('id', s)
         .property('label', s)
         .property('needsValue', b)
-    ;
+        ;
+
+    AttributeSet
+        .constructor([ Object, Node], function(data, node) {
+            return new AttributeSet({
+                id: data.id,
+                _attributes: data.attributes,
+                _sets: data.sets,
+                node: node
+            });
+        }, true)
+        .constructor([ Object, Node, AttributeSet], function(data, node, parentSet) {
+            return new AttributeSet({
+                id: data.id,
+                _attributes: data.attributes,
+                _sets: data.sets,
+                node: node,
+                parentSet: parentSet
+            });
+        }, true)
+
+        .key('id', s)
+        .property('node', Node)
+        .property('parentSet', AttributeSet)
+
+        .property('_attributes', o)
+        .property('_sets', o)
+
+        .computed('attributes', function() {
+            var self = this, attributes = self.resolve('node.impl.attributes', []);
+            return _.filter(attributes, function(attr) {
+                return _.contains(self._attributes(), attr.name());
+            });
+        })
+        .computed('sets', function() {
+            var self = this;
+            return this._sets().map(function(as) {
+                return new AttributeSet(as, self.node(), self);
+            });
+        })
+        .computed('relevant', function() {
+            return !this.irrelevant();
+        })
+        .computed('irrelevant', function() {
+            var a_irrelevant = _.every(this.attributes(), function(attr) { return attr.irrelevant(); }),
+                s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
+            return a_irrelevant && s_irrelevant;
+        })
+        ;
 
     AttributeInfo
         .key('name', s)
@@ -1372,11 +1421,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr[filterBy]();
             })
         })
-
         .method('attribute', function(name) {
             return _.find(this.attributes() || [], function(attr) {
                 return attr.name() == name;
             });
+        })
+        .method('set', function(name) {
+            var findSetRecursively = function(sets, setId) {
+                for (var s = 0; s < sets.length; s++) {
+                    if (sets[s].id() == setId) return sets[s];
+                    if (sets[s].sets().length) {
+                        var findedSet = findSetRecursively(sets[s].sets(), setId);
+                        if (findedSet) return findedSet;
+                    }
+                }
+
+                return null;
+            };
+
+            return findSetRecursively(this.sets(), name);
         })
         .method('group', function(id) {
             return _.find(this.groups() || [], function(group) {
@@ -1401,6 +1464,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('invalidAttributes', function() {
             return this._filterAttributes("invalid");
+        })
+
+        .property('_sets', o)
+        .computed('sets', {
+            read: function() {
+                var node = this.node(), sets = [], createdNames = {};
+                var processSetName = function(data) {
+                    if(!createdNames[data.id]) {
+                        createdNames[data.id] = true;
+                        sets.push(new AttributeSet(data, node));
+                    }
+                };
+
+                _.each(this._sets(), processSetName);
+                return sets;
+            },
+            pure: true
         })
 
         .property('_attributes', o)
@@ -2187,33 +2267,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 $(window).resize();
             }
 
-            if (this.options.model.inlineEdit) {
-                $("body").click(function(e, a) {
-                    var node = self.runtime.node(),
-                        isDraft = node.properties["invariants:isDraft"],
-                        form = $("#" + self.options.model.key),
-                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
-
-                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
-                        if (isDraft || node.resolve("impl.valid")) {
-                            // save node if it valid
-                            if (_.any(inlineEditingAttributes, function(attr) {
-                                return attr.newValue() != null && attr.newValue() != attr.persistedValue();
-                            })) node.thisclass.save(node, { });
-                            
-                            // close all valid inline editing attributes
-                            _.each(node.impl().attributes(), function(attr) {
-                                if (attr.inlineEditVisibility() && (isDraft || attr.valid())) attr.inlineEditVisibility(false);
-                            });
-                        } else {
-                            Alfresco.util.PopupManager.displayMessage({
-                                text: Alfresco.util.message("message.invalid-node.form")
-                            });   
-                        }
-                    }
-                });
-            }
-
             // define attributes from first group as forced
             if (this.options.model.loadAttributesMethod == "clickOnGroup") {
                 this.options.model.invariantSet.forcedInvariants = this.options.model.node.groups[0].invariants;
@@ -2248,6 +2301,33 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 });
             } else {
                 this.initRuntime();
+            }
+
+            if (this.options.model.inlineEdit) {
+                $("body").click(function(e, a) {
+                    var node = self.runtime.node(),
+                        isDraft = node.properties["invariants:isDraft"],
+                        form = $("#" + self.options.model.key),
+                        inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
+
+                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
+                        if (isDraft || node.resolve("impl.valid")) {
+                            // save node if it valid
+                            if (_.any(inlineEditingAttributes, function(attr) {
+                                return attr.newValue() != null && attr.newValue() != attr.persistedValue();
+                            })) node.thisclass.save(node, { });
+                            
+                            // close all valid inline editing attributes
+                            _.each(node.impl().attributes(), function(attr) {
+                                if (attr.inlineEditVisibility() && (isDraft || attr.valid())) attr.inlineEditVisibility(false);
+                            });
+                        } else {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message("message.invalid-node.form")
+                            });   
+                        }
+                    }
+                });
             }
         },
 

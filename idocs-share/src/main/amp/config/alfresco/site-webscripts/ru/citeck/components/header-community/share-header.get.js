@@ -705,7 +705,7 @@ function buildLogo(isMobile) {
             logoClasses: "alfresco-logo-only",
             currentTheme: theme,
             logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
-            targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
+            targetUrl: "/share/page/user/" + encodeURIComponent(user.name) + "/dashboard"
         }
     };
 };
