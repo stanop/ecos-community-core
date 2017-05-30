@@ -343,7 +343,13 @@
                         panel.setHeader(header);
                         panel.setBody(response.serverResponse.responseText);
 
-                        // additional styel for panel with fixed size
+                        panel.subscribe("render", function() {
+                            if (window.innerHeight < panel.element.offsetHeight) {
+                                panel.cfg.config.fixedcenter.value = "contained";
+                            }
+                        });
+
+                        // additional style for panel with fixed size
                         if (height != "auto") { panel.body.classList.add("fixed-size"); }
 
                         panel.render(document.body);
