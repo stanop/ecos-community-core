@@ -324,7 +324,7 @@
                         var panel = new YAHOO.widget.Panel(id, {
                             width: width,
                             height: height,
-                            fixedcenter:  true,
+                            fixedcenter:  "contained",
                             constraintoviewport: true,
                             close: true,
                             modal: true,
