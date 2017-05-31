@@ -698,8 +698,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .computed('attributes', function() {
             var self = this, attributes = self.resolve('node.impl.attributes', []);
-            return _.filter(attributes, function(attr) {
-                return _.contains(self._attributes(), attr.name());
+            return _.filter(attributes, function(attribute) {
+                return !!_.find(self._attributes(), function(attr) { return attr.name == attribute.name(); });
             });
         })
         .computed('sets', function() {
@@ -712,9 +712,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return !this.irrelevant();
         })
         .computed('irrelevant', function() {
-            var a_irrelevant = _.every(this.attributes(), function(attr) { return attr.irrelevant(); }),
+            var self = this;
+            var a_irrelevant = _.every(this.attributes(), function(attr) { 
+                    return attr.irrelevant() || self.getAttributeTemplate(attr.name()) == "none"; 
+                }),
                 s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
             return a_irrelevant && s_irrelevant;
+        })
+
+        .method('getAttributeTemplate', function(attributeName) {
+            var attribute = _.find(this._attributes(), function(attr) { return attr.name == attributeName; });
+            if (attribute) return attribute.template;
+            return null;
         })
         ;
 
