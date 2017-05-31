@@ -598,11 +598,11 @@
         doubleClickLink: function(urlTemplate, fieldId, formatter, target) {
             if (!target) target = '_self';
             if (!urlTemplate) urlTemplate = '';
+
             return function (elCell, oRecord, oColumn, sData) {
-                var label = formatter && (formatter.apply(this, arguments), elCell.innerHTML) || sData || Alfresco.util.message("label.none");
-                var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, {
-                    id: oRecord.getData(fieldId)
-                }));
+                var label = formatter && (formatter.apply(this, arguments), elCell.innerHTML) || sData || Alfresco.util.message("label.none"),
+                	url = Alfresco.constants.URL_PAGECONTEXT + YAHOO.lang.substitute(urlTemplate, { id: oRecord.getData(fieldId) });
+
                 elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" '
                                  + 'href="' + url + '" target="' + target + '">' + label + '</a>';
             }
