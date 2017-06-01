@@ -44,29 +44,21 @@
   padding: 10px;
 }
 
-.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
-  content: "!";
+.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before,
+.inline-edit-form .template-wide .template-block.invalid:not(.inline-edit) .block-region-label:before {
+  content: "\f06a";
+  font-family: FontAwesome;
   color: red;
   display: block;
-  width: 16px;
-  padding-left: 6px;
-  border: 1px solid red;
+  font-size: 16px;
   right: 0;
-  border-radius: 100%;
   box-sizing: border-box;
-  top: 1px;
   position: absolute;
   visibility: visible;
 }
 
-.yui-skin-uedmsTheme .inline-edit-form .template-table .template-row.invalid:not(.inline-edit):before {
-    content: "\f06a";
-    font-family: FontAwesome;
-    border: none;
-    font-size: 16px;
-}
-
-.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):hover:before {
+.inline-edit-form .template-table .template-row.invalid:not(.inline-edit):hover:before,
+.inline-edit-form .template-wide .template-block.invalid:not(.inline-edit):hover .block-region-label:before {
   visibility: hidden;
 }
 
@@ -471,18 +463,23 @@
   vertical-align: top;
 }
 
-.invariants-form .template-wide .template-block.with-help,
-.invariants-form .template-wide .template-block-checkbox.with-help {
+.invariants-form .template-wide .template-block .block-region-label,
+.invariants-form .template-wide .template-block-checkbox .block-region-label {
+  box-sizing: border-box;
+}
+
+.invariants-form .template-wide .template-block.with-help .block-region-label,
+.invariants-form .template-wide .template-block-checkbox.with-help .block-region-label {
   padding-right: 15px;
 }
 
-.inline-edit-form .template-wide .template-block,
-.inline-edit-form .template-wide .template-block-checkbox {
+.inline-edit-form .template-wide .template-block .block-region-label,
+.inline-edit-form .template-wide .template-block-checkbox .block-region-label {
   padding-right: 20px;
 }
 
-.inline-edit-form .template-wide .template-block.with-help,
-.inline-edit-form .template-wide .template-block-checkbox.with-help {
+.inline-edit-form .template-wide .template-block.with-help .block-region-label,
+.inline-edit-form .template-wide .template-block-checkbox.with-help .block-region-label {
   padding-right: 35px;
 }
 
@@ -521,10 +518,17 @@
   width: 100%;
 }
 
-.invariants-form .template-wide .template-help {
+.invariants-form .template-wide .template-block .template-help,
+.invariants-form .template-wide .template-block-checkbox .template-help  {
   position: absolute;
   right: 0px;
-  top: 0px;
+  top: 1px;
+}
+
+.inline-edit-form .template-wide .template-block.with-help .template-help,
+.inline-edit-form .template-wide .template-block-checkbox.with-help .template-help {
+  right: 20px;
+  top: 1px;
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region-input {
