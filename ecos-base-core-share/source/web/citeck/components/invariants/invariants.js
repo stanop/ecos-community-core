@@ -1706,16 +1706,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             toRequest: function(node) {
                 node.impl().inSubmitProcess(true);
 
-                var inlineEdit = node.impl().runtime() && node.impl().runtime().inlineEdit(),
+                var defaultView = node.resolve('impl.defaultModel.view'),
                     data = {
-                        view: node.impl().defaultModel().view(),
-                        attributes: inlineEdit ? node.impl().changedData().attributes : node.impl().allData().attributes
-                    },
-                    isDraft = node.impl().isDraft();
-
-                if (_.isBoolean(isDraft)) {
-                    data['isDraft'] = isDraft;
-                }
+                        view: defaultView,
+                        attributes: node.resolve('impl.' + ( defaultView.mode == "create" ? 'allData' : 'changedData' ) + '.attributes')
+                    };
+                    
+                var isDraft = node.resolve('impl.isDraft');
+                if (_.isBoolean(isDraft)) data['isDraft'] = isDraft;
 
                 return data;
             },
@@ -2141,6 +2139,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 if (this.node().hasAspect("invariants:draftAspect")) {
                     this.node().impl().isDraft(false);
                 }
+
                 this.broadcast('node-view-submit');
             }
         })
