@@ -64,6 +64,8 @@
 
 .ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list {
   margin-top: 5px;
+  max-height: 200px;
+  overflow: auto;
 }
 
 .ecos-form .form-errors .invalid-attributes ul.invalid-attributes-list li {
@@ -452,7 +454,8 @@
 }
 
 .invariants-form .template-wide .template-block,
-.invariants-form .template-wide .template-block-checkbox {
+.invariants-form .template-wide .template-block-checkbox,
+.invariants-form .template-wide .template-single {
   min-width: 200px;
   width: 250px;
   display: inline-block;
