@@ -54,7 +54,7 @@
 	</bean>
 	
 	
-	<bean id="deputyService" class="ru.citeck.ecos.deputy.DeputyServiceImpl">
+	<bean id="deputyService" class="ru.citeck.ecos.deputy.DeputyServiceImpl" depends-on="cacheManager">
 		<property name="deputyListener" ref="deputyListener.Composite" />
 		<property name="authenticationService" ref="authenticationService" />
 		<property name="authorityService" ref="authorityService" />
@@ -66,6 +66,7 @@
 		<property name="deputationRecordAssoc" value="{http://www.alfresco.org/model/system/1.0}children" />
 		<property name="roleGroupType" value="role" />
 		<property name="branchGroupType" value="branch" />
+		<property name="cacheManager" ref="cacheManager"/>
 	</bean>
 	
 	<bean id="deputyListener" class="ru.citeck.ecos.deputy.AbstractDeputyListener"

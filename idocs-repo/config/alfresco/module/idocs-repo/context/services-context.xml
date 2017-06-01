@@ -91,7 +91,7 @@
 		parent="AbstractDataBundleSplit" abstract="true">
 		<property name="dao" ref="supplementaryFilesDAO" />
 	</bean>
-	
+
 	<!-- overdue notification sender -->
 	<bean id="OverdueNotificationSender"
 		class="ru.citeck.ecos.notification.TaskNotificationSender" parent="AbstractNotificationSender">
@@ -132,7 +132,7 @@
     </bean>
 
 	<!-- Constant Makers -->
-	
+
 	<bean id="ConstantMaker.allow" class="ru.citeck.ecos.security.ConstantMakerAllowImpl">
 		<property name="nodeService" ref="NodeService" />
 		<property name="permissionService" ref="PermissionService" />
@@ -144,9 +144,9 @@
 		<property name="permissionService" ref="PermissionService" />
 		<property name="nodeOwnerDAO" ref="NodeOwnerDAO" />
 	</bean>
-	
+
 	<alias name="ConstantMaker.${constant-maker.impl}" alias="ConstantMaker" />
-	
+
 	<bean id="ConstantMakerJS" class="ru.citeck.ecos.security.ConstantMakerJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="constantMaker" />
 		<property name="implementations">
@@ -154,7 +154,7 @@
 				<entry key="allow" value-ref="ConstantMaker.allow" />
 				<entry key="deny"  value-ref="ConstantMaker.deny" />
 			</map>
-		</property>	
+		</property>
 		<property name="implId" value="${constant-maker.impl}" />
 	</bean>
 
@@ -173,7 +173,7 @@
 			<value>alfresco/module/idocs-repo/model/dataTypeAnalyzers</value>
 		</property>
 	</bean>
-	
+
 	<bean id="dictionaryDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target" ref="alfrescoDictionaryDAO" />
 		<property name="interceptorNames">
@@ -184,7 +184,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!-- interceptor, that automatically adds index properties for each big number property -->
 	<bean name="AddBigNumberIndexProperties" class="ru.citeck.ecos.dictionary.AddBigNumberIndexProperties" />
 
@@ -204,7 +204,7 @@
 			</set>
 		</property>
 	</bean>
-	
+
 	<!-- interceptor, that automatically adds indexing to properties, that do not have indexing -->
 	<bean name="AddDefaultPropertiesTokenisation" class="ru.citeck.ecos.dictionary.AddDefaultPropertiesTokenisation">
 		<property name="defaultMode" value="BOTH" />
@@ -228,19 +228,19 @@
 		<property name="jobLockService" ref="jobLockService"/>
 		<property name="transactionService" ref="transactionService"/>
 	</bean>
-	
+
 	<bean name="EnumerationService" class="ru.citeck.ecos.counter.EnumerationServiceImpl">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
-	
+
 	<bean name="EnumerationServiceJS" class="ru.citeck.ecos.counter.EnumerationServiceJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="enumeration" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="enumerationService" ref="EnumerationService" />
 	</bean>
-	
-	<bean name="abstractNumberFormProcessor" 
-		class="ru.citeck.ecos.form.AbstractNumberFormProcessor" 
+
+	<bean name="abstractNumberFormProcessor"
+		class="ru.citeck.ecos.form.AbstractNumberFormProcessor"
 		abstract="true" init-method="register">
 		<property name="processorRegistry" ref="formProcessorRegistry" />
 		<property name="fieldProcessorRegistry" ref="fieldProcessorRegistry" />
@@ -248,18 +248,18 @@
 		<property name="nodeInfoFactory" ref="NodeInfoFactory" />
 		<property name="templateNameField" value="template" />
 	</bean>
-	
+
 	<bean id="nodeNumberFilterRegistry" class="org.alfresco.repo.forms.processor.FilterRegistry" />
 	<bean id="typeNumberFilterRegistry" class="org.alfresco.repo.forms.processor.FilterRegistry" />
-	
-	<bean name="nodeNumberFormProcessor" 
+
+	<bean name="nodeNumberFormProcessor"
 		class="ru.citeck.ecos.form.NodeNumberFormProcessor"
 		parent="abstractNumberFormProcessor">
 		<property name="matchPattern" value="node-number" />
 		<property name="filterRegistry" ref="nodeNumberFilterRegistry" />
 	</bean>
-	
-	<bean name="typeNumberFormProcessor" 
+
+	<bean name="typeNumberFormProcessor"
 		class="ru.citeck.ecos.form.TypeNumberFormProcessor"
 		parent="abstractNumberFormProcessor">
 		<property name="matchPattern" value="type-number" />
@@ -289,7 +289,7 @@
 		<property name="namespaceService" ref="NamespaceService" />
 		<property name="assocTypeName" value="dms:agreement_to_files" />
 	</bean>
-	
+
 	<bean id="supplementaryFilesDAO.child"
 			class="ru.citeck.ecos.document.SupplementaryFilesDAOChildImpl"
 			init-method="init">
@@ -298,9 +298,9 @@
 		<property name="assocTypeName" value="dms:supplementaryFiles" />
 		<property name="aspectTypeName" value="dms:hasSupplementaryFiles" />
 	</bean>
-	
+
 	<alias name="supplementaryFilesDAO.${supplementary-files.impl}" alias="supplementaryFilesDAO" />
-	
+
 	<bean id="supplementaryFilesMigration"
 			class="ru.citeck.ecos.document.SupplementaryFilesMigration"
 			parent="baseJavaScriptExtension">
@@ -377,7 +377,7 @@
             <list></list>
         </property>
     </bean>
-    
+
      <bean id="CardTemplateService" class="ru.citeck.ecos.template.CardTemplateService">
         <property name="searchService" ref="searchService" />
         <property name="dictionaryService" ref="dictionaryService" />
@@ -455,7 +455,7 @@
 		<property name="workflowService" ref="WorkflowService" />
 		<property name="enabled" value="${mail.action-executer-interceptor}"/>
 	</bean>
-	
+
 	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
 		<property name="beanNames">
 			<list>
@@ -468,7 +468,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="NotificationForLoggingItemSender" class="ru.citeck.ecos.notification.NotificationForLoggingItemSender"
 		  parent="AbstractNotificationSender">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
@@ -528,7 +528,7 @@
             <value>${mail.testmessage.text}</value>
         </property>
 	</bean-->
-	
+
 	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
 		<property name="searchService" ref="searchService" />
 	</bean-->
@@ -558,5 +558,8 @@
 		<property name="searchService" ref="searchService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
+
+    <bean id="cacheManager" class="ru.citeck.ecos.cache.EhcacheConfigurationManager" init-method="init"
+          destroy-method="destroy"/>
 
 </beans>

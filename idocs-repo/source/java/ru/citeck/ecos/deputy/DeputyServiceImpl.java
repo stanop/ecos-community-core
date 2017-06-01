@@ -31,10 +31,18 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.util.GUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.expiry.Duration;
+import org.ehcache.expiry.Expirations;
+import ru.citeck.ecos.cache.EhcacheConfigurationManager;
 import ru.citeck.ecos.model.DeputyModel;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class DeputyServiceImpl implements DeputyService
 {
@@ -53,8 +61,11 @@ public class DeputyServiceImpl implements DeputyService
 	private QName deputationRecordAssoc;
 	private String roleGroupType;
 	private String branchGroupType;
+	private Cache<String, List<String>> usersWhoHaveThisUserDeputyCache;
 
-	/////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////////1+++++++++++++++++++++++++0
+
 	//                      SPRING INTERFACE                       //
 	/////////////////////////////////////////////////////////////////
 
@@ -149,6 +160,16 @@ public class DeputyServiceImpl implements DeputyService
 
 	@Override
 	public List<String> getUsersWhoHaveThisUserDeputy(String userName) {
+		if (!usersWhoHaveThisUserDeputyCache.containsKey(userName)) {
+            List<String>result = cacheUsersWhoHaveThisUserDeputy(userName);
+            usersWhoHaveThisUserDeputyCache.put(userName, result);
+            return result;
+		} else {
+			return usersWhoHaveThisUserDeputyCache.get(userName);
+		}
+	}
+
+	private List<String>cacheUsersWhoHaveThisUserDeputy(String userName) {
 		NodeRef user = authorityHelper.needUser(userName);
 		return getAuthorityNames(getUsersDeputiedToUserImpl(user, false));
 	}
@@ -721,5 +742,18 @@ public class DeputyServiceImpl implements DeputyService
 		}
 		;
 		return true;
+	}
+
+	public void setCacheManager(EhcacheConfigurationManager ehcacheConfigurationManager) {
+		CacheManager cacheManager = ehcacheConfigurationManager.getCacheManager();
+		if (cacheManager.getCache("usersWhoHaveThisUserDeputyCache", String.class, (Class<List<String>>)(Class<?>)List.class) == null) {
+			usersWhoHaveThisUserDeputyCache = cacheManager
+					.createCache("usersWhoHaveThisUserDeputyCache", CacheConfigurationBuilder
+							.newCacheConfigurationBuilder(String.class, (Class<List<String>>) (Class<?>) List.class, ResourcePoolsBuilder
+									.newResourcePoolsBuilder()
+									.heap(EhcacheConfigurationManager.cacheSize))
+							.withExpiry(Expirations.timeToLiveExpiration(new Duration(EhcacheConfigurationManager.timeToLive, TimeUnit.SECONDS)))
+							.build());
+		}
 	}
 }
