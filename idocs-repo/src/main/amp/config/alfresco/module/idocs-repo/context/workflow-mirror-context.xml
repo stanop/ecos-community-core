@@ -28,6 +28,7 @@
         <property name="extensionName" value="workflowMirrorService"/>
 		<property name="orgStructService" ref="orgStructService"/>
 		<property name="authorityService" ref="authorityService" />
+		<property name="searchService" ref="searchService" />
 	</bean>
 
 	<bean id="workflowMirrorBehaviour" class="ru.citeck.ecos.workflow.mirror.MirrorBehaviour" init-method="init">
@@ -48,5 +49,13 @@
         <property name="publicAction" value="false"/>
         <property name="workflowMirrorService" ref="workflowMirrorService"/>
     </bean>
-	
+
+    <bean id="ecos.task-mirror-root.split-children" parent="ecos.splitChildrenBehaviour">
+        <property name="node" value="workspace://SpacesStore/task-mirror-root" />
+        <property name="splitBehaviour">
+            <bean class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour.DateSplit" />
+        </property>
+        <property name="order" value="400" />
+    </bean>
+
 </beans>

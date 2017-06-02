@@ -5,7 +5,6 @@
 
 <#macro renderElement element>
 	<#assign template = element.template!"default" />
-	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
@@ -58,7 +57,6 @@
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
 
-	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 	<#assign withoutMode = element.type == "region" && inlineEdit />
 
 	<#if !withoutMode>
@@ -88,14 +86,11 @@
 
 <#macro renderViewContainer view id>
 	<#assign loadIndicator = (view.params.loadIndicator!"true") == "true" />
-	<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 
 	<#assign formMode = view.mode?string + "-form" />
 	<#assign formTemplate = "form-template-" + view.template?string />
 
-	<#assign viewMode = view.mode?string == "view" />
-
-	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit && viewMode>inline-edit-form</#if>"
+	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit>inline-edit-form</#if>"
 		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess, invalid: invalid }">
 
 		<#if loadIndicator>
@@ -108,7 +103,7 @@
 			</div>
 		</#if>
 
-		<#if viewMode && inlineEdit>
+		<#if inlineEdit>
 			<!-- ko if: node.loaded() && node().impl.loaded() -->
 				<!-- ko with: resolve("node.impl") -->
 					<!-- ko if: invalid -->
@@ -279,8 +274,6 @@
 		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
 		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
-		<#assign inlineEdit = view.params.inlineEdit!"true" />
-		<#assign viewMode = view.mode?string == "view" />
 
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
@@ -293,7 +286,8 @@
 					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
 					preloadInvariants: ${preloadInvariants},
-					<#if viewMode>inlineEdit: ${inlineEdit},</#if>
+
+					<#if inlineEdit>inlineEdit: true,</#if>
 
 					node: {
 						key: "${runtimeKey}",

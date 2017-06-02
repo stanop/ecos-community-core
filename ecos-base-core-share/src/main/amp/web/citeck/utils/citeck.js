@@ -833,9 +833,260 @@ Citeck.UI.waitIndicator = function(id, params) {
     this._render();
 }
 
+Citeck.UI.orgstruct = function(id, params) {
+    var self = this;
 
-// OVERWRITE
-// ---------
+    this.name = "Citeck.UI.orgstruct";
+    this.id = id;
+
+    this.widgets = {};
+
+    this.widgets.panel = new YAHOO.widget.SimpleDialog("ipt_orgstruct", {
+        width:          "800px", 
+        visible:        false, 
+        fixedcenter:    true,  
+        modal:          true,
+        zindex:         1000005,
+        close:          true,
+        buttons: [
+            { 
+                text: Alfresco.util.message("button.ok"), 
+                handler: function(event) {
+                    if (params.callback instanceof Function) { params.callback.call(self, event); }
+                    else if (params.callback.ok instanceof Function) { params.callback.ok.call(self, event); } 
+                }
+            },
+            { 
+                text: Alfresco.util.message("button.cancel"), 
+                handler: function(e) {
+                    if (params.callback instanceof Function) { this.hide(); }
+                    else if (params.callback.cancel instanceof Function) { params.callback.cancel.call(self, event); }
+                }
+            }
+        ]
+    });
+
+    this.widgets.panel.hideEvent.subscribe(function() {
+        $(self._selectedItems).empty();
+    });
+
+    var orgstructSearchBoxId = this.id + "-searchBox",
+        orgstructSearchId = this.id + "-searchInput",
+        orgstructTreeId = this.id + "-treeView";
+
+    var firstPanel = this.id + "-first-panel",
+        secondPanel = this.id + "-second-panel";
+
+    this.widgets.panel.setHeader(Alfresco.util.message("orgstruct.picker"));
+    this.widgets.panel.setBody('\
+        <div class="orgstruct-header">\
+            <div class="orgstruct-search" id="' + orgstructSearchBoxId + '">\
+                <input class="search-input" type="text" value="" id="' + orgstructSearchId + '">\
+                <i class="fa fa-search search-icon" aria-hidden="true"></i>\
+            </div>\
+        </div>\
+        <div class="yui-g orgstruct-layout">\
+            <div class="yui-u first panel-left resizable-panel first-panel" id="' + firstPanel + '">\
+                <div class="orgstruct-tree" id="' + orgstructTreeId + '"></div>\
+            </div>\
+            <div class="yui-u panel-right second-panel" id="' + secondPanel + '">\
+                <ul class="orgstruct-selected-items"></ul>\
+            </div>\
+        </div>\
+    ');
+
+    this.widgets.panel.render(document.body);
+
+    this._selectedItems = $("ul.orgstruct-selected-items", this.widgets.panel.body)[0];
+
+    // initialize resize
+    this.widgets.resize = new YAHOO.util.Resize(firstPanel, { handles: ['r'], minWidth: 200, maxWidth: 600 });
+    this.widgets.resize.on('resize', function(ev) { $("#" + secondPanel).width(800 - ev.width - 10); });
+
+    // initialize treeView
+    this.widgets.tree = new YAHOO.widget.TreeView(this.id + "-treeView");
+    Citeck.UI.treeViewExtension(this.widgets.tree);
+    this.widgets.tree.setDynamicLoad(this.widgets.tree.loadNodeData);
+    this.widgets.tree.loadRootNodes();
+    this.widgets.tree.subscribe("clickEvent", function(args) {
+        var textNode = args.node,
+            object = textNode.data,
+            event = args.event;
+
+        var existsSelectedItems = [];
+
+        $("li.selected-object", this._selectedItems).each(function() {
+            existsSelectedItems.push(this.id);
+        });
+
+        // return if element exists
+        if (existsSelectedItems.indexOf(textNode.data.nodeRef) != -1) {
+            return false; 
+        }
+
+        if (object.authorityType == "USER") {
+            $(this._selectedItems).append(this._createSelectedObject({
+                id: object.nodeRef, 
+                label: object.displayName, 
+                aType: textNode.data.authorityType,
+                gType: textNode.data.groupType 
+            }));
+
+            // remove selectable state
+            $("table.selectable", textNode.getEl())
+                .first()
+                .removeClass("selectable")
+                .addClass("unselectable selected");
+        }
+
+
+        return false;
+    }, this, true);
+
+
+    YAHOO.util.Event.addListener(orgstructSearchId, "keypress", function(event) {
+        if(event.which == 13) {
+            event.stopPropagation();
+
+            var input = event.target,
+                query = input.value;
+
+            if (query.length > 1) {
+                this.loadRootNodes( query)
+            } else if (query.length == 0) {
+                this.loadRootNodes()
+            }
+        }
+    }, this.widgets.tree, true);
+
+    YAHOO.util.Event.addListener(secondPanel, "click", function(event) {
+        if (event.target.tagName == "LI") {
+            var node = this.getNodeByProperty("nodeRef", event.target.id);
+            if (node) { $("table", node.getEl()).first().removeClass("selected unselectable").addClass("selectable") };
+            $(event.target).remove();
+        }
+    }, this.widgets.tree, true);
+
+    // public methods
+    this.getSelectedItems = function() {
+        return _.map($("li.selected-object", this._selectedItems), function(el) {
+            return { nodeRef: el.id, displayName: el.innerHTML }
+        });
+    };
+    this.show = function() { this.widgets.panel.show(); }
+    this.hide = function() { this.widgets.panel.hide(); }
+
+
+    // private methods
+    this._createSelectedObject = function(options) {
+        if (!options.id || !options.label) {
+            throw new Error("Required parameters not found");
+            return;
+        }
+
+        var li = $("<li>", { "class": "selected-object", html: options.label, id: options.id });
+        li.on("click", function() { $(this).remove() });
+
+        if (options.aType) li.addClass("authorityType-" + options.aType);
+        if (options.gType) li.addClass("groupType-" + options.gType.toUpperCase());
+
+        return li;
+    };
+}
+
+// OVERWRITE and EXTEND
+// --------------------
+
+Citeck.UI.treeViewExtension = function(instance) {
+    instance.buildTreeNode = function(p_oItem, p_oParent, p_expanded) {
+        var textNode = new YAHOO.widget.TextNode({
+            label: $html(p_oItem.displayName || p_oItem.shortName),
+            nodeRef: p_oItem.nodeRef,
+            shortName: p_oItem.shortName,
+            displayName: p_oItem.displayName,
+            fullName: p_oItem.fullName,
+            authorityType: p_oItem.authorityType,
+            groupType: p_oItem.groupType,
+            editable : false
+        }, p_oParent, p_expanded);
+
+        // add nessesary classes
+        if (p_oItem.authorityType) textNode.contentStyle += " authorityType-" + p_oItem.authorityType;
+        if (p_oItem.groupType) textNode.contentStyle += " groupType-" + p_oItem.groupType.toUpperCase();
+
+        // selectable elements
+        if (p_oItem.authorityType == "USER") {
+            textNode.className = "selectable";
+        }
+
+        return textNode;
+    };
+
+    instance.buildTreeNodeUrl = function (group, query) {
+        var uriTemplate ="api/orgstruct/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
+        if (query) uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+        return  Alfresco.constants.PROXY_URI + uriTemplate;
+    };
+
+    instance.loadNodeData = function(node, fnLoadComplete) {
+        var treeView = this.tree;
+        YAHOO.util.Connect.asyncRequest('GET', treeView.buildTreeNodeUrl(node.data.shortName), {
+            success: function (oResponse) {
+                var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                if (results) {
+                    for (var i = 0; i < results.length; i++) {
+                        item = results[i];
+
+                        treeNode = treeView.buildTreeNode(item, node, false);
+                        if (item.authorityType == "USER") {
+                            treeNode.isLeaf = true;
+                        }
+                    }
+                }
+
+                oResponse.argument.fnLoadComplete();
+            },
+
+            failure: function(oResponse) {
+                // error
+            },
+
+            argument: { "node": node, "fnLoadComplete": fnLoadComplete }
+        });
+    };
+
+    instance.loadRootNodes = function(query) {
+        var treeView = this;
+        YAHOO.util.Connect.asyncRequest('GET', treeView.buildTreeNodeUrl("_orgstruct_home_", query), {
+            success: function(oResponse) {
+                var results = YAHOO.lang.JSON.parse(oResponse.responseText), 
+                    rootNode = treeView.getRoot(), treeNode,
+                    expanded = true;
+
+                if (results) {
+                    treeView.removeChildren(rootNode);
+
+                    if (results.length > 1) expanded = false;
+                    for (var i = 0; i < results.length; i++) {
+                        treeNode = treeView.buildTreeNode(results[i], rootNode, expanded);
+                        if (results[i].authorityType == "USER") {
+                            treeNode.isLeaf = true;
+                        }
+                    }
+                }
+
+                treeView.draw(); 
+            },
+
+            failure: function(oResponse) {
+                if (oResponse.status == 404) {
+                    treeView.removeChildren(treeView.getRoot());
+                    treeView.draw();
+                }
+            }
+        });
+    };
+};
 
 Citeck.UI.previewOverwrite = function() {
     // Overwrite alfresco js

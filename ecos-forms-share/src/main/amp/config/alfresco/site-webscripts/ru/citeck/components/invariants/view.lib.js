@@ -43,14 +43,14 @@ function buildAttributeSet(view) {
     for (var i in view.elements) {
         var element = view.elements[i];
         if (element.type == "field") {
-            attributeSet.attributes.push(element.attribute);
+            attributeSet.attributes.push({ name: element.attribute, template: element.template });
         } else if (element.type == "view" && element.template.indexOf("set") != -1) {
             attributeSet.sets.push(buildAttributeSet(element));
         }
     }
 
     attributeSet.id = (function() {
-        var identificator = attributeSet.attributes.join("_");
+        var identificator = attributeSet.attributes.map(function(attr) { return attr.name; }).join("_");
         identificator += "_" + attributeSet.attributes.length + "_" + attributeSet.sets.length;
         return identificator;
     })();

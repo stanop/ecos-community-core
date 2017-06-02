@@ -174,3 +174,130 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+
+/* orgstruct */
+
+.orgstruct-header {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.orgstruct-layout {
+  background-color: white;
+}
+
+.orgstruct-layout .selected-object {
+  padding: 10px 35px 10px 10px;
+  position: relative;
+  line-height: normal;
+  cursor: pointer;
+
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+.orgstruct-layout .selected-object:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+}
+
+.orgstruct-layout .selected-object:after {
+  content: "\f00d";
+  font-family: FontAwesome;
+  display: block;
+  position: absolute;
+  right: 10px;
+  top: 9px;
+  font-size: 16px;
+}
+
+.orgstruct-layout .selected-object:hover {
+  color: red;
+}
+
+.orgstruct-header .orgstruct-search {
+  position: relative;
+}
+
+.orgstruct-header .orgstruct-search input[type="text"].search-input {
+  padding: 5px 10px 5px 30px;
+  border-radius: 10px;
+}
+
+.orgstruct-header .orgstruct-search .search-icon {
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  font-size: 16px;
+  color: #CCC;
+}
+
+.orgstruct-tree {
+  height: 250px;
+  overflow-y: auto;
+}
+
+.orgstruct-tree > .ygtvitem > .ygtvchildren > .ygtvitem {
+  padding: 5px 10px;
+}
+
+.orgstruct-tree > .ygtvitem > .ygtvchildren > .ygtvitem:not(:first-child) {
+  border-top: 1px solid #ccc;
+}
+
+.orgstruct-tree .ygtvtable {
+  width: 100%;
+}
+
+.orgstruct-tree .ygtvcontent {
+  padding: 5px 0;
+  text-align: left;
+  cursor: default;
+}
+
+.orgstruct-tree .selectable .ygtvrow .ygtvcontent {
+  padding-right: 25px;
+  position: relative;
+}
+
+.orgstruct-tree .selectable .ygtvrow .ygtvcontent:after {
+  content: "\f067";
+  font-family: FontAwesome;
+  display: block;
+  position: absolute;
+  top: 6px;
+  right: 0;
+  font-size: 16px;
+}
+
+.orgstruct-tree .ygtvcontent .ygtvlabel {
+  display: block;
+  cursor: default;
+  margin: 0;
+  padding-left: 10px;
+  line-height: normal;
+
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.orgstruct-tree .ygtvtable.selectable .ygtvrow:hover .ygtvcontent,
+.orgstruct-tree .ygtvtable.selectable .ygtvrow:hover .ygtvcontent .ygtvlabel {
+  color: red;
+  cursor: pointer;
+}
+
+.orgstruct-tree .ygtvfocus,
+.orgstruct-tree .ygtvfocus .ygtvlabel {
+  background-color: transparent;
+}
+
+.orgstruct-control-objects {
+  float: left;
+  width: 72.5%;
+  position: relative;
+}
+
+.orgstruct-control-objects .selected-object-list li.selected-object {
+  line-height: 200%;
+}

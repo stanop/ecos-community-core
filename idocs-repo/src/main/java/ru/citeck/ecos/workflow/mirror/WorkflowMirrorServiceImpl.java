@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.workflow.mirror;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.repo.workflow.WorkflowModel;
@@ -26,6 +27,8 @@ import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
@@ -41,6 +44,7 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +60,8 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 	private WorkflowService workflowService;
 	private NodeInfoFactory nodeInfoFactory;
 	private OrgStructService orgStructService;
-	
+	private SearchService searchService;
+
 	private NodeRef taskMirrorRoot;
 	private QName taskMirrorAssoc;
 
@@ -104,7 +109,26 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     @Override
     public NodeRef getTaskMirror(String taskId) {
-        return nodeService.getChildByName(taskMirrorRoot, taskMirrorAssoc, taskId);
+
+        String query = String.format("=cm\\:name:\"%s\"", taskId);
+        SearchParameters searchParameters = new SearchParameters();
+        searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        searchParameters.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
+        searchParameters.setQuery(query);
+
+        ResultSet resultSet;
+        try {
+            resultSet = searchService.query(searchParameters);
+        } catch (Exception e) {
+            throw new AlfrescoRuntimeException("Nodes search failed. Query: '" + query + "'", e);
+        }
+        try {
+            List<NodeRef> nodeRefs = resultSet.getNodeRefs();
+            return nodeRefs != null && !nodeRefs.isEmpty() ? nodeRefs.get(0) : null;
+        } finally {
+            resultSet.close();
+        }
     }
 	
 	private WorkflowTask getTask(String taskId) {
@@ -281,6 +305,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 			
         return null;
     }
+
+	public void setSearchService(SearchService searchService) {
+		this.searchService = searchService;
+	}
 
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;

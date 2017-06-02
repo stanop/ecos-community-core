@@ -12,8 +12,25 @@
         attributes = getAttributes(view),
         attributeSet = getAttributeSet(view);
 
-    // extend args with view.params for inlineEdit parameters
-    if (view.params.inlineEdit) args.inlineEdit = view.params.inlineEdit;
+    var writePermission = false,
+        inlineEdit = false,
+        viewMode = view.mode == "view";
+
+    if (args.nodeRef) {
+        writePermission = getWritePermission(args.nodeRef);
+
+        if (writePermission && viewMode) {
+            // extend args with view.params for inlineEdit parameters
+            args.inlineEdit = view.params.inlineEdit;
+            
+            if (view.params.inlineEdit) {
+                inlineEdit = view.params.inlineEdit == "true"; 
+            } else { inlineEdit = true; }
+        }
+    }
+
+    model.writePermission = writePermission;
+    model.inlineEdit = inlineEdit;
 
     if (model.isMobile) {
         for (var a = 0; a < attributes.length; a++) {
@@ -85,8 +102,6 @@
 
     model.classNames = invariantSet.classNames;
     model.defaultModel = defaultModel;
-  
-    if (args.nodeRef) model.writePermission = getWritePermission(args.nodeRef);
 
 })()
 

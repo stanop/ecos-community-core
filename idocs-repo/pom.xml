@@ -94,6 +94,12 @@
             <classifier>${build.classifier}</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

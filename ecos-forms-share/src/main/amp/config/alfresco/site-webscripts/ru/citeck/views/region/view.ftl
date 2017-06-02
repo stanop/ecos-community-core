@@ -1,6 +1,5 @@
 <#assign params = viewScope.region.params!{} />
 <#assign isViewMode = (viewScope.view.mode == "view")/>
-<#assign inlineEdit = (view.params.inlineEdit!"true") == "true" />
 <#assign completeDelete = (params.completeDelete!"false") == "true" />
 <#assign editable>
     <#if config.scoped["InvariantControlsConfiguration"]?? &&
