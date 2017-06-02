@@ -1,6 +1,6 @@
 var migrationData = [
     {
-        type: "cardlet:cardlet",
+        aspect: "cardlet:scoped",
         fields: ['cardlet:allowedType', 'cardlet:allowedAuthorities', 'cardlet:cardMode']
     },
     {
@@ -12,7 +12,13 @@ var migrationData = [
 
 for each(var mData in migrationData) {
 
-    var nodes = search.query({query:'TYPE:"' + mData.type + '"', language:'fts-alfresco'});
+    var query;
+    if (mData.aspect) {
+        query = 'ASPECT:"' + mData.aspect + '"';
+    } else {
+        query = 'TYPE:"' + mData.type + '"';
+    }
+    var nodes = search.query({query: query, language:'fts-alfresco'});
     var fixed = 0;
 
     for each(var n in nodes) {
@@ -24,6 +30,6 @@ for each(var mData in migrationData) {
             }
         }
     }
-    logger.warn("[null-to-empty-migration.js] Type: " + mData.type + " Fixed: " + fixed);
+    logger.warn("[null-to-empty-migration.js] Type: " + (mData.type || mData.aspect) + " Fixed: " + fixed);
 }
 
