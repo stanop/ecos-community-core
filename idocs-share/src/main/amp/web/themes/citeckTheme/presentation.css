@@ -51,7 +51,7 @@
 .yui-overlay input,
 .alfresco-share .sticky-wrapper textarea,
 .yui-overlay textarea {
-   border: 1px solid #ccc; 
+   border: 1px solid #ccc;
 }
 
 .alfresco-share .sticky-wrapper hr,
@@ -288,7 +288,7 @@ h4 .lighter
 
 .dashlet > .toolbar    {
    border-bottom: 1px solid #ccc;
-   padding: 10px 15px; 
+   padding: 10px 15px;
    min-height: 15px;
 }
 
@@ -394,7 +394,7 @@ h4 .lighter
 .dashlet.sitesearch .toolbar .search-text + .yui-button.search-icon {
   position: relative;
   left: -25px;
-  margin: 0; 
+  margin: 0;
 }
 
 .dashlet.sitesearch .toolbar .search-text + .yui-button.search-icon .first-child {
@@ -730,7 +730,7 @@ span.navigation-separator-alt
 
 .share-form .form-container .form-fields
 {
-   
+
 }
 
 .form-container textarea,
@@ -1432,7 +1432,7 @@ h3.alfresco-twister-closed
   color: white;
   padding: 3px 5px;
   text-align: justify;
-  border: none; 
+  border: none;
   border-radius: 3px;
 }
 
@@ -1898,8 +1898,8 @@ body.alfresco-guest
   margin-bottom: 10px;
 }
 
-.profile .viewcolumn .sites, 
-.profile .viewcolumn .content, 
+.profile .viewcolumn .sites,
+.profile .viewcolumn .content,
 .profile .viewcolumn .people {
    margin: 0 !important;
 }
@@ -2132,9 +2132,9 @@ table td.thumbnail img
 
 
 
-/*.yui-skin-citeckTheme .alf-menu-bar .dijitMenuBar .dijitMenuItemHover, 
+/*.yui-skin-citeckTheme .alf-menu-bar .dijitMenuBar .dijitMenuItemHover,
 .yui-skin-citeckTheme .alf-menu-bar .dijitMenuBar .dijitMenuItemSelected {
-   background-color: transparent !important; 
+   background-color: transparent !important;
 }*/
 
 
@@ -2151,14 +2151,14 @@ table td.thumbnail img
 }
 
 
-#alf-hd .alf-header {
+#alf-hd .alfresco-header-Header {
    margin: 0;
-   padding: 0 25px;
+   padding: 0 35px;
    background-color: #2d3541;
    border-bottom: 1px solid #ccc;
 }
 
-#alf-hd .alf-header .dijitMenuBar .dijitMenuItem {
+.alfresco-header-Header .dijitMenuBar .dijitMenuItem:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU) {
    background-color: #2d3541;
    color: white;
    margin: 0;
@@ -2166,24 +2166,28 @@ table td.thumbnail img
    height: 20px;
 }
 
-#alf-hd .alf-menu-bar .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
-#alf-hd .alf-menu-bar .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected,
-#alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
+#alf-hd .alfresco-menus-AlfMenuBar .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
+#alf-hd .alfresco-menus-AlfMenuBar .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected,
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
    background-color: transparent;
 }
 
-#alf-hd .alf-header .dijitMenuBar .dijitMenuItem span {
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem span[class*="alfresco-menus-AlfMenuBarPopup__arrow"] {
+    padding-left: 7px !important;
+}
+
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem span {
    padding: 0 !important;
    margin: 0 !important;
 }
 
-#alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner,
-#alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner,
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
    height: auto !important;
    display: inline-block;
 }
 
-#alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > 
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer >
 span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    border: none;
    padding: 0 15px 0 0;
@@ -2193,50 +2197,50 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    background-position-y: 3px;
 }
 
-.alfresco-share #alf-hd .alf-header .alf-menu-bar .dijitMenuBar {
+.alfresco-share #alf-hd .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar {
    padding: 0;
 }
 
 /* only for left-widgets */
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem {
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem {
    border-left: 1px solid #394353;
    border-right: 1px solid #1e242c;
 }
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem:first-child {
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:first-child {
    border-left: none;
 }
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem:nth-last-child(2) {
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:nth-last-child(2) {
    border-right: none;
 }
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
-#alf-hd .alf-header .right-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-hover > 
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar .dijitMenuItem.dijitMenuItemHover:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU),
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover >
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    background-color: #394353;
 }
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-active > 
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
-#alf-hd .alf-header .right-widgets .dijitMenuBar.dijitMenuActive .dijitMenuItem {
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem {
    background-color: #252c36;
 }
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-active > 
-span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
-   background-position-y: 6px; 
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
+span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
+   background-position-y: 6px;
 }
 
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.yui-menu-button-active button.alf-header-js-wrapper-button,
-#alf-hd .alf-header .left-widgets .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused .alf-menu-arrow,
-#alf-hd .alf-header .right-widgets .dijitMenuBar.dijitMenuActive .dijitMenuItem.dijitMenuItemSelected .alf-menu-arrow {
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active button.alf-header-js-wrapper-button,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused .alf-menu-arrow,
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem.dijitMenuItemSelected .alf-menu-arrow {
    background-image: url(images/open-menu-tringle.png);
    background-position: center right;
 }
@@ -2245,7 +2249,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 /* only for right-widgets */
 
-.alfresco-share .right-widgets .alf-menu-bar .dijitMenuBar {
+.alfresco-share .alfresco-layout-LeftAndRight__right .alfresco-menus-AlfMenuBar .dijitMenuBar {
    padding-left: 5px;
 }
 
@@ -2253,62 +2257,26 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    float: right;
 }*/
 
-#alf-hd .alf-header #HEADER_SEARCH_BOX {
-   margin: 5px 10px;
-  border: none;
-  border-radius: initial;
-  background-color: transparent;
-  padding: 0;
-  max-height: none;
-  position: relative;
+.yui-skin-citeckTheme.alfresco-share .alfresco-header-SearchBox {
+    height: 30px;
+    padding: 0;
+    margin: 5px 10px;
+    width: auto !important;
 }
 
-/*#alf-hd .alf-header #HEADER_SEARCH_BOX:hover {
-   border-color: 394353;
-}*/
-
-#alf-hd .alf-header #HEADER_SEARCH_BOX .alf-search-box-menu {
-   position: absolute;
-   margin-top: 5px;
+.yui-skin-citeckTheme.alfresco-share .alfresco-header-SearchBox .alfresco-header-SearchBox-menu {
+    padding-top: 4px;
+    padding-left: 5px;
 }
 
-#alf-hd .alf-header #HEADER_SEARCH_BOX .alf-search-box-menu .alf-menu-bar {
-   float: left;
-   padding-left: 5px;
+.yui-skin-citeckTheme .alfresco-header-Header .dijitMenuBar #HEADER_CHANGE_LANGUAGE {
+    padding-top: 12px;
+    height: 17px
 }
 
-#alf-hd .alf-header #HEADER_SEARCH_BOX .alf-search-box-menu #HEADER_SEARCH_BOX_DROPDOWN_MENU {
-   background-color: transparent;
-   border: none;
-   padding: 0 5px;
-   display: table-cell;
-}
-
-#alf-hd .alf-header #HEADER_SEARCH_BOX .alf-search-box-menu #HEADER_SEARCH_BOX_DROPDOWN_MENU:hover {
-    background-color: transparent !important;
-}
-
-#alf-hd .alf-header #HEADER_SEARCH_BOX .alf-search-box-menu #HEADER_SEARCH_BOX_DROPDOWN_MENU img.alf-search-icon {
-   margin-top: 0;
-   vertical-align: middle;
-}
-
-#alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
-   margin: 0;
-   background-color: white;
-   border: 1px solid #ccc !important;
-   padding: 5px 10px 5px 30px !important;
-   border-radius: 10px;
-   position: initial;
-   width: 135px !important;
-}
-
-#alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text:hover {
-   border-color: #aaa !important;
-}
-
-#alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text:focus {
-   border-color: #1c55da !important;
+.yui-skin-citeckTheme #HEADER_TITLE {
+    padding-left: 49px;
+    margin-top: 7px;
 }
 
 /* end only for right-widgets*/
@@ -2376,7 +2344,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    margin: 0 !important;
 }
 
-.alfresco-share .navigation-menu .alf-menu-bar {
+.alfresco-share .navigation-menu .alfresco-menus-AlfMenuBar {
    padding-bottom: 5px;
 }
 
@@ -2387,8 +2355,8 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    text-transform: uppercase;
 }
 
-.alfresco-share #alf-hd .alf-header .alf-menu-bar .dijitMenuBar #HEADER_CUSTOMIZE_USER_DASHBOARD .dijitMenuItemHover, 
-.alfresco-share #alf-hd .alf-header .alf-menu-bar .dijitMenuBar #HEADER_CUSTOMIZE_USER_DASHBOARD .dijitMenuItemSelected {
+.alfresco-share #alf-hd .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar #HEADER_CUSTOMIZE_USER_DASHBOARD .dijitMenuItemHover,
+.alfresco-share #alf-hd .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar #HEADER_CUSTOMIZE_USER_DASHBOARD .dijitMenuItemSelected {
    background-color: transparent;
 }
 
@@ -2409,7 +2377,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 #bd .grid {
-  padding: 20px 25px;
+  padding: 5px 25px;
   margin: 0;
   background-color: #f0f0f0;
   min-height: 80vh;
@@ -2667,7 +2635,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    border-bottom: none;
 }
 
-.alfresco-share .items-list li.selected, 
+.alfresco-share .items-list li.selected,
 .alfresco-share .items-list li.selected:hover,
 .yui-skin-citeckTheme #bd .div-filter .yuimenu .bd .yuimenuitem-selected {
    color: #333;
@@ -2856,7 +2824,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 .share-form .form-container {
-   border: none; 
+   border: none;
 }
 
 .share-form .form-container .caption {
@@ -2913,7 +2881,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    float: left;
    padding: 0;
    line-height: 100%;
-   margin: 8px 0 0 0; 
+   margin: 8px 0 0 0;
    position: relative;
    max-width: 40%;
 }
@@ -3245,7 +3213,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 .share-form .form-container .form-fields .form-field,
-.share-form .form-container .form-fields .yui-g, 
+.share-form .form-container .form-fields .yui-g,
 .share-form .form-container .form-fields .yui-gb,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-g,
@@ -3288,7 +3256,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 .share-form .form-container .form-fields .set .form-field > .object-finder .show-picker .yui-button {
-   margin-right: 10px; 
+   margin-right: 10px;
 }
 
 .share-form .form-container .form-fields .form-field > .object-finder > div.object-finder-items:empty,
@@ -3318,7 +3286,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 .share-form .form-container .form-fields .yui-u .form-field > label,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label {
    margin: 0;
-   padding-bottom: 10px; 
+   padding-bottom: 10px;
 }
 
 .yui-skin-citeckTheme .share-form .form-container div[id*="workflowDueDate"] .yui-g .yui-u.first,
@@ -3508,7 +3476,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 }
 
 #bd #yui-main .search .forms-container .share-form {
-   padding: 5px 15px; 
+   padding: 5px 15px;
    background-color: transparent;
 }
 
@@ -3573,7 +3541,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 
 #bd #yui-main .search .yui-gc .yui-u .yui-button.search-icon > .first-child {
    padding: 0;
-   background: none; 
+   background: none;
 }
 
 
@@ -3751,7 +3719,7 @@ div#HEADER_USER_STATUS {
 
 #alfresco-repository .toolbar .nav-bar {
    padding: 5px 0 10px 0   ;
-   border: none; 
+   border: none;
 }
 
 /* breadcrumbs */
@@ -3843,7 +3811,7 @@ div#HEADER_USER_STATUS {
 }
 
 #alfresco-repository .doclist td.yui-dt-last .yui-dt-liner {
-  padding: 4px 10px; 
+  padding: 4px 10px;
 }
 
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-nodeRef .yui-dt-liner {
@@ -3891,7 +3859,7 @@ div#HEADER_USER_STATUS {
 
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set .highlighted {
    background-color: transparent;
-   border: none; 
+   border: none;
 }
 
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set > div {
@@ -3901,7 +3869,7 @@ div#HEADER_USER_STATUS {
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set a {
    padding: 4px 4px 4px 25px;
    background-repeat: no-repeat;
-   background-position-y: center; 
+   background-position-y: center;
    border: none;
    color: #1c55da;
 }
@@ -3958,7 +3926,7 @@ div#HEADER_USER_STATUS {
 }
 
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set .document-copy-to a:hover {
-   background-image: url(images/copy-active.png) !important  
+   background-image: url(images/copy-active.png) !important
 }
 
 /*#alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set .custom-manage-permissions a {
@@ -3977,7 +3945,7 @@ div#HEADER_USER_STATUS {
 }
 
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set.detailed .internal-show-more a {
-   background-position-x: 45px; 
+   background-position-x: 45px;
 }
 
 #alfresco-repository .doclist tr.yui-dt-rec td.yui-dt-col-actions .action-set .internal-show-more a:hover {
@@ -4023,11 +3991,11 @@ div#HEADER_USER_STATUS {
 
 /* end doclist */
 
-#alfresco-repository .ygtvtm, #alfresco-repository .ygtvtmh, 
-#alfresco-repository .ygtvtmhh, #alfresco-repository .ygtvtp, 
+#alfresco-repository .ygtvtm, #alfresco-repository .ygtvtmh,
+#alfresco-repository .ygtvtmhh, #alfresco-repository .ygtvtp,
 #alfresco-repository .ygtvtph, #alfresco-repository .ygtvtphh,
 #alfresco-repository .ygtvlm, #alfresco-repository .ygtvlmh,
-#alfresco-repository .ygtvlmhh, #alfresco-repository .ygtvlp, 
+#alfresco-repository .ygtvlmhh, #alfresco-repository .ygtvlp,
 #alfresco-repository .ygtvlph, #alfresco-repository .ygtvlphh {
    cursor: pointer;
 }
@@ -4037,19 +4005,19 @@ div#HEADER_USER_STATUS {
    background-position: center;
 }
 
-#alfresco-repository .ygtvtm, #alfresco-repository .ygtvlm, 
+#alfresco-repository .ygtvtm, #alfresco-repository .ygtvlm,
 #alfresco-repository .ygtvtmh, #alfresco-repository .ygtvlmh {
    background-image: url(images/small-repo-folder-open.png);
    width: 18px;
 }
 
-#alfresco-repository .ygtvtp, #alfresco-repository .ygtvlp, 
+#alfresco-repository .ygtvtp, #alfresco-repository .ygtvlp,
 #alfresco-repository .ygtvln, #alfresco-repository .ygtvtn {
    background-image: url(images/small-repo-folder.png);
    width: 18px;
 }
 
-#alfresco-repository .ygtvtph, #alfresco-repository .ygtvtphh, 
+#alfresco-repository .ygtvtph, #alfresco-repository .ygtvtphh,
 #alfresco-repository .ygtvlmhh, #alfresco-repository .ygtvlph, #alfresco-repository .ygtvlphh {
    background-image: url(images/small-repo-folder-active.png);
    width: 18px;
@@ -4109,11 +4077,11 @@ div#HEADER_USER_STATUS {
 }
 
 
-#alfresco-repository .treeview .ygtvlabel, 
-#alfresco-repository .treeview .ygtvlabel:link, 
+#alfresco-repository .treeview .ygtvlabel,
+#alfresco-repository .treeview .ygtvlabel:link,
 #alfresco-repository .treeview .ygtvlabel:visited,
-#alfresco-repository .category .ygtvlabel, 
-#alfresco-repository .category .ygtvlabel:link, 
+#alfresco-repository .category .ygtvlabel,
+#alfresco-repository .category .ygtvlabel:link,
 #alfresco-repository .category .ygtvlabel:visited {
    color: #1c55da;
    margin: 0;
@@ -4138,7 +4106,7 @@ div#HEADER_USER_STATUS {
   overflow: hidden;
 }
 
-#alfresco-console .tool h3,  
+#alfresco-console .tool h3,
 #alfresco-console .tool h2 {
   color: #333;
   padding: 0;
@@ -4161,7 +4129,7 @@ div#HEADER_USER_STATUS {
 
 
 #alfresco-console .application {
-  margin: 5px 0 0 0; 
+  margin: 5px 0 0 0;
 }
 
 #alfresco-console .application .label {
@@ -4272,7 +4240,7 @@ div#HEADER_USER_STATUS {
 
 /*  customize layout  */
 
-.customise-layout, 
+.customise-layout,
 .customise-dashlets {
   padding: 15px 40px;
 }
@@ -4304,16 +4272,16 @@ div#HEADER_USER_STATUS {
 */
 
 /* chrome hacks */
-@media screen and (-webkit-min-device-pixel-ratio:0) { 
-   #alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > 
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+   #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer >
    span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
-      padding-bottom: 3px; 
+      padding-bottom: 3px;
    }
 }
 
 /* firefox hacks */
 @-moz-document url-prefix() {
-   #alf-hd .alf-header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > 
+   #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer >
    span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
       position: relative;
       top: -1px;
@@ -4325,7 +4293,7 @@ div#HEADER_USER_STATUS {
 .sticky-wrapper h3,
 .yui-overlay h3,
 .comments-list .alfresco-datatable td .yui-dt-liner {
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 
@@ -4339,7 +4307,7 @@ div#HEADER_USER_STATUS {
 
 .create-site span.help {
   display: block;
-  white-space: normal !important; 
+  white-space: normal !important;
   margin-top: 5px;
 }
 
@@ -4435,8 +4403,8 @@ div#HEADER_USER_STATUS {
   .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .dynamic-list,
   .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > a,
   .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry
-  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field div.help-text
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry,
+  .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field div.help-text,
   #alf-hd .alf-header #HEADER_SEARCH_BOX input.alf-search-box-text {
     position: static;
   }
