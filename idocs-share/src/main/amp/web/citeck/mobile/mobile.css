@@ -121,7 +121,7 @@
 }
 
 
-.mobile #share-header .alf-header {
+.mobile #share-header .alfresco-header-Header {
     margin: 0;
 }
 
@@ -146,10 +146,10 @@
         margin: 0 5px 0 0;
     }
 
-    #HEADER_USER_MENU > span#HEADER_USER_MENU_text {
+    #HEADER_USER_MENU_text {
         font-size: 0;
         display: block;
-        background-image: url(/share/res/js/alfresco/header/css/images/user-profile.png);
+        background-image: url(/share/res/components/images/header/user-profile.png);
         width: 20px;
         height: 20px;
         float: left;

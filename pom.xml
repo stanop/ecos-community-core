@@ -62,7 +62,6 @@
 
         <module.st-override.version>3.1.0.0-SNAPSHOT</module.st-override.version>
         <module.base-core.version>2.0.0.1-SNAPSHOT</module.base-core.version>
-        <module.citeckTheme.version>2.0.0.0-SNAPSHOT</module.citeckTheme.version>
         <module.journals.version>2.0.0.1-SNAPSHOT</module.journals.version>
         <module.forms.version>2.0.0.0-SNAPSHOT</module.forms.version>
         <module.idocs.version>3.1.0.0-SNAPSHOT</module.idocs.version>
@@ -616,14 +615,6 @@
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-citeckTheme-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.citeckTheme.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-share</artifactId>
                             <classifier>${build.classifier}</classifier>
                             <version>${module.base-core.version}</version>
@@ -726,7 +717,6 @@
     <modules>
         <module>1st-override-repo</module>
         <module>1st-override-share</module>
-        <module>ecos-citeckTheme-share</module>
         <module>ecos-base-core-repo</module>
         <module>ecos-base-core-share</module>
         <module>journals-repo</module>

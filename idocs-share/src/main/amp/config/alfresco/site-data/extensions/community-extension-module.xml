@@ -12,5 +12,25 @@
                 </customization>
             </customizations>
         </module>
+        <module>
+            <id>Custom Header Menu Packages</id>
+            <version>1.0</version>
+            <auto-deploy>true</auto-deploy>
+            <configurations>
+                <config evaluator="string-compare" condition="WebFramework" replace="false">
+                    <web-framework>
+                        <dojo-pages>
+                            <packages>
+                                <package name="citeckHeaderItem" location="js/citeck/header/citeckMenuItem"/>
+                                <package name="citeckMenuBarItem" location="js/citeck/menus/citeckMenuBarItem"/>
+                                <package name="citeckMenuGroup" location="js/citeck/menus/citeckMenuGroup"/>
+                                <package name="citeckMenuItem" location="js/citeck/menus/citeckMenuItem"/>
+                                <package name="citeckLogo" location="js/citeck/logo/citeckLogo"/>
+                            </packages>
+                        </dojo-pages>
+                    </web-framework>
+                </config>
+            </configurations>
+        </module>
     </modules>
 </extension>

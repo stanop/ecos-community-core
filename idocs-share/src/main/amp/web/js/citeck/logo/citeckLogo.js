@@ -27,13 +27,12 @@
 define(["dojo/_base/declare",
         "dijit/_WidgetBase",
         "dijit/_TemplatedMixin",
-        "dojo/text!./templates/Logo.html",
         "alfresco/core/Core",
         "dojo/dom-construct",
         "dojo/dom-style",
-        "alfresco/_Alf.lib",
+        "js/citeck/_citeck.lib",
         "dojo/dom-class"],
-    function (declare, _Widget, _Templated, template, Core, domConstruct, domStyle, _alflib, domClass) {
+    function (declare, _Widget, _Templated, Core, domConstruct, domStyle, _citecklib, domClass) {
 
         return declare([_Widget, _Templated, Core], {
 
@@ -81,7 +80,7 @@ define(["dojo/_base/declare",
              * @instance
              * @type {string}
              */
-            templateString: template,
+            templateString: "",
 
             /**
              * This controls whether or not the image is rendered with the img element or the div in the template.
@@ -95,13 +94,27 @@ define(["dojo/_base/declare",
             targetUrl: null,
 
             buildRendering: function alfresco_logo_Logo__buildRendering() {
-                this.templateString = '<div class="logo alfresco-logo-Logo"><a href="' + this.targetUrl + '"><img src= "' + this.logoSrc + '" style="display: block;"></a></div>';
+                this.templateString = '<div class="logo alfresco-logo-Logo"><a href="/share/page/' + this.targetUrl + '"><img src= "' + this.logoSrc + '" style="display: block;"></a></div>';
                 if (this.logoSrc) {
                     this.imgNodeStyle = "display: block;";
                 }
                 else {
                     this.cssNodeStyle = "display: block";
                 }
+                this.inherited(arguments);
+            },
+
+            postCreate: function alfresco_logo_Logo__postCreate() {
+                domClass.add(this.domNode, "alfresco-logo-Logo");
+                var self = this;
+                this.domNode.addEventListener("click", function(event) {
+                    event.stopPropagation();
+                    if (self.targetUrl) {
+                        self.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: self.targetUrl, type: self.targetUrlType, target: self.targetUrlLocation});
+                    } else {
+                        self.alfLog("error", "An AlfMenuItem was clicked but did not define a 'targetUrl' or 'publishTopic' or 'clickEvent' attribute", event);
+                    }
+                }, false);
                 this.inherited(arguments);
             }
         });
