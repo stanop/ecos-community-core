@@ -1,4 +1,4 @@
-<#if inlineEdit>
+<#if inlineEdit!false>
 	<!-- ko if: inlineEditVisibility -->
 		<div class="block-region block-region-input">
 			<@views.renderRegion "input" />

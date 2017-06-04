@@ -56,4 +56,5 @@
     model.attributes = attributes;
     model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.defaultModel = defaultModel;
+    model.inlineEdit = false;
 })();

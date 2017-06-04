@@ -27,7 +27,7 @@
     </#if>
 </#macro>
 
-<#if isViewMode && inlineEdit>
+<#if isViewMode && inlineEdit!false>
     <div class="view-value" data-bind="click: showEditableField, clickBubble: false">
 </#if>
 
@@ -47,11 +47,11 @@
             <@valueText />
         </#if>
 
-        <#if isViewMode && inlineEdit>
+        <#if isViewMode && inlineEdit!false>
             <!--ko if: $parent.inlineEditVisibility -->
         </#if>
 
-        <#if !isViewMode || inlineEdit>
+        <#if !isViewMode || inlineEdit!false>
             <span class="value-item-actions" data-bind="ifnot: $parent.protected()">
         
             <#if editable?trim == "all" || (editable?trim == "admin" && user.isAdmin)>
@@ -74,7 +74,7 @@
             </span>
         </#if>
 
-        <#if isViewMode && inlineEdit>
+        <#if isViewMode && inlineEdit!false>
             <!-- /ko -->
         </#if>
     </span>
@@ -84,6 +84,6 @@
     <span>${msg(params.emptyLabel!"label.none")}</span>
 <!-- /ko -->
 
-<#if isViewMode && inlineEdit>
+<#if isViewMode && inlineEdit!false>
     </div>
 </#if>

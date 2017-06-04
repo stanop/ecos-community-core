@@ -1,4 +1,4 @@
-<#if inlineEdit>
+<#if inlineEdit!false>
 	<div class="block-region block-region-label">
 		<@views.renderRegion "label" />	
 

@@ -57,7 +57,7 @@
 <#macro renderContent element>
 	<#assign template = element.template!"default" />
 
-	<#assign withoutMode = element.type == "region" && inlineEdit />
+	<#assign withoutMode = element.type == "region" && inlineEdit!false />
 
 	<#if !withoutMode>
 		<#assign file>/ru/citeck/views/${element.type}/${viewScope.view.mode}/${template}.ftl</#assign>
@@ -90,7 +90,7 @@
 	<#assign formMode = view.mode?string + "-form" />
 	<#assign formTemplate = "form-template-" + view.template?string />
 
-	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit>inline-edit-form</#if>"
+	<div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit!false>inline-edit-form</#if>"
 		 data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess, invalid: invalid }">
 
 		<#if loadIndicator>
@@ -103,7 +103,7 @@
 			</div>
 		</#if>
 
-		<#if inlineEdit>
+		<#if inlineEdit!false>
 			<!-- ko if: node.loaded() && node().impl.loaded() -->
 				<!-- ko with: resolve("node.impl") -->
 					<!-- ko if: invalid -->
@@ -287,7 +287,7 @@
 					loadGroupIndicator: ${loadGroupIndicator},
 					preloadInvariants: ${preloadInvariants},
 
-					<#if inlineEdit>inlineEdit: true,</#if>
+					<#if inlineEdit!false>inlineEdit: true,</#if>
 
 					node: {
 						key: "${runtimeKey}",
