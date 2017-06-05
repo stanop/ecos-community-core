@@ -37,76 +37,68 @@
 /*     base styles       */
 /* --------------------- */
 
-/* add link */
-.node-actions [class*="add"] a {
-    background-image: url(../../../themes/citeckTheme/images/create.png) !important; 
+.node-actions .doclist .action-set a {
+    background-image: none !important;
+    padding-left: 7px;
 }
 
-.node-actions [class*="add"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/create-active.png) !important; 
+.node-actions .doclist .action-set a span::before {
+    display: inline-block;
+    width: 16px;
+    margin-right: 12px;
+    vertical-align: text-bottom;
+    font: 17px FontAwesome;
+}
+
+/* add link */
+.node-actions .doclist .action-set [class*="add"] a span::before {
+    content: '\f067'; /* plus */
 }
 
 /* edit link */
-.node-actions [class*="edit"] a {
-    background-image: url(../../../themes/citeckTheme/images/edit.png) !important; 
-}
-
-.node-actions [class*="edit"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/edit-active.png) !important; 
+.node-actions .doclist .action-set [class*="edit"]:not([class*="google-docs-edit-action-link"]):not([class*="document-edit-metadata"]) a span::before,
+.node-actions .document-fill-template a span::before {
+    content: '\f040'; /* pen - edit */
 }
 
 /* delete link */
-.node-actions [class*="delete"] a {
-    background-image: url(../../../themes/citeckTheme/images/remove.png) !important; 
-}
-
-.node-actions [class*="delete"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/remove-active.png) !important; 
+.node-actions .doclist .action-set [class*="delete"] a span::before {
+    content: '\f00d'; /* close cross */
 }
 
 /* download link */
-.node-actions [class*="download"] a {
-    background-image: url(../../../themes/citeckTheme/images/download.png) !important; 
-}
-
-.node-actions [class*="download"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/download-active.png) !important; 
+.node-actions .doclist .action-set [class*="download"] a span::before {
+    content: '\f019'; /* download */
 }
 
 /* upload link */
-.node-actions [class*="upload"] a {
-    background-image: url(../../../themes/citeckTheme/images/upload.png) !important; 
-}
-
-.node-actions [class*="upload"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/upload-active.png) !important; 
+.node-actions .doclist .action-set [class*="upload"] a span::before {
+    content: '\f093'; /* upload */
 }
 
 /* save link */
-.node-actions [class*="save"] a {
-    background-image: url(../../../themes/citeckTheme/images/save.png) !important; 
-}
-
-.node-actions [class*="save"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/save-active.png) !important; 
+.node-actions .doclist .action-set [class*="save"] a span::before {
+    content: '\f0c7'; /* save */
 }
 
 /* copy link */
-.node-actions [class*="copy"] a {
-    background-image: url(../../../themes/citeckTheme/images/copy.png) !important; 
-}
-
-.node-actions [class*="copy"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/copy-active.png) !important; 
+.node-actions .doclist .action-set [class*="copy"] a span::before {
+    content: '\f0c5'; /* copy */
 }
 
 /* start link */
-.node-actions [class*="start"] a {
-    background-image: url(../../../themes/citeckTheme/images/do-transition.png) !important; 
+.node-actions .doclist .action-set [class*="start"] a span::before {
+    content: '\f055'; /* plus circle */
 }
 
-.node-actions [class*="start"] a:hover {
-    background-image: url(../../../themes/citeckTheme/images/do-transition-active.png) !important; 
+/* print link */
+.node-actions .doclist .action-set [class*="print"] a span::before {
+    content: '\f02f'; /* print */
+}
+
+/* settings link */
+.node-actions .doclist .action-set .document-manage-aspects a span::before {
+    content: '\f013'; /* cog settings */
 }
 
 
@@ -115,21 +107,7 @@
 /* --------------------- */
 
 /* edit properties link */
-.node-actions .document-edit-metadata a,
-.node-actions .google-docs-edit-action-link a {
-    background-image: url(../../../themes/citeckTheme/images/edit-properties.png) !important; 
-}
-
-.node-actions .document-edit-metadata a:hover,
-.node-actions .google-docs-edit-action-link a:hover {
-    background-image: url(../../../themes/citeckTheme/images/edit-properties-active.png) !important; 
-}
-
-/* template */
-.node-actions .document-fill-template a {
-    background-image: url(../../../themes/citeckTheme/images/edit.png) !important; 
-}
-
-.node-actions .document-fill-template a:hover {
-    background-image: url(../../../themes/citeckTheme/images/edit-active.png) !important; 
+.node-actions .document-edit-metadata a span::before,
+.node-actions .google-docs-edit-action-link a span::before {
+    content: '\f044'; /* edit2 - permissions */
 }
