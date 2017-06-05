@@ -44,6 +44,9 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
     private boolean enabled = true;
 
+    private QName containerType = ContentModel.TYPE_FOLDER;
+    private QName childAssocType = ContentModel.ASSOC_CONTAINS;
+
     public void init() {
 
         ParameterCheck.mandatoryString("node", node);
@@ -52,7 +55,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         splitBehaviour.init(serviceRegistry);
 
         this.policyComponent.bindAssociationBehaviour(
-                OnCreateChildAssociationPolicy.QNAME, ContentModel.TYPE_FOLDER, ContentModel.ASSOC_CONTAINS,
+                OnCreateChildAssociationPolicy.QNAME, containerType, childAssocType,
                 new OrderedBehaviour(this, "onCreateChildAssociation", NotificationFrequency.TRANSACTION_COMMIT, order)
         );
     }
@@ -70,7 +73,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
             public Void doWork() throws Exception {
 
                 if (parent.equals(getNodeRef()) && nodeService.exists(child)
-                        && !ContentModel.TYPE_FOLDER.equals(nodeService.getType(child))) {
+                        && !containerType.equals(nodeService.getType(child))) {
 
                     NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
 
@@ -96,7 +99,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
             String name = FolderUtils.makeUniqueName(destination, child, nodeService);
             QName assocQName = QName.createQName(assocRef.getQName().getNamespaceURI(), name);
-            nodeService.moveNode(child, destination, ContentModel.ASSOC_CONTAINS, assocQName);
+            nodeService.moveNode(child, destination, childAssocType, assocQName);
 
             splitBehaviour.onSuccess(parent, child);
         }
@@ -105,14 +108,14 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
     private NodeRef getFolder(NodeRef parent, List<String> path, boolean createIfNotExist) {
         NodeRef folderRef = parent;
         for (String name : path) {
-            NodeRef child = nodeService.getChildByName(folderRef, ContentModel.ASSOC_CONTAINS, name);
+            NodeRef child = nodeService.getChildByName(folderRef, childAssocType, name);
             if (child == null) {
                 if (createIfNotExist) {
                     Map<QName, Serializable> props = new HashMap<>();
                     props.put(ContentModel.PROP_NAME, name);
-                    child = nodeService.createNode(folderRef, ContentModel.ASSOC_CONTAINS,
+                    child = nodeService.createNode(folderRef, childAssocType,
                                                    QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name),
-                                                   ContentModel.TYPE_FOLDER, props).getChildRef();
+                                                   containerType, props).getChildRef();
                 } else {
                     return null;
                 }
@@ -149,6 +152,14 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
     public void setSplitBehaviour(SplitBehaviour splitBehaviour) {
         this.splitBehaviour = splitBehaviour;
+    }
+
+    public void setContainerType(QName containerType) {
+        this.containerType = containerType;
+    }
+
+    public void setChildAssocType(QName childAssocType) {
+        this.childAssocType = childAssocType;
     }
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
