@@ -1251,22 +1251,6 @@
   cursor: default;
 }
 
-.orgstruct-tree .selectable .ygtvrow .ygtvcontent {
-  padding-right: 25px;
-
-  background-image: url(images/add.png);
-  background-position: right center;
-  background-repeat: no-repeat;
-}
-
-.orgstruct-tree .selectable .ygtvrow:hover .ygtvcontent {
-  background-image: url(images/add-active.png);
-}
-
-.orgstruct-tree .selectable .ygtvrow .ygtvcontent.selected {
-  background-image: none;
-}
-
 .orgstruct-tree .ygtvcontent .ygtvlabel {
   display: block;
   cursor: default;
