@@ -1,5 +1,9 @@
+const ASSOCS_LIMIT = 200; //sometimes assocs count is too high
+
 (function() {
-    
+
+    var assocsCount;
+
     function checkContentType(node, contentTypes) {
         var result = false;
         for (var i = 0; i < contentTypes.length; i++) {
@@ -44,7 +48,9 @@
                     if (sourceAssocs == undefined) {
                         sourceAssocs = "";
                     } else {
-                        for each(source in sourceAssocs)
+                        assocsCount = Math.min(ASSOCS_LIMIT, sourceAssocs.length);
+                        for (var sourceIdx = 0; sourceIdx < assocsCount; sourceIdx++) {
+                            var source = sourceAssocs[sourceIdx];
                             if(source != null && source.length != 0 && source.hasPermission("Read")) {
                                 if (contentTypes.length > 0 && !checkContentType(source, contentTypes))
                                     continue;
@@ -63,13 +69,16 @@
                                     'title': titleSource
                                 });
                             }
+                        }
                     }
                     var targetAssocs = node.assocs[type];
                     var targetNodeRef = [];
                     if (targetAssocs == undefined) {
                         targetAssocs = "";
                     } else {
-                        for each(target in targetAssocs)
+                        assocsCount = Math.min(ASSOCS_LIMIT, targetAssocs.length);
+                        for (var targetIdx = 0; targetIdx < assocsCount; targetIdx++) {
+                            var target = targetAssocs[targetIdx];
                             if(target != null && target.length != 0 && target.hasPermission("Read")) {
                                 if (contentTypes.length > 0 && !checkContentType(target, contentTypes))
                                     continue;
@@ -88,13 +97,16 @@
                                     'title': titleTarget
                                 });
                             }
+                        }
                     }
                     var childAssocs = node.childAssocs[type];
                     var childNodeRef = [];
                     if (childAssocs == undefined) {
                         childAssocs = "";
                     } else {
-                        for each(child in childAssocs)
+                        assocsCount = Math.min(ASSOCS_LIMIT, childAssocs.length);
+                        for (var childIdx = 0; childIdx < assocsCount; childIdx++) {
+                            var child = childAssocs[childIdx];
                             if(child != null && child.length != 0 && child.hasPermission("Read")) {
                                 if (contentTypes.length > 0 && !checkContentType(child, contentTypes))
                                     continue;
@@ -113,6 +125,7 @@
                                     'title': titleChild
                                 });
                             }
+                        }
                     }
                     assocs.push({
                         'type': type,
