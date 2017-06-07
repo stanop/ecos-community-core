@@ -147,6 +147,7 @@
           abstract="true" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
+        <property name="mlAwareNodeService" ref="mlAwareNodeService" />
         <property name="templateService" ref="templateService"/>
         <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>

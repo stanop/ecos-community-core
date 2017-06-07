@@ -25,6 +25,7 @@ import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.PolicyScope;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.version.VersionServicePolicies;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -33,48 +34,37 @@ import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.springframework.extensions.surf.util.I18NUtil;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Alexander Nemerov
  * created on 03.03.2015.
  */
 public class TitleGenerationBehaviour implements
-        NodeServicePolicies.OnUpdatePropertiesPolicy,
-        VersionServicePolicies.OnCreateVersionPolicy {
+        NodeServicePolicies.OnUpdatePropertiesPolicy {
+
+    private static final String TITLE_UPDATE_TIME_KEY = TitleGenerationBehaviour.class.toString();
 
     // common properties
     private PolicyComponent policyComponent;
     private NodeService nodeService;
+    private NodeService mlAwareNodeService;
     private TemplateService templateService;
 
     // distinct properties
     private QName className;
     private String nodeVariable;
     private String templateEngine;
-    private String titleTemplate;
-    private Map<Locale, String> titleMLTemplate;
-    private String descriptionTemplate;
-    private Map<Locale, String> descriptionMLTemplate;
+    private Map<Locale, String> titleMLTemplate = new HashMap<>();
+    private Map<Locale, String> descriptionMLTemplate = new HashMap<>();
 	private int order = 80;
 
     public void init() {
-        //policyComponent.bindClassBehaviour(NodeServicePolicies
-        //        .OnUpdatePropertiesPolicy.QNAME, className, new JavaBehaviour(
-        //        this, "onUpdateProperties", Behaviour.NotificationFrequency.EVERY_EVENT));
 		OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
-		
-		OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
-		policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
-
-        //policyComponent.bindClassBehaviour(VersionServicePolicies
-        //        .OnCreateVersionPolicy.QNAME, className, new JavaBehaviour(
-        //        this, "onCreateVersion", Behaviour.NotificationFrequency.EVERY_EVENT));
     }
 
     @Override
@@ -83,19 +73,21 @@ public class TitleGenerationBehaviour implements
         updateName(nodeRef);
     }
 
-    @Override
-    public void onCreateVersion(QName qName, NodeRef nodeRef,
-                                Map<String, Serializable> map, PolicyScope policyScope) {
-        updateName(nodeRef);
-    }
-
     private void updateName(final NodeRef nodeRef) {
+
         if (!nodeService.exists(nodeRef)) {
             return;
         }
 
-        setProperty(nodeRef, ContentModel.PROP_TITLE, titleMLTemplate, titleTemplate);
-        setProperty(nodeRef, ContentModel.PROP_DESCRIPTION, descriptionMLTemplate, descriptionTemplate);
+        Map<NodeRef, Date> updateTime = TransactionalResourceHelper.getMap(TITLE_UPDATE_TIME_KEY);
+        Date updated = updateTime.get(nodeRef);
+        Date modified = (Date) nodeService.getProperty(nodeRef, ContentModel.PROP_MODIFIED);
+
+        if (modified == null || updated == null || modified.after(updated)) {
+            setProperty(nodeRef, ContentModel.PROP_TITLE, titleMLTemplate);
+            setProperty(nodeRef, ContentModel.PROP_DESCRIPTION, descriptionMLTemplate);
+            updateTime.put(nodeRef, modified);
+        }
     }
 
     private MLText getProcessedMLText(final NodeRef nodeRef, final Map<Locale, String> mlText) {
@@ -127,23 +119,21 @@ public class TitleGenerationBehaviour implements
     }
 
     private void setProperty(final NodeRef nodeRef, final QName property,
-                             final Map<Locale, String> mlTemplate, final String template) {
+                             final Map<Locale, String> mlTemplate) {
 
         MLText mlValue = getProcessedMLText(nodeRef, mlTemplate);
         if(mlValue != null && mlValue.size() > 0) {
             setProperty(nodeRef, property, mlValue);
-        } else {
-            String value = getProcessedString(nodeRef, template);
-            if(value != null && !value.isEmpty()) {
-                setProperty(nodeRef, property, value);
-            }
         }
     }
 
-    private Void setProperty(final NodeRef nodeRef, final QName property, final Serializable value) {
+    private Void setProperty(final NodeRef nodeRef, final QName property, final MLText value) {
         return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
             public Void doWork() throws Exception {
-                nodeService.setProperty(nodeRef, property, value);
+                Serializable currentValue = mlAwareNodeService.getProperty(nodeRef, property);
+                if (!Objects.equals(value, currentValue)) {
+                    nodeService.setProperty(nodeRef, property, value);
+                }
                 return null;
             }
         });
@@ -155,6 +145,10 @@ public class TitleGenerationBehaviour implements
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setMlAwareNodeService(NodeService mlAwareNodeService) {
+        this.mlAwareNodeService = mlAwareNodeService;
     }
 
     public void setTemplateService(TemplateService templateService) {
@@ -174,19 +168,19 @@ public class TitleGenerationBehaviour implements
     }
 
     public void setTitleTemplate(String titleTemplate) {
-        this.titleTemplate = titleTemplate;
+        titleMLTemplate.put(I18NUtil.getContentLocale(), titleTemplate);
     }
 
     public void setTitleMLTemplate(Map<Locale, String> titleTemplate) {
-        this.titleMLTemplate = titleTemplate;
+        this.titleMLTemplate.putAll(titleTemplate);
     }
 
     public void setDescriptionTemplate(String descriptionTemplate) {
-        this.descriptionTemplate = descriptionTemplate;
+        descriptionMLTemplate.put(I18NUtil.getContentLocale(), descriptionTemplate);
     }
 
     public void setDescriptionMLTemplate(Map<Locale, String> descriptionTemplate) {
-        this.descriptionMLTemplate = descriptionTemplate;
+        this.descriptionMLTemplate.putAll(descriptionTemplate);
     }
     public void setOrder(int order) {
         this.order = order;
