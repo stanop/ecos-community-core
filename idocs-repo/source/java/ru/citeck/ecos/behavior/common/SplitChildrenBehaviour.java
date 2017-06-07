@@ -1,5 +1,6 @@
 package ru.citeck.ecos.behavior.common;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateChildAssociationPolicy;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -11,9 +12,13 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.Pair;
 import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.service.AlfrescoServices;
@@ -46,6 +51,8 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
     private QName containerType = ContentModel.TYPE_FOLDER;
     private QName childAssocType = ContentModel.ASSOC_CONTAINS;
+
+    private Map<Pair<NodeRef, String>, NodeRef> containersCache = new HashMap<>();
 
     public void init() {
 
@@ -95,7 +102,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
         if (!path.isEmpty()) {
 
-            NodeRef destination = getFolder(parent, path, true);
+            NodeRef destination = getContainer(parent, path, true);
 
             String name = FolderUtils.makeUniqueName(destination, child, nodeService);
             QName assocQName = QName.createQName(assocRef.getQName().getNamespaceURI(), name);
@@ -105,10 +112,10 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         }
     }
 
-    private NodeRef getFolder(NodeRef parent, List<String> path, boolean createIfNotExist) {
+    private NodeRef getContainer(NodeRef parent, List<String> path, boolean createIfNotExist) {
         NodeRef folderRef = parent;
         for (String name : path) {
-            NodeRef child = nodeService.getChildByName(folderRef, childAssocType, name);
+            NodeRef child = getContainerByName(folderRef, name);
             if (child == null) {
                 if (createIfNotExist) {
                     Map<QName, Serializable> props = new HashMap<>();
@@ -123,6 +130,49 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
             folderRef = child;
         }
         return folderRef;
+    }
+
+    private NodeRef getContainerByName(NodeRef parent, String name) {
+
+        Pair<NodeRef, String> data = new Pair<>(parent, name);
+
+        NodeRef containerRef = containersCache.get(data);
+        if (containerRef != null && nodeService.exists(containerRef)) {
+            ChildAssociationRef containerParent = nodeService.getPrimaryParent(containerRef);
+            if (Objects.equals(parent, containerParent.getParentRef())) {
+                return containerRef;
+            }
+        }
+
+        containerRef = queryContainerByName(parent, name);
+        containersCache.put(data, containerRef);
+
+        return containerRef;
+    }
+
+    private NodeRef queryContainerByName(NodeRef parent, String name) {
+
+        String query = String.format("PARENT:\"%s\" AND TYPE:\"%s\" AND =cm\\:name:\"%s\"", parent, containerType, name);
+        SearchParameters searchParameters = new SearchParameters();
+        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+        searchParameters.setQuery(query);
+        searchParameters.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
+
+        ResultSet results = null;
+        try {
+            results = searchService.query(searchParameters);
+            if (results != null && results.length() > 0) {
+                return results.getNodeRef(0);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new AlfrescoRuntimeException("Children search failed. Query: \"" + query + "\"", e);
+        } finally {
+            if (results != null) {
+                results.close();
+            }
+        }
     }
 
     private NodeRef getNodeRef() {
