@@ -167,9 +167,9 @@ if (navigationMenu && navigationMenu.config.widgets.length) {
             navigationMenu.config.widgets.splice(w, 1);
         }
     }
-    navigationMenu.config.widgets = navigationMenu.config.widgets.map(function(item) {
+    navigationMenu.config.widgets = navigationMenu.config.widgets.filter(function(item) {
         item.name = "alfresco/header/AlfMenuItem";
-        return item;
+        return user.isAdmin || item.id != "HEADER_SITE_SITE-DOCUMENT-TYPES";
     });
     siteMenuItems = siteMenuItems.concat(navigationMenu.config.widgets);
 }
