@@ -9,7 +9,7 @@
             <journal:journalsList view:childName="cm:global-nomenclature-docs">
                 <view:properties>
                     <sys:node-uuid>journal-meta-l-nomenclature-docs</sys:node-uuid>
-                    <cm:name>nomenclature-docs</cm:name>
+                    <cm:name>global-nomenclature-docs</cm:name>
                     <cm:title>
                         <view:mlvalue view:locale="en_US">Nomenclature docs</view:mlvalue>
                         <view:mlvalue view:locale="ru_RU">Документы в деле</view:mlvalue>

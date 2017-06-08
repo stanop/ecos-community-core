@@ -8,6 +8,12 @@
     </bean>
 
     <bean id="letters.nomenclature-list.journals.income-outcome" parent="letters.import-spaces.1-2-2">
+        <property name="dependsOn">
+            <list>
+                <ref bean="letters.module-component.income-journal" />
+                <ref bean="letters.module-component.outcome-journal" />
+            </list>
+        </property>
         <property name="bootstrapViews">
             <list>
                 <props>

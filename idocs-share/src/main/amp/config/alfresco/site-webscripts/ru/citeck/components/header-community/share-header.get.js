@@ -203,7 +203,7 @@ if (siteMenuItems.length) {
         config: {
             id: "HEADER_SITE_MENU",
             label: "",
-            style: isMobile ? "padding-left: 5px; padding-right: 5px;" :  "padding-left: 10px; padding-right: 10px;",
+            style: isMobile ? "padding-left: 5px; padding-right: 5px" :  "padding-left: 10px; padding-right: 10px",
             widgets: siteMenuItems
         }
     })
@@ -705,7 +705,7 @@ function buildLogo(isMobile) {
             logoClasses: "alfresco-logo-only",
             currentTheme: theme,
             logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
-            targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
+            targetUrl: "/share/page/user/" + encodeURIComponent(user.name) + "/dashboard"
         }
     };
 };

@@ -146,4 +146,22 @@
         </property>
     </bean>
 
+    <bean id="letters.nomenclature-list.journals.internal" parent="orders.import-spaces">
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.module-component.journals-internal" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/nomenclature-docs/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/orders-repo/messages/journals-internal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>

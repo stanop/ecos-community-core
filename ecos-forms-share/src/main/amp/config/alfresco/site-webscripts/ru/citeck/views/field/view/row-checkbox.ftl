@@ -1,4 +1,4 @@
-<#if inlineEdit>
+<#if inlineEdit!false>
 	<!-- ko ifnot: inlineEditVisibility -->
 		<@views.renderRegion "label" />
 		<@views.renderTemplate "view" />
