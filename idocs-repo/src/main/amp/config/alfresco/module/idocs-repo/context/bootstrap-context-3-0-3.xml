@@ -77,7 +77,7 @@
             <list>
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
-                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature-in-global-main-list.xml</prop>
                     <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
