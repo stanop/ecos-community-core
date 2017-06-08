@@ -442,7 +442,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                             confirmChange: false,
                             skipEmptyValues: false,
                             changeExistsValue: true,
-                            skipInStatuses: "[]"
+                            skipInStatuses: []
                         };
                         var useFilter = false;
                         var confirmChange = action.settings().confirmChange;
