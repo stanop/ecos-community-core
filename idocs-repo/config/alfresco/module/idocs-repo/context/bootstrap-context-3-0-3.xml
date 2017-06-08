@@ -67,4 +67,22 @@
         </property>
     </bean>
 
+    <bean id="idocs.global-main-list.journals.nomenclature" parent="idocs.import-spaces.3-0-3">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-files-nomenclature" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/nomenclature</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
