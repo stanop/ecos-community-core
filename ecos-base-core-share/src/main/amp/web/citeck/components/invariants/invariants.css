@@ -26,6 +26,7 @@
 
 .fixed-size .ecos-form {
   height: inherit;
+  max-height: inherit;
 }
 
 .fixed-size .ecos-form .form-fields {
@@ -33,7 +34,6 @@
   height: calc(100% - 37px);
   box-sizing: border-box;
 }
-
 
 /* form-errors */
 

@@ -326,6 +326,7 @@
                             height: height,
                             fixedcenter:  "contained",
                             constraintoviewport: true,
+                            visible: false,
                             close: true,
                             modal: true,
                             postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
@@ -342,9 +343,6 @@
 
                         panel.setHeader(header);
                         panel.setBody(response.serverResponse.responseText);
-
-                        // additional style for panel with fixed size
-                        if (height != "auto") { panel.body.classList.add("fixed-size"); }
 
                         panel.render(document.body);
 
@@ -375,6 +373,21 @@
                             // TODO destroy runtime
                         });
 
+
+                        // max-height
+                        var maxHeight = screen.height - 200,
+                            formButtonsHeight = $(".ecos-form > .form-buttons", panel.body)[0].offsetHeight;
+
+                        $(panel.body)
+                            .css("max-height", maxHeight - panel.header.offsetHeight + "px").addClass("fixed-size")
+                            .parent().css("max-height", maxHeight + "px");
+
+                        $(".ecos-form > .form-fields", panel.body)
+                            .css("max-height", maxHeight - formButtonsHeight - panel.header.offsetHeight + "px");
+
+
+                        // show panel
+                        panel.show();
                     }
                 }
             });
