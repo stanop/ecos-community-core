@@ -53,6 +53,9 @@ public class VirtualAttributeType extends AbstractInvariantAttributeType {
     @Override
     public List<InvariantDefinition> getDefaultInvariants(QName attributeName, List<ClassDefinition> classes) {
         PropertyDefinition propDef = dictionaryService.getProperty(attributeName);
+        if (propDef == null) {
+            return Collections.emptyList(); // for virtual fields
+        }
         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(prefixResolver)
                 .pushScope(propDef)
                 .priority(InvariantPriority.COMMON);
