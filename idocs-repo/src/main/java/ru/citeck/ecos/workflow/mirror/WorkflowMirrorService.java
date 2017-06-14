@@ -21,6 +21,8 @@ package ru.citeck.ecos.workflow.mirror;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 
+import java.util.List;
+
 public interface WorkflowMirrorService {
 
 	/**
@@ -64,4 +66,8 @@ public interface WorkflowMirrorService {
      */
     public NodeRef getTaskMirror(String taskId);
 
+    /**
+    * Get task mirrors by workflow id
+    */
+	public List<NodeRef> getTaskMirrorsByWorkflowId(String workflowId);
 }

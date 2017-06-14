@@ -5,7 +5,6 @@
 	<bean id="workflowMirrorListener" class="ru.citeck.ecos.workflow.mirror.MirrorListener" />
 
 	<bean id="mirrorEndProcessListener" class="ru.citeck.ecos.workflow.mirror.MirrorEndProcessListener">
-		<property name="taskMirrorRoot" value="workspace://SpacesStore/task-mirror-root" />
 	</bean>
 
 	<bean id="workflowMirrorInterceptor" class="ru.citeck.ecos.workflow.mirror.MirrorInterceptor" init-method="init">

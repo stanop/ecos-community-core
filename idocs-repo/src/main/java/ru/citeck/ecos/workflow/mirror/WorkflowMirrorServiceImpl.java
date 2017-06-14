@@ -44,13 +44,13 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService
 {
+	private static final String QUERY_TASK_BY_ID = "TYPE:\"bpm:task\" AND =cm\\:name:\"%s\"";
+	private static final String QUERY_TASKS_BY_WORKFLOW_ID = "TYPE:\"bpm:task\" AND =wfm\\:workflowId:\"%s\"";
+
 	private static Log logger = LogFactory.getLog(WorkflowMirrorServiceImpl.class);
 	
 	private NodeService nodeService;
@@ -109,8 +109,19 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     @Override
     public NodeRef getTaskMirror(String taskId) {
+    	String query = String.format(QUERY_TASK_BY_ID, taskId);
+        List<NodeRef> tasksList = searchQuery(query);
+		return !tasksList.isEmpty() ? tasksList.get(0) : null;
+    }
 
-        String query = String.format("=cm\\:name:\"%s\"", taskId);
+    @Override
+	public List<NodeRef> getTaskMirrorsByWorkflowId(String workflowId) {
+		String query = String.format(QUERY_TASKS_BY_WORKFLOW_ID, workflowId);
+		return searchQuery(query);
+    }
+
+    private List<NodeRef> searchQuery(String query) {
+
         SearchParameters searchParameters = new SearchParameters();
         searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
@@ -125,7 +136,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         }
         try {
             List<NodeRef> nodeRefs = resultSet.getNodeRefs();
-            return nodeRefs != null && !nodeRefs.isEmpty() ? nodeRefs.get(0) : null;
+            if (nodeRefs == null) {
+                nodeRefs = Collections.emptyList();
+            }
+            return nodeRefs;
         } finally {
             resultSet.close();
         }

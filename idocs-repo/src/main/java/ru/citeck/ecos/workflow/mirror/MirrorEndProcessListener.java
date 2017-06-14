@@ -21,17 +21,16 @@ package ru.citeck.ecos.workflow.mirror;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.model.WorkflowMirrorModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 
 import java.util.List;
 
@@ -43,8 +42,10 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
 
     private static final Log logger = LogFactory.getLog(MirrorEndProcessListener.class);
     private NodeService nodeService;
-    private NodeRef taskMirrorRoot;
     private WorkflowMirrorService service;
+
+    @Autowired
+    private TransactionUtils transactionUtils;
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) {
@@ -57,10 +58,9 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
                 && (deleteReason.equals("cancelled") || deleteReason.equals("deleted"))) {
 
             String workflowId = "activiti$" + entity.getProcessInstanceId();
-            List<ChildAssociationRef> associations =
-                    nodeService.getChildAssocsByPropertyValue(taskMirrorRoot, WorkflowMirrorModel.PROP_WORKFLOW_ID, workflowId);
-            for(ChildAssociationRef assoc : associations) {
-                final NodeRef taskMirror = assoc.getChildRef();
+            List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
+            for (NodeRef mirror : mirrors) {
+                final NodeRef taskMirror = mirror;
                 AuthenticationUtil.runAs(new RunAsWork<Void>() {
                     @Override
                     public Void doWork() throws Exception {
@@ -75,11 +75,10 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
             }
         } else if(entity.getProcessInstance().isEnded()) {
             String workflowId = "activiti$" + entity.getProcessInstanceId();
-            List<ChildAssociationRef> associations =
-                    nodeService.getChildAssocsByPropertyValue(taskMirrorRoot, WorkflowMirrorModel.PROP_WORKFLOW_ID, workflowId);
-            for(ChildAssociationRef assoc : associations) {
-                String taskId = (String) nodeService.getProperty(assoc.getChildRef(), ContentModel.PROP_NAME);
-                TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
+            List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
+            for(NodeRef mirror : mirrors) {
+                String taskId = (String) nodeService.getProperty(mirror, ContentModel.PROP_NAME);
+                transactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
             }
         }
     }
@@ -88,9 +87,5 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
         this.service = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
-    }
-
-    public void setTaskMirrorRoot(NodeRef taskMirrorRoot) {
-        this.taskMirrorRoot = taskMirrorRoot;
     }
 }
