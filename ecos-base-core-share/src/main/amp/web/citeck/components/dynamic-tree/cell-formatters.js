@@ -556,6 +556,12 @@
 			};
 		},
 
+		journalLink: function (journalNodeRef, assocFieldName, target) {
+			return Citeck.format.siteURL('journals2/list/main?site=contracts#journal=' + journalNodeRef +
+			'&filter={%22criteria%22:[{%22field%22:%22' + assocFieldName + '%22,%22predicate%22:%22assoc-contains%22,%22value%22:%22{nodeRef}%22}]}',
+				'{data}', target);
+		},
+
         documentDetailsLink: function (target) {
             return Citeck.format.siteURL('document-details?nodeRef={nodeRef}', '{displayName}', target)
         },
@@ -581,7 +587,7 @@
             if (!urlTemplate) urlTemplate = '';
             return function (elCell, oRecord, oColumn, sData) {
                 if (sData) {
-                	if (!_.isObject(sData)) sData = { data: sData };
+									if (!_.isObject(sData)) sData = { data: sData, nodeRef: oRecord._oData.nodeRef };
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
                     var label = YAHOO.lang.substitute(labelTemplate, sData);
                     elCell.innerHTML = '<a class="document-link" onclick="event.stopPropagation()" '
@@ -1608,10 +1614,6 @@
 			if (!target) target = 3;
 			return function(elCell, oRecord, oColumn, sData) {
 				if(YAHOO.lang.isArray(sData)) {
-					var texts = [];
-					for (var i = 0, ii = sData.length; i < ii; i++) {
-						texts[i] = sData[i];
-					}
 					if (sData.length > target) {
 						elCell.innerHTML = '<div class="truncatedInfo">'
 							+ '<div>'
