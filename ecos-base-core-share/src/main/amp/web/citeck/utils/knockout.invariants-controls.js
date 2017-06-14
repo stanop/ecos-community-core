@@ -70,30 +70,33 @@ ko.components.register("help", {
         kocomponents.initializeParameters.call(this, params);
         var self = this;
 
-        if (!this.tooltip) {
-            this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
-                showDelay: 250,
-                hideDelay: 250,
-                xyoffset: [5, 0],
-                autodismissdelay: 10000,
-                context: [ this.id ]
-            });
-
-            this.tooltip.cfg.addProperty("forceVisible", { value: false });
-            this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
-
-            if (this.text()) { this.tooltip.cfg.setProperty("text", this.text()); }
-        }
-
-        this.tooltip.contextMouseOverEvent.subscribe(function() {
-            var parent = $("#" + self.id).closest(".yui-panel-container"),
-                zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
-            self.tooltip.cfg.setProperty("zIndex", zindex);
-        });
-
         this.text.subscribe(function(newValue) {
-            if (newValue) this.tooltip.cfg.setProperty("text", newValue);
-            this.tooltip.cfg.setProperty("disabled", !newValue);
+            if (newValue) {
+                if (!this.tooltip) {
+                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                        showDelay: 250,
+                        hideDelay: 250,
+                        xyoffset: [5, 0],
+                        text: newValue,
+                        autodismissdelay: 10000,
+                        context: [ this.id ]
+                    });
+
+                    this.tooltip.cfg.addProperty("forceVisible", { value: false });
+                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+
+                    this.tooltip.contextMouseOverEvent.subscribe(function() {
+                        var parent = $("#" + self.id).closest(".yui-panel-container"),
+                            zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+                        self.tooltip.cfg.setProperty("zIndex", zindex);
+                    });
+                }
+            }
+
+            if (this.tooltip) {
+                this.tooltip.cfg.setProperty("text", newValue);
+                this.tooltip.cfg.setProperty("disabled", !newValue);
+            }
         }, this);
 
         this.onclick = function(data, event) {
