@@ -14,14 +14,14 @@ var isMobile = isMobileDevice(context.headers["user-agent"]);
 // HEADER MENU
 // ---------------------
 
-var header = getWidget("SHARE_HEADER"),
-    appMenu = getWidget("HEADER_APP_MENU_BAR"),
-    userMenu = getWidget("HEADER_USER_MENU_BAR"),
-    search = getWidget("HEADER_SEARCH"),
-    shareVerticalLayout = getWidget("SHARE_VERTICAL_LAYOUT"),
-    titleMenu = getWidget("HEADER_TITLE_MENU"),
-    navigationMenu = getWidget("HEADER_NAVIGATION_MENU_BAR"),
-    customizeUserDashboard = getWidget("HEADER_CUSTOMIZE_USER_DASHBOARD"),
+var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
+    appMenu = findObjectById(model.jsonModel.widgets, "HEADER_APP_MENU_BAR"),
+    userMenu = findObjectById(model.jsonModel.widgets, "HEADER_USER_MENU_BAR"),
+    search = findObjectById(model.jsonModel.widgets, "HEADER_SEARCH"),
+    shareVerticalLayout = findObjectById(model.jsonModel.widgets, "SHARE_VERTICAL_LAYOUT"),
+    titleMenu = findObjectById(model.jsonModel.widgets, "HEADER_TITLE_MENU"),
+    navigationMenu = findObjectById(model.jsonModel.widgets, "HEADER_NAVIGATION_MENU_BAR"),
+    customizeUserDashboard = findObjectById(model.jsonModel.widgets, "HEADER_CUSTOMIZE_USER_DASHBOARD"),
 
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie();
 
@@ -214,16 +214,7 @@ var createSiteClickEvent = function(event, element) {
   Alfresco.module.getCreateSiteInstance().show(); 
 };
  
-var HEADER_HOME = {
-      id: "HEADER_HOME",
-      name: "js/citeck/menus/citeckMenuBarItem",
-      config: {
-        id: "HEADER_HOME",
-        label: "header.menu.home.label",
-        targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
-      }
-    },
-    HEADER_SITES_VARIANTS = {
+var HEADER_SITES_VARIANTS = {
       id: "HEADER_SITES_VARIANTS",
       name: "js/citeck/menus/citeckMenuGroup",
       config: {
@@ -539,7 +530,7 @@ appMenu.config.widgets.unshift(
 // TITLE MENU
 // ---------------------
 
-var siteConfig = getWidget("HEADER_SITE_CONFIGURATION_DROPDOWN"),
+var siteConfig = findObjectById(model.jsonModel.widgets, "HEADER_SITE_CONFIGURATION_DROPDOWN"),
     siteData = getSiteData();
 
 if (siteConfig && siteData.userIsSiteManager) {

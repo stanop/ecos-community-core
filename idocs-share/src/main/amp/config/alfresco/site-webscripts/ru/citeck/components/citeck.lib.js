@@ -34,3 +34,15 @@ function uniq(elements) {
   }
   return uniqElements;
 }
+
+function findObjectById(array, id) {
+    for (var key in array) {
+        if (array[key].id != id) {
+            if (array[key].config && array[key].config.widgets && array[key].config.widgets.length) {
+                if (typeof findObjectById(array[key].config.widgets, id) == "object") return findObjectById(array[key].config.widgets, id);
+            }
+        } else {
+            return array[key];
+        }
+    }
+};
