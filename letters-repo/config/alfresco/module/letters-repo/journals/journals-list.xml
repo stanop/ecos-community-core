@@ -17,6 +17,7 @@
 			<header key="idocs:documentStatus" default="true" />
 			<header key="idocs:registrationDate" default="true" />
 			<header key="idocs:registrationNumber" default="true" />
+			<header key="letters:nomenclature" default="true" />
 			<header key="tk:kind" default="true" />
 			<header key="letters:deliveryMethod" />
 			<header key="letters:reporterOrganization" default="true" />
@@ -38,6 +39,7 @@
 			<header key="idocs:documentStatus" default="true" />
 			<header key="idocs:registrationNumber" default="true" />
 			<header key="idocs:registrationDate" default="true" />
+			<header key="letters:outcomeNomenclature" default="true" />
 			<header key="tk:kind" default="true" />
 			<header key="letters:deliveryMethod" />
 			<header key="letters:addressee" default="true" />

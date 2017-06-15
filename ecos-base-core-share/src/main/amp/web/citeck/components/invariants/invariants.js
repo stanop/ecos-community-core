@@ -443,9 +443,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('view', o)
         ;
 
-    var COMMON_DEFAULT_MODEL_KEY = "default";
-
-    var COMMON_INVARIANTS_KEY = "default";
+    var COMMON_DEFAULT_MODEL_KEY = "default",
+        COMMON_INVARIANTS_KEY = "default";
 
     var invariantsLoader = new Citeck.utils.BulkLoader({
         url: Alfresco.constants.PROXY_URI + "citeck/invariants",
@@ -2179,6 +2178,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     GroupedInvariantSet.extend('invariants', rateLimit);
     NodeImpl.extend('attributes', rateLimit);
+
+    MultiClassInvariantSet.extend('invariants', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
 
     // create common attributes statically:
     _.each({

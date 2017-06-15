@@ -640,7 +640,8 @@ ko.bindingHandlers.journalControl = {
 
         if (!panel) {
             var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
-                loading = ko.observable(true), criteriaListShow = ko.observable(false), 
+                filterCriteriaVisibility = ko.observable(false),
+                loading = ko.observable(true), criteriaListShow = ko.observable(false),
                 searchBar = params.searchBar ? params.searchBar == "true" : true,
                 mode = params.mode, dockMode = params.dock ? "dock" : "",
                 pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
@@ -785,7 +786,7 @@ ko.bindingHandlers.journalControl = {
                 </div>\
                 <div class="journal-picker-page-container ' + mode + '">\
                     <div class="filter-page hidden" id="' + filterPageId + '">\
-                        <div class="selected-filter-criteria-container">\
+                        <div class="selected-filter-criteria-container" data-bind="if: filterCriteriaVisibility">\
                             <!-- ko component: { name: \'filter-criteria-table\',\
                                 params: {\
                                     htmlId: htmlId,\
@@ -899,6 +900,8 @@ ko.bindingHandlers.journalControl = {
 
                 if (event.target.tagName == "A") {
                     if ($(event.target).hasClass("journal-tab-button")) {
+                        if (event.target.id == filterTabId) filterCriteriaVisibility(true);
+
                         switch (mode) {
                             case "full":
                               $(event.target)
@@ -999,6 +1002,7 @@ ko.bindingHandlers.journalControl = {
                 journalType: journalType,
                 defaultFilterCriteria: defaultSearchableAttributes,
                 selectedFilterCriteria: selectedFilterCriteria,
+                filterCriteriaVisibility: filterCriteriaVisibility,
                 criteria: criteria,
                 criteriaListShow: criteriaListShow,
                 selectFilterCriterion: function(data, event) {

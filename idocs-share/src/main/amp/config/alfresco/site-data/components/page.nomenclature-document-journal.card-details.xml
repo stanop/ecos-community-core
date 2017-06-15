@@ -5,7 +5,7 @@
     <region-id>nomenclature-document-journal</region-id>
     <url>/citeck/components/document-journal</url>
     <properties>
-        <journalsListId>nomenclature-docs</journalsListId>
+        <journalsListId>global-nomenclature-docs</journalsListId>
         <sendNodeRef>false</sendNodeRef>
     </properties>
 </component>

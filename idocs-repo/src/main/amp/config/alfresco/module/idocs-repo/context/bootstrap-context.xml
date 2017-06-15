@@ -526,6 +526,7 @@
         <property name="name" value="journals-files-nomenclature" />
         <property name="description" value="Files Nomenclature Journals" />
         <property name="sinceVersion" value="2.3" />
+		<!-- <property name="executeOnceOnly" value="false" /> -->
         <property name="appliesFromVersion" value="2.3" />
         <property name="dependsOn">
             <list>
@@ -533,7 +534,8 @@
                 <ref bean="idocs.documentFolders" />
             </list>
         </property>
-        <property name="bootstrapView">
+        <property name="bootstrapViews">
+			<list>
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
                 <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
@@ -541,6 +543,19 @@
                 <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature</prop>
                 <prop key="encoding">UTF-8</prop>
             </props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:files-nomenclature</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:files-nomenclature</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/nomenclature</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
         </property>
     </bean>
 

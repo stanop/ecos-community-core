@@ -156,7 +156,7 @@
             <list>
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
-                    <prop key="location">alfresco/module/orders-repo/journals/internal-in-global-main-list.xml</prop>
+                    <prop key="location">alfresco/module/orders-repo/bootstrap/journals/internal-in-global-main-list.xml</prop>
                     <prop key="messages">alfresco/module/orders-repo/messages/journals-internal</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
