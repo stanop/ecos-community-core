@@ -308,7 +308,7 @@
 		},
 
 		// get results from server response
-		_getResults: function(response, path) {
+		_getResults: function(response, path, excludeFields) {
 			var children = response.json;
 			if(path) {
 				var fields = path.split(/[.]/);
@@ -317,6 +317,11 @@
 					if(!children) break;
 					children = children[fields[i]];
 				}
+			}
+			if (excludeFields) {
+                children = children.filter(function(item) {
+                    return excludeFields.indexOf(item.shortName) == -1;
+                });
 			}
 			return children;
 		},
@@ -421,7 +426,7 @@
 				this._fillModel(items, format);
 				// fire event
 				this.fireEvent("childrenUpdated", { items: items, from: item });
-			}
+			};
 			
 			if(passive || !config.get) {
 				// in passive mode - first ensure, that all items exist in the model
@@ -462,9 +467,9 @@
 				successCallback: {
 					scope: this,
 					fn: function(response) {
-						item._item_children_ = this._getResults(response, config.resultsList);
+						item._item_children_ = this.config ? this._getResults(response, config.resultsList, this.config.excludeFields) : this._getResults(response, config.resultsList);
 						process.call(this, item._item_children_);
-					},
+					}
 				},
 				failureCallback: {
 					scope: this,

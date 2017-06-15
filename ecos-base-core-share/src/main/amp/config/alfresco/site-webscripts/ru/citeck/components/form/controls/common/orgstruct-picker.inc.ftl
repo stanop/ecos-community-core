@@ -9,6 +9,7 @@
 		searchRoot = (params.searchRoot!rootGroup)
 		searchQuery = (params.searchQuery!childrenQuery)
 		rootUrl = (params.rootUrl!"")
+		excludeFields = (params.excludeFields!"")
 	/>
 
 	{
@@ -50,5 +51,6 @@
 			"GROUP": "{displayName} ({shortName})",
 			"USER": "{firstName} {lastName} ({shortName})",
 		},
+		excludeFields: "${excludeFields}"
 	}
 </#macro>

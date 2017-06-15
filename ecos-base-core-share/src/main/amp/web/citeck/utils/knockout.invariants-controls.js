@@ -2508,7 +2508,7 @@ ko.bindingHandlers.orgstructControl = {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
                                 if (params && params.excludeFields) {
                                     results = results.filter(function(item) {
-                                        return item.shortName.indexOf(params.excludeFields) == -1;
+                                        return params.excludeFields.indexOf(item.shortName) == -1;
                                     });
                                 }
 
