@@ -17,6 +17,6 @@
 		<!-- ko ifnot: inlineEditVisibility --><i class="fa fa-pencil-square-o" aria-hidden="true"></i><!-- /ko -->
 	</span>
 <#else>
-	<@views.renderRegion "input" />
 	<@views.renderRegion "label" />
+	<@views.renderRegion "input" />
 </#if>

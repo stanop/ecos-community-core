@@ -954,6 +954,11 @@
   margin-top: 5px;
 }
 
+.invariants-form.form-template-table .form-view.template-table .template-row .form-region.template-textarea {
+  width: auto;
+  margin-top: 0px;
+}
+
 .invariants-form .template-table .template-row.with-help .template-textarea {
   width: calc(100% + 15px);
 }
