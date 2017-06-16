@@ -235,10 +235,10 @@ public class HistoryUtils {
                             }
                         }
                     }
-                    AlfrescoTransactionSupport.bindResource(ASSOC_ADDED, added);
-                    AlfrescoTransactionSupport.bindResource(ASSOC_REMOVED, removed);
+                    AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_ADDED, added);
+                    AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_REMOVED, removed);
                 } else if (added.size() > 0 || removed.size() > 0){
-                    if (resourceKey.equals(ASSOC_ADDED)) {
+                    if (resourceKey.equals(CHILD_ASSOC_ADDED)) {
                         Iterator<ChildAssociationRef> iter = added.iterator();
                         while (iter.hasNext()) {
                             ChildAssociationRef childAssociationRefAdded = iter.next();
