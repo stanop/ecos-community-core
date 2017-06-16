@@ -35,8 +35,9 @@
         <property name="configs" ref="siteConfigResources"/>
     </bean>
 
-    <bean id="ru.citeck.ecos.share.template.TemplateUtils" parent="baseTemplateExtension" class="ru.citeck.ecos.share.template.TemplateUtils">
+    <bean id="ru.citeck.ecos.share.template.CiteckUtilsTemplate" parent="baseTemplateExtension" class="ru.citeck.ecos.share.template.CiteckUtilsTemplate">
         <property name="extensionName" value="citeckUtils" />
+        <property name="modulePackageManager" ref="modulepackagemanager" />
     </bean>
 
     <!--====================================-->

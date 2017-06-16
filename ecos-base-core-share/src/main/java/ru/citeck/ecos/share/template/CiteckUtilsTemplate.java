@@ -4,30 +4,37 @@ import freemarker.cache.TemplateCache;
 import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.TemplateBooleanModel;
+import org.alfresco.web.config.packaging.ModulePackage;
+import org.alfresco.web.config.packaging.ModulePackageManager;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.extensions.webscripts.processor.BaseProcessorExtension;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Pavel Simonov
  */
-public class TemplateUtils extends BaseProcessorExtension {
+public class CiteckUtilsTemplate extends BaseProcessorExtension {
 
     private final Map<String, TemplateBooleanModel> templateExistsCache = new ConcurrentHashMap<>();
+    private final Map<String, ModulePackage> modulePackagesById = new ConcurrentHashMap<>();
+
+    private ModulePackageManager modulePackageManager;
 
     public TemplateBooleanModel templateExists(String path) {
+        return templateExistsCache.computeIfAbsent(path, this::templateExistsImpl);
+    }
 
-        TemplateBooleanModel result = templateExistsCache.get(path);
-
-        if (result == null) {
-            result = templateExistsImpl(path);
-            templateExistsCache.put(path, result);
-        }
-
-        return result;
+    public ModulePackage getModulePackage(String moduleId) {
+        return modulePackagesById.computeIfAbsent(moduleId, id -> {
+            List<ModulePackage> packages = modulePackageManager.getModulePackages();
+            return packages.stream()
+                           .filter(module -> id.equals(module.getId()))
+                           .findFirst().orElse(null);
+        });
     }
 
     public void clearCache() {
@@ -54,5 +61,9 @@ public class TemplateUtils extends BaseProcessorExtension {
         }
 
         return exists ? TemplateBooleanModel.TRUE : TemplateBooleanModel.FALSE;
+    }
+
+    public void setModulePackageManager(ModulePackageManager modulePackageManager) {
+        this.modulePackageManager = modulePackageManager;
     }
 }

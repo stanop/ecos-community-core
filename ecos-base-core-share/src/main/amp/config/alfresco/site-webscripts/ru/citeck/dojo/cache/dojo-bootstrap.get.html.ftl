@@ -4,7 +4,7 @@
    <#if webframeworkConfig.dojoEnabled>
      <script type="text/javascript">
         // Enable Cache Bust for testing
-        dojoConfig.cacheBust = Date.now();
+        dojoConfig.cacheBust = "${citeckUtils.getModulePackage("ecos-base-core-share").getVersion().toString()}";
      </script>
    </#if>
 </@>
