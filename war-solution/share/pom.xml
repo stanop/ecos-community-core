@@ -32,13 +32,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ecos-citeckTheme-share</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
-            <version>${module.citeckTheme.version}</version>
-            <type>amp</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-share</artifactId>
             <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
@@ -146,12 +139,6 @@
                         <overlay>
                             <groupId>de.fmaul</groupId>
                             <artifactId>javascript-console-share</artifactId>
-                            <type>amp</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-citeckTheme-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
