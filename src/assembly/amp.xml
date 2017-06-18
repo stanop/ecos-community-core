@@ -24,7 +24,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>target/classes/META-INF/resources</directory>
+            <directory>target/classes/META-INF</directory>
             <outputDirectory>web</outputDirectory>
             <filtered>false</filtered>
         </fileSet>

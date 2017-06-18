@@ -416,7 +416,7 @@
                     <configuration>
                         <excludes>
                             <exclude>alfresco/**</exclude>
-                            <exclude>META-INF/resources/**</exclude>
+                            <exclude>META-INF/**</exclude>
                         </excludes>
                         <classifier>${build.classifier}</classifier>
                     </configuration>
@@ -590,6 +590,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>contracts-repo</artifactId>
+                            <classifier>${build.classifier}</classifier>
+                            <version>${module.contracts.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -649,6 +657,14 @@
                             <artifactId>idocs-share</artifactId>
                             <classifier>${build.classifier}</classifier>
                             <version>${module.idocs.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>contracts-share</artifactId>
+                            <classifier>${build.classifier}</classifier>
+                            <version>${module.contracts.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
