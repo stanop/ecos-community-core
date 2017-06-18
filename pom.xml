@@ -50,7 +50,6 @@
 
         <alfresco.platform.version>5.1.f</alfresco.platform.version>
         <alfresco.share.version>5.1.f</alfresco.share.version>
-        <alfresco.share.services.version>5.1.f</alfresco.share.services.version>
         <alfresco.platform.artifactId>alfresco</alfresco.platform.artifactId>
         <alfresco.surf.version>6.10</alfresco.surf.version>
 
@@ -59,27 +58,8 @@
         <!-- ECOS build config -->
 
         <default.locale>en</default.locale>
-
-        <module.st-override.version>3.1.0.0-SNAPSHOT</module.st-override.version>
-        <module.base-core.version>2.0.0.1-SNAPSHOT</module.base-core.version>
-        <module.journals.version>2.0.0.1-SNAPSHOT</module.journals.version>
-        <module.forms.version>2.0.0.0-SNAPSHOT</module.forms.version>
-        <module.idocs.version>3.1.0.0-SNAPSHOT</module.idocs.version>
         <module.contracts.version>2.0.0.0-SNAPSHOT</module.contracts.version>
-
-        <enterprise.groupId>ru.citeck.ecos.enterprise</enterprise.groupId>
-        <enterprise.classifier>alfresco-5.1.2</enterprise.classifier>
-        <module.enterprise.version>3.1.0.0-SNAPSHOT</module.enterprise.version>
-        <module.diadoc.version>2.0.0.0-SNAPSHOT</module.diadoc.version>
-        <module.esign.version>2.0.0.0-SNAPSHOT</module.esign.version>
-        <module.integration.version>2.0.0.0-SNAPSHOT</module.integration.version>
-
-        <attorneys.groupId>ru.citeck.ecos</attorneys.groupId>
-        <attorneys.classifier>common</attorneys.classifier>
-        <module.attorneys.version>2.1.0.0-SNAPSHOT</module.attorneys.version>
-        <module.citeckTheme.version>2.0.0.0-SNAPSHOT</module.citeckTheme.version>
-        <build.classifier>${alfresco.platform.version}-com</build.classifier>
-
+        <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
     </properties>
@@ -90,15 +70,10 @@
             <properties>
                 <alfresco.platform.version>5.1.2</alfresco.platform.version>
                 <alfresco.share.version>5.1.2</alfresco.share.version>
-                <alfresco.share.services.version>5.1.f</alfresco.share.services.version>
                 <alfresco.platform.artifactId>alfresco-enterprise</alfresco.platform.artifactId>
-                <alfresco.surf.version>6.10</alfresco.surf.version>
                 <maven.alfresco.edition>enterprise</maven.alfresco.edition>
-                <build.classifier>${alfresco.platform.version}-ent</build.classifier>
+                <ecos.project.classifier>${alfresco.platform.version}-ent</ecos.project.classifier>
             </properties>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
         </profile>
         <profile>
             <id>development</id>
@@ -279,8 +254,8 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>1st-override-repo</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.st-override.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -288,15 +263,15 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-base-core-share</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.base-core.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-base-core-repo</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.base-core.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -304,15 +279,15 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-forms-repo</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.forms.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-forms-share</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.forms.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -320,15 +295,15 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>journals-repo</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.journals.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>journals-share</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.journals.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -336,15 +311,15 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idocs-repo</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.idocs.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idocs-share</artifactId>
-                <classifier>${build.classifier}</classifier>
-                <version>${module.idocs.version}</version>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -426,7 +401,7 @@
                             <exclude>alfresco/**</exclude>
                             <exclude>META-INF/**</exclude>
                         </excludes>
-                        <classifier>${build.classifier}</classifier>
+                        <classifier>${ecos.project.classifier}</classifier>
                     </configuration>
                 </plugin>
 
@@ -555,7 +530,7 @@
                         <moduleDependency>
                             <groupId>${alfresco.groupId}</groupId>
                             <artifactId>alfresco-share-services</artifactId>
-                            <version>${alfresco.share.services.version}</version>
+                            <version>${alfresco.share.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -563,47 +538,47 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.st-override.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.base-core.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.forms.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.journals.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.idocs.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${module.contracts.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -633,47 +608,47 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.st-override.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.base-core.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.forms.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.journals.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
-                            <version>${module.idocs.version}</version>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${module.contracts.version}</version>
                             <type>amp</type>
                         </moduleDependency>

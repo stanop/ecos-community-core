@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <artifactId>ecos-base-core-share</artifactId>
-    <version>2.0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ecos-base-core-share</name>

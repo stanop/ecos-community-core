@@ -39,7 +39,7 @@
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-share-services</artifactId>
-            <version>${alfresco.share.services.version}</version>
+            <version>${alfresco.share.version}</version>
             <type>amp</type>
         </dependency>
         <!-- Demonstrating the dependency / installation of the repo AMP developed in the 'repo-amp' module -->
@@ -52,51 +52,45 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.st-override.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.base-core.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.forms.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-repo</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.journals.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-repo</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.idocs.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>contracts-repo</artifactId>
-            <classifier>${build.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
             <version>${module.contracts.version}</version>
             <type>amp</type>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>${project.groupId}</groupId>-->
-        <!--<artifactId>unilever-finance-repo</artifactId>-->
-        <!--<classifier>${ecos.build.classifier}</classifier>-->
-        <!--<type>amp</type>-->
-        <!--</dependency>-->
 
         <!-- Uncomment if you are using SPP (SharePoint Protocol Support) for Online Edit etc -->
         <!--
@@ -124,7 +118,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <classifier>${build.classifier}</classifier>
+                    <classifier>${ecos.project.classifier}</classifier>
                     <!--  Here is can control the order of overlay of your (WAR, AMP, etc.) dependencies
                         | NOTE: At least one WAR dependency must be uncompressed first
                         | NOTE: In order to have a dependency effectively added to the WAR you need to
@@ -156,45 +150,40 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-repo</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
-                        <!--<overlay>-->
-                        <!--<groupId>${project.groupId}</groupId>-->
-                        <!--<artifactId>unilever-finance-repo</artifactId>-->
-                        <!--<classifier>${ecos.build.classifier}</classifier>-->
-                        <!--<type>amp</type>-->
-                        <!--</overlay>-->
+
                         <!-- Uncomment if you are using SPP -->
                         <!--
                         <overlay>

@@ -33,58 +33,53 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-citeckTheme-share</artifactId>
-            <classifier>${build.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
             <version>${module.citeckTheme.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-share</artifactId>
-            <version>${module.st-override.version}</version>
-            <classifier>${build.classifier}</classifier>
+            <version>${project.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-share</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.base-core.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-share</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.forms.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-share</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.journals.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-share</artifactId>
-            <classifier>${build.classifier}</classifier>
-            <version>${module.idocs.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>contracts-share</artifactId>
             <version>${module.contracts.version}</version>
-            <classifier>${build.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>${project.groupId}</groupId>-->
-        <!--<artifactId>unilever-finance-share</artifactId>-->
-        <!--<classifier>${ecos.build.classifier}</classifier>-->
-        <!--<type>amp</type>-->
-        <!--</dependency>-->
+
         <!-- Uncomment if you are using RM (Records Management) module -->
         <!-- Make sure to set the correct version for 5.1 with alfresco.rm.version property in parent POM
         <dependency>
@@ -123,7 +118,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <classifier>${build.classifier}</classifier>
+                    <classifier>${ecos.project.classifier}</classifier>
                     <!-- Bring in the MANIFEST.MF file from the original share.war, it contains version information
                          that is needed for it to operate properly -->
                     <archive>
@@ -156,51 +151,46 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-citeckTheme-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-share</artifactId>
-                            <classifier>${build.classifier}</classifier>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
-                        <!--<overlay>-->
-                        <!--<groupId>${project.groupId}</groupId>-->
-                        <!--<artifactId>unilever-finance-share</artifactId>-->
-                        <!--<classifier>${ecos.build.classifier}</classifier>-->
-                        <!--<type>amp</type>-->
-                        <!--</overlay>-->
+
                         <!-- Uncomment if you are using RM module -->
                         <!--
                         <overlay>

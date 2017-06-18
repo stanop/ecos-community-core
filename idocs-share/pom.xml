@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <artifactId>idocs-share</artifactId>
-    <version>3.1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>idocs-share</name>
@@ -41,7 +40,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-share</artifactId>
-            <classifier>${build.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
     </dependencies>
