@@ -80,6 +80,8 @@
         <module.citeckTheme.version>2.0.0.0-SNAPSHOT</module.citeckTheme.version>
         <build.classifier>${alfresco.platform.version}-com</build.classifier>
 
+        <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
+
     </properties>
 
     <profiles>
@@ -97,6 +99,12 @@
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
+        </profile>
+        <profile>
+            <id>development</id>
+            <properties>
+                <yuicompressor.compress.skip>true</yuicompressor.compress.skip>
+            </properties>
         </profile>
     </profiles>
 
@@ -452,21 +460,23 @@
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>yuicompressor-maven-plugin</artifactId>
-                    <version>1.2</version>
-                    <!--<executions>
+                    <version>1.5.1</version>
+                    <executions>
                         <execution>
                             <goals>
                                 <goal>compress</goal>
                             </goals>
                             <configuration>
+                                <jswarn>false</jswarn>
+                                <skip>${yuicompressor.compress.skip}</skip>
                                 <excludes>
-                                    <exclude>config/**</exclude>
+                                    <exclude>alfresco/**</exclude>
                                     <exclude>*-min.js</exclude>
                                     <exclude>*-min.css</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
-                    </executions>-->
+                    </executions>
                 </plugin>
 
             </plugins>
