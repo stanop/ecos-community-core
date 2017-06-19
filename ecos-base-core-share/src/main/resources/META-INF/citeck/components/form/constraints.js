@@ -375,15 +375,14 @@
 
 
                         // max-height
-                        var maxHeight = screen.height - 200,
-                            formButtonsHeight = $(".ecos-form > .form-buttons", panel.body)[0].offsetHeight;
-
+                        var maxHeight = screen.height - 200;
+                        
                         $(panel.body)
-                            .css("max-height", maxHeight - panel.header.offsetHeight + "px").addClass("fixed-size")
+                            .css("max-height", maxHeight - 33 + "px").addClass("fixed-size")
                             .parent().css("max-height", maxHeight + "px");
 
                         $(".ecos-form > .form-fields", panel.body)
-                            .css("max-height", maxHeight - formButtonsHeight - panel.header.offsetHeight + "px");
+                            .css("max-height", maxHeight - 70 + "px");
 
 
                         // show panel
