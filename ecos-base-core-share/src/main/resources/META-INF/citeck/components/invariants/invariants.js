@@ -326,7 +326,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (pagination.skipCount) query.skipCount = pagination.skipCount;
             if (pagination.sortBy) {
                 if (_.isArray(pagination.sortBy)) query.sortBy = pagination.sortBy;
-                if (_.isObject(pagination.sortBy)) query.sortBy = [pagination.sortBy];
+                if (_.isObject(pagination.sortBy)) query.sortBy = [ pagination.sortBy ];
             }
         }
 
@@ -509,41 +509,35 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     ClassInvariantSet
         .key('className', s)
-        .property('invariants', [Invariant])
+        .property('invariants', [ Invariant ])
         .load('invariants', koutils.bulkLoad(invariantsLoader, "className", "invariants"))
         ;
 
     MultiClassInvariantSet
         .key('classNames', s)
         .computed('invariants', function() {
-            var classNames = this.classNames().split(',');
-            var invariants = _.flatten(_.map(classNames, function(className) {
-                return new ClassInvariantSet(className).invariants();
-            }));
-            return invariants.sort(function(i1, i2) {
-                // final first
-                if(i1.isFinal() != i2.isFinal()) return i1.isFinal() ? -1 : 1;
+            var classNames = this.classNames().split(','),
+                invariants = _.flatten(_.map(classNames, function(className) {
+                    return new ClassInvariantSet(className).invariants();
+                }));
+            
+            var priorityGroups = _.groupBy(invariants, function(invariant) {
+                if (invariant.isFinal()) return 1;
 
-                // highest attribute priority first
-                var a1 = i1.attributeScopeKind().match(/_type$/) == null;
-                var a2 = i2.attributeScopeKind().match(/_type$/) == null;
-                if(a1 != a2) return a1 ? -1 : 1;
+                if (invariant.attributeScopeKind().match(/_type$/)) return 2;
 
-                // highest invariant priority first
-                var priorities = { "common": 1, "module": 2, "extend": 3, "custom": 4, "view-scoped": 5 };
-                var p1 = priorities[i1.priority()] || 0;
-                var p2 = priorities[i2.priority()] || 0;
-                if(p1 != p2) return p1 > p2 ? -1 : 1;
+                var priorities = { "common": 10, "module": 11, "extend": 12, "custom": 13, "view-scoped": 14 },
+                    priority = priorities[invariant.priority()];
+                if (priority) return priority;
 
-                // highest class priority first
-                var c1 = i1.classScope();
-                var c2 = i2.classScope();
-                var cp1 = classNames.indexOf(c1);
-                var cp2 = classNames.indexOf(c2);
-                if(cp1 != cp2) return cp1 > cp2 ? -1 : 1;
+                var classScope = invariant.classScope();
+                if (classNames.indexOf(classScope) != -1)
+                    return 100 + classNames.indexOf(classScope);
 
-                return 0;
+                return 1000;
             });
+
+            return _.flatten(_.values(priorityGroups));
         })
         ;
 

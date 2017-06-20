@@ -609,15 +609,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 if (value) {
                     // if string
                     if (typeof value == "string") {
-                        if (attr.labels() && attr.labels()[value]) 
+                        if (attr.labels && attr.labels() && attr.labels()[value]) 
                             return attr.labels()[value];
                     }
 
                     // if object
                     if (typeof value == "object") {
                         if (value instanceof Date) return value.toLocaleString();
-                        if (isInvariantsObject(value)) return value.name;
-                        if (value.length && attr.labels()) {
+                        if (isInvariantsObject(value)) return this.getTitle(attr);
+                        if (value.length && attr.labels && attr.labels()) {
                             var array = value.map(function (item) {
                                 return attr.labels()[item] ? attr.labels()[item] : item;
                             });
@@ -650,6 +650,59 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     }
                    
                     return data.valueTitle() || data.textValue();
+                });
+            };
+
+            this.getCellValueTitleList = function(attribute) {
+                return ko.computed(function() {
+                    var assemblyValues = [],
+                        attributeValues = attribute.value();
+
+                    _.each(attributeValues, function(value) {
+                        // if we have a labels
+                        if (_.isString(value)) {
+                            if (attribute.labels && attribute.labels().length) {
+                                assemblyValues.push(attribute.labels()[value]);
+                            } 
+                        }
+
+                        if (_.isObject(value)) {
+                            // if we have a invariant node
+                            if (isInvariantsObject(value)) assemblyValues.push(attribute.valueTitle());
+
+                            // if we have a date
+                            if (_.isDate(value)) assemblyValues.push(value.toLocaleString());
+                        }
+
+                        // return original if not another
+                        assemblyValues.push(value);
+                    });
+
+                    return assemblyValues.join(", ")
+                })
+            };
+
+            this.getCellValueTitle = function(attribute) {
+                return ko.computed(function() {
+                    var attributeValue = attribute.value();
+
+                    // if we have a labels
+                    if (_.isString(attributeValue)) {
+                        if (attribute.labels && attribute.labels().length) {
+                            return attribute.labels()[attributeValue]
+                        }
+                    }
+
+                    if (_.isObject(attributeValue)) {
+                        // if we have a invariant node
+                        if (isInvariantsObject(attributeValue)) return attribute.valueTitle();
+
+                        // if we have a date
+                        if (_.isDate(attributeValue)) return attributeValue.toLocaleString();
+                    }
+
+                    // return original if not another
+                    return attributeValue;
                 });
             };
 
@@ -747,13 +800,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                                                    click: $component.selectElement, clickBubble: false,\
                                                                    event: { dblclick: $component.selectElement },\
                                                                    css: { selected: $component.selected($data) }">\
-                                <!-- ko if: $parent.properties[$data.name()] -->\
-                                    <td data-bind="text: $component.displayText($parent.properties[$data.name()], $data)"></td>\
-                                <!-- /ko -->\
-                                <!-- ko ifnot: $parent.properties[$data.name()] -->\
-                                    <!-- ko with: $parent.impl().attribute($data.name()) -->\
-                                        <td data-bind="text: $component.getTitle($data)"></td>\
-                                    <!-- /ko -->\
+                                <!-- ko with: $parent.impl().attribute($data.name()) -->\
+                                        <!-- ko ifnot: $data.multiple -->\
+                                            <td data-bind="text: $component.getCellValueTitle($data)"></td>\
+                                        <!-- /ko -->\
+                                        <!-- ko if: $data.multiple -->\
+                                            <td data-bind="text: $component.getCellValueTitleList($data)"></td>\
+                                        <!-- /ko -->\
                                 <!-- /ko -->\
                             </tr>\
                         <!-- /ko -->\
@@ -765,13 +818,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                                                    css: { selected: $component.selected($data) }">\
                                <!-- ko if: $component.journalType.attribute($data) -->\
                                     <!-- ko with: $component.journalType.attribute($data) -->\
-                                        <!-- ko if: $parents[1].properties[$data.name()] -->\
-                                            <td data-bind="text: $component.displayText($parents[1].properties[$data.name()], $data)"></td>\
+                                        <!-- ko ifnot: $data.multiple -->\
+                                            <td data-bind="text: $component.getCellValueTitle($data)"></td>\
                                         <!-- /ko -->\
-                                        <!-- ko ifnot: $parents[1].properties[$data.name()] -->\
-                                            <!-- ko with: $parents[1].impl().attribute($data.name()) -->\
-                                                <td data-bind="text: $component.getTitle($data)"></td>\
-                                            <!-- /ko -->\
+                                        <!-- ko if: $data.multiple -->\
+                                            <td data-bind="text: $component.getCellValueTitleList($data)"></td>\
                                         <!-- /ko -->\
                                     <!-- /ko -->\
                                 <!-- /ko -->\
