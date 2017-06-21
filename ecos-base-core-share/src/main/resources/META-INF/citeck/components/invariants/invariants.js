@@ -1112,7 +1112,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 isDraft = this.node().properties["invariants:isDraft"],
                 isView = this.node().impl().inViewMode();
 
-            if(invariantValue != null) return invariantValue;
+            if(invariantValue != null) {
+                this.newValue(this.convertValue(invariantValue, true));
+                return invariantValue;
+            }
+            
             if(this.changed()) return this.newValue();
 
             if(this.persisted()) {
