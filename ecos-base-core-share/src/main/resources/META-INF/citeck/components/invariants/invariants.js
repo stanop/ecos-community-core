@@ -1112,7 +1112,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 isDraft = this.node().properties["invariants:isDraft"],
                 isView = this.node().impl().inViewMode();
 
-            if(invariantValue != null) return invariantValue;
+            if(invariantValue != null) {
+                this.newValue(this.convertValue(invariantValue, true));
+                return invariantValue;
+            }
+            
             if(this.changed()) return this.newValue();
 
             if(this.persisted()) {
@@ -2314,7 +2318,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         form = $("#" + self.options.model.key),
                         inlineEditingAttributes = node.impl()._filterAttributes("inlineEditVisibility");
 
-                    if (!form.is(e.target) && form.has(e.target).length == 0 && inlineEditingAttributes.length) {
+                    var targetOutForm = !form.is(e.target) && form.has(e.target).length == 0,
+                        isPanel = $(e.target).closest(".yui-panel-container").length,
+                        isLink = e.target.tagName == "A";
+
+                    // target not: from form, a link, a panel
+                    if (targetOutForm && !isPanel && !isLink && inlineEditingAttributes.length) {
                         if (isDraft || node.resolve("impl.valid")) {
                             // save node if it valid
                             if (_.any(inlineEditingAttributes, function(attr) {
