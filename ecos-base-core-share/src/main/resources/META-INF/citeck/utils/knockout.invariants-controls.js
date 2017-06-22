@@ -1460,11 +1460,8 @@ ko.components.register("autocomplete", {
             var node = event.target,
                 body = document.getElementById("Share");
 
-            while (node != body) {
-                if (node == self.element) {
-                    return;
-                }
-                
+            while (node && node != body) {
+                if (node == self.element) return;
                 node = node.parentNode;
             }
 

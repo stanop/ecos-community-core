@@ -327,7 +327,7 @@
                             fixedcenter:  "contained",
                             constraintoviewport: true,
                             visible: false,
-                            close: true,
+                            close: false, // Because not access to runtime
                             modal: true,
                             postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
                             hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
@@ -349,28 +349,38 @@
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
                             if(runtime.key() != viewId) return;
+                            
                             var node = args[1].node;
+
+                            // save node
                             node.thisclass.save(node, function(persistedNode) {
                                 _.isFunction(callback) ? callback(persistedNode) : callback.fn.call(callback.scope, persistedNode);
-                                runtime.node().impl().reset(true);
                                 panel.hide();
+                                runtime.terminate();
                             });
                         };
 
                         var onCancel = function(layer, args) {
                             var runtime = args[1].runtime;
                             if(runtime.key() != viewId) return;
-                            runtime.node().impl().reset();
+                            
                             panel.hide();
+                            runtime.terminate();
                         };
 
                         YAHOO.Bubbling.on("node-view-submit", onSubmit);
                         YAHOO.Bubbling.on("node-view-cancel", onCancel);
+                        
                         panel.subscribe("hide", function() {
+                            // unsubscribe
                             YAHOO.Bubbling.unsubscribe("node-view-submit", onSubmit);
                             YAHOO.Bubbling.unsubscribe("node-view-cancel", onCancel);
+                            
+                            // destory panel
                             _.defer(_.bind(panel.destroy, panel));
-                            // TODO destroy runtime
+
+                            // clear DOM
+                            $("[id^='" + id + "']").remove();
                         });
 
 
