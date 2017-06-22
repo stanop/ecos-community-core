@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -210,13 +210,12 @@ define(['lib/knockout'], function(ko) {
 					successCallback: {
 						fn: function(response) {
 							var result = response.json;
+
 							if(config.toResult) result = config.toResult(result);
 							if(config.onSuccess) config.onSuccess(viewModel, result);
-							if(typeof callback == "function") {
-								callback(result);
-							} else {
-								callback.fn.call(callback.scope, result);
-							}
+							
+							if(typeof callback == "function") { callback(result); } 
+							else if (typeof callback.fn == "function") { callback.fn.call(callback.scope, result); }
 						}
 					},
 					failureCallback: {

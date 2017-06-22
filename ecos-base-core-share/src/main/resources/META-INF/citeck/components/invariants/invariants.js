@@ -2157,10 +2157,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             });
         })
 
+        .method('terminate', function() {
+            var form = Alfresco.util.ComponentManager.get(this.key() + "-form");
+            if (form) form._terminate();
+            delete form;
+        })
+
         .init(function() {
             this._loading(true);
-
-
         })
         ;
 
@@ -2252,6 +2256,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     };
 
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
+
+        _terminate: function() {
+            // unregister component
+            Alfresco.util.ComponentManager.unregister(this);
+
+            // destory knockout runtime
+            ko.cleanNode(this.id);
+            this.runtime = null;
+
+            this.destroy();
+        },
 
         onReady: function() {
             var self = this;
