@@ -286,6 +286,49 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(value == null) return key;
             return YAHOO.lang.substitute(value, _.rest(arguments));
         },
+
+        searchQuery: function(node, attrName, query, schema, cacheAge) {
+
+            var attribute = node.impl().attribute(attrName),
+                attInfo = attribute.info();
+
+            if (!attInfo.searchQueryData) {
+                attInfo.searchQueryData = {
+                    query: new ko.observable(""),
+                    nodes: new ko.observableArray([]),
+                    schema: null,
+                    cacheAge: null
+                };
+                attInfo.searchQueryData.query.subscribe(function(value) {
+
+                    var dataObj = { query: value };
+                    if (this.schema) dataObj.schema = this.schema;
+                    if (this.cacheAge) dataObj.cacheAge = this.cacheAge;
+
+                    Alfresco.util.Ajax.jsonGet({
+                        url: Alfresco.constants.PROXY_URI + "citeck/search/query",
+                        dataObj: dataObj,
+                        successCallback: {
+                            scope: this,
+                            fn: function(response) {
+                                var nodes = [];
+                                var results = response.json.results;
+                                for (var n in results) {
+                                    nodes.push(new Node(results[n]));
+                                }
+                                this.nodes(nodes);
+                            }
+                        }
+                    });
+                }, attInfo.searchQueryData);
+            }
+
+            attInfo.searchQueryData.cacheAge = cacheAge;
+            attInfo.searchQueryData.schema = schema;
+            attInfo.searchQueryData.query(query);
+
+            return attInfo.searchQueryData.nodes();
+        },
         ko: ko,
         koutils: koutils,
         utils: UtilsImpl,

@@ -1,0 +1,13 @@
+<webscript>
+    <shortname>Search query</shortname>
+    <description>Execute search query</description>
+    <url>/citeck/search/query</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <cache>
+        <never>false</never>
+        <public>false</public>
+        <mustrevalidate/>
+    </cache>
+</webscript>

@@ -195,4 +195,13 @@
         <property name="prefixResolver" ref="namespaceService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.search.search-query.get"
+          class="ru.citeck.ecos.webscripts.search.SearchQueryGet"
+          parent="webscript">
+        <property name="searchService" ref="searchService" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="attributeService" ref="nodeAttributeService" />
+        <property name="namespaceService" ref="namespaceService" />
+    </bean>
+
 </beans>
