@@ -201,8 +201,16 @@
     </view>
 
     <view class="deputy:absenceEvent">
-        <field prop="deputy:startAbsence"/>
-        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:startAbsence">
+            <region name="input" template="datetime">
+                <param name="mode">alfresco</param>
+            </region>
+        </field>
+        <field prop="deputy:endAbsence">
+            <region name="input" template="datetime">
+                <param name="mode">alfresco</param>
+            </region>
+        </field>
         <field prop="deputy:comment"/>
         <field assoc="deputy:user">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -217,8 +225,16 @@
     </view>
 
     <view class="deputy:absenceEvent" id="currentUserAbsence">
-        <field prop="deputy:startAbsence"/>
-        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:startAbsence">
+            <region name="input" template="datetime">
+                <param name="mode">alfresco</param>
+            </region>
+        </field>
+        <field prop="deputy:endAbsence">
+            <region name="input" template="datetime">
+                <param name="mode">alfresco</param>
+            </region>
+        </field>
         <field prop="deputy:comment"/>
         <field assoc="deputy:user">
             <invariant on="value" language="javascript">
@@ -235,8 +251,16 @@
     </view>
 
     <view class="deputy:selfAbsenceEvent">
-        <field prop="deputy:startAbsence"/>
-        <field prop="deputy:endAbsence"/>
+        <field prop="deputy:startAbsence">
+            <region name="input" template="datetime">
+                <param name="mode">alfresco</param>
+            </region>
+        </field>
+        <field prop="deputy:endAbsence">
+            <region name="input" template="datetime">
+                <param name="mode">alfresco</param>
+            </region>
+        </field>
         <field prop="deputy:autoAnswer"/>
         <field assoc="deputy:user">
             <invariant on="value" language="javascript">
