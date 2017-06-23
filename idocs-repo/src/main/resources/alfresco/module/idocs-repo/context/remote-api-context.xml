@@ -263,6 +263,13 @@
         <property name="namespaceService" ref="NamespaceService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.history.document-history.get" class="ru.citeck.ecos.webscripts.history.DocumentHistoryGet" parent="webscript">
+        <property name="historyRemoteService" ref="historyRemoteService"/>
+        <property name="nodeService" ref="NodeService"/>
+        <property name="personService" ref="PersonService"/>
+        <property name="historyService" ref="historyService"/>
+    </bean>
+
     <bean id="webscript.ru.citeck.tasks.document-tasks.get" class="ru.citeck.ecos.webscripts.tasks.DocumentTasksGet"
             parent="webscript">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
