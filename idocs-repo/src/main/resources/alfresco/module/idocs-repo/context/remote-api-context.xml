@@ -267,7 +267,7 @@
         <property name="historyRemoteService" ref="historyRemoteService"/>
         <property name="nodeService" ref="NodeService"/>
         <property name="personService" ref="PersonService"/>
-        <property name="historyService" ref="historyService"/>
+        <property name="historyGetService" ref="historyGetService"/>
     </bean>
 
     <bean id="webscript.ru.citeck.tasks.document-tasks.get" class="ru.citeck.ecos.webscripts.tasks.DocumentTasksGet"

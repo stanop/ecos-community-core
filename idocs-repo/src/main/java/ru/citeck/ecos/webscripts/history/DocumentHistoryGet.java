@@ -8,12 +8,13 @@ import org.alfresco.service.namespace.QName;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.history.HistoryRemoteService;
-import ru.citeck.ecos.history.HistoryService;
+import ru.citeck.ecos.history.impl.HistoryGetService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,20 +33,26 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** Constants */
-    private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
-    private static final String HISTORY_PROPERTY_NAME = "history";
-    private static final String ATTRIBUTES_PROPERTY_NAME = "attributes";
-    private static final Pair<String, String> NODE_REF = new Pair<>("nodeRef", "uuid");
-    private static final Pair<String, String> EVENT_INITIATOR = new Pair<>("event:initiator", "username");
-    private static final Pair<String, String> DOCUMENT_DATE = new Pair<>("event:date", "creationTime");
-    private static final Pair<String, String> DOCUMENT_VERSION = new Pair("event:documentVersion", "version");
-    private static final Pair<String, String> COMMENTS = new Pair("event:taskComment", "comments");
-    private static final Pair<String, String> EVENT_TYPE = new Pair<>("event:name", "eventType");
+    public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
+    public static final String HISTORY_PROPERTY_NAME = "history";
+    public static final String ATTRIBUTES_PROPERTY_NAME = "attributes";
+    public static final Pair<String, String> NODE_REF = new Pair<>("nodeRef", "historyEventUuid");
+    public static final Pair<String, String> EVENT_INITIATOR = new Pair<>("event:initiator", "username");
+    public static final Pair<String, String> DOCUMENT_DATE = new Pair<>("event:date", "creationTime");
+    public static final Pair<String, String> DOCUMENT_VERSION = new Pair("event:documentVersion", "version");
+    public static final Pair<String, String> COMMENTS = new Pair("event:taskComment", "comments");
+    public static final Pair<String, String> EVENT_TYPE = new Pair<>("event:name", "eventType");
 
     /**
      * Request params
      */
     private static final String DOCUMENT_NODE_REF = "nodeRef";
+
+    /**
+     * Properties values
+     */
+    @Value("${ecos.citek.history.service.enabled}")
+    private Boolean enabledRemoteHistoryService;
 
     /**
      * Services
@@ -56,7 +63,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     private NodeService nodeService;
 
-    private HistoryService historyService;
+    private HistoryGetService historyGetService;
 
     /**
      * Execute implementation
@@ -69,11 +76,17 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String nodeRefUuid = req.getParameter(DOCUMENT_NODE_REF);
         NodeRef documentRef = new NodeRef(nodeRefUuid);
-        List historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
+        List historyRecordMaps = null;
+        if (enabledRemoteHistoryService) {
+            historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
+        } else {
+            historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("jsonResult", createJsonResponse(historyRecordMaps));
         return result;
     }
+
 
     /**
      * Create json response
@@ -97,7 +110,9 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             attributesNode.put(EVENT_TYPE.getKey(), (String) historyRecordMap.get(EVENT_TYPE.getValue()));
             /** User */
             NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(EVENT_INITIATOR.getValue()));
-            attributesNode.put(EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
+            if (userNodeRef != null) {
+                attributesNode.put(EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
+            }
             /** Add history node to result */
             recordObjectNode.put(ATTRIBUTES_PROPERTY_NAME, attributesNode);
             arrayNode.add(recordObjectNode);
@@ -140,7 +155,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         this.nodeService = nodeService;
     }
 
-    public void setHistoryService(HistoryService historyService) {
-        this.historyService = historyService;
+    public void setHistoryGetService(HistoryGetService historyGetService) {
+        this.historyGetService = historyGetService;
     }
 }

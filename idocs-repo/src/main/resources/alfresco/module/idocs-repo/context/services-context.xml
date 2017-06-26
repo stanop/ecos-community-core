@@ -436,6 +436,11 @@
 		<property name="restTemplate" ref="restTemplate"/>
 	</bean>
 
+	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
+		<property name="nodeService" ref="NodeService"/>
+		<property name="personService" ref="PersonService"/>
+	</bean>
+
     <bean id="historyServiceJS" class="ru.citeck.ecos.history.HistoryServiceJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="historyService"/>
         <property name="historyService" ref="historyService"/>
