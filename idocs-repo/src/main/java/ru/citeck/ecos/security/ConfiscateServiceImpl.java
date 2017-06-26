@@ -18,20 +18,26 @@
  */
 package ru.citeck.ecos.security;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.OwnableService;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
-
+import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.GrantModel;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Simple ConfiscateService implementation.
@@ -41,12 +47,16 @@ import ru.citeck.ecos.model.GrantModel;
  */
 public class ConfiscateServiceImpl implements ConfiscateService
 {
+
+	private static final Log logger = LogFactory.getLog(ConfiscateServiceImpl.class);
 	private NodeService nodeService;
 	private DictionaryService dictionaryService;
 	private OwnableService ownableService;
 	private PermissionService permissionService;
 	private AssociationWalker walker;
 	private String confiscateToUser;
+	private ExecutorService executorService = Executors.newFixedThreadPool(50);
+	private TransactionService transactionService;
 
 	/////////////////////////////////////////////////////////////////
 	//                     SPRING INTERFACE                        //
@@ -98,38 +108,60 @@ public class ConfiscateServiceImpl implements ConfiscateService
 	// general confiscateNode implementation
 	/*package*/ void confiscateNodeImpl(NodeRef nodeRef, boolean restrictInheritance) {
 		// if node does not exist - do nothing
-		if(!nodeService.exists(nodeRef)) {
-			return;
-		}
+		executorService.execute(getConfiscateNodeTask(nodeRef, restrictInheritance));
+	}
 
-		// if node is already confiscated - do nothing
-		if(nodeService.hasAspect(nodeRef, GrantModel.ASPECT_CONFISCATED)) {
-			return;
-		}
-		
-		// maintain permissions only for cm:cmobject subclasses
-		if(!dictionaryService.isSubClass(nodeService.getType(nodeRef), ContentModel.TYPE_CMOBJECT)) {
-			return;
-		}
-			
-		// otherwise do confiscate it:
-		String owner = ownableService.getOwner(nodeRef);
-		boolean inherits = permissionService.getInheritParentPermissions(nodeRef);
-		
-		Map<QName,Serializable> properties = new HashMap<QName,Serializable>(1);
-		properties.put(GrantModel.PROP_OWNER, owner);
-		properties.put(GrantModel.PROP_INHERITS, inherits);
-		nodeService.addAspect(nodeRef, GrantModel.ASPECT_CONFISCATED, properties);
+	private Runnable getConfiscateNodeTask(final NodeRef nodeRef, final boolean restrictInheritance) {
+		return new Runnable() {
+                @Override
+                public void run() {
+					AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
 
-		ownableService.setOwner(nodeRef, confiscateToUser);
-		if(restrictInheritance) {
-			permissionService.setInheritParentPermissions(nodeRef, false);
-		}
-		
-		// secondary assocs receive permissions from GrantPermissionService and primary - do not
-		// so we restrict permission inheritance only on secondary assocs
-		this.confiscateNodeImpl(walker.getPrimaryAssocs(nodeRef), false);
-		this.confiscateNodeImpl(walker.getSecondaryAssocs(nodeRef), true);
+						@Override
+						public Void doWork() throws Exception {
+							transactionService.getRetryingTransactionHelper().doInTransaction(
+									new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
+										public String execute() throws Exception {
+											if (!nodeService.exists(nodeRef)) {
+												return null;
+											}
+
+											// if node is already confiscated - do nothing
+											if (nodeService.hasAspect(nodeRef, GrantModel.ASPECT_CONFISCATED)) {
+												return null;
+											}
+
+											// maintain permissions only for cm:cmobject subclasses
+											if (!dictionaryService.isSubClass(nodeService.getType(nodeRef), ContentModel.TYPE_CMOBJECT)) {
+												return null;
+											}
+
+											// otherwise do confiscate it:
+											String owner = ownableService.getOwner(nodeRef);
+											boolean inherits = permissionService.getInheritParentPermissions(nodeRef);
+
+											Map<QName, Serializable> properties = new HashMap<QName, Serializable>(1);
+											properties.put(GrantModel.PROP_OWNER, owner);
+											properties.put(GrantModel.PROP_INHERITS, inherits);
+											nodeService.addAspect(nodeRef, GrantModel.ASPECT_CONFISCATED, properties);
+
+											ownableService.setOwner(nodeRef, confiscateToUser);
+											if (restrictInheritance) {
+												permissionService.setInheritParentPermissions(nodeRef, false);
+											}
+
+											// secondary assocs receive permissions from GrantPermissionService and primary - do not
+											// so we restrict permission inheritance only on secondary assocs
+											confiscateNodeImpl(walker.getPrimaryAssocs(nodeRef), false);
+											confiscateNodeImpl(walker.getSecondaryAssocs(nodeRef), true);
+											return null;
+										}
+									}, false, true);
+							return null;
+						}
+					});
+                }
+            };
 	}
 
 	// general returnNode implementation
@@ -176,5 +208,8 @@ public class ConfiscateServiceImpl implements ConfiscateService
 			this.returnNodeImpl(nodeRef, resetOwner);
 		}
 	}
-	
+
+	public void setTransactionService(TransactionService transactionService) {
+		this.transactionService = transactionService;
+	}
 }

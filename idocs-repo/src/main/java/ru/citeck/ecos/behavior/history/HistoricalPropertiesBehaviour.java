@@ -32,10 +32,12 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.history.HistoryUtils;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -55,6 +57,8 @@ public class HistoricalPropertiesBehaviour implements
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
 	private HistoryService historyService;
+	@Autowired
+	private TransactionUtils transactionUtils;
 
 	private QName className;
 	private List<QName> allowedProperties;
@@ -200,7 +204,7 @@ public class HistoricalPropertiesBehaviour implements
 						HistoryUtils.eventProperties(
 								HistoryUtils.ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), HistoryUtils.getAssocComment(nodeAssocRef, null, dictionaryService, nodeService), null, null
 						));
-				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_ADDED, historyService, dictionaryService, nodeService);
+				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_ADDED, historyService, dictionaryService, nodeService, transactionUtils);
 			}
 		}
 	}
@@ -218,7 +222,7 @@ public class HistoricalPropertiesBehaviour implements
 						HistoryUtils.eventProperties(
 								HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, HistoryUtils.getAssocComment(null, nodeAssocRef, dictionaryService, nodeService), null, null
 						));
-				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService);
+				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService, transactionUtils);
 			}
 		}
 	}
@@ -239,7 +243,7 @@ public class HistoricalPropertiesBehaviour implements
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_ADDED, historyService, dictionaryService, nodeService, "");
+                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_ADDED, historyService, dictionaryService, nodeService, "", transactionUtils);
 			}
 		}
 	}
@@ -259,7 +263,7 @@ public class HistoricalPropertiesBehaviour implements
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, historyService, dictionaryService, nodeService, "");
+                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, historyService, dictionaryService, nodeService, "", transactionUtils);
 			}
 		}
 	}
@@ -281,7 +285,7 @@ public class HistoricalPropertiesBehaviour implements
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-				HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, historyService, dictionaryService, nodeService, String.valueOf(nodeService.getProperty(nodeTarget, ContentModel.PROP_NAME)));
+				HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, historyService, dictionaryService, nodeService, String.valueOf(nodeService.getProperty(nodeTarget, ContentModel.PROP_NAME)), transactionUtils);
 			}
 		}
 	}

@@ -4,32 +4,47 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
-import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
+import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
+@Component
 public class TransactionUtils {
 
     private static final Logger LOG = Logger.getLogger(TransactionUtils.class);
 
-    private static TransactionService transactionService;
+    @Autowired
+    @Qualifier("transactionService")
+    private TransactionService transactionService;
 
-    public static void doBeforeCommit(final Runnable runnable) {
-        new DeferBeforeCommit(runnable).run();
+    @Autowired
+    private SessionTaskExecutor taskExecutor;
+
+    public void doBeforeCommit(final Runnable runnable) {
+        final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+        final Locale locale = I18NUtil.getLocale();
+        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+            @Override
+            public void beforeCommit(boolean readOnly) {
+                taskExecutor.getExecutorService().execute(getRunnableTask(runnable, null, currentUser, locale));
+            }
+        });
     }
 
-    public static void doAfterBehaviours(final Runnable runnable) {
-        doBeforeCommit(new DeferBeforeCommit(runnable));
+    public void doAfterBehaviours(final Runnable runnable) {
+        doBeforeCommit(runnable);
     }
 
-    public static void doAfterCommit(final Runnable job) {
+    public void doAfterCommit(final Runnable job) {
         doAfterCommit(job, null);
     }
 
-    public static void doAfterCommit(final Runnable job, final Runnable errorHandler) {
+    public void doAfterCommit(final Runnable job, final Runnable errorHandler) {
 
         final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         final Locale locale = I18NUtil.getLocale();
@@ -37,14 +52,18 @@ public class TransactionUtils {
         AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
             @Override
             public void afterCommit() {
-                prepareJobThread(job, errorHandler, currentUser, locale).start();
+                taskExecutor.getExecutorService().execute(getRunnableTask(job, errorHandler, currentUser, locale));
             }
         });
     }
 
-    private static Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
+    private Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
 
-        return new Thread(new Runnable() {
+        return new Thread(getRunnableTask(job, errorHandler, currentUser, locale));
+    }
+
+    private Runnable getRunnableTask(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
+        return new Runnable() {
 
             public void run() {
 
@@ -65,10 +84,10 @@ public class TransactionUtils {
                     }
                 });
             }
-        });
+        };
     }
 
-    private static void doInTransaction(final Runnable job) {
+    private void doInTransaction(final Runnable job) {
         transactionService.getRetryingTransactionHelper().doInTransaction(
                 new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
                     public String execute() throws Exception {
@@ -76,9 +95,5 @@ public class TransactionUtils {
                         return null;
                     }
                 }, false, true);
-    }
-
-    public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        transactionService = serviceRegistry.getTransactionService();
     }
 }

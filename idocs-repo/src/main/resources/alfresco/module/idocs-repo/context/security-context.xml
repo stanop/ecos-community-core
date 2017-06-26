@@ -40,6 +40,7 @@
         <property name="permissionService" ref="PermissionService" />
         <property name="walker" ref="ConfiscateServiceWalker" />
         <property name="confiscateToUser" value="${confiscate.to-user}" />
+        <property name="transactionService" ref="transactionService" />
     </bean>
 
     <bean id="NodeOwnerDAO" class="ru.citeck.ecos.security.NodeOwnerDAO">

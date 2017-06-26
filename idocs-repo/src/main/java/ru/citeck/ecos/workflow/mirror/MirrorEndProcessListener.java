@@ -44,6 +44,9 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
     private NodeService nodeService;
     private WorkflowMirrorService service;
 
+    @Autowired
+    private TransactionUtils transactionUtils;
+
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) {
         if(!(delegateExecution instanceof ExecutionEntity)) return;
@@ -75,7 +78,7 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
             List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
             for(NodeRef mirror : mirrors) {
                 String taskId = (String) nodeService.getProperty(mirror, ContentModel.PROP_NAME);
-                TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
+                transactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
             }
         }
     }

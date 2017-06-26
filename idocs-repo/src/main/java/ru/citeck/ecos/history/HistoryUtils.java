@@ -9,6 +9,8 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
@@ -22,6 +24,8 @@ import java.util.*;
  * Created by andrey.kozlov on 20.12.2016.
  */
 public class HistoryUtils {
+
+    private static final Log logger = LogFactory.getLog(HistoryUtils.class);
 
     public static final Serializable NODE_CREATED = "node.created";
     public static final Serializable NODE_UPDATED = "node.updated";
@@ -110,8 +114,8 @@ public class HistoryUtils {
         AlfrescoTransactionSupport.bindResource(resourceKey, listAssocRef);
     }
 
-    public static void addUpdateResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService) {
-        TransactionUtils.doBeforeCommit(new Runnable() {
+    public static void addUpdateResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, TransactionUtils transactionUtils) {
+        transactionUtils.doBeforeCommit(new Runnable() {
             @Override
             public void run() {
                 List<AssociationRef> added = new ArrayList<AssociationRef>();
@@ -196,8 +200,8 @@ public class HistoryUtils {
         });
     }
 
-    public static void addUpdateChildAsscosResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, final String nodeRefName) {
-        TransactionUtils.doBeforeCommit(new Runnable() {
+    public static void addUpdateChildAsscosResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, final String nodeRefName, TransactionUtils transactionUtils) {
+        transactionUtils.doBeforeCommit(new Runnable() {
             @Override
             public void run() {
                 List<ChildAssociationRef> added = new ArrayList<ChildAssociationRef>();
