@@ -19,8 +19,11 @@
 package ru.citeck.ecos.utils;
 
 import org.alfresco.repo.jscript.ScriptNode;
+import org.alfresco.repo.jscript.ScriptableQNameMap;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.MLText;
+import org.alfresco.service.namespace.NamespacePrefixResolver;
+import org.alfresco.service.namespace.NamespacePrefixResolverProvider;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
@@ -31,7 +34,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension {
+public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements NamespacePrefixResolverProvider {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -70,6 +73,18 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension {
         return result;
     }
 
+    public ScriptableQNameMap<String, Object> toScriptQNameMap(Map<QName, Object> map) {
+
+        ScriptableQNameMap<String, Object> result = new ScriptableQNameMap<>(this);
+
+        for (QName qname : map.keySet()) {
+            Object value = map.get(qname);
+            result.put(qname, value);
+        }
+
+        return result;
+    }
+
     public void setMLText(ScriptNode node, String property, Serializable valueObj) {
 
         @SuppressWarnings("unchecked")
@@ -87,4 +102,8 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension {
         return new String(str.getBytes(), UTF8);
     }
 
+    @Override
+    public NamespacePrefixResolver getNamespacePrefixResolver() {
+        return serviceRegistry.getNamespaceService();
+    }
 }
