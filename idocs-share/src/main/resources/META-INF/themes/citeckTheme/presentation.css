@@ -2153,7 +2153,7 @@ table td.thumbnail img
 
 #alf-hd .alfresco-header-Header {
    margin: 0;
-   padding: 0 35px;
+   padding: 0 25px;
    background-color: #2d3541;
    border-bottom: 1px solid #ccc;
 }
@@ -2275,7 +2275,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 }
 
 .yui-skin-citeckTheme #HEADER_TITLE {
-    padding-left: 49px;
+    padding-left: 39px;
     margin-top: 7px;
 }
 
@@ -3558,7 +3558,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .sticky-footer .footer-content {
   overflow: hidden;
-  padding: 0 40px;
+  padding: 3px 40px;
   font-size: 10px;
 }
 
@@ -3644,6 +3644,7 @@ div#HEADER_USER_STATUS {
 
 .yui-skin-citeckTheme #share-header {
    min-height: 40px;
+   margin: 0;
 }
 
 #bd .yui-gc > .yui-u .document-details-panel .panel-body h3:not(:first-child) {
