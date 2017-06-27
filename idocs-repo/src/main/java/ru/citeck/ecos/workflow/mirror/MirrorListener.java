@@ -19,20 +19,16 @@
 package ru.citeck.ecos.workflow.mirror;
 
 import org.activiti.engine.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
 
 public class MirrorListener extends AbstractTaskListener {
 
     private WorkflowMirrorService service;
-    @Autowired
-    private TransactionUtils transactionUtils;
 
     @Override
     protected void notifyImpl(DelegateTask task) {
-        transactionUtils.doAfterBehaviours(new MirrorTaskWork(service, "activiti$" + task.getId()));
+        service.mirrorTaskAsync("activiti$" + task.getId());
     }
 
     public void initImpl() {

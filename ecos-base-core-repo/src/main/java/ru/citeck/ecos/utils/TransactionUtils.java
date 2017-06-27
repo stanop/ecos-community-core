@@ -2,8 +2,7 @@ package ru.citeck.ecos.utils;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.repo.transaction.TransactionListenerAdapter;
+import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +25,7 @@ public class TransactionUtils {
     private SessionTaskExecutor taskExecutor;
 
     public void doBeforeCommit(final Runnable runnable) {
-        final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
-        final Locale locale = I18NUtil.getLocale();
-        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
-            @Override
-            public void beforeCommit(boolean readOnly) {
-                taskExecutor.getExecutorService().execute(getRunnableTask(runnable, null, currentUser, locale));
-            }
-        });
-    }
-
-    public void doAfterBehaviours(final Runnable runnable) {
-        doBeforeCommit(runnable);
+        new DeferBeforeCommit(runnable).run();
     }
 
     public void doAfterCommit(final Runnable job) {
@@ -57,43 +45,30 @@ public class TransactionUtils {
         });
     }
 
-    private Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
-
-        return new Thread(getRunnableTask(job, errorHandler, currentUser, locale));
-    }
-
     private Runnable getRunnableTask(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
-        return new Runnable() {
+        return () -> {
 
-            public void run() {
+            AuthenticationUtil.setRunAsUser(currentUser);
+            I18NUtil.setLocale(locale);
 
-                AuthenticationUtil.setRunAsUser(currentUser);
-                I18NUtil.setLocale(locale);
-
-                AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-                    public Void doWork() throws Exception {
-                        try {
-                            doInTransaction(job);
-                        } catch (Exception e) {
-                            LOG.error("Exception while job running", e);
-                            if (errorHandler != null) {
-                                doInTransaction(errorHandler);
-                            }
-                        }
-                        return null;
+            AuthenticationUtil.runAsSystem(() -> {
+                try {
+                    doInTransaction(job);
+                } catch (Exception e) {
+                    LOG.error("Exception while job running", e);
+                    if (errorHandler != null) {
+                        doInTransaction(errorHandler);
                     }
-                });
-            }
+                }
+                return null;
+            });
         };
     }
 
     private void doInTransaction(final Runnable job) {
-        transactionService.getRetryingTransactionHelper().doInTransaction(
-                new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
-                    public String execute() throws Exception {
-                        job.run();
-                        return null;
-                    }
-                }, false, true);
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            job.run();
+            return null;
+        }, false, true);
     }
 }

@@ -115,172 +115,168 @@ public class HistoryUtils {
     }
 
     public static void addUpdateResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, TransactionUtils transactionUtils) {
-        transactionUtils.doBeforeCommit(new Runnable() {
-            @Override
-            public void run() {
-                List<AssociationRef> added = new ArrayList<AssociationRef>();
-                List<AssociationRef> removed =  new ArrayList<AssociationRef>();
+        transactionUtils.doBeforeCommit(() -> {
 
-                if (AlfrescoTransactionSupport.getResource(ASSOC_ADDED) != null) {
-                    added.addAll((Collection<AssociationRef>) AlfrescoTransactionSupport.getResource(ASSOC_ADDED));
-                }
-                if (AlfrescoTransactionSupport.getResource(ASSOC_REMOVED) != null) {
-                    removed.addAll((Collection<AssociationRef>) AlfrescoTransactionSupport.getResource(ASSOC_REMOVED));
-                }
-                if (added.size() > 0 && removed.size() > 0) {
-                    Iterator<AssociationRef> iterAdded = added.iterator();
-                    while (iterAdded.hasNext()) {
-                        AssociationRef associationRefAdded = iterAdded.next();
-                        Iterator<AssociationRef> iterRemoved = removed.iterator();
-                        while (iterRemoved.hasNext()) {
-                            AssociationRef associationRefRemoved = iterRemoved.next();
-                            if (associationRefAdded.getTypeQName().equals(associationRefRemoved.getTypeQName())
-                                    && !isEqualsAssocs(associationRefAdded, associationRefRemoved, nodeService)) {
-                                historyService.persistEvent(
-                                        HistoryModel.TYPE_BASIC_EVENT,
-                                        HistoryUtils.eventProperties(
-                                                ASSOC_UPDATED,
-                                                associationRefAdded.getSourceRef(),
-                                                associationRefAdded.getTypeQName(),
-                                                associationRefAdded.getTargetRef().toString(),
-                                                getAssocComment(associationRefAdded, associationRefRemoved, dictionaryService, nodeService),
-                                                null,
-                                                null
-                                        )
-                                );
-                                iterAdded.remove();
-                                iterRemoved.remove();break;
-                            }
-                        }
-                    }
-                    AlfrescoTransactionSupport.bindResource(ASSOC_ADDED, added);
-                    AlfrescoTransactionSupport.bindResource(ASSOC_REMOVED, removed);
-                } else if (added.size() > 0 || removed.size() > 0){
-                    if (resourceKey.equals(ASSOC_ADDED)) {
-                        Iterator<AssociationRef> iter = added.iterator();
-                        while (iter.hasNext()) {
-                            AssociationRef associationRefAdded = iter.next();
-                            historyService.persistEvent(
+            List<AssociationRef> added = new ArrayList<>();
+            List<AssociationRef> removed =  new ArrayList<>();
+
+            if (AlfrescoTransactionSupport.getResource(ASSOC_ADDED) != null) {
+                added.addAll(AlfrescoTransactionSupport.getResource(ASSOC_ADDED));
+            }
+            if (AlfrescoTransactionSupport.getResource(ASSOC_REMOVED) != null) {
+                removed.addAll(AlfrescoTransactionSupport.getResource(ASSOC_REMOVED));
+            }
+            if (added.size() > 0 && removed.size() > 0) {
+                Iterator<AssociationRef> iterAdded = added.iterator();
+                while (iterAdded.hasNext()) {
+                    AssociationRef associationRefAdded = iterAdded.next();
+                    Iterator<AssociationRef> iterRemoved = removed.iterator();
+                    while (iterRemoved.hasNext()) {
+                        AssociationRef associationRefRemoved = iterRemoved.next();
+                        if (associationRefAdded.getTypeQName().equals(associationRefRemoved.getTypeQName())
+                                && !isEqualsAssocs(associationRefAdded, associationRefRemoved, nodeService)) {
+                            historyService.persistEventAsync(
                                     HistoryModel.TYPE_BASIC_EVENT,
                                     HistoryUtils.eventProperties(
                                             ASSOC_UPDATED,
                                             associationRefAdded.getSourceRef(),
                                             associationRefAdded.getTypeQName(),
                                             associationRefAdded.getTargetRef().toString(),
-                                            getAssocComment(associationRefAdded, null, dictionaryService, nodeService),
+                                            getAssocComment(associationRefAdded, associationRefRemoved, dictionaryService, nodeService),
                                             null,
                                             null
                                     )
                             );
-                            iter.remove();
+                            iterAdded.remove();
+                            iterRemoved.remove();break;
                         }
-                        AlfrescoTransactionSupport.bindResource(resourceKey, added);
-                    } else {
-                        Iterator<AssociationRef> iter = removed.iterator();
-                        while (iter.hasNext()) {
-                            AssociationRef associationRefRemoved = iter.next();
-                            historyService.persistEvent(
-                                    HistoryModel.TYPE_BASIC_EVENT,
-                                    HistoryUtils.eventProperties(
-                                            ASSOC_UPDATED,
-                                            associationRefRemoved.getSourceRef(),
-                                            associationRefRemoved.getTypeQName(),
-                                            null,
-                                            getAssocComment(null, associationRefRemoved, dictionaryService, nodeService),
-                                            null,
-                                            null
-                                    )
-                            );
-                            iter.remove();
-                        }
-                        AlfrescoTransactionSupport.bindResource(resourceKey, removed);
                     }
+                }
+                AlfrescoTransactionSupport.bindResource(ASSOC_ADDED, added);
+                AlfrescoTransactionSupport.bindResource(ASSOC_REMOVED, removed);
+            } else if (added.size() > 0 || removed.size() > 0){
+                if (resourceKey.equals(ASSOC_ADDED)) {
+                    Iterator<AssociationRef> iter = added.iterator();
+                    while (iter.hasNext()) {
+                        AssociationRef associationRefAdded = iter.next();
+                        historyService.persistEventAsync(
+                                HistoryModel.TYPE_BASIC_EVENT,
+                                HistoryUtils.eventProperties(
+                                        ASSOC_UPDATED,
+                                        associationRefAdded.getSourceRef(),
+                                        associationRefAdded.getTypeQName(),
+                                        associationRefAdded.getTargetRef().toString(),
+                                        getAssocComment(associationRefAdded, null, dictionaryService, nodeService),
+                                        null,
+                                        null
+                                )
+                        );
+                        iter.remove();
+                    }
+                    AlfrescoTransactionSupport.bindResource(resourceKey, added);
+                } else {
+                    Iterator<AssociationRef> iter = removed.iterator();
+                    while (iter.hasNext()) {
+                        AssociationRef associationRefRemoved = iter.next();
+                        historyService.persistEventAsync(
+                                HistoryModel.TYPE_BASIC_EVENT,
+                                HistoryUtils.eventProperties(
+                                        ASSOC_UPDATED,
+                                        associationRefRemoved.getSourceRef(),
+                                        associationRefRemoved.getTypeQName(),
+                                        null,
+                                        getAssocComment(null, associationRefRemoved, dictionaryService, nodeService),
+                                        null,
+                                        null
+                                )
+                        );
+                        iter.remove();
+                    }
+                    AlfrescoTransactionSupport.bindResource(resourceKey, removed);
                 }
             }
         });
     }
 
     public static void addUpdateChildAsscosResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, final String nodeRefName, TransactionUtils transactionUtils) {
-        transactionUtils.doBeforeCommit(new Runnable() {
-            @Override
-            public void run() {
-                List<ChildAssociationRef> added = new ArrayList<ChildAssociationRef>();
-                List<ChildAssociationRef> removed =  new ArrayList<ChildAssociationRef>();
+        transactionUtils.doBeforeCommit(() -> {
 
-                if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED) != null) {
-                    added.addAll((Collection<ChildAssociationRef>) AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED));
-                }
-                if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_REMOVED) != null) {
-                    removed.addAll((Collection<ChildAssociationRef>) AlfrescoTransactionSupport.getResource(CHILD_ASSOC_REMOVED));
-                }
-                if (added.size() > 0 && removed.size() > 0) {
-                    Iterator<ChildAssociationRef> iterAdded = added.iterator();
-                    while (iterAdded.hasNext()) {
-                        ChildAssociationRef childAssociationRefAdded = iterAdded.next();
-                        Iterator<ChildAssociationRef> iterRemoved = removed.iterator();
-                        while (iterRemoved.hasNext()) {
-                            ChildAssociationRef childAssociationRefRemoved = iterRemoved.next();
-                            if (childAssociationRefAdded.getTypeQName().equals(childAssociationRefRemoved.getTypeQName())
-                                    && !isEqualsChildAssocs(childAssociationRefAdded, childAssociationRefRemoved, nodeService)) {
-                                historyService.persistEvent(
-                                        HistoryModel.TYPE_BASIC_EVENT,
-                                        HistoryUtils.eventProperties(
-                                                ASSOC_UPDATED,
-                                                childAssociationRefAdded.getParentRef(),
-                                                childAssociationRefAdded.getTypeQName(),
-                                                childAssociationRefAdded.getChildRef().toString(),
-                                                getChildAssocComment(childAssociationRefAdded, childAssociationRefRemoved, dictionaryService, nodeService, ""),
-                                                nodeService.getProperty(childAssociationRefAdded.getChildRef(), ClassificationModel.PROP_DOCUMENT_TYPE),
-                                                nodeService.getProperty(childAssociationRefAdded.getChildRef(), ClassificationModel.PROP_DOCUMENT_KIND)
-                                        )
-                                );
-                                iterAdded.remove();
-                                iterRemoved.remove();break;
-                            }
-                        }
-                    }
-                    AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_ADDED, added);
-                    AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_REMOVED, removed);
-                } else if (added.size() > 0 || removed.size() > 0){
-                    if (resourceKey.equals(CHILD_ASSOC_ADDED)) {
-                        Iterator<ChildAssociationRef> iter = added.iterator();
-                        while (iter.hasNext()) {
-                            ChildAssociationRef childAssociationRefAdded = iter.next();
-                            historyService.persistEvent(
+            List<ChildAssociationRef> added = new ArrayList<>();
+            List<ChildAssociationRef> removed =  new ArrayList<>();
+
+            if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED) != null) {
+                added.addAll(AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED));
+            }
+            if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_REMOVED) != null) {
+                removed.addAll(AlfrescoTransactionSupport.getResource(CHILD_ASSOC_REMOVED));
+            }
+            if (added.size() > 0 && removed.size() > 0) {
+                Iterator<ChildAssociationRef> iterAdded = added.iterator();
+                while (iterAdded.hasNext()) {
+                    ChildAssociationRef childAssociationRefAdded = iterAdded.next();
+                    Iterator<ChildAssociationRef> iterRemoved = removed.iterator();
+                    while (iterRemoved.hasNext()) {
+                        ChildAssociationRef childAssociationRefRemoved = iterRemoved.next();
+                        if (childAssociationRefAdded.getTypeQName().equals(childAssociationRefRemoved.getTypeQName())
+                                && !isEqualsChildAssocs(childAssociationRefAdded, childAssociationRefRemoved, nodeService)) {
+                            historyService.persistEventAsync(
                                     HistoryModel.TYPE_BASIC_EVENT,
                                     HistoryUtils.eventProperties(
                                             ASSOC_UPDATED,
                                             childAssociationRefAdded.getParentRef(),
                                             childAssociationRefAdded.getTypeQName(),
                                             childAssociationRefAdded.getChildRef().toString(),
-                                            getChildAssocComment(childAssociationRefAdded, null, dictionaryService, nodeService, ""),
+                                            getChildAssocComment(childAssociationRefAdded, childAssociationRefRemoved, dictionaryService, nodeService, ""),
                                             nodeService.getProperty(childAssociationRefAdded.getChildRef(), ClassificationModel.PROP_DOCUMENT_TYPE),
                                             nodeService.getProperty(childAssociationRefAdded.getChildRef(), ClassificationModel.PROP_DOCUMENT_KIND)
                                     )
                             );
-                            iter.remove();
+                            iterAdded.remove();
+                            iterRemoved.remove();break;
                         }
-                        AlfrescoTransactionSupport.bindResource(resourceKey, added);
-                    } else {
-                        Iterator<ChildAssociationRef> iter = removed.iterator();
-                        while (iter.hasNext()) {
-                            ChildAssociationRef childAssociationRefRemoved = iter.next();
-                            historyService.persistEvent(
-                                    HistoryModel.TYPE_BASIC_EVENT,
-                                    HistoryUtils.eventProperties(
-                                            ASSOC_UPDATED,
-                                            childAssociationRefRemoved.getParentRef(),
-                                            childAssociationRefRemoved.getTypeQName(),
-                                            null,
-                                            getChildAssocComment(null, childAssociationRefRemoved, dictionaryService, nodeService, nodeRefName),
-                                            nodeService.getProperty(childAssociationRefRemoved.getParentRef(), ClassificationModel.PROP_DOCUMENT_TYPE),
-                                            nodeService.getProperty(childAssociationRefRemoved.getParentRef(), ClassificationModel.PROP_DOCUMENT_KIND)
-                                    )
-                            );
-                            iter.remove();
-                        }
-                        AlfrescoTransactionSupport.bindResource(resourceKey, removed);
                     }
+                }
+                AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_ADDED, added);
+                AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_REMOVED, removed);
+            } else if (added.size() > 0 || removed.size() > 0){
+                if (resourceKey.equals(CHILD_ASSOC_ADDED)) {
+                    Iterator<ChildAssociationRef> iter = added.iterator();
+                    while (iter.hasNext()) {
+                        ChildAssociationRef childAssociationRefAdded = iter.next();
+                        historyService.persistEventAsync(
+                                HistoryModel.TYPE_BASIC_EVENT,
+                                HistoryUtils.eventProperties(
+                                        ASSOC_UPDATED,
+                                        childAssociationRefAdded.getParentRef(),
+                                        childAssociationRefAdded.getTypeQName(),
+                                        childAssociationRefAdded.getChildRef().toString(),
+                                        getChildAssocComment(childAssociationRefAdded, null, dictionaryService, nodeService, ""),
+                                        nodeService.getProperty(childAssociationRefAdded.getChildRef(), ClassificationModel.PROP_DOCUMENT_TYPE),
+                                        nodeService.getProperty(childAssociationRefAdded.getChildRef(), ClassificationModel.PROP_DOCUMENT_KIND)
+                                )
+                        );
+                        iter.remove();
+                    }
+                    AlfrescoTransactionSupport.bindResource(resourceKey, added);
+                } else {
+                    Iterator<ChildAssociationRef> iter = removed.iterator();
+                    while (iter.hasNext()) {
+                        ChildAssociationRef childAssociationRefRemoved = iter.next();
+                        historyService.persistEventAsync(
+                                HistoryModel.TYPE_BASIC_EVENT,
+                                HistoryUtils.eventProperties(
+                                        ASSOC_UPDATED,
+                                        childAssociationRefRemoved.getParentRef(),
+                                        childAssociationRefRemoved.getTypeQName(),
+                                        null,
+                                        getChildAssocComment(null, childAssociationRefRemoved, dictionaryService, nodeService, nodeRefName),
+                                        nodeService.getProperty(childAssociationRefRemoved.getParentRef(), ClassificationModel.PROP_DOCUMENT_TYPE),
+                                        nodeService.getProperty(childAssociationRefRemoved.getParentRef(), ClassificationModel.PROP_DOCUMENT_KIND)
+                                )
+                        );
+                        iter.remove();
+                    }
+                    AlfrescoTransactionSupport.bindResource(resourceKey, removed);
                 }
             }
         });
