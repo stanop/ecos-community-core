@@ -91,6 +91,9 @@ public class HistoryService {
 
     private NodeRef historyRoot;
 
+    @Value("${ecos.citek.history.service.enabled}")
+    private Boolean enabledRemoteHistoryService;
+
     public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
         this.historyRemoteService = historyRemoteService;
     }
@@ -189,7 +192,9 @@ public class HistoryService {
                 requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
                 requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
                 requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
-                historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+                if (enabledRemoteHistoryService) {
+                    historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+                }
                 return historyEvent;
             }
         });

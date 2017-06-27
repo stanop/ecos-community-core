@@ -2,6 +2,8 @@ package ru.citeck.ecos.history.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.history.HistoryRemoteService;
@@ -28,6 +30,13 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
     private static final String DELIMETER = ";";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+    private static final String SEND_NEW_RECORD_QUEUE = "send_new_record_queue";
+
+    /**
+     * Path constants
+     */
+    private static final String GET_BY_DOCUMENT_ID_PATH = "/history_records/by_document_id/";
+    private static final String INSERT_RECORD_PATH = "/history_records/insert_record";
 
     /**
      * Logger
@@ -45,15 +54,15 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private String getByDocumentRecordsPath;
     @Value("${ecos.citek.history.service.csv.folder}")
     private String csvFolder;
+    @Value("${ecos.citek.history.service.use.activemq}")
+    private Boolean useActiveMq;
 
     /**
      * Services
      */
     private RestTemplate restTemplate;
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * Get history records
@@ -62,7 +71,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     @Override
     public List getHistoryRecords(String documentUuid) {
-        return restTemplate.getForObject(historyServiceHost + getByDocumentRecordsPath + documentUuid, List.class);
+        return restTemplate.getForObject(historyServiceHost + GET_BY_DOCUMENT_ID_PATH + documentUuid, List.class);
     }
 
     /**
@@ -72,11 +81,27 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     @Override
     public void sendHistoryEventToRemoteService(Map<String, Object> requestParams) {
         try {
-            restTemplate.postForObject(historyServiceHost + insertRecordPath, requestParams, String.class);
+            if (useActiveMq) {
+                convertMapToJsonString(requestParams);
+                rabbitTemplate.convertAndSend(SEND_NEW_RECORD_QUEUE, convertMapToJsonString(requestParams));
+            } else {
+                restTemplate.postForObject(historyServiceHost + INSERT_RECORD_PATH, requestParams, String.class);
+            }
+
         } catch (Exception exception) {
             logger.error(exception);
             saveHistoryRecordAsCsv(requestParams);
         }
+    }
+
+    /**
+     * Convert map to json string
+     * @param requestParams Request params map
+     * @return Json string
+     */
+    private String convertMapToJsonString(Map<String, Object> requestParams) {
+        JSONObject jsonObject =  new JSONObject(requestParams);
+        return jsonObject.toString();
     }
 
     /**
@@ -102,5 +127,13 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             logger.error(e);
             throw new RuntimeException(e);
         }
+    }
+
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
     }
 }

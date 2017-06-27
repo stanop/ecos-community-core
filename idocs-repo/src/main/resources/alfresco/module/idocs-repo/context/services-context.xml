@@ -17,6 +17,18 @@
         </property>
     </bean>
 
+	<!-- RabbitMQ -->
+	<bean id="rabbitConnectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+		<property name="host" value="${rabbitmq.server.host}"/>
+		<property name="port" value="${rabbitmq.server.port}"/>
+		<property name="username" value="${rabbitmq.server.username}"/>
+		<property name="password" value="${rabbitmq.server.password}"/>
+	</bean>
+
+	<bean id="rabbitTemplate" class="org.springframework.amqp.rabbit.core.RabbitTemplate">
+		<constructor-arg name="connectionFactory" ref="rabbitConnectionFactory"/>
+	</bean>
+
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
 
     <util:map id="EcoS.PropertyEditors">
@@ -434,6 +446,7 @@
 
 	<bean id="historyRemoteService" class="ru.citeck.ecos.history.impl.HistoryRemoteServiceImpl">
 		<property name="restTemplate" ref="restTemplate"/>
+		<property name="rabbitTemplate" ref="rabbitTemplate"/>
 	</bean>
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
