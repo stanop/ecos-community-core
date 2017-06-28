@@ -21,6 +21,7 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.task.TaskQuery;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
@@ -30,6 +31,8 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.workflow.WorkflowService;
+import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
@@ -72,6 +75,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 	private AuthorityService authorityService;
 	private DeputyService deputyService;
 	private CaseRoleService caseRoleService;
+	private WorkflowService workflowService;
 	private List<String> panelOfAuthorized; //группа уполномоченных
 
 	private WorkflowQNameConverter qNameConverter;
@@ -137,9 +141,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		String roleName;
 		if (panelOfAuthorized != null && assignee != null && !panelOfAuthorized.isEmpty() && panelOfAuthorized.size() > 0) {
 			List<NodeRef> listRoles = getListRoles(document);
-			roleName = getAuthorizedName(panelOfAuthorized, listRoles, assignee) != null ? getAuthorizedName(panelOfAuthorized, listRoles, assignee) : getRoleName(packageAssocs, assignee);
+			roleName = getAuthorizedName(panelOfAuthorized, listRoles, assignee) != null ? getAuthorizedName(panelOfAuthorized, listRoles, assignee) : getRoleName(packageAssocs, assignee, task.getId());
 		} else {
-			roleName = getRoleName(packageAssocs, assignee);
+			roleName = getRoleName(packageAssocs, assignee, task.getId());
 			if (packageAssocs.size() > 0) {
 				eventProperties.put(HistoryModel.PROP_CASE_TASK, packageAssocs.get(0).getSourceRef());
 			}
@@ -219,18 +223,33 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		return null;
 	}
 
-	private String getRoleName(List<AssociationRef> packageAssocs, String assignee) {
+	private String getRoleName(List<AssociationRef> packageAssocs, String assignee, String taskId) {
 		String roleName = "";
-		if (packageAssocs.size() > 0) {
-			NodeRef currentTask = packageAssocs.get(0).getSourceRef();
-			List<AssociationRef> performerRoles = nodeService.getTargetAssocs(currentTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
-			if (performerRoles != null && !performerRoles.isEmpty()) {
-				NodeRef firstRole = performerRoles.get(0).getTargetRef();
-				roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
+		if (taskId != null) {
+			WorkflowTask task = workflowService.getTaskById(ACTIVITI_PREFIX + taskId);
+			if (task != null) {
+				Map<QName, Serializable> properties = task.getProperties();
+				if (properties.get(CasePerformModel.ASSOC_CASE_ROLE) != null) {
+					NodeRef role = (NodeRef) properties.get(CasePerformModel.ASSOC_CASE_ROLE);
+					if (role != null && nodeService.getProperty(role, ContentModel.PROP_NAME) != null) {
+						roleName = (String) nodeService.getProperty(role, ContentModel.PROP_NAME);
+					}
+				}
 			}
 		}
-		if (roleName.isEmpty()) {
-			roleName = assignee;
+
+		if (roleName == null || roleName.equals("")) {
+			if (packageAssocs.size() > 0) {
+				NodeRef currentTask = packageAssocs.get(0).getSourceRef();
+				List<AssociationRef> performerRoles = nodeService.getTargetAssocs(currentTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
+				if (performerRoles != null && !performerRoles.isEmpty()) {
+					NodeRef firstRole = performerRoles.get(0).getTargetRef();
+					roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
+				}
+			}
+			if (roleName.isEmpty()) {
+				roleName = assignee;
+			}
 		}
 		return roleName;
 	}
@@ -243,6 +262,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		authorityService = serviceRegistry.getAuthorityService();
 		deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
 		caseRoleService = (CaseRoleService) serviceRegistry.getService(QName.createQName("", "caseRoleService"));
+		workflowService = serviceRegistry.getWorkflowService();
 		
 		qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
