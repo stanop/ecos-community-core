@@ -30,6 +30,8 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
@@ -45,6 +47,11 @@ import java.util.*;
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
 public class HistoryService {
+
+    /**
+     * Properties constants
+     */
+    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citek.history.service.enabled";
 
     /**
      * Constants
@@ -66,6 +73,13 @@ public class HistoryService {
      * Date-time format
      */
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+    /**
+     * Global properties
+     */
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties properties;
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
 
@@ -90,9 +104,6 @@ public class HistoryService {
     private StoreRef storeRef;
 
     private NodeRef historyRoot;
-
-    @Value("${ecos.citek.history.service.enabled}")
-    private Boolean enabledRemoteHistoryService;
 
     public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
         this.historyRemoteService = historyRemoteService;
@@ -192,7 +203,7 @@ public class HistoryService {
                 requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
                 requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
                 requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
-                if (enabledRemoteHistoryService) {
+                if (isEnabledRemoteHistoryService()) {
                     historyRemoteService.sendHistoryEventToRemoteService(requestParams);
                 }
                 return historyEvent;
@@ -208,6 +219,19 @@ public class HistoryService {
      */
     private Object getDocumentProperty(NodeRef documentNode, String localPropertyName) {
         return nodeService.getProperty(documentNode, QName.createQName(ALFRESCO_NAMESPACE, localPropertyName));
+    }
+
+    /**
+     * Check - is remote history service enabled
+     * @return Check result
+     */
+    private Boolean isEnabledRemoteHistoryService() {
+        String propertyValue = properties.getProperty(ENABLED_REMOTE_HISTORY_SERVICE);
+        if (propertyValue == null) {
+            return false;
+        } else {
+            return Boolean.valueOf(propertyValue);
+        }
     }
 
     /**

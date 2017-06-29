@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.history.HistoryRemoteService;
@@ -15,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * History remote service
@@ -31,6 +34,14 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String DELIMETER = ";";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
     private static final String SEND_NEW_RECORD_QUEUE = "send_new_record_queue";
+    private static final String DEFAULT_RESULT_CSV_FOLDER = "/citeck/ecos/history_record_csv/";
+
+    /**
+     * Use active mq
+     */
+    private static final String USE_ACTIVE_MQ = "ecos.citek.history.service.use.activemq";
+    private static final String CSV_RESULT_FOLDER = "ecos.citek.history.service.csv.folder";
+    private static final String HISTORY_SERVICE_HOST = "ecos.citek.history.service.host";
 
     /**
      * Path constants
@@ -44,24 +55,18 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static Log logger = LogFactory.getLog(HistoryRemoteServiceImpl.class);
 
     /**
-     * Properties values
+     * Global properties
      */
-    @Value("${ecos.citek.history.service.host}" )
-    private String historyServiceHost;
-    @Value("${ecos.citek.history.service.insert.record.path}")
-    private String insertRecordPath;
-    @Value("${ecos.citek.history.service.get.records.path}")
-    private String getByDocumentRecordsPath;
-    @Value("${ecos.citek.history.service.csv.folder}")
-    private String csvFolder;
-    @Value("${ecos.citek.history.service.use.activemq}")
-    private Boolean useActiveMq;
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties properties;
 
     /**
      * Services
      */
     private RestTemplate restTemplate;
 
+    @Autowired(required = false)
     private RabbitTemplate rabbitTemplate;
 
     /**
@@ -71,7 +76,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     @Override
     public List getHistoryRecords(String documentUuid) {
-        return restTemplate.getForObject(historyServiceHost + GET_BY_DOCUMENT_ID_PATH + documentUuid, List.class);
+        return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + GET_BY_DOCUMENT_ID_PATH + documentUuid, List.class);
     }
 
     /**
@@ -81,11 +86,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     @Override
     public void sendHistoryEventToRemoteService(Map<String, Object> requestParams) {
         try {
-            if (useActiveMq) {
+            if (useActiveMq()) {
                 convertMapToJsonString(requestParams);
                 rabbitTemplate.convertAndSend(SEND_NEW_RECORD_QUEUE, convertMapToJsonString(requestParams));
             } else {
-                restTemplate.postForObject(historyServiceHost + INSERT_RECORD_PATH, requestParams, String.class);
+                restTemplate.postForObject(properties.getProperty(HISTORY_SERVICE_HOST) + INSERT_RECORD_PATH, requestParams, String.class);
             }
 
         } catch (Exception exception) {
@@ -117,7 +122,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         }
         /** Create file */
         String currentDate = dateFormat.format(new Date());
-        File csvFile = new File(csvFolder + HISTORY_RECORD_FILE_NAME + currentDate + ".csv");
+        File csvFile = new File(properties.getProperty(CSV_RESULT_FOLDER, DEFAULT_RESULT_CSV_FOLDER)
+                + HISTORY_RECORD_FILE_NAME + currentDate + ".csv");
         try {
             csvFile.createNewFile();
             PrintWriter printWriter = new PrintWriter(csvFile);
@@ -128,12 +134,22 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * Check - use active mq for history records sending
+     * @return Check result
+     */
+    private Boolean useActiveMq() {
+        String propertyValue = properties.getProperty(USE_ACTIVE_MQ);
+        if (propertyValue == null) {
+            return false;
+        } else {
+            return Boolean.valueOf(propertyValue);
+        }
+    }
+
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
 }

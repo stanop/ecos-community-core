@@ -8,7 +8,10 @@ import org.alfresco.service.namespace.QName;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -17,10 +20,7 @@ import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Document history get web script
@@ -31,6 +31,11 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      * Date-time format
      */
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+    /**
+     * Properties constants
+     */
+    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citek.history.service.enabled";
 
     /** Constants */
     public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
@@ -49,10 +54,11 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     private static final String DOCUMENT_NODE_REF = "nodeRef";
 
     /**
-     * Properties values
+     * Global properties
      */
-    @Value("${ecos.citek.history.service.enabled}")
-    private Boolean enabledRemoteHistoryService;
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties properties;
 
     /**
      * Services
@@ -77,7 +83,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         String nodeRefUuid = req.getParameter(DOCUMENT_NODE_REF);
         NodeRef documentRef = new NodeRef(nodeRefUuid);
         List historyRecordMaps = null;
-        if (enabledRemoteHistoryService) {
+        if (isEnabledRemoteHistoryService()) {
             historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
         } else {
             historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
@@ -85,6 +91,19 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         Map<String, Object> result = new HashMap<>();
         result.put("jsonResult", createJsonResponse(historyRecordMaps));
         return result;
+    }
+
+    /**
+     * Check - is remote history service enabled
+     * @return Check result
+     */
+    private Boolean isEnabledRemoteHistoryService() {
+        String propertyValue = properties.getProperty(ENABLED_REMOTE_HISTORY_SERVICE);
+        if (propertyValue == null) {
+            return false;
+        } else {
+            return Boolean.valueOf(propertyValue);
+        }
     }
 
 
