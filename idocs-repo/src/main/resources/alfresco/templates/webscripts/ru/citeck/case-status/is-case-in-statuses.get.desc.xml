@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>is-case-in-statuses</shortname>
+    <description>Check that case in statuses</description>
+    <url>/citeck/case/is-case-in-statuses?nodeRef={nodeRef}&amp;statuses={statuses}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
