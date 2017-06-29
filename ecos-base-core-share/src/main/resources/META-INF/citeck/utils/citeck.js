@@ -1030,29 +1030,34 @@ Citeck.UI.treeViewExtension = function(instance) {
 
     instance.loadNodeData = function(node, fnLoadComplete) {
         var treeView = this.tree;
-        YAHOO.util.Connect.asyncRequest('GET', treeView.buildTreeNodeUrl(node.data.shortName), {
-            success: function (oResponse) {
-                var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
-                if (results) {
-                    for (var i = 0; i < results.length; i++) {
-                        item = results[i];
+        if (node.data.shortName != "all_users") {
+            YAHOO.util.Connect.asyncRequest('GET', treeView.buildTreeNodeUrl(node.data.shortName), {
+                success: function (oResponse) {
+                    var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                    if (results) {
+                        for (var i = 0; i < results.length; i++) {
+                            item = results[i];
 
-                        treeNode = treeView.buildTreeNode(item, node, false);
-                        if (item.authorityType == "USER") {
-                            treeNode.isLeaf = true;
+                            treeNode = treeView.buildTreeNode(item, node, false);
+                            if (item.authorityType == "USER") {
+                                treeNode.isLeaf = true;
+                            }
                         }
                     }
-                }
 
-                oResponse.argument.fnLoadComplete();
-            },
+                    oResponse.argument.fnLoadComplete();
+                },
 
-            failure: function(oResponse) {
-                // error
-            },
+                failure: function(oResponse) {
+                    // error
+                },
 
-            argument: { "node": node, "fnLoadComplete": fnLoadComplete }
-        });
+                argument: { "node": node, "fnLoadComplete": fnLoadComplete }
+            });
+        } else {
+            alert("Просьба обратиться к администратору системы, код ошибки 'all_users'");
+        }
+
     };
 
     instance.loadRootNodes = function(query) {
