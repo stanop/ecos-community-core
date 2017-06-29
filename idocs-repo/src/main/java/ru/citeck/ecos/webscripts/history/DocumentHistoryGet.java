@@ -35,7 +35,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     /**
      * Properties constants
      */
-    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citek.history.service.enabled";
+    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
 
     /** Constants */
     public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";

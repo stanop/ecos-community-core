@@ -39,9 +39,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     /**
      * Use active mq
      */
-    private static final String USE_ACTIVE_MQ = "ecos.citek.history.service.use.activemq";
-    private static final String CSV_RESULT_FOLDER = "ecos.citek.history.service.csv.folder";
-    private static final String HISTORY_SERVICE_HOST = "ecos.citek.history.service.host";
+    private static final String USE_ACTIVE_MQ = "ecos.citeck.history.service.use.activemq";
+    private static final String CSV_RESULT_FOLDER = "ecos.citeck.history.service.csv.folder";
+    private static final String HISTORY_SERVICE_HOST = "ecos.citeck.history.service.host";
 
     /**
      * Path constants

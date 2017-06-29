@@ -51,7 +51,7 @@ public class HistoryService {
     /**
      * Properties constants
      */
-    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citek.history.service.enabled";
+    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
 
     /**
      * Constants
