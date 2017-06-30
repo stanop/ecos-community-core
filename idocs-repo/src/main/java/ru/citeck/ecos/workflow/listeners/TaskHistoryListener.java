@@ -231,7 +231,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 				Map<QName, Serializable> properties = task.getProperties();
 				if (properties.get(CasePerformModel.ASSOC_CASE_ROLE) != null) {
 					NodeRef role = (NodeRef) properties.get(CasePerformModel.ASSOC_CASE_ROLE);
-					if (role != null && nodeService.getProperty(role, ContentModel.PROP_NAME) != null) {
+					if (role != null && nodeService.exists(role) && nodeService.getProperty(role, ContentModel.PROP_NAME) != null) {
 						roleName = (String) nodeService.getProperty(role, ContentModel.PROP_NAME);
 					}
 				}

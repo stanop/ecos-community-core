@@ -38,13 +38,7 @@ import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileInfo;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.ContentData;
-import org.alfresco.service.cmr.repository.MimetypeService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.version.VersionType;
@@ -729,21 +723,37 @@ public class RepoUtils {
 
     public static void createAssociation(NodeRef nodeRef, NodeRef nodeToLink,
             QName name, boolean isTarget, NodeService nodeService) {
-        if (isTarget) {
-            nodeService.createAssociation(nodeRef, nodeToLink, name);
-        } else {
-            nodeService.createAssociation(nodeToLink, nodeRef, name);
-        }
-    }
+		try {
+			if (isTarget) {
+                nodeService.createAssociation(nodeRef, nodeToLink, name);
+            } else {
+                nodeService.createAssociation(nodeToLink, nodeRef, name);
+            }
+		} catch (InvalidNodeRefException e) {
+			LOGGER.error(
+			        String.format("Error while creating association: nodeRef=%s, nodeToLink=%s, name=%s, isTarget=%b",
+                            nodeRef, nodeToLink, name, isTarget),
+                    e);
+			throw e;
+		}
+	}
 
     public static void removeAssociation(NodeRef nodeRef, NodeRef linkedNode,
             QName name, boolean isTarget, NodeService nodeService) {
-        if (isTarget) {
-            nodeService.removeAssociation(nodeRef, linkedNode, name);
-        } else {
-            nodeService.removeAssociation(linkedNode, nodeRef, name);
-        }
-    }
+		try {
+			if (isTarget) {
+                nodeService.removeAssociation(nodeRef, linkedNode, name);
+            } else {
+                nodeService.removeAssociation(linkedNode, nodeRef, name);
+            }
+		} catch (InvalidNodeRefException e) {
+			LOGGER.error(
+			        String.format("Error while removing association: nodeRef=%s, nodeToLink=%s, name=%s, isTarget=%b",
+                            nodeRef, linkedNode, name, isTarget),
+                    e);
+			throw e;
+		}
+	}
 
     public static Map<QName, Object> convertStringMapToQNameMap(
             Map<?,?> stringMap, NamespacePrefixResolver prefixResolver) {
