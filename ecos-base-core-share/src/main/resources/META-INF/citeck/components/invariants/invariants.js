@@ -361,7 +361,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     function evalCriteriaQuery(criteria, model, pagination) {
         var query = {
-            skipCount: 0
+            skipCount: 0,
+            sortBy: [{attribute: "sys:node-dbid", order: "asc"}]
         };
 
         if (pagination) {
