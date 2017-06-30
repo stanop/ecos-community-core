@@ -1,5 +1,7 @@
+<#macro dateFormat date>${date?string("dd MMM yyyy HH:mm:ss 'GMT'Z '('zzz')'")}</#macro>
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
+    "query": "${data.logQuery!''}",
 	"totalRecords": ${data.paging.totalRecords?c},
 	"totalRecordsUpper": ${data.paging.totalRecordsUpper?c},
 	"startIndex": ${data.paging.startIndex?c},
@@ -32,7 +34,7 @@
 			"title": "${item.title}",
 			</#if>
 			"description": "${item.description!''}",
-			"modifiedOn": "${xmldate(item.modifiedOn)}",
+            "modifiedOn": "<@dateFormat item.modifiedOn />",
 			"modifiedByUser": "${item.modifiedByUser}",
 			"modifiedBy": "${item.modifiedBy}",
 			"fromDate": "${xmldate(item.fromDate)}",

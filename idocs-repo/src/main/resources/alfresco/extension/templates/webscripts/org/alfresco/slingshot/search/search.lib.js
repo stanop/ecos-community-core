@@ -514,7 +514,7 @@ function getItem(siteId, containerId, pathParts, node, populate)
 /**
  * Splits the qname path to a node to extract Site information and display path parts.
  * The display path will be truncated to match the overridden root node if present.
- * 
+ *
  * Returns an array with:
  * [0] = site or null
  * [1] = container or null
@@ -526,11 +526,11 @@ function splitQNamePath(node, rootNodeDisplayPath, rootNodeQNamePath, qnameOnly)
        displayPath = qnameOnly ? null : utils.displayPath(node).split("/"),
        siteId = null,
        containerId = null;
-   
+
    if (path.match("^"+SITES_SPACE_QNAME_PATH) == SITES_SPACE_QNAME_PATH)
    {
       // this item is contained within a Site
-      
+
       // ensure we have not matched a Site folder directly or some node created under the st:sites folder that is not a Site
       var qpathUnderSitesFolder = path.substring(SITES_SPACE_QNAME_PATH.length),
           positionContainer = qpathUnderSitesFolder.indexOf("/");
@@ -547,7 +547,7 @@ function splitQNamePath(node, rootNodeDisplayPath, rootNodeQNamePath, qnameOnly)
             // extract container id from the qname path - strip off namespace
             containerId = qpathContainer.substring(0, positionUnderContainer);
             containerId = containerId.substring(containerId.indexOf(":") + 1);
-            
+
             // construct remaining part of the cm:name based display path to the object
             // by removing everything up to the path of the item under the container folder
             if (!qnameOnly) displayPath = displayPath.slice(5, displayPath.length);
@@ -565,17 +565,17 @@ function splitQNamePath(node, rootNodeDisplayPath, rootNodeQNamePath, qnameOnly)
          displayPath.unshift("");
       }
    }
-   
+
    return [ siteId, containerId, displayPath ];
 }
 
 /**
  * Processes the search results, extracting the given page of results from the startIndex up to the maxPageResults
  * from the total list of nodes passed in. Filters out unnecessary nodes
- * 
+ *
  * @return the final search results object
  */
-function processResults(nodes, maxPageResults, startIndex, rootNode, meta)
+function processResults(nodes, maxPageResults, startIndex, rootNode, meta, query)
 {
    // empty cache state
    processedCache = {};
@@ -644,7 +644,8 @@ function processResults(nodes, maxPageResults, startIndex, rootNode, meta)
       },
       facets: meta ? meta.facets : null,
       items: results,
-      spellcheck: meta ? meta.spellcheck : null
+      spellcheck: meta ? meta.spellcheck : null,
+      logQuery: query
    });
 }
 
@@ -653,7 +654,7 @@ function processResults(nodes, maxPageResults, startIndex, rootNode, meta)
  *
  * @return the final search results object
  */
-function processResultsSinglePage(nodes, startIndex, rootNode, meta)
+function processResultsSinglePage(nodes, startIndex, rootNode, meta, query)
 {
    // empty cache state
    processedCache = {};
@@ -710,7 +711,8 @@ function processResultsSinglePage(nodes, startIndex, rootNode, meta)
       },
       facets: meta ? meta.facets : null,
       items: results,
-      spellcheck: meta ? meta.spellcheck : null
+      spellcheck: meta ? meta.spellcheck : null,
+      logQuery: query
    });
 }
 
@@ -754,6 +756,37 @@ function escapeString(value)
       result += c;
    }
    return result;
+}
+
+/**
+ * This function iterate propValue if it is array.
+ *
+ * @param propName - name of the property
+ * @param propValue - value of the property. If it is ["a","b"],
+ * @param isArray - propValue is array or not.
+ * @param negation - if it is true, it adds to the search query 'NOT '.
+ *                   By default it is has NO negation.
+ * @returns {String}
+ */
+function getSearchQuery(propName, propValue, isArray) {
+    var result = '';
+    if (propValue) {
+        if (isArray) {
+            var first = true;
+            if (propValue.length > 0) {
+                result += ' ( ';
+                for (var i = 0; i < propValue.length; i++) {
+                    result += (first ? '' : ' OR ') + '=' + escapeQName(propName) + ': "' + propValue[i] + '"';
+                    first = false;
+                }
+                result += ' ) ';
+            }
+        }
+        else {
+            result += '=' + escapeQName(propName) + ': "' + propValue + '"';
+        }
+    }
+    return result;
 }
 
 /**
@@ -891,106 +924,256 @@ function getSearchResults(params)
             {
                // found a property - is it namespace_propertyname or pseudo property format?
                var propName = p.substr(5);
+               var MIN = "MIN", MAX = "MAX";
+
+               // big decimal handling:
+               if(propName.match(/_BIG(-[\w-]+)?$/i)) {
+                   // change property *_BIG to property *_INDEX
+                   propName = propName.replace(/_BIG(-[\w-]+)?$/i, "_INDEX$1");
+                   // change value to index-prepared value
+                   if(propValue) {
+                       propValue = bigNumberEncoder.encode(propValue);
+                       MIN = bigNumberEncoder.getMinValue();
+                       MAX = bigNumberEncoder.getMaxValue();
+                   }
+               }
+
                if (propName.indexOf("_") !== -1)
                {
                   // property name - convert to DD property name format
                   propName = propName.replace("_", ":");
 
-                  // special case for range packed properties
-                  if (propName.match("-range$") == "-range")
-                  {
-                     // currently support text based ranges (usually numbers) or date ranges
-                     // range value is packed with a | character separator
+                   var isArrayValue = false;
+                   if (propName.match("-array") == "-array") {
+                       isArrayValue = true;
+                       var pos = propName.indexOf("-array");
+                       propName = propName.substr(0, pos) + propName.substr(pos + "-array".length);
+                       propValue = propValue.split(',');
+                   }
+                   if (propName.match("-string-match$") == "-string-match") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-string-match".length);
 
-                     // if neither value is specified then there is no need to add the term
-                     if (propValue.length > 1)
-                     {
-                        var from, to, sepindex = propValue.indexOf("|");
-                        if (propName.match("-date-range$") == "-date-range")
-                        {
-                           // date range found
-                           propName = propName.substr(0, propName.length - "-date-range".length)
+                           propValue = propValue.replace(/^[ ]+/g, '').replace(/[ ]+$/g, ''); //trim
+                           propValue = propValue.replace(/[ ]+/g, ' '); //удаление повторяющихся пробелов
+                           var terms = propValue.split(' ');
+                           if (terms && terms.length > 0 && terms[0]) {
+                               for (var i = 0; i < terms.length; i++) {
+                                   formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ': "*' + terms[i] + '*"';
+                                   first = false;
+                               }
+                           }
+//                       formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':"*' + propValue + '*"';
+//                       first = false;
+                       }
+                   } else if (propName.match("-boolean-match$") == "-boolean-match") {
+                       propName = propName.substr(0, propName.length - "-boolean-match".length);
+                       if ("true" == propValue)  {
+                           formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':*true*';
+                           first = false;
+                       } else if ("false" == propValue)  {
+                           formQuery += (first ? '' : ' AND ') +
+                               '(' +
+                               escapeQName(propName) + ':*false*' +
+                               ' OR ' +
+                               'ISNULL:"' + escapeQName(propName) + '"' +
+                               ')';
+                           first = false;
+                       }
+                   } else if (propName.match("-string-equal$") == "-string-equal") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-string-equal".length);
+                           var sq = getSearchQuery(propName, propValue, isArrayValue);
+                           if (sq) {
+                               formQuery += (first ? '' : ' AND ') + sq;
+                               first = false;
+                           }
+//                       formQuery += (first ? '' : ' AND ') + '=' + escapeQName(propName) + ': "' + propValue + '"';
+//                       first = false;
+                       }
+                   } else if (propName.match("-string-notequal$") == "-string-notequal") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-string-notequal".length);
+                           var sq = getSearchQuery(propName, propValue, isArrayValue, true);
+                           if (sq) {
+                               formQuery += (first ? 'NOT ' : ' AND NOT ') + sq;
+                               first = false;
+                           }
+//                        formQuery += (first ? 'NOT ' : ' AND NOT ') + '=' + escapeQName(propName) + ': "' + propValue + '"';
+//                        first = false;
+                       }
+                   } else if (propName.match("-number-equal$") == "-number-equal") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-number-equal".length);
+                           var sq = getSearchQuery(propName, propValue, isArrayValue);
+                           if (sq) {
+                               formQuery += (first ? '' : ' AND ') + sq;
+                               first = false;
+                           }
+//                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ': "' + propValue + '"';
+//                      first = false;
+                       }
+                   } else if (propName.match("-number-notequal$") == "-number-notequal") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-number-notequal".length);
+                           var sq = getSearchQuery(propName, propValue, isArrayValue, true);
+                           if (sq) {
+                               formQuery += (first ? 'NOT ' : ' AND NOT ') + sq;
+                               first = false;
+                           }
+//                      formQuery += (first ? '' : ' AND NOT ') + escapeQName(propName) + ': "' + propValue + '"';
+//                      first = false;
+                       }
+                   } else if (propName.match("-number-more-than-exclusive$") == "-number-more-than-exclusive") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-number-more-than-exclusive".length);
+                           formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + propValue + ' TO ' + MAX + '] AND NOT ' + escapeQName(propName) + ': "' + propValue + '"';
+                           first = false;
+                       }
+                   } else if (propName.match("-number-more-than-inclusive$") == "-number-more-than-inclusive") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-number-more-than-inclusive".length);
+                           formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + propValue + ' TO ' + MAX + ']';
+                           first = false;
+                       }
+                   } else if (propName.match("-number-less-than-exclusive$") == "-number-less-than-exclusive") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-number-less-than-exclusive".length);
+                           formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + MIN + ' TO ' + propValue + '] AND NOT ' + escapeQName(propName) + ': "' + propValue + '"';
+                           first = false;
+                       }
+                   } else if (propName.match("-number-less-than-inclusive$") == "-number-less-than-inclusive") {
+                       if (propValue.length !== 0)  {
+                           propName = propName.substr(0, propName.length - "-number-less-than-inclusive".length);
+                           formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + MIN + ' TO ' + propValue + ']';
+                           first = false;
+                       }
+                   } else if (propName.match("-string-empty$") == "-string-empty") {
+                       propName = propName.substr(0, propName.length - "-string-empty".length);
+                       formQuery += (first ? '' : ' AND ') + 'ISNULL:"' + escapeQName(propName) + '"';
+                       first = false;
+                   } else if (propName.match("-string-notempty$") == "-string-notempty") {
+                       propName = propName.substr(0, propName.length - "-string-notempty".length);
+                       formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':*';
+                       first = false;
+                       // special case for range packed properties
+                   } else if (propValue.length !== 0)  {
 
-                           // work out if "from" and/or "to" are specified - use MIN and MAX otherwise;
-                           // we only want the "YYYY-MM-DD" part of the ISO date value - so crop the strings
-                           from = (sepindex === 0 ? "MIN" : propValue.substr(0, 10));
-                           to = (sepindex === propValue.length - 1 ? "MAX" : propValue.substr(sepindex + 1, 10));
-                        }
-                        else
-                        {
-                           // simple range found
-                           propName = propName.substr(0, propName.length - "-range".length);
+                       // special case for range packed properties
+                       if (propName.match("-range$") == "-range")
+                       {
+                          // currently support text based ranges (usually numbers) or date ranges
+                          // range value is packed with a | character separator
 
-                           // work out if "min" and/or "max" are specified - use MIN and MAX otherwise
-                           from = (sepindex === 0 ? "MIN" : propValue.substr(0, sepindex));
-                           to = (sepindex === propValue.length - 1 ? "MAX" : propValue.substr(sepindex + 1));
-                        }
-                        formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':"' + from + '".."' + to + '"';
-                        first = false;
-                     }
-                  }
-                  else if (isCategoryProperty(formJson, p))
-                  {
-                     // If there's no suffix it means this property holds the value for categories
-                     if (propName.indexOf("usesubcats") == -1 && propName.indexOf("isCategory") == -1)
-                     {
-                        // Determines if the checkbox use sub categories was clicked
-                        if (formJson[p + "_usesubcats"] == "true")
-                        {
-                           useSubCats = true;
-                        }
+                          // if neither value is specified then there is no need to add the term
+                          if (propValue.length > 1)
+                          {
+                             var from, to, sepindex = propValue.indexOf("|");
+                             if (propName.match("-date-range$") == "-date-range")
+                             {
+                                // date range found
+                                propName = propName.substr(0, propName.length - "-date-range".length)
 
-                        // Build list of category terms to search for
-                        var catQuery = "";
-                        var cats = propValue.split(',');
-                        if (propName.indexOf("cm:categories") != -1)
-                        {
-                           catQuery = processDefaultCategoryProperty(cats, useSubCats);
-                        }
-                        else
-                        {
-                           catQuery = processCustomCategoryProperty(propName, cats, useSubCats);
-                        }
+                                // work out if "from" and/or "to" are specified - use MIN and MAX otherwise;
+                                // we only want the "YYYY-MM-DD" part of the ISO date value - so crop the strings
+                                from = (sepindex === 0 ? "MIN" : propValue.substr(0, 10));
+                                to = (sepindex === propValue.length - 1 ? "MAX" : propValue.substr(sepindex + 1, 10));
+                             }
+                             else
+                             {
+                                // simple range found
+                                propName = propName.substr(0, propName.length - "-range".length);
 
-                        if (catQuery.length !== 0)
-                        {
-                           // surround category terms with brackets if appropriate
-                           formQuery += (first ? '' : ' AND ') + "(" + catQuery + ")";
+                                // work out if "min" and/or "max" are specified - use MIN and MAX otherwise
+                                from = (sepindex === 0 ? "MIN" : propValue.substr(0, sepindex));
+                                to = (sepindex === propValue.length - 1 ? "MAX" : propValue.substr(sepindex + 1));
+                             }
+                             formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':"' + from + '".."' + to + '"';
+                             first = false;
+                          }
+                       }
+                       else if (isCategoryProperty(formJson, p))
+                       {
+                          // If there's no suffix it means this property holds the value for categories
+                          if (propName.indexOf("usesubcats") == -1 && propName.indexOf("isCategory") == -1)
+                          {
+                             // Determines if the checkbox use sub categories was clicked
+                             if (formJson[p + "_usesubcats"] == "true")
+                             {
+                                useSubCats = true;
+                             }
+
+                             // Build list of category terms to search for
+                             var catQuery = "";
+                             var cats = propValue.split(',');
+                             if (propName.indexOf("cm:categories") != -1)
+                             {
+                                catQuery = processDefaultCategoryProperty(cats, useSubCats);
+                             }
+                             else
+                             {
+                                catQuery = processCustomCategoryProperty(propName, cats, useSubCats);
+                             }
+
+                             if (catQuery.length !== 0)
+                             {
+                                // surround category terms with brackets if appropriate
+                                formQuery += (first ? '' : ' AND ') + "(" + catQuery + ")";
+                                first = false;
+                             }
+                          }
+                       }
+                       //multiple values support (in *_added properties)
+                       else if (p.indexOf("_added") == p.length - "_added".length) {
+                           var cats = propValue.split(',');
+                           var catQuery = "";
+                           var firstCat = true;
+                           for (var i = 0; i < cats.length; i++) {
+                               var cat = cats[i];
+                               var catNode = search.findNode(cat);
+                               if (catNode) {
+                                   catQuery += (firstCat ? '' : ' OR ') + escapeQName(propName) + ':"' + cat + '"';
+                                   firstCat = false;
+                               }
+                           }
+                           if (catQuery.length !== 0) {
+                               formQuery += (first ? '' : ' AND ') + "(" + catQuery + ")";
+                               first = false;
+                           }
+                           //
+                       }
+                       else if (isMultiValueProperty(propValue, modePropValue) || isListProperty(formJson, p))
+                       {
+                           if(propName.indexOf('isListProperty') === -1)
+                           {
+                               formQuery += (first ? '(' : ' AND (');
+                               formQuery += processMultiValue(propName, propValue, modePropValue, false);
+                               formQuery += ')';
+                               first = false;
+                          }
+                       }
+                       else
+                       {
+                          if (propValue.charAt(0) === '"' && propValue.charAt(propValue.length-1) === '"')
+                          {
+                             formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':' + propValue;
+                          }
+                          else
+                          {
+                             var index = propValue.lastIndexOf(" ");
+                             formQuery += (first ? '' : ' AND ') + escapeQName(propName)
+                             if (index > 0 && index < propValue.length - 1)
+                             {
+                                formQuery += ':(' + propValue + ')';
+                             }
+                             else
+                             {
+                                formQuery += ':"' + propValue + '"';
+                             }
+                           }
                            first = false;
                         }
                      }
-                  }
-                  else if (isMultiValueProperty(propValue, modePropValue) || isListProperty(formJson, p))
-                  {
-                      if(propName.indexOf('isListProperty') === -1) 
-                      {
-                          formQuery += (first ? '(' : ' AND (');
-                          formQuery += processMultiValue(propName, propValue, modePropValue, false);
-                          formQuery += ')';
-                          first = false;
-                     }
-                  }
-                  else
-                  {
-                     if (propValue.charAt(0) === '"' && propValue.charAt(propValue.length-1) === '"')
-                     {
-                        formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':' + propValue;
-                     }
-                     else
-                     {
-                        var index = propValue.lastIndexOf(" ");
-                        formQuery += (first ? '' : ' AND ') + escapeQName(propName)
-                        if (index > 0 && index < propValue.length - 1)
-                        {
-                           formQuery += ':(' + propValue + ')';
-                        }
-                        else
-                        {
-                           formQuery += ':"' + propValue + '"';
-                     }
-                     }
-                     first = false;
-                  }
                }
                else
                {
@@ -1128,11 +1311,11 @@ function getSearchResults(params)
       {
     	 fqs.push(site);
       }
-      
+
       fqs.push('-TYPE:"cm:thumbnail" AND -TYPE:"cm:failedThumbnail" AND -TYPE:"cm:rating" AND -TYPE:"st:site"' +
                ' AND -ASPECT:"st:siteContainer" AND -ASPECT:"sys:hidden" AND -cm:creator:system AND -QNAME:comment\\-*');
-      
-      
+
+
       // sort field - expecting field to in one of the following formats:
       //  - short QName form such as: cm:name
       //  - pseudo cm:content field starting with "." such as: .size
@@ -1210,7 +1393,8 @@ function getSearchResults(params)
          params.maxResults,
          params.startIndex,
          rootNode,
-         rs.meta);
+         rs.meta,
+         ftsQuery);
    }
    else
    {
@@ -1218,7 +1402,8 @@ function getSearchResults(params)
          nodes,
          params.startIndex,
          rootNode,
-         rs.meta);
+         rs.meta,
+         ftsQuery);
    }
 }
 
@@ -1262,7 +1447,7 @@ function getQueryTemplate()
 * Helper method used to determine whether the property is tied to a list of properties.
 *
 * @param formJSON the list of the properties provided to the form
-* @param prop propertyname 
+* @param prop propertyname
 * @return true if it is tied to a list of properties, false otherwise
 */
 function isListProperty(formJson, prop)
@@ -1274,7 +1459,7 @@ function isListProperty(formJson, prop)
  * Helper method used to determine whether the property is tied to categories.
  *
  * @param formJSON the list of the properties provided to the form
- * @param prop propertyname 
+ * @param prop propertyname
  * @return true if it is tied to categories, false otherwise
  */
 function isCategoryProperty(formJson, prop)
@@ -1287,7 +1472,7 @@ function isCategoryProperty(formJson, prop)
  * Helper method used to construct lucene query fragment for a default category property.
  *
  * @param cats the selected categories (array of string noderef)
- * @param useSubCats boolean that indicates if should search also in subcategories 
+ * @param useSubCats boolean that indicates if should search also in subcategories
  * @return lucene query with default category property
  */
 function processDefaultCategoryProperty(cats, useSubCats)
@@ -1301,7 +1486,7 @@ function processDefaultCategoryProperty(cats, useSubCats)
       if (catNode)
       {
          catQuery += (firstCat ? '' : ' OR ') + "PATH:\"" + catNode.qnamePath + (useSubCats ? "//*\"" : "/member\"" );
-      
+
          firstCat = false;
       }
    }
@@ -1313,7 +1498,7 @@ function processDefaultCategoryProperty(cats, useSubCats)
  *
  * @param propName property name
  * @param cats the selected categories (array of string noderef)
- * @param useSubCats boolean that indicates if should search also in subcategories 
+ * @param useSubCats boolean that indicates if should search also in subcategories
  * @return lucene query with custom category property
  */
 function processCustomCategoryProperty(propName, cats, useSubCats)
@@ -1347,7 +1532,7 @@ function processCustomCategoryProperty(propName, cats, useSubCats)
       // Create lucene query with custom category property
       if (selectedCatNodes && selectedCatNodes.length !== 0)
       {
-         for (var j = 0; j < selectedCatNodes.length; j++) 
+         for (var j = 0; j < selectedCatNodes.length; j++)
          {
             var selectedCatNode = selectedCatNodes[j];
             catQuery += (j == 0 ? '':' OR ') + escapeQName(propName) + ':' + selectedCatNode.id;
