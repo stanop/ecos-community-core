@@ -150,7 +150,11 @@
         ],
         <#assign propNames = getExtraProp(node) />
         <#list propNames as prop>
+            <#if prop?is_string>
         "${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,
+            <#else>
+            "${prop.key}": <#if node.properties[prop.value]??><@printValue node.properties[prop.value]/><#elseif node.properties[prop.key]??><@printValue node.properties[prop.key]/><#else>null</#if>,
+            </#if>
         </#list>
         "displayName": "${node.properties["cm:title"]!node.properties["itmpl:generatedName"]!node.name}"
     <#else>
@@ -161,8 +165,14 @@
 </#macro>
 
 <#function getExtraProp node>
+    <#assign defaultPersonExtraProps = [ "cm:userName", "cm:firstName", "cm:lastName", "cm:middleName" ] />
+    <#assign personExtraProps = defaultPersonExtraProps />
+    <#if config.script?size != 0 && config.script.config?size != 0 && config.script.config.personExtraProps?is_string >
+        <#assign personExtraProps = config.script.config.personExtraProps?eval />
+    </#if>
+
     <#assign extraProps = {
-        "cm:person": [ "cm:userName", "cm:firstName", "cm:lastName", "cm:middleName" ],
+        "cm:person": personExtraProps,
         "cm:authorityContainer": [ "cm:authorityName", "cm:authorityDisplayName" ],
         "bpm:workflowTask": ["bpm:status", "wfm:taskType", "wfm:assignee", "wfm:actors"]
     } />

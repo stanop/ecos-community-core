@@ -2500,39 +2500,43 @@ ko.bindingHandlers.orgstructControl = {
                 // initialize tree function
                 tree.fn = {
                     loadNodeData: function(node, fnLoadComplete) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
-                            success: function (oResponse) {
-                                var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
-                                if (params && params.excludeFields) {
-                                    results = results.filter(function(item) {
-                                        return params.excludeFields.indexOf(item.shortName) == -1;
-                                    });
-                                }
+                        if (node.data.shortName != "all_users") {
+                            YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
+                                success: function (oResponse) {
+                                    var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                                    if (params && params.excludeFields) {
+                                        results = results.filter(function(item) {
+                                            return params.excludeFields.indexOf(item.shortName) == -1;
+                                        });
+                                    }
 
-                                if (results) {
-                                    for (var i = 0; i < results.length; i++) {
-                                        item = results[i];
+                                    if (results) {
+                                        for (var i = 0; i < results.length; i++) {
+                                            item = results[i];
 
-                                        treeNode = this.buildTreeNode(item, node, false);
-                                        if (item.authorityType == "USER") {
-                                            treeNode.isLeaf = true;
+                                            treeNode = this.buildTreeNode(item, node, false);
+                                            if (item.authorityType == "USER") {
+                                                treeNode.isLeaf = true;
+                                            }
                                         }
                                     }
+
+                                    oResponse.argument.fnLoadComplete();
+                                },
+
+                                failure: function(oResponse) {
+                                    // error
+                                },
+
+                                scope: tree.fn,
+                                argument: {
+                                    "node": node,
+                                    "fnLoadComplete": fnLoadComplete
                                 }
-
-                                oResponse.argument.fnLoadComplete();
-                            },
-
-                            failure: function(oResponse) {
-                                // error
-                            },
-
-                            scope: tree.fn,
-                            argument: {
-                              "node": node,
-                              "fnLoadComplete": fnLoadComplete
-                            }
-                        });
+                            });
+                        } else {
+                            alert("Просьба обратиться к администратору системы, код ошибки 'all_users'");
+                        }
                     },
 
                     loadRootNodes: function(tree, scope, query) {

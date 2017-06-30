@@ -483,7 +483,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                         if (useFilter) {
                             filterByOptions(records, 0, [], processRecords, options);
                         } else {
-                            processRecords(records);
+                            processRecords(records, options);
                         }
                     }
                 };

@@ -4,7 +4,10 @@
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/people-finder/people-finder.css" group="profile" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/people-finder/group-finder.css" group="profile" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/console.css" group="profile" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/orgstruct-icons.css" group="profile" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/deputy/deputy.css" group="profile" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.css" group="profile" />
+
 </@>
 
 <@markup id="js">
@@ -13,7 +16,11 @@
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/people-finder.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/group-finder.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/modules/simple-dialog.js" group="profile" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-toolbar.js" group="profile" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="profile" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="profile" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/picker-dialogs.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/form-dialogs.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/console.js" group="profile" />
