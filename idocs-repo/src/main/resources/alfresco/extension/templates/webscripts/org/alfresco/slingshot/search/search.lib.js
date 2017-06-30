@@ -1,8 +1,6 @@
-var logQuery = "";
-
 /**
  * Search Component
- * 
+ *
  * Takes the following object as Input:
  *    params
  *    {
@@ -14,20 +12,19 @@ var logQuery = "";
  *       sort: sort parameter
  *       maxResults: maximum results to return
  *    };
- * 
+ *
  * Outputs:
  *  items - Array of objects containing the search results
  */
 
 const DEFAULT_MAX_RESULTS = 250;
+const DEFAULT_PAGE_SIZE = 50;
 const SITES_SPACE_QNAME_PATH = "/app:company_home/st:sites/";
-const DISCUSSION_QNAMEPATH = "/fm:discussion";
-const COMMENT_QNAMEPATH = DISCUSSION_QNAMEPATH + "/cm:Comments/";
 
 /**
  * Returns site information data structure.
  * { shortName: siteId, title: title }
- * 
+ *
  * Caches the data to avoid repeatedly querying the repository.
  */
 var siteDataCache = {};
@@ -49,7 +46,7 @@ function getSiteData(siteId)
 
 /**
  * Returns person display name string as returned to the user.
- * 
+ *
  * Caches the person full name to avoid repeatedly querying the repository.
  */
 var personDataCache = {};
@@ -59,12 +56,11 @@ function getPersonDisplayName(userId)
    {
       return personDataCache[userId];
    }
-   
-   var displayName = "";
-   var person = people.getPerson(userId);
-   if (person != null)
+
+   var displayName = people.getPersonFullName(userId);
+   if (displayName == null)
    {
-      displayName = person.properties.firstName + " " + person.properties.lastName;
+      displayName = "";
    }
    personDataCache[userId] = displayName;
    return displayName;
@@ -90,117 +86,119 @@ function checkProcessedCache(key)
 /**
  * Returns an item outside of a site in the main repository.
  */
-function getRepositoryItem(folderPath, node)
+function getRepositoryItem(folderPath, node, populate)
 {
    // check whether we already processed this document
    if (checkProcessedCache("" + node.nodeRef.toString()))
    {
       return null;
    }
-   
+
    // check whether this is a valid folder or a file
    var item = t = null;
-   if (node.qnamePath.indexOf(COMMENT_QNAMEPATH) == -1 &&
-       !(node.qnamePath.match(DISCUSSION_QNAMEPATH+"$") == DISCUSSION_QNAMEPATH))
+   if (node.isContainer || node.isDocument)
    {
-      if (node.isContainer || node.isDocument)
+      if (!populate) return {};
+      item =
       {
-         item =
-         {
-            nodeRef: node.nodeRef.toString(),
-            tags: ((t = node.tags) !== null) ? t : [],
-            name: node.name,
-            displayName: node.name,
-            title: node.properties["cm:title"],
-            description: node.properties["cm:description"],
-            modifiedOn: node.properties["cm:modified"],
-            modifiedByUser: node.properties["cm:modifier"],
-            createdOn: node.properties["cm:created"],
-            createdByUser: node.properties["cm:creator"],
-            path: folderPath.join("/")
-         };
-         item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
-         item.createdBy = getPersonDisplayName(item.createdByUser);
-      }
-      if (node.isContainer)
-      {
-         item.type = "folder";
-         item.size = -1;
-      }
-      else if (node.isDocument)
-      {
-         item.type = "document";
-         item.size = node.size;
-      }
+         nodeRef: node.nodeRef.toString(),
+         tags: ((t = node.tags) !== null) ? t : [],
+         name: node.name,
+         displayName: node.name,
+         title: node.properties["cm:title"],
+         description: node.properties["cm:description"],
+         modifiedOn: node.properties["cm:modified"],
+         modifiedByUser: node.properties["cm:modifier"],
+         createdOn: node.properties["cm:created"],
+         createdByUser: node.properties["cm:creator"],
+         lastThumbnailModification: node.properties["cm:lastThumbnailModification"],
+         mimetype: node.mimetype,
+         path: folderPath.join("/")
+      };
+      item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
+      item.createdBy = getPersonDisplayName(item.createdByUser);
    }
-   
+   if (node.isContainer)
+   {
+      item.type = "folder";
+      item.size = -1;
+   }
+   else if (node.isDocument)
+   {
+      item.type = "document";
+      item.size = node.size;
+   }
+
    return item;
 }
 
 /**
  * Returns an item of the document library component.
  */
-function getDocumentItem(siteId, containerId, pathParts, node)
+function getDocumentItem(siteId, containerId, pathParts, node, populate)
 {
    // PENDING: how to handle comments? the document should
    //          be returned instead
-   
+
    // check whether we already processed this document
    if (checkProcessedCache("" + node.nodeRef.toString()))
    {
       return null;
    }
-   
+
    // check whether this is a valid folder or a file
    var item = t = null;
-   if (node.qnamePath.indexOf(COMMENT_QNAMEPATH) == -1 &&
-       !(node.qnamePath.match(DISCUSSION_QNAMEPATH+"$") == DISCUSSION_QNAMEPATH))
+   if (node.isContainer || node.isDocument)
    {
-      if (node.isContainer || node.isDocument)
+      if (!populate) return {};
+      item =
       {
-         item =
-         {
-            site: getSiteData(siteId),
-            container: containerId,
-            nodeRef: node.nodeRef.toString(),
-            tags: ((t = node.tags) !== null) ? t : [],
-            name: node.name,
-            displayName: node.name,
-            title: node.properties["cm:title"],
-            description: node.properties["cm:description"],
-            modifiedOn: node.properties["cm:modified"],
-            modifiedByUser: node.properties["cm:modifier"],
-            createdOn: node.properties["cm:created"],
-            createdByUser: node.properties["cm:creator"],
-            path: pathParts.join("/")
-         };
-         item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
-         item.createdBy = getPersonDisplayName(item.createdByUser);
-      }
-      if (node.isContainer)
-      {
-         item.type = "folder";
-         item.size = -1;
-      }
-      else if (node.isDocument)
-      {
-         item.type = "document";
-         item.size = node.size;
-      }
+         site: getSiteData(siteId),
+         container: containerId,
+         nodeRef: node.nodeRef.toString(),
+         tags: ((t = node.tags) !== null) ? t : [],
+         name: node.name,
+         displayName: node.name,
+         title: node.properties["cm:title"],
+         description: node.properties["cm:description"],
+         modifiedOn: node.properties["cm:modified"],
+         modifiedByUser: node.properties["cm:modifier"],
+         createdOn: node.properties["cm:created"],
+         createdByUser: node.properties["cm:creator"],
+         lastThumbnailModification: node.properties["cm:lastThumbnailModification"],
+         mimetype: node.mimetype,
+         path: pathParts.join("/")
+      };
+      item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
+      item.createdBy = getPersonDisplayName(item.createdByUser);
    }
-   
+   if (node.isContainer)
+   {
+      item.type = "folder";
+      item.size = -1;
+   }
+   else if (node.isDocument)
+   {
+      item.type = "document";
+      item.size = node.size;
+   }
+
    return item;
 }
 
-function getBlogPostItem(siteId, containerId, pathParts, node)
+function getBlogPostItem(siteId, containerId, pathParts, node, populate)
 {
    /**
     * Investigate the rest of the path. the first item is the blog post, ignore everything that follows
     * are replies or folders
     */
    var site = siteService.getSite(siteId);
+   if (site === null)
+   {
+      return null;
+   }
    var container = site.getContainer(containerId);
-   
+
    /**
     * Find the direct child of the container
     * Note: this only works for post which are direct children of the blog container
@@ -212,20 +210,21 @@ function getBlogPostItem(siteId, containerId, pathParts, node)
       child = parent;
       parent = parent.parent;
    }
-   
+
    // check whether we found the container
    if (parent === null)
    {
       return null;
    }
-   
+
    // check whether we already added this blog post
    if (checkProcessedCache("" + child.nodeRef.toString()))
    {
       return null;
    }
-   
+
    // child is our blog post
+   if (!populate) return {};
    var item, t = null;
    item =
    {
@@ -244,11 +243,11 @@ function getBlogPostItem(siteId, containerId, pathParts, node)
    };
    item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
    item.createdBy = getPersonDisplayName(item.createdByUser);
-   
+
    return item;
 }
 
-function getForumPostItem(siteId, containerId, pathParts, node)
+function getForumPostItem(siteId, containerId, pathParts, node, populate)
 {
    // try to find the first fm:topic node, that's what we return as search result
    var topicNode = node;
@@ -260,18 +259,19 @@ function getForumPostItem(siteId, containerId, pathParts, node)
    {
       return null;
    }
-   
+
    // make sure we haven't already added the post
    if (checkProcessedCache("" + topicNode.nodeRef.toString()))
    {
       return null;
    }
-   
+
    // find the first post, which contains the post title
    // PENDING: error prone
    var postNode = topicNode.childAssocs["cm:contains"][0];
-   
+
    // child is our forum post
+   if (!populate) return {};
    var item = t = null;
    item =
    {
@@ -295,20 +295,21 @@ function getForumPostItem(siteId, containerId, pathParts, node)
    return item;
 }
 
-function getCalendarItem(siteId, containerId, pathParts, node)
+function getCalendarItem(siteId, containerId, pathParts, node, populate)
 {
    // only process nodes of the correct type
    if (node.type != "{http://www.alfresco.org/model/calendar}calendarEvent")
    {
       return null;
    }
-   
+
    // make sure we haven't already added the event
    if (checkProcessedCache("" + node.nodeRef.toString()))
    {
       return null;
    }
-   
+
+   if (!populate) return {};
    var item, t = null;
    item =
    {
@@ -323,29 +324,31 @@ function getCalendarItem(siteId, containerId, pathParts, node)
       modifiedByUser: node.properties["cm:modifier"],
       createdOn: node.properties["cm:created"],
       createdByUser: node.properties["cm:creator"],
+      fromDate: node.properties["ia:fromDate"],
       size: -1,
       displayName: node.properties["ia:whatEvent"]
    };
    item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
    item.createdBy = getPersonDisplayName(item.createdByUser);
-      
+
    return item;
 }
 
-function getWikiItem(siteId, containerId, pathParts, node)
+function getWikiItem(siteId, containerId, pathParts, node, populate)
 {
    // only process documents
    if (!node.isDocument)
    {
       return null;
    }
-   
+
    // make sure we haven't already added the page
    if (checkProcessedCache("" + node.nodeRef.toString()))
    {
       return null;
    }
-   
+
+   if (!populate) return {};
    var item, t = null;
    item =
    {
@@ -365,64 +368,62 @@ function getWikiItem(siteId, containerId, pathParts, node)
    };
    item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
    item.createdBy = getPersonDisplayName(item.createdByUser);
-   
+
    return item;
 }
 
-function getLinkItem(siteId, containerId, pathParts, node)
+function getLinkItem(siteId, containerId, pathParts, node, populate)
 {
    // only process documents
    if (!node.isDocument)
    {
       return null;
    }
-   
+
    // make sure we haven't already added this link
    if (checkProcessedCache("" + node.nodeRef.toString()))
    {
       return null;
    }
-   
+
    var item = t = null;
-   if (node.qnamePath.indexOf(COMMENT_QNAMEPATH) == -1 &&
-       !(node.qnamePath.match(DISCUSSION_QNAMEPATH+"$") == DISCUSSION_QNAMEPATH))
+   if (!populate) return {};
+   item =
    {
-      item =
-      {
-         site: getSiteData(siteId),
-         container: containerId,
-         nodeRef: node.nodeRef.toString(),
-         type: "link",
-         tags: ((t = node.tags) !== null) ? t : [],
-         name: node.name,
-         description: node.properties["cm:description"],
-         modifiedOn: node.properties["cm:modified"],
-         modifiedByUser: node.properties["cm:modifier"],
-         createdOn: node.properties["cm:created"],
-         createdByUser: node.properties["cm:creator"],
-         size: -1,
-         displayName: node.properties["lnk:title"]
-      };
-      item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
-      item.createdBy = getPersonDisplayName(item.createdByUser);
-   }
-   
+      site: getSiteData(siteId),
+      container: containerId,
+      nodeRef: node.nodeRef.toString(),
+      type: "link",
+      tags: ((t = node.tags) !== null) ? t : [],
+      name: node.name,
+      description: node.properties["cm:description"],
+      modifiedOn: node.properties["cm:modified"],
+      modifiedByUser: node.properties["cm:modifier"],
+      createdOn: node.properties["cm:created"],
+      createdByUser: node.properties["cm:creator"],
+      size: -1,
+      displayName: node.properties["lnk:title"]
+   };
+   item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
+   item.createdBy = getPersonDisplayName(item.createdByUser);
+
    return item;
 }
 
-function getDataItem(siteId, containerId, pathParts, node)
+function getDataItem(siteId, containerId, pathParts, node, populate)
 {
    // make sure we haven't already added this item
    if (checkProcessedCache("" + node.nodeRef.toString()))
    {
       return null;
    }
-   
+
    var item = null;
-   
+
    // data item can be either ba containing dl:dataList or any dl:dataListItem subtype
    if (node.type == "{http://www.alfresco.org/model/datalist/1.0}dataList")
    {
+      if (!populate) return {};
       // found a data list
       item =
       {
@@ -445,6 +446,7 @@ function getDataItem(siteId, containerId, pathParts, node)
    }
    else if (node.isSubType("{http://www.alfresco.org/model/datalist/1.0}dataListItem"))
    {
+      if (!populate) return {};
       // found a data list item
       item =
       {
@@ -464,45 +466,45 @@ function getDataItem(siteId, containerId, pathParts, node)
       item.modifiedBy = getPersonDisplayName(item.modifiedByUser);
       item.createdBy = getPersonDisplayName(item.createdByUser);
    }
-   
+
    return item;
 }
 
 /**
- * Deputies the extraction to the correct extraction function
+ * Delegates the extraction to the correct extraction function
  * depending on containerId.
  */
-function getItem(siteId, containerId, pathParts, node)
+function getItem(siteId, containerId, pathParts, node, populate)
 {
    var item = null;
    if (siteId == null)
    {
-      item = getRepositoryItem(pathParts, node);
+      item = getRepositoryItem(pathParts, node, populate);
    }
    else
    {
-      switch ("" + containerId)
+      switch ("" + containerId.toLowerCase())
       {
-         case "documentLibrary":
-            item = getDocumentItem(siteId, containerId, pathParts, node);
+         case "documentlibrary":
+            item = getDocumentItem(siteId, containerId, pathParts, node, populate);
             break;
          case "blog":
-            item = getBlogPostItem(siteId, containerId, pathParts, node);
+            item = getBlogPostItem(siteId, containerId, pathParts, node, populate);
             break;
          case "discussions":
-            item = getForumPostItem(siteId, containerId, pathParts, node);
+            item = getForumPostItem(siteId, containerId, pathParts, node, populate);
             break;
          case "calendar":
-            item = getCalendarItem(siteId, containerId, pathParts, node);
+            item = getCalendarItem(siteId, containerId, pathParts, node, populate);
             break;
          case "wiki":
-            item = getWikiItem(siteId, containerId, pathParts, node);
+            item = getWikiItem(siteId, containerId, pathParts, node, populate);
             break;
          case "links":
-            item = getLinkItem(siteId, containerId, pathParts, node);
+            item = getLinkItem(siteId, containerId, pathParts, node, populate);
             break;
-         case "dataLists":
-            item = getDataItem(siteId, containerId, pathParts, node);
+         case "datalists":
+            item = getDataItem(siteId, containerId, pathParts, node, populate);
             break;
       }
    }
@@ -510,95 +512,212 @@ function getItem(siteId, containerId, pathParts, node)
 }
 
 /**
- * Splits the qname path to a node.
+ * Splits the qname path to a node to extract Site information and display path parts.
+ * The display path will be truncated to match the overridden root node if present.
  * 
  * Returns an array with:
- * [0] = site
- * [1] = container or null if the node does not match
+ * [0] = site or null
+ * [1] = container or null
  * [2] = remaining part of the cm:name based path to the object - as an array
  */
-function splitQNamePath(node)
+function splitQNamePath(node, rootNodeDisplayPath, rootNodeQNamePath, qnameOnly)
 {
    var path = node.qnamePath,
-       displayPath = node.displayPath.split("/"),
-       parts = null;
+       displayPath = qnameOnly ? null : utils.displayPath(node).split("/"),
+       siteId = null,
+       containerId = null;
    
    if (path.match("^"+SITES_SPACE_QNAME_PATH) == SITES_SPACE_QNAME_PATH)
    {
-      var tmp = path.substring(SITES_SPACE_QNAME_PATH.length),
-          pos = tmp.indexOf('/');
-      if (pos >= 1)
+      // this item is contained within a Site
+      
+      // ensure we have not matched a Site folder directly or some node created under the st:sites folder that is not a Site
+      var qpathUnderSitesFolder = path.substring(SITES_SPACE_QNAME_PATH.length),
+          positionContainer = qpathUnderSitesFolder.indexOf("/");
+      if (positionContainer !== -1)
       {
-         // site id is the cm:name for the site - we cannot use the encoded QName version
-         var siteId = displayPath[3];
-         tmp = tmp.substring(pos + 1);
-         pos = tmp.indexOf('/');
-         if (pos >= 1)
+         // Decode the Site ID from the qname path using the util method - as we may not have displayPath
+         // the displayPath will look something like this: ["", "Company Home", "Sites", "MySite", "documentLibrary", "MyFolder"]
+         var siteQName = Packages.org.alfresco.util.ISO9075.decode(qpathUnderSitesFolder.substring(0, positionContainer));
+         siteId = siteQName.substring(siteQName.indexOf(":") + 1);
+         var qpathContainer = qpathUnderSitesFolder.substring(positionContainer + 1);
+         var positionUnderContainer = qpathContainer.indexOf("/");
+         if (positionUnderContainer !== -1)
          {
-            // strip container id from the path
-            var containerId = tmp.substring(0, pos);
+            // extract container id from the qname path - strip off namespace
+            containerId = qpathContainer.substring(0, positionUnderContainer);
             containerId = containerId.substring(containerId.indexOf(":") + 1);
             
-            parts = [ siteId, containerId, displayPath.slice(5, displayPath.length) ];
+            // construct remaining part of the cm:name based display path to the object
+            // by removing everything up to the path of the item under the container folder
+            if (!qnameOnly) displayPath = displayPath.slice(5, displayPath.length);
          }
       }
    }
+   else
+   {
+      // check if we have an overridden root node and the node is under that path
+      if (!qnameOnly && rootNodeDisplayPath !== null && path.indexOf(rootNodeQNamePath) === 0)
+      {
+         // restructure the display path of the node
+         displayPath = displayPath.splice(rootNodeDisplayPath.length);
+         // empty element is required at the start of the repository paths - we want to show it as the repo root later
+         displayPath.unshift("");
+      }
+   }
    
-   return (parts !== null ? parts : [ null, null, displayPath ]);
+   return [ siteId, containerId, displayPath ];
 }
 
 /**
- * Processes the search results. Filters out unnecessary nodes
+ * Processes the search results, extracting the given page of results from the startIndex up to the maxPageResults
+ * from the total list of nodes passed in. Filters out unnecessary nodes
  * 
  * @return the final search results object
  */
-function processResults(nodes, maxResults)
+function processResults(nodes, maxPageResults, startIndex, rootNode, meta)
 {
    // empty cache state
    processedCache = {};
    var results = [],
-      added = 0,
+      added = processed = failed = 0,
       parts,
       item,
-      failed = 0,
-      i, j;
-   
+      rootNodeDisplayPath = rootNode ? utils.displayPath(rootNode).split("/") : null,
+      rootNodeQNamePath = rootNode ? rootNode.qnamePath : null;
+
    if (logger.isLoggingEnabled())
       logger.log("Processing resultset of length: " + nodes.length);
-   
-   for (i = 0, j = nodes.length; i < j && added < maxResults; i++)
+
+   startIndex = startIndex ? startIndex : 0;
+   for (var i = 0, j = nodes.length; i < j; i++)
    {
-      /**
-       * For each node we extract the site/container qname path and then
-       * let the per-container helper function decide what to do.
-       */
-      parts = splitQNamePath(nodes[i]);
-      item = getItem(parts[0], parts[1], parts[2], nodes[i]);
-      if (item !== null)
+      // For each node we extract the site/container qname path and then
+      // let the per-container helper function decide what to do.
+      try
       {
-         results.push(item);
-         added++;
+         // We only want to populate node return structures if we are going to add the items to the results,
+         // so we skip (process, but don't populate or add to results) until we have reached the startIndex
+         // then we populate and add items up to the maxPageResults - after that we still need to process
+         // (but don't populate or add to results) each item to correctly calculate the totalRecordsUpper.
+         var populate = (processed >= startIndex && added < maxPageResults);
+         parts = splitQNamePath(nodes[i], rootNodeDisplayPath, rootNodeQNamePath, !populate);
+         item = getItem(parts[0], parts[1], parts[2], nodes[i], populate);
+         if (item !== null)
+         {
+            processed++;
+            if (populate)
+            {
+               results.push(item);
+               added++;
+            }
+         }
+         else
+         {
+            failed++;
+         }
       }
-      else
+      catch (e)
       {
+         // THOR-833
+         if (logger.isWarnLoggingEnabled() == true)
+         {
+            logger.warn("search.lib.js: Skipping node due to exception when processing query result: " + e);
+            logger.warn("..." + nodes[i].nodeRef);
+         }
+
          failed++;
       }
    }
-   
+
    if (logger.isLoggingEnabled())
       logger.log("Filtered resultset to length: " + results.length + ". Discarded item count: " + failed);
-   
+
    return (
    {
+      paging:
+      {
+         totalRecords: results.length,
+         totalRecordsUpper: nodes.length - failed,
+         startIndex: startIndex,
+         numberFound: meta ? meta.numberFound : -1
+      },
+      facets: meta ? meta.facets : null,
       items: results,
-      logQuery: logQuery
+      spellcheck: meta ? meta.spellcheck : null
+   });
+}
+
+/**
+ * Processes the search results for a single page. Filters out unnecessary nodes
+ *
+ * @return the final search results object
+ */
+function processResultsSinglePage(nodes, startIndex, rootNode, meta)
+{
+   // empty cache state
+   processedCache = {};
+   var results = [],
+      failed = 0,
+      parts,
+      item,
+      rootNodeDisplayPath = rootNode ? utils.displayPath(rootNode).split("/") : null,
+      rootNodeQNamePath = rootNode ? rootNode.qnamePath : null;
+
+   if (logger.isLoggingEnabled())
+      logger.log("Processing resultset of length: " + nodes.length);
+
+   for (var i = 0, j = nodes.length; i < j; i++)
+   {
+      // For each node we extract the site/container qname path and then
+      // let the per-container helper function decide what to do.
+      try
+      {
+         parts = splitQNamePath(nodes[i], rootNodeDisplayPath, rootNodeQNamePath, false);
+         item = getItem(parts[0], parts[1], parts[2], nodes[i], true);
+         if (item !== null)
+         {
+            results.push(item);
+         }
+         else
+         {
+            failed++;
+         }
+      }
+      catch (e)
+      {
+         // THOR-833
+         if (logger.isWarnLoggingEnabled() == true)
+         {
+            logger.warn("search.lib.js: Skipping node due to exception when processing query result: " + e);
+            logger.warn("..." + nodes[i].nodeRef);
+         }
+         failed++;
+      }
+   }
+
+   if (logger.isLoggingEnabled())
+      logger.log("Filtered resultset to length: " + results.length + ". Discarded item count: " + failed);
+
+   return (
+   {
+      paging:
+      {
+         totalRecords: results.length,
+         totalRecordsUpper: -1,
+         startIndex: startIndex,
+         numberFound: meta ? meta.numberFound : -1
+      },
+      facets: meta ? meta.facets : null,
+      items: results,
+      spellcheck: meta ? meta.spellcheck : null
    });
 }
 
 /**
  * Helper to escape the QName string so it is valid inside an fts-alfresco query.
  * The language supports the SQL92 identifier standard.
- * 
+ *
  * @param qname   The QName string to escape
  * @return escaped string
  */
@@ -638,42 +757,88 @@ function escapeString(value)
 }
 
 /**
- * This function iterate propValue if it is array.
- * 
- * @param propName - name of the property
- * @param propValue - value of the property. If it is ["a","b"], 
- * @param isArray - propValue is array or not.
- * @param negation - if it is true, it adds to the search query 'NOT '.
- *                   By default it is has NO negation.
- * @returns {String}
+ * Helper method used to determine whether the property value is multi-valued.
+ *
+ * @param propValue the property value to test
+ * @param modePropValue the logical operand that should be used for multi-value property
+ * @return true if it is multi-valued, false otherwise
  */
-function getSearchQuery(propName, propValue, isArray) {
-	var result = '';
-	if (propValue) {
-		if (isArray) {
-			var first = true;
-			if (propValue.length > 0) {
-				result += ' ( ';
-				for (var i = 0; i < propValue.length; i++) {
-					result += (first ? '' : ' OR ') + '=' + escapeQName(propName) + ': "' + propValue[i] + '"';
-					first = false;
-				}
-				result += ' ) ';
-			}
-		}
-		else {
-			result += '=' + escapeQName(propName) + ': "' + propValue + '"';
-		}
-	}
-	return result;
+function isMultiValueProperty(propValue, modePropValue)
+{
+   return modePropValue != null && propValue.indexOf(",") !== -1;
+}
+
+/**
+ * Helper method used to construct lucene query fragment for a multi-valued property.
+ *
+ * @param propName property name
+ * @param propValue property value (comma separated)
+ * @param operand logical operand that should be used
+ * @param pseudo is it a pseudo property
+ * @return lucene query with multi-valued property
+ */
+function processMultiValue(propName, propValue, operand, pseudo)
+{
+   var multiValue = propValue.split(","),
+       formQuery = "";
+   for (var i = 0; i < multiValue.length; i++)
+   {
+      if (i > 0)
+      {
+         formQuery += ' ' + operand + ' ';
+      }
+
+      if (pseudo)
+      {
+         formQuery += '(cm:content.' + propName + ':"' + multiValue[i] + '")';
+      }
+      else
+      {
+         formQuery += '(' + escapeQName(propName) + ':"' + multiValue[i] + '")';
+      }
+   }
+
+   return formQuery;
+}
+
+/**
+ * Resolve a root node reference to use as the Repository root for a search.
+ *
+ * NOTE: see ParseArgs.resolveNode()
+ *
+ * @method resolveRootNode
+ * @param reference {string} "virtual" nodeRef, nodeRef or xpath expressions
+ * @return {ScriptNode|null} Node corresponding to supplied expression. Returns null if node cannot be resolved.
+ */
+function resolveRootNode(reference)
+{
+   try
+   {
+      var node = utils.resolveNodeReference(reference);
+      if (node === null)
+      {
+         logger.warn("Unable to resolve specified root node reference: " + reference);
+      }
+      else if (companyhome.nodeRef === node.nodeRef)
+      {
+         // default root node - no special handling required
+         return null;
+      }
+      return node;
+   }
+   catch (e)
+   {
+      logger.warn("Unable to resolve specified root node reference: " + reference);
+      return null;
+   }
 }
 
 /**
  * Return Search results with the given search terms.
- * 
+ *
  * "or" is the default operator, AND and NOT are also supported - as is any other valid fts-alfresco
  * elements such as "quoted terms" and (bracket terms) and also propname:propvalue syntax.
- * 
+ *
  * @param params  Object containing search parameters - see API description above
  */
 function getSearchResults(params)
@@ -682,17 +847,21 @@ function getSearchResults(params)
       ftsQuery = "",
       term = params.term,
       tag = params.tag,
-      formData = params.query;
-   
+      formData = params.query,
+      rootNode = params.rootNode ? resolveRootNode(params.rootNode) : null;
+
    // Simple keyword search and tag specific search
-   if (term !== null && term.length !== 0) {
-      // TAG is now part of the default macro
+   if (term !== null && term.length !== 0)
+   {
+      // TAG is now part of the default search macro
       ftsQuery = term + " ";
-   } else if (tag !== null && tag.length !== 0) {
+   }
+   else if (tag !== null && tag.length !== 0)
+   {
       // Just look for tag
       ftsQuery = "TAG:" + tag +" ";
    }
-   
+
    // Advanced search form data search.
    // Supplied as json in the standard Alfresco Forms data structure:
    //    prop_<name>:value|assoc_<name>:value
@@ -701,172 +870,54 @@ function getSearchResults(params)
    // - underscore represents colon character in name
    // - pseudo property is one of any cm:content url property: mimetype|encoding|size
    // - always string values - interogate DD for type data
-   if (formData !== null && formData.length !== 0) {
+   // - an additional "-mode" suffixed parameter for a value is allowed to specify
+   //   either an AND or OR join condition for multi-value property searches
+   if (formData !== null && formData.length !== 0)
+   {
       var formQuery = "",
           formJson = jsonUtils.toObject(formData);
-      
+
       // extract form data and generate search query
       var first = true;
       var useSubCats = false;
-      for (var p in formJson) {
-        // retrieve value and check there is someting to search for
-        // currently all values are returned as strings
-        var propValue = formJson[p];
-        if (p.indexOf("prop_") === 0) {
-            logger.log("Searching by property: " + p + "; value=" + propValue);
+      for (var p in formJson)
+      {
+         // retrieve value and check there is someting to search for
+         // currently all values are returned as strings
+         var propValue = formJson[p], modePropValue = formJson[p + "-mode"];
+         if (propValue.length !== 0)
+         {
+            if (p.indexOf("prop_") === 0 && p.match("-mode$") != "-mode")
+            {
+               // found a property - is it namespace_propertyname or pseudo property format?
+               var propName = p.substr(5);
+               if (propName.indexOf("_") !== -1)
+               {
+                  // property name - convert to DD property name format
+                  propName = propName.replace("_", ":");
 
-            // found a property - is it namespace_propertyname or pseudo property format?
-           var propName = p.substr(5);
-		   var MIN = "MIN", MAX = "MAX";
-
-		   // big decimal handling:
-		   if(propName.match(/_BIG(-[\w-]+)?$/i)) {
-		      // change property *_BIG to property *_INDEX
-		      propName = propName.replace(/_BIG(-[\w-]+)?$/i, "_INDEX$1");
-			  // change value to index-prepared value
-			  if(propValue) {
-			     propValue = bigNumberEncoder.encode(propValue);
-				 MIN = bigNumberEncoder.getMinValue();
-				 MAX = bigNumberEncoder.getMaxValue();
-		      }
-		   }
-		
-           if (propName.indexOf("_") !== -1) {
-              // property name - convert to DD property name format
-              propName = propName.replace("_", ":");
-
-              var isArrayValue = false;
-              if (propName.match("-array") == "-array") {
-                  isArrayValue = true;
-                  var pos = propName.indexOf("-array");
-                  propName = propName.substr(0, pos) + propName.substr(pos + "-array".length);
-                  propValue = propValue.split(',');
-              }
-              if (propName.match("-string-match$") == "-string-match") {
-                   if (propValue.length !== 0)  {
-                       propName = propName.substr(0, propName.length - "-string-match".length);
-
-                       propValue = propValue.replace(/^[ ]+/g, '').replace(/[ ]+$/g, ''); //trim
-                       propValue = propValue.replace(/[ ]+/g, ' '); //удаление повторяющихся пробелов
-                       var terms = propValue.split(' ');
-                       if (terms && terms.length > 0 && terms[0]) {
-                           for (var i = 0; i < terms.length; i++) {
-                               formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ': "*' + terms[i] + '*"';
-                               first = false;
-                           }
-                       }
-//                       formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':"*' + propValue + '*"';
-//                       first = false;
-                   }
-              } else if (propName.match("-boolean-match$") == "-boolean-match") {
-                  propName = propName.substr(0, propName.length - "-boolean-match".length);
-                  if ("true" == propValue)  {
-                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':*true*';
-                      first = false;
-                  } else if ("false" == propValue)  {
-                      formQuery += (first ? '' : ' AND ') +
-                      '(' +
-                          escapeQName(propName) + ':*false*' +
-                          ' OR ' +
-                          'ISNULL:"' + escapeQName(propName) + '"' +
-                      ')';
-                      first = false;
-                  }
-              } else if (propName.match("-string-equal$") == "-string-equal") {
-                   if (propValue.length !== 0)  {
-                       propName = propName.substr(0, propName.length - "-string-equal".length);
-                       var sq = getSearchQuery(propName, propValue, isArrayValue);
-                       if (sq) {
-                           formQuery += (first ? '' : ' AND ') + sq;
-                           first = false;
-                       }
-//                       formQuery += (first ? '' : ' AND ') + '=' + escapeQName(propName) + ': "' + propValue + '"';
-//                       first = false;
-                   }
-              } else if (propName.match("-string-notequal$") == "-string-notequal") {
-                  if (propValue.length !== 0)  {
-                        propName = propName.substr(0, propName.length - "-string-notequal".length);
-                        var sq = getSearchQuery(propName, propValue, isArrayValue, true);
-                        if (sq) {
-                            formQuery += (first ? 'NOT ' : ' AND NOT ') + sq;
-                            first = false;
-                        }
-//                        formQuery += (first ? 'NOT ' : ' AND NOT ') + '=' + escapeQName(propName) + ': "' + propValue + '"';
-//                        first = false;
-                  }
-              } else if (propName.match("-number-equal$") == "-number-equal") {
-                  if (propValue.length !== 0)  {
-                      propName = propName.substr(0, propName.length - "-number-equal".length);
-                      var sq = getSearchQuery(propName, propValue, isArrayValue);
-                      if (sq) {
-                          formQuery += (first ? '' : ' AND ') + sq;
-                          first = false;
-                      }
-//                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ': "' + propValue + '"';
-//                      first = false;
-                  }
-              } else if (propName.match("-number-notequal$") == "-number-notequal") {
-                  if (propValue.length !== 0)  {
-                      propName = propName.substr(0, propName.length - "-number-notequal".length);
-                      var sq = getSearchQuery(propName, propValue, isArrayValue, true);
-                      if (sq) {
-                          formQuery += (first ? 'NOT ' : ' AND NOT ') + sq;
-                          first = false;
-                      }
-//                      formQuery += (first ? '' : ' AND NOT ') + escapeQName(propName) + ': "' + propValue + '"';
-//                      first = false;
-                  }
-              } else if (propName.match("-number-more-than-exclusive$") == "-number-more-than-exclusive") {
-                  if (propValue.length !== 0)  {
-                      propName = propName.substr(0, propName.length - "-number-more-than-exclusive".length);
-                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + propValue + ' TO ' + MAX + '] AND NOT ' + escapeQName(propName) + ': "' + propValue + '"';
-                      first = false;
-                  }
-              } else if (propName.match("-number-more-than-inclusive$") == "-number-more-than-inclusive") {
-                  if (propValue.length !== 0)  {
-                      propName = propName.substr(0, propName.length - "-number-more-than-inclusive".length);
-                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + propValue + ' TO ' + MAX + ']';
-                      first = false;
-                  }
-              } else if (propName.match("-number-less-than-exclusive$") == "-number-less-than-exclusive") {
-                  if (propValue.length !== 0)  {
-                      propName = propName.substr(0, propName.length - "-number-less-than-exclusive".length);
-                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + MIN + ' TO ' + propValue + '] AND NOT ' + escapeQName(propName) + ': "' + propValue + '"';
-                      first = false;
-                  }
-              } else if (propName.match("-number-less-than-inclusive$") == "-number-less-than-inclusive") {
-                  if (propValue.length !== 0)  {
-                      propName = propName.substr(0, propName.length - "-number-less-than-inclusive".length);
-                      formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':[' + MIN + ' TO ' + propValue + ']';
-                      first = false;
-                  }
-              } else if (propName.match("-string-empty$") == "-string-empty") {
-                  propName = propName.substr(0, propName.length - "-string-empty".length);
-                  formQuery += (first ? '' : ' AND ') + 'ISNULL:"' + escapeQName(propName) + '"';
-                  first = false;
-              } else if (propName.match("-string-notempty$") == "-string-notempty") {
-                  propName = propName.substr(0, propName.length - "-string-notempty".length);
-                  formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':*';
-                  first = false;
-              // special case for range packed properties
-              } else if (propValue.length !== 0)  {
-
-                  if (propName.match("-range$") == "-range") {
+                  // special case for range packed properties
+                  if (propName.match("-range$") == "-range")
+                  {
                      // currently support text based ranges (usually numbers) or date ranges
                      // range value is packed with a | character separator
 
                      // if neither value is specified then there is no need to add the term
-                     if (propValue.length > 1) {
+                     if (propValue.length > 1)
+                     {
                         var from, to, sepindex = propValue.indexOf("|");
-                        if (propName.match("-date-range$") == "-date-range") {
+                        if (propName.match("-date-range$") == "-date-range")
+                        {
                            // date range found
                            propName = propName.substr(0, propName.length - "-date-range".length)
 
                            // work out if "from" and/or "to" are specified - use MIN and MAX otherwise;
                            // we only want the "YYYY-MM-DD" part of the ISO date value - so crop the strings
                            from = (sepindex === 0 ? "MIN" : propValue.substr(0, 10));
-                           to = (sepindex === propValue.length - 1 ? "MAX" : propValue.substr(sepindex + 1, sepindex + 10));
-                        } else {
+                           to = (sepindex === propValue.length - 1 ? "MAX" : propValue.substr(sepindex + 1, 10));
+                        }
+                        else
+                        {
                            // simple range found
                            propName = propName.substr(0, propName.length - "-range".length);
 
@@ -877,117 +928,211 @@ function getSearchResults(params)
                         formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':"' + from + '".."' + to + '"';
                         first = false;
                      }
-
-                  } else if (propName.indexOf("cm:categories") != -1) {
-                     // determines if the checkbox use sub categories was clicked
-                     if (propName.indexOf("usesubcats") == -1) {
-                        if (formJson["prop_cm_categories_usesubcats"] == "true") {
+                  }
+                  else if (isCategoryProperty(formJson, p))
+                  {
+                     // If there's no suffix it means this property holds the value for categories
+                     if (propName.indexOf("usesubcats") == -1 && propName.indexOf("isCategory") == -1)
+                     {
+                        // Determines if the checkbox use sub categories was clicked
+                        if (formJson[p + "_usesubcats"] == "true")
+                        {
                            useSubCats = true;
                         }
-                        // build list of category terms to search for
-                        var firstCat = true;
+
+                        // Build list of category terms to search for
                         var catQuery = "";
                         var cats = propValue.split(',');
-                        for (var i = 0; i < cats.length; i++) {
-                           var cat = cats[i];
-                           var catNode = search.findNode(cat);
-                           if (catNode) {
-                              catQuery += (firstCat ? '' : ' OR ') + "PATH:\"" + catNode.qnamePath + (useSubCats ? "//*\"" : "/member\"" );
-                              firstCat = false;
-                           }
+                        if (propName.indexOf("cm:categories") != -1)
+                        {
+                           catQuery = processDefaultCategoryProperty(cats, useSubCats);
                         }
-                        if (catQuery.length !== 0) {
+                        else
+                        {
+                           catQuery = processCustomCategoryProperty(propName, cats, useSubCats);
+                        }
+
+                        if (catQuery.length !== 0)
+                        {
                            // surround category terms with brackets if appropriate
                            formQuery += (first ? '' : ' AND ') + "(" + catQuery + ")";
                            first = false;
                         }
                      }
-                  //multiple values support (in *_added properties)
-                  } else if (p.indexOf("_added") == p.length - "_added".length) {
-                      var cats = propValue.split(',');
-                      var catQuery = "";
-                      var firstCat = true;
-                      for (var i = 0; i < cats.length; i++) {
-                          var cat = cats[i];
-                          var catNode = search.findNode(cat);
-                          if (catNode) {
-                              catQuery += (firstCat ? '' : ' OR ') + escapeQName(propName) + ':"' + cat + '"';
-                              firstCat = false;
-                          }
-                      }
-                      if (catQuery.length !== 0) {
-                          formQuery += (first ? '' : ' AND ') + "(" + catQuery + ")";
-                          first = false;
-                      }
-                  //
-                  } else {
-                      var sq = getSearchQuery(propName, propValue, isArrayValue);
-                      if (sq) {
-                          formQuery += (first ? '' : ' AND ') + sq;
-                          first = false;
-                      }
-//                     formQuery += (first ? '' : ' AND ') + "=" + escapeQName(propName) + ':"' + propValue + '"';
-//                     first = false;
                   }
-              }
-           } else {
-              // pseudo cm:content property - e.g. mimetype, size or encoding
-			  if(propValue.length !== 0) {
-              formQuery += (first ? '' : ' AND ') + 'cm:content.' + propName + ':"' + propValue + '"';
-              first = false;
-			  }
-           }
-        }
-
+                  else if (isMultiValueProperty(propValue, modePropValue) || isListProperty(formJson, p))
+                  {
+                      if(propName.indexOf('isListProperty') === -1) 
+                      {
+                          formQuery += (first ? '(' : ' AND (');
+                          formQuery += processMultiValue(propName, propValue, modePropValue, false);
+                          formQuery += ')';
+                          first = false;
+                     }
+                  }
+                  else
+                  {
+                     if (propValue.charAt(0) === '"' && propValue.charAt(propValue.length-1) === '"')
+                     {
+                        formQuery += (first ? '' : ' AND ') + escapeQName(propName) + ':' + propValue;
+                     }
+                     else
+                     {
+                        var index = propValue.lastIndexOf(" ");
+                        formQuery += (first ? '' : ' AND ') + escapeQName(propName)
+                        if (index > 0 && index < propValue.length - 1)
+                        {
+                           formQuery += ':(' + propValue + ')';
+                        }
+                        else
+                        {
+                           formQuery += ':"' + propValue + '"';
+                     }
+                     }
+                     first = false;
+                  }
+               }
+               else
+               {
+                  if (isMultiValueProperty(propValue, modePropValue))
+                  {
+                     // multi-valued pseudo cm:content property - e.g. mimetype, size or encoding
+                     formQuery += (first ? '(' : ' AND (');
+                     formQuery += processMultiValue(propName, propValue, modePropValue, true);
+                     formQuery += ')';
+                  }
+                  else
+                  {
+                     // single pseudo cm:content property - e.g. mimetype, size or encoding
+                     formQuery += (first ? '' : ' AND ') + 'cm:content.' + propName + ':"' + propValue + '"';
+                  }
+                  first = false;
+               }
+            }
+         }
       }
-      
-      if (formQuery.length !== 0 || ftsQuery.length !== 0) {
+
+      if (formQuery.length !== 0 || ftsQuery.length !== 0)
+      {
          // extract data type for this search - advanced search query is type specific
          ftsQuery = 'TYPE:"' + formJson.datatype + '"' +
-                    (formQuery.length !== 0 ? ' AND ' + formQuery : '') +
-                    (ftsQuery.length !== 0 ? ' AND ' + ftsQuery : '');
+                    (formQuery.length !== 0 ? ' AND (' + formQuery + ')' : '') +
+                    (ftsQuery.length !== 0 ? ' AND (' + ftsQuery + ')' : '');
       }
    }
-   
+
    if (ftsQuery.length !== 0)
    {
+      // Filter queries
+	  var fqs = [];
+      if (params.filters != null)
+      {
+         var filters = [];
+         if(params.encodedFilters)
+         {
+            var encodedFilters = params.encodedFilters.split(",");
+            for(var i=0; i<encodedFilters.length;i++)
+            {
+               encodedFilters[i] = decodeURIComponent(encodedFilters[i]);
+               filters.push(encodedFilters[i]);
+            }
+         }
+         else
+         {
+         // comma separated list of filter pairs - filter|value|value|...
+         var filters = params.filters.split(",");
+         }
+         for (var f=0; f<filters.length; f++)
+         {
+            var filterParts = filters[f].split("|");
+            if (filterParts.length > 1)
+            {
+               // special case for some filters e.g. TYPE content or folder
+               switch (filterParts[0])
+               {
+                  case "TYPE":
+                  {
+                     ftsQuery += ' AND +TYPE:"' + filterParts[1] + '"';
+                     break;
+                  }
+                  default:
+                  {
+                     // facet filtering selection - reduce query results
+                     // bracket each filter part within the attribute statement
+                     ftsQuery += ' AND (' + filterParts[0] + ':(';
+                     for (var p=1; p<filterParts.length; p++)
+                     {
+                        ftsQuery += '"' + filterParts[p] + '" ';  // space separated values
+                     }
+                     ftsQuery += '))';
+                     break;
+                  }
+               }
+            }
+         }
+      }
+
       // ensure a TYPE is specified - if no add one to remove system objects from result sets
       if (ftsQuery.indexOf("TYPE:\"") === -1 && ftsQuery.indexOf("TYPE:'") === -1)
       {
-         ftsQuery += ' AND (+TYPE:"cm:content" +TYPE:"cm:folder")';
+    	 fqs.push('+TYPE:"cm:content" OR +TYPE:"cm:folder"');
       }
-      
+
       // we processed the search terms, so suffix the PATH query
       var path = null;
+      var site = null
       if (!params.repo)
       {
-         path = SITES_SPACE_QNAME_PATH;
-         if (params.siteId !== null && params.siteId.length > 0)
+         if (params.siteId !== null && params.siteId.length > 0 )
          {
-            path += "cm:" + search.ISO9075Encode(params.siteId) + "/";
+            if (params.containerId !== null && params.containerId.length > 0)
+            {
+               // using PATH to restrict to container and site
+               path = SITES_SPACE_QNAME_PATH;
+               path += "cm:" + search.ISO9075Encode(params.siteId) + "/";
+               path += "cm:" + search.ISO9075Encode(params.containerId) + "/";
+            }
+            else
+            {
+               // use SITE syntax to restrict to specific site
+               site = "SITE:\"" + params.siteId + "\"" ;
+            }
          }
          else
          {
-            path += "*/";
+            if (params.containerId !== null && params.containerId.length > 0)
+            {
+               // using PATH to restrict to container and site
+               path = SITES_SPACE_QNAME_PATH;
+               path += "*/";
+               path += "cm:" + search.ISO9075Encode(params.containerId) + "/";
+            }
+            else
+            {
+               // use SITE syntax to restrict to specific site
+               site = "SITE:\"_ALL_SITES_\"" ;
+            }
          }
-         if (params.containerId !== null && params.containerId.length > 0)
-         {
-            path += "cm:" + search.ISO9075Encode(params.containerId) + "/";
-         }
-         else
-         {
-            path += "*/";
-         }
+      }
+
+      // root node - generally used for overridden Repository root in Share
+      if (params.repo && rootNode !== null)
+      {
+         ftsQuery = 'PATH:"' + rootNode.qnamePath + '//*" AND (' + ftsQuery + ')';
+      }
+      else if (path !== null)
+      {
+    	 fqs.push('PATH:"' + path + '/*"');
+      }
+      else if (site !== null)
+      {
+    	 fqs.push(site);
       }
       
-      if (path !== null)
-      {
-         ftsQuery = 'PATH:"' + path + '/*" AND (' + ftsQuery + ') ';
-      }
-      ftsQuery = '(' + ftsQuery + ') AND -TYPE:"cm:thumbnail" AND -TYPE:"cm:failedThumbnail" AND -TYPE:"cm:rating"';
-
-      ftsQuery = '(' + ftsQuery + ') AND NOT ASPECT:"sys:hidden"';
-
+      fqs.push('-TYPE:"cm:thumbnail" AND -TYPE:"cm:failedThumbnail" AND -TYPE:"cm:rating" AND -TYPE:"st:site"' +
+               ' AND -ASPECT:"st:siteContainer" AND -ASPECT:"sys:hidden" AND -cm:creator:system AND -QNAME:comment\\-*');
+      
+      
       // sort field - expecting field to in one of the following formats:
       //  - short QName form such as: cm:name
       //  - pseudo cm:content field starting with "." such as: .size
@@ -1025,31 +1170,56 @@ function getSearchResults(params)
             ascending: asc
          });
       }
-      
+
       if (logger.isLoggingEnabled())
          logger.log("Query:\r\n" + ftsQuery + "\r\nSortby: " + (sort != null ? sort : ""));
 
-
-      logQuery = ftsQuery;
       // perform fts-alfresco language query
+      var qt = getQueryTemplate();
       var queryDef = {
          query: ftsQuery,
          language: "fts-alfresco",
-         page: {maxItems: params.maxResults * 2},    // allow for space for filtering out results
-         templates: getQueryTemplate(),
+         page: {
+            maxItems: params.maxResults > 0 ? params.maxResults + 1 : params.pageSize,
+            skipCount: params.maxResults > 0 ? 0 : params.startIndex
+         },
+         templates: qt.template,
          defaultField: "keywords",
+         defaultOperator: qt.operator,
          onerror: "no-results",
-         sort: sortColumns 
+         sort: sortColumns,
+         fieldFacets: params.facetFields != null ? params.facetFields.split(",") : null,
+         filterQueries: fqs,
+         searchTerm: params.term,
+         spellCheck: params.spell
       };
-      nodes = search.query(queryDef);
+      var rs = search.queryResultSet(queryDef);
+      nodes = rs.nodes;
    }
    else
    {
       // failed to process the search string - empty list returned
+      var rs = {};
       nodes = [];
    }
-   
-   return processResults(nodes, params.maxResults);
+
+   if (params.maxResults > 0)
+   {
+      return processResults(
+         nodes,
+         params.maxResults,
+         params.startIndex,
+         rootNode,
+         rs.meta);
+   }
+   else
+   {
+      return processResultsSinglePage(
+         nodes,
+         params.startIndex,
+         rootNode,
+         rs.meta);
+   }
 }
 
 /**
@@ -1064,10 +1234,126 @@ function getQueryTemplate()
          field: "keywords",
          template: "%(cm:name cm:title cm:description ia:whatEvent ia:descriptionEvent lnk:title lnk:description TEXT TAG)"
       }],
-      qt = new XML(config.script)["default-query-template"];
-   if (qt != null && qt.length != 0)
+      xml = new XML(config.script),
+      qt = xml["default-query-template"];
+   if (qt != null && qt.length() != 0)
    {
       t[0].template = qt.toString();
    }
-   return t;
+
+   // get default fts operator from the config
+   //
+   // TODO: common search lib - for both live and standard e.g. to get values like this...
+   //
+   var operator = "AND",
+       cf = xml["default-operator"];
+   if (cf != null && cf.length != 0)
+   {
+      operator = cf.toString();
+   }
+
+   return {
+      template: t,
+      operator: operator
+   };
+}
+
+/*
+* Helper method used to determine whether the property is tied to a list of properties.
+*
+* @param formJSON the list of the properties provided to the form
+* @param prop propertyname 
+* @return true if it is tied to a list of properties, false otherwise
+*/
+function isListProperty(formJson, prop)
+{
+  return prop.indexOf('isListProperty') != -1 || prop+'_isListProperty' in formJson;
+}
+
+/**
+ * Helper method used to determine whether the property is tied to categories.
+ *
+ * @param formJSON the list of the properties provided to the form
+ * @param prop propertyname 
+ * @return true if it is tied to categories, false otherwise
+ */
+function isCategoryProperty(formJson, prop)
+{
+   return prop.indexOf('usesubcats') != -1 || prop.indexOf('isCategory') != -1 ||
+      prop+'_usesubcats' in formJson || prop+'_isCategory' in formJson;
+}
+
+/**
+ * Helper method used to construct lucene query fragment for a default category property.
+ *
+ * @param cats the selected categories (array of string noderef)
+ * @param useSubCats boolean that indicates if should search also in subcategories 
+ * @return lucene query with default category property
+ */
+function processDefaultCategoryProperty(cats, useSubCats)
+{
+   var firstCat = true;
+   var catQuery = "";
+   for (var i = 0; i < cats.length; i++)
+   {
+      var cat = cats[i];
+      var catNode = search.findNode(cat);
+      if (catNode)
+      {
+         catQuery += (firstCat ? '' : ' OR ') + "PATH:\"" + catNode.qnamePath + (useSubCats ? "//*\"" : "/member\"" );
+      
+         firstCat = false;
+      }
+   }
+   return catQuery;
+}
+
+/**
+ * Helper method used to construct lucene query fragment for a custom category property.
+ *
+ * @param propName property name
+ * @param cats the selected categories (array of string noderef)
+ * @param useSubCats boolean that indicates if should search also in subcategories 
+ * @return lucene query with custom category property
+ */
+function processCustomCategoryProperty(propName, cats, useSubCats)
+{
+   var catQuery = "";
+
+   // Prepare the query that will be used to load all the noderefs for the selected categories values
+   // (and their subcategories if selected)
+   var selectedCatsQuery = "";
+   for (var i = 0; i < cats.length; i++)
+   {
+      var cat = cats[i];
+      var catNode = search.findNode(cat);
+      if (catNode)
+      {
+         selectedCatsQuery += "+PATH:\"" + catNode.qnamePath + (useSubCats ? "//." : '') + "\" ";
+      }
+   }
+
+   if (selectedCatsQuery.length !== 0)
+   {
+      // Load all the noderefs for the selected categories values
+      var queryDefCat = {
+            query: selectedCatsQuery,
+            language: "fts-alfresco",
+            onerror: "no-results"
+      };
+      var rs = search.queryResultSet(queryDefCat);
+      var selectedCatNodes = rs.nodes;
+
+      // Create lucene query with custom category property
+      if (selectedCatNodes && selectedCatNodes.length !== 0)
+      {
+         for (var j = 0; j < selectedCatNodes.length; j++) 
+         {
+            var selectedCatNode = selectedCatNodes[j];
+            catQuery += (j == 0 ? '':' OR ') + escapeQName(propName) + ':' + selectedCatNode.id;
+         }
+      }
+   }
+
+   return catQuery;
 }
