@@ -2,37 +2,34 @@ package ru.citeck.ecos.utils;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.util.transaction.TransactionListenerAdapter;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
+import org.alfresco.repo.transaction.TransactionListenerAdapter;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
-import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
-@Component
 public class TransactionUtils {
 
     private static final Logger LOG = Logger.getLogger(TransactionUtils.class);
 
-    @Autowired
-    @Qualifier("transactionService")
-    private TransactionService transactionService;
+    private static TransactionService transactionService;
 
-    @Autowired
-    private SessionTaskExecutor taskExecutor;
-
-    public void doBeforeCommit(final Runnable runnable) {
+    public static void doBeforeCommit(final Runnable runnable) {
         new DeferBeforeCommit(runnable).run();
     }
 
-    public void doAfterCommit(final Runnable job) {
+    public static void doAfterBehaviours(final Runnable runnable) {
+        doBeforeCommit(new DeferBeforeCommit(runnable));
+    }
+
+    public static void doAfterCommit(final Runnable job) {
         doAfterCommit(job, null);
     }
 
-    public void doAfterCommit(final Runnable job, final Runnable errorHandler) {
+    public static void doAfterCommit(final Runnable job, final Runnable errorHandler) {
 
         final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         final Locale locale = I18NUtil.getLocale();
@@ -40,18 +37,19 @@ public class TransactionUtils {
         AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
             @Override
             public void afterCommit() {
-                taskExecutor.getExecutorService().execute(getRunnableTask(job, errorHandler, currentUser, locale));
+                prepareJobThread(job, errorHandler, currentUser, locale).start();
             }
         });
     }
 
-    private Runnable getRunnableTask(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
-        return () -> {
+    private static Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
+
+        return new Thread(() -> {
 
             AuthenticationUtil.setRunAsUser(currentUser);
             I18NUtil.setLocale(locale);
 
-            AuthenticationUtil.runAsSystem(() -> {
+            AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
                 try {
                     doInTransaction(job);
                 } catch (Exception e) {
@@ -62,13 +60,18 @@ public class TransactionUtils {
                 }
                 return null;
             });
-        };
+        });
     }
 
-    private void doInTransaction(final Runnable job) {
-        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            job.run();
-            return null;
-        }, false, true);
+    private static void doInTransaction(final Runnable job) {
+        transactionService.getRetryingTransactionHelper().doInTransaction(
+                (RetryingTransactionHelper.RetryingTransactionCallback<String>) () -> {
+                    job.run();
+                    return null;
+                }, false, true);
+    }
+
+    public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        transactionService = serviceRegistry.getTransactionService();
     }
 }

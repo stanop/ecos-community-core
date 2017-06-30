@@ -22,11 +22,16 @@ import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.*;
+import org.alfresco.service.cmr.search.QueryConsistency;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
@@ -37,14 +42,15 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
-import ru.citeck.ecos.utils.TransactionUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService
 {
@@ -54,6 +60,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 	private static Log logger = LogFactory.getLog(WorkflowMirrorServiceImpl.class);
 	
 	private NodeService nodeService;
+	private ActionService actionService;
 	private PersonService personService;
 	private AuthorityService authorityService;
 	private WorkflowService workflowService;
@@ -63,9 +70,6 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
 	private NodeRef taskMirrorRoot;
 	private QName taskMirrorAssoc;
-
-	@Autowired
-	private TransactionUtils transactionUtils;
 
     @Override
 	public void mirrorTask(String taskId) {
@@ -95,9 +99,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     @Override
-	public void mirrorTaskAsync(final String taskId) {
-		transactionUtils.doAfterCommit(() -> mirrorTask(taskId));
-    }
+	public void mirrorTaskAsync(String taskId) {
+		Action action = actionService.createAction(MirrorActionExecuter.NAME);
+		action.setParameterValue(MirrorActionExecuter.PARAM_TASK_ID, taskId);
+		actionService.executeAction(action, null, false, true);
+	}
 
     @Override
     public void mirrorAllTasksAsync() {
@@ -326,6 +332,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;
+	}
+
+	public void setActionService(ActionService actionService) {
+		this.actionService = actionService;
 	}
 
 	public void setPersonService(PersonService personService) {

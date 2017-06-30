@@ -30,11 +30,9 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.RepoUtils;
-import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -58,11 +56,12 @@ public class HistoryService {
     private static final String HISTORY_ROOT = "/" + "history:events";
 
     private NodeService nodeService;
+
     private AuthenticationService authenticationService;
+
     private PersonService personService;
+
     private SearchService searchService;
-    @Autowired
-    private TransactionUtils transactionUtils;
 
     private StoreRef storeRef;
 
@@ -89,75 +88,68 @@ public class HistoryService {
         this.historyRoot = historyRoot;
     }
 
-    public void persistEventAsync(final QName type, final Map<QName, Serializable> properties) {
-        final Date eventDate = new Date();
-        transactionUtils.doAfterCommit(() -> persistEventImpl(type, properties, eventDate));
-    }
-
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
-        return AuthenticationUtil.runAsSystem(() -> persistEventImpl(type, properties, new Date()));
-    }
+        return AuthenticationUtil.runAsSystem(() -> {
+            NodeRef initiator = getInitiator(properties);
+            properties.remove(HistoryModel.ASSOC_INITIATOR);
+            if (initiator == null) {
+                properties.put(HistoryModel.PROP_NAME, UNKNOWN_USER);
+            }
+            NodeRef document = getDocument(properties);
+            properties.remove(HistoryModel.ASSOC_DOCUMENT);
 
-    private NodeRef persistEventImpl(final QName type, final Map<QName, Serializable> properties, Date eventDate) {
-
-        NodeRef initiator = getInitiator(properties);
-        properties.remove(HistoryModel.ASSOC_INITIATOR);
-        if (initiator == null) {
-            properties.put(HistoryModel.PROP_NAME, UNKNOWN_USER);
-        }
-        NodeRef document = getDocument(properties);
-        properties.remove(HistoryModel.ASSOC_DOCUMENT);
-
-        //sorting in history for assocs
-         /*   if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-                eventDate.setTime(now.getTime() + 1000);
+            //sorting in history for assocs
+            Date now = new Date();
+            if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
+                now.setTime(now.getTime() + 1000);
             }
             if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
                     || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
-                eventDate.setTime(now.getTime() - 5000);
-            }*/
-        properties.put(HistoryModel.PROP_DATE, eventDate);
-        QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
+                now.setTime(now.getTime() - 5000);
+            }
+            properties.put(HistoryModel.PROP_DATE, now);
+            QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
 
-        QName assocType;
-        NodeRef parentNode;
-        if (document == null) {
-            parentNode = getHistoryRoot();
-            assocType = ContentModel.ASSOC_CONTAINS;
-        } else {
-            parentNode = document;
-            assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
-        }
-
-        NodeRef historyEvent = nodeService.createNode(parentNode, assocType, assocName, type, properties).getChildRef();
-
-        if (initiator != null) {
-            if (!RepoUtils.isAssociated(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR, nodeService)) {
-                nodeService.createAssociation(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR);
+            QName assocType;
+            NodeRef parentNode;
+            if (document == null) {
+                parentNode = getHistoryRoot();
+                assocType = ContentModel.ASSOC_CONTAINS;
             } else {
-                logger.warn("Association " + HistoryModel.ASSOC_INITIATOR.toString() + " already exists between " + historyEvent.toString() + " and " + initiator.toString());
+                parentNode = document;
+                assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
             }
-            persistAdditionalProperties(historyEvent, initiator);
-        }
-        if (document != null) {
-            nodeService.createAssociation(historyEvent, document, HistoryModel.ASSOC_DOCUMENT);
-            persistAdditionalProperties(historyEvent, document);
-            List<ChildAssociationRef> parents = nodeService.getParentAssocs(document);
-            for (ChildAssociationRef parent : parents) {
-                NodeRef parentCase = parent.getParentRef();
-                if (nodeService.hasAspect(parentCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(parentCase, ICaseModel.ASPECT_SUBCASE)) {
-                    nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
+
+            NodeRef historyEvent = nodeService.createNode(parentNode, assocType, assocName, type, properties).getChildRef();
+
+            if (initiator != null) {
+                if (!RepoUtils.isAssociated(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR, nodeService)) {
+                    nodeService.createAssociation(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR);
+                } else {
+                    logger.warn("Association " + HistoryModel.ASSOC_INITIATOR.toString() + " already exists between " + historyEvent.toString() + " and " + initiator.toString());
+                }
+                persistAdditionalProperties(historyEvent, initiator);
+            }
+            if (document != null) {
+                nodeService.createAssociation(historyEvent, document, HistoryModel.ASSOC_DOCUMENT);
+                persistAdditionalProperties(historyEvent, document);
+                List<ChildAssociationRef> parents = nodeService.getParentAssocs(document);
+                for (ChildAssociationRef parent : parents) {
+                    NodeRef parentCase = parent.getParentRef();
+                    if (nodeService.hasAspect(parentCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(parentCase, ICaseModel.ASPECT_SUBCASE)) {
+                        nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
+                    }
+                }
+                List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
+                for (AssociationRef source : sources) {
+                    NodeRef sourceCase = source.getSourceRef();
+                    if (nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_SUBCASE)) {
+                        nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
+                    }
                 }
             }
-            List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
-            for (AssociationRef source : sources) {
-                NodeRef sourceCase = source.getSourceRef();
-                if (nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_SUBCASE)) {
-                    nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
-                }
-            }
-        }
-        return historyEvent;
+            return historyEvent;
+        });
     }
 
     /**

@@ -18,6 +18,7 @@
 	
 	<bean id="workflowMirrorService" class="ru.citeck.ecos.workflow.mirror.WorkflowMirrorServiceImpl" parent="baseJavaScriptExtension">
 		<property name="nodeService" ref="nodeService" />
+		<property name="actionService" ref="actionService" />
 		<property name="personService" ref="personService" />
 		<property name="workflowService" ref="workflowServiceImpl" />
 		<property name="nodeInfoFactory" ref="nodeInfoFactory" />
