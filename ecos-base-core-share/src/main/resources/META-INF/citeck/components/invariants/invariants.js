@@ -838,7 +838,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .shortcut('default', 'defaultValue', null)
 
         .computed('valueClass', function() { return classMapping[this.javaclass()] || null; })
-        .computed('invariantSet', function() { return this.node().impl().invariantSet(); })
+        .computed('invariantSet', function() { return this.resolve("node.impl.invariantSet"); })
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
         .computed('changed', function() { return this.newValue.loaded(); })
         .computed('changedByInvariant', function() {
@@ -993,7 +993,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('getInvariantsModel', function(value, cache) {
             var model = {};
-            _.each(this.node().impl().defaultModel(), function(property, name) {
+
+            _.each(this.resolve("node.impl.defaultModel"), function(property, name) {
                 Object.defineProperty(model, name, _.isFunction(property) ? { get: property } : { value: property });
             });
             Object.defineProperty(model, 'node', { get: this.node });
@@ -1152,21 +1153,30 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         // value properties:
         .property('newValue', o) // value, set by user
         .property('persistedValue', o) // value, persisted in repository
+        .property('hybridValue', o)
         .computed('invariantValue', featuredProperty('value'))
         .computed('invariantNonblockingValue', featuredProperty('nonblockingValue'))
         .computed('invariantDefault', featuredProperty('default'))
         .computed('defaultValue', function() { 
                 return this.convertValue(this.invariantDefault(), this.multiple()); 
         })
+
+        .subscribe('invariantNonblockingValue', function(newValue) {
+            this.hybridValue(this.convertValue(newValue, true));
+        })
+        .subscribe('newValue', function(newValue) {
+            this.hybridValue(newValue);
+        })
+
         .computed('rawValue', function() {
             var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
+                hybridValue = this.hybridValue(),
                 invariantDefault = this.invariantDefault();
            
-            if(invariantValue != null) return invariantValue;
-            if(this.changed()) return this.newValue();
+            if(invariantValue != null) return invariantValue;         
+            if (hybridValue) return hybridValue;
             if(invariantNonblockingValue != null) return invariantNonblockingValue;
-            if(this.persisted()) return this.persistedValue();
-            if(!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
+            if (!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
 
             return null;
         })
@@ -2213,6 +2223,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
 
     Attribute.extend('*', rateLimit);
+    Attribute.extend('invariantNonblockingValue', { notify: "always" });
     AttributeInfo.extend('*', rateLimit);
     DDClass.extend('attributes', rateLimit);
     NodeImpl.extend('type', rateLimit);
