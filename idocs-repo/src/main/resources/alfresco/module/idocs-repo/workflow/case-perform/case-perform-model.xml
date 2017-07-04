@@ -126,6 +126,7 @@
             </overrides>
             <mandatory-aspects>
                 <aspect>wfcp:basePerformData</aspect>
+                <aspect>wfcp:doNotIndexTypeCompletely</aspect>
             </mandatory-aspects>
         </type>
     </types>
@@ -190,6 +191,18 @@
                     <type>d:boolean</type>
                 </property>
             </properties>
+        </aspect>
+        <aspect name="wfcp:doNotIndexTypeCompletely">
+            <title>Do Not Index</title>
+            <parent>cm:indexControl</parent>
+            <overrides>
+                <property name="cm:isIndexed">
+                    <default>false</default>
+                </property>
+                <property name="cm:isContentIndexed">
+                    <default>false</default>
+                </property>
+            </overrides>
         </aspect>
     </aspects>
 

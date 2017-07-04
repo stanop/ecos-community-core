@@ -6,6 +6,7 @@
 	<imports>
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
 	</imports>
 
 	<namespaces>
@@ -29,6 +30,9 @@
 					<type>d:boolean</type>
 				</property>
 			</properties>
+			<mandatory-aspects>
+				<aspect>grant:doNotIndexTypeCompletely</aspect>
+			</mandatory-aspects>
 		</type>
 	</types>
 
@@ -64,6 +68,18 @@
 			</properties>
 		</aspect>
 
+		<aspect name="grant:doNotIndexTypeCompletely">
+			<title>Do Not Index</title>
+			<parent>cm:indexControl</parent>
+			<overrides>
+				<property name="cm:isIndexed">
+					<default>false</default>
+				</property>
+				<property name="cm:isContentIndexed">
+					<default>false</default>
+				</property>
+			</overrides>
+		</aspect>
 	</aspects>
 
 </model>
