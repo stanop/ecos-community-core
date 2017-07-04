@@ -1,3 +1,19 @@
+<#if personFirstName??>
+    <#assign _personFirstName = {"key": "cm:firstName", "value": personFirstName} />
+<#else>
+    <#assign _personFirstName = "cm:firstName" />
+</#if>
+<#if personLastName??>
+    <#assign _personLastName = {"key": "cm:lastName", "value": personLastName} />
+<#else>
+    <#assign _personLastName = "cm:lastName" />
+</#if>
+<#if personMiddleName??>
+    <#assign _personMiddleName = {"key": "cm:middleName", "value": personMiddleName} />
+<#else>
+    <#assign _personMiddleName = "cm:middleName" />
+</#if>
+
 <#macro printNodes nodes excludeAttributes=[]>
     <#escape x as jsonUtils.encodeJSONString(x)>
         <#list nodes as node>
@@ -165,14 +181,8 @@
 </#macro>
 
 <#function getExtraProp node>
-    <#assign defaultPersonExtraProps = [ "cm:userName", "cm:firstName", "cm:lastName", "cm:middleName" ] />
-    <#assign personExtraProps = defaultPersonExtraProps />
-    <#if config.script?size != 0 && config.script.config?size != 0 && config.script.config.personExtraProps?is_string >
-        <#assign personExtraProps = config.script.config.personExtraProps?eval />
-    </#if>
-
     <#assign extraProps = {
-        "cm:person": personExtraProps,
+        "cm:person": [ "cm:userName", _personFirstName, _personLastName, _personMiddleName ],
         "cm:authorityContainer": [ "cm:authorityName", "cm:authorityDisplayName" ],
         "bpm:workflowTask": ["bpm:status", "wfm:taskType", "wfm:assignee", "wfm:actors"]
     } />
