@@ -6,3 +6,8 @@ for (var key in data) {
 }
 
 model.language = language;
+
+var globalProps = services.get("global-properties");
+model.personFirstName = globalProps["reportProducer.personFirstName"];
+model.personLastName = globalProps["reportProducer.personLastName"];
+model.personMiddleName = globalProps["reportProducer.personMiddleName"];

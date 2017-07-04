@@ -425,6 +425,9 @@
           name="dbp.report.producer" parent="AbstractDataBundleLine" abstract="true">
         <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="templateNodeService" ref="TemplateNodeService" />
+        <property name="personFirstName"  value="${reportProducer.personFirstName}" />
+        <property name="personLastName"   value="${reportProducer.personLastName}" />
+        <property name="personMiddleName" value="${reportProducer.personMiddleName}" />
     </bean>
 
     <bean id="ReportOutputHTML" name="dbp.report.template.html" parent="OutputTemplateLine.html" abstract="true" />
