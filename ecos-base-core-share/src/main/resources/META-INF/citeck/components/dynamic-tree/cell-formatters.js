@@ -361,7 +361,7 @@
 		},
 		code: function(labels, tdClassPrefix, trClassPrefix) {
 			var labelByCode = Citeck.format.labelByCode(labels);
-			return _code(labelByCode, tdClassPrefix, trClassPrefix);
+			return Citeck.format._code(labelByCode, tdClassPrefix, trClassPrefix);
 		},
 
 		multiple: function(singleFormatter) {
