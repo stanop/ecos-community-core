@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="value-description"/>
  *     &lt;enumeration value="datatype"/>
  *     &lt;enumeration value="nodetype"/>
+ *     &lt;enumeration value="nonblocking-value"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -64,7 +65,9 @@ public enum Feature {
     @XmlEnumValue("datatype")
     DATATYPE("datatype"),
     @XmlEnumValue("nodetype")
-    NODETYPE("nodetype");
+    NODETYPE("nodetype"),
+    @XmlEnumValue("nonblocking-value")
+    NONBLOCKING_VALUE("nonblocking-value");
     private final String value;
 
     Feature(String v) {

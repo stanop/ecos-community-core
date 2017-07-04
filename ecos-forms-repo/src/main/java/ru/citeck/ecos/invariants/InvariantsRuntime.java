@@ -173,7 +173,8 @@ class InvariantsRuntime {
             for(RuntimeAttribute attribute : attributes.values()) {
                 if(attribute.isRelevant()) {
                     boolean valueCanBeUpdated = !attribute.features.get(Feature.VALUE).invariants.isEmpty() 
-                            || !attribute.persisted && !attribute.features.get(Feature.DEFAULT).invariants.isEmpty();
+                            || !attribute.persisted && !attribute.features.get(Feature.DEFAULT).invariants.isEmpty()
+                            && !attribute.features.get(Feature.NONBLOCKING_VALUE).invariants.isEmpty();
                     
                     if(valueCanBeUpdated)
                         attributeValues.put(attribute.name, attribute.getValue());
@@ -307,8 +308,11 @@ class InvariantsRuntime {
         }
         
         private Object getInvariantValue() { return getFeatureValue(Feature.VALUE, null); }
+
+        private Object getInvariantNonblockingValue() { return getFeatureValue(Feature.NONBLOCKING_VALUE, null); }
         
         public Object getInvariantDefault() { return getFeatureValue(Feature.DEFAULT, null); }
+
         public Object getDefaultValue() {
             Object result = this.getInvariantDefault();
             if (result instanceof Undefined) {
@@ -352,11 +356,13 @@ class InvariantsRuntime {
         }
 
         private boolean invariantValid() { return getFeatureValue(Feature.VALID, false); }
+
         public boolean isValid() {
             if(!isRelevant()) return true;
             if(isEmpty()) return !isMandatory() || isProtected();
             return invariantValid();
         }
+
         public InvariantDefinition getFailedInvariant() {
             if(!isRelevant()) return null;
             if(isEmpty()) {
