@@ -53,6 +53,9 @@
                     <type>d:text</type>
                 </property>
             </properties>
+            <mandatory-aspects>
+                <aspect>icaseRole:doNotIndexTypeCompletely</aspect>
+            </mandatory-aspects>
         </type>
     </types>
 
@@ -96,6 +99,19 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="icaseRole:doNotIndexTypeCompletely">
+            <title>Do Not Index</title>
+            <parent>cm:indexControl</parent>
+            <overrides>
+                <property name="cm:isIndexed">
+                    <default>false</default>
+                </property>
+                <property name="cm:isContentIndexed">
+                    <default>false</default>
+                </property>
+            </overrides>
         </aspect>
     </aspects>
 </model>
