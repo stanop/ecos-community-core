@@ -10,7 +10,6 @@
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
         <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
-        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
     </imports>
 
     <namespaces>
@@ -54,9 +53,6 @@
                     <type>d:text</type>
                 </property>
             </properties>
-            <mandatory-aspects>
-                <aspect>idocs:doNotIndexTypeCompletely</aspect>
-            </mandatory-aspects>
         </type>
     </types>
 
