@@ -841,6 +841,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariantSet', function() { return this.node().impl().invariantSet(); })
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
         .computed('changed', function() { return this.newValue.loaded(); })
+        .computed('changedByInvariant', function() {
+            return this.invariantValue() != null || this.invariantNonblockingValue() != null || this.invariantDefault() != null;
+        })
         .computed('textValue', {
             read: function() {
                 return this.getValueText(this.value());
@@ -1159,23 +1162,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
                 invariantDefault = this.invariantDefault();
            
-            if(invariantValue != null) {
-                this.newValue(this.convertValue(invariantValue, true));
-                return invariantValue;
-            }
-
-            if(invariantNonblockingValue != null) {
-                this.newValue(this.convertValue(invariantNonblockingValue, true));
-                return invariantNonblockingValue;
-            }
-           
+            if(invariantValue != null) return invariantValue;
             if(this.changed()) return this.newValue();
+            if(invariantNonblockingValue != null) return invariantNonblockingValue;
             if(this.persisted()) return this.persistedValue();
-
-            if (!this.resolve("node.impl.inViewMode") && invariantDefault != null) {
-                this.newValue(this.convertValue(invariantDefault, true));
-                return invariantDefault;
-            }
+            if(!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
 
             return null;
         })
@@ -1515,7 +1506,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
         .method('changedAttributes', function() {
-            return this._filterAttributes("changed");
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr.changed() || attr.changedByInvariant();
+            })
         })
         .method('invalidAttributes', function() {
             return this._filterAttributes("invalid");
