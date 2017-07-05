@@ -841,6 +841,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariantSet', function() { return this.node().impl().invariantSet(); })
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
         .computed('changed', function() { return this.newValue.loaded(); })
+        .computed('changedByInvariant', function() {
+            return this.invariantValue() != null || this.invariantNonblockingValue() != null || this.invariantDefault() != null;
+        })
         .computed('textValue', {
             read: function() {
                 return this.getValueText(this.value());
@@ -990,6 +993,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('getInvariantsModel', function(value, cache) {
             var model = {};
+
             _.each(this.node().impl().defaultModel(), function(property, name) {
                 Object.defineProperty(model, name, _.isFunction(property) ? { get: property } : { value: property });
             });
@@ -1133,6 +1137,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         // feature evaluators
         .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
+        .method('nonblockingValueEvaluator', featureEvaluator('nonblocking-value', o, null, notNull))
         .method('defaultEvaluator', featureEvaluator('default', o, null, notNull))
         .method('optionsEvaluator', featureEvaluator('options', o, null, notNull))
         .method('titleEvaluator', featureEvaluator('title', s, '', notNull))
@@ -1148,32 +1153,32 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         // value properties:
         .property('newValue', o) // value, set by user
         .property('persistedValue', o) // value, persisted in repository
+        .property('hybridValue', o)
         .computed('invariantValue', featuredProperty('value'))
+        .computed('invariantNonblockingValue', featuredProperty('nonblockingValue'))
         .computed('invariantDefault', featuredProperty('default'))
-        .computed('defaultValue', function() { return this.convertValue(this.invariantDefault(), this.multiple()); })
+        .computed('defaultValue', function() { 
+                return this.convertValue(this.invariantDefault(), this.multiple()); 
+        })
+
+        .subscribe('invariantNonblockingValue', function(newValue) {
+            if (newValue) this.hybridValue(newValue);
+        })
+        .subscribe('newValue', function(newValue) {
+            this.hybridValue(newValue);
+        })
+
         .computed('rawValue', function() {
-            var invariantValue = this.invariantValue(),
-                isDraft = this.node().properties["invariants:isDraft"],
-                isView = this.node().impl().inViewMode();
+            var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
+                hybridValue = this.hybridValue(),
+                invariantDefault = this.invariantDefault();
+           
+            if(invariantValue != null) return invariantValue;
+            if(invariantNonblockingValue != null || this.changed()) return hybridValue;
+            if(this.persisted()) return this.persistedValue();
+            if(!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
 
-            if(invariantValue != null) {
-                this.newValue(this.convertValue(invariantValue, true));
-                return invariantValue;
-            }
-            
-            if(this.changed()) return this.newValue();
-
-            if(this.persisted()) {
-                if (!isView && isDraft &&
-                    _.isEmpty(this.persistedValue()) &&
-                    !_.isBoolean(this.persistedValue()) &&
-                    !_.isNumber(this.persistedValue())) {
-                    return this.invariantDefault();
-                }
-                return this.persistedValue();
-            }
-
-            return isView ? null : this.invariantDefault();
+            return null;
         })
         .computed('value', {
             read: function() { return this.convertValue(this.rawValue(), this.multiple()); },
@@ -1511,7 +1516,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
         .method('changedAttributes', function() {
-            return this._filterAttributes("changed");
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr.changed() || attr.changedByInvariant();
+            })
         })
         .method('invalidAttributes', function() {
             return this._filterAttributes("invalid");
@@ -1747,11 +1754,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             toRequest: function(node) {
                 node.impl().inSubmitProcess(true);
 
-                var defaultView = node.resolve('impl.defaultModel.view'),
-                    data = {
-                        view: defaultView,
-                        attributes: node.resolve('impl.' + ( defaultView.mode == "create" ? 'allData' : 'changedData' ) + '.attributes')
-                    };
+                var data = {
+                    view: node.resolve('impl.defaultModel.view'),
+                    attributes: node.resolve('impl.changedData.attributes')
+                };
                     
                 var isDraft = node.resolve('impl.isDraft');
                 if (_.isBoolean(isDraft)) data['isDraft'] = isDraft;
@@ -2217,6 +2223,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
 
     Attribute.extend('*', rateLimit);
+    Attribute.extend('invariantNonblockingValue', { notify: "always" });
     AttributeInfo.extend('*', rateLimit);
     DDClass.extend('attributes', rateLimit);
     NodeImpl.extend('type', rateLimit);
