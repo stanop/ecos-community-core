@@ -838,7 +838,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .shortcut('default', 'defaultValue', null)
 
         .computed('valueClass', function() { return classMapping[this.javaclass()] || null; })
-        .computed('invariantSet', function() { return this.resolve("node.impl.invariantSet"); })
+        .computed('invariantSet', function() { return this.node().impl().invariantSet(); })
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
         .computed('changed', function() { return this.newValue.loaded(); })
         .computed('changedByInvariant', function() {
@@ -994,7 +994,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('getInvariantsModel', function(value, cache) {
             var model = {};
 
-            _.each(this.resolve("node.impl.defaultModel"), function(property, name) {
+            _.each(this.node().impl().defaultModel(), function(property, name) {
                 Object.defineProperty(model, name, _.isFunction(property) ? { get: property } : { value: property });
             });
             Object.defineProperty(model, 'node', { get: this.node });
@@ -1162,7 +1162,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .subscribe('invariantNonblockingValue', function(newValue) {
-            this.hybridValue(this.convertValue(newValue, true));
+            if (newValue) this.hybridValue(newValue);
         })
         .subscribe('newValue', function(newValue) {
             this.hybridValue(newValue);
@@ -1173,10 +1173,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 hybridValue = this.hybridValue(),
                 invariantDefault = this.invariantDefault();
            
-            if(invariantValue != null) return invariantValue;         
-            if (hybridValue) return hybridValue;
-            if(invariantNonblockingValue != null) return invariantNonblockingValue;
-            if (!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
+            if(invariantValue != null) return invariantValue;
+            if(invariantNonblockingValue != null || this.changed()) return hybridValue;
+            if(this.persisted()) return this.persistedValue();
+            if(!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
 
             return null;
         })

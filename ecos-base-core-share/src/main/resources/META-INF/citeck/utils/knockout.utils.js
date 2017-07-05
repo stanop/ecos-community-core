@@ -508,8 +508,9 @@ define(['lib/knockout'], function(ko) {
                     }, viewModel);
 
                     _.each(subscriptions, function(definition, name) {
-                		if ((ko.isObservable(this[name]) || ko.isComputed(this[name])) && (_.isFunction(definition)))
-                			this[name].subscribe(_.bind(definition, this));
+                		if ((ko.isObservable(this[name]) || ko.isComputed(this[name])) && (_.isFunction(definition))) {
+                			_.defer(function() { viewModel[name].subscribe(_.bind(definition, viewModel)); });
+                		}
                     }, viewModel);
     
                     _.each(nativeProperties, function(definition, name) {
