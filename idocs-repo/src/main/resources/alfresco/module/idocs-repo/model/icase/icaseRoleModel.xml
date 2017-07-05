@@ -53,9 +53,9 @@
                     <type>d:text</type>
                 </property>
             </properties>
-            <mandatory-aspects>
-                <aspect>icaseRole:doNotIndexTypeCompletely</aspect>
-            </mandatory-aspects>
+            <!--<mandatory-aspects>-->
+                <!--<aspect>icaseRole:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
         </type>
     </types>
 

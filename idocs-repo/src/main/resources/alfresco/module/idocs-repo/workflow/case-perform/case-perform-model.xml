@@ -126,7 +126,7 @@
             </overrides>
             <mandatory-aspects>
                 <aspect>wfcp:basePerformData</aspect>
-                <aspect>wfcp:doNotIndexTypeCompletely</aspect>
+                <!--<aspect>wfcp:doNotIndexTypeCompletely</aspect>-->
             </mandatory-aspects>
         </type>
     </types>
