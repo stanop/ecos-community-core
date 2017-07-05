@@ -10,6 +10,13 @@
                     <targetPackageRoot>org.alfresco.share.header</targetPackageRoot>
                     <sourcePackageRoot>ru.citeck.components.header-community</sourcePackageRoot>
                 </customization>
+                <customization>
+                    <targetPackageRoot>org.alfresco.share.pages.faceted-search</targetPackageRoot>
+                    <sourcePackageRoot>ru.citeck.components.header-community</sourcePackageRoot>
+                    <alwaysApply>
+                        <webscript>share-header</webscript>
+                    </alwaysApply>
+                </customization>
             </customizations>
         </module>
         <module>
