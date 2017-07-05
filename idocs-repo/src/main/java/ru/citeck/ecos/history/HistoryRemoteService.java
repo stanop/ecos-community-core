@@ -1,5 +1,7 @@
 package ru.citeck.ecos.history;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,5 +22,11 @@ public interface HistoryRemoteService {
      * @param requestParams Request params
      */
     void sendHistoryEventToRemoteService(Map<String, Object> requestParams);
+
+    /**
+     * Send history events to remote service by document reference
+     * @param documentRef Document reference
+     */
+    void sendHistoryEventsByDocumentToRemoteService(NodeRef documentRef);
 
 }

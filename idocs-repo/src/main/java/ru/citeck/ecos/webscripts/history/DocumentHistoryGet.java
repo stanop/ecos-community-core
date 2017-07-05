@@ -1,6 +1,5 @@
 package ru.citeck.ecos.webscripts.history;
 
-import javafx.util.Pair;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -10,12 +9,11 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 
@@ -39,14 +37,10 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     /** Constants */
     public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
+    private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
+    private static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(DOC_NAMESPACE, "useNewHistory");
     public static final String HISTORY_PROPERTY_NAME = "history";
     public static final String ATTRIBUTES_PROPERTY_NAME = "attributes";
-    public static final Pair<String, String> NODE_REF = new Pair<>("nodeRef", "historyEventUuid");
-    public static final Pair<String, String> EVENT_INITIATOR = new Pair<>("event:initiator", "username");
-    public static final Pair<String, String> DOCUMENT_DATE = new Pair<>("event:date", "creationTime");
-    public static final Pair<String, String> DOCUMENT_VERSION = new Pair("event:documentVersion", "version");
-    public static final Pair<String, String> COMMENTS = new Pair("event:taskComment", "comments");
-    public static final Pair<String, String> EVENT_TYPE = new Pair<>("event:name", "eventType");
 
     /**
      * Request params
@@ -81,7 +75,13 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String nodeRefUuid = req.getParameter(DOCUMENT_NODE_REF);
+        /** Check history event status */
         NodeRef documentRef = new NodeRef(nodeRefUuid);
+        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, DOCUMENT_USE_NEW_HISTORY);
+        if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService()) {
+            historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
+        }
+        /** Load data */
         List historyRecordMaps = null;
         if (isEnabledRemoteHistoryService()) {
             historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
@@ -119,18 +119,18 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         /** Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps ) {
             ObjectNode recordObjectNode = objectMapper.createObjectNode();
-            recordObjectNode.put(NODE_REF.getKey(), (String) historyRecordMap.get(NODE_REF.getValue()));
+            recordObjectNode.put(DocumentHistoryConstants.NODE_REF.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.NODE_REF.getValue()));
             ObjectNode attributesNode = objectMapper.createObjectNode();
             /** Populate object */
-            Date date = new Date((Long) historyRecordMap.get(DOCUMENT_DATE.getValue()));
-            attributesNode.put(DOCUMENT_DATE.getKey(), dateFormat.format(date));
-            attributesNode.put(DOCUMENT_VERSION.getKey(), (String) historyRecordMap.get(DOCUMENT_VERSION.getValue()));
-            attributesNode.put(COMMENTS.getKey(), (String)historyRecordMap.get(COMMENTS.getValue()));
-            attributesNode.put(EVENT_TYPE.getKey(), (String) historyRecordMap.get(EVENT_TYPE.getValue()));
+            Date date = new Date((Long) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue()));
+            attributesNode.put(DocumentHistoryConstants.DOCUMENT_DATE.getKey(), dateFormat.format(date));
+            attributesNode.put(DocumentHistoryConstants.DOCUMENT_VERSION.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_VERSION.getValue()));
+            attributesNode.put(DocumentHistoryConstants.COMMENTS.getKey(), (String)historyRecordMap.get(DocumentHistoryConstants.COMMENTS.getValue()));
+            attributesNode.put(DocumentHistoryConstants.EVENT_TYPE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue()));
             /** User */
-            NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(EVENT_INITIATOR.getValue()));
+            NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(DocumentHistoryConstants.EVENT_INITIATOR.getValue()));
             if (userNodeRef != null) {
-                attributesNode.put(EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
+                attributesNode.put(DocumentHistoryConstants.EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
             }
             /** Add history node to result */
             recordObjectNode.put(ATTRIBUTES_PROPERTY_NAME, attributesNode);

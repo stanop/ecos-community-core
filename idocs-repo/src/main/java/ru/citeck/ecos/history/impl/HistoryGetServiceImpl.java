@@ -1,13 +1,19 @@
 package ru.citeck.ecos.history.impl;
 
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
+import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.webscripts.history.DocumentHistoryGet;
 
 import java.util.*;
 
@@ -17,11 +23,24 @@ import java.util.*;
 public class HistoryGetServiceImpl implements HistoryGetService {
 
     /**
+     * Constants
+     */
+    private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
+    private static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(DOC_NAMESPACE, "useNewHistory");
+
+    /**
+     * Logger
+     */
+    private static Log logger = LogFactory.getLog(HistoryGetServiceImpl.class);
+
+    /**
      * Services
      */
     private NodeService nodeService;
 
     private PersonService personService;
+
+    private TransactionService transactionService;
 
     /**
      * Get history events by document refs
@@ -36,15 +55,15 @@ public class HistoryGetServiceImpl implements HistoryGetService {
         for (AssociationRef associationRef : associations) {
             Map<String, Object> entryMap = new HashMap<>();
             NodeRef eventRef = associationRef.getSourceRef();
-            entryMap.put(DocumentHistoryGet.NODE_REF.getValue(), eventRef.getId());
-            entryMap.put(DocumentHistoryGet.EVENT_TYPE.getValue(),
+            entryMap.put(DocumentHistoryConstants.NODE_REF.getValue(), eventRef.getId());
+            entryMap.put(DocumentHistoryConstants.EVENT_TYPE.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_NAME));
-            entryMap.put(DocumentHistoryGet.DOCUMENT_VERSION.getValue(),
+            entryMap.put(DocumentHistoryConstants.DOCUMENT_VERSION.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_DOCUMENT_VERSION));
-            entryMap.put(DocumentHistoryGet.COMMENTS.getValue(), "");
-            entryMap.put(DocumentHistoryGet.DOCUMENT_DATE.getValue(),
+            entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(), "");
+            entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
                     ((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)).getTime());
-            entryMap.put(DocumentHistoryGet.EVENT_INITIATOR.getValue(),
+            entryMap.put(DocumentHistoryConstants.EVENT_INITIATOR.getValue(),
                     getInitiatorName(eventRef));
             result.add(entryMap);
         }
@@ -66,11 +85,42 @@ public class HistoryGetServiceImpl implements HistoryGetService {
         }
     }
 
+    /**
+     * Update document history status
+     * @param documentNodeRef Document node reference
+     * @param newStatus       New document status
+     */
+    @Override
+    public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
+        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+        txnHelper.setForceWritable(true);
+        boolean requiresNew = false;
+        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+            requiresNew = true;
+        }
+        txnHelper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Object>() {
+            @Override
+            public Object execute() throws Throwable {
+                try {
+                    nodeService.setProperty(documentNodeRef, DOCUMENT_USE_NEW_HISTORY, newStatus);
+                } catch (Exception e) {
+                    logger.error("Unexpected error", e);
+                } finally {
+                    return null;
+                }
+            }
+        }, false, requiresNew);
+    }
+
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
 
     public void setPersonService(PersonService personService) {
         this.personService = personService;
+    }
+
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 }

@@ -122,6 +122,11 @@
         <!-- Abstract -->
         <type name="idocs:doc">
             <parent>dms:doc</parent>
+            <properties>
+                <property name="history:useNewHistory">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
             <mandatory-aspects>
                 <aspect>idocs:hasLegalEntity</aspect>
                 <aspect>idocs:registrationInfo</aspect>
