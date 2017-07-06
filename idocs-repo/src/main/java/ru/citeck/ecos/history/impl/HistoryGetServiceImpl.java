@@ -1,12 +1,9 @@
 package ru.citeck.ecos.history.impl;
 
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -23,12 +20,6 @@ import java.util.*;
 public class HistoryGetServiceImpl implements HistoryGetService {
 
     /**
-     * Constants
-     */
-    private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
-    private static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(DOC_NAMESPACE, "useNewHistory");
-
-    /**
      * Logger
      */
     private static Log logger = LogFactory.getLog(HistoryGetServiceImpl.class);
@@ -39,8 +30,6 @@ public class HistoryGetServiceImpl implements HistoryGetService {
     private NodeService nodeService;
 
     private PersonService personService;
-
-    private TransactionService transactionService;
 
     /**
      * Get history events by document refs
@@ -85,42 +74,11 @@ public class HistoryGetServiceImpl implements HistoryGetService {
         }
     }
 
-    /**
-     * Update document history status
-     * @param documentNodeRef Document node reference
-     * @param newStatus       New document status
-     */
-    @Override
-    public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
-        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
-        txnHelper.setForceWritable(true);
-        boolean requiresNew = false;
-        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
-            requiresNew = true;
-        }
-        txnHelper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Object>() {
-            @Override
-            public Object execute() throws Throwable {
-                try {
-                    nodeService.setProperty(documentNodeRef, DOCUMENT_USE_NEW_HISTORY, newStatus);
-                } catch (Exception e) {
-                    logger.error("Unexpected error", e);
-                } finally {
-                    return null;
-                }
-            }
-        }, false, requiresNew);
-    }
-
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
 
     public void setPersonService(PersonService personService) {
         this.personService = personService;
-    }
-
-    public void setTransactionService(TransactionService transactionService) {
-        this.transactionService = transactionService;
     }
 }

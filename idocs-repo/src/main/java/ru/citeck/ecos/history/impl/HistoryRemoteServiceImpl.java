@@ -1,11 +1,14 @@
 package ru.citeck.ecos.history.impl;
 
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -51,6 +54,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String SEND_NEW_RECORDS_QUEUE = "send_new_records_queue";
     private static final String DEFAULT_RESULT_CSV_FOLDER = "/citeck/ecos/history_record_csv/";
 
+    private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
+    private static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(DOC_NAMESPACE, "useNewHistory");
+
     /**
      * Use active mq
      */
@@ -82,7 +88,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     private RestTemplate restTemplate;
 
-    private HistoryGetService historyGetService;
+    private TransactionService transactionService;
 
     private NodeService nodeService;
 
@@ -161,7 +167,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 restTemplate.postForObject(properties.getProperty(HISTORY_SERVICE_HOST) + INSERT_RECORDS_PATH, map, Boolean.class);
             }
             /** Update document status */
-            historyGetService.updateDocumentHistoryStatus(documentRef, true);
+            updateDocumentHistoryStatus(documentRef, true);
         } catch (Exception exception) {
             logger.error(exception);
         }
@@ -229,13 +235,40 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         }
     }
 
+    /**
+     * Update document history status
+     * @param documentNodeRef Document node reference
+     * @param newStatus       New document status
+     */
+    @Override
+    public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
+        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+        txnHelper.setForceWritable(true);
+        boolean requiresNew = false;
+        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+            requiresNew = true;
+        }
+        txnHelper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Object>() {
+            @Override
+            public Object execute() throws Throwable {
+                try {
+                    nodeService.setProperty(documentNodeRef, DOCUMENT_USE_NEW_HISTORY, newStatus);
+                } catch (Exception e) {
+                    logger.error("Unexpected error", e);
+                } finally {
+                    return null;
+                }
+            }
+        }, false, requiresNew);
+    }
+
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public void setHistoryGetService(HistoryGetService historyGetService) {
-        this.historyGetService = historyGetService;
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     public void setNodeService(NodeService nodeService) {

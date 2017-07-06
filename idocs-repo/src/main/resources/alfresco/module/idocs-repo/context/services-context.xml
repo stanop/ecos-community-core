@@ -436,15 +436,14 @@
 
 	<bean id="historyRemoteService" class="ru.citeck.ecos.history.impl.HistoryRemoteServiceImpl">
 		<property name="restTemplate" ref="restTemplate"/>
-		<property name="historyGetService" ref="historyGetService"/>
 		<property name="nodeService" ref="NodeService"/>
 		<property name="personService" ref="PersonService"/>
+		<property name="transactionService" ref="TransactionService"/>
 	</bean>
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
 		<property name="nodeService" ref="NodeService"/>
 		<property name="personService" ref="PersonService"/>
-		<property name="transactionService" ref="TransactionService"/>
 	</bean>
 
     <bean id="historyServiceJS" class="ru.citeck.ecos.history.HistoryServiceJS" parent="baseJavaScriptExtension">

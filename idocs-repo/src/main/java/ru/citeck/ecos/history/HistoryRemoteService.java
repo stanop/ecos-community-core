@@ -29,4 +29,11 @@ public interface HistoryRemoteService {
      */
     void sendHistoryEventsByDocumentToRemoteService(NodeRef documentRef);
 
+    /**
+     * Update document history status
+     * @param documentNodeRef Document node reference
+     * @param newStatus New document status
+     */
+    void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus);
+
 }
