@@ -56,6 +56,11 @@ public class HistoryGetServiceImpl implements HistoryGetService {
                     getInitiatorName(eventRef));
             result.add(entryMap);
         }
+        Collections.sort(result, (firstMap, secondMap) -> {
+            Long firstDate = (Long) firstMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue());
+            Long secondDate = (Long) secondMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue());
+            return firstDate.compareTo(secondDate);
+        });
         return result;
     }
 

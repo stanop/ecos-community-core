@@ -205,6 +205,9 @@ public class HistoryService {
                 requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
                 if (isEnabledRemoteHistoryService()) {
                     historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+                    nodeService.deleteNode(historyEvent);
+                } else {
+                    historyRemoteService.updateDocumentHistoryStatus(document, false);
                 }
                 return historyEvent;
             }
