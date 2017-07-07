@@ -200,7 +200,7 @@
 }
 
 .yui-skin-citeckTheme.mobile #HEADER_SEARCHBOX_FORM_FIELD {
-    width: 40px !important;
+    width: 22px !important;
 }
 
 .yui-skin-citeckTheme.mobile .alfresco-header-Header .dijitMenuBar #HEADER_CHANGE_LANGUAGE {
@@ -215,13 +215,13 @@
 
 @media screen and (min-width: 360px) {
     .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        width: 80px !important;
+        width: 60px !important;
     }
 }
 
 @media screen and (min-width: 400px) {
     .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        width: 130px !important;
+        width: 115px !important;
     }
 }
 

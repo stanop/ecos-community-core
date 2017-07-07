@@ -66,6 +66,7 @@
             <mandatory-aspects>
                 <aspect>cm:titled</aspect>
                 <aspect>activ:hasState</aspect>
+                <!--<aspect>activ:doNotIndexTypeCompletely</aspect>-->
             </mandatory-aspects>
         </type>
     </types>
@@ -105,6 +106,19 @@
                     <default>0</default>
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="activ:doNotIndexTypeCompletely">
+            <title>Do Not Index</title>
+            <parent>cm:indexControl</parent>
+            <overrides>
+                <property name="cm:isIndexed">
+                    <default>false</default>
+                </property>
+                <property name="cm:isContentIndexed">
+                    <default>false</default>
+                </property>
+            </overrides>
         </aspect>
 
     </aspects>

@@ -4,14 +4,21 @@ function main()
 {
    var params =
    {
-      siteId: (args.site !== null) ? args.site : null,
-      containerId: (args.container !== null) ? args.container : null,
+      siteId: args.site,
+      containerId: args.container,
       repo: (args.repo !== null) ? (args.repo == "true") : false,
-      term: (args.term !== null) ? args.term : null,
-      tag: (args.tag !== null) ? args.tag : null,
-      query: (args.query !== null) ? args.query : null,
-      sort: (args.sort !== null) ? args.sort : null,
-      maxResults: (args.maxResults !== null) ? parseInt(args.maxResults, 10) : DEFAULT_MAX_RESULTS
+      term: args.term,
+      tag: args.tag,
+      query: args.query,
+      rootNode: args.rootNode,
+      sort: args.sort,
+      maxResults: (args.maxResults !== null) ? parseInt(args.maxResults, 10) : DEFAULT_MAX_RESULTS,
+      pageSize: (args.pageSize !== null) ? parseInt(args.pageSize, 10) : DEFAULT_PAGE_SIZE,
+      startIndex: (args.startIndex !== null) ? parseInt(args.startIndex, 10) : 0,
+      facetFields: args.facetFields,
+      filters: args.filters,
+      encodedFilters: args.encodedFilters,
+      spell: (args.spellcheck !== null) ? (args.spellcheck == "true") : false
    };
    
    model.data = getSearchResults(params);

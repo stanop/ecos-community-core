@@ -44,6 +44,7 @@ public class CasePerformUtils {
     public static final String ABORT_PERFORMING = "abortPerforming";
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
+    public static final String PERFORMERS_ROLES_POOL = "performersRolesPool";
 
     public static final String REASSIGNMENT_KEY = "case-perform-reassignment";
 
@@ -238,17 +239,17 @@ public class CasePerformUtils {
     }
 
     void setPerformer(TaskEntity task, final NodeRef performer) {
+
         String performerKey = toString(CasePerformModel.ASSOC_PERFORMER);
         final NodeRef currentPerformer = (NodeRef) task.getVariable(performerKey);
         final NodeRef caseRoleRef = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_CASE_ROLE));
+
         if (caseRoleRef != null) {
-            AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-                @Override
-                public Void doWork() throws Exception {
-                    caseRoleService.setDelegate(caseRoleRef, currentPerformer, performer);
-                    caseRoleService.updateRole(caseRoleRef);
-                    return null;
-                    }
+
+            AuthenticationUtil.runAsSystem(() -> {
+                caseRoleService.setDelegate(caseRoleRef, currentPerformer, performer);
+                caseRoleService.updateRole(caseRoleRef);
+                return null;
             });
 
             Set<NodeRef> assignees = caseRoleService.getAssignees(caseRoleRef);
@@ -257,7 +258,6 @@ public class CasePerformUtils {
                 persistReassign(caseRoleRef, task.getProcessInstanceId(), currentPerformer, performer);
             }
         }
-
     }
 
     void persistReassign(NodeRef caseRole, String workflowId, NodeRef from, NodeRef to) {
@@ -277,6 +277,20 @@ public class CasePerformUtils {
 
     NodeRef getCaseRole(NodeRef performer, ExecutionEntity execution) {
 
+        Map<NodeRef, List<NodeRef>> pool = getMap(execution, PERFORMERS_ROLES_POOL);
+
+        List<NodeRef> roles = pool.get(performer);
+        if (roles != null && !roles.isEmpty()) {
+            return roles.remove(roles.size() - 1);
+        }
+
+        return null;
+    }
+
+    List<NodeRef> getTaskRoles(ExecutionEntity execution) {
+
+        List<NodeRef> roles = new ArrayList<>();
+
         ActivitiScriptNode pack = (ActivitiScriptNode) execution.getVariable(toString(WorkflowModel.ASSOC_PACKAGE));
         NodeRef caseTask = null;
 
@@ -286,16 +300,31 @@ public class CasePerformUtils {
         }
 
         if (caseTask != null) {
-
             List<AssociationRef> roleAssocs = nodeService.getTargetAssocs(caseTask, CasePerformModel.ASSOC_PERFORMERS_ROLES);
             for (AssociationRef roleAssocRef : roleAssocs) {
-                NodeRef roleRef = roleAssocRef.getTargetRef();
-                if (caseRoleService.isRoleMember(roleRef, performer, true)) {
-                    return roleRef;
-                }
+                roles.add(roleAssocRef.getTargetRef());
             }
         }
-        return null;
+
+        return roles;
+    }
+
+    void fillRolesByPerformers(ExecutionEntity execution) {
+
+        Map<NodeRef, List<NodeRef>> pool = getMap(execution, PERFORMERS_ROLES_POOL);
+        Collection<NodeRef> performers = getCollection(execution, CasePerformUtils.PERFORMERS);
+
+        List<NodeRef> roles = getTaskRoles(execution);
+
+        for (NodeRef performer : performers) {
+            List<NodeRef> performerRoles = new ArrayList<>();
+            for (NodeRef roleRef : roles) {
+                if (caseRoleService.isRoleMember(roleRef, performer)) {
+                    performerRoles.add(roleRef);
+                }
+            }
+            pool.put(performer, performerRoles);
+        }
     }
 
     public void setNodeService(NodeService nodeService) {

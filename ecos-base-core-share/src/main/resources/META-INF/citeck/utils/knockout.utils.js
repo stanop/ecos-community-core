@@ -374,6 +374,7 @@ define(['lib/knockout'], function(ko) {
 				computedProperties = {},
 				nativeProperties = {},
 				methods = {},
+				subscriptions = {},
 				attributeDefinitions = {
 					"Property": {
 						collection: properties,
@@ -396,12 +397,21 @@ define(['lib/knockout'], function(ko) {
 					assert(_.isString(newName), attributeType + " name should be string, " + typeof(newName) + " provided instead");
 					var definitionTypes = attributeDefinitions[attributeType].definitionTypes;
 					var definitionType = _.isArray(definition) ? "array" : typeof definition;
+
 					assert(definitionTypes.indexOf(definitionType) != -1, 
 						attributeType + " definition should be " + definitionTypes.join(" or ") + ", " + definitionType + " provided instead");
+
 					_.each(attributeDefinitions, function(attributeDef, attributeType) {
 						assert(_.isUndefined(attributeDef.collection[newName]), 
 							attributeType + " with name " + newName + " is already defined");
 					});
+				},
+				assertNewSubscription = function(name, definition) {
+					assert(_.isString(name), 
+						"Subscription name should be string, " + typeof(name) + " provided instead");
+
+					assert(typeof definition == "function", 
+						"Subscription definition should be function, " + typeof definition + " provided instead");
 				},
 				initializers = [],
 				constructors = [],
@@ -495,6 +505,12 @@ define(['lib/knockout'], function(ko) {
                         if(extenders['*']) this[name].extend(extenders['*']);
                         if(extenders[name]) this[name].extend(extenders[name]);
                         this[name].toString = function() { return name; }
+                    }, viewModel);
+
+                    _.each(subscriptions, function(definition, name) {
+                		if ((ko.isObservable(this[name]) || ko.isComputed(this[name])) && (_.isFunction(definition))) {
+                			_.defer(function() { viewModel[name].subscribe(_.bind(definition, viewModel)); });
+                		}
                     }, viewModel);
     
                     _.each(nativeProperties, function(definition, name) {
@@ -651,8 +667,19 @@ define(['lib/knockout'], function(ko) {
 						} else {
 							value = instantiate(value, type);
 						}
+
+						if (_.isObject(value)) {
+							if (_.isArray(value)) {
+								_.each(value, function(v_el) { v_el._parent_association_ = this; }, this);
+							} else { value._parent_association_ = this; }
+						}
+
 						this[name](value);
 					}, this);
+				},
+
+				getParentAssociation: function() {
+					return this._parent_association_ || null;
 				}
 			});
 
@@ -759,6 +786,11 @@ define(['lib/knockout'], function(ko) {
 					_.extend(extenders[propertyName], newExtenders);
 					return ViewModelClass;
 				},
+				subscribe: function(propertyName, definition) {
+					assertNewSubscription(propertyName, definition);
+					subscriptions[propertyName] = definition;
+					return ViewModelClass;
+				}
 			});
 
 			// aliases and shortcuts

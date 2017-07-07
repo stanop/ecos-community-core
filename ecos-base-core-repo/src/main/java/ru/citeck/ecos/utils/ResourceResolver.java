@@ -54,7 +54,12 @@ public class ResourceResolver extends ServletContextResourcePatternResolver {
 		{
 			Resource[] resourcesForPattern = getResources(locationPattern);
 			for (Resource resourceForPattern : resourcesForPattern) {
-				result.add(resourceForPattern.getURL().toString());
+				String url = resourceForPattern.getURL().toString();
+				//exclude resources from source and target folders because a same files deploying multiple times
+				//TODO: verify the uniqueness of resources and load them from any classpath
+				if (!url.contains("/target/classes/") && !url.contains("/src/main/resources/")) {
+					result.add(url);
+				}
 			}
 		}
 		logger.debug("Found resource locations: " + result);

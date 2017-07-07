@@ -41,6 +41,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class NodeInfoFactoryImpl implements NodeInfoFactory 
 {
@@ -105,6 +108,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
         NodeInfo nodeInfo = new NodeInfo();
         
         Map<QName, Serializable> all = task.getProperties();
+        removeNotExistingNodeRefs(all);
         Map<QName, Serializable> props = new HashMap<QName, Serializable>(all.size());
         Map<QName, List<NodeRef>> assocs = new HashMap<QName, List<NodeRef>>(all.size()/2);
         splitPropsAndAssocs(all, props, assocs);
@@ -426,13 +430,13 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 				if(!(value instanceof Collection)) {
 					value = (Serializable) Collections.singletonList(value);
 				}
-				
+
 				if(value instanceof Collection) {
 					@SuppressWarnings("rawtypes")
 					Collection<?> objects = (Collection) value;
 					List<NodeRef> targets = new ArrayList<NodeRef>(objects.size());
 					for(Object object : objects) {
-						if(object == null) { 
+						if(object == null) {
 							continue;
 						} else if(object instanceof NodeRef) {
 							targets.add((NodeRef) object);
@@ -444,14 +448,38 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 					}
 					assocs.put(name, targets);
 				}
-				
+
 				continue;
 			}
 			
 			logger.warn("Found non-registered property (association), ignoring it: " + name);
 		}
 	}
-	
+
+	private void removeNotExistingNodeRefs(Map<QName, Serializable> taskProps) {
+	    Predicate<Serializable> predicate = prop -> prop instanceof NodeRef && !nodeService.exists((NodeRef) prop);
+
+	    taskProps.forEach((name, value) -> {
+            if (value instanceof Collection) {
+                @SuppressWarnings("unchecked")
+                Collection<Serializable> collection = (Collection<Serializable>) value;
+
+                if (collection.stream().anyMatch(predicate)) {
+                    Collection<Serializable> newCollection = collection.stream()
+                            .map(v -> predicate.test(v) ? null : v)
+                            .collect(Collectors.toList());
+
+                    taskProps.replace(name, (Serializable) newCollection);
+                }
+            }
+            else {
+                if (predicate.test(value)) {
+                    taskProps.replace(name, null);
+                }
+            }
+        });
+	}
+
 	/////////////////////////////////////////////////////////////////
 	//                      SPRING INTERFACE                       //
 	/////////////////////////////////////////////////////////////////

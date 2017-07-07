@@ -64,6 +64,9 @@ public class ReportProducer extends AbstractDataBundleLine {
     private NamespaceService namespaceService;
     private MessageService messageService;
     private DictionaryService dictionaryService;
+    private String personFirstName;
+    private String personLastName;
+    private String personMiddleName;
 
     @Override
     public void init() {
@@ -212,26 +215,30 @@ public class ReportProducer extends AbstractDataBundleLine {
         if (node.hasPermission("Read")) {
             if (node.getTypeShort().equals("cm:person")) {
                 Map<String, Serializable> properties = node.getProperties();
-
                 if (properties != null) {
-                    if (properties.get("cm:lastName") != null)
-                        result += properties.get("cm:lastName");
-
-                    if (properties.get("cm:firstName") != null) {
-                        result += (result.length() > 0) ? " " : "";
-                        result += properties.get("cm:firstName");
-                    }
-
-                    if (properties.get("cm:middleName") != null) {
-                        result += (result.length() > 0) ? " " : "";
-                        result += properties.get("cm:middleName");
-                    }
+                    result = appendValue(result, properties, personLastName, "cm:lastName");
+                    result = appendValue(result, properties, personFirstName, "cm:firstName");
+                    result = appendValue(result, properties, personMiddleName, "cm:middleName");
                 }
-            } else if (node.getName() != null)
+            } else if (node.getProperties().get("cm:title") != null) {
+                result = node.getProperties().get("cm:title").toString();
+            } else if (node.getName() != null) {
                 result = node.getName();
+            }
 
+                    }
+
+        return result;
+                }
+
+    private String appendValue(String result, Map<String, Serializable> props, String customKey, String defaultKey) {
+        if (!customKey.startsWith("${") && props.get(customKey) != null) {
+            result += (result.length() > 0) ? " " : "";
+            result += props.get(customKey);
+        } else if (props.get(defaultKey) != null) {
+            result += (result.length() > 0) ? " " : "";
+            result += props.get(defaultKey);
         }
-
         return result;
     }
 
@@ -256,4 +263,15 @@ public class ReportProducer extends AbstractDataBundleLine {
         this.templateNodeService = templateNodeService;
     }
 
+    public void setPersonFirstName(String personFirstName) {
+        this.personFirstName = personFirstName;
+    }
+
+    public void setPersonLastName(String personLastName) {
+        this.personLastName = personLastName;
+    }
+
+    public void setPersonMiddleName(String personMiddleName) {
+        this.personMiddleName = personMiddleName;
+    }
 }

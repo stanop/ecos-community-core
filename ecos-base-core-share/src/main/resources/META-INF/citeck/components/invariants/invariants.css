@@ -801,7 +801,7 @@
 .invariants-form .template-table .template-row.with-help .template-checkbox,
 .invariants-form .template-table .template-row.with-help .template-number,
 .invariants-form .template-table .template-row .template-free-content {
-  width: 53.5%;
+  width: 54.5%;
 }
 
 
@@ -952,11 +952,6 @@
   width: 100%;
   clear: left;
   margin-top: 5px;
-}
-
-.invariants-form.form-template-table .form-view.template-table .template-row .form-region.template-textarea {
-  width: auto;
-  margin-top: 0px;
 }
 
 .invariants-form .template-table .template-row.with-help .template-textarea {
@@ -2203,6 +2198,12 @@
   height: 27px;
   box-sizing: border-box;
 }
+
+.invariants-form .template-tabs .tabs-title li.tab-title i {
+  color: red;
+  margin-left: 7px;
+}
+
 
 .invariants-form .template-tabs .tabs-title li.tab-title:not(.selected) {
   cursor: pointer;  

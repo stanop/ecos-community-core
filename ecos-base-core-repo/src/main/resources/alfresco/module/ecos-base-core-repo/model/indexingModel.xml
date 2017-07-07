@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="ind:indexingModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Indexing model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind"/>
+    </namespaces>
+
+    <aspects>
+        <aspect name="ind:doNotIndexTypeCompletely">
+            <title>Do Not Index</title>
+            <parent>cm:indexControl</parent>
+            <overrides>
+                <property name="cm:isIndexed">
+                    <default>false</default>
+                </property>
+                <property name="cm:isContentIndexed">
+                    <default>false</default>
+                </property>
+            </overrides>
+        </aspect>
+    </aspects>
+
+
+</model>

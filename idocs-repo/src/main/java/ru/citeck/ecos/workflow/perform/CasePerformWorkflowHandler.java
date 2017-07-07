@@ -3,9 +3,6 @@ package ru.citeck.ecos.workflow.perform;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.repo.workflow.WorkflowModel;
-import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -16,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
-import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 
 import java.io.Serializable;
@@ -69,6 +65,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         }
 
         execution.setVariableLocal(CasePerformUtils.PERFORMERS, performers);
+        utils.fillRolesByPerformers(execution);
     }
 
     public void onSkipPerformingGatewayStarted(ExecutionEntity execution) {

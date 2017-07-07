@@ -2140,6 +2140,10 @@ table td.thumbnail img
 
 /* HEADER */
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER #HEADER_MOBILE_MENU {
+    display: none;
+}
+
 #alf-hd {
     border-bottom: 1px solid #ccc;
     background-color: white;
@@ -2150,10 +2154,10 @@ table td.thumbnail img
    margin: 0;
 }
 
-
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header,
 #alf-hd .alfresco-header-Header {
    margin: 0;
-   padding: 0 35px;
+   padding: 0 25px;
    background-color: #2d3541;
    border-bottom: 1px solid #ccc;
 }
@@ -2168,25 +2172,32 @@ table td.thumbnail img
 
 #alf-hd .alfresco-menus-AlfMenuBar .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
 #alf-hd .alfresco-menus-AlfMenuBar .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected,
-#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
+#alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
    background-color: transparent;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .dijitMenuBar .dijitMenuItem span[class*="alfresco-menus-AlfMenuBarPopup__arrow"],
 #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem span[class*="alfresco-menus-AlfMenuBarPopup__arrow"] {
     padding-left: 7px !important;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .dijitMenuBar .dijitMenuItem span,
 #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem span {
    padding: 0 !important;
    margin: 0 !important;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer,
 #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner,
 #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer {
    height: auto !important;
    display: inline-block;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER.alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer >
+span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 #alf-hd .alfresco-header-Header .dijitMenuBar .dijitMenuItem > span.alf-header-js-wrapper-outer >
 span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    border: none;
@@ -2197,25 +2208,33 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    background-position-y: 3px;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar,
 .alfresco-share #alf-hd .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar {
    padding: 0;
 }
 
 /* only for left-widgets */
-
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem {
    border-left: 1px solid #394353;
    border-right: 1px solid #1e242c;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:first-child,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:first-child {
    border-left: none;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:nth-last-child(2),
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:nth-last-child(2) {
    border-right: none;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar .dijitMenuItem.dijitMenuItemHover:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU),
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover >
+span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar .dijitMenuItem.dijitMenuItemHover:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU),
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
@@ -2224,6 +2243,12 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    background-color: #394353;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
+span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
@@ -2233,11 +2258,16 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
    background-color: #252c36;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
+span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
 span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    background-position-y: 6px;
 }
 
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active button.alf-header-js-wrapper-button,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused .alf-menu-arrow,
+.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem.dijitMenuItemSelected .alf-menu-arrow,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active button.alf-header-js-wrapper-button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused .alf-menu-arrow,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem.dijitMenuItemSelected .alf-menu-arrow {
@@ -2275,7 +2305,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 }
 
 .yui-skin-citeckTheme #HEADER_TITLE {
-    padding-left: 49px;
+    padding-left: 39px;
     margin-top: 7px;
 }
 
@@ -3558,7 +3588,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .sticky-footer .footer-content {
   overflow: hidden;
-  padding: 0 40px;
+  padding: 3px 40px;
   font-size: 10px;
 }
 
@@ -3644,6 +3674,7 @@ div#HEADER_USER_STATUS {
 
 .yui-skin-citeckTheme #share-header {
    min-height: 40px;
+   margin: 0;
 }
 
 #bd .yui-gc > .yui-u .document-details-panel .panel-body h3:not(:first-child) {

@@ -24,7 +24,7 @@
 	}
 	var textPart = "";
 	if (args.text) {
-	    textPart = "AND ALL:\"" + args.text + "\"";
+	    textPart = "AND (@cm\\:title:\"" + args.text + "\" OR @cm\\:name:\""+args.text+"\")";
 	}
 	var typePart = 'TYPE:"' + type + '"';
 	var query = typePart + pathPart + propertyPart + textPart;

@@ -53,7 +53,13 @@ public enum Feature {
         }
     },
     DATATYPE(QName.class, null, ""),
-    NODETYPE(QName.class, null, "");
+    NODETYPE(QName.class, null, ""),
+    NONBLOCKING_VALUE(Object.class, null, "nonblocking value") {
+        @Override
+        public String toString() {
+            return "nonblocking-value";
+        }
+    };
     
     private final Class<?> type;
     private final Object defaultValue;
@@ -65,8 +71,7 @@ public enum Feature {
         this.defaultDescription = defaultDescription;
     }
     
-    public static Feature valueOf(
-            ru.citeck.ecos.invariants.xml.Feature on) {
+    public static Feature valueOf(ru.citeck.ecos.invariants.xml.Feature on) {
         return valueOf(on.toString());
     }
     

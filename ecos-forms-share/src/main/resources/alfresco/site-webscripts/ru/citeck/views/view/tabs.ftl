@@ -15,13 +15,18 @@
 	<ul>
 		<#list tabs as tab>
 			<#assign tabId = tab.id!tab.genId />
-			<li class="tab-title <#if tab_index == 0>selected</#if>"
-				data-tab-id="${tabId}"
-				data-tab-index="${tab_index}"
-				data-bind="click: $root.selectGroup, clickBubble: false"
-			>
-				<#if msg(tab.params.title)?has_content>${msg(tab.params.title)}<#else>${msg("tabs.tab.title")} ${tab_index}</#if>
-			</li>
+			<!-- ko with: group("${tabId}") -->
+				<li class="tab-title <#if tab_index == 0>selected</#if>"
+					data-tab-id="${tabId}"
+					data-tab-index="${tab_index}"
+					data-bind="click: _.bind($root.selectGroup, $root), clickBubble: false"
+				>
+					<#if msg(tab.params.title)?has_content>${msg(tab.params.title)}<#else>${msg("tabs.tab.title")} ${tab_index}</#if>
+					<!-- ko if: invalid -->
+						<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+					<!-- /ko -->
+				</li>
+			<!-- /ko -->
 		</#list>
 	</ul>
 	<span class="scroll-tabs scroll-right hidden" data-bind="click: $root.scrollGroups"> >> </span>

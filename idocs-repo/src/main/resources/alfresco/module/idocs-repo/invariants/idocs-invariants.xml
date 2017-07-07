@@ -7,7 +7,7 @@
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
         <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
     </imports>
-    
+
     <associations type="idocs:legalEntity">
         <invariant on="value-title" language="javascript">value.properties["idocs:shortOrganizationName"] || value.properties["idocs:fullOrganizationName"]</invariant>
     </associations>
@@ -50,7 +50,7 @@
     <type name="deputy:absenceEvent">
         <property name="deputy:startAbsence">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
-            <invariant on="protected" language="explicit">true</invariant>
+            <invariant on="protected" language="explicit">false</invariant>
         </property>
         <property name="deputy:endAbsence">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
@@ -65,7 +65,7 @@
             <invariant on="valid" language="javascript" description="Дата начала не может быть меньше текущей даты">
                 node.properties['deputy:startAbsence'] >= new Date().setSeconds(0,0)
             </invariant>
-            <invariant on="protected" language="explicit">false</invariant>
+            <invariant on="protected" language="explicit">true</invariant>
         </property>
         <property name="deputy:endAbsence">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>

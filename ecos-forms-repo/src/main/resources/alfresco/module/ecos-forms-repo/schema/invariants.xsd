@@ -164,6 +164,7 @@
       <xs:enumeration value="value-description"/>
       <xs:enumeration value="datatype"/>
       <xs:enumeration value="nodetype"/>
+      <xs:enumeration value="nonblocking-value"/>
     </xs:restriction>
   </xs:simpleType>
 

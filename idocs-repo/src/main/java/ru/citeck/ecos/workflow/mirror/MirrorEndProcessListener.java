@@ -27,7 +27,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;

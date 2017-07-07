@@ -1,3 +1,19 @@
+<#if personFirstName??>
+    <#assign _personFirstName = {"key": "cm:firstName", "value": personFirstName} />
+<#else>
+    <#assign _personFirstName = "cm:firstName" />
+</#if>
+<#if personLastName??>
+    <#assign _personLastName = {"key": "cm:lastName", "value": personLastName} />
+<#else>
+    <#assign _personLastName = "cm:lastName" />
+</#if>
+<#if personMiddleName??>
+    <#assign _personMiddleName = {"key": "cm:middleName", "value": personMiddleName} />
+<#else>
+    <#assign _personMiddleName = "cm:middleName" />
+</#if>
+
 <#macro printNodes nodes excludeAttributes=[]>
     <#escape x as jsonUtils.encodeJSONString(x)>
         <#list nodes as node>
@@ -150,7 +166,11 @@
         ],
         <#assign propNames = getExtraProp(node) />
         <#list propNames as prop>
+            <#if prop?is_string>
         "${prop}": <#if node.properties[prop]??><@printValue node.properties[prop]/><#else>null</#if>,
+            <#else>
+            "${prop.key}": <#if node.properties[prop.value]??><@printValue node.properties[prop.value]/><#elseif node.properties[prop.key]??><@printValue node.properties[prop.key]/><#else>null</#if>,
+            </#if>
         </#list>
         "displayName": "${node.properties["cm:title"]!node.properties["itmpl:generatedName"]!node.name}"
     <#else>
@@ -162,7 +182,7 @@
 
 <#function getExtraProp node>
     <#assign extraProps = {
-        "cm:person": [ "cm:userName", "cm:firstName", "cm:lastName", "cm:middleName" ],
+        "cm:person": [ "cm:userName", _personFirstName, _personLastName, _personMiddleName ],
         "cm:authorityContainer": [ "cm:authorityName", "cm:authorityDisplayName" ],
         "bpm:workflowTask": ["bpm:status", "wfm:taskType", "wfm:assignee", "wfm:actors"]
     } />

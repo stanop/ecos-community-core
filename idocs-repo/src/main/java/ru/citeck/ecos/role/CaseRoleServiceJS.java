@@ -129,6 +129,7 @@ public class CaseRoleServiceJS extends AlfrescoScopableProcessorExtension {
         Object delegatesObj = converter.convertValueForJava(delegatesJSObj);
         if (delegatesObj instanceof Map) {
             Map<NodeRef, NodeRef> delegates = new HashMap<>();
+            @SuppressWarnings("unchecked")
             Map<Object, Object> delegatesObjMap = (Map<Object, Object>) delegatesObj;
             for (Map.Entry entry : delegatesObjMap.entrySet()) {
                 NodeRef assignee = JavaScriptImplUtils.getAuthorityRef(entry.getKey(), authorityService);

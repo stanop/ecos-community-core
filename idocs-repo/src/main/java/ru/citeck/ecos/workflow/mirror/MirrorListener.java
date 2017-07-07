@@ -19,7 +19,6 @@
 package ru.citeck.ecos.workflow.mirror;
 
 import org.activiti.engine.delegate.DelegateTask;
-
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;

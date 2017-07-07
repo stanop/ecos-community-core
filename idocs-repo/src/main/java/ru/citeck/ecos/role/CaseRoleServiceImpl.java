@@ -134,7 +134,10 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     @Override
     public Set<NodeRef> getAssignees(NodeRef roleRef) {
-        return getTargets(roleRef, ICaseRoleModel.ASSOC_ASSIGNEES);
+        if (roleRef != null) {
+            return getTargets(roleRef, ICaseRoleModel.ASSOC_ASSIGNEES);
+        }
+        return new HashSet<>();
     }
 
     @Override
@@ -144,11 +147,13 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     @Override
     public void removeAssignees(NodeRef roleRef) {
-        Set<NodeRef> assignees = getTargets(roleRef, ICaseRoleModel.ASSOC_ASSIGNEES);
-        for (NodeRef ref : assignees) {
-            nodeService.removeAssociation(roleRef, ref, ICaseRoleModel.ASSOC_ASSIGNEES);
+        if (roleRef != null) {
+            Set<NodeRef> assignees = getTargets(roleRef, ICaseRoleModel.ASSOC_ASSIGNEES);
+            for (NodeRef ref : assignees) {
+                nodeService.removeAssociation(roleRef, ref, ICaseRoleModel.ASSOC_ASSIGNEES);
+            }
+            fireAssigneesChangedEvent(roleRef, null, assignees);
         }
-        fireAssigneesChangedEvent(roleRef, null, assignees);
     }
 
     @Override

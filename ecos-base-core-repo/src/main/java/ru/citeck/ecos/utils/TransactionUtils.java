@@ -44,37 +44,30 @@ public class TransactionUtils {
 
     private static Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
 
-        return new Thread(new Runnable() {
+        return new Thread(() -> {
 
-            public void run() {
+            AuthenticationUtil.setRunAsUser(currentUser);
+            I18NUtil.setLocale(locale);
 
-                AuthenticationUtil.setRunAsUser(currentUser);
-                I18NUtil.setLocale(locale);
-
-                AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-                    public Void doWork() throws Exception {
-                        try {
-                            doInTransaction(job);
-                        } catch (Exception e) {
-                            LOG.error("Exception while job running", e);
-                            if (errorHandler != null) {
-                                doInTransaction(errorHandler);
-                            }
-                        }
-                        return null;
+            AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+                try {
+                    doInTransaction(job);
+                } catch (Exception e) {
+                    LOG.error("Exception while job running", e);
+                    if (errorHandler != null) {
+                        doInTransaction(errorHandler);
                     }
-                });
-            }
+                }
+                return null;
+            });
         });
     }
 
     private static void doInTransaction(final Runnable job) {
         transactionService.getRetryingTransactionHelper().doInTransaction(
-                new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
-                    public String execute() throws Exception {
-                        job.run();
-                        return null;
-                    }
+                (RetryingTransactionHelper.RetryingTransactionCallback<String>) () -> {
+                    job.run();
+                    return null;
                 }, false, true);
     }
 
