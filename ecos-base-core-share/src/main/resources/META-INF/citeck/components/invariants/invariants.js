@@ -1132,7 +1132,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('getGroup', function() {
             var name = this.name(), groups = this.resolve("node.impl.groups", []);
-            return _.find(groups, function(gp) { return gp.attributes().indexOf(name) != -1; }) || null;
+            return _.find(groups, function(gp) { return gp._attributes().indexOf(name) != -1; }) || null;
         })
 
         // feature evaluators
@@ -1281,9 +1281,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('index', n)
         .property('_visibility', b)
         .property('_activity', b)
-        .property('attributes', [ s ])
+        .property('_attributes', [ s ])
         .property('invariants', [ Invariant ])
 
+        .computed('attributes', function() {
+            var nodeImpl = this.getParentAssociation(),
+                attributes = nodeImpl.attributes(),
+                attributeNames = this._attributes();
+
+            return _.filter(attributes, function(attribute) {
+                return _.contains(attributeNames, attribute.name());
+            });
+        })
         .computed('hidden', {
             read: function() { return !this._visibility(); },
             write: function(newValue) { this._visibility(!newValue); }
@@ -1299,6 +1308,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('enable', {
             read: function() { return this._activity(); },
             write: function(newValue) { this._activity(!!newValue); }
+        })
+        .computed('invalid', function() {
+            return _.any(this.attributes(), function(attribute) {
+                return attribute.relevant() && attribute.invalid();
+            });
         })
 
         .load('_visibility', function() { this._visibility(true) })
@@ -1345,6 +1359,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this._activity(this._activity());
         })
     ;
+
+    /* TODO:
+        merge Group and AttributeSet to one class
+    */
 
     NodeImpl
         .constructor([Node, Object], function(node, model) {
@@ -2096,10 +2114,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 .end().end()
                 .removeClass("hidden");
 
-            if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
+            if (this.loadAttributesMethod() == "clickOnGroup") {
                 var group = this.node().impl().group(tabId);
 
-                if (this.runtime().loadGroupIndicator() && tabIndex > 0) {
+                if (this.loadGroupIndicator() && tabIndex > 0) {
                     var self = this,
                         indicatorId = tabId + "-loadGroupIndicator", bodyId = $(".tabs-body .tab-body[data-tab-id=" + tabId + "]").attr("id"),
                         buttons = $(".invariants-form .form-buttons");
@@ -2113,7 +2131,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         });
 
                         window[indicatorId].handler = ko.computed(function() {
-                            var impl = self.resolve("node.impl"), groupAttributes = group.attributes();
+                            var impl = self.resolve("node.impl"), groupAttributes = group._attributes();
                             return _.every(groupAttributes, function(attribute) { return !!impl.attribute(attribute);  });
                         });
 
@@ -2140,8 +2158,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
 
         .method('loadGroupAttributes', function(group) {
-            if (group && !this.checkGroupAttributes(group.attributes())) {
-                this.node().impl().forcedAttributes(_.union(this.resolve("node.impl.forcedAttributes"), group.attributes()));
+            if (group && !this.checkGroupAttributes(group._attributes())) {
+                this.node().impl().forcedAttributes(_.union(this.resolve("node.impl.forcedAttributes"), group._attributes()));
             }
         })
         .method('loadGroupInvariants', function(group) {

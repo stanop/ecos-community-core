@@ -667,8 +667,19 @@ define(['lib/knockout'], function(ko) {
 						} else {
 							value = instantiate(value, type);
 						}
+
+						if (_.isObject(value)) {
+							if (_.isArray(value)) {
+								_.each(value, function(v_el) { v_el._parent_association_ = this; }, this);
+							} else { value._parent_association_ = this; }
+						}
+
 						this[name](value);
 					}, this);
+				},
+
+				getParentAssociation: function() {
+					return this._parent_association_ || null;
 				}
 			});
 

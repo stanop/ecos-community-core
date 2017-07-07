@@ -2199,6 +2199,12 @@
   box-sizing: border-box;
 }
 
+.invariants-form .template-tabs .tabs-title li.tab-title i {
+  color: red;
+  margin-left: 7px;
+}
+
+
 .invariants-form .template-tabs .tabs-title li.tab-title:not(.selected) {
   cursor: pointer;  
 }

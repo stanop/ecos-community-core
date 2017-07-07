@@ -302,7 +302,7 @@
 								{
 									"id": <@views.renderValue group.id />,
 									"index": <@views.renderValue group.index />,
-									"attributes": <@views.renderValue group.attributes />,
+									"_attributes": <@views.renderValue group.attributes />,
 									"invariants": <@views.renderInvariants group.invariants />
 								}<#if group_has_next>,</#if>
 								</#list>
