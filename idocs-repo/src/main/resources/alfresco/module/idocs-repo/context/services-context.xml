@@ -10,6 +10,8 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+	<bean id="rabbitMQConfiguration" class="ru.citeck.ecos.config.RabbitMQConfiguration"/>
+
 	<context:component-scan base-package="ru.citeck.ecos"/>
 	<context:annotation-config/>
 	<mvc:annotation-driven/>
@@ -21,6 +23,8 @@
             </list>
         </property>
     </bean>
+
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
 
     <util:map id="EcoS.PropertyEditors">
         <entry key="org.alfresco.service.namespace.QName">
@@ -427,12 +431,25 @@
     <!-- History Service -->
 
     <bean id="historyService" class="ru.citeck.ecos.history.HistoryService" >
+		<property name="historyRemoteService" ref="historyRemoteService"/>
         <property name="nodeService" ref="NodeService"/>
         <property name="authenticationService" ref="authenticationService"/>
         <property name="personService" ref="PersonService"/>
         <property name="searchService" ref="searchService"/>
         <property name="historyRoot" value="workspace://SpacesStore/history-events-root"/>
     </bean>
+
+	<bean id="historyRemoteService" class="ru.citeck.ecos.history.impl.HistoryRemoteServiceImpl">
+		<property name="restTemplate" ref="restTemplate"/>
+		<property name="nodeService" ref="NodeService"/>
+		<property name="personService" ref="PersonService"/>
+		<property name="transactionService" ref="TransactionService"/>
+	</bean>
+
+	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
+		<property name="nodeService" ref="NodeService"/>
+		<property name="personService" ref="PersonService"/>
+	</bean>
 
     <bean id="historyServiceJS" class="ru.citeck.ecos.history.HistoryServiceJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="historyService"/>

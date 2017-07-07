@@ -30,6 +30,8 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -44,6 +46,39 @@ import java.util.*;
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
 public class HistoryService {
+
+    /**
+     * Properties constants
+     */
+    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
+
+    /**
+     * Constants
+     */
+    private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
+    private static final String MODIFIER_PROPERTY = "modifier";
+    private static final String VERSION_LABEL_PROPERTY = "versionLabel";
+
+    private static final String HISTORY_EVENT_ID = "historyEventId";
+    private static final String DOCUMENT_ID = "documentId";
+    private static final String EVENT_TYPE = "eventType";
+    private static final String COMMENTS = "comments";
+    private static final String VERSION = "version";
+    private static final String CREATION_TIME = "creationTime";
+    private static final String USERNAME = "username";
+    private static final String USER_ID = "userId";
+
+    /**
+     * Date-time format
+     */
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+    /**
+     * Global properties
+     */
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties properties;
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
 
@@ -63,9 +98,15 @@ public class HistoryService {
 
     private SearchService searchService;
 
+    private HistoryRemoteService historyRemoteService;
+
     private StoreRef storeRef;
 
     private NodeRef historyRoot;
+
+    public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
+        this.historyRemoteService = historyRemoteService;
+    }
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
@@ -90,10 +131,14 @@ public class HistoryService {
 
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
         return AuthenticationUtil.runAsSystem(() -> {
+            Map<String, Object> requestParams = new HashMap();
             NodeRef initiator = getInitiator(properties);
             properties.remove(HistoryModel.ASSOC_INITIATOR);
             if (initiator == null) {
                 properties.put(HistoryModel.PROP_NAME, UNKNOWN_USER);
+                requestParams.put(USER_ID, UNKNOWN_USER);
+            } else {
+                requestParams.put(USER_ID, initiator.getId());
             }
             NodeRef document = getDocument(properties);
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
@@ -108,6 +153,7 @@ public class HistoryService {
                 now.setTime(now.getTime() - 5000);
             }
             properties.put(HistoryModel.PROP_DATE, now);
+            requestParams.put(CREATION_TIME, dateFormat.format(now));
             QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
 
             QName assocType;
@@ -148,8 +194,42 @@ public class HistoryService {
                     }
                 }
             }
+            requestParams.put(HISTORY_EVENT_ID, historyEvent.getId());
+            requestParams.put(DOCUMENT_ID, document.getId());
+            requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
+            requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
+            requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
+            if (isEnabledRemoteHistoryService()) {
+                historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+                nodeService.deleteNode(historyEvent);
+            } else {
+                historyRemoteService.updateDocumentHistoryStatus(document, false);
+            }
             return historyEvent;
         });
+    }
+
+    /**
+     * Get document property
+     * @param documentNode Document node
+     * @param localPropertyName Local property name
+     * @return Property object
+     */
+    private Object getDocumentProperty(NodeRef documentNode, String localPropertyName) {
+        return nodeService.getProperty(documentNode, QName.createQName(ALFRESCO_NAMESPACE, localPropertyName));
+    }
+
+    /**
+     * Check - is remote history service enabled
+     * @return Check result
+     */
+    private Boolean isEnabledRemoteHistoryService() {
+        String propertyValue = properties.getProperty(ENABLED_REMOTE_HISTORY_SERVICE);
+        if (propertyValue == null) {
+            return false;
+        } else {
+            return Boolean.valueOf(propertyValue);
+        }
     }
 
     /**
