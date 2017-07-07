@@ -1,18 +1,18 @@
 package ru.citeck.ecos.constants;
 
-import javafx.util.Pair;
+import java.util.AbstractMap;
 
 /**
  * Document history constants
  */
 public class DocumentHistoryConstants {
 
-    public static final Pair<String, String> NODE_REF = new Pair<>("nodeRef", "historyEventId");
-    public static final Pair<String, String> EVENT_INITIATOR = new Pair<>("event:initiator", "username");
-    public static final Pair<String, String> DOCUMENT_ID = new Pair<>("event:documentId", "documentId");
-    public static final Pair<String, String> DOCUMENT_DATE = new Pair<>("event:date", "creationTime");
-    public static final Pair<String, String> DOCUMENT_VERSION = new Pair("event:documentVersion", "version");
-    public static final Pair<String, String> COMMENTS = new Pair("event:taskComment", "comments");
-    public static final Pair<String, String> EVENT_TYPE = new Pair<>("event:name", "eventType");
+    public static final AbstractMap.SimpleEntry<String, String> NODE_REF = new AbstractMap.SimpleEntry<>("nodeRef", "historyEventId");
+    public static final AbstractMap.SimpleEntry<String, String> EVENT_INITIATOR = new AbstractMap.SimpleEntry<>("event:initiator", "username");
+    public static final AbstractMap.SimpleEntry<String, String> DOCUMENT_ID = new AbstractMap.SimpleEntry<>("event:documentId", "documentId");
+    public static final AbstractMap.SimpleEntry<String, String> DOCUMENT_DATE = new AbstractMap.SimpleEntry<>("event:date", "creationTime");
+    public static final AbstractMap.SimpleEntry<String, String> DOCUMENT_VERSION = new AbstractMap.SimpleEntry("event:documentVersion", "version");
+    public static final AbstractMap.SimpleEntry<String, String> COMMENTS = new AbstractMap.SimpleEntry("event:taskComment", "comments");
+    public static final AbstractMap.SimpleEntry<String, String> EVENT_TYPE = new AbstractMap.SimpleEntry<>("event:name", "eventType");
 
 }
