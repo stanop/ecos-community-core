@@ -96,6 +96,23 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
+    public void restartChildrenActivity(NodeRef parentActivityRef, NodeRef childActivityRef) {
+        if (nodeService.exists(parentActivityRef) && nodeService.exists(childActivityRef)) {
+            if (!isActive(parentActivityRef)) {
+//                nodeService.setProperty(parentActivityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
+                nodeService.setProperty(parentActivityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
+                nodeService.setProperty(parentActivityRef, LifeCycleModel.PROP_STATE, STATE_STARTED);
+
+//                HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(parentActivityRef, nodeService));
+//                CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
+//                policy.onCaseActivityReset(parentActivityRef);
+                resetActivitiesInChildren(childActivityRef);
+                startActivity(childActivityRef);
+            }
+        }
+    }
+
+    @Override
     public NodeRef getDocument(NodeRef activityRef) {
         ChildAssociationRef parent = nodeService.getPrimaryParent(activityRef);
         while (parent.getParentRef() != null
