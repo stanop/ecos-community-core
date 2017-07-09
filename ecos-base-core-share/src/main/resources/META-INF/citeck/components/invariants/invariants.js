@@ -842,7 +842,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
         .computed('changed', function() { return this.newValue.loaded(); })
         .computed('changedByInvariant', function() {
-            return this.invariantValue() != null || this.invariantNonblockingValue() != null || this.invariantDefault() != null;
+            return this.invariantValue() != null || this.invariantNonblockingValue() != null;
         })
         .computed('textValue', {
             read: function() {
@@ -1517,7 +1517,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('changedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
-                return attr.changed() || attr.changedByInvariant();
+                return attr.relevant() && (attr.changed() || attr.changedByInvariant() || (!attr.persisted() && attr.invariantDefault() != null));
             })
         })
         .method('invalidAttributes', function() {
@@ -2408,6 +2408,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     }
                 });
             }
+
         },
 
         initRuntime: function() {
