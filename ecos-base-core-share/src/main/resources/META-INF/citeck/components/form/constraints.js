@@ -379,21 +379,14 @@
                             // destory panel
                             _.defer(_.bind(panel.destroy, panel));
 
+                            //scroll to parent element
+                            if (panel.element.clientHeight > document.documentElement.clientHeight) {
+                                $("html, body").animate({ scrollTop: panel.element.offsetTop - document.documentElement.clientHeight * 0.2 }, 600);
+                            }
+
                             // clear DOM
                             $("[id^='" + id + "']").remove();
                         });
-
-
-                        // max-height
-                        var maxHeight = screen.height - 200;
-                        
-                        $(panel.body)
-                            .css("max-height", maxHeight - 33 + "px").addClass("fixed-size")
-                            .parent().css("max-height", maxHeight + "px");
-
-                        $(".ecos-form > .form-fields", panel.body)
-                            .css("max-height", maxHeight - 70 + "px");
-
 
                         // show panel
                         panel.show();
