@@ -343,8 +343,9 @@
 
                         panel.setHeader(header);
                         panel.setBody(response.serverResponse.responseText);
-
                         panel.render(document.body);
+
+                        var clientHeight = panel.element.clientHeight;
 
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
@@ -355,6 +356,7 @@
                             // save node
                             node.thisclass.save(node, function(persistedNode) {
                                 _.isFunction(callback) ? callback(persistedNode) : callback.fn.call(callback.scope, persistedNode);
+                                clientHeight = panel.element.clientHeight;
                                 panel.hide();
                                 runtime.terminate();
                             });
@@ -363,7 +365,7 @@
                         var onCancel = function(layer, args) {
                             var runtime = args[1].runtime;
                             if(runtime.key() != viewId) return;
-                            
+                            clientHeight = panel.element.clientHeight;
                             panel.hide();
                             runtime.terminate();
                         };
@@ -380,13 +382,24 @@
                             _.defer(_.bind(panel.destroy, panel));
 
                             //scroll to parent element
-                            if (panel.element.clientHeight > document.documentElement.clientHeight) {
+                           if (clientHeight > document.documentElement.clientHeight) {
                                 $("html, body").animate({ scrollTop: panel.element.offsetTop - document.documentElement.clientHeight * 0.2 }, 600);
                             }
 
                             // clear DOM
                             $("[id^='" + id + "']").remove();
                         });
+
+                        // max-height
+                        if (height != "auto") {
+                            var maxHeight = screen.height - 200;
+                            $(panel.body)
+                                .css("max-height", maxHeight - 33 + "px").addClass("fixed-size")
+                                .parent().css("max-height", maxHeight + "px");
+
+                            $(".ecos-form > .form-fields", panel.body)
+                                .css("max-height", maxHeight - 70 + "px");
+                        }
 
                         // show panel
                         panel.show();
