@@ -9,8 +9,16 @@
 		searchRoot = (params.searchRoot!rootGroup)
 		searchQuery = (params.searchQuery!childrenQuery)
 		rootUrl = (params.rootUrl!"")
-		excludeFields = (params.excludeFields!"")
 	/>
+	<#assign excludeFields>
+        <#if params.excludeFields??>
+            ${params.excludeFields}
+        <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
+                 config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+                 config.scoped["InvariantControlsConfiguration"]["orgstruct"].attributes["excludeFields"]??>
+            ${config.scoped["InvariantControlsConfiguration"]["orgstruct"].attributes["excludeFields"]}
+        <#else>""</#if>
+    </#assign>
 
 	{
 		formats: {
@@ -51,6 +59,6 @@
 			"GROUP": "{displayName} ({shortName})",
 			"USER": "{firstName} {lastName} ({shortName})",
 		},
-		excludeFields: "${excludeFields}"
+		excludeFields: "${excludeFields?trim}"
 	}
 </#macro>
