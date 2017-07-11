@@ -199,6 +199,7 @@ public class HistoryService {
             requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
             requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
             requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
+            requestParams.put(COMMENTS, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_COMMENT));
             if (isEnabledRemoteHistoryService()) {
                 historyRemoteService.sendHistoryEventToRemoteService(requestParams);
                 nodeService.deleteNode(historyEvent);

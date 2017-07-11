@@ -49,7 +49,8 @@ public class HistoryGetServiceImpl implements HistoryGetService {
                     nodeService.getProperty(eventRef, HistoryModel.PROP_NAME));
             entryMap.put(DocumentHistoryConstants.DOCUMENT_VERSION.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_DOCUMENT_VERSION));
-            entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(), "");
+            entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(),
+                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_COMMENT));
             entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
                     ((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)).getTime());
             entryMap.put(DocumentHistoryConstants.EVENT_INITIATOR.getValue(),
