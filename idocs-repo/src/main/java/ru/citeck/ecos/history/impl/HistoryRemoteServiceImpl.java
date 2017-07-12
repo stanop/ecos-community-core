@@ -7,7 +7,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
-
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -249,18 +248,17 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
             requiresNew = true;
         }
-        txnHelper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Object>() {
-            @Override
-            public Object execute() throws Throwable {
-                try {
+        txnHelper.doInTransaction(() -> {
+            try {
+                if (documentNodeRef != null) {
                     nodeService.setProperty(documentNodeRef, DOCUMENT_USE_NEW_HISTORY, newStatus);
-                } catch (Exception e) {
-                    logger.error("Unexpected error", e);
-                } finally {
-                    return null;
                 }
+            } catch (Exception e) {
+                logger.error("Unexpected error", e);
             }
+            return null;
         }, false, requiresNew);
+
     }
 
 

@@ -193,12 +193,12 @@ public class HistoryService {
                         nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
                     }
                 }
+                requestParams.put(DOCUMENT_ID, document.getId());
+                requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
+                requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
             }
             requestParams.put(HISTORY_EVENT_ID, historyEvent.getId());
-            requestParams.put(DOCUMENT_ID, document.getId());
             requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
-            requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
-            requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
             requestParams.put(COMMENTS, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_COMMENT));
             if (isEnabledRemoteHistoryService()) {
                 historyRemoteService.sendHistoryEventToRemoteService(requestParams);
@@ -206,13 +206,15 @@ public class HistoryService {
             } else {
                 historyRemoteService.updateDocumentHistoryStatus(document, false);
             }
+
             return historyEvent;
         });
     }
 
     /**
      * Get document property
-     * @param documentNode Document node
+     *
+     * @param documentNode      Document node
      * @param localPropertyName Local property name
      * @return Property object
      */
@@ -222,6 +224,7 @@ public class HistoryService {
 
     /**
      * Check - is remote history service enabled
+     *
      * @return Check result
      */
     private Boolean isEnabledRemoteHistoryService() {
