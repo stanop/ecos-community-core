@@ -18,6 +18,9 @@ import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 /**
@@ -123,7 +126,9 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             ObjectNode attributesNode = objectMapper.createObjectNode();
             /** Populate object */
             Date date = new Date((Long) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue()));
-            attributesNode.put(DocumentHistoryConstants.DOCUMENT_DATE.getKey(), dateFormat.format(date));
+            ZoneOffset offset = ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
+            OffsetDateTime offsetDateTime = date.toInstant().atOffset(offset);
+            attributesNode.put(DocumentHistoryConstants.DOCUMENT_DATE.getKey(), offsetDateTime.toString());
             attributesNode.put(DocumentHistoryConstants.DOCUMENT_VERSION.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_VERSION.getValue()));
             attributesNode.put(DocumentHistoryConstants.COMMENTS.getKey(), (String)historyRecordMap.get(DocumentHistoryConstants.COMMENTS.getValue()));
             attributesNode.put(DocumentHistoryConstants.EVENT_TYPE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue()));
