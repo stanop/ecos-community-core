@@ -2575,7 +2575,7 @@ ko.bindingHandlers.orgstructControl = {
 
                     buildTreeNode: function(p_oItem, p_oParent, p_expanded) {
                         var textNode = new YAHOO.widget.TextNode({
-                                label: $html(p_oItem.displayName || p_oItem.shortName),
+                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)] || p_oItem.displayName || p_oItem.shortName),
                                 nodeRef: p_oItem.nodeRef,
                                 shortName: p_oItem.shortName,
                                 displayName: p_oItem.displayName,
@@ -2640,7 +2640,7 @@ ko.bindingHandlers.orgstructControl = {
                             if (existsSelectedItems.length == 0 || (existsSelectedItems.length > 0 && multiple())) {
                                 $(this.selectedItems).append(createSelectedObject({
                                     id: object.nodeRef, 
-                                    label: object.displayName, 
+                                    label: object[tree.fn.getNodeLabelKey(object)] || object.displayName,
                                     aType: textNode.data.authorityType,
                                     gType: textNode.data.groupType 
                                 }));
@@ -2671,6 +2671,22 @@ ko.bindingHandlers.orgstructControl = {
                                 this.fn.loadRootNodes(this, this.fn)
                             }
                         }
+                    },
+
+                    getNodeLabelKey: function(node) {
+                        var label = "";
+                        if (params.labels) {
+                            switch (node.authorityType) {
+                                case "USER":
+                                    label = params.labels["USER"];
+                                    break;
+
+                                case "GROUP":
+                                    label = params.labels["GROUP"];
+                                    break;
+                            }
+                        }
+                        return label;
                     }
                 };
 
@@ -2798,7 +2814,7 @@ function updatedControlValue(valueObject, ulSelected, tree) {
                         if (results) {
                             var newLi = createSelectedObject({ 
                                     id: results.nodeRef, 
-                                    label: results.displayName,
+                                    label: results[tree.fn.getNodeLabelKey(results)] || results.displayName,
                                     aType: results.authorityType,
                                     gType: results.groupType
                                 }),

@@ -4,6 +4,18 @@
 <#assign submitButtonTitle = msg("button.ok")>
 <#assign cancelButtonTitle = msg("button.cancel")>
 
+<#if config.scoped["InvariantControlsConfiguration"]?? &&
+     config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+     config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["user"]??>
+         <#assign userLabel = config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["user"][0].attributes["label"]>
+</#if>
+
+<#if config.scoped["InvariantControlsConfiguration"]?? &&
+     config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+     config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"]??>
+        <#assign userLabel = config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"][0].attributes["label"]>
+</#if>
+
 <div id="${controlId}" class="orgstruct-control" data-bind="orgstructControl: { 
                                                                 value: value, 
                                                                 multiple: multiple 
@@ -28,6 +40,11 @@
                                                                         rootGroupFunction: ${params.rootGroupFunction},
                                                                     </#if>
 
+                                                                    labels:
+                                                                        {
+                                                                            GROUP: '${groupLabel!""}',
+                                                                            USER: '${userLabel!""}'
+                                                                        },
                                                                     submitButtonTitle: '${submitButtonTitle}',
                                                                     cancelButtonTitle: '${cancelButtonTitle}'
                                                                 }
