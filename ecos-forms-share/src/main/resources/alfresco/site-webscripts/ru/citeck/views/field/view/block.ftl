@@ -11,6 +11,13 @@
 			<!-- ko if: inlineEditVisibility --><i class="fa fa-floppy-o" aria-hidden="true"></i><!-- /ko -->
 			<!-- ko ifnot: inlineEditVisibility --><i class="fa fa-pencil-square-o" aria-hidden="true"></i><!-- /ko -->
 		</span>
+
+		<!-- ko ifnot: inlineEditVisibility -->
+			<span class="form-field-inline-icons">
+				<!-- ko if: inlineViewAttention --><i class="fa fa-exclamation-triangle attention" aria-hidden="true"></i><!-- /ko -->
+				<!-- ko if: invalid --><i class="fa fa-exclamation-circle warning" aria-hidden="true"></i><!-- /ko -->
+			</span>
+		<!-- /ko -->
 	</div>
 	
 	<!-- ko ifnot: inlineEditVisibility -->

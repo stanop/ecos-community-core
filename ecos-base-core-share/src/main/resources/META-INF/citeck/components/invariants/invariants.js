@@ -842,7 +842,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
         .computed('changed', function() { return this.newValue.loaded(); })
         .computed('changedByInvariant', function() {
-            return this.invariantValue() != null || this.invariantNonblockingValue() != null;
+            return (this.invariantValue.loaded() && this.invariantValue() != null) || 
+                   (this.invariantNonblockingValue.loaded() && this.invariantNonblockingValue() != null);
         })
         .computed('textValue', {
             read: function() {
@@ -941,6 +942,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
+        .computed('inlineViewAttention', function() {
+            return !this.inlineEditVisibility() && this.changedByInvariant();
+        })
 
         .load('inlineEditVisibility', function() { this.inlineEditVisibility(false) })
         
@@ -952,7 +956,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             // save node if it valid
             if (this.inlineEditVisibility()) {
-                if (this.newValue() != null && this.newValue() != this.persistedValue()) {
+                if (this.changed() || this.changedByInvariant()) {
                     if (isDraft || this.resolve("node.impl.valid")) {
                         this.node().thisclass.save(this.node(), { });
 
@@ -1016,6 +1020,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('reset', function(full) {
             this.newValue(null);
             this.newValue.reload();
+
+            this.invariantValue.reload();
+            this.invariantNonblockingValue.reload();
+
+            this.hybridValue(null);
+            this.hybridValue.reload();
+
             if(full) {
                 this.persisted.reload();
                 this.persistedValue.reload();
@@ -1162,21 +1173,31 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .subscribe('invariantNonblockingValue', function(newValue) {
-            if (newValue) this.hybridValue(newValue);
+            if (this.invariantNonblockingValue.loaded() && newValue) this.hybridValue(newValue);
         })
         .subscribe('newValue', function(newValue) {
-            this.hybridValue(newValue);
+            if (this.changed()) this.hybridValue(newValue);
         })
 
         .computed('rawValue', function() {
             var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
                 hybridValue = this.hybridValue(),
-                invariantDefault = this.invariantDefault();
-           
-            if(invariantValue != null) return invariantValue;
-            if(invariantNonblockingValue != null || this.changed()) return hybridValue;
-            if(this.persisted()) return this.persistedValue();
-            if(!this.resolve("node.impl.inViewMode") && invariantDefault != null) return invariantDefault;
+                invariantDefault = this.invariantDefault(),
+                isViewMode = this.resolve("node.impl.inViewMode", false),
+                isInlineEditMode = this.resolve("node.impl.runtime.inlineEdit", false),
+                inSubmitProcess = this.resolve("node.impl.inSubmitProcess", false),
+                inEditing = this.inlineEditVisibility() || inSubmitProcess;
+            
+            if (!isViewMode || inEditing) {
+                if(invariantValue != null) return invariantValue;
+                if(this.hybridValue.loaded()) return hybridValue;
+            }           
+
+            if(this.persisted()) return this.persistedValue();            
+
+            if ((!isViewMode || inEditing) && invariantDefault != null) {
+                return invariantDefault;
+            }
 
             return null;
         })
@@ -1489,7 +1510,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
-
         .method('_filterAttributes', function(filterBy) {
             return _.filter(this.attributes() || [], function(attr) {
                 return attr[filterBy]();
@@ -1791,12 +1811,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             onSuccess: function(node, result) {
                 if (node.impl().runtime() && node.impl().runtime().inlineEdit()) {
                     node.impl().changedAttributes().forEach(function(attribute) {
-                        // newValue as persistedValue
+                        // value as persistedValue
                         // persisited by default as 'true' after save
-                        attribute.persistedValue(attribute.newValue());
+                        attribute.persistedValue(attribute.rawValue());
                         attribute.persisted(true);
 
-                        // reset new value
                         attribute.reset();
                     });
                 }
@@ -1806,7 +1825,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             onFailure: function(node, message) {
                 if (node.impl().runtime() && node.impl().runtime().inlineEdit()) {
                     node.impl().changedAttributes().forEach(function(attribute) {
-                        // reset old and new value
                         attribute.reset(true);
                     });
                 }
@@ -2241,7 +2259,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
 
     Attribute.extend('*', rateLimit);
-    Attribute.extend('invariantNonblockingValue', { notify: "always" });
+    Attribute.extend('invariantNonblockingValue', rateLimit);
     AttributeInfo.extend('*', rateLimit);
     DDClass.extend('attributes', rateLimit);
     NodeImpl.extend('type', rateLimit);

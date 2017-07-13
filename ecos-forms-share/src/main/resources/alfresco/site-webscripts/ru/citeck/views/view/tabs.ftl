@@ -23,7 +23,7 @@
 					<#if msg(tab.params.title)?has_content>${msg(tab.params.title)}<#else>${msg("tabs.tab.title")} ${tab_index}</#if>
 					<!-- ko with: group("${tabId}") -->
 						<!-- ko if: invalid -->
-							<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+							<i class="fa fa-exclamation-circle warning" aria-hidden="true"></i>
 						<!-- /ko -->
 					<!-- /ko -->
 				</li>

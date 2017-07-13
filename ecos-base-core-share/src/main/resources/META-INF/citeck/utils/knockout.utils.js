@@ -311,6 +311,7 @@ define(['lib/knockout'], function(ko) {
 				},
 				deferEvaluation: true
 			});
+
 			// export stuff:
 			result._class = valueClass;
 			result._value = value;
@@ -486,6 +487,7 @@ define(['lib/knockout'], function(ko) {
                         this[name] = isArray
                             ? koutils.onDemandObservable([], loadCallback, type) 
                             : koutils.onDemandObservable(null, loadCallback, type);
+
                         if(extenders['*']) this[name].extend(extenders['*']);
                         if(extenders[name]) this[name].extend(extenders[name]);
                         this[name].toString = function() { return name; }
@@ -501,7 +503,13 @@ define(['lib/knockout'], function(ko) {
                             owner: this,
                             deferEvaluation: true
                         }));
-                        this[name].loaded = _.constant(true);
+
+                        this[name].loaded = ko.observable(true);
+                        this[name].reload = _.bind(function() {
+                        	this.loaded(false);
+                        	koutils.subscribeOnce(this, function() { this.loaded(true); }, this);
+                        }, this[name])
+
                         if(extenders['*']) this[name].extend(extenders['*']);
                         if(extenders[name]) this[name].extend(extenders[name]);
                         this[name].toString = function() { return name; }
