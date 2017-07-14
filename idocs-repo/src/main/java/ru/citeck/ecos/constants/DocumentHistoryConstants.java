@@ -14,5 +14,8 @@ public class DocumentHistoryConstants {
     public static final AbstractMap.SimpleEntry<String, String> DOCUMENT_VERSION = new AbstractMap.SimpleEntry("event:documentVersion", "version");
     public static final AbstractMap.SimpleEntry<String, String> COMMENTS = new AbstractMap.SimpleEntry("event:taskComment", "comments");
     public static final AbstractMap.SimpleEntry<String, String> EVENT_TYPE = new AbstractMap.SimpleEntry<>("event:name", "eventType");
+    public static final AbstractMap.SimpleEntry<String, String> TASK_ROLE = new AbstractMap.SimpleEntry<>("event:taskRole", "taskRole");
+    public static final AbstractMap.SimpleEntry<String, String> TASK_OUTCOME = new AbstractMap.SimpleEntry<>("event:taskOutcome", "taskOutcome");
+    public static final AbstractMap.SimpleEntry<String, String> TASK_TYPE = new AbstractMap.SimpleEntry<>("event:taskType", "taskType");
 
 }

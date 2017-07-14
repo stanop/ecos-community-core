@@ -1,9 +1,11 @@
 package ru.citeck.ecos.webscripts.history;
 
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -67,6 +69,9 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     private NodeService nodeService;
 
     private HistoryGetService historyGetService;
+
+    @Autowired
+    private ServiceRegistry serviceRegistry;
 
     /**
      * Execute implementation
@@ -132,6 +137,19 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             attributesNode.put(DocumentHistoryConstants.DOCUMENT_VERSION.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_VERSION.getValue()));
             attributesNode.put(DocumentHistoryConstants.COMMENTS.getKey(), (String)historyRecordMap.get(DocumentHistoryConstants.COMMENTS.getValue()));
             attributesNode.put(DocumentHistoryConstants.EVENT_TYPE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue()));
+            attributesNode.put(DocumentHistoryConstants.TASK_ROLE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.TASK_ROLE.getValue()));
+            attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue())); // good
+            String taskType = (String) historyRecordMap.get(DocumentHistoryConstants.TASK_TYPE.getValue());
+            if (StringUtils.isNotEmpty(taskType)) {
+                QName taskTypeValue = QName.createQName(taskType);
+                if (taskTypeValue != null) {
+                    ObjectNode taskTypeNode = objectMapper.createObjectNode();
+                    taskTypeNode.put("fullQName", taskType.toString());
+                    taskTypeNode.put("shortQName", taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService()));
+                    attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
+                }
+
+            }
             /** User */
             NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(DocumentHistoryConstants.EVENT_INITIATOR.getValue()));
             if (userNodeRef != null) {

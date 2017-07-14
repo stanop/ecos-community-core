@@ -41,7 +41,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * Constants
      */
     private static final String[] KEYS= {
-            "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId"
+            "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
+            "taskRole", "taskOutcome", "taskType"
     };
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     private static final QName MODIFIER_PROPERTY = QName.createQName(ALFRESCO_NAMESPACE, "modifier");
@@ -51,6 +52,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final SimpleDateFormat importDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     private static final String SEND_NEW_RECORD_QUEUE = "send_new_record_queue";
     private static final String SEND_NEW_RECORDS_QUEUE = "send_new_records_queue";
+    private static final String DELETE_RECORDS_BY_DOCUMENT_QUEUE = "delete_records_by_document_queue";
     private static final String DEFAULT_RESULT_CSV_FOLDER = "/citeck/ecos/history_record_csv/";
 
     private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
@@ -67,6 +69,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * Path constants
      */
     private static final String GET_BY_DOCUMENT_ID_PATH = "/history_records/by_document_id/";
+    private static final String DELETE_BY_DOCUMENT_ID_PATH = "/history_records/by_document_id/";
     private static final String INSERT_RECORD_PATH = "/history_records/insert_record";
     private static final String INSERT_RECORDS_PATH = "/history_records/insert_records";
 
@@ -150,6 +153,12 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                     nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_COMMENT));
             entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
                     importDateFormat.format((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)));
+            entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
+                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
+            entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
+                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
+            QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
+            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.toString() : "");
             /** Username and user id */
             String username = (String) nodeService.getProperty(eventRef, MODIFIER_PROPERTY);
             NodeRef userNodeRef = personService.getPerson(username);
@@ -222,18 +231,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             throw new RuntimeException(e);
         }
     }
-    /**
-     * Check - use active mq for history records sending
-     * @return Check result
-     */
-    private Boolean useActiveMq() {
-        String propertyValue = properties.getProperty(USE_ACTIVE_MQ);
-        if (propertyValue == null) {
-            return false;
-        } else {
-            return Boolean.valueOf(propertyValue);
-        }
-    }
 
     /**
      * Update document history status
@@ -261,6 +258,31 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     }
 
+    /**
+     * Remove history events by document
+     * @param documentNodeRef Document node reference
+     */
+    @Override
+    public void removeEventsByDocument(NodeRef documentNodeRef) {
+        if (useActiveMq()) {
+            rabbitTemplate.convertAndSend(DELETE_RECORDS_BY_DOCUMENT_QUEUE, documentNodeRef.getId());
+        } else {
+            restTemplate.delete(properties.getProperty(HISTORY_SERVICE_HOST) + DELETE_BY_DOCUMENT_ID_PATH + documentNodeRef.getId());
+        }
+    }
+
+    /**
+     * Check - use active mq for history records sending
+     * @return Check result
+     */
+    private Boolean useActiveMq() {
+        String propertyValue = properties.getProperty(USE_ACTIVE_MQ);
+        if (propertyValue == null) {
+            return false;
+        } else {
+            return Boolean.valueOf(propertyValue);
+        }
+    }
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

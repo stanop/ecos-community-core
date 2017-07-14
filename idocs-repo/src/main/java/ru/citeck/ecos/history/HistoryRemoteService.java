@@ -36,4 +36,10 @@ public interface HistoryRemoteService {
      */
     void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus);
 
+    /**
+     * Remove history events by document
+     * @param documentNodeRef Document node reference
+     */
+    void removeEventsByDocument(NodeRef documentNodeRef);
+
 }

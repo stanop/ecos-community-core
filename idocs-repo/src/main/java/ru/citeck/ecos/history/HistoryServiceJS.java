@@ -22,6 +22,7 @@ import org.alfresco.repo.dictionary.DictionaryNamespaceComponent;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.repo.processor.BaseProcessorExtension;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.mozilla.javascript.ScriptableObject;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
@@ -63,4 +64,10 @@ public class HistoryServiceJS extends BaseProcessorExtension {
         QName historyPropQName = QName.resolveToQName(namespaceService, historyProp);
         historyService.addHistoricalProperty(node.getNodeRef(), sourcePropQName, historyPropQName);
     }
+
+    public void removeEventsByDocument(ScriptNode node) {
+        NodeRef documentRef = node.getNodeRef();
+        historyService.removeEventsByDocument(documentRef);
+    }
+
 }

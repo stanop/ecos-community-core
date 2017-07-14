@@ -67,6 +67,9 @@ public class HistoryService {
     private static final String CREATION_TIME = "creationTime";
     private static final String USERNAME = "username";
     private static final String USER_ID = "userId";
+    private static final String TASK_ROLE = "taskRole";
+    private static final String TASK_OUTCOME = "taskOutcome";
+    private static final String TASK_TYPE = "taskType";
 
     /**
      * Date-time format
@@ -200,6 +203,10 @@ public class HistoryService {
             requestParams.put(HISTORY_EVENT_ID, historyEvent.getId());
             requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
             requestParams.put(COMMENTS, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_COMMENT));
+            requestParams.put(TASK_ROLE, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_ROLE));
+            requestParams.put(TASK_OUTCOME, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_OUTCOME));
+            QName taskType = (QName) nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_TYPE);
+            requestParams.put(TASK_TYPE, taskType != null ? taskType.toString() : "");
             if (isEnabledRemoteHistoryService()) {
                 historyRemoteService.sendHistoryEventToRemoteService(requestParams);
                 nodeService.deleteNode(historyEvent);
@@ -209,6 +216,18 @@ public class HistoryService {
 
             return historyEvent;
         });
+    }
+
+    public void removeEventsByDocument(NodeRef documentRef) {
+        if (isEnabledRemoteHistoryService()) {
+            historyRemoteService.removeEventsByDocument(documentRef);
+        } else {
+            List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
+            for (AssociationRef associationRef : associations) {
+                NodeRef eventRef = associationRef.getSourceRef();
+                nodeService.deleteNode(eventRef);
+            }
+        }
     }
 
     /**
