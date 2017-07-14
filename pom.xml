@@ -89,8 +89,13 @@
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-rabbit</artifactId>
             <version>1.4.5.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
 
         <!-- The main Alfresco Repo dependency for compiling Java code in src/main/java -->
         <dependency>
@@ -197,6 +202,12 @@
                  NOTE: It defaults to the latest version this SDK pom has been tested with,
                        but alfresco version can/should be overridden in your project's pom
             -->
+            <dependency>
+                <groupId>com.google</groupId>
+                <artifactId>guava</artifactId>
+                <version>11.0.2</version>
+                <type>jar</type>
+            </dependency>
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>alfresco-platform-distribution</artifactId>
