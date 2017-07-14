@@ -191,6 +191,12 @@
                        but alfresco version can/should be overridden in your project's pom
             -->
             <dependency>
+                <groupId>com.google</groupId>
+                <artifactId>guava</artifactId>
+                <version>11.0.2</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>alfresco-platform-distribution</artifactId>
                 <version>${alfresco.platform.version}</version>
