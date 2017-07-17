@@ -154,7 +154,16 @@ public interface InvariantService {
      * @param nodeRef
      */
     public void executeInvariants(NodeRef nodeRef);
-    
+
+    /**
+     * Execute all matching invariants for the specified node as for new node.
+     * It considers 'value' and 'default' invariants to set attribute values
+     *   and 'valid' invariant to validate node state.
+     *
+     * @param nodeRef
+     */
+    void executeInvariantsForNewNode(NodeRef nodeRef);
+
     /**
      * Execute specified invariants for the specified node.
      * It considers 'value' and 'default' invariants to set attribute values 
