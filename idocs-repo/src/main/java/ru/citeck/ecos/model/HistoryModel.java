@@ -29,6 +29,7 @@ public final class HistoryModel {
     public static final String MODEL_PREFIX = "history";
 
     // namespace
+    public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     public static final String HISTORY_NAMESPACE = "http://www.citeck.ru/model/history/1.0";
     public static final String EVENT_NAMESPACE = "http://www.citeck.ru/model/event/1.0";
 
@@ -72,4 +73,6 @@ public final class HistoryModel {
     public static final QName ASSOC_DOCUMENT = QName.createQName(EVENT_NAMESPACE, "document");
     public static final QName ASSOC_CASE = QName.createQName(EVENT_NAMESPACE, "case");
     public static final QName ASSOC_EVENT_CONTAINED = QName.createQName(HISTORY_NAMESPACE, "eventContained");
+
+    public static final QName MODIFIER_PROPERTY = QName.createQName(ALFRESCO_NAMESPACE, "modifier");
 }
