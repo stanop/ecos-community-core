@@ -134,6 +134,12 @@ class InvariantServiceImpl implements InvariantService {
     }
 
     @Override
+    public void executeInvariantsForNewNode(NodeRef nodeRef) {
+        List<InvariantDefinition> invariants = this.getInvariants(nodeRef);
+        executeInvariantsForNewNode(nodeRef, invariants, null);
+    }
+
+    @Override
     public void executeInvariants(NodeRef nodeRef, List<InvariantDefinition> invariants, Map<String, Object> model) {
         runtime.executeInvariants(nodeRef, invariants, model, false);
     }
