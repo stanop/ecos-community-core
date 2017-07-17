@@ -388,7 +388,17 @@ ko.components.register("datetime", {
 
         this.textValue = ko.pureComputed({
             read: function() {
-                return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
+                if (self.value() instanceof Date) {
+                    var date = self.value();
+                    date.setFullYear(date.getUTCFullYear());
+                    date.setMonth(date.getUTCMonth());
+                    date.setDate(date.getUTCDate());
+                    date.setHours(date.getUTCHours());
+                    date.setMinutes(date.getUTCMinutes());
+
+                    return moment(date).format("YYYY-MM-DD HH:mm:ss");
+                }
+                return null;
             },
             write: function(newValue) {
                 if (newValue) {                   
@@ -398,6 +408,12 @@ ko.components.register("datetime", {
 
                         var newDate = new Date(timeArray.join("T"));
                         if (newDate != "Invalid Date") {
+                            newDate.setFullYear(newDate.getUTCFullYear());
+                            newDate.setMonth(newDate.getUTCMonth());
+                            newDate.setDate(newDate.getUTCDate());
+                            newDate.setHours(newDate.getUTCHours());
+                            newDate.setMinutes(newDate.getUTCMinutes());
+
                             self.value(newDate);
                             return;
                         }
