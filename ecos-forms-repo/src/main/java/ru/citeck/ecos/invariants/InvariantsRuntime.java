@@ -173,8 +173,8 @@ class InvariantsRuntime {
             for(RuntimeAttribute attribute : attributes.values()) {
                 if(attribute.isRelevant()) {
                     boolean valueCanBeUpdated = !attribute.features.get(Feature.VALUE).invariants.isEmpty() 
-                            || !attribute.persisted && !attribute.features.get(Feature.DEFAULT).invariants.isEmpty()
-                            && !attribute.features.get(Feature.NONBLOCKING_VALUE).invariants.isEmpty();
+                            || (!attribute.persisted && !attribute.features.get(Feature.DEFAULT).invariants.isEmpty())
+                            || !attribute.features.get(Feature.NONBLOCKING_VALUE).invariants.isEmpty();
                     
                     if(valueCanBeUpdated)
                         attributeValues.put(attribute.name, attribute.getValue());
