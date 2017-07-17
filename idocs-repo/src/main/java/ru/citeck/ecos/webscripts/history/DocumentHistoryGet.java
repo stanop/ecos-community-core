@@ -18,6 +18,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.history.impl.HistoryGetService;
+import ru.citeck.ecos.model.IdocsModel;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -42,8 +43,6 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     /** Constants */
     public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
-    private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
-    private static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(DOC_NAMESPACE, "useNewHistory");
     public static final String HISTORY_PROPERTY_NAME = "history";
     public static final String ATTRIBUTES_PROPERTY_NAME = "attributes";
 
@@ -85,7 +84,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         String nodeRefUuid = req.getParameter(DOCUMENT_NODE_REF);
         /** Check history event status */
         NodeRef documentRef = new NodeRef(nodeRefUuid);
-        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, DOCUMENT_USE_NEW_HISTORY);
+        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
         if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService()) {
             historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
         }

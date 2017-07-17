@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.IdocsModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,8 +45,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
             "taskRole", "taskOutcome", "taskType"
     };
-    private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
-    private static final QName MODIFIER_PROPERTY = QName.createQName(ALFRESCO_NAMESPACE, "modifier");
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
     private static final String DELIMETER = ";";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -54,9 +53,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String SEND_NEW_RECORDS_QUEUE = "send_new_records_queue";
     private static final String DELETE_RECORDS_BY_DOCUMENT_QUEUE = "delete_records_by_document_queue";
     private static final String DEFAULT_RESULT_CSV_FOLDER = "/citeck/ecos/history_record_csv/";
-
-    private static final String DOC_NAMESPACE = "http://www.citeck.ru/model/content/idocs/1.0";
-    private static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(DOC_NAMESPACE, "useNewHistory");
 
     /**
      * Use active mq
@@ -160,7 +156,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
             entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.toString() : "");
             /** Username and user id */
-            String username = (String) nodeService.getProperty(eventRef, MODIFIER_PROPERTY);
+            String username = (String) nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY);
             NodeRef userNodeRef = personService.getPerson(username);
             entryMap.put(USER_ID, userNodeRef != null ? userNodeRef.getId() : null);
             entryMap.put(USERNAME, username);
@@ -221,14 +217,19 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         String currentDate = dateFormat.format(new Date());
         File csvFile = new File(properties.getProperty(CSV_RESULT_FOLDER, DEFAULT_RESULT_CSV_FOLDER)
                 + HISTORY_RECORD_FILE_NAME + currentDate + ".csv");
+        PrintWriter printWriter = null;
         try {
             csvFile.createNewFile();
-            PrintWriter printWriter = new PrintWriter(csvFile);
+            printWriter = new PrintWriter(csvFile);
             printWriter.print(csvResult.toString());
             printWriter.flush();
         } catch (IOException e) {
             logger.error(e);
             throw new RuntimeException(e);
+        } finally {
+            if (printWriter != null) {
+                printWriter.close();
+            }
         }
     }
 
@@ -248,7 +249,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         txnHelper.doInTransaction(() -> {
             try {
                 if (documentNodeRef != null) {
-                    nodeService.setProperty(documentNodeRef, DOCUMENT_USE_NEW_HISTORY, newStatus);
+                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
                 }
             } catch (Exception e) {
                 logger.error("Unexpected error", e);

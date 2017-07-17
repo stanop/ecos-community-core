@@ -133,15 +133,21 @@ public class HistoryService {
     }
 
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
+        if (isEnabledRemoteHistoryService()) {
+            sendHistoryEventToRemoteService(properties);
+            return null;
+        } else {
+            return persistEventToAlfresco(type, properties);
+        }
+    }
+
+    private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties) {
         return AuthenticationUtil.runAsSystem(() -> {
-            Map<String, Object> requestParams = new HashMap();
             NodeRef initiator = getInitiator(properties);
             properties.remove(HistoryModel.ASSOC_INITIATOR);
             if (initiator == null) {
                 properties.put(HistoryModel.PROP_NAME, UNKNOWN_USER);
-                requestParams.put(USER_ID, UNKNOWN_USER);
             } else {
-                requestParams.put(USER_ID, initiator.getId());
             }
             NodeRef document = getDocument(properties);
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
@@ -156,7 +162,6 @@ public class HistoryService {
                 now.setTime(now.getTime() - 5000);
             }
             properties.put(HistoryModel.PROP_DATE, now);
-            requestParams.put(CREATION_TIME, dateFormat.format(now));
             QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
 
             QName assocType;
@@ -196,26 +201,50 @@ public class HistoryService {
                         nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
                     }
                 }
-                requestParams.put(DOCUMENT_ID, document.getId());
-                requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
-                requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
-            }
-            requestParams.put(HISTORY_EVENT_ID, historyEvent.getId());
-            requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
-            requestParams.put(COMMENTS, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_COMMENT));
-            requestParams.put(TASK_ROLE, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_ROLE));
-            requestParams.put(TASK_OUTCOME, nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_OUTCOME));
-            QName taskType = (QName) nodeService.getProperty(historyEvent, HistoryModel.PROP_TASK_TYPE);
-            requestParams.put(TASK_TYPE, taskType != null ? taskType.toString() : "");
-            if (isEnabledRemoteHistoryService()) {
-                historyRemoteService.sendHistoryEventToRemoteService(requestParams);
-                nodeService.deleteNode(historyEvent);
-            } else {
-                historyRemoteService.updateDocumentHistoryStatus(document, false);
-            }
 
+
+            }
+            historyRemoteService.updateDocumentHistoryStatus(document, false);
             return historyEvent;
         });
+    }
+
+    private void sendHistoryEventToRemoteService(final Map<QName, Serializable> properties) {
+        Map<String, Object> requestParams = new HashMap();
+        /** Document */
+        NodeRef document = getDocument(properties);
+        if (document == null) {
+            return;
+        }
+        requestParams.put(DOCUMENT_ID, document.getId());
+        requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
+        requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
+        /** Initiator */
+        NodeRef initiator = getInitiator(properties);
+        if (initiator == null) {
+            requestParams.put(USER_ID, UNKNOWN_USER);
+        } else {
+            requestParams.put(USER_ID, initiator.getId());
+        }
+        /** Event time */
+        Date now = new Date();
+        if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
+            now.setTime(now.getTime() + 1000);
+        }
+        if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
+                || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
+            now.setTime(now.getTime() - 5000);
+        }
+        requestParams.put(CREATION_TIME, dateFormat.format(now));
+        /** Event properties */
+        requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
+        requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
+        requestParams.put(COMMENTS, properties.get(HistoryModel.PROP_TASK_COMMENT));
+        requestParams.put(TASK_ROLE, properties.get(HistoryModel.PROP_TASK_ROLE));
+        requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
+        QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);
+        requestParams.put(TASK_TYPE, taskType != null ? taskType.toString() : "");
+        historyRemoteService.sendHistoryEventToRemoteService(requestParams);
     }
 
     public void removeEventsByDocument(NodeRef documentRef) {
