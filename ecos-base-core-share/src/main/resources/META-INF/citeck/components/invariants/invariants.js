@@ -35,6 +35,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         GroupedInvariantSet = koclass('invariants.GroupedInvariantSet', InvariantSet),
         ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
         MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
+        SingleClassInvariantSet = koclass('invariants.SingleClassInvariantSet', InvariantSet),
         AttributeInvariantSet = koclass('invariants.AttributeInvariantSet', InvariantSet),
         MultiAttributeInvariantSet = koclass('invariants.MultiAttributeInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
@@ -235,6 +236,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         }
 
     };
+
 
     var JournalService = koutils.koclass('journals.JournalsService')
         .property('journalTypes', [o])
@@ -442,6 +444,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         return undefined;
     }
 
+    // TODO:
+    // - cache for default invariants
+
     InvariantScope
         .property('class', s)
         .property('classKind', s)
@@ -508,20 +513,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return invariant.scope["class"] || COMMON_INVARIANTS_KEY;
                 });
             }
-        }),
-        attributeInvariantsLoader = new Citeck.utils.BulkLoader({
-            url: Alfresco.constants.PROXY_URI + "citeck/invariants",
-            method: "GET",
-            emptyFn: function() { return { attributes: [] } },
-            addFn: function(query, attributeName) {
-                if (attributeName != COMMON_INVARIANTS_KEY) 
-                    query.attributes.push(attributeName);
-            },
-            getFn: function(response) {
-                return _.groupBy(response.json.invariants, function(invariant) {
-                    return invariant.scope["class"] || COMMON_INVARIANTS_KEY;
-                });
-            } 
         });
 
     InvariantSet
@@ -601,6 +592,76 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             });
 
             return _.flatten(_.values(priorityGroups));
+        })
+        ;
+
+    SingleClassInvariantSet
+        .constructor([ Object ], function(model) { this.setModel(model); }, true)
+
+        .key('className', s)
+        .property('nodeRef', s)
+        .property('_invariants', [ Invariant ])
+        .property('attributeNames', s)
+
+        .computed('invariants', function() {
+            var className = this.className(),
+                invariants = this._invariants();
+            
+            if (_.any(invariants, function(inv) {
+                return inv.toString().indexOf("invariats.Invariant") == -1;
+            })) { return []; }
+
+            var priorityGroups = _.groupBy(invariants, function(invariant) {
+                if (invariant.isFinal()) return 1;
+
+                if (invariant.attributeScopeKind().match(/_type$/)) return 2;
+
+                var priorities = { "common": 10, "module": 11, "extend": 12, "custom": 13, "view-scoped": 14 },
+                    priority = priorities[invariant.priority()];
+                if (priority) return priority;
+
+                var classScope = invariant.classScope();
+                if (classNames.indexOf(classScope) != -1)
+                    return 100 + classNames.indexOf(classScope);
+
+                return 1000;
+            });
+
+            return _.flatten(_.values(priorityGroups));
+        })
+
+        // .load('_invariants', koutils.bulkLoad(invariantsLoader, "className", "invariants"))
+        // .load("_invariants", function(invariantSet) {
+        //     Alfresco.util.Ajax.jsonGet({
+        //         url: Alfresco.constants.PROXY_URI + "citeck/invariants?aspects=" + this.className(),
+        //         successCallback: {
+        //             scope: this,
+        //             fn: function (response) {
+        //                 // var invariants = _.map(response.json.invariants, function(invariant) {
+        //                 //     return new Invariant(invariant);
+        //                 // });
+        //                 invariantSet._invariants(response.json.invariants);
+        //             }
+        //         }
+        //     });
+        // })
+
+        .load("_invariants", function(invariantSet) {
+            var URLParams = "?attributes=" + invariantSet.attributeNames();
+            if (invariantSet.nodeRef()) { URLParams += "&nodeRef=" + invariantSet.nodeRef(); }
+            else { URLParams += "&type=" + invariantSet.type(); }
+
+            Alfresco.util.Ajax.jsonGet({
+                url: Alfresco.constants.PROXY_URI + "citeck/invariants" + URLParams,
+                successCallback: {
+                    scope: invariantSet,
+                    fn: function (response) {
+                        this._invariants(_.map(response.json.invariants, function(invariant) {
+                            return new Invariant(invariant);
+                        }));
+                    }
+                }
+            });
         })
         ;
 
@@ -1422,6 +1483,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('groups', [ Group ])
+        .property('viewAttributeNames', [ s ])
 
         .shortcut('typeShort', 'type')
 
@@ -1432,14 +1494,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return qnameType.fullQName();
         })
         .computed('invariantSet', function() {
-            // return this.resolve('runtime.invariantSet') || new MultiAttributeInvariantSet({
-            //     attributeNames: _Object.keys(this._attributes()).join(','),
-            //     nodeRef: this.nodeRef(),
-            //     type: this.type()
-            // }) || new MultiClassInvariantSet(this.classNames().concat(COMMON_INVARIANTS_KEY).join(','));
-            
-            return this.resolve('runtime.invariantSet', null) || 
-                new MultiClassInvariantSet([this.type()].concat(COMMON_INVARIANTS_KEY).join(","));
+            var runtimeInvariantSet = this.resolve('runtime.invariantSet', null);
+
+            if (runtimeInvariantSet) {
+                return runtimeInvariantSet;
+            } else if (this.type.loaded()) {
+                return new SingleClassInvariantSet({ 
+                    className: this.type(),
+                    nodeRef: this.nodeRef(),
+                    attributeNames: Object.keys(this._attributes()).join(",") 
+                });
+            }
+
+            // return this.resolve('runtime.invariantSet', null) || new MultiClassInvariantSet([this.type()].concat(COMMON_INVARIANTS_KEY).join(","));
+
+            return null;
         })
         .computed('inViewMode', function() {
             return this.resolve('defaultModel.view.mode') == "view";
@@ -1454,9 +1523,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .computed('definedAttributeNames', function() {
-            var type = this.type();
-            if (type) _.invoke(new DDClass(type).attributes(), 'shortQName')
+            _.invoke(new DDClass(this.type()).attributes(), 'shortQName')
         })
+
         .computed('valid', function() {
             return _.all(this.attributes(), function(attr) {
                 return attr.valid();
@@ -1522,6 +1591,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             };
         })
 
+        .load('viewAttributeNames', function(impl) {
+            var URLParams = "?";
+            if (this.nodeRef()) URLParams += "nodeRef=" + this.nodeRef();
+            else if (this.type()) URLParams += "type=" + this.type();
+
+            if (/\?(nodeRef|type)=/.test(URLParams)) {
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + "/citeck/invariants/view-attributes" + URLParams,
+                    successCallback: {
+                        scope: this,
+                        fn: function (response) {
+                            var attributes = eval("(" + response.serverResponse.responseText + ")").attributes;
+                            this.viewAttributeNames(attributes);
+                        }
+                    }
+                });
+            }
+        })
         .load('groups', function(impl) { impl.groups([]) })
         .load('*', function(impl) {
             if(impl.isPersisted()) {
@@ -1639,10 +1726,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 // first load forced attributes
                 _.each(this.forcedAttributes(), processAttributeName);
 
-                // second load defined attributes
+                // second load viewScope attributes
                 if (!this.runtime() || this.runtime().loadAttributesMethod() == "default") {
-                    _.each(this.definedAttributeNames(), processAttributeName);
+                    _.each(this.viewAttributeNames(), processAttributeName);
                 }
+
+                // third load defined attributes
+                // _.each(this.definedAttributeNames(), processAttributeName);
 
                 // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
                 //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
@@ -2295,6 +2385,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     NodeImpl.extend('attributes', rateLimit);
 
     MultiClassInvariantSet.extend('invariants', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
+    SingleClassInvariantSet.extend('invariants', rateLimit)
 
     // create common attributes statically:
     // _.each({

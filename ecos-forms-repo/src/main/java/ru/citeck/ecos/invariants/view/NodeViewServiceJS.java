@@ -19,24 +19,38 @@
 package ru.citeck.ecos.invariants.view;
 
 import org.alfresco.repo.jscript.ScriptNode;
-
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 public class NodeViewServiceJS extends AlfrescoScopableProcessorExtension {
 
     private NodeViewService impl;
+
     public boolean hasNodeView(String type, String id) {
         return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-                .className(type)
-                .id(id)
-                .build());
+            .className(type)
+            .id(id)
+            .build());
     }
     
     public boolean hasNodeView(ScriptNode node, String id) {
         return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-                .className(node.getTypeShort())
-                .id(id)
-                .build());
+            .className(node.getTypeShort())
+            .id(id)
+            .build());
+    }
+
+    public NodeView getNodeView(String className, String id) {
+        return impl.getNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+            .className(className)
+            .id(id)
+            .build());
+    }
+
+    public NodeView getNodeView(ScriptNode node, String id) {
+        return impl.getNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+            .className(node.getTypeShort())
+            .id(id)
+            .build());
     }
     
     public void setImpl(NodeViewService impl) {

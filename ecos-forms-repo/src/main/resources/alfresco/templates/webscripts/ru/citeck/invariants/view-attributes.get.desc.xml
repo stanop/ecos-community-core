@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>Defined attributes on view</shortname>
+	<description>Get attribute names, that are defined on view</description>
+	<url>/citeck/invariants/view-attributes?type={type}&amp;viewId={id}</url>
+	<url>/citeck/invariants/view-attributes?nodeRef={nodeRef}&amp;viewId={id}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>
