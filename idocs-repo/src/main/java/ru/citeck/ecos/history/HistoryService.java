@@ -147,7 +147,6 @@ public class HistoryService {
             properties.remove(HistoryModel.ASSOC_INITIATOR);
             if (initiator == null) {
                 properties.put(HistoryModel.PROP_NAME, UNKNOWN_USER);
-            } else {
             }
             NodeRef document = getDocument(properties);
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
