@@ -1,6 +1,7 @@
 package ru.citeck.ecos.journals.group.evaluator;
 
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
@@ -29,14 +30,15 @@ public class CompleteTaskByMirrorEvaluator extends GroupActionEvaluator {
 
     @Override
     public void invoke(NodeRef mirrorRef, Map<String, String> params) {
-        String taskId = (String) nodeService.getProperty(mirrorRef, WorkflowModel.PROP_TASK_ID);
-        workflowService.endTask(taskId, params.get(TRANSITION_ID));
+        String taskId = String.valueOf(nodeService.getProperty(mirrorRef, WorkflowModel.PROP_TASK_ID));
+        String globalTaskId = ActivitiConstants.ENGINE_ID + "$" + taskId;
+        workflowService.endTask(globalTaskId, params.get(TRANSITION_ID));
     }
 
     @Override
     public boolean isApplicable(NodeRef mirrorRef, Map<String, String> params) {
 
-        String taskId = (String) nodeService.getProperty(mirrorRef, WorkflowModel.PROP_TASK_ID);
+        Long taskId = (Long) nodeService.getProperty(mirrorRef, WorkflowModel.PROP_TASK_ID);
 
         if (taskId == null) {
             return false;

@@ -27,6 +27,7 @@
     <bean id="journals.groupActionServiceJS" class="ru.citeck.ecos.journals.group.GroupActionServiceJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="groupActionService" />
         <property name="groupActionService" ref="journals.groupActionService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
     <bean id="journals.groupActionEvaluator" class="ru.citeck.ecos.journals.group.GroupActionEvaluator"
