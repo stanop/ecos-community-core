@@ -62,6 +62,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GroupAction }
+     * 
+     */
+    public GroupAction createGroupAction() {
+        return new GroupAction();
+    }
+
+    /**
      * Create an instance of {@link Header }
      * 
      */

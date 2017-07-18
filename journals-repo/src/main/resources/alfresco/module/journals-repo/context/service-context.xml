@@ -21,4 +21,20 @@
         </property>
     </bean>-->
 
+    <bean id="journals.groupActionService" class="ru.citeck.ecos.journals.group.GroupActionServiceImpl">
+    </bean>
+
+    <bean id="journals.groupActionServiceJS" class="ru.citeck.ecos.journals.group.GroupActionServiceJS" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="groupActionService" />
+        <property name="groupActionService" ref="journals.groupActionService" />
+    </bean>
+
+    <bean id="journals.groupActionEvaluator" class="ru.citeck.ecos.journals.group.GroupActionEvaluator"
+                                             abstract="true" init-method="init">
+        <property name="groupActionService" ref="journals.groupActionService" />
+        <property name="namespaceService" ref="namespaceService" />
+        <property name="workflowService" ref="WorkflowService" />
+        <property name="nodeService" ref="nodeService" />
+    </bean>
+
 </beans>

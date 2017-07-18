@@ -3,6 +3,7 @@
 {
     "journalType": "${journalType.id}",
     "settings": <@renderJournalOptions journalType.options />,
+    "groupActions": <@renderJournalGroupAction journalType.getGroupActions() />,
     "attributes": [
         <#list journalType.attributes as attribute>
         {
@@ -19,6 +20,22 @@
     ]
 }
 </#escape>
+</#macro>
+
+<#macro renderJournalGroupAction groupActions>
+    <#escape x as jsonUtils.encodeJSONString(x)>
+    [
+        <#list groupActions as action>
+        {
+        "id": "${action.getId()}",
+        "label": "${action.getTitle()}",
+        "func": "onGroupAction",
+        "isDoclib": false,
+        "settings": <@renderJournalOptions action.getOptions() />
+        }<#if action_has_next>,</#if>
+        </#list>
+    ]
+    </#escape>
 </#macro>
 
 <#macro renderJournalBatchEdit batchEdit>

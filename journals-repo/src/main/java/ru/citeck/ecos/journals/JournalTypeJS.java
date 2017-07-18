@@ -95,5 +95,9 @@ public class JournalTypeJS {
     public List<JournalBatchEdit> getBatchEdit(String attributeKey) {
         return impl.getBatchEdit(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
     }
+
+    public List<JournalGroupAction> getGroupActions() {
+        return impl.getGroupActions();
+    }
     
 }

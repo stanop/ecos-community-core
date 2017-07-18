@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Group action</shortname>
+    <description>Execute action for group of nodes</description>
+    <url>/api/journals/group-action</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+</webscript>

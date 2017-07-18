@@ -31,16 +31,14 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
-import ru.citeck.ecos.journals.xml.BatchEdit;
-import ru.citeck.ecos.journals.xml.Header;
-import ru.citeck.ecos.journals.xml.Journal;
-import ru.citeck.ecos.journals.xml.Option;
+import ru.citeck.ecos.journals.xml.*;
 
 class JournalTypeImpl implements JournalType {
 
     private final String id;
     private final Map<String, String> options;
     private final List<QName> attributes;
+    private final List<JournalGroupAction> groupActions;
     private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
     private final Map<QName, Map<String, String>> attributeOptions;
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
@@ -49,6 +47,7 @@ class JournalTypeImpl implements JournalType {
 
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
+        this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
         List<Header> headers = journal.getHeaders().getHeader();
         List<QName> allAttributes = new ArrayList<>(headers.size());
         batchEdit = new HashMap<>();
@@ -167,6 +166,17 @@ class JournalTypeImpl implements JournalType {
         return result;
     }
 
+    @Override
+    public List<JournalGroupAction> getGroupActions() {
+        List<JournalGroupAction> result = new ArrayList<>(groupActions.size());
+        for (JournalGroupAction action : groupActions) {
+            if (action.getEvaluator().evaluate()) {
+                result.add(action);
+            }
+        }
+        return result;
+    }
+
     private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
         List<QName> result = new LinkedList<>();
         for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i+1)) {
@@ -181,12 +191,22 @@ class JournalTypeImpl implements JournalType {
     }
 
     private static Map<String, String> getOptions(List<Option> options) {
-        if(options == null) return Collections.emptyMap();
+        if (options == null) return Collections.emptyMap();
         Map<String, String> optionMap = new HashMap<>(options.size());
-        for(Option option : options) {
+        for (Option option : options) {
             optionMap.put(option.getName(), option.getValue().trim());
         }
         return optionMap;
     }
 
+    private static List<JournalGroupAction> getGroupActions(Journal journal, ServiceRegistry serviceRegistry) {
+        List<JournalGroupAction> result = new ArrayList<>();
+        if (journal.getGroupActions() != null) {
+            List<GroupAction> rawActions = journal.getGroupActions().getAction();
+            for (GroupAction action : rawActions) {
+                result.add(new JournalGroupAction(action, journal.getId(), serviceRegistry));
+            }
+        }
+        return result;
+    }
 }

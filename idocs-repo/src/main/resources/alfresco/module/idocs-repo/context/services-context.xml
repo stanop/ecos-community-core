@@ -587,4 +587,9 @@
     <bean id="cacheManager" class="ru.citeck.ecos.cache.EhcacheConfigurationManager" init-method="init"
           destroy-method="destroy"/>
 
+	<bean id="journals.group.action.CompleteTaskByMirror"
+		  class="ru.citeck.ecos.journals.group.evaluator.CompleteTaskByMirrorEvaluator"
+		  parent="journals.groupActionEvaluator">
+	</bean>
+
 </beans>

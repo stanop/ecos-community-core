@@ -25,10 +25,26 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  
+
+  <xs:complexType name="groupAction">
+    <xs:sequence>
+      <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="evaluator" type="j:evaluator" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="title" type="xs:string" use="required" />
+  </xs:complexType>
+
   <xs:complexType name="journal">
     <xs:sequence>
       <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="group-actions" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="action" type="j:groupAction" minOccurs="1" maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="headers">
         <xs:complexType>
           <xs:sequence>

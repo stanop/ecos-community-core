@@ -55,5 +55,7 @@ public interface JournalType {
     public boolean isAttributeGroupable(QName attributeKey);
 
     public List<JournalBatchEdit> getBatchEdit(QName attributeKey);
+
+    public List<JournalGroupAction> getGroupActions();
     
 }
