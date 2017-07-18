@@ -1,8 +1,8 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
-	view: [ 
-		<@renderElement view /> 
-	]
+	<#list views?keys as key>
+		"${key}": [ <@renderElement views[key] /> ]<#if key_has_next>,</#if>
+	</#list>
 }
 </#escape>
 
