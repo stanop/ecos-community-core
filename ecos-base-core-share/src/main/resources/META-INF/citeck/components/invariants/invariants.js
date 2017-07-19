@@ -1492,15 +1492,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .computed('invariantSet', function() {
             var runtimeInvariantSet = this.resolve('runtime.invariantSet', null);
+            if (runtimeInvariantSet) { return runtimeInvariantSet; } 
+            else if (this.type.loaded()) {
+                var validAttributeNames = this.withoutView() ? this.definedAttributeNames() : this.viewAttributeNames();
 
-            if (runtimeInvariantSet) {
-                return runtimeInvariantSet;
-            } else if (this.type.loaded()) {
-                return new SingleClassInvariantSet({ 
-                    className: this.type(),
-                    nodeRef: this.nodeRef(),
-                    attributeNames: Object.keys(this._attributes()).join(",") 
-                });
+                if (validAttributeNames && validAttributeNames.length > 0) {
+                    return new SingleClassInvariantSet({ 
+                        className: this.type(),
+                        nodeRef: this.nodeRef(),
+                        attributeNames: validAttributeNames.join(",") 
+                    });
+                }
             }
 
             // return this.resolve('runtime.invariantSet', null) || 
@@ -1595,13 +1597,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this.viewAttributeNames.loaded()) {
                 if (impl.nodeRef.loaded() && impl.nodeRef()) {
                     viewAttributeNamesByNodeRefLoader.load(impl.nodeRef(), function(nodeRef, attributes) {
-                        if (attributes && attributes.length) impl.viewAttributeNames(attributes);
-                        else impl.withoutView(true);
+                        if (attributes && attributes.length > 0) impl.viewAttributeNames(attributes);
+                        else if (attributes && attributes.length == 0) impl.withoutView(true);
                     });
                 } else if (impl.type.loaded() && impl.type()) {
                     viewAttributeNamesByTypeLoader.load(impl.type(), function(type, attributes) {
-                        if (attributes && attributes.length) impl.viewAttributeNames(attributes);
-                        else impl.withoutView(true);
+                        if (attributes && attributes.length > 0) impl.viewAttributeNames(attributes);
+                        else if (attributes && attributes.length == 0) impl.withoutView(true);
                     });
                 }
             }
@@ -1715,14 +1717,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 // first load forced attributes
                 _.each(this.forcedAttributes(), processAttributeName);
 
-                // second load viewScope attributes
+                // second load defined attributes
                 if (!this.runtime() || this.runtime().loadAttributesMethod() == "default") {
-                    _.each(this.viewAttributeNames(), processAttributeName);
+                    _.each(this.definedAttributeNames(), processAttributeName);
+                   
+                    // TODO: 
+                    // use only attributes defined on view. 
+                    // use mapping cells on journal
 
-                    if (this.withoutView()) {
-                        _.each(this.definedAttributeNames(), processAttributeName);
-                    }
+                    // _.each(this.viewAttributeNames(), processAttributeName);
+                    // if (this.withoutView()) {
+                    //     _.each(this.definedAttributeNames(), processAttributeName);
+                    // }
                 }
+
 
                 // if (this.runtime().loadAttributesMethod() == "clickOnGroup") {
                 //     if (_.every(_.flatten(this.groupedAttributes()), function(attribute) {
