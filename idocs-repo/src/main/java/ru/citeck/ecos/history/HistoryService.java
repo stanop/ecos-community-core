@@ -70,6 +70,9 @@ public class HistoryService {
     private static final String TASK_ROLE = "taskRole";
     private static final String TASK_OUTCOME = "taskOutcome";
     private static final String TASK_TYPE = "taskType";
+    private static final String INITIATOR = "initiator";
+    private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
+    private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
 
     /**
      * Date-time format
@@ -217,14 +220,11 @@ public class HistoryService {
         }
         requestParams.put(DOCUMENT_ID, document.getId());
         requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
-        requestParams.put(USERNAME, getDocumentProperty(document, MODIFIER_PROPERTY));
-        /** Initiator */
-        NodeRef initiator = getInitiator(properties);
-        if (initiator == null) {
-            requestParams.put(USER_ID, UNKNOWN_USER);
-        } else {
-            requestParams.put(USER_ID, initiator.getId());
-        }
+        /** User */
+        String username = (String) getDocumentProperty(document, MODIFIER_PROPERTY);
+        NodeRef userRef = personService.getPerson(username);
+        requestParams.put(USERNAME, username);
+        requestParams.put(USER_ID, userRef.getId());
         /** Event time */
         Date now = new Date();
         if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
@@ -243,6 +243,10 @@ public class HistoryService {
         requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);
         requestParams.put(TASK_TYPE, taskType != null ? taskType.toString() : "");
+        /** Workflow properties */
+        requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
+        requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
+        requestParams.put(WORKFLOW_DESCRIPTION, properties.get(HistoryModel.PROP_WORKFLOW_DESCRIPTION));
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
     }
 
