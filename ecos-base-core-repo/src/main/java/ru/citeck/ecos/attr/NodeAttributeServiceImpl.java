@@ -98,8 +98,8 @@ public class NodeAttributeServiceImpl implements NodeAttributeService {
 
     @Override
     public Object getAttribute(NodeRef nodeRef, QName attributeName) {
-        AttributeProvider provider = needProvider(attributeName);
-        return provider.getAttribute(nodeRef, attributeName);
+        AttributeProvider provider = getProvider(attributeName);
+        return provider != null ? provider.getAttribute(nodeRef, attributeName) : null;
     }
 
     @Override
