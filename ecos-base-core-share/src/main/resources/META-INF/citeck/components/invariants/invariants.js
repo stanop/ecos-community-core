@@ -510,7 +510,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         }),
         viewAttributeNamesByNodeRefLoader = new Citeck.utils.BulkLoader({
             url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-attributes",
-            method: "GET",
+            method: "POST",
             emptyFn: function() { return { nodeRefs: [] } },
             addFn: function(query, nodeRef) {
                 if (query.nodeRefs.indexOf(nodeRef) == -1) query.nodeRefs.push(nodeRef);
@@ -519,7 +519,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         }),
         viewAttributeNamesByTypeLoader = new Citeck.utils.BulkLoader({
             url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-attributes",
-            method: "GET",
+            method: "POST",
             emptyFn: function() { return { types: [] } },
             addFn: function(query, type) {
                 if (query.types.indexOf(type) == -1) query.types.push(type);
