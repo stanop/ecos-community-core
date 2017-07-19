@@ -189,4 +189,9 @@ public interface NodeAttributeService {
      */
     public Class<?> getAttributeValueType(QName attributeName);
 
+    /**
+     * Is attribute provided or not
+     */
+    public boolean isAttributeProvided(QName attributeName);
+
 }

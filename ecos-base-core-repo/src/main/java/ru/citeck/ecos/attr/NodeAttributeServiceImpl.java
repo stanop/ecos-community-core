@@ -185,4 +185,8 @@ public class NodeAttributeServiceImpl implements NodeAttributeService {
         return provider.getAttributeValueType(attributeName);
     }
 
+    @Override
+    public boolean isAttributeProvided(QName attributeName) {
+        return getProvider(attributeName) != null;
+    }
 }

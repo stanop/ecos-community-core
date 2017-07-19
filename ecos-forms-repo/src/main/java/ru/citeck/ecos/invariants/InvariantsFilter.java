@@ -166,7 +166,12 @@ class InvariantsFilter {
 
         Set<QName> attributes;
         if (attributeNames != null) {
-            attributes = new HashSet<>(attributeNames);
+            attributes = new HashSet<>();
+            for (QName attribute : attributeNames) {
+                if (nodeAttributeService.isAttributeProvided(attribute)) {
+                    attributes.add(attribute);
+                }
+            }
             attributes.add(AttributeModel.ATTR_NODEREF);
             attributes.add(AttributeModel.ATTR_ASPECTS);
             attributes.add(AttributeModel.ATTR_PARENT);
