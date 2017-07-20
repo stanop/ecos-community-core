@@ -1522,10 +1522,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return aspects ? aspects.multipleValues() : [];
         })
 
+        .property('_definedAttributeNamesWasLoaded', b)
         .computed('definedAttributeNames', function() {
-            return _.uniq(_.flatten(_.map(this.classNames(), function(className) {
+            var attributeNames =_.uniq(_.flatten(_.map(this.classNames(), function(className) {
                 return _.invoke(new DDClass(className).attributes(), 'shortQName');
             })));
+
+            if (attributeNames.length > 0) this._definedAttributeNamesWasLoaded(true);
+            return attributeNames;
         })
 
         .computed('valid', function() {
@@ -2188,19 +2192,35 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .shortcut('inSubmitProcess', 'node.impl.inSubmitProcess')
 
         .computed('loaded', function() {
-            if (this.node.loaded() && this.node().impl.loaded() && this.node().impl().attributes.loaded()) {
-              var attributes = this.resolve("node.impl.attributes");
-              for (var a = 0; a < attributes.length; a++) {
-                for (var prop in attributes[a]) {
-                  if (ko.isObservable(!attributes[a][prop])) {
-                    if (!attributes[a][prop].loaded()) return false;
-                  }
-                }
-              }
+            if (!this._loading()) return true;
 
-              // delay while controls are loading (2 seconds enough)
-              if (this._loading()) { setTimeout(function(scope) { scope._loading(false); }, 2000, this); }
-              return !this._loading();
+            if (this.node.loaded() && this.node().impl.loaded() && 
+                this.node().impl().attributes.loaded() && this.node().impl().invariantSet.loaded()) {
+
+                var attributes = this.node().impl().attributes(),
+                    loadedAttributes = {};
+
+                for (var a in attributes) {
+                    var attribute = attributes[a],
+                        isLoaded = _.every([ "name", "valid", "relevant", "value" ], function(p) {
+                            return attribute[p].loaded() && 
+                                (p != "value" ? (attribute[p]() != null || attribute[p]() != undefined) : true);
+                        });
+
+                    if (isLoaded) loadedAttributes[attribute.name()] = true;
+                }
+
+                if (!this.node().impl()._definedAttributeNamesWasLoaded()) return false;
+                if (Object.keys(loadedAttributes).length != attributes.length) return false;
+
+                // delay while controls are loading (2 seconds enough)
+                if (this._loading()) {
+                    setTimeout(function(scope) { 
+                        scope._loading(false);
+                    }, 500, this);
+                }
+
+                return !this._loading();
             }
 
             return false;
@@ -2208,6 +2228,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .computed('invalid', function() {
             return !this.node().properties["invariants:isDraft"] && this.resolve('node.impl.invalid');
+        })
+
+        .computed('isSubmitReady', function() {
+            var isValid = !this.invalid(),
+                isLoaded = this.loaded(),
+                isNotInSubmitProcess = !this.inSubmitProcess();
+
+            return isNotInSubmitProcess && isLoaded && isValid;
         })
 
         .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
@@ -2384,6 +2412,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     MultiClassInvariantSet.extend('invariants', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
     SingleClassInvariantSet.extend('invariants', rateLimit)
+
+    Runtime.extend('loaded', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
 
     // create common attributes statically:
     // _.each({

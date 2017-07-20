@@ -491,6 +491,7 @@ define(['lib/knockout'], function(ko) {
                         if(extenders['*']) this[name].extend(extenders['*']);
                         if(extenders[name]) this[name].extend(extenders[name]);
                         this[name].toString = function() { return name; }
+                        this[name].is = function() { return "property"; }
                     }, viewModel);
     
                     _.each(computedProperties, function(definition, name) {
@@ -513,6 +514,7 @@ define(['lib/knockout'], function(ko) {
                         if(extenders['*']) this[name].extend(extenders['*']);
                         if(extenders[name]) this[name].extend(extenders[name]);
                         this[name].toString = function() { return name; }
+                        this[name].is = function() { return "computed"; }
                     }, viewModel);
 
                     _.each(subscriptions, function(definition, name) {

@@ -146,9 +146,9 @@
                 <input id="${args.htmlid}-form-submit" type="submit" value="${msg(saveButtonTitle)}"
                        data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
 			<#else>
-                <input id="${id}-form-submit" type="submit"
+                <input id="${id}-form-submit" type="submit" disabled="disabled"
                        value="<#if view.mode == "create">${msg(submitButtonTitle)}<#else/>${msg(saveButtonTitle)}</#if>"
-                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+                       data-bind="enable: $root.isSubmitReady, click: $root.submit.bind($root)" />
 			</#if>
 
 			<input id="${id}-form-reset"  type="button" value="${msg(resetButtonTitle)}" data-bind="enable: changed, click: reset" />
