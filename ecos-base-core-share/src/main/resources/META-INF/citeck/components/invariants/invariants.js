@@ -2202,9 +2202,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 for (var a in attributes) {
                     var attribute = attributes[a],
-                        isLoaded = _.every([ "name", "valid", "relevant", "value" ], function(p) {
+                        isLoaded = _.every([ "name", "valid", "relevant", "protected", "mandatory", "value" ], function(p) {
                             return attribute[p].loaded() && 
-                                (p != "value" ? (attribute[p]() != null || attribute[p]() != undefined) : true);
+                                (p != "value" ? !_.isNull(attribute[p]()) : true);
                         });
 
                     if (isLoaded) loadedAttributes[attribute.name()] = true;
