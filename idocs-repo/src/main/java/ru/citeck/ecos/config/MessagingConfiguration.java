@@ -1,19 +1,21 @@
 package ru.citeck.ecos.config;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
 
 import java.util.Properties;
 
 /**
- * Rabbit MQ configuration
+ * Messaging configuration
  */
 @Configuration
-public class RabbitMQConfiguration {
+public class MessagingConfiguration {
 
     /**
      * Properties constants
@@ -22,6 +24,7 @@ public class RabbitMQConfiguration {
     private static final String RABBIT_MQ_PORT= "rabbitmq.server.port";
     private static final String RABBIT_MQ_USERNAME= "rabbitmq.server.username";
     private static final String RABBIT_MQ_PASSWORD = "rabbitmq.server.password";
+    private static final String BROKER_URL = "messaging.broker.url";
 
     /**
      * Global properties
@@ -29,6 +32,36 @@ public class RabbitMQConfiguration {
     @Autowired
     @Qualifier("global-properties")
     private Properties properties;
+
+
+    /**
+     * ActiveMQ connection factory
+     * @return ActiveMQ connection factory
+     */
+    @Bean(name = "activeMQConnectionFactory")
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
+        if (properties.getProperty(BROKER_URL) != null) {
+            ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+            activeMQConnectionFactory.setBrokerURL(properties.getProperty(BROKER_URL));
+            return activeMQConnectionFactory;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * JMS template
+     * @param factory Connection factory
+     * @return JMS template
+     */
+    @Bean(name = "jmsTemplate")
+    public JmsTemplate jmsTemplate(ActiveMQConnectionFactory factory) {
+        if (factory != null) {
+            return new JmsTemplate(factory);
+        } else {
+            return null;
+        }
+    }
 
 
     /**

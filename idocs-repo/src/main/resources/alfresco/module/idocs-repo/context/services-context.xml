@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean id="rabbitMQConfiguration" class="ru.citeck.ecos.config.RabbitMQConfiguration"/>
+	<bean id="messagingConfiguration" class="ru.citeck.ecos.config.MessagingConfiguration"/>
 
 	<context:component-scan base-package="ru.citeck.ecos"/>
 	<context:annotation-config/>
