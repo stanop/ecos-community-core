@@ -681,21 +681,21 @@ Citeck.UI.previewDependencies = function() {
             "res/components/preview/WebPreviewer.js",
             "res/js/flash/extMouseWheel.js",
             "res/components/preview/StrobeMediaPlayback.js",
-            "res/components/preview/Video.js"
-            "res/components/preview/Audio.js"
+            "res/components/preview/Video.js",
+            "res/components/preview/Audio.js",
             "res/components/preview/Flash.js",
             "res/components/preview/Image.js",
             "res/components/preview/PdfJs.js.js",
             "res/components/preview/pdfjs/compatibility.js.js",
             "res/components/preview/pdfjs/pdf.js.js",
-            "res/components/preview/pdfjs/pdf.worker.js.js",
+            "res/components/preview/pdfjs/pdf.worker.js",
             "res/components/preview/spin.js.js",
 
             "res/components/preview/web-preview.css",
             "res/components/preview/WebPreviewerHTML.css",
             "res/components/preview/StrobeMediaPlayback.css",
-            "res/components/preview/Audio.css"
-            "res/components/preview/Image.css"
+            "res/components/preview/Audio.css",
+            "res/components/preview/Image.css",
             "res/components/preview/PdfJs.css"
         ],
         deps = _.map(_.filter(sources, function(src) {
