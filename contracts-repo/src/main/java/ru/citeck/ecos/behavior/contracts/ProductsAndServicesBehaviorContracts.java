@@ -54,13 +54,10 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnDeleteAssociationPolicy,
         NodeServicePolicies.OnCreateAssociationPolicy {
 
-    private static Log logger = LogFactory.getLog(ProductsAndServicesBehaviorContracts.class);
-
     private NodeService nodeService;
     private PolicyComponent policyComponent;
     private String namespace;
     private String type;
-    private ServiceRegistry serviceRegistry;
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
@@ -77,11 +74,6 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
     public void setType(String type) {
         this.type = type;
     }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
-
 
     public void init() {
         this.policyComponent.bindClassBehaviour(

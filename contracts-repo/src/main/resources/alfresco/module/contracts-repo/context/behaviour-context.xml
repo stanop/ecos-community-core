@@ -176,7 +176,6 @@
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="namespace" value="http://www.citeck.ru/model/products-and-services/1.0"/>
 		<property name="type" value="pasEntityCopied"/>
-		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
 	<bean id="paymentsBehaviour" class="ru.citeck.ecos.behavior.contracts.PaymentsBehaviour" init-method="init">
