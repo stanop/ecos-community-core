@@ -620,7 +620,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 invariants = this._invariants();
             
             if (_.any(invariants, function(inv) {
-                return inv.toString().indexOf("invariats.Invariant") == -1;
+                return inv.toString().indexOf("invariants.Invariant") == -1;
             })) { return []; }
 
             var priorityGroups = _.groupBy(invariants, function(invariant) {
@@ -1494,7 +1494,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var runtimeInvariantSet = this.resolve('runtime.invariantSet', null);
             if (runtimeInvariantSet) { return runtimeInvariantSet; } 
             else if (this.type.loaded()) {
-                var validAttributeNames = this.withoutView() ? this.definedAttributeNames() : this.viewAttributeNames();
+                var validAttributeNames = !this.withoutView() ? this.viewAttributeNames() : this.definedAttributeNames();
 
                 if (validAttributeNames && validAttributeNames.length > 0) {
                     return new SingleClassInvariantSet({ 
@@ -1601,13 +1601,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this.viewAttributeNames.loaded()) {
                 if (impl.nodeRef.loaded() && impl.nodeRef()) {
                     viewAttributeNamesByNodeRefLoader.load(impl.nodeRef(), function(nodeRef, attributes) {
-                        if (attributes && attributes.length > 0) impl.viewAttributeNames(attributes);
-                        else if (attributes && attributes.length == 0) impl.withoutView(true);
+                        var attributeCount = attributes ? Object.keys(attributes).length : -1;
+                        impl.viewAttributeNames(attributes);
+                        if (attributeCount <= 0) impl.withoutView(true);
                     });
                 } else if (impl.type.loaded() && impl.type()) {
                     viewAttributeNamesByTypeLoader.load(impl.type(), function(type, attributes) {
-                        if (attributes && attributes.length > 0) impl.viewAttributeNames(attributes);
-                        else if (attributes && attributes.length == 0) impl.withoutView(true);
+                        var attributeCount = attributes ? Object.keys(attributes).length : -1;
+                        impl.viewAttributeNames(attributes);
+                        if (attributeCount <= 0) impl.withoutView(true);
                     });
                 }
             }
