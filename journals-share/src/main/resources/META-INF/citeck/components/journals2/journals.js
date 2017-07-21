@@ -171,6 +171,7 @@ JournalType
 	.property('attributes', [ Attribute ])
 	.property('filters', [ Filter ])
 	.property('settings', [ Settings ])
+	.property('groupActions', [ Action ])
 
 	.computed('visibleAttributes', function() {
 		return _.invoke(_.filter(this.attributes(), function(attr) {
@@ -802,21 +803,29 @@ JournalsWidget
             hasAspect = function(record, aspect) {
                 return record.hasAspect(aspect);
             };
+
         if(records.length == 0) return [];
 
-		var actions = this.multiActions();
+		var actions = this.multiActions(),
+			journal = this.journal(),
+			journalType = journal.type();
 
-		var journal = this.journal();
-		if (journal) {
-			var attributes = journal.type().attributes();
-			actions = _.reduce(attributes, function(actions, att){
+		if (journal && journalType) {
+			// get attribute actions
+			var attributes = journalType.attributes();
+			actions = _.uniq(_.reduce(attributes, function(actions, att){
 				return actions.concat(att.batchEdit());
-			}, actions);
+			}, actions));
+
+			// get group actions
+			var groupActions = journalType.groupActions();
+			actions = actions.concat(groupActions);
 		}
 
-        return _.filter(actions, function(action) {
+		var filteredActions = _.filter(actions, function(action) {
 			// sync mode check:
 			if (action.syncMode() != null) return false;
+			
 			// doclib mode check:
 			if (!doclibMode && action.isDoclib()) return false;
 
@@ -825,11 +834,13 @@ JournalsWidget
             if (permission && !_.all(records, _.partial(hasPermission, _, permission))) {
                 return false;
             }
+
             // required aspect check
             var requiredAspect = action.requiredAspect();
             if (requiredAspect && !_.all(records, _.partial(hasAspect, _, requiredAspect))) {
                 return false;
             }
+
             // forbidden aspect check
             var forbiddenAspect = action.forbiddenAspect();
             if (forbiddenAspect && _.any(records, _.partial(hasAspect, _, forbiddenAspect))) {
@@ -838,6 +849,8 @@ JournalsWidget
 
             return true;
         });
+
+        return filteredActions;
     })
 
 	.computed('fullscreenLink', function() {
@@ -1157,17 +1170,19 @@ JournalType
 		url: Alfresco.constants.PROXY_URI + "api/journals/settings?journalType={id}",
 		resultsMap: { settings: 'settings' }
 	}))
+
 	.load('*', koutils.simpleLoad({
 		url: Alfresco.constants.PROXY_URI + "api/journals/types/{id}",
 		resultsMap: function(data) {
-			return {
+			return mapObject = {
 				attributes: data.attributes,
 				options: data.settings,
+				groupActions: data.groupActions,
 				formInfo: {
 					type: data.settings ? data.settings.type : "",
 					formId: data.settings ? data.settings.formId : ""
 				}
-			}
+			};
 		},
 		postprocessing: function(model) { model["journal"] = this; }
 	}))

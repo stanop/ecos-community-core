@@ -1,13 +1,13 @@
 (function() {
 
-    var nodes = json.get('nodes'),
-        actionId = json.get('actionId'),
-        params = json.get('params');
+    var jsonData = jsonUtils.toObject(json),
+        nodes = jsonData.nodes,
+        actionId = jsonData.actionId,
+        params = jsonData.params;
 
     if (!exists("nodes", nodes) ||
         !exists("attributes", params) ||
         !exists("actionId", actionId)) {
-
         return;
     }
 

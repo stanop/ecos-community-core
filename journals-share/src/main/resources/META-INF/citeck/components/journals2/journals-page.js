@@ -261,6 +261,36 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                 }
             },
 
+            onGroupAction: function (records, action) {
+                var dataObj = {
+                  nodes: _.map(records, function(record) { return record.nodeRef(); }),
+                  actionId: action.id(),
+                  params: action.settings()
+                };
+
+                Alfresco.util.Ajax.jsonPost({
+                  url: Alfresco.constants.PROXY_URI + "api/journals/group-action",
+                  dataObj: dataObj,
+                  successCallback: {
+                      scope: this,
+                      fn: function(response) {
+                        Alfresco.util.PopupManager.displayMessage({
+                          text: this.msg("batch-edit.message.OK")
+                        });
+                      }
+                  },
+                  failureCallback: {
+                      scope: this,
+                      fn: function(response) {
+                        Alfresco.util.PopupManager.displayMessage({
+                          text: this.msg("batch-edit.message.ERROR")
+                        });
+                      }
+                  }
+                });
+            },
+
+
             onBatchEdit: function (records, action) {
 
                 var editStatus = {}, ref;
