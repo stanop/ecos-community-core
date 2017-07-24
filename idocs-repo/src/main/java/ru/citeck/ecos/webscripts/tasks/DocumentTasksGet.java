@@ -70,6 +70,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
     private static final String MODEL_IS_REASSIGNABLE = "reassignable";
     private static final String MODEL_IS_RELEASABLE = "releasable";
     private static final String MODEL_IS_CLAIMABLE = "claimable";
+    private static final QName MODEL_CLAIM_OWNER_PROP = QName.createQName(null, "claimOwner");
 
     private NodeService nodeService;
 
@@ -177,8 +178,10 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         model.put(MODEL_SENDER, properties.get(CiteckWorkflowModel.PROP_SENDER_NAME));
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-        model.put(MODEL_IS_CLAIMABLE, (pooledActors!=null && pooledActors.size()>0 && properties.get(ContentModel.PROP_OWNER)==null));
-        model.put(MODEL_IS_RELEASABLE, (pooledActors!=null && pooledActors.size()>0 && properties.get(ContentModel.PROP_OWNER)!=null));
+        model.put(MODEL_IS_CLAIMABLE, (pooledActors!=null && pooledActors.size()>0 &&
+                properties.get(ContentModel.PROP_OWNER)==null && properties.get(MODEL_CLAIM_OWNER_PROP) == null));
+        model.put(MODEL_IS_RELEASABLE, (pooledActors!=null && pooledActors.size()>0 &&
+                (properties.get(ContentModel.PROP_OWNER)!=null || properties.get(MODEL_CLAIM_OWNER_PROP) != null)));
         model.put(MODEL_IS_REASSIGNABLE, ((Boolean)properties.get(WorkflowModel.PROP_REASSIGNABLE) && properties.get(ContentModel.PROP_OWNER)!=null));
         QName outcomeProperty = (QName) properties.get(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
         if(outcomeProperty != null) {

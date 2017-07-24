@@ -197,7 +197,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
         updatePooledActors(tasks, actors, false);
     }
 
-    private void updatePooledActors(List<WorkflowTask> tasks, List<String> actors, final boolean add) {
+    public void updatePooledActors(List<WorkflowTask> tasks, List<String> actors, final boolean add) {
         for (final WorkflowTask task : tasks) {
             List<NodeRef> actorsList = new ArrayList<NodeRef>();
             for (String actor : actors) {
