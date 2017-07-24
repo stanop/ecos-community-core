@@ -264,7 +264,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
             onGroupAction: function (records, action) {
                 var dataObj = {
                   nodes: _.map(records, function(record) { return record.nodeRef(); }),
-                  actionId: action.id(),
+                  actionId: action.settings().actionId,
                   params: action.settings()
                 };
 

@@ -1,10 +1,13 @@
 package ru.citeck.ecos.journals.group;
 
 import org.alfresco.repo.jscript.ScriptNode;
+import org.alfresco.repo.jscript.ScriptableHashMap;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.mozilla.javascript.Scriptable;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -18,30 +21,20 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
     private GroupActionService groupActionService;
     private ValueConverter converter = new ValueConverter();
 
-    public Map<ScriptNode, GroupActionStatus> invoke(Object nodes, String actionId, Object paramsObj) {
+    public GroupActionStatusesJS invoke(Object nodes, String actionId, Object paramsObj) throws JSONException {
         List<NodeRef> nodeRefs = toNodeRefList(nodes);
         Map<String, String> params = toStringMap(paramsObj);
-
-        Map<NodeRef, GroupActionStatus> status = groupActionService.invoke(nodeRefs, actionId, params);
-        return toScriptStatus(status);
-    }
-
-    private Map<ScriptNode, GroupActionStatus> toScriptStatus(Map<NodeRef, GroupActionStatus> status) {
-        Map<ScriptNode, GroupActionStatus> result = new HashMap<>();
-        for (NodeRef nodeRef : status.keySet()) {
-            ScriptNode node = new ScriptNode(nodeRef, getServiceRegistry(), getScope());
-            result.put(node, status.get(nodeRef));
-        }
-        return result;
+        Map<NodeRef, GroupActionStatus> statuses = groupActionService.invoke(nodeRefs, actionId, params);
+        return new GroupActionStatusesJS(statuses, getScope(), serviceRegistry);
     }
 
     private List<NodeRef> toNodeRefList(Object array) {
         Object jArray = converter.convertValueForJava(array);
         List<NodeRef> result = new ArrayList<>();
         if (jArray instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<NodeRef> jList = (List<NodeRef>) jArray;
-            result.addAll(jList);
+            for (Object obj : (List)jArray) {
+                result.add(JavaScriptImplUtils.getNodeRef(obj));
+            }
         } else if (jArray instanceof JSONArray) {
             JSONArray jsonArray = (JSONArray) jArray;
             for (int i = 0; i < jsonArray.length(); i++) {

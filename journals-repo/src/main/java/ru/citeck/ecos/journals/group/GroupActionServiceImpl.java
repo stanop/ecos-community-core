@@ -3,6 +3,8 @@ package ru.citeck.ecos.journals.group;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.Map;
  * @author Pavel Simonov
  */
 public class GroupActionServiceImpl implements GroupActionService {
+
+    private static Log logger = LogFactory.getLog(GroupActionServiceImpl.class);
 
     @Autowired
     private TransactionService transactionService;
@@ -46,17 +50,16 @@ public class GroupActionServiceImpl implements GroupActionService {
 
         final GroupActionStatus status = new GroupActionStatus();
 
-        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            try {
+        try {
+            transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
                 evaluator.invoke(nodeRef, params);
-            } catch (Exception e) {
-                status.setStatus(GroupActionStatus.STATUS_ERROR);
-                status.setException(e);
-                throw e;
-            }
-            return null;
-        }, false, true);
-
+                return null;
+            }, false, true);
+        } catch (Exception e) {
+            status.setStatus(GroupActionStatus.STATUS_ERROR);
+            status.setException(e);
+            logger.error("Error while node processing", e);
+        }
         return status;
     }
 
