@@ -270,6 +270,9 @@ public class HistoricalPropertiesBehaviour implements
 		logger.debug("beforeDeleteNode event");
 		ChildAssociationRef childAssociationRef = nodeService.getPrimaryParent(nodeTarget);
 		NodeRef nodeSource = childAssociationRef.getParentRef();
+		if (!nodeService.exists(nodeSource)) {
+			return;
+		}
 		AssociationDefinition assoc = dictionaryService.getAssociation(childAssociationRef.getTypeQName());
 
 		if(enableHistoryOnDeleteChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()))

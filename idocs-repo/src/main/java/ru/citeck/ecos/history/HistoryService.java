@@ -20,6 +20,8 @@ package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
@@ -172,7 +174,11 @@ public class HistoryService {
                 parentNode = getHistoryRoot();
                 assocType = ContentModel.ASSOC_CONTAINS;
             } else {
-                parentNode = document;
+                if (isDocumentForDelete(document)) {
+                    parentNode = getHistoryRoot();
+                } else {
+                    parentNode = document;
+                }
                 assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
             }
 
@@ -186,7 +192,7 @@ public class HistoryService {
                 }
                 persistAdditionalProperties(historyEvent, initiator);
             }
-            if (document != null) {
+            if (document != null && !isDocumentForDelete(document)) {
                 nodeService.createAssociation(historyEvent, document, HistoryModel.ASSOC_DOCUMENT);
                 persistAdditionalProperties(historyEvent, document);
                 List<ChildAssociationRef> parents = nodeService.getParentAssocs(document);
@@ -204,9 +210,8 @@ public class HistoryService {
                     }
                 }
 
-
+                historyRemoteService.updateDocumentHistoryStatus(document, false);
             }
-            historyRemoteService.updateDocumentHistoryStatus(document, false);
             return historyEvent;
         });
     }
@@ -215,7 +220,7 @@ public class HistoryService {
         Map<String, Object> requestParams = new HashMap();
         /** Document */
         NodeRef document = getDocument(properties);
-        if (document == null) {
+        if (document == null || isDocumentForDelete(document)) {
             return;
         }
         requestParams.put(DOCUMENT_ID, document.getId());
@@ -248,6 +253,15 @@ public class HistoryService {
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
         requestParams.put(WORKFLOW_DESCRIPTION, properties.get(HistoryModel.PROP_WORKFLOW_DESCRIPTION));
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+    }
+
+    private boolean isDocumentForDelete(NodeRef documentRef) {
+        if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+            return false;
+        } else {
+            Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet("DbNodeServiceImpl.pendingDeleteNodes");
+            return nodesPendingDelete.contains(documentRef);
+        }
     }
 
     public void removeEventsByDocument(NodeRef documentRef) {
