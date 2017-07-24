@@ -611,16 +611,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .key('className', s)
         .property('nodeRef', s)
-        .property('_invariants', [ Invariant ])
+        .property('_invariants', o)
         .property('attributeNames', s)
 
         .computed('invariants', function() {
             var className = this.className(),
-                invariants = this._invariants();
+                invariants = _.map(this._invariants(), function(invariant) {
+                    if (!invariant.scope.class) {
+                        // TODO: use InvariantRuntimeCache
+                    }
+                });
             
-            if (_.any(invariants, function(inv) {
-                return inv.toString().indexOf("invariants.Invariant") == -1;
-            })) { return []; }
+            // if (_.any(invariants, function(inv) {
+            //     return inv.toString().indexOf("invariants.Invariant") == -1;
+            // })) { return []; }
 
             var priorityGroups = _.groupBy(invariants, function(invariant) {
                 if (invariant.isFinal()) return 1;
@@ -2405,14 +2409,63 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     //     })
     // });
 
+    var InvariantsRuntimeCache = function() {
+        InvariantsRuntimeCache.superclass.constructor.call(this, "Citeck.invariants.InvariantsRuntimeCache", "InvariantsRuntimeCache");
+        
+        this.cacheObject = {
+            "DefaultInvariants": {}
+        };
+    };
+
+    YAHOO.extend(InvariantsRuntimeCache, Alfresco.component.Base, {
+        _isInvariantClass: function(object) {
+            return object.toString().indexOf("invariants.Invariant") != -1;
+        },
+
+        insert: function(key, object) { this.cacheObject[key] = object; },
+        get: function(key) { return this.cacheObject[key]; },
+        remove: function(key) { delete this.cacheObject[key]; },
+
+        // An extended set of methods for DefaultInvariants
+        addDefaultInvarinats: function(invariants) {
+            var defaultInvariants = this.cacheObject["DefaultInvariants"];
+            _.each(
+                _.groupBy(
+                    _.map(
+                        invariants, 
+                        function(invariant) { 
+                            return !this._isInvariantClass(invariant) ? new Invariant(invariant) : invariant;
+                        }, this
+                    ), 
+                    function(invObject) { return invObject.attributeScope(); }, this
+                ), 
+                function(invGroup, invGroupKey) {
+                    if (!defaultInvariants[invGroupKey]) defaultInvariants[invGroupKey] = [];
+                    defaultInvariants[invGroupKey] = _.uniq(defaultInvariants[invGroupKey].concat(invGroup));
+                }, this
+            );
+        },
+        addDefaultInvarinat: function(invariant) {
+            var defaultInvariants = this.cacheObject["DefaultInvariants"],
+                invariantObject = !this._isInvariantClass(invariant) ? new Invariant(invariant) : invariant,
+                invariantKey = invariantObject.attributeScope();
+            
+            if (!defaultInvariants[invariantKey]) defaultInvariants[invariantKey] = [];
+            if (!_.contains(defaultInvariants[invariantKey], invariantObject))
+                defaultInvariants[invariantKey].push(invariantObject);
+        },
+
+        getDefaultInvariants: function(attributeName) {
+            if (attributeName) return this.cacheObject["DefaultInvariants"][attributeName];
+            return this.cacheObject["DefaultInvariants"];
+        }
+
+    });
+
+
     var InvariantsRuntime = function(htmlid, runtimeKey) {
         InvariantsRuntime.superclass.constructor.call(this, "Citeck.invariants.InvariantsRuntime", htmlid);
         this.runtime = new Runtime(runtimeKey);
-    };
-
-    var InvariantsRuntimeCache = function(htmlid, runtimeKey) {
-        InvariantsRuntime.superclass.constructor.call(this, "Citeck.invariants.InvariantsRuntimeCache", htmlid);
-        this.runtime = new InvariantsRuntimeCache(runtimeKey);
     };
 
     YAHOO.extend(InvariantsRuntime, Alfresco.component.Base, {
@@ -2429,10 +2482,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         },
 
         onReady: function() {
-            window.countOfAI = 0;
-            window.countOfA = 0;
-
             var self = this;
+
+            this.initRuntimeCache();
 
             if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
                 $(window).resize(function() {
@@ -2530,6 +2582,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             ko.applyBindings(this.runtime, Dom.get(this.id));
             
             console.log(this.runtime)
+        },
+
+        initRuntimeCache: function() {
+            var runtimeCache = Alfresco.util.ComponentManager.get("InvariantsRuntimeCache");
+            if (!runtimeCache) Alfresco.util.ComponentManager.register(new InvariantsRuntimeCache());
         }
 
     });
