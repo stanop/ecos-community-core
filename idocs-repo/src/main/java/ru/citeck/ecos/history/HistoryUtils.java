@@ -258,6 +258,9 @@ public class HistoryUtils {
                         Iterator<ChildAssociationRef> iter = removed.iterator();
                         while (iter.hasNext()) {
                             ChildAssociationRef childAssociationRefRemoved = iter.next();
+                            if (!nodeService.exists(childAssociationRefRemoved.getParentRef())) {
+                                continue;
+                            }
                             historyService.persistEvent(
                                     HistoryModel.TYPE_BASIC_EVENT,
                                     HistoryUtils.eventProperties(
