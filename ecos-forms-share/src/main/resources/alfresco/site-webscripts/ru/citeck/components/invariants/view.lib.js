@@ -26,50 +26,32 @@ function get(view, type, template) {
     return objects;
 }
 
-function getAttributeSet(view) {
-    var sets = [];
-    for (var i in view.elements) {
-        if (view.elements[i].type == "view" && view.elements[i].template.indexOf("set") != -1) {
-            sets.push(buildAttributeSet(view.elements[i]));
-            buildAttributeSetId(view.elements[i]);
-        }
-    }
-    return sets;
-}
-
-function buildAttributeSet(view) {
-    var attributeSet = { attributes: [], sets: [], id: "" };
+function getAttributeSet(args, view) {
+    var attributeSet = { attributes: [], sets: [], id: "", template: view.template };
 
     for (var i in view.elements) {
         var element = view.elements[i];
         if (element.type == "field") {
             attributeSet.attributes.push({ name: element.attribute, template: element.template });
         } else if (element.type == "view" && element.template.indexOf("set") != -1) {
-            attributeSet.sets.push(buildAttributeSet(element));
+            attributeSet.sets.push(getAttributeSet(args, element));
         }
     }
 
-    attributeSet.id = (function() {
+    attributeSet.id = view.id || (function() {
         var identificator = attributeSet.attributes.map(function(attr) { return attr.name; }).join("_");
         identificator += "_" + attributeSet.attributes.length + "_" + attributeSet.sets.length;
         return identificator;
     })();
 
+    // TODO: replace many requests for one
+    var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; }));
+    attributeSet.invariants = invariantSet.invariants;
+
     return attributeSet;
 }
 
-function buildAttributeSetId(view) {
-    var attributes = [], setsCount = 0;
-    for (var i in view.elements) {
-        if (view.elements[i].type == "field") { attributes.push(view.elements[i].attribute); }
-        else if (view.elements[i].type == "view" && element.template.indexOf("set") != -1) { 
-            buildAttributeSetId(view.elements[i]);
-            setsCount++;
-        }
-    }
-
-    view.params.setId = attributes.join("_") + "_" + attributes.length + "_" + setsCount;
-}
+// TODO: get invariantSet grouped by attribute sets
 
 function getInvariantSet(args, attributes) {
     var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 

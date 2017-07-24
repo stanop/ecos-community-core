@@ -271,7 +271,6 @@
 <#macro nodeViewWidget nodeRef="" type="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
-		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
 		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
 
@@ -283,7 +282,6 @@
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					formTemplate: "${view.template}",
 
-					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
 					preloadInvariants: ${preloadInvariants},
 
@@ -296,35 +294,13 @@
 						type: <#if type?has_content>"${type}"<#else>null</#if>,
 						
 						classNames: <#if classNames??><@views.renderQNames classNames /><#else>null</#if>,
-						groups: [
-							<#if groups?? && groups?has_content>
-								<#list groups as group>
-								{
-									"id": <@views.renderValue group.id />,
-									"index": <@views.renderValue group.index />,
-									"_attributes": <@views.renderValue group.attributes />,
-									"invariants": <@views.renderInvariants group.invariants />
-								}<#if group_has_next>,</#if>
-								</#list>
-							</#if>
-						],
 
-						_sets: <@views.renderValue attributeSet />,
-
-						<#if loadAttributesMethod != "clickOnGroup">
-							forcedAttributes: <@views.renderValue attributes />,
-						</#if>
+						_set: <@views.renderValue attributeSet />,
+						_attributeNames: <@views.renderValue attributeNames />,
+						_invariants: <@views.renderInvariants invariants />,
 
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderDefaultModel defaultModel />,
-					},
-
-					invariantSet: {
-						key: "${runtimeKey}",
-
-						<#if loadAttributesMethod != "clickOnGroup">
-							forcedInvariants: <@views.renderInvariants invariants />
-						</#if>
 					}
 				}
 			});
