@@ -21,8 +21,11 @@ function main() {
 		responseType = AlfrescoUtil.param('responseType', null),
 		hideEmpty = AlfrescoUtil.param('hideEmpty', false),
 		groupBy = AlfrescoUtil.param('groupBy', null),
+        propertyName = AlfrescoUtil.param('propertyName', null),
+        propertyValue = AlfrescoUtil.param('propertyValue', null),
 		groupTitle = AlfrescoUtil.param('groupTitle', null),
-		childrenFormat = AlfrescoUtil.param('childrenFormat', null);
+		childrenFormat = AlfrescoUtil.param('childrenFormat', null),
+    	availableButtonForGroups = AlfrescoUtil.param('childrenFormat', null);
 
 	if (!childrenUrl) {
 		AlfrescoUtil.error(400, "Input parameter 'childrenUrl' is empty");
