@@ -617,7 +617,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariants', function() {
             var className = this.className(),
                 invariants = _.map(this._invariants(), function(invariant) {
-                    if (!invariant.scope.class) {
+                    if (!invariant["scope"]["class"]) {
                         // TODO: use InvariantRuntimeCache
                     }
                 });
