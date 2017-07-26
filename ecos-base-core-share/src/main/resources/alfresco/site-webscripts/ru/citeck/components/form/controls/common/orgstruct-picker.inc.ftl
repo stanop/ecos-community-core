@@ -10,15 +10,19 @@
 		searchQuery = (params.searchQuery!childrenQuery)
 		rootUrl = (params.rootUrl!"")
 	/>
-	<#assign excludeFields>
-        <#if params.excludeFields??>
-            ${params.excludeFields}
-        <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
-                 config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
-                 config.scoped["InvariantControlsConfiguration"]["orgstruct"].attributes["excludeFields"]??>
-            ${config.scoped["InvariantControlsConfiguration"]["orgstruct"].attributes["excludeFields"]}
-        <#else>""</#if>
-    </#assign>
+<#assign excludeFields>
+    <#if config.scoped["InvariantControlsConfiguration"]?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]?? && params.excludeFields??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"] + "," + params.excludeFields}
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]}
+    <#elseif params.excludeFields??>
+         ${params.excludeFields}
+    <#else>""</#if>
+</#assign>
 
 	{
 		formats: {
