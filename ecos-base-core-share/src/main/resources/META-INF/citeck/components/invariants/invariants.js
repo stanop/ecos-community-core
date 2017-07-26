@@ -17,7 +17,6 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(ko, koutils, moment) {
-
     var logger = Alfresco.logger,
         koclass = koutils.koclass,
         $isNodeRef = Citeck.utils.isNodeRef,
@@ -611,41 +610,55 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .key('className', s)
         .property('nodeRef', s)
+        .property('attributeNames', [ s ])
+
         .property('_invariants', o)
-        .property('attributeNames', s)
+        .property('_cache', o)
 
         .computed('invariants', function() {
-            var className = this.className(),
-                invariants = _.map(this._invariants(), function(invariant) {
-                    if (!invariant["scope"]["class"]) {
-                        // TODO: use InvariantRuntimeCache
-                    }
-                });
+            var defaultInvariants = this.defaultInvariants(),
+                specifiedInvariants = this.specifiedInvariants();
+
+            if (!defaultInvariants.length || !specifiedInvariants.length) return [];
             
-            // if (_.any(invariants, function(inv) {
-            //     return inv.toString().indexOf("invariants.Invariant") == -1;
-            // })) { return []; }
+            var invariants = defaultInvariants.concat(specifiedInvariants),
+                priorityGroups = _.groupBy(invariants, function(invariant) {
+                    if (invariant.isFinal()) return 1;
 
-            var priorityGroups = _.groupBy(invariants, function(invariant) {
-                if (invariant.isFinal()) return 1;
+                    if (invariant.attributeScopeKind().match(/_type$/)) return 2;
 
-                if (invariant.attributeScopeKind().match(/_type$/)) return 2;
+                    var priorities = { "common": 10, "module": 11, "extend": 12, "custom": 13, "view-scoped": 14 },
+                        priority = priorities[invariant.priority()];
+                    if (priority) return priority;
 
-                var priorities = { "common": 10, "module": 11, "extend": 12, "custom": 13, "view-scoped": 14 },
-                    priority = priorities[invariant.priority()];
-                if (priority) return priority;
+                    var classScope = invariant.classScope();
+                    if (classNames.indexOf(classScope) != -1)
+                        return 100 + classNames.indexOf(classScope);
 
-                var classScope = invariant.classScope();
-                if (classNames.indexOf(classScope) != -1)
-                    return 100 + classNames.indexOf(classScope);
-
-                return 1000;
-            });
+                    return 1000;
+                });
 
             return _.flatten(_.values(priorityGroups));
         })
+        .computed('defaultInvariants', {
+            read: function() {
+                if (!this._invariants()) return [];
+                var defaultInvariantGroups = this.attributeNames().concat([ "general", "base" ]);
+                return this._cache().getDefaultInvariants(defaultInvariantGroups); 
+            },
+            write: function (invariants) { 
+                return this._cache().addDefaultInvariants(invariants); 
+            },
+            scope: this
+        })
+        .computed('specifiedInvariants', function() {
+            return _.map(
+                _.filter(this._invariants(), function (invariant) { return !!invariant["scope"]["class"] }),
+                function(invariant) { return new Invariant(invariant); }
+            );
+        })
 
-        .load("_invariants", function(invariantSet) {
+        .load('_invariants', function(invariantSet) {
             var URLParams = "?attributes=" + invariantSet.attributeNames();
             if (invariantSet.nodeRef()) { URLParams += "&nodeRef=" + invariantSet.nodeRef(); }
             else { URLParams += "&type=" + invariantSet.type(); }
@@ -655,12 +668,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 successCallback: {
                     scope: invariantSet,
                     fn: function (response) {
-                        this._invariants(_.map(response.json.invariants, function(invariant) {
-                            return new Invariant(invariant);
-                        }));
+                        this.defaultInvariants(response.json.invariants);
+                        this._invariants(response.json.invariants);
                     }
                 }
             });
+        })
+        .load('_defaultInvariants', function(invariantSet) {
+            this._cache().getDefaultInvariants();
+        })
+        .load('_cache', function(invariantSet) {
+            invariantSet._cache(Alfresco.util.ComponentManager.get("InvariantsRuntimeCache"));
         })
         ;
 
@@ -1489,14 +1507,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     invariants: this._invariants() 
                 });
             } else if (this.type.loaded()) {
-                var validAttributeNames = !this.withoutView() ? 
-                    this.viewAttributeNames() : this.definedAttributeNames();
+                var forcedAttributes = this._attributeNames(),
+                    validAttributeNames = [];
 
-                if (validAttributeNames && validAttributeNames.length > 0) {
+                if (forcedAttributes.length) {
+                    validAttributeNames = forcedAttributes;
+                } else {
+                    validAttributeNames = !this.withoutView() ? this.viewAttributeNames() : this.definedAttributeNames();
+                }
+
+                if (validAttributeNames.length > 0) {
                     return new SingleClassInvariantSet({ 
                         className: this.type(),
                         nodeRef: this.nodeRef(),
-                        attributeNames: validAttributeNames.join(",") 
+                        attributeNames: validAttributeNames 
                     });
                 }
             }
@@ -2426,26 +2450,54 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         get: function(key) { return this.cacheObject[key]; },
         remove: function(key) { delete this.cacheObject[key]; },
 
+
         // An extended set of methods for DefaultInvariants
-        addDefaultInvarinats: function(invariants) {
+        // ------------------------------------------------
+
+        addDefaultInvariants: function(invariants) {
             var defaultInvariants = this.cacheObject["DefaultInvariants"];
+
+            // finally, add groups to 'DefaultInvaraints'
             _.each(
+                // thirdly, group by attribute class name
                 _.groupBy(
+                    // secondly, instantiate invariant
                     _.map(
-                        invariants, 
+                        // firstly, get all default invariants
+                        _.filter(
+                            invariants, 
+                            function (invariant) { 
+                                return this._isInvariantClass(invariant) ? 
+                                    !invariant.classScope() : !invariant["scope"]["class"];
+                            }, this
+                        ),
                         function(invariant) { 
                             return !this._isInvariantClass(invariant) ? new Invariant(invariant) : invariant;
                         }, this
                     ), 
-                    function(invObject) { return invObject.attributeScope(); }, this
+                    function(invariant) {
+                        let attributeName = invariant.attributeScope(),
+                            isTypeInvariant = invariant.attributeScopeKind().indexOf("_type") != -1;
+                        
+                        if (isTypeInvariant) {
+                            if (attributeName) return "general";
+                            return "base";
+                        }
+
+                        return attributeName;
+                    }, this
                 ), 
                 function(invGroup, invGroupKey) {
                     if (!defaultInvariants[invGroupKey]) defaultInvariants[invGroupKey] = [];
-                    defaultInvariants[invGroupKey] = _.uniq(defaultInvariants[invGroupKey].concat(invGroup));
+                    defaultInvariants[invGroupKey] = _.uniq(
+                        defaultInvariants[invGroupKey].concat(invGroup), 
+                        function(inv, index) { return JSON.stringify(Object.values(inv.model())); }
+                    );
                 }, this
             );
         },
-        addDefaultInvarinat: function(invariant) {
+
+        addDefaultInvariant: function(invariant) {
             var defaultInvariants = this.cacheObject["DefaultInvariants"],
                 invariantObject = !this._isInvariantClass(invariant) ? new Invariant(invariant) : invariant,
                 invariantKey = invariantObject.attributeScope();
@@ -2455,7 +2507,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 defaultInvariants[invariantKey].push(invariantObject);
         },
 
-        getDefaultInvariants: function(attributeName) {
+        getDefaultInvariants: function(attributeNames) {
+            if (attributeNames) {
+                return _.flatten(_.filter(this.cacheObject["DefaultInvariants"], function(invArray, invKey) {
+                    return _.contains(attributeNames, invKey);
+                }));
+            }
+            return _.flatten(_.values(this.cacheObject["DefaultInvariants"]));
+        },
+
+        getDefaultInvariantsGroup: function(attributeName) {
             if (attributeName) return this.cacheObject["DefaultInvariants"][attributeName];
             return this.cacheObject["DefaultInvariants"];
         }
@@ -2580,8 +2641,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
-            
-            console.log(this.runtime)
         },
 
         initRuntimeCache: function() {
