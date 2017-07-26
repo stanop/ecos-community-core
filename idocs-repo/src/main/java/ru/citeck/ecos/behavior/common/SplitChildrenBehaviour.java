@@ -8,10 +8,7 @@ import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
@@ -23,6 +20,7 @@ import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.utils.FolderUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -39,6 +37,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
     private PolicyComponent policyComponent;
     private SearchService searchService;
     private NodeService nodeService;
+    private MimetypeService mimetypeService;
 
     private int order = 250;
 
@@ -104,12 +103,25 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
             NodeRef destination = getContainer(parent, path, true);
 
-            String name = FolderUtils.makeUniqueName(destination, child, nodeService);
+            String name;
+            if (childAssocType.equals(ContentModel.ASSOC_CONTAINS)) {
+                name = getUniqueName(destination, child);
+                nodeService.setProperty(child, ContentModel.PROP_NAME, name);
+            } else {
+                name = (String) nodeService.getProperty(child, ContentModel.PROP_NAME);
+            }
+
             QName assocQName = QName.createQName(assocRef.getQName().getNamespaceURI(), name);
             nodeService.moveNode(child, destination, childAssocType, assocQName);
 
             splitBehaviour.onSuccess(parent, child);
         }
+    }
+
+    private String getUniqueName(NodeRef destination, NodeRef child) {
+        String originalName = RepoUtils.getOriginalName(child, nodeService, mimetypeService);
+        String extension = RepoUtils.getExtension(child, "", nodeService, mimetypeService);
+        return RepoUtils.getUniqueName(destination, childAssocType, child,  originalName, extension, nodeService);
     }
 
     private NodeRef getContainer(NodeRef parent, List<String> path, boolean createIfNotExist) {
@@ -216,6 +228,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         this.serviceRegistry = serviceRegistry;
         nodeService = serviceRegistry.getNodeService();
         searchService = serviceRegistry.getSearchService();
+        mimetypeService = serviceRegistry.getMimetypeService();
         namespaceService = serviceRegistry.getNamespaceService();
         policyComponent = (PolicyComponent) serviceRegistry.getService(AlfrescoServices.POLICY_COMPONENT);
     }
