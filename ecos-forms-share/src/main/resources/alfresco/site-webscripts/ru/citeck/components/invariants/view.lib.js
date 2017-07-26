@@ -44,14 +44,22 @@ function getAttributeSet(args, view) {
         return identificator;
     })();
 
-    // TODO: replace many requests for one
-    var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; }));
-    attributeSet.invariants = invariantSet.invariants;
+    // TODO: replace many requests for one (speed up!!!)
+    var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; })) || [],
+        viewScopeInvariants = getViewInvariants(view) || [];
+    attributeSet.invariants = invariantSet.invariants.concat(viewScopeInvariants);
 
     return attributeSet;
 }
 
-// TODO: get invariantSet grouped by attribute sets
+function getViewInvariants(view) {
+    var invariants = [];
+    view.elements.forEach(function(element) {
+        if (element.type == "field" && element.invariants && element.invariants.length)
+            for(var i in element.invariants) invariants.push(element.invariants[i]);
+    });
+    return invariants;
+}
 
 function getInvariantSet(args, attributes) {
     var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 

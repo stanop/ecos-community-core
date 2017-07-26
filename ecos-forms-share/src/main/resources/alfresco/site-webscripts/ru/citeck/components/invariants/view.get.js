@@ -38,33 +38,34 @@
         }
     }
 
-    var invariantSet = { invariants: [], classNames: [] }, viewScopedInvariants = [];
-    if (view.params.preloadInvariants == "true") {
-        invariantSet = getInvariantSet(args, attributeNames),
-        viewScopedInvariants = getViewScopedInvariants(view);
-    }
-   
     var defaultModel = {},
         publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
-
-    if (invariantSet.model) {
-        for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
-    }
-      
+     
     defaultModel.view = {};
     for(var i in publicViewProperties) {
         var name = publicViewProperties[i];
         defaultModel.view[name] = view[name];
     }
 
+    var invariantSet = { invariants: [], classNames: [] }, viewScopedInvariants = [];
+    if (view.params.preloadInvariants == "true") {
+        invariantSet = getInvariantSet(args, attributeNames),
+        viewScopedInvariants = getViewScopedInvariants(view);
+
+        if (invariantSet.model) {
+            for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
+        }
+
+        model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
+        model.classNames = invariantSet.classNames;
+    }
+   
 
     model.view = view;
     model.defaultModel = defaultModel;
 
     model.attributeSet = attributeSet;
     model.attributeNames = attributeNames;
-    model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
-    model.classNames = invariantSet.classNames;
 
     model.canBeDraft = viewData.canBeDraft;
 

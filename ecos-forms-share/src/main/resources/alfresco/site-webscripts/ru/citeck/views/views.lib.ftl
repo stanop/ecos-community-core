@@ -110,7 +110,7 @@
 						<div class="form-errors">
 							<div class="invalid-attributes">
 								<span>${msg('message.invalid-attributes.form-errors')}:</span>
-								<ul class="invalid-attributes-list" data-bind="foreach: invalidAttributes()">
+								<ul class="invalid-attributes-list" data-bind="foreach: getInvalidAttributes">
 									<li class="invalid-attribute" data-bind="click: $root.scrollToFormField, clickBubble: false">
 										<span class="invalid-attribute-name" data-bind="text: title"></span>:
 										<span class="invalid-attribute-message" data-bind="text: validationMessage"></span>
@@ -297,7 +297,7 @@
 
 						_set: <@views.renderValue attributeSet />,
 						_attributeNames: <@views.renderValue attributeNames />,
-						_invariants: <@views.renderInvariants invariants />,
+						_invariants: <#if invariants??><@views.renderInvariants invariants /><#else>null</#if>,
 
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderDefaultModel defaultModel />,
