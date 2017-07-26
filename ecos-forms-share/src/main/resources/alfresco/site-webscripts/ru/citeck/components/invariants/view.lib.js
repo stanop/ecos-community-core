@@ -26,18 +26,19 @@ function get(view, type, template) {
     return objects;
 }
 
-function getAttributeSet(args, view) {
-    var attributeSet = { attributes: [], sets: [], id: "", template: view.template };
-    setAttributeSetId(view);
+function getAttributeSet(args, view, all) {
+    buildAttributeSetId(view);
 
-    for (var i in view.elements) {
-        var element = view.elements[i];
+    var attributeSet = { attributes: [], sets: [], id: "", template: view.template, params: {} };
+
+    view.elements.forEach(function(element) {
         if (element.type == "field") {
             attributeSet.attributes.push({ name: element.attribute, template: element.template });
-        } else if (element.type == "view" && element.template.indexOf("set") != -1) {
+        } else if (element.type == "view") {
             attributeSet.sets.push(getAttributeSet(args, element));
+            attributeSet.params = element.params;
         }
-    }
+    })
 
     attributeSet.id = view.id || (function() {
         var identificator = attributeSet.attributes.map(function(attr) { return attr.name; }).join("_");
@@ -46,24 +47,24 @@ function getAttributeSet(args, view) {
     })();
 
     // TODO: replace many requests for one (speed up!!!)
-    var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; })) || [],
-        viewScopeInvariants = getViewInvariants(view) || [];
-    attributeSet.invariants = invariantSet.invariants.concat(viewScopeInvariants);
+    if (attributeSet.attributes.length) {
+        var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; })) || [],
+            viewScopeInvariants = getViewInvariants(view) || [];
+        attributeSet.invariants = invariantSet.invariants.concat(viewScopeInvariants);
+    }
 
     return attributeSet;
 }
 
-function setAttributeSetId(view) {
-    var attributes = [], setsCount = 0;
-    for (var i in view.elements) {
-        if (view.elements[i].type == "field") { attributes.push(view.elements[i].attribute); }
-        else if (view.elements[i].type == "view" && view.template.indexOf("set") != -1) { 
-            buildAttributeSetId(view.elements[i]);
-            setsCount++;
-        }
-    }
-
-    view.params.setId = attributes.join("_") + "_" + attributes.length + "_" + setsCount;
+function buildAttributeSetId(view) {
+    view.params.setId = view.id || (function() {
+        var attributes = [], setsCount = 0;
+        view.elements.forEach(function(element) {
+            if (element.type == "field") { attributes.push(element.attribute); }
+            else if (element.type == "view") setsCount++; 
+        });
+        return attributes.join("_") + "_" + attributes.length + "_" + setsCount;
+    })()
 }
 
 function getViewInvariants(view) {

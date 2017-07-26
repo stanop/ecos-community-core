@@ -32,11 +32,21 @@
 	
 	<div class="form-${element.type} template-${template}"
 		<#if element.attribute??>
-			data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }"
+			data-bind="css: { 
+				invalid: invalid, 
+				hidden: irrelevant, 
+				'with-help': description, 
+				'inline-edit': inlineEditVisibility
+			}"
 			data-attribute-name="${element.attribute}"
 		</#if>
+
 		<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
-			data-bind="css: { hidden: getSet('${element.params.setId}').irrelevant() }"
+			data-bind="css: { hidden: function() {
+					let set = getAttributeSet('${element.params.setId}');
+					return set ? set.irrelevant() : false
+				}
+			}"
 		</#if>
 
 		<#-- custom width for field -->

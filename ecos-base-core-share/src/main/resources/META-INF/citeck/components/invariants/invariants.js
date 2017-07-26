@@ -488,6 +488,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('companyhome', Node)
         .property('userhome', Node)
         .property('view', o)
+
+        // TODO: load
         ;
 
     var COMMON_DEFAULT_MODEL_KEY = "default",
@@ -1312,7 +1314,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 datatype: datatype
             };
         })
-        // .method('getGroup', function() {
+
+        // .method('getAttributeSet', function() {
         //     var name = this.name(), groups = this.resolve("node.impl.groups", []);
         //     return _.find(groups, function(gp) { return gp._attributes().indexOf(name) != -1; }) || null;
         // })
@@ -1685,21 +1688,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
-        .method('getSet', function(name) {
-            var findSetRecursively = function(sets, setId) {
-                for (var s = 0; s < sets.length; s++) {
-                    if (sets[s].id() == setId) return sets[s];
-                    if (sets[s].sets().length) {
-                        var findedSet = findSetRecursively(sets[s].sets(), setId);
+        .method('getAttributeSet', function(id) {
+            var findSetRecursively = function(attributeSets, setId) {
+                for (var as in attributeSets) {
+                    if (attributeSets[as].id() == setId) return attributeSets[as];
+                    
+                    if (attributeSets[as].sets().length) {
+                        var findedSet = findSetRecursively(attributeSets[as].sets(), setId);
                         if (findedSet) return findedSet;
                     }
                 }
-
+                
                 return null;
             };
 
-            return findSetRecursively([ this.attributeSet() ], name);
+            return findSetRecursively([ this.attributeSet() ], id);
         })
+
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
                 return attr.relevant() && (attr.changed() || attr.changedByInvariant() || (!attr.persisted() && attr.invariantDefault() != null));
@@ -2589,43 +2594,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 $(window).resize();
             }
-
-            // define attributes from first group as forced
-            // if (this.options.model.loadAttributesMethod == "clickOnGroup") {
-            //     this.options.model.invariantSet.forcedInvariants = this.options.model.node.groups[0].invariants;
-            //     this.options.model.node.forcedAttributes = this.options.model.node.groups[0].attributes;
-            // }
-
-            // define invariants
-            // if ((!this.options.model.node._invariants || this.options.model.node._invariants.length == 0) && 
-            //     (!this.options.model.node.classNames || this.options.model.node.classNames.length == 0)) {
-                
-            //     var invariantsURL = Alfresco.constants.PROXY_URI + "/citeck/invariants";
-            //     if (this.options.model.node.nodeRef) { 
-            //         invariantsURL += "?nodeRef=" + this.options.model.node.nodeRef;
-            //         if (this.options.model.inlineEdit) invariantsURL += "&inlineEdit=true"
-            //     } else if (this.options.model.node.type) { invariantsURL += "?type=" + this.options.model.node.type; }
-            //     invariantsURL += "&attributes=" + this.options.model.node.attributeNames.join(",");
-
-            //     Alfresco.util.Ajax.jsonGet({
-            //         url: invariantsURL,
-            //         successCallback: {
-            //             scope: this,
-            //             fn: function (response) {
-            //                 this.options.model.node._invariants = response.json.invariants;
-            //                 this.options.model.node.classNames = response.json.classNames;
-
-            //                 for (var name in response.json.model) {
-            //                     this.options.model.node.defaultModel[name] = response.json.model[name];
-            //                 }
-
-            //                 this.initRuntime();
-            //             }
-            //         }
-            //     });
-            // } else {
-                
-            // }
 
             if (this.options.model.inlineEdit) {
                 $("body").mousedown(function(e, a) {
