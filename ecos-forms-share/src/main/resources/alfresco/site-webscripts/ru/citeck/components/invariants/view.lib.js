@@ -28,6 +28,7 @@ function get(view, type, template) {
 
 function getAttributeSet(args, view) {
     var attributeSet = { attributes: [], sets: [], id: "", template: view.template };
+    setAttributeSetId(view);
 
     for (var i in view.elements) {
         var element = view.elements[i];
@@ -50,6 +51,19 @@ function getAttributeSet(args, view) {
     attributeSet.invariants = invariantSet.invariants.concat(viewScopeInvariants);
 
     return attributeSet;
+}
+
+function setAttributeSetId(view) {
+    var attributes = [], setsCount = 0;
+    for (var i in view.elements) {
+        if (view.elements[i].type == "field") { attributes.push(view.elements[i].attribute); }
+        else if (view.elements[i].type == "view" && view.template.indexOf("set") != -1) { 
+            buildAttributeSetId(view.elements[i]);
+            setsCount++;
+        }
+    }
+
+    view.params.setId = attributes.join("_") + "_" + attributes.length + "_" + setsCount;
 }
 
 function getViewInvariants(view) {

@@ -605,6 +605,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         ;
 
+    // TODO: enable and disable InvariantsRuntimeCache
+
     SingleClassInvariantSet
         .constructor([ Object ], function(model) { this.setModel(model); }, true)
 
@@ -1526,9 +1528,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     className: this.type(), 
                     invariants: this._invariants() 
                 });
-            } 
-
-            if (this.type.loaded()) {
+            } else if (this.type.loaded()) {
                 var forcedAttributes = this._attributeNames(),
                     validAttributeNames = [];
 
@@ -1698,7 +1698,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return null;
             };
 
-            return findSetRecursively([ this.set() ], name);
+            return findSetRecursively([ this.attributeSet() ], name);
         })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
@@ -2665,6 +2665,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
+            
+            console.log(this.runtime)
         },
 
         initRuntimeCache: function() {

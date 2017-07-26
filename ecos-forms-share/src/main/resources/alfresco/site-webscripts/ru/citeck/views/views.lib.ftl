@@ -36,7 +36,7 @@
 			data-attribute-name="${element.attribute}"
 		</#if>
 		<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
-			data-bind="css: { hidden: set('${element.params.setId}').irrelevant() }"
+			data-bind="css: { hidden: getSet('${element.params.setId}').irrelevant() }"
 		</#if>
 
 		<#-- custom width for field -->
