@@ -270,6 +270,11 @@
         <property name="historyGetService" ref="historyGetService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.node.node-child-associations.get" class="ru.citeck.ecos.webscripts.node.NodeChildAssociationsGet"
+            parent="webscript">
+        <property name="nodeService" ref="NodeService"/>
+    </bean>
+
     <bean id="webscript.ru.citeck.tasks.document-tasks.get" class="ru.citeck.ecos.webscripts.tasks.DocumentTasksGet"
             parent="webscript">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
