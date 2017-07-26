@@ -264,20 +264,80 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
             onGroupAction: function (records, action) {
                 var dataObj = {
                   nodes: _.map(records, function(record) { return record.nodeRef(); }),
-                  actionId: action.id(),
+                  actionId: action.settings().actionId,
                   params: action.settings()
                 };
 
                 Alfresco.util.Ajax.jsonPost({
-                  url: Alfresco.constants.PROXY_URI + "api/journals/group-action",
-                  dataObj: dataObj,
-                  successCallback: {
-                      scope: this,
-                      fn: function(response) {
-                        Alfresco.util.PopupManager.displayMessage({
-                          text: this.msg("batch-edit.message.OK")
-                        });
-                      }
+                    url: Alfresco.constants.PROXY_URI + "api/journals/group-action",
+                    dataObj: dataObj,
+                    successCallback: {
+                        scope: this,
+                        fn: function(response) {
+                            var results = response.json;
+
+                            if (!this.widgets.gard) {
+                                this.widgets.gard = new YAHOO.widget.SimpleDialog("group-action-result-dialog", {
+                                    width: "600px",
+                                    effect:{
+                                        effect: YAHOO.widget.ContainerEffect.FADE,
+                                        duration: 0.25
+                                    },
+                                    fixedcenter: "contained",
+                                    modal: false,
+                                    visible: true,
+                                    draggable: false,
+                                    close: false,
+                                    buttons: [ { text: "OK", handler: function() { this.hide()} } ]
+                                });
+
+                                this.widgets.gard.setHeader(msg("group-action.label.header"));
+                                this.widgets.gard.setBody(
+                                    $("<table>").append(
+                                        $("<thead>").append(
+                                            $("<tr>")
+                                                .append($("<th>", { text: msg("group-action.label.record") }))
+                                                .append($("<th>", { text: msg("group-action.label.status") }))
+                                                .append($("<th>", { text: msg("group-action.label.message") }))
+                                        )
+                                    ).get(0)
+                                );
+
+                                this.widgets.gard.render(document.body);
+                            }
+
+                            $("table tbody", this.widgets.gard.body).remove();
+
+
+                            var rtbody = $("<tbody>");
+                            _.each(results, function(result) {
+                                var record = _.find(records, function(rec) {
+                                    return rec.nodeRef() == result.nodeRef;
+                                });
+
+                                if (record) {
+                                    var id = record.attributes()["cm:name"];
+
+                                    if (record.isDocument()) {
+                                        var doc = record.attributes()["wfm:document"];
+                                        id = doc.displayName;
+                                    }
+
+                                    rtbody.append(
+                                        $("<tr>")
+                                            .append($("<td>", { text: id }))
+                                            .append($("<td>", { 
+                                                text: msg("batch-edit.message." + result.status)
+                                            }))
+                                            .append($("<td>", { text: result.message }))
+                                    );
+                                }
+                            });
+
+                            $("table", this.widgets.gard.body).append(rtbody);
+                            
+                            this.widgets.gard.show();
+                        }
                   },
                   failureCallback: {
                       scope: this,

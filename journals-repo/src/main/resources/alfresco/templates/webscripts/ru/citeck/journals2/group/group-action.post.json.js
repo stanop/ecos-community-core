@@ -11,16 +11,18 @@
         return;
     }
 
-    var statusByNode = groupActionService.invoke(nodes, actionId, params);
+    var statuses = groupActionService.invoke(nodes, actionId, params);
 
     var results = [];
 
-    for (var node in statusByNode) {
-        var status = statusByNode[node];
+    var statusNodes = statuses.getNodes();
+
+    for (var idx in statusNodes) {
+        var node = statusNodes[idx];
         results.push({
-            nodeRef: node.nodeRef,
-            status: status.getStatus(),
-            message: status.getMessage()
+            nodeRef: node.nodeRef.toString(),
+            status: statuses.getStatus(node),
+            message: statuses.getMessage(node)
         });
     }
 

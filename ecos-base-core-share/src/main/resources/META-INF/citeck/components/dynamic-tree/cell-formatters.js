@@ -905,7 +905,7 @@
 							// Start/stop inherit rules from parent folder
 							Alfresco.util.Ajax.jsonPut(
 							{
-								url: Alfresco.constants.PROXY_URI_RELATIVE + "api/task-instances/" + taskId,
+								url: Alfresco.constants.PROXY_URI + "citeck/tasks/change-task-owner/" + taskId,
 								dataObj: properties,
 								successCallback:
 								{
@@ -970,7 +970,8 @@
 					{
 						updateTaskProperties(
 						{
-							"cm_owner": Alfresco.constants.USERNAME
+							"cm_owner": Alfresco.constants.USERNAME,
+							"action": "claim"
 						}, "claim");
 					};
 					  
@@ -978,7 +979,8 @@
 					{
 						updateTaskProperties(
 						{
-							"cm_owner": null
+							"cm_owner": null,
+							"action": "release"
 						}, "release");
 					};
 					

@@ -28,6 +28,9 @@
 			var uploadUrl = "api/citeck/upload?assoctype=" + encodeURIComponent(options.assocType);
 			if (options.contentType)
 				uploadUrl += '&contenttype=' + encodeURIComponent(options.contentType);
+			if (options.propertyName && options.propertyValue) {
+                uploadUrl += '&propertyname=' + options.propertyName + '&propertyvalue=' + options.propertyValue;
+			}
 			if (Alfresco.util.CSRFPolicy && Alfresco.util.CSRFPolicy.getParameter && Alfresco.util.CSRFPolicy.getToken)
 				uploadUrl += '&' + Alfresco.util.CSRFPolicy.getParameter() + '=' + encodeURIComponent(Alfresco.util.CSRFPolicy.getToken());
 			//todo timefix

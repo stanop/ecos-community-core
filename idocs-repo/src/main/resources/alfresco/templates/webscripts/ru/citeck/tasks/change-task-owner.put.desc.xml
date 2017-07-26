@@ -1,0 +1,18 @@
+<webscript>
+    <shortname>change-task-owner</shortname>
+    <description>Process claim/release of tasks.</description>
+    <url>/citeck/tasks/change-task-owner/{taskId}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <args>
+        <arg>
+            <shortname>cm_owner</shortname>
+            <description>User who claims or releases the task</description>
+        </arg>
+        <arg>
+            <shortname>action</shortname>
+            <description>Either claim or release</description>
+        </arg>
+    </args>
+</webscript>

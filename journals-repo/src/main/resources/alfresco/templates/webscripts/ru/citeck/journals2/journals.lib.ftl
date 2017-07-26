@@ -27,11 +27,17 @@
     [
         <#list groupActions as action>
         {
-        "id": "${action.getId()}",
+        "id": "group-action-${action_index}",
         "label": "${action.getTitle()}",
         "func": "onGroupAction",
         "isDoclib": false,
-        "settings": <@renderJournalOptions action.getOptions() />
+        "settings": {
+            <#local gActionOptions = action.getOptions() />
+            <#list gActionOptions?keys as name>
+            "${name}": <#if gActionOptions[name]??>"${gActionOptions[name]}"<#else>null</#if>,
+            </#list>
+            "actionId": "${action.getId()}"
+        }
         }<#if action_has_next>,</#if>
         </#list>
     ]

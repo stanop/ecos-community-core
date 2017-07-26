@@ -288,4 +288,11 @@
 		<property name="searchService" ref="searchService"/>
 	</bean>
 
+    <bean id="webscript.ru.citeck.tasks.change-task-owner.put"
+          class="ru.citeck.ecos.webscripts.tasks.ChangeTaskOwner"
+          parent="abstractWorkflowWebScript">
+        <property name="deputyService" ref="DeputyService" />
+        <property name="delegateListenerName" value="deputyListener.taskManagement"/>
+    </bean>
+
 </beans>

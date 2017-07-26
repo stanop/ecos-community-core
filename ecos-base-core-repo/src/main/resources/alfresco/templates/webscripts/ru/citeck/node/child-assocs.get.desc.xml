@@ -1,7 +1,7 @@
 <webscript>
     <shortname>Supplementary Files</shortname>
     <description>Supplementary Files of specified node</description>
-    <url>/citeck/node/child-assocs?nodeRef={nodeRef}&amp;assocType={assocType?}</url>
+    <url>/citeck/node/child-assocs?nodeRef={nodeRef}&amp;assocType={assocType?}&amp;docKind={docKind?}</url>
     <format default="json"/>
     <authentication>user</authentication>
     <transaction allow="readonly">required</transaction>

@@ -11,11 +11,13 @@ import ru.citeck.ecos.service.CiteckServices;
 public interface CaseStatusPolicies {
 
     public interface OnCaseStatusChangedPolicy extends ClassPolicy {
+
+        public static final String CASE_STATUS_CHANGED = "onCaseStatusChanged";
         // NOTE: this is important, that this field is here
         // if it is removed, this behaviours will be registered with
         // default namespace and will not be matched
         public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-        public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseStatusChanged");
+        public static final QName QNAME = QName.createQName(NAMESPACE, CASE_STATUS_CHANGED);
 
         //without this fields TransactionBehaviourQueue takes invocations
         //with a same first argument as totally equals and processes only one

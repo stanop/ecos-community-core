@@ -80,16 +80,41 @@
 			if (this.id.indexOf("agenda") != -1) console.log(this)
 
 			if (this.options.args.buttonsInHeader) {
+                var actionKeys = this.options.args.buttonsInHeader.split(',');
 
-				var actionKeys = this.options.args.buttonsInHeader.split(',');
-
-				for (var i = 0; i < actionKeys.length; i++) {
-					var key = actionKeys[i];
-					if (key) {
-						key = key.replace(/^\s+|\s+$/g, '');
-						if (key)
-							this.renderPanelAction(key);
+                if (this.options.args.availableButtonForGroups) {
+                    var groups  = this.options.args.availableButtonForGroups.split(','),
+						available = false;
+					for (var i = 0; i < groups.length; i++) {
+						Alfresco.util.Ajax.jsonGet({
+							url: (Alfresco.constants.PROXY_URI + "citeck/is-group-member?userName=" + Alfresco.constants.USERNAME + "&groupName=" + groups[i]),
+							successCallback: {
+                                scope: this,
+                                fn: function (response) {
+                                    if (response.json && !available) {
+                                        available = true;
+                                        for (var i = 0; i < actionKeys.length; i++) {
+                                            var key = actionKeys[i];
+                                            if (key) {
+                                                key = key.replace(/^\s+|\s+$/g, '');
+                                                if (key)
+                                                    this.renderPanelAction(key);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+						});
 					}
+				} else {
+                    for (var i = 0; i < actionKeys.length; i++) {
+                        var key = actionKeys[i];
+                        if (key) {
+                            key = key.replace(/^\s+|\s+$/g, '');
+                            if (key)
+                                this.renderPanelAction(key);
+                        }
+                    }
 				}
 			}
 
