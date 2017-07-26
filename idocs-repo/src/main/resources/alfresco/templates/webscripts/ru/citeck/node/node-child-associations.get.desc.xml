@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>node-child-association</shortname>
+    <description>Extended node child associations web script</description>
+    <url>/citeck/node/node-child-associations?nodeRef={userNodeRef}&amp;assocType={userAssocType}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>
