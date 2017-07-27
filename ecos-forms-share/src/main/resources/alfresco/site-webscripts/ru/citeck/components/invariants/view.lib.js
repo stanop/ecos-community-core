@@ -1,3 +1,12 @@
+function makeId(length) {
+    var POSSIBLE_SYMBOLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    var text = "";
+    for (var i = 0; i < length; i++) text += POSSIBLE_SYMBOLS.charAt(Math.floor(Math.random() * POSSIBLE_SYMBOLS.length));
+
+    return text;
+}
+
 function getAttributes(view) {
     var attributes = [];
     getAttributesRecursively(view, attributes);
@@ -27,9 +36,13 @@ function get(view, type, template) {
 }
 
 function getAttributeSet(args, view, all) {
-    buildAttributeSetId(view);
-
-    var attributeSet = { attributes: [], sets: [], id: "", template: view.template, params: {} };
+    var attributeSet = { 
+            attributes: [], 
+            sets: [], 
+            id: "", 
+            template: view.template, 
+            params: {}
+        };
 
     view.elements.forEach(function(element) {
         if (element.type == "field") {
@@ -40,11 +53,8 @@ function getAttributeSet(args, view, all) {
         }
     })
 
-    attributeSet.id = view.id || (function() {
-        var identificator = attributeSet.attributes.map(function(attr) { return attr.name; }).join("_");
-        identificator += "_" + attributeSet.attributes.length + "_" + attributeSet.sets.length;
-        return identificator;
-    })();
+    attributeSet.id = view.id || makeId(34);
+    view.params.setId = view.id || makeId(34);
 
     // TODO: replace many requests for one (speed up!!!)
     if (attributeSet.attributes.length) {
@@ -54,17 +64,6 @@ function getAttributeSet(args, view, all) {
     }
 
     return attributeSet;
-}
-
-function buildAttributeSetId(view) {
-    view.params.setId = view.id || (function() {
-        var attributes = [], setsCount = 0;
-        view.elements.forEach(function(element) {
-            if (element.type == "field") { attributes.push(element.attribute); }
-            else if (element.type == "view") setsCount++; 
-        });
-        return attributes.join("_") + "_" + attributes.length + "_" + setsCount;
-    })()
 }
 
 function getViewInvariants(view) {
