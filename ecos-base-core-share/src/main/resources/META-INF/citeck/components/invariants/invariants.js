@@ -884,10 +884,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return !this.irrelevant();
         })
         .computed('irrelevant', function() {
-            var self = this;
             var a_irrelevant = _.every(this.attributes(), function(attr) { 
-                    return attr.irrelevant() || self.getAttributeTemplate(attr.name()) == "none"; 
-                }),
+                    return attr.irrelevant() || this.getAttributeTemplate(attr.name()) == "none"; 
+                }, this),
                 s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
             return a_irrelevant && s_irrelevant;
         })
@@ -1689,20 +1688,40 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .method('getAttributeSet', function(id) {
-            var findSetRecursively = function(attributeSets, setId) {
-                for (var as in attributeSets) {
-                    if (attributeSets[as].id() == setId) return attributeSets[as];
-                    
-                    if (attributeSets[as].sets().length) {
-                        var findedSet = findSetRecursively(attributeSets[as].sets(), setId);
-                        if (findedSet) return findedSet;
+            var attributeSetMap = this.attributeSetMap(),
+                attributeSetObject = attributeSetMap[id];
+            if (attributeSetObject) return attributeSetMap[id].set;
+            return null;
+        })
+
+        .computed('attributeSetMap', function() {
+            var buildMapOfSets = function(sets, parent, nMap) {
+                sets.forEach(function(set) {
+                    if (!nMap[set.id()]) {
+                        nMap[set.id()] = { 
+                            set: set, 
+                            parent: parent, 
+                            children: _.map(set.sets(), function(s) { return s.id(); })
+                        };
+                        
+                        if (set.sets().length)
+                            buildMapOfSets(set.sets(), set.id(), nMap)
                     }
-                }
-                
-                return null;
+                });
+            }
+
+            var rootSet = this.attributeSet(),
+                map = {};
+
+            map[rootSet.id()] = {
+                set: rootSet,
+                parent: null,
+                children: _.map(rootSet.sets(), function(s) { return s.id(); })
             };
 
-            return findSetRecursively([ this.attributeSet() ], id);
+            buildMapOfSets(rootSet.sets(), rootSet.id(), map);
+
+            return map;
         })
 
         .method('getChangedAttributes', function() {
@@ -2504,7 +2523,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         }, this
                     ), 
                     function(invariant) {
-                        let attributeName = invariant.attributeScope(),
+                        var attributeName = invariant.attributeScope(),
                             isTypeInvariant = invariant.attributeScopeKind().indexOf("_type") != -1;
                         
                         if (isTypeInvariant) {

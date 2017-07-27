@@ -42,10 +42,10 @@
 		</#if>
 
 		<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
-			data-bind="css: { hidden: function() {
-					let set = getAttributeSet('${element.params.setId}');
+			data-bind="css: { hidden: ko.computed(function() {
+					var set = getAttributeSet('${element.params.setId}');
 					return set ? set.irrelevant() : false
-				}
+				})
 			}"
 		</#if>
 
