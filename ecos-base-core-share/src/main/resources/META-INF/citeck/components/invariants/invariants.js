@@ -810,20 +810,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('needsValue', b)
         ;
 
+    // TODO:
+    // - property to visible tab by default
 
     AttributeSet
         .constructor([ Object, Node], function(data, node) {
             return new AttributeSet({
                 id: data.id,
+                template: data.template,
                 _invariants: data.invariants,
                 _attributes: data.attributes,
                 _sets: data.sets,
                 node: node
             });
         }, true)
-        .constructor([ Object, Node, AttributeSet], function(data, node, parentSet) {
+        .constructor([ Object, Node, AttributeSet, n], function(data, node, parentSet, index) {
             return new AttributeSet({
                 id: data.id,
+                index: index,
+                template: data.template,
                 _invariants: data.invariants,
                 _attributes: data.attributes,
                 _sets: data.sets,
@@ -833,7 +838,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         }, true)
 
         .key('id', s)
-        // .property('index', n)
+        .property('index', n)
         .property('node', Node)
         .property('parentSet', AttributeSet)
         .property('template', s)
@@ -845,16 +850,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_invariants', o)
 
         .computed('attributes', function() {
-            var self = this, attributes = self.resolve('node.impl.attributes', []);
+            var attributes = this.resolve('node.impl.attributes', []);
             return _.filter(attributes, function(attribute) {
-                return !!_.find(self._attributes(), function(attr) { return attr.name == attribute.name(); });
-            });
+                return !!_.find(this._attributes(), function(attr) { return attr.name == attribute.name(); });
+            }, this);
         })
         .computed('sets', function() {
-            var self = this;
-            return this._sets().map(function(as) {
-                return new AttributeSet(as, self.node(), self);
-            });
+            return _.map(this._sets(), function(as, index) {
+                return new AttributeSet(as, this.node(), this, index);
+            }, this);
         })
         .computed('invariants', function() {
             // TODO: get invariants from general container or invariantSet of node
@@ -891,55 +895,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return a_irrelevant && s_irrelevant;
         })
 
-
         .method('getAttributeTemplate', function(attributeName) {
             var attribute = _.find(this._attributes(), function(attr) { return attr.name == attributeName; });
             if (attribute) return attribute.template;
             return null;
         })
-        .method('open', function() {
-            $(".tab-title[data-tab-id=" + this.id() + "]").addClass("selected");
-            $(".tab-body[data-tab-id=" + this.id() + "]").show();
-        })
-        .method('close', function() {
-            $(".tab-body[data-tab-id=" + this.id() + "]").hide();
-            $(".tab-title[data-tab-id=" + this.id() + "]").removeClass("selected");
-        })
-        .method('getTitleEl', function() { return $(".tab-title[data-tab-id=" + this.id() + "]")[0]; })
-        .method('getBodyEl', function() { return $(".tab-body[data-tab-id=" + this.id() + "]")[0]; })
 
-        .load('_visibility', function() { this._visibility(true) })
+        .load('_visibility', function() {
+            var parentTemplate = this.parentSet() ? this.parentSet().template() : null;
+            this._visibility(parentTemplate == "tabs" && this.index() == 0);
+        })
         .load('_activity', function() { this._activity(true) })
-
-        .init(function() {
-            // var self = this;
-
-            // subscription
-            // this._visibility.subscribe(function(newValue) {
-            //     var tab = $(self.getTitleEl()),
-            //         body = $(self.getBodyEl());
-
-            //     if (!!newValue) { tab.show(); body.show(); }
-            //     else { tab.hide(); body.hide(); }
-            // });
-
-            // this._activity.subscribe(function(newValue) {
-            //     var tab = $(self.getTitleEl()),
-            //         body = $(self.getBodyEl());
-
-            //     if (!!newValue) {
-            //         tab.attr("data-activity", true);
-            //         body.show();
-            //     } else {
-            //         tab.attr("data-activity", false).removeClass("selected");
-            //         body.hide();
-            //     }
-            // });
-
-            // trigger subscription
-            // this._visibility(this._visibility());
-            // this._activity(this._activity());
-        })
         ;
 
     AttributeInfo
@@ -1699,7 +1665,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 sets.forEach(function(set) {
                     if (!nMap[set.id()]) {
                         nMap[set.id()] = { 
-                            set: set, 
+                            set: set,
                             parent: parent, 
                             children: _.map(set.sets(), function(s) { return s.id(); })
                         };
@@ -2236,9 +2202,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return isNotInSubmitProcess && isLoaded && isValid;
         })
 
-        // .load('loadAttributesMethod', function() { this.loadAttributesMethod("default"); })
         .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
 
+
+        // PUBLIC METHODS
+        // --------------
         .method('scrollToFormField', function(data, event) {
             var field = $(".form-field[data-attribute-name='" + data.name() + "']");
             if (!data.inlineEditVisibility()) data.inlineEditVisibility(true);
@@ -2248,114 +2216,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('deleteNode', function(nodeRef, callback) {
             YAHOO.util.Connect.asyncRequest('DELETE', Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, callback);
         })
-
-        // .method('selectGroup', function(data, event) {
-        //     var tabId = $(event.target).attr("data-tab-id"),
-        //         tabIndex = $(event.target).attr("data-tab-index");
-
-        //     var tab = $(".tab-title[data-tab-id=" + tabId + "]"),
-        //         body = $(".tab-body[data-tab-id=" + tabId + "]");
-
-        //     if (tab.attr("data-activity") == "false") return false;
-
-        //     $(event.target)
-        //         .parent()
-        //         .children()
-        //         .removeClass("selected")
-        //         .end().end()
-        //         .addClass("selected");
-
-        //     $(".tabs-body .tab-body[data-tab-id=" + tabId + "]")
-        //         .parent()
-        //         .children()
-        //         .addClass("hidden")
-        //         .end().end()
-        //         .removeClass("hidden");
-
-        //     if (this.loadAttributesMethod() == "clickOnGroup") {
-        //         var group = this.node().impl().group(tabId);
-
-        //         if (this.loadGroupIndicator() && tabIndex > 0) {
-        //             var self = this,
-        //                 indicatorId = tabId + "-loadGroupIndicator", bodyId = $(".tabs-body .tab-body[data-tab-id=" + tabId + "]").attr("id"),
-        //                 buttons = $(".invariants-form .form-buttons");
-
-        //             if (!window[indicatorId]) {
-        //                 buttons.hide();
-
-        //                 window[indicatorId] = new Citeck.UI.waitIndicator(indicatorId, {
-        //                     context: bodyId,
-        //                     backgroundColor: "#f0f0f0"
-        //                 });
-
-        //                 window[indicatorId].handler = ko.computed(function() {
-        //                     var impl = self.resolve("node.impl"), groupAttributes = group._attributes();
-        //                     return _.every(groupAttributes, function(attribute) { return !!impl.attribute(attribute);  });
-        //                 });
-
-        //                 window[indicatorId].handler.subscribe(function(newValue) {
-        //                     if (newValue) {
-        //                         window[indicatorId].hide();
-        //                         window[indicatorId].handler.dispose();
-
-        //                         // indicator was finished
-        //                         window[indicatorId] = true;
-
-        //                         buttons.show();
-        //                     }
-        //                 });
-
-        //                 window[indicatorId].show();
-        //             }
-        //         }
-
-        //         this.runtime().loadGroupInvariants(group);
-        //         this.runtime().loadGroupAttributes(group);
-        //     }
-        // })
-
-
-        // .method('loadGroupAttributes', function(group) {
-        //     if (group && !this.checkGroupAttributes(group._attributes())) {
-        //         this.node().impl().attributeNames(_.union(this.resolve("node.impl.attributeNames"), group._attributes()));
-        //     }
-        // })
-        // .method('loadGroupInvariants', function(group) {
-        //     if (group && !this.checkGroupInvariants(group.invariants())) {
-        //         this.invariantSet().forcedInvariants(_.union(this.resolve("invariantSet.forcedInvariants"), group.invariants()));
-        //     }
-        // })
-
-        // .method('checkGroupAttributes', function(attributes) {
-        //     return _.every(attributes, function(attribute) {
-        //         return this.resolve("node.impl.forcedAttributes").indexOf(attribute) != -1;
-        //     }, this);
-        // })
-        // .method('checkGroupInvariants', function(invariants) {
-        //     return _.every(invariants, function(invariant) {
-        //         return this.resolve("invariantSet.forcedInvariants").indexOf(invariant) != -1;
-        //     }, this);
-        // })
-
-
-        // .method('scrollGroups', function(data, event) {
-        //     var scrollArrow = $(event.target),
-        //         direction = (function() {
-        //             var matches = scrollArrow.attr("class").match(/scroll-(left|right)/);
-        //             return matches.length > 0 ? matches[1] : undefined;
-        //         })();
-
-        //     if (direction) {
-        //         var list = $("ul", scrollArrow.parent());
-        //         if (direction == "right") 
-        //             list.animate({ scrollLeft: list.scrollLeft() + 100 }, 300);
-        //         if (direction == "left") 
-        //             list.animate({ scrollLeft: list.scrollLeft() - 100 }, 300);
-        //     }
-
-        //     return false;
-        // })
-
 
         .method('submit', function() {
             if(this.node().impl().valid()) {
@@ -2372,9 +2232,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.broadcast('node-view-submit');
             }
         })
+
         .method('cancel', function() {
             this.broadcast('node-view-cancel');
         })
+
         .method('broadcast', function(eventName) {
             YAHOO.Bubbling.fire(eventName, {
                 key: this.key(),
@@ -2388,6 +2250,34 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (form) form._terminate();
             delete form;
         })
+
+
+        // for tabs template
+        // -----------------
+
+        .method('selectAttributeSet', function(attributeSet, event) {
+            _.each(attributeSet.parentSet().sets(), function(set) { set.visible(false); })
+            attributeSet.visible(true);
+        })
+
+        .method('scroll', function(data, event) {
+            var scrollArrow = $(event.target),
+                direction = (function() {
+                    var matches = scrollArrow.attr("class").match(/scroll-(left|right)/);
+                    return matches.length > 0 ? matches[1] : undefined;
+                })();
+
+            if (direction) {
+                var list = $("ul", scrollArrow.parent());
+                if (direction == "right") 
+                    list.animate({ scrollLeft: list.scrollLeft() + 100 }, 300);
+                if (direction == "left") 
+                    list.animate({ scrollLeft: list.scrollLeft() - 100 }, 300);
+            }
+
+            return false;
+        })
+
 
         .init(function() {
             this._loading(true);
@@ -2595,24 +2485,22 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this.initRuntimeCache();
             this.initRuntime();
 
-            if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
-                $(window).resize(function() {
-                   $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
-                        var ulWidth = parseInt($("ul", tabTitle).innerWidth()),
-                            lisWidth = 0;
+            // if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
+            //     $(window).resize(function() {
+            //        $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
+            //             var ulWidth = parseInt($("ul", tabTitle).innerWidth()),
+            //                 tabsWidth = parseInt($("ul", tabTitle).parent().innerWidth());
 
-                        $.each($("li", tabTitle), function(il, li) {
-                            lisWidth += $(li).innerWidth() + (/left|right/.test($(li).css("float")) ? parseInt($(li).css("margin-right")) : 4);
-                        });
+            //             console.log(tabsWidth, ulWidth)
 
-                        if (lisWidth > ulWidth) {
-                            $("span.scroll-tabs", tabTitle).removeClass("hidden");
-                        } else { $("span.scroll-tabs", tabTitle).addClass("hidden"); }
-                    }); 
-                });
+            //             if (tabsWidth > ulWidth) {
+            //                 $("span.scroll-tabs", tabTitle).removeClass("hidden");
+            //             } else { $("span.scroll-tabs", tabTitle).addClass("hidden"); }
+            //         }); 
+            //     });
 
-                $(window).resize();
-            }
+            //     $(window).resize();
+            // }
 
             if (this.options.model.inlineEdit) {
                 $("body").mousedown(function(e, a) {

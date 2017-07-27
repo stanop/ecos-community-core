@@ -11,40 +11,44 @@
 <#assign tabs = getTabs(viewScope.view) />
 
 <div class="tabs-title">
-	<#-- <span class="scroll-tabs scroll-left hidden" data-bind="click: $root.scrollGroups"> << </span> -->
+	<span class="scroll-tabs scroll-left" data-bind="click: $root.scroll"> << </span>
 	<ul>
 		<#list tabs as tab>
 			<#assign tabId = tab.id!tab.params.setId />
-			<li class="tab-title <#if tab_index == 0>selected</#if>"
-				data-tab-id="${tabId}"
-				data-tab-index="${tab_index}"
-				data-bind="click: console.log, clickBubble: false"
-			>
-				<#if msg(tab.params.title)?has_content>
-					${msg(tab.params.title)}
-				<#else>
-					${msg("tabs.tab.title")} ${tab_index}
-				</#if>
 
-				<!-- ko with: getAttributeSet("${tabId}") -->
+			<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
+				<li class="tab-title" data-tab-id="${tabId}"
+					data-bind="css: { selected: visible }, click: _.bind($root.selectAttributeSet, $root), clickBubble: false"
+				>
+					<#if msg(tab.params.title)?has_content>
+						${msg(tab.params.title)}
+					<#else>
+						${msg("tabs.tab.title")} ${tab_index}
+					</#if>
+
+					
 					<!-- ko if: invalid -->
 						<i class="fa fa-exclamation-circle warning" aria-hidden="true"></i>
 					<!-- /ko -->
-				<!-- /ko -->
-			</li>
+				</li>
+			<!-- /ko -->
 		</#list>
 	</ul>
-	<#-- <span class="scroll-tabs scroll-right hidden" data-bind="click: $root.scrollGroups"> >> </span> -->
+	<span class="scroll-tabs scroll-right" data-bind="click: $root.scroll"> >> </span>
 </div>
 
 <div class="tabs-body ">
 	<#list tabs as tab>
-		<#assign tabId = tab.id!tab.genId />
-		<div class="tab-body <#if tab_index != 0>hidden</#if>"
-			 id="${args.htmlid}-${tabId}"
-			 data-tab-id="${tabId}"
-		>
-			<@views.renderElement tab />
-		</div>
+		<#assign tabId = tab.id!tab.params.setId />
+
+		<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
+			<div class="tab-body" id="${args.htmlid}-${tabId}" data-tab-id="${tabId}" 
+				data-bind="css: { hidden: hidden }"
+			>
+				<!-- ko with: $root.node().impl() -->
+					<@views.renderElement tab />
+				<!-- /ko -->
+			</div>
+		<!-- /ko -->
 	</#list>
 </div>
