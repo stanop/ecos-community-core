@@ -12,6 +12,16 @@ import java.util.List;
 public class ChildAssociationDto implements Serializable {
 
     /**
+     * Node reference
+     */
+    private String nodeRef;
+
+    /**
+     * Parent reference
+     */
+    private String parentRef;
+
+    /**
      * Properties
      */
     private List<AbstractMap.SimpleEntry<QName, Serializable>> properties;
@@ -19,8 +29,23 @@ public class ChildAssociationDto implements Serializable {
     /**
      * Child associations
      */
-    private List<AbstractMap.SimpleEntry<QName, List<AbstractMap.SimpleEntry<QName, Serializable>>>> childAssociations;
+    private List<AbstractMap.SimpleEntry<QName, ChildAssociationDto>> childAssociations;
 
+    public String getNodeRef() {
+        return nodeRef;
+    }
+
+    public void setNodeRef(String nodeRef) {
+        this.nodeRef = nodeRef;
+    }
+
+    public String getParentRef() {
+        return parentRef;
+    }
+
+    public void setParentRef(String parentRef) {
+        this.parentRef = parentRef;
+    }
 
     public List<AbstractMap.SimpleEntry<QName, Serializable>> getProperties() {
         return properties;
@@ -30,11 +55,11 @@ public class ChildAssociationDto implements Serializable {
         this.properties = properties;
     }
 
-    public List<AbstractMap.SimpleEntry<QName, List<AbstractMap.SimpleEntry<QName, Serializable>>>> getChildAssociations() {
+    public List<AbstractMap.SimpleEntry<QName, ChildAssociationDto>> getChildAssociations() {
         return childAssociations;
     }
 
-    public void setChildAssociations(List<AbstractMap.SimpleEntry<QName, List<AbstractMap.SimpleEntry<QName, Serializable>>>> childAssociations) {
+    public void setChildAssociations(List<AbstractMap.SimpleEntry<QName, ChildAssociationDto>> childAssociations) {
         this.childAssociations = childAssociations;
     }
 }
