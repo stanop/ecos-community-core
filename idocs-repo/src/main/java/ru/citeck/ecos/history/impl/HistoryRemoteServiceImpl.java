@@ -38,13 +38,18 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     /** JSON constants */
     private static final String USERNAME = "username";
     private static final String USER_ID = "userId";
+    private static final String INITIATOR = "initiator";
+    private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
+    private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
+    private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
 
     /**
      * Constants
      */
     private static final String[] KEYS = {
             "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
-            "taskRole", "taskOutcome", "taskType", "initiator", "workflowInstanceId", "workflowDescription"
+            "taskRole", "taskOutcome", "taskType", "initiator", "workflowInstanceId", "workflowDescription",
+            "taskEventInstanceId"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
     private static final String DELIMETER = ";";
@@ -164,6 +169,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                     nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
             QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
             entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.toString() : "");
+            /** Workflow */
+            entryMap.put(WORKFLOW_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
+            entryMap.put(WORKFLOW_DESCRIPTION, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_DESCRIPTION));
+            entryMap.put(TASK_EVENT_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
+            entryMap.put(INITIATOR, nodeService.getProperty(eventRef, HistoryModel.ASSOC_INITIATOR));
             /** Username and user id */
             String username = (String) nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY);
             NodeRef userNodeRef = personService.getPerson(username);

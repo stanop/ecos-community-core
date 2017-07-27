@@ -75,6 +75,7 @@ public class HistoryService {
     private static final String INITIATOR = "initiator";
     private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
     private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
+    private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
 
     /**
      * Date-time format
@@ -252,6 +253,7 @@ public class HistoryService {
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
         requestParams.put(WORKFLOW_DESCRIPTION, properties.get(HistoryModel.PROP_WORKFLOW_DESCRIPTION));
+        requestParams.put(TASK_EVENT_INSTANCE_ID, properties.get(HistoryModel.PROP_TASK_INSTANCE_ID));
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
     }
 
