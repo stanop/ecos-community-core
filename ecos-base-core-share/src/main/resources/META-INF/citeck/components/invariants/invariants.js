@@ -1280,11 +1280,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             };
         })
 
-        // .method('getAttributeSet', function() {
-        //     var name = this.name(), groups = this.resolve("node.impl.groups", []);
-        //     return _.find(groups, function(gp) { return gp._attributes().indexOf(name) != -1; }) || null;
-        // })
-
         // feature evaluators
         .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
         .method('nonblockingValueEvaluator', featureEvaluator('nonblocking-value', o, null, notNull))
@@ -1661,20 +1656,34 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .computed('attributeSetMap', function() {
-            var buildMapOfSets = function(sets, parent, nMap) {
-                sets.forEach(function(set) {
-                    if (!nMap[set.id()]) {
-                        nMap[set.id()] = { 
-                            set: set,
-                            parent: parent, 
-                            children: _.map(set.sets(), function(s) { return s.id(); })
-                        };
-                        
-                        if (set.sets().length)
-                            buildMapOfSets(set.sets(), set.id(), nMap)
-                    }
-                });
-            }
+            var buildMapOfAttributes = function(set, attributes, nMap) {
+                    attributes.forEach(function(attribute) {
+                        if (!nMap[attribute.key()]) {
+                            nMap[attribute.key()] = {
+                                attribute: attribute,
+                                set: set
+                            };
+                        }
+                    });
+                },
+                buildMapOfSets = function(sets, parent, nMap) {
+                    sets.forEach(function(set) {
+                        if (!nMap[set.id()]) {
+                            nMap[set.id()] = { 
+                                set: set,
+                                parent: parent, 
+                                children: _.map(set.sets(), function(s) { return s.id(); })
+                            };
+                            
+                            if (set.sets().length)
+                                buildMapOfSets(set.sets(), set.id(), nMap)
+
+                            if (set.attributes().length)
+                                buildMapOfAttributes(set, set.attributes(), nMap);
+                        }
+                    });
+                };
+
 
             var rootSet = this.attributeSet(),
                 map = {};
