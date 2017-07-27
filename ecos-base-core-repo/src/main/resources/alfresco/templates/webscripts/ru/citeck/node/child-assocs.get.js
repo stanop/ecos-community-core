@@ -15,4 +15,10 @@
             return node.properties["tk:kind"] && node.properties["tk:kind"].nodeRef == args.docKind;
         });
     }
+
+    if (args.filterKind) {
+        model.nodes = model.nodes.filter(function (node) {
+            return !node.properties["tk:kind"] || args.filterKind.indexOf(node.properties["tk:kind"].nodeRef) == -1;
+        });
+    }
 })();
