@@ -334,12 +334,15 @@ public class RepoUtils {
 	}
 
 	public static String getUniqueName(NodeRef nodeRef, String nameWithoutExt, String extension, NodeService nodeService) {
+		ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
+		return getUniqueName(parentAssoc.getParentRef(), parentAssoc.getTypeQName(), nodeRef, nameWithoutExt, extension, nodeService);
+	}
 
+	public static String getUniqueName(NodeRef parentRef, QName parentAssoc, NodeRef nodeRef, String nameWithoutExt, String extension, NodeService nodeService) {
 		int index = 0;
 		String newNameWithIndex = nameWithoutExt + extension;
-		ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
 		NodeRef nr = null;
-		while ((nr = nodeService.getChildByName(parentAssoc.getParentRef(), parentAssoc.getTypeQName(), newNameWithIndex)) != null
+		while ((nr = nodeService.getChildByName(parentRef, parentAssoc, newNameWithIndex)) != null
 				&& !nodeRef.equals(nr)) {
 			index++;
 			newNameWithIndex = nameWithoutExt + " (" + index + ")" + extension;

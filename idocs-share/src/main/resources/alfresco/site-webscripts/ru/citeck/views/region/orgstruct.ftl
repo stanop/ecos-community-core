@@ -16,6 +16,20 @@
         <#assign userLabel = config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"][0].attributes["label"]>
 </#if>
 
+<#assign allExcludeFields>
+    <#if config.scoped["InvariantControlsConfiguration"]?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]?? && params.excludeFields??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"] + "," + params.excludeFields}
+    <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]}
+    <#elseif params.excludeFields??>
+         ${params.excludeFields}
+    <#else>""</#if>
+</#assign>
+
 <div id="${controlId}" class="orgstruct-control" data-bind="orgstructControl: { 
                                                                 value: value, 
                                                                 multiple: multiple 
@@ -30,8 +44,8 @@
                                                                         allowedGroupType: '${params.allowedGroupType}',
                                                                     </#if>
 
-                                                                    <#if params.excludeFields??>
-                                                                        excludeFields: '${params.excludeFields}',
+                                                                    <#if allExcludeFields??>
+                                                                        excludeFields: '${allExcludeFields?trim}',
                                                                     </#if>
 
                                                                     <#if params.rootGroup??>
