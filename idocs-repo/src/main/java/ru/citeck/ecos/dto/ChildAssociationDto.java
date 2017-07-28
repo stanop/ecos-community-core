@@ -10,6 +10,10 @@ import java.util.List;
  * Child association data transfer object
  */
 public class ChildAssociationDto implements Serializable {
+    /**
+     * Content url
+     */
+    private String contentUrl;
 
     /**
      * Node reference
@@ -30,6 +34,14 @@ public class ChildAssociationDto implements Serializable {
      * Child associations
      */
     private List<AbstractMap.SimpleEntry<QName, ChildAssociationDto>> childAssociations;
+
+    public String getContentUrl() {
+        return contentUrl;
+    }
+
+    public void setContentUrl(String contentUrl) {
+        this.contentUrl = contentUrl;
+    }
 
     public String getNodeRef() {
         return nodeRef;
