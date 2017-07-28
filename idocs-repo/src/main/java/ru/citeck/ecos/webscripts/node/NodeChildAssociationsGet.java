@@ -24,6 +24,8 @@ import java.util.*;
 public class NodeChildAssociationsGet extends DeclarativeWebScript {
 
     private static final String DELIMITER = ",";
+    private static final String DOWNLOAD_API_PREFIX = "/api/node/workspace/SpacesStore/";
+    private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
 
     /**
      * Request params
@@ -92,6 +94,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             ChildAssociationDto associationDto = new ChildAssociationDto();
             associationDto.setParentRef(topNodeRef.toString());
             associationDto.setNodeRef(childNodeRef.toString());
+            associationDto.setContentUrl(DOWNLOAD_API_PREFIX + childNodeRef.getId() + DOWNLOAD_API_SUFFIX);
             associationDto.setProperties(transformProperties(nodeService.getProperties(childNodeRef)));
             /** Child associations */
             List<ChildAssociationRef> childChildAssociationRefs = getChildAssociations(childNodeRef, childQNames);
@@ -104,6 +107,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
                 ChildAssociationDto childChildDto = new ChildAssociationDto();
                 childChildDto.setNodeRef(childChildRef.toString());
                 childChildDto.setParentRef(childNodeRef.toString());
+                childChildDto.setContentUrl(DOWNLOAD_API_PREFIX + childChildRef.getId() + DOWNLOAD_API_SUFFIX);
                 childChildDto.setProperties(transformProperties(nodeService.getProperties(childChildRef)));
                 dtoAccos.add(new AbstractMap.SimpleEntry<QName, ChildAssociationDto>(
                         childChildAssocRef.getTypeQName(),
