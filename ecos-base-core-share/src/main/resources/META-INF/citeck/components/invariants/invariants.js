@@ -1257,6 +1257,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .computed('rawValue', function() {
+            if (this.irrelevant()) return null;
+
             var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
                 hybridValue = this.hybridValue(),
                 invariantDefault = this.invariantDefault(),
@@ -1264,7 +1266,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 isInlineEditMode = this.resolve("node.impl.runtime.inlineEdit", false),
                 inSubmitProcess = this.resolve("node.impl.inSubmitProcess", false),
                 inEditing = this.inlineEditVisibility() || inSubmitProcess;
-            
+
             if (!isViewMode || inEditing) {
                 if(invariantValue != null) return invariantValue;
                 if(this.hybridValue.loaded()) return hybridValue;
@@ -1314,12 +1316,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('optionsInvariants', function() { return featureInvariants('options').call(this); })
         .computed('options', {
             read: function() {
+                if (this.irrelevant()) return [];
                 var options = this.invariantOptions();
                 return options ? this.convertValue(options, true) : [];
             },
             pure: true
         })
         .method('filterOptions', function(criteria, pagination) {
+            if (this.irrelevant()) return [];
+
             // find invariant with correct query
             var model = this.getInvariantsModel(this.value, criteria.cache = criteria.cache || {}),
                 optionsInvariant = _.find(this.optionsInvariants(), function(invariant) {
@@ -2197,30 +2202,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this._loading()) return true;
 
             if (this.node.loaded() && this.node().impl.loaded() && 
-                this.node().impl().attributes.loaded() && this.node().impl().invariantSet.loaded()) {
+                this.node().impl().attributes.loaded() && 
+                this.node().impl().invariantSet.loaded() && this.node().impl().invariantSet().invariants.loaded()) {
 
                 var attributes = this.node().impl().attributes(),
-                    loadedAttributes = {};
+                    loadedAttributes = [];
 
-                for (var a in attributes) {
-                    var attribute = attributes[a],
-                        isLoaded = _.every([ "name", "valid", "relevant", "protected", "mandatory", "value" ], function(p) {
-                            return attribute[p].loaded() && 
-                                (p != "value" ? !_.isNull(attribute[p]()) : true);
-                        });
-
-                    if (isLoaded) loadedAttributes[attribute.name()] = true;
-                }
+                _.each(attributes, function(attribute) {
+                    if (_.every([ "name", "valid", "relevant", "protected", "mandatory" ], function(p) {
+                        return attribute[p].loaded();
+                    })) loadedAttributes.push(true);
+                });
 
                 if (!this.node().impl()._definedAttributeNamesWasLoaded()) return false;
-                if (Object.keys(loadedAttributes).length != attributes.length) return false;
+                if (loadedAttributes.length != attributes.length) return false;
 
-                // delay while controls are loading (2 seconds enough)
-                if (this._loading()) {
-                    setTimeout(function(scope) { 
-                        scope._loading(false);
-                    }, 500, this);
-                }
+                // delay while controls are loading (0.5 seconds enough)
+                if (this._loading())
+                    setTimeout(function(scope) {  scope._loading(false); }, 500, this);
 
                 return !this._loading();
             }
