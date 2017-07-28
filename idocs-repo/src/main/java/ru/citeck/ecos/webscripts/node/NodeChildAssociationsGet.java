@@ -24,7 +24,7 @@ import java.util.*;
 public class NodeChildAssociationsGet extends DeclarativeWebScript {
 
     private static final String DELIMITER = ",";
-    private static final String DOWNLOAD_API_PREFIX = "/share/proxy/alfresco/api/node/workspace/SpacesStore/";
+    private static final String DOWNLOAD_API_PREFIX = "/api/node/workspace/SpacesStore/";
     private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
 
     /**

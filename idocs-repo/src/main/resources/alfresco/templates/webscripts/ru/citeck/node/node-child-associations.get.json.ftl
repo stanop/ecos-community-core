@@ -9,13 +9,13 @@
                 {
                 "nodeRef" : "${childAssociation.nodeRef}",
                 "parent": "${childAssociation.parentRef}",
-                "contentUrl" : "${childAssociation.contentUrl}",
                 <#-- Child association properties -->
                 "attributes" : {
                 <#list childAssociation.properties as propertyEntry>
                     <#assign propertyName = shortQName(propertyEntry.key)>
-                    "${propertyName}" : <#if propertyEntry.value??><@search.printValue propertyEntry.value/><#else>null</#if><#if propertyEntry_has_next>,</#if>
+                    "${propertyName}" : <#if propertyEntry.value??><@search.printValue propertyEntry.value/><#else>null</#if>,
                 </#list>
+                "contentUrl" : "${childAssociation.contentUrl}"
                 },
                 <#-- Child-child associations -->
                 "childAssociations" : [
@@ -25,14 +25,13 @@
                             "name" : "${propertyName}",
                             "nodeRef" : "${childChildAssoc.value.nodeRef}",
                             "parent": "${childChildAssoc.value.parentRef}",
-                            "contentUrl" : "${childChildAssoc.value.contentUrl}",
                             "attributes" : {
                             <#-- Child-child properties -->
                             <#list childChildAssoc.value.properties as propertyEntry>
                                     <#assign propertyName = shortQName(propertyEntry.key)>
-                                "${propertyName}" : <#if propertyEntry.value??><@search.printValue propertyEntry.value/><#else>null</#if>
-                                <#if propertyEntry_has_next>,</#if>
+                                "${propertyName}" : <#if propertyEntry.value??><@search.printValue propertyEntry.value/><#else>null</#if>,
                             </#list>
+                            "contentUrl" : "${childChildAssoc.value.contentUrl}"
                             }
                         }<#if childChildAssoc_has_next>,</#if>
                     </#list>
