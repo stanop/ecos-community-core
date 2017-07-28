@@ -2,16 +2,13 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
 
 {
-    <#if nodeProperties??>
-        <#-- Node properties -->
-        <#list nodeProperties?keys as property>
-            <#assign propertyName = shortQName(property)>
-            "${propertyName}": <#if nodeProperties[property]??><@search.printValue nodeProperties[property]/><#else>null</#if>,
-        </#list>
+    <#if nodeExists == true>
         <#-- Node child associations -->
-        "childAssociations" : [
+        "nodes" : [
             <#list childAssociations as childAssociation>
                 {
+                "nodeRef" : "${childAssociation.nodeRef}",
+                "parent": "${childAssociation.parentRef}",
                 <#-- Child association properties -->
                 <#list childAssociation.properties as propertyEntry>
                     <#assign propertyName = shortQName(propertyEntry.key)>
@@ -25,11 +22,13 @@
                             <#assign propertyName = shortQName(childChildAssoc.key)>
                             "name" : "${propertyName}",
                             <#-- Child-child properties -->
-                            <#list childChildAssoc.value as propertyEntry>
+                            <#list childChildAssoc.value.properties as propertyEntry>
                                 <#assign propertyName = shortQName(propertyEntry.key)>
                                 "${propertyName}" : <#if propertyEntry.value??><@search.printValue propertyEntry.value/><#else>null</#if>
-                                <#if propertyEntry_has_next>,</#if>
+                                ,
                             </#list>
+                            "nodeRef" : "${childChildAssoc.value.nodeRef}",
+                            "parent": "${childChildAssoc.value.parentRef}"
                         }<#if childChildAssoc_has_next>,</#if>
                     </#list>
                 ]

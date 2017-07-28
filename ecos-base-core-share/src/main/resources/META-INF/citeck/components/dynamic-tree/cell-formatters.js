@@ -120,7 +120,7 @@
 			};
 		},
 
-		date: function Citeck_format_date(pattern) {
+		date: function Citeck_format_date(pattern, date) {
 			if (!pattern) {
 				pattern = 'dd.MM.yyyy';
 			}
@@ -131,7 +131,7 @@
 					return;
 				}
 
-				var date = Alfresco.util.fromISO8601(sData);
+				var date = date ? Alfresco.util.fromISO8601(date) : Alfresco.util.fromISO8601(sData);
 				elCell.innerHTML = date.toString(pattern);
 			};
 		},
@@ -220,7 +220,7 @@
 			};
 		},
 
-		node: function(plainText) {
+		node: function(plainText, nameKey) {
 			return function(elCell, oRecord, oColumn, sData) {
 				if(!sData) {
 					elCell.innerHTML = "";
@@ -238,6 +238,10 @@
 					elCell.innerHTML = sData["cm:authorityDisplayName"] || sData["cm:authorityName"] || sData.displayName || "";
 					return;
 				}
+				if (nameKey) {
+                    elCell.innerHTML = sData[nameKey] || "";
+                    return;
+                }
 				elCell.innerHTML = sData.displayName; 
 			};
 		},
@@ -1655,9 +1659,9 @@
 			}
 		},
 
-        downloadSign: function (attributeName) {
+        downloadSign: function (attributeName, attributeValue) {
             return function (elCell, oRecord) {
-                var linkValue = oRecord.getData(attributeName),
+                var linkValue = attributeValue ? attributeValue : oRecord.getData(attributeName),
                     signLink = document.createElement('a');
                 signLink.className = "document-link";
                 signLink.onclick = function (event) {
@@ -1685,6 +1689,25 @@
                 signLink.href = '#';
                 signLink.text = Alfresco.util.message("button.financial-request-documents.download-sign");
                 elCell.appendChild(signLink);
+            }
+        },
+
+        getChildAssociationProperty: function (associationName, propertyName, formatterType) {
+            return function (elCell, oRecord) {
+                var childAssociations = oRecord.getData('attributes["childAssociations"]');
+                var childAssociation = _.find( childAssociations, function(item) { return item.name == associationName; });
+                if (childAssociation) {
+                    switch (formatterType) {
+                        case "date":
+                            Citeck.format.date(null, childAssociation['attributes[' + propertyName+ ']']);
+                            break;
+
+                        case "downloadSign":
+                            Citeck.format.downloadSign(null, childAssociation['attributes[' + propertyName+ ']']);
+                            break;
+                    }
+				}
+
             }
         }
 	});

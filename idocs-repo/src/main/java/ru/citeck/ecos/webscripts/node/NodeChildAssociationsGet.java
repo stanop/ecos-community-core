@@ -63,34 +63,57 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             return new HashMap<>();
         }
         Map<String, Object> result = new HashMap<>();
-        result.put("nodeProperties", nodeService.getProperties(nodeRef));
+        result.put("nodeExists", true);
         /** Load association */
         QName assocQName = parseQName(assocType);
         List<ChildAssociationRef> associations = getChildAssociations(nodeRef, assocQName);
+        result.put("childAssociations", buildChildAssociations(nodeRef, associations, childNames));
+        /** Load associations of child associations */
+        return result;
+    }
+
+    /**
+     * Build child associations
+     * @param topNodeRef Top node reference
+     * @param associations Child associations
+     * @param childNames Child names
+     * @return List of child associations data transfer object
+     */
+    private List<ChildAssociationDto> buildChildAssociations(NodeRef topNodeRef, List<ChildAssociationRef> associations,
+                                                             String childNames[]) {
         List<ChildAssociationDto> childAssociationDtos = new ArrayList<>(associations.size());
         Set<QName> childQNames = parseQNames(childNames);
         /** Build associations */
         for (ChildAssociationRef childAssociationRef : associations) {
             NodeRef childNodeRef = childAssociationRef.getChildRef();
+            if (childNodeRef == null) {
+                continue;
+            }
             ChildAssociationDto associationDto = new ChildAssociationDto();
+            associationDto.setParentRef(topNodeRef.toString());
+            associationDto.setNodeRef(childNodeRef.toString());
             associationDto.setProperties(transformProperties(nodeService.getProperties(childNodeRef)));
             /** Child associations */
             List<ChildAssociationRef> childChildAssociationRefs = getChildAssociations(childNodeRef, childQNames);
-            List<AbstractMap.SimpleEntry<QName, List<AbstractMap.SimpleEntry<QName, Serializable>>>> dtoAccos = new ArrayList<>();
+            List<AbstractMap.SimpleEntry<QName, ChildAssociationDto>> dtoAccos = new ArrayList<>();
             for (ChildAssociationRef childChildAssocRef : childChildAssociationRefs) {
                 NodeRef childChildRef = childChildAssocRef.getChildRef();
-                dtoAccos.add(new AbstractMap.SimpleEntry<QName, List<AbstractMap.SimpleEntry<QName, Serializable>>>(
-                    childChildAssocRef.getTypeQName(),
-                    transformProperties(nodeService.getProperties(childChildRef))
+                if (childChildRef == null) {
+                    continue;
+                }
+                ChildAssociationDto childChildDto = new ChildAssociationDto();
+                childChildDto.setNodeRef(childChildRef.toString());
+                childChildDto.setParentRef(childNodeRef.toString());
+                childChildDto.setProperties(transformProperties(nodeService.getProperties(childChildRef)));
+                dtoAccos.add(new AbstractMap.SimpleEntry<QName, ChildAssociationDto>(
+                        childChildAssocRef.getTypeQName(),
+                        childChildDto
                 ));
-
             }
             associationDto.setChildAssociations(dtoAccos);
             childAssociationDtos.add(associationDto);
         }
-        result.put("childAssociations", childAssociationDtos);
-        /** Load associations of child associations */
-        return result;
+        return childAssociationDtos;
     }
 
     /**
