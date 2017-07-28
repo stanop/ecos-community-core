@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -30,6 +31,13 @@ import java.util.*;
  * Document history get web script
  */
 public class DocumentHistoryGet extends DeclarativeWebScript {
+
+    /**
+     * Exclude event types
+     */
+    private static final String[] EXCLUDE_EVENT_TYPES = {
+        "task.create", "task.assign", "task.complete" , "workflow.start" , "workflow.end", "workflow.end.cancelled", "unknown-user"
+    };
 
     /**
      * Date-time format
@@ -125,6 +133,10 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         ArrayNode arrayNode = objectMapper.createArrayNode();
         /** Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps ) {
+            String eventType = (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue());
+            if (ArrayUtils.contains(EXCLUDE_EVENT_TYPES, eventType)) {
+                continue;
+            }
             ObjectNode recordObjectNode = objectMapper.createObjectNode();
             recordObjectNode.put(DocumentHistoryConstants.NODE_REF.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.NODE_REF.getValue()));
             ObjectNode attributesNode = objectMapper.createObjectNode();
