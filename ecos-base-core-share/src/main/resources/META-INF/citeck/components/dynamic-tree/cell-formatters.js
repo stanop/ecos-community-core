@@ -1694,7 +1694,7 @@
 
         getChildAssociationProperty: function (associationName, propertyName, formatterType) {
             return function (elCell, oRecord) {
-                var childAssociations = oRecord.getData('attributes["childAssociations"]');
+                var childAssociations = oRecord.getData('childAssociations');
                 var childAssociation = _.find( childAssociations, function(item) { return item.name == associationName; });
                 if (childAssociation && formatterType && Citeck.format[formatterType]) {
                     Citeck.format[formatterType](null, childAssociation['attributes[' + propertyName+ ']']);
