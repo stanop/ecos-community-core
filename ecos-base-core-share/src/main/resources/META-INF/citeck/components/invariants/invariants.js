@@ -1861,6 +1861,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        .method('hasClassName', function(name) {
+            return _.contains(this.impl().classNames(), name);
+        })
+
         .nativeProperty('parent', function() {
             return this.impl().parent();
         })
@@ -2356,7 +2360,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .method('submit', function() {
             if(this.node().impl().valid()) {
-                if (this.node().hasAspect("invariants:draftAspect")) {
+                if (this.node().hasClassName("invariants:draftAspect")) {
                     this.node().impl().isDraft(false);
                 }
 
@@ -2364,7 +2368,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
         .method('submitDraft', function() {
-            if (this.node().hasAspect("invariants:draftAspect")) {
+            if (this.node().hasClassName("invariants:draftAspect")) {
                 this.node().impl().isDraft(true);
                 this.broadcast('node-view-submit');
             }
