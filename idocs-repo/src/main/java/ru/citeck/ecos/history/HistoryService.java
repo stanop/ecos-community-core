@@ -76,6 +76,8 @@ public class HistoryService {
     private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
     private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
     private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
+    private static final String DOCUMENT_VERSION = "documentVersion";
+    private static final String PROPERTY_NAME = "propertyName";
 
     /**
      * Date-time format
@@ -254,6 +256,9 @@ public class HistoryService {
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
         requestParams.put(WORKFLOW_DESCRIPTION, properties.get(HistoryModel.PROP_WORKFLOW_DESCRIPTION));
         requestParams.put(TASK_EVENT_INSTANCE_ID, properties.get(HistoryModel.PROP_TASK_INSTANCE_ID));
+        requestParams.put(DOCUMENT_VERSION, properties.get(HistoryModel.PROP_DOCUMENT_VERSION));
+        QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
+        requestParams.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
     }
 

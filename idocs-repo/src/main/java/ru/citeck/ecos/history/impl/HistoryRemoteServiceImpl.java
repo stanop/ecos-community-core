@@ -49,7 +49,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String[] KEYS = {
             "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
             "taskRole", "taskOutcome", "taskType", "initiator", "workflowInstanceId", "workflowDescription",
-            "taskEventInstanceId"
+            "taskEventInstanceId", "documentVersion", "propertyName"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
     private static final String DELIMETER = ";";
