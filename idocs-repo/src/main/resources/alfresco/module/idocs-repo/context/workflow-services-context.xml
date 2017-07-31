@@ -230,11 +230,11 @@
 				<ref bean="citeckTaskSenderPull" />
 				<ref bean="lastCommentPull" />
 				<ref bean="taskPriorityPull" />
-				<ref bean="assignTaskToSingleCandidate" />
 				<ref bean="taskOriginalOwner"/>
 				<ref bean="workflowMirrorListener" />
 				<ref bean="grantWorkflowPackage" />
 				<ref bean="taskHistoryListener" />
+				<ref bean="assignTaskToSingleCandidate" />
 				<ref bean="sendTaskNotificationListener" />
 			</list>
 		</property>
