@@ -235,8 +235,9 @@ public class HistoryService {
         requestParams.put(USER_ID, userRef.getId());
         /** Event time */
         Date now = new Date();
-        if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-            now.setTime(now.getTime() + 1000);
+        if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))
+                    || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
+            now.setTime(now.getTime() + 5000);
         }
         if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
                 || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
