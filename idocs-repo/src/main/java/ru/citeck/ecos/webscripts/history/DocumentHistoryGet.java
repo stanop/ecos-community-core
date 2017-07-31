@@ -35,7 +35,8 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     /**
      * Exclude event types
      */
-    private static final String[] EXCLUDE_EVENT_TYPES = {
+    private static final String EXCLUDE_EVENT_TYPES_PROPERTY = "ecos.citeck.history.exclude.types";
+    private static final String[] DEFAULT_EXCLUDE_EVENT_TYPES = {
         "task.create", "task.assign", "task.complete" , "workflow.start" , "workflow.end", "workflow.end.cancelled", "unknown-user"
     };
 
@@ -134,7 +135,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         /** Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps ) {
             String eventType = (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue());
-            if (ArrayUtils.contains(EXCLUDE_EVENT_TYPES, eventType)) {
+            if (ArrayUtils.contains(getExcludeEventTypes(), eventType)) {
                 continue;
             }
             ObjectNode recordObjectNode = objectMapper.createObjectNode();
@@ -194,6 +195,19 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         result.add(userNode);
         return result;
 
+    }
+
+    /**
+     * Get exclude event types
+     * @return
+     */
+    private String[] getExcludeEventTypes() {
+        String rawValue = properties.getProperty(EXCLUDE_EVENT_TYPES_PROPERTY);
+        if (rawValue == null) {
+            return DEFAULT_EXCLUDE_EVENT_TYPES;
+        } else {
+            return rawValue.trim().split(",");
+        }
     }
 
     public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
