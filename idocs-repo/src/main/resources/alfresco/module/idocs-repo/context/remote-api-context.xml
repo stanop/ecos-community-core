@@ -298,6 +298,8 @@
           parent="abstractWorkflowWebScript">
         <property name="deputyService" ref="DeputyService" />
         <property name="delegateListenerName" value="deputyListener.taskManagement"/>
+        <property name="workflowMirrorService" ref="workflowMirrorService" />
+        <property name="grantWorkflowTaskPermissionExecutor" ref="grantWorkflowTaskPermissionExecutor" />
     </bean>
 
 </beans>
