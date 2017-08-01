@@ -222,7 +222,7 @@
 
 		node: function(plainText, nameKey) {
 			return function(elCell, oRecord, oColumn, sData) {
-				if(!sData) {
+				if(!sData && !nameKey) {
 					elCell.innerHTML = "";
 					return;
 				}
@@ -1697,7 +1697,7 @@
                 var childAssociations = oRecord.getData('childAssociations');
                 var childAssociation = _.find( childAssociations, function(item) { return item.name == associationName; });
                 if (childAssociation && formatterType && Citeck.format[formatterType]) {
-                    Citeck.format[formatterType](null, childAssociation['attributes'][propertyName]);
+                    return Citeck.format[formatterType](null, childAssociation['attributes'][propertyName]);
 				} else if (childAssociation) {
                     elCell.innerHTML = childAssociation['attributes'][propertyName];
 				}
