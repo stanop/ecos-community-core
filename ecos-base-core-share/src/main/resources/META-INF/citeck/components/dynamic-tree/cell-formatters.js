@@ -239,7 +239,7 @@
 					return;
 				}
 				if (nameKey) {
-                    elCell.innerHTML = sData[nameKey] || "";
+                    elCell.innerHTML = oRecord.getData(nameKey) && oRecord.getData(nameKey).displayName ? oRecord.getData(nameKey).displayName : "";
                     return;
                 }
 				elCell.innerHTML = sData.displayName; 
@@ -1697,9 +1697,9 @@
                 var childAssociations = oRecord.getData('childAssociations');
                 var childAssociation = _.find( childAssociations, function(item) { return item.name == associationName; });
                 if (childAssociation && formatterType && Citeck.format[formatterType]) {
-                    Citeck.format[formatterType](null, childAssociation['attributes[' + propertyName+ ']']);
+                    Citeck.format[formatterType](null, childAssociation['attributes'][propertyName]);
 				} else if (childAssociation) {
-                    elCell.innerHTML = childAssociation['attributes[' + propertyName+ ']'];
+                    elCell.innerHTML = childAssociation['attributes'][propertyName];
 				}
 
             }
