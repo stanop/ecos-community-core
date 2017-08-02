@@ -205,13 +205,6 @@ public class HistoryService {
                         nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
                     }
                 }
-                List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
-                for (AssociationRef source : sources) {
-                    NodeRef sourceCase = source.getSourceRef();
-                    if (nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_SUBCASE)) {
-                        nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
-                    }
-                }
 
                 historyRemoteService.updateDocumentHistoryStatus(document, false);
             }
