@@ -251,7 +251,7 @@ public class HistoryService {
         requestParams.put(TASK_ROLE, properties.get(HistoryModel.PROP_TASK_ROLE));
         requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);
-        requestParams.put(TASK_TYPE, taskType != null ? taskType.toString() : "");
+        requestParams.put(TASK_TYPE, taskType != null ? taskType.getLocalName() : "");
         /** Workflow properties */
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
