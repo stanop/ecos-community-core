@@ -120,7 +120,7 @@
 			};
 		},
 
-		date: function Citeck_format_date(pattern, date) {
+		date: function Citeck_format_date(pattern) {
 			if (!pattern) {
 				pattern = 'dd.MM.yyyy';
 			}
@@ -131,7 +131,7 @@
 					return;
 				}
 
-				var date = date ? Alfresco.util.fromISO8601(date) : Alfresco.util.fromISO8601(sData);
+				var date = Alfresco.util.fromISO8601(sData);
 				elCell.innerHTML = date.toString(pattern);
 			};
 		},
@@ -1659,10 +1659,10 @@
 			}
 		},
 
-        downloadSign: function (attributeName, attributeValue) {
-            return function (elCell, oRecord) {
-                var linkValue = attributeValue ? attributeValue : oRecord.getData(attributeName),
-                    redirection = attributeValue ? Alfresco.constants.PROXY_URI + attributeValue : Alfresco.constants.PROXY_URI + "/acm/getDecodeESign?nodeRef=" + linkValue.nodeRef,
+        downloadSign: function (attributeName) {
+            return function (elCell, oRecord, oColumn, sData) {
+                var linkValue = sData ? sData : oRecord.getData(attributeName),
+                    redirection = sData ? Alfresco.constants.PROXY_URI + sData : Alfresco.constants.PROXY_URI + "/acm/getDecodeESign?nodeRef=" + linkValue.nodeRef,
                     signLink = document.createElement('a');
                 signLink.className = "document-link";
                 signLink.onclick = function (event) {
@@ -1692,16 +1692,19 @@
             }
         },
 
-        getChildAssociationProperty: function (associationName, propertyName, formatterType) {
-            return function (elCell, oRecord) {
+        getChildAssociationProperty: function (associationName, propertyName, options) {
+            return function (elCell, oRecord, oColumn) {
                 var childAssociations = oRecord.getData('childAssociations');
                 var childAssociation = _.find( childAssociations, function(item) { return item.name == associationName; });
-                if (childAssociation && formatterType && Citeck.format[formatterType]) {
-                    return Citeck.format[formatterType](null, childAssociation['attributes'][propertyName]);
-				} else if (childAssociation) {
-                    elCell.innerHTML = childAssociation['attributes'][propertyName];
-				}
-
+                if (childAssociation) {
+                    var property = childAssociation['attributes'][propertyName] ? childAssociation['attributes'][propertyName] : (options && options.anotherPropertyName ? childAssociation['attributes'][options.anotherPropertyName] : '');
+                    if (options && options.formatter && property) {
+                        formatter(elCell, oRecord, oColumn, property);
+                        return;
+                    } else if (property) {
+                        elCell.innerHTML = property;
+                    }
+                }
             }
         }
 	});
