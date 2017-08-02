@@ -653,9 +653,19 @@ Citeck.UI.preview = function(id, params) {
         draggable: true,
         modal: true
     });
+
+    var previewContainerId = id + "-previewer-container";
+
+    this.panel.subscribe("hide", function () {
+        YAHOO.util.Dom.setStyle(previewContainerId, 'display', 'none');
+    });
+
+    this.panel.subscribe("show", function () {
+        YAHOO.util.Dom.setStyle(previewContainerId, 'display', 'block');
+    });
     
     this.panel.setHeader("Document preview");
-    this.panel.setBody("<div id='" + id + "-previewer-container" + "'></div>");
+    this.panel.setBody("<div id='" + previewContainerId + "'></div>");
 
     if (params.renderImmediately)
         this.panel.render(params.container || document.body);
@@ -664,7 +674,7 @@ Citeck.UI.preview = function(id, params) {
     Alfresco.util.loadWebscript({
       url: Alfresco.constants.URL_SERVICECONTEXT + "components/preview/web-preview",
       properties: { nodeRef: params.nodeRef },
-      target: id + "-previewer-container"
+      target: previewContainerId
     });
 
     // PUBLIC METHODS
@@ -680,7 +690,6 @@ Citeck.UI.previewDependencies = function() {
             "res/components/preview/web-preview.js",
             "res/components/preview/WebPreviewer.js",
             "res/js/flash/extMouseWheel.js",
-            "res/components/preview/StrobeMediaPlayback.js",
             "res/components/preview/Video.js",
             "res/components/preview/Audio.js",
             "res/components/preview/Flash.js",
@@ -693,7 +702,6 @@ Citeck.UI.previewDependencies = function() {
 
             "res/components/preview/web-preview.css",
             "res/components/preview/WebPreviewerHTML.css",
-            "res/components/preview/StrobeMediaPlayback.css",
             "res/components/preview/Audio.css",
             "res/components/preview/Image.css",
             "res/components/preview/PdfJs.css"
@@ -720,7 +728,13 @@ Citeck.UI.previewDependencies = function() {
             node.setAttribute("href", src);
         }
 
-        if (node instanceof HTMLElement) $("head").append(node);
+        if (node instanceof HTMLElement) {
+            try {
+                $("head").append(node);
+            } catch(e) {
+                console.error("Exception while append dependency '" + src + "'", e);
+            }
+        }
     });
 };
 
