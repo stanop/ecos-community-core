@@ -1699,7 +1699,7 @@
                 if (childAssociation) {
                     var property = childAssociation['attributes'][propertyName] ? childAssociation['attributes'][propertyName] : (options && options.anotherPropertyName ? childAssociation['attributes'][options.anotherPropertyName] : '');
                     if (options && options.formatter && property) {
-                        formatter(elCell, oRecord, oColumn, property);
+                        options.formatter(elCell, oRecord, oColumn, property);
                         return;
                     } else if (property) {
                         elCell.innerHTML = property;
