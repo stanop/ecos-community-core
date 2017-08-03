@@ -222,7 +222,11 @@
 
 		node: function(plainText, nameKey) {
 			return function(elCell, oRecord, oColumn, sData) {
-				if(!sData && !nameKey) {
+                if (nameKey) {
+                    elCell.innerHTML = oRecord.getData(nameKey) && oRecord.getData(nameKey).displayName ? oRecord.getData(nameKey).displayName : "";
+                    return;
+                }
+				if(!sData) {
 					elCell.innerHTML = "";
 					return;
 				}
@@ -238,10 +242,6 @@
 					elCell.innerHTML = sData["cm:authorityDisplayName"] || sData["cm:authorityName"] || sData.displayName || "";
 					return;
 				}
-				if (nameKey) {
-                    elCell.innerHTML = oRecord.getData(nameKey) && oRecord.getData(nameKey).displayName ? oRecord.getData(nameKey).displayName : "";
-                    return;
-                }
 				elCell.innerHTML = sData.displayName; 
 			};
 		},
