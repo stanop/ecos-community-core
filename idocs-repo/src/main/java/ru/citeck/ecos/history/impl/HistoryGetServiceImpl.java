@@ -4,7 +4,7 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.transaction.TransactionService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -55,6 +55,12 @@ public class HistoryGetServiceImpl implements HistoryGetService {
                     ((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)).getTime());
             entryMap.put(DocumentHistoryConstants.EVENT_INITIATOR.getValue(),
                     getInitiatorName(eventRef));
+            entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
+                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
+            entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
+                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
+            QName taskTypeValue = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
+            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskTypeValue != null ? taskTypeValue.getLocalName() : "");
             result.add(entryMap);
         }
         Collections.sort(result, (firstMap, secondMap) -> {
