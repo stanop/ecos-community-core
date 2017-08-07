@@ -15,6 +15,8 @@ import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.deputy.TaskDeputyListener;
+import ru.citeck.ecos.workflow.listeners.GrantWorkflowTaskPermissionExecutor;
+import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -27,6 +29,8 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
     private DeputyService deputyService;
     private ApplicationContext applicationContext;
     private String delegateListenerName;
+    private WorkflowMirrorService workflowMirrorService;
+    private GrantWorkflowTaskPermissionExecutor grantWorkflowTaskPermissionExecutor;
 
     @Override
     protected Map<String, Object> buildModel(WorkflowModelBuilder modelBuilder, WebScriptRequest request, Status status, Cache cache) {
@@ -61,6 +65,9 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             Map<QName, Serializable> props = setOwners(action, owner, hasAssistants);
             workflowTask = workflowService.updateTask(workflowTask.getId(), props, null, null);
 
+            workflowMirrorService.mirrorTask(workflowTask);
+            grantWorkflowTaskPermissionExecutor.grantPermissions(workflowTask);
+
             Map<String, Object> model = new HashMap<>();
             model.put("workflowTask", modelBuilder.buildDetailed(workflowTask));
             return model;
@@ -83,6 +90,14 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
 
     public void setDelegateListenerName(String delegateListenerName) {
         this.delegateListenerName = delegateListenerName;
+    }
+
+    public void setWorkflowMirrorService(WorkflowMirrorService workflowMirrorService) {
+        this.workflowMirrorService = workflowMirrorService;
+    }
+
+    public void setGrantWorkflowTaskPermissionExecutor(GrantWorkflowTaskPermissionExecutor grantWorkflowTaskPermissionExecutor) {
+        this.grantWorkflowTaskPermissionExecutor = grantWorkflowTaskPermissionExecutor;
     }
 
     private Map<QName, Serializable> setOwners(Action action, String owner, boolean hasAssistants) {

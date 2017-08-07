@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.1.1.0-SNAPSHOT</version>
+    <version>3.1.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -55,14 +55,14 @@
 
         <spring.rabbitmq.version>1.4.5.RELEASE</spring.rabbitmq.version>
         <spring.jms.version>4.3.9.RELEASE</spring.jms.version>
-        <!--<activemq.version>5.10.0</activemq.version>-->
+        <activemq.version>5.15.0</activemq.version>
 
         <maven.alfresco.edition>community</maven.alfresco.edition>
 
         <!-- ECOS build config -->
 
         <default.locale>en</default.locale>
-        <module.contracts.version>2.0.0.0-SNAPSHOT</module.contracts.version>
+        <module.contracts.version>2.0.1.0-SNAPSHOT</module.contracts.version>
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
@@ -101,17 +101,31 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.apache.activemq</groupId>-->
-            <!--<artifactId>activemq-spring</artifactId>-->
-            <!--<version>${activemq.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-spring</artifactId>
+            <version>${activemq.version}</version>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-jms</artifactId>-->
-            <!--<version>${spring.jms.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${spring.jms.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- The main Alfresco Repo dependency for compiling Java code in src/main/java -->
         <dependency>

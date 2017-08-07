@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-//import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -49,7 +49,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String[] KEYS = {
             "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
             "taskRole", "taskOutcome", "taskType", "initiator", "workflowInstanceId", "workflowDescription",
-            "taskEventInstanceId"
+            "taskEventInstanceId", "documentVersion", "propertyName"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
     private static final String DELIMETER = ";";
@@ -101,8 +101,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     @Autowired(required = false)
     private RabbitTemplate rabbitTemplate;
 
-//    @Autowired(required = false)
-//    private JmsTemplate jmsTemplate;
+    @Autowired(required = false)
+    private JmsTemplate jmsTemplate;
 
     /**
      * Get history records
@@ -125,9 +125,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 if (rabbitTemplate != null) {
                     rabbitTemplate.convertAndSend(SEND_NEW_RECORD_QUEUE, convertMapToJsonString(requestParams));
                 }
-//                if (jmsTemplate != null) {
-//                    jmsTemplate.convertAndSend(SEND_NEW_RECORD_QUEUE, convertMapToJsonString(requestParams));
-//                }
+                if (jmsTemplate != null) {
+                    jmsTemplate.convertAndSend(SEND_NEW_RECORD_QUEUE, convertMapToJsonString(requestParams));
+                }
             } else {
                 MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap();
                 paramsMap.setAll(requestParams);
@@ -187,9 +187,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 if (rabbitTemplate != null) {
                     rabbitTemplate.convertAndSend(SEND_NEW_RECORDS_QUEUE, convertListOfMapsToJsonString(result));
                 }
-//                if (jmsTemplate != null) {
-//                    jmsTemplate.convertAndSend(SEND_NEW_RECORDS_QUEUE, convertListOfMapsToJsonString(result));
-//                }
+                if (jmsTemplate != null) {
+                    jmsTemplate.convertAndSend(SEND_NEW_RECORDS_QUEUE, convertListOfMapsToJsonString(result));
+                }
             } else {
                 MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
                 map.add("records", convertListOfMapsToJsonString(result));
@@ -293,9 +293,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             if (rabbitTemplate != null) {
                 rabbitTemplate.convertAndSend(DELETE_RECORDS_BY_DOCUMENT_QUEUE, documentNodeRef.getId());
             }
-//            if (jmsTemplate != null) {
-//                jmsTemplate.convertAndSend(DELETE_RECORDS_BY_DOCUMENT_QUEUE, documentNodeRef.getId());
-//            }
+            if (jmsTemplate != null) {
+                jmsTemplate.convertAndSend(DELETE_RECORDS_BY_DOCUMENT_QUEUE, documentNodeRef.getId());
+            }
         } else {
             restTemplate.delete(properties.getProperty(HISTORY_SERVICE_HOST) + DELETE_BY_DOCUMENT_ID_PATH + documentNodeRef.getId());
         }

@@ -1839,6 +1839,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        .method('hasClassName', function(name) {
+            return _.contains(this.impl().classNames(), name);
+        })
+
         .nativeProperty('parent', function() {
             return this.impl().parent();
         })
@@ -2285,7 +2289,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             return false;
         })
-
 
         .init(function() {
             this._loading(true);

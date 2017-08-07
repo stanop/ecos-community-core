@@ -76,6 +76,8 @@ public class HistoryService {
     private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
     private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
     private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
+    private static final String DOCUMENT_VERSION = "documentVersion";
+    private static final String PROPERTY_NAME = "propertyName";
 
     /**
      * Date-time format
@@ -203,13 +205,6 @@ public class HistoryService {
                         nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
                     }
                 }
-                List<AssociationRef> sources = nodeService.getSourceAssocs(document, RegexQNamePattern.MATCH_ALL);
-                for (AssociationRef source : sources) {
-                    NodeRef sourceCase = source.getSourceRef();
-                    if (nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(sourceCase, ICaseModel.ASPECT_SUBCASE)) {
-                        nodeService.createAssociation(historyEvent, sourceCase, HistoryModel.ASSOC_CASE);
-                    }
-                }
 
                 historyRemoteService.updateDocumentHistoryStatus(document, false);
             }
@@ -233,8 +228,9 @@ public class HistoryService {
         requestParams.put(USER_ID, userRef.getId());
         /** Event time */
         Date now = new Date();
-        if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-            now.setTime(now.getTime() + 1000);
+        if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))
+                    || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
+            now.setTime(now.getTime() + 5000);
         }
         if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
                 || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
@@ -248,12 +244,15 @@ public class HistoryService {
         requestParams.put(TASK_ROLE, properties.get(HistoryModel.PROP_TASK_ROLE));
         requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);
-        requestParams.put(TASK_TYPE, taskType != null ? taskType.toString() : "");
+        requestParams.put(TASK_TYPE, taskType != null ? taskType.getLocalName() : "");
         /** Workflow properties */
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
         requestParams.put(WORKFLOW_DESCRIPTION, properties.get(HistoryModel.PROP_WORKFLOW_DESCRIPTION));
         requestParams.put(TASK_EVENT_INSTANCE_ID, properties.get(HistoryModel.PROP_TASK_INSTANCE_ID));
+        requestParams.put(DOCUMENT_VERSION, properties.get(HistoryModel.PROP_DOCUMENT_VERSION));
+        QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
+        requestParams.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
     }
 
