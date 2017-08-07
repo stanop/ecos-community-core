@@ -690,6 +690,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featureInvariants = function(featureName) {
         return function() {
+            if (featureName != "relevant") if (this.irrelevant()) return [];
+
             var invariantSet = this.invariantSet();
             if(!invariantSet) return [];
 
@@ -717,6 +719,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
         return function(model) {
+            if (featureName != "relevant") if (this.irrelevant()) return {};
+
             var invariantSet = this.invariantSet(),
                 invariant = null,
                 invariantValue = null,
@@ -736,6 +740,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featuredProperty = function(featureName) {
         return function() {
+            if (featureName != "relevant") if (this.irrelevant()) return null;
             return this[featureName + 'Evaluator'](this.invariantsModel()).value;
         }
     };
@@ -984,15 +989,61 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('valueClass', function() { return classMapping[this.javaclass()] || null; })
         .computed('invariantSet', function() { return this.node().impl().invariantSet(); })
         .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
+        .computed('title', featuredProperty('title'))
+        .computed('description', featuredProperty('description'))
+        .computed('multiple', featuredProperty('multiple'))
+        .computed('mandatory', featuredProperty('mandatory'))
+        .computed('invariantRelevant', featuredProperty('relevant'))
+        .computed('relevant', function() {
+            var forcedAttributes = this.node().impl().forcedAttributes();
+            if(!_.isEmpty(forcedAttributes) // is a view attribute
+            && !_.contains(forcedAttributes, this.name())) // is not forced
+                return false; // non-exposed attributes are always irrelevant
+            return this.invariantRelevant();
+        })
+        .computed('invariantProtected', featuredProperty('protected'))
+        .computed('protected', function() {
+            if(this.irrelevant()) return true;
+            var invariantValue = this.invariantValue();
+            if(invariantValue != null && (!_.isArray(invariantValue) || invariantValue.length > 0)) return true;
+            return this.invariantProtected();
+        })
+        .computed('empty', function() {
+            return this.value() == null
+                || this.multiple() && this.value().length == 0
+                || this.valueClass() == String && this.value().length == 0;
+        })
+        .computed('evaluatedValid', function() {
+            return this.validEvaluator(this.invariantsModel());
+        })
+        .computed('invariantValid', function() {
+            return this.evaluatedValid().value; 
+        })
+        .computed('valid', function() {
+            if(this.irrelevant()) return true;
+            if(this.empty()) return this.optional() || this['protected']();
+            return this.invariantValid();
+        })
+        .computed('validDraft', function() {
+            if(this.irrelevant() || this.empty()) return true;
+            return this.invariantValid();
+        })
+        .computed('validationMessage', function() {
+            if(this.irrelevant()) return "";
+
+            if(this.empty())
+                return this.optional() || this['protected']() ? "" : Alfresco.util.message("validation-hint.mandatory");
+
+            var invariant = this.evaluatedValid().invariant;
+            return invariant != null ? Alfresco.util.message(invariant.description()) : "";
+        })
         .computed('changed', function() { return this.newValue.loaded(); })
         .computed('changedByInvariant', function() {
             return (this.invariantValue.loaded() && this.invariantValue() != null) || 
                    (this.invariantNonblockingValue.loaded() && this.invariantNonblockingValue() != null);
         })
         .computed('textValue', {
-            read: function() {
-                return this.getValueText(this.value());
-            },
+            read: function() { return this.getValueText(this.value()); },
             write: function(value) {
                 if(value == null || value == "") {
                     return this.value(null);
@@ -1013,55 +1064,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return this.value(this.value() == newValue ? null : newValue);
                 }
             }
-        })
-        .computed('title', featuredProperty('title'))
-        .computed('description', featuredProperty('description'))
-        .computed('multiple', featuredProperty('multiple'))
-        .computed('mandatory', featuredProperty('mandatory'))
-        .computed('invariantRelevant', featuredProperty('relevant'))
-        .computed('relevant', function() { return this.invariantRelevant(); })
-        .computed('invariantProtected', featuredProperty('protected'))
-        .computed('protected', function() {
-            var invariantValue = this.invariantValue();
-            if(invariantValue != null && (!_.isArray(invariantValue) || invariantValue.length > 0)) return true;
-            return this.invariantProtected();
-        })
-        .computed('empty', function() {
-            return this.value() == null
-                || this.multiple() && this.value().length == 0
-                || this.valueClass() == String && this.value().length == 0;
-        })
-        .computed('evaluatedValid', function() { return this.validEvaluator(this.invariantsModel()); })
-        .computed('invariantValid', function() { return this.evaluatedValid().value; })
-        .computed('valid', function() {
-            // irrelevant is always valid
-            if(this.irrelevant()) return true;
-
-            // empty values: valid, if optional or protected
-            if(this.empty()) {
-                return this.optional() || this['protected']();
-            }
-
-            // non-empty values: valid invariants should all be valid
-            return this.invariantValid();
-        })
-        .computed('validDraft', function() {
-            // irrelevant or empty is always valid
-            if(this.irrelevant() || this.empty()) return true;
-
-            // non-empty values: valid invariants should all be valid
-            return this.invariantValid();
-        })
-        .computed('validationMessage', function() {
-            // mimic validation behaviour:
-            if(this.irrelevant()) return "";
-
-            if(this.empty()) {
-                return this.optional() || this['protected']() ? "" : Alfresco.util.message("validation-hint.mandatory");
-            }
-
-            var invariant = this.evaluatedValid().invariant;
-            return invariant != null ? Alfresco.util.message(invariant.description()) : "";
         })
         .computed('single', function() { return !this.multiple(); })
         .computed('optional', function() { return !this.mandatory(); })
@@ -1302,8 +1304,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariantValue', featuredProperty('value'))
         .computed('invariantNonblockingValue', featuredProperty('nonblockingValue'))
         .computed('invariantDefault', featuredProperty('default'))
-        .computed('defaultValue', function() { 
-                return this.convertValue(this.invariantDefault(), this.multiple()); 
+        .computed('defaultValue', function() {
+            return this.convertValue(this.invariantDefault(), this.multiple()); 
         })
 
         .subscribe('invariantNonblockingValue', function(newValue) {
@@ -1314,6 +1316,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .computed('rawValue', function() {
+            if (this.irrelevant()) return null;
+
             var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
                 hybridValue = this.hybridValue(),
                 invariantDefault = this.invariantDefault(),
@@ -1321,7 +1325,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 isInlineEditMode = this.resolve("node.impl.runtime.inlineEdit", false),
                 inSubmitProcess = this.resolve("node.impl.inSubmitProcess", false),
                 inEditing = this.inlineEditVisibility() || inSubmitProcess;
-            
+
             if (!isViewMode || inEditing) {
                 if(invariantValue != null) return invariantValue;
                 if(this.hybridValue.loaded()) return hybridValue;
@@ -1368,15 +1372,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         // options properties
         .computed('invariantOptions', featuredProperty('options'))
-        .computed('optionsInvariants', function() { return featureInvariants('options').call(this); })
+        .computed('optionsInvariants', function() {
+            return featureInvariants('options').call(this);
+        })
         .computed('options', {
-            read: function() {
-                var options = this.invariantOptions();
-                return options ? this.convertValue(options, true) : [];
-            },
+            read: function() { return this.convertValue(this.invariantOptions(), true); },
             pure: true
         })
         .method('filterOptions', function(criteria, pagination) {
+            if (this.irrelevant()) return [];
+
             // find invariant with correct query
             var model = this.getInvariantsModel(this.value, criteria.cache = criteria.cache || {}),
                 optionsInvariant = _.find(this.optionsInvariants(), function(invariant) {
@@ -2168,30 +2173,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this._loading()) return true;
 
             if (this.node.loaded() && this.node().impl.loaded() && 
-                this.node().impl().attributes.loaded() && this.node().impl().invariantSet.loaded()) {
+                this.node().impl().attributes.loaded() && 
+                this.node().impl().invariantSet.loaded() && this.node().impl().invariantSet().invariants.loaded()) {
 
                 var attributes = this.node().impl().attributes(),
-                    loadedAttributes = {};
+                    loadedAttributes = [];
 
-                for (var a in attributes) {
-                    var attribute = attributes[a],
-                        isLoaded = _.every([ "name", "valid", "relevant", "protected", "mandatory", "value" ], function(p) {
-                            return attribute[p].loaded() && 
-                                (p != "value" ? !_.isNull(attribute[p]()) : true);
-                        });
-
-                    if (isLoaded) loadedAttributes[attribute.name()] = true;
-                }
+                _.each(attributes, function(attribute) {
+                    if (_.every([ "name", "valid", "relevant", "protected", "mandatory" ], function(p) {
+                        return attribute[p].loaded();
+                    })) loadedAttributes.push(true);
+                });
 
                 if (!this.node().impl()._definedAttributeNamesWasLoaded()) return false;
-                if (Object.keys(loadedAttributes).length != attributes.length) return false;
+                if (loadedAttributes.length != attributes.length) return false;
 
-                // delay while controls are loading (2 seconds enough)
-                if (this._loading()) {
-                    setTimeout(function(scope) { 
-                        scope._loading(false);
-                    }, 500, this);
-                }
+                // delay while controls are loading (0.5 seconds enough)
+                if (this._loading())
+                    setTimeout(function(scope) {  scope._loading(false); }, 500, this);
 
                 return !this._loading();
             }

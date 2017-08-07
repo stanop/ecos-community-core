@@ -1662,6 +1662,7 @@
         downloadSign: function (attributeName, attributeValue) {
             return function (elCell, oRecord) {
                 var linkValue = attributeValue ? attributeValue : oRecord.getData(attributeName),
+                    redirection = attributeValue ? Alfresco.constants.PROXY_URI + attributeValue : Alfresco.constants.PROXY_URI + "/acm/getDecodeESign?nodeRef=" + linkValue.nodeRef,
                     signLink = document.createElement('a');
                 signLink.className = "document-link";
                 signLink.onclick = function (event) {
@@ -1682,7 +1683,6 @@
                                 }]
                         });
                     } else {
-                        var redirection = Alfresco.constants.PROXY_URI + "/acm/getDecodeESign?nodeRef=" + linkValue.nodeRef;
                         window.location = redirection;
                     }
                 };
@@ -1696,16 +1696,10 @@
             return function (elCell, oRecord) {
                 var childAssociations = oRecord.getData('attributes["childAssociations"]');
                 var childAssociation = _.find( childAssociations, function(item) { return item.name == associationName; });
-                if (childAssociation) {
-                    switch (formatterType) {
-                        case "date":
-                            Citeck.format.date(null, childAssociation['attributes[' + propertyName+ ']']);
-                            break;
-
-                        case "downloadSign":
-                            Citeck.format.downloadSign(null, childAssociation['attributes[' + propertyName+ ']']);
-                            break;
-                    }
+                if (childAssociation && formatterType && Citeck.format[formatterType]) {
+                    Citeck.format[formatterType](null, childAssociation['attributes[' + propertyName+ ']']);
+				} else if (childAssociation) {
+                    elCell.innerHTML = childAssociation['attributes[' + propertyName+ ']'];
 				}
 
             }

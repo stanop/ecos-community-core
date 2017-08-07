@@ -22,8 +22,9 @@
 
 	<!-- ko ifnot: inlineEditVisibility -->
 		<span class="form-field-inline-icons">
-			<!-- ko if: inlineViewAttention --><i class="fa fa-exclamation-triangle attention" aria-hidden="true"></i><!-- /ko -->
-			<!-- ko if: invalid --><i class="fa fa-exclamation-circle warning" aria-hidden="true"></i><!-- /ko -->
+			<!-- ko if: invalid -->
+				<i class="fa fa-exclamation-circle warning" aria-hidden="true"></i>
+			<!-- /ko -->
 		</span>
 	<!-- /ko -->
 <#else>

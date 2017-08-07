@@ -1655,7 +1655,7 @@ ko.components.register("select2", {
         });
       
         this.visibleOptions = ko.pureComputed(function() {
-            var preparedOptions = self.forceOptions ? self.forceOptions() : self.options();
+            var preparedOptions = (self.forceOptions ? self.forceOptions() : self.options()) || [];
 
             if (self.additionalOptions().length) {
                 preparedOptions = _.union(preparedOptions, self.additionalOptions()); 
