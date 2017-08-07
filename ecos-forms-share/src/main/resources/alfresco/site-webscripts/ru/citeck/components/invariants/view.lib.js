@@ -35,13 +35,13 @@ function get(view, type, template) {
     return objects;
 }
 
-function getAttributeSet(args, view, all) {
+function getAttributeSet(args, view) {
     var attributeSet = { 
             attributes: [], 
             sets: [], 
             id: "", 
             template: view.template, 
-            params: {}
+            params: view.params
         };
 
     view.elements.forEach(function(element) {
@@ -49,14 +49,12 @@ function getAttributeSet(args, view, all) {
             attributeSet.attributes.push({ name: element.attribute, template: element.template });
         } else if (element.type == "view") {
             attributeSet.sets.push(getAttributeSet(args, element));
-            attributeSet.params = element.params;
         }
     })
 
-    attributeSet.id = view.id || makeId(34);
-    view.params.setId = view.id || makeId(34);
+    attributeSet.id = view.params.setId = view.id || makeId(34);
 
-    // TODO: replace many requests for one (speed up!!!)
+    // TODO: replace many requests for one (optimize it!!!)
     if (attributeSet.attributes.length) {
         var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; })) || [],
             viewScopeInvariants = getViewInvariants(view) || [];

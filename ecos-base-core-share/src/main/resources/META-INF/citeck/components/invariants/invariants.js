@@ -815,14 +815,34 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('needsValue', b)
         ;
 
-    // TODO:
-    // - property to visible tab by default
+    var featureParameter = function(name, defaultValue) {
+        return function() {
+            var params = this.params();
+            if (params[name]) {
+                var evalExpression;
+                try {
+                    evalExpression = eval("(" + params[name] + ")");
+                } catch (e) {
+                    console.error(e);
+                    evalExpression = null;
+                }
+            }
+
+            if (evalExpression) {
+                if (_.isBoolean(evalExpression)) return evalExpression;
+                if (_.isFunction(evalExpression)) return evalExpression.call(this);
+            }
+
+            return defaultValue || null;
+        }
+    }
 
     AttributeSet
-        .constructor([ Object, Node], function(data, node) {
+        .constructor([ Object, Node], function(data, node) {           
             return new AttributeSet({
                 id: data.id,
                 template: data.template,
+                params: data.params,
                 _invariants: data.invariants,
                 _attributes: data.attributes,
                 _sets: data.sets,
@@ -834,6 +854,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 id: data.id,
                 index: index,
                 template: data.template,
+                params: data.params,
                 _invariants: data.invariants,
                 _attributes: data.attributes,
                 _sets: data.sets,
@@ -847,12 +868,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('node', Node)
         .property('parentSet', AttributeSet)
         .property('template', s)
-        
+        .property('params', o)
+       
         .property('_visibility', b)
         .property('_activity', b)
         .property('_attributes', o)
         .property('_sets', o)
         .property('_invariants', o)
+
+        .computed('paramRelevant', featureParameter("relevant", true))
+        .computed('paramProtected', featureParameter("protected", false))
 
         .computed('attributes', function() {
             var attributes = this.resolve('node.impl.attributes', []);
@@ -900,8 +925,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return a_irrelevant && s_irrelevant;
         })
 
-        .method('getAttributeTemplate', function(attributeName) {
-            var attribute = _.find(this._attributes(), function(attr) { return attr.name == attributeName; });
+        .method('getAttributeTemplate', function(name) {
+            var attribute = _.find(this._attributes(), function(attr) { return attr.name == name; });
             if (attribute) return attribute.template;
             return null;
         })
@@ -995,10 +1020,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('mandatory', featuredProperty('mandatory'))
         .computed('invariantRelevant', featuredProperty('relevant'))
         .computed('relevant', function() {
-            var forcedAttributes = this.node().impl().forcedAttributes();
-            if(!_.isEmpty(forcedAttributes) // is a view attribute
-            && !_.contains(forcedAttributes, this.name())) // is not forced
-                return false; // non-exposed attributes are always irrelevant
+            var forcedAttributes = this.node().impl()._attributeNames();
+            if(!_.isEmpty(forcedAttributes) && !_.contains(forcedAttributes, this.name())) return false;
             return this.invariantRelevant();
         })
         .computed('invariantProtected', featuredProperty('protected'))
@@ -1281,6 +1304,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 datatype: datatype
             };
         })
+        .method('getAttributeSet', function() {
+            var map = this.node().impl().attributeSetMap(),
+                mapObject = map.attributes[this.name()];
+            return mapObject ? mapObject.set : null;
+        })
 
         // feature evaluators
         .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
@@ -1316,7 +1344,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .computed('rawValue', function() {
-            if (this.irrelevant()) return null;
+            // if (this.irrelevant()) return null;
 
             var invariantValue = this.invariantValue(), invariantNonblockingValue = this.invariantNonblockingValue(),
                 hybridValue = this.hybridValue(),
@@ -1472,29 +1500,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return qnameType.fullQName();
         })
         .computed('invariantSet', function() {
-            var getSetInvariants = function(set) {
-                    var invariants = [];
-                    getSetInvariantsRecurse(set, invariants);
-                    return invariants;
-                }, 
-                getSetInvariantsRecurse = function(set, invariants) {
-                    if (set.invariants && set.invariants.length)
-                        invariants = invariants.concat(set.invariants);
+            // TODO: get only invariants from relevant attribute
 
-                    if (set.sets.length) {
-                        set.sets.forEach(function(nestedSet) {
-                            getSetInvariants(nestedSet, invariants);
-                        });
-                    } else { return invariants }
-                };
-
-            var attributeSet = this._set(),
-                invariants = this._invariants() || getSetInvariants(attributeSet);
-
+            var invariants = this._invariants();
             if (invariants.length > 0) { 
                 return new ExplicitInvariantSet({ 
                     className: this.type(), 
-                    invariants: this._invariants() 
+                    invariants: invariants 
                 });
             } else if (this.type.loaded()) {
                 var forcedAttributes = this._attributeNames(),
@@ -1634,6 +1646,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr[filterBy]();
             })
         })
+        // Slow. Use 'getAttribute' to speed up your calculation
         .method('attribute', function(name) {
             return _.find(this.attributes() || [], function(attr) {
                 return attr.name() == name;
@@ -1654,17 +1667,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .method('getAttributeSet', function(id) {
-            var attributeSetMap = this.attributeSetMap(),
-                attributeSetObject = attributeSetMap[id];
-            if (attributeSetObject) return attributeSetMap[id].set;
+            var setObject = this.attributeSetMap() ? this.attributeSetMap().attributeSets[id] : null;
+            if (setObject) return setObject.set;
+            return null;
+        })
+        .method('getAttribute', function(name) {
+            var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
+            if (attributeObject) return attributeObject.attribute;
             return null;
         })
 
         .computed('attributeSetMap', function() {
             var buildMapOfAttributes = function(set, attributes, nMap) {
                     attributes.forEach(function(attribute) {
-                        if (!nMap[attribute.key()]) {
-                            nMap[attribute.key()] = {
+                        if (!nMap[attribute.name()]) {
+                            nMap.attributes[attribute.name()] = {
                                 attribute: attribute,
                                 set: set
                             };
@@ -1674,7 +1691,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 buildMapOfSets = function(sets, parent, nMap) {
                     sets.forEach(function(set) {
                         if (!nMap[set.id()]) {
-                            nMap[set.id()] = { 
+                            nMap.attributeSets[set.id()] = { 
                                 set: set,
                                 parent: parent, 
                                 children: _.map(set.sets(), function(s) { return s.id(); })
@@ -1691,9 +1708,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
 
             var rootSet = this.attributeSet(),
-                map = {};
+                map = {
+                    attributes: {},
+                    attributeSets: {}
+                };
 
-            map[rootSet.id()] = {
+            map.attributeSets[rootSet.id()] = {
                 set: rootSet,
                 parent: null,
                 children: _.map(rootSet.sets(), function(s) { return s.id(); })
@@ -2544,7 +2564,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     }
                 });
             }
-
         },
 
         initRuntime: function() {

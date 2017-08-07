@@ -18,7 +18,10 @@
 
 			<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
 				<li class="tab-title" data-tab-id="${tabId}"
-					data-bind="css: { selected: visible }, click: _.bind($root.selectAttributeSet, $root), clickBubble: false"
+					data-bind="
+						css: { selected: visible, hidden: irrelevant }, 
+						click: _.bind($root.selectAttributeSet, $root), clickBubble: false
+					"
 				>
 					<#if msg(tab.params.title)?has_content>
 						${msg(tab.params.title)}
