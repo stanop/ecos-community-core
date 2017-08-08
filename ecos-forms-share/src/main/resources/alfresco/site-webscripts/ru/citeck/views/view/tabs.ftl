@@ -19,7 +19,7 @@
 			<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
 				<li class="tab-title" data-tab-id="${tabId}"
 					data-bind="
-						css: { selected: visible, hidden: irrelevant }, 
+						css: { selected: visible, hidden: irrelevant, disabled: disable }, 
 						click: _.bind($root.selectAttributeSet, $root), clickBubble: false
 					"
 				>

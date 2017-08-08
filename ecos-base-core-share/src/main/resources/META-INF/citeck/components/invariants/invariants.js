@@ -819,18 +819,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         return function() {
             var params = this.params();
             if (params[name]) {
-                var evalExpression;
                 try {
-                    evalExpression = eval("(" + params[name] + ")");
-                } catch (e) {
-                    console.error(e);
-                    evalExpression = null;
-                }
-            }
+                    var evaluatedContextFunction = function() {
+                        var evaluatedExpression = eval("(" + params[name] + ")");
+                        if (_.isBoolean(evaluatedExpression)) return evaluatedExpression;
+                        if (_.isFunction(evaluatedExpression)) return evaluatedExpression.call(this);
 
-            if (evalExpression) {
-                if (_.isBoolean(evalExpression)) return evalExpression;
-                if (_.isFunction(evalExpression)) return evalExpression.call(this);
+                        console.warn("featureParameter " + name + " have a not valid result of evaluatedExpression for AttributeSet.id:" + this.id());
+                        return null;
+                    }
+                    
+                    return evaluatedContextFunction.cell(this);
+                } catch (e) { 
+                    console.error("featureParameter " + name + " have an error calculating value of evaluatedExpression for AttributeSet.id:" + this.id());
+                    console.error(e);
+                }
             }
 
             return defaultValue || null;
@@ -876,8 +879,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_sets', o)
         .property('_invariants', o)
 
-        .computed('paramRelevant', featureParameter("relevant", true))
-        .computed('paramProtected', featureParameter("protected", false))
+        .computed('paramRelevant', featureParameter("relevant"))
+        .computed('paramProtected', featureParameter("protected"))
 
         .computed('attributes', function() {
             var attributes = this.resolve('node.impl.attributes', []);
@@ -889,9 +892,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return _.map(this._sets(), function(as, index) {
                 return new AttributeSet(as, this.node(), this, index);
             }, this);
-        })
-        .computed('invariants', function() {
-            // TODO: get invariants from general container or invariantSet of node
         })
         .computed('hidden', {
             read: function() { return !this._visibility(); },
@@ -918,11 +918,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return !this.irrelevant();
         })
         .computed('irrelevant', function() {
+            if (this.paramRelevant() != null && !this.paramRelevant()) return true;
             var a_irrelevant = _.every(this.attributes(), function(attr) { 
                     return attr.irrelevant() || this.getAttributeTemplate(attr.name()) == "none"; 
                 }, this),
                 s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
             return a_irrelevant && s_irrelevant;
+        })
+        .computed('protected', function() {
+            if (this.paramProtected() != null && this.paramProtected()) return true;
+            return false;
         })
 
         .method('getAttributeTemplate', function(name) {
@@ -1500,8 +1505,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return qnameType.fullQName();
         })
         .computed('invariantSet', function() {
-            // TODO: get only invariants from relevant attribute
-
+            // TODO: get only invariants from visible attributeSet
+            
             var invariants = this._invariants();
             if (invariants.length > 0) { 
                 return new ExplicitInvariantSet({ 
@@ -2288,8 +2293,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         // -----------------
 
         .method('selectAttributeSet', function(attributeSet, event) {
-            _.each(attributeSet.parentSet().sets(), function(set) { set.visible(false); })
-            attributeSet.visible(true);
+            if (attributeSet.enable()) {
+                _.each(attributeSet.parentSet().sets(), function(set) { set.visible(false); })
+                attributeSet.visible(true);
+            }
         })
 
         .method('scroll', function(data, event) {
@@ -2322,12 +2329,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     Attribute.extend('*', rateLimit);
     Attribute.extend('invariantNonblockingValue', rateLimit);
     AttributeInfo.extend('*', rateLimit);
+    
     DDClass.extend('attributes', rateLimit);
+    
     NodeImpl.extend('type', rateLimit);
     NodeImpl.extend('_attributes', rateLimit);
+    NodeImpl.extend('attributes', rateLimit);
+    NodeImpl.extend('invariantSet', rateLimit);
+
 
     GroupedInvariantSet.extend('invariants', rateLimit);
-    NodeImpl.extend('attributes', rateLimit);
 
     MultiClassInvariantSet.extend('invariants', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
     SingleClassInvariantSet.extend('invariants', rateLimit)
