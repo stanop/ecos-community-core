@@ -120,27 +120,33 @@ ko.components.register("select", {
             if (this.data.optionsText) { this.optionsText = this.data.optionsText; }
             else { this.optionsText = function(option) { return this.getValueTitle(option); }.bind(this.data) };
         }
-        if (!this.optionsValue && this.data.optionsValue) { this.optionsValue = this.data.optionsValue; }
-        if (!this.optionsAfterRender && this.data.optionsAfterRender) { this.optionsAfterRender = this.data.optionsAfterRender; }
+
+        if (!this.optionsValue && this.data.optionsValue) { 
+            this.optionsValue = this.data.optionsValue;
+        }
+
+        if (!this.optionsAfterRender && this.data.optionsAfterRender) {
+            this.optionsAfterRender = this.data.optionsAfterRender;
+        }
     },
     template: 
        '<!--ko ifnot: data.multiple -->\
             <select data-bind="attr: { id: id },\
                 disable: data.protected,\
                 options: data.options,\
-                optionsCaption: optionsCaption,\
-                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
-                value: data.value,\
-                valueAllowUnset: true"></select>\
+                optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue,\
+                optionsAfterRender: optionsAfterRender,\
+                value: data.value\
+            "></select>\
         <!-- /ko -->\
         <!-- ko if: data.multiple -->\
             <select data-bind="attr: { id: id, multiple: data.multiple },\
                 disable: data.protected,\
                 options: data.options,\
-                optionsCaption: optionsCaption,\
-                optionsText: optionsText, optionsValue: optionsValue, optionsAfterRender: optionsAfterRender,\
-                selectedOptions: data.multipleValues,\
-                valueAllowUnset: true"></select>\
+                optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue,\
+                optionsAfterRender: optionsAfterRender,\
+                selectedOptions: data.multipleValues\
+            "></select>\
         <!-- /ko -->'
 });
 
