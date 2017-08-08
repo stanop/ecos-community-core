@@ -37,7 +37,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      */
     private static final String EXCLUDE_EVENT_TYPES_PROPERTY = "ecos.citeck.history.exclude.types";
     private static final String[] DEFAULT_EXCLUDE_EVENT_TYPES = {
-        "task.create", "task.assign", "task.complete" , "workflow.start" , "workflow.end", "workflow.end.cancelled", "unknown-user"
+        "task.create", "task.assign" , "workflow.start" , "workflow.end", "workflow.end.cancelled", "unknown-user"
     };
 
     /**
