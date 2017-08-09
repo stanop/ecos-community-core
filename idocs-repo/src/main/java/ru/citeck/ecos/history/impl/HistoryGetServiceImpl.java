@@ -5,8 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
@@ -54,7 +52,7 @@ public class HistoryGetServiceImpl implements HistoryGetService {
             entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
                     ((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)).getTime());
             entryMap.put(DocumentHistoryConstants.EVENT_INITIATOR.getValue(),
-                    getInitiatorName(eventRef));
+                    nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY));
             entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
             entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
@@ -69,21 +67,6 @@ public class HistoryGetServiceImpl implements HistoryGetService {
             return firstDate.compareTo(secondDate);
         });
         return result;
-    }
-
-    /**
-     * Get initiator name
-     * @param eventRef Event node reference
-     * @return Initiator username or null
-     */
-    private String getInitiatorName(NodeRef eventRef) {
-        List<String> initiators = (List<String>) nodeService.getProperty(eventRef, HistoryModel.INITIATOR);
-        String initiatorUUid = CollectionUtils.isNotEmpty(initiators) ? initiators.get(0) : "";
-        if (StringUtils.isEmpty(initiatorUUid)) {
-            return null;
-        } else {
-            return personService.getPerson(new NodeRef(initiatorUUid)).getUserName();
-        }
     }
 
     public void setNodeService(NodeService nodeService) {
