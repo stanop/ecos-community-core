@@ -828,8 +828,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         console.warn("featureParameter " + name + " have a not valid result of evaluatedExpression for AttributeSet.id:" + this.id());
                         return null;
                     }
-                    
-                    return evaluatedContextFunction.cell(this);
+
+                    return evaluatedContextFunction.call(this);
                 } catch (e) { 
                     console.error("featureParameter " + name + " have an error calculating value of evaluatedExpression for AttributeSet.id:" + this.id());
                     console.error(e);
@@ -882,6 +882,32 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('paramRelevant', featureParameter("relevant"))
         .computed('paramProtected', featureParameter("protected"))
 
+        .computed('irrelevant', function() {
+            if (this.paramRelevant() != null && !this.paramRelevant()) return true;
+            var a_irrelevant = _.every(this.attributes(), function(attr) { 
+                    return attr.irrelevant() || this.getAttributeTemplate(attr.name()) == "none"; 
+                }, this),
+                s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
+            return a_irrelevant && s_irrelevant;
+        })
+        .computed('relevant', function() { return !this.irrelevant(); })
+        .computed('protected', function() {
+            if (this.paramProtected() != null && this.paramProtected()) return true;
+            return false;
+        })
+        .computed('invalid', function() {
+            return _.any(this.attributes(), function(attribute) {
+                return attribute.relevant() && attribute.invalid();
+            });
+        })
+        .computed('hidden', function() {
+            return this.irrelevant() || !this._visibility();
+        })
+        .computed('disabled', function() {
+            return this.protected() || !this._activity();
+        })
+        .computed('selected', function() { return !this.hidden() && !this.disabled(); })
+
         .computed('attributes', function() {
             var attributes = this.resolve('node.impl.attributes', []);
             return _.filter(attributes, function(attribute) {
@@ -893,43 +919,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return new AttributeSet(as, this.node(), this, index);
             }, this);
         })
-        .computed('hidden', {
-            read: function() { return !this._visibility(); },
-            write: function(newValue) { this._visibility(!newValue); }
-        })
-        .computed('visible', {
-            read: function() { return this._visibility(); },
-            write: function(newValue) { this._visibility(!!newValue); }
-        })
-        .computed('disable', {
-            read: function() { return !this._activity(); },
-            write: function(newValue) { this._activity(!newValue); }
-        })
-        .computed('enable', {
-            read: function() { return this._activity(); },
-            write: function(newValue) { this._activity(!!newValue); }
-        })
-        .computed('invalid', function() {
-            return _.any(this.attributes(), function(attribute) {
-                return attribute.relevant() && attribute.invalid();
-            });
-        })
-        .computed('relevant', function() {
-            return !this.irrelevant();
-        })
-        .computed('irrelevant', function() {
-            if (this.paramRelevant() != null && !this.paramRelevant()) return true;
-            var a_irrelevant = _.every(this.attributes(), function(attr) { 
-                    return attr.irrelevant() || this.getAttributeTemplate(attr.name()) == "none"; 
-                }, this),
-                s_irrelevant = _.every(this.sets(), function(set) { return set.irrelevant(); });
-            return a_irrelevant && s_irrelevant;
-        })
-        .computed('protected', function() {
-            if (this.paramProtected() != null && this.paramProtected()) return true;
-            return false;
-        })
 
+        .method('visible', function(newValue) { this._visibility(newValue); })
+        .method('enable', function(newValue) { this._activity(newValue); })
         .method('getAttributeTemplate', function(name) {
             var attribute = _.find(this._attributes(), function(attr) { return attr.name == name; });
             if (attribute) return attribute.template;
@@ -937,8 +929,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
         .load('_visibility', function() {
-            var parentTemplate = this.parentSet() ? this.parentSet().template() : null;
-            this._visibility(parentTemplate == "tabs" && this.index() == 0);
+            var parent = this.parentSet();
+            
+            if (parent.template() == "tabs") {
+                var defaultAttributeSet = parent.params().defaultAttributeSet || null; 
+                if (defaultAttributeSet) {
+                    this._visibility(defaultAttributeSet == this.id());
+                    return;
+                } else if (this.index() == 0) { 
+                    this._visibility(true);
+                    return;
+                }
+
+                this._visibility(false);
+                return;
+            }
+
+            this._visibility(true);
         })
         .load('_activity', function() { this._activity(true) })
         ;
@@ -2293,7 +2300,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         // -----------------
 
         .method('selectAttributeSet', function(attributeSet, event) {
-            if (attributeSet.enable()) {
+            if (!attributeSet.disabled()) {
                 _.each(attributeSet.parentSet().sets(), function(set) { set.visible(false); })
                 attributeSet.visible(true);
             }
