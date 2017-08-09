@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="meetings-repo" default="hotcopy-tomcat">
-    <property file="module.properties"/>
-    <import file="../idocs-repo-dependent.xml"/>
-</project>
