@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Explicit permissions get</shortname>
+	<description>Get permissions of node, explicitly specified in the arguments</description>
+	<url>/citeck/node/permissions</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

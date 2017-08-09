@@ -390,6 +390,42 @@ Citeck.utils.nodeInfoLoader = new Citeck.utils.BulkLoader({
     }
 });
 
+Citeck.utils.classNamesLoader = new Citeck.utils.BulkLoader({
+    url: Alfresco.constants.PROXY_URI + "citeck/node/class-names",
+    method: "POST",
+    emptyFn: function() { return { nodeRefs: [] } },
+    addFn: function(query, nodeRef) {
+        if(query.nodeRefs.indexOf(nodeRef) == -1) {
+            query.nodeRefs.push(nodeRef);
+            return true;
+        } else {
+            return false;
+        }
+    },
+    getFn: function(response) {
+        var nodes = response.json.nodes;
+        return _.object(_.pluck(nodes, 'nodeRef'), nodes);
+    }
+});
+
+Citeck.utils.permissionsLoader = new Citeck.utils.BulkLoader({
+    url: Alfresco.constants.PROXY_URI + "citeck/node/permissions",
+    method: "POST",
+    emptyFn: function() { return { nodeRefs: [] } },
+    addFn: function(query, nodeRef) {
+        if(query.nodeRefs.indexOf(nodeRef) == -1) {
+            query.nodeRefs.push(nodeRef);
+            return true;
+        } else {
+            return false;
+        }
+    },
+    getFn: function(response) {
+        var nodes = response.json.nodes;
+        return _.object(_.pluck(nodes, 'nodeRef'), nodes);
+    }
+});
+
 Citeck.utils.attributeValueLoader = new Citeck.utils.BulkLoader({
     url: Alfresco.constants.PROXY_URI + "citeck/attributes/values",
     method: "POST",

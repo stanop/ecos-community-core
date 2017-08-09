@@ -296,16 +296,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             if (!attInfo.searchQueryData) {
                 attInfo.searchQueryData = {
-                    query: new ko.observable(""),
-                    nodes: new ko.observableArray([]),
+                    query: ko.observable(""),
+                    nodes: ko.observableArray([]),
                     schema: null,
                     cacheAge: null
                 };
                 attInfo.searchQueryData.query.subscribe(function(value) {
 
                     var dataObj = { query: value };
-                    if (this.schema) dataObj.schema = this.schema;
-                    if (this.cacheAge) dataObj.cacheAge = this.cacheAge;
+                    if (this.schema)
+                        dataObj.schema = _.isObject(this.schema) ? JSON.stringify(this.schema) : this.schema;
+                    if (this.cacheAge) 
+                        dataObj.cacheAge = this.cacheAge;
 
                     Alfresco.util.Ajax.jsonGet({
                         url: Alfresco.constants.PROXY_URI + "citeck/search/query",
@@ -1596,6 +1598,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             };
         })
 
+        .load('withoutView', function(impl) { impl.withoutView(null) })
+        .load('groups', function(impl) { impl.groups([]) })
         .load('viewAttributeNames', function(impl) {
             if (!this.viewAttributeNames.loaded()) {
                 if (impl.nodeRef.loaded() && impl.nodeRef()) {
@@ -1613,15 +1617,26 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
-
-        .load('groups', function(impl) { impl.groups([]) })
+        .load('classNames', function(impl) {
+            if(impl.isPersisted()) {
+                Citeck.utils.classNamesLoader.load(impl.nodeRef(), function(nodeRef, model) {
+                    if (model) impl.updateModel(model);
+                });
+            }
+        })
+        .load('permissions', function(impl) {
+            if(impl.isPersisted()) {
+                Citeck.utils.permissionsLoader.load(impl.nodeRef(), function(nodeRef, model) {
+                    if (model) impl.updateModel(model);
+                });
+            }
+        })
         .load('*', function(impl) {
             if(impl.isPersisted()) {
                 Citeck.utils.nodeInfoLoader.load(impl.nodeRef(), function(nodeRef, model) {
                     for (var attr in model.attributes) {
                         if (attr.indexOf("_added") != -1) delete model.attributes[attr];
                     }
-
                     if (model) impl.updateModel(model);
                 });
             }
