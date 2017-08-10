@@ -1498,6 +1498,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('virtualParent', Node)
         .property('defaultModel', DefaultModel)
         .property('runtime', Runtime)
+
         
         .property('_invariants', o)
         .property('_attributeNames', [ s ])
@@ -1505,6 +1506,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_attributes', o)
         .property('_set', o)
         .property('_currentInvariantSet', o)
+        .property('_cache', o)
 
         .shortcut('typeShort', 'type')
 
@@ -1752,6 +1754,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this._filterAttributes("invalid");
         })
 
+        .load('_cache', function(impl) {
+            impl._cache(Alfresco.util.ComponentManager.get("InvariantsRuntimeCache"));
+        })
         .load('_systemInvariantSet', function(impl) { impl._systemInvariantSet(null); })
         .load('_attributeNames', function(impl) { impl._attributeNames([]); })
         .load('_invariants', function(impl) { impl._invariants([]); })
@@ -1760,19 +1765,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('defaultModel', function(impl) { impl.defaultModel(new DefaultModel(COMMON_DEFAULT_MODEL_KEY)) })
         .load('runtime', function(impl) { impl.runtime(null); })
         .load('viewAttributeNames', function(impl) {
-            if (!this.viewAttributeNames.loaded()) {
-                if (impl.nodeRef.loaded() && impl.nodeRef()) {
-                    viewAttributeNamesByNodeRefLoader.load(impl.nodeRef(), function(nodeRef, attributes) {
-                        var attributeCount = attributes ? Object.keys(attributes).length : -1;
-                        impl.viewAttributeNames(attributes);
-                        if (attributeCount <= 0) impl.withoutView(true);
-                    });
-                } else if (impl.type.loaded() && impl.type()) {
-                    viewAttributeNamesByTypeLoader.load(impl.type(), function(type, attributes) {
-                        var attributeCount = attributes ? Object.keys(attributes).length : -1;
-                        impl.viewAttributeNames(attributes);
-                        if (attributeCount <= 0) impl.withoutView(true);
-                    });
+            if (!impl.viewAttributeNames.loaded()) {
+                var cachedViewAttributeNames = impl._cache().get(["ViewAttributeNames", impl.type()]);
+                if (cachedViewAttributeNames) {
+                    impl.viewAttributeNames(cachedViewAttributeNames);
+                    return;
+                }
+
+                var loader = function(nodeRef, attributes) {
+                    var attributeCount = attributes ? Object.keys(attributes).length : -1;
+                    if (attributeCount <= 0) impl.withoutView(true);
+                    else impl._cache().insert(["ViewAttributeNames"], impl.type(), attributes);
+                    impl.viewAttributeNames(attributes);
+                }
+
+                if (impl.nodeRef()) {
+                    viewAttributeNamesByNodeRefLoader.load(impl.nodeRef(), loader);
+                } else if (impl.type()) {
+                    viewAttributeNamesByTypeLoader.load(impl.type(), loader);
                 }
             }
         })
@@ -2436,7 +2446,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         InvariantsRuntimeCache.superclass.constructor.call(this, "Citeck.invariants.InvariantsRuntimeCache", "InvariantsRuntimeCache");
         
         this.cacheObject = {
-            "DefaultInvariants": {}
+            "DefaultInvariants": {},
+            "ViewAttributeNames": {}
         };
     };
 
@@ -2445,8 +2456,29 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return object.toString().indexOf("invariants.Invariant") != -1;
         },
 
-        insert: function(key, object) { this.cacheObject[key] = object; },
-        get: function(key) { return this.cacheObject[key]; },
+        insert: function(keys, keyName, object, mode) {
+            if (!_.isArray(keys)) { keys = [ keys ] }
+            var targetObject = this.get(keys);
+            if (targetObject) {
+                try {
+                    if (_.isArray(targetObject)) { targetObject.push(object); }
+                    else if (_.isObject(targetObject)) {
+                        if (keyName) targetObject[keyName] = object;
+                        else targetObject = object;
+                    }
+                } catch (e) { console.error(e); }
+            }
+        },
+        get: function(keys) {
+            if (!_.isArray(keys)) { keys = [ keys ] }
+            var targetObject = this.cacheObject;
+            for (var i = 0; i < keys.length; i++) {
+                if (!targetObject[keys[i]]) return null;
+                targetObject = targetObject[keys[i]];
+            }
+            return targetObject;
+        },
+        has: function(keys) { return !!this.get(keys); },
         remove: function(key) { delete this.cacheObject[key]; },
 
 
