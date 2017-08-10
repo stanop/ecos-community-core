@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Explicit classNames get</shortname>
+	<description>Get classNames of node, explicitly specified in the arguments</description>
+	<url>/citeck/node/class-names</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

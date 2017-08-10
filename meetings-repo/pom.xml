@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <artifactId>meetings-repo</artifactId>
+    <version>1.1.4-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>meetings-repo</name>
+    <description>meetings-repo</description>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.citeck.ecos.community</groupId>
+        <artifactId>ecos-community</artifactId>
+        <version>3.1.3.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>idocs-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

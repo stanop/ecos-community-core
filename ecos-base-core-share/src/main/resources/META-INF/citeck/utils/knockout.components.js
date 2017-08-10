@@ -70,49 +70,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 });
             };
 
-            this.fillSelectControl = function(documentType) {
-                var query = {
-                    skipCount: 0,
-                    maxItems: 50,
-                    field_1: "type",
-                    predicate_1: "type-equals",
-                    value_1: "cm:category",
-                    field_2: "parent",
-                    predicate_2: "parent-equals",
-                    value_2: documentType
-                };
-
-                Alfresco.util.Ajax.jsonPost({
-                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                    dataObj: query,
-                    successCallback: {
-                        fn: function(response) {
-                            var result = _.map(response.json.results, function(node) {
-                                return new Node(node);
-                            });
-                            var temporaryArray = [];
-
-                            for (var i = 0; i < result.length; i ++) {
-                                var currentObj = result[i];
-                                var displayName = currentObj.properties['cm:title']
-                                    ? currentObj.properties['cm:title'] : currentObj.properties['cm:name'];
-                                var nodeRef = currentObj.nodeRef;
-                                temporaryArray.push([nodeRef, displayName]);
-                            }
-                            if (temporaryArray.length > 0) {
-                                selectData(temporaryArray);
-                            }
-                        }
-                    }
-                });
-
-                var selectData = ko.observable([]);
-                selectData.subscribe(function() {
-                    self.fakeViewModel.options(selectData());
-                    self.drawFilterCriterionValueComponent();
-                });
-            };
-
             this.drawFilterCriterionValueComponent = function() {
               if (self.templateName == 'checkbox') {
                   return;
@@ -146,29 +103,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     dataObj: query,
                     successCallback: {
                         fn: function(response) {
-                            var result = _.map(response.json.results, function(node) {
-                                return new Node(node);
-                            });
-                            var temporaryArray = [];
+                            var results = [];
+                            if (response.json.results.length) {
+                                results = _.map(response.json.results, function(node) {
+                                    return [
+                                        node.nodeRef,
+                                        node.attributes["cm:title"] || node.attributes["cm:name"]
+                                    ];
+                                });
+                            }
 
-                            for (var i = 0; i < result.length; i ++) {
-                                var currentObj = result[i];
-                                var displayName = currentObj.properties['cm:title']
-                                    ? currentObj.properties['cm:title'] : currentObj.properties['cm:name'];
-                                var nodeRef = currentObj.nodeRef;
-                                temporaryArray.push([nodeRef, displayName]);
-                            }
-                            if (temporaryArray.length > 0) {
-                                selectData(temporaryArray);
-                            }
+                            self.fakeViewModel.options(results);
+                            self.drawFilterCriterionValueComponent();
                         }
                     }
-                });
-
-                var selectData = ko.observable([]);
-                selectData.subscribe(function() {
-                    self.fakeViewModel.options(selectData());
-                    self.drawFilterCriterionValueComponent();
                 });
             };
 

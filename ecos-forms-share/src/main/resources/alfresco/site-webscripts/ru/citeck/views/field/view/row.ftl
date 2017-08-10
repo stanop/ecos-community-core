@@ -2,7 +2,14 @@
 	<@views.renderRegion "label" />
 	
 	<!-- ko ifnot: inlineEditVisibility -->
-		<@views.renderTemplate "view" />
+	    <#assign defaultTemplate="" />
+	    <#list viewScope.field.regions as region>
+    		<#if region.name == "input" && region.template?? && region.template?contains("view")>
+    			<@views.renderElement region />
+    			<#assign defaultTemplate = region.template />
+    		</#if>
+    	</#list>
+        <#if !defaultTemplate?has_content><@views.renderTemplate "view" /></#if>
 	<!-- /ko -->
 
 	<!-- ko if: inlineEditVisibility -->

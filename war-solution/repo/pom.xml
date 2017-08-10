@@ -14,7 +14,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>war-solution</artifactId>
-        <version>3.1.2.0-SNAPSHOT</version>
+        <version>3.1.3.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -89,6 +89,27 @@
             <artifactId>contracts-repo</artifactId>
             <classifier>${ecos.project.classifier}</classifier>
             <version>${module.contracts.version}</version>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>letters-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${module.letters.version}</version>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>meetings-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${module.meetings.version}</version>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>orders-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${module.orders.version}</version>
             <type>amp</type>
         </dependency>
 
@@ -180,6 +201,24 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>letters-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>meetings-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>orders-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
