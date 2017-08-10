@@ -2649,8 +2649,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
-            
-            console.log("impl", this.runtime.node().impl())
         },
 
         initRuntimeCache: function() {

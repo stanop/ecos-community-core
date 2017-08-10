@@ -69,9 +69,6 @@
 
     model.canBeDraft = viewData.canBeDraft;
 
-    // DEBUG
-    view.params.loadIndicator = "false";
-
 })()
 
 
