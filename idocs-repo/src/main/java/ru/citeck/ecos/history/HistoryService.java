@@ -185,6 +185,11 @@ public class HistoryService {
                 assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
             }
 
+            /** Modifier */
+            String currentUsername = authenticationService.getCurrentUserName();
+            if (currentUsername != null) {
+                properties.put(HistoryModel.MODIFIER_PROPERTY, currentUsername);
+            }
             NodeRef historyEvent = nodeService.createNode(parentNode, assocType, assocName, type, properties).getChildRef();
 
             if (initiator != null) {
@@ -223,6 +228,10 @@ public class HistoryService {
         requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
         /** User */
         String username = (String) getDocumentProperty(document, MODIFIER_PROPERTY);
+        String currentUsername = authenticationService.getCurrentUserName();
+        if (currentUsername != null) {
+            username = currentUsername;
+        }
         NodeRef userRef = personService.getPerson(username);
         requestParams.put(USERNAME, username);
         requestParams.put(USER_ID, userRef.getId());
