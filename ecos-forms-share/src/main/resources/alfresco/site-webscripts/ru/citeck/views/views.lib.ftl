@@ -8,11 +8,6 @@
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
-	<#if element.attribute??>
-		<!-- ko with: attribute("${element.attribute}") -->
-		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
-	</#if>
-
 	<#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
 		<#assign wideBlockWidth>
 			<#-- field level -->
@@ -29,6 +24,20 @@
 			</#if>
 		</#assign>
 	</#if>
+
+	<#-- virtual elements for field -->
+	<#if element.attribute??>
+		<!-- ko with: getAttribute("${element.attribute}") -->
+		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
+	</#if>
+
+	<#-- virtual elements for view -->
+	<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
+		<!-- ko ifnot: ko.computed(function() {
+			var set = getAttributeSet('${element.params.setId}');
+			return set ? set.hidden() : false
+		}) -->
+	</#if>
 	
 	<div class="form-${element.type} template-${template}"
 		<#if element.attribute??>
@@ -41,14 +50,6 @@
 			data-attribute-name="${element.attribute}"
 		</#if>
 
-		<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
-			data-bind="css: { hidden: ko.computed(function() {
-					var set = getAttributeSet('${element.params.setId}');
-					return set ? set.irrelevant() : false
-				})
-			}"
-		</#if>
-
 		<#-- custom width for field -->
 		<#if element.type == "field" && wideBlockWidth?has_content>
 			style="width: ${wideBlockWidth?trim};"
@@ -57,6 +58,10 @@
 		<@renderContent element />
 	</div>
 	
+	<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
+		<!-- /ko -->
+	</#if>
+
 	<#if element.attribute??>
 		<!-- /ko -->
 	</#if>

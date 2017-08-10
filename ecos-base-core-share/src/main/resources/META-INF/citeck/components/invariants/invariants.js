@@ -841,7 +841,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     }
 
     AttributeSet
-        .constructor([ Object, Node], function(data, node) {           
+        .constructor([ Object, Node], function(data, node) {
+            if (!data || !Node) return null;    
             return new AttributeSet({
                 id: data.id,
                 template: data.template,
@@ -853,6 +854,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             });
         }, true)
         .constructor([ Object, Node, AttributeSet, n], function(data, node, parentSet, index) {
+            if (!data || !Node || !AttributeSet) return null;
             return new AttributeSet({
                 id: data.id,
                 index: index,
@@ -877,7 +879,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_activity', b)
         .property('_attributes', o)
         .property('_sets', o)
-        .property('_invariants', o)
+        .property('_rendered', b)
 
         .computed('paramRelevant', featureParameter("relevant"))
         .computed('paramProtected', featureParameter("protected"))
@@ -904,7 +906,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.irrelevant() || !this._visibility();
         })
         .computed('disabled', function() {
-            return this.protected() || !this._activity();
+            return this["protected"]() || !this._activity();
         })
         .computed('selected', function() { return !this.hidden() && !this.disabled(); })
 
@@ -930,13 +932,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .load('_visibility', function() {
             var parent = this.parentSet();
-            
-            if (parent.template() == "tabs") {
+            if (parent && parent.template() == "tabs") {
                 var defaultAttributeSet = parent.params().defaultAttributeSet || null; 
                 if (defaultAttributeSet) {
                     this._visibility(defaultAttributeSet == this.id());
                     return;
-                } else if (this.index() == 0) { 
+                } else if (this.index() == 0) {
                     this._visibility(true);
                     return;
                 }
@@ -1497,11 +1498,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('virtualParent', Node)
         .property('defaultModel', DefaultModel)
         .property('runtime', Runtime)
+        
         .property('_invariants', o)
         .property('_attributeNames', [ s ])
         .property('_definedAttributeNamesWasLoaded', b)
         .property('_attributes', o)
         .property('_set', o)
+        .property('_currentInvariantSet', o)
 
         .shortcut('typeShort', 'type')
 
@@ -1512,13 +1515,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return qnameType.fullQName();
         })
         .computed('invariantSet', function() {
-            // TODO: get only invariants from visible attributeSet
-            
-            var invariants = this._invariants();
-            if (invariants.length > 0) { 
+            if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
                 return new ExplicitInvariantSet({ 
                     className: this.type(), 
-                    invariants: invariants 
+                    invariants: this._invariants() 
                 });
             } else if (this.type.loaded()) {
                 var forcedAttributes = this._attributeNames(),
@@ -1602,7 +1602,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 attributes: attributes
             };
         })
-        .computed('attributeSet', function() { return new AttributeSet(this._set(), this.node()); })
+        .computed('attributeSet', function() {
+            if (this._set()) return new AttributeSet(this._set(), this.node());
+            return null;
+        })
         .computed('attributes', {
             read: function() {
                 var node = this.node(),
@@ -1725,15 +1728,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     attributeSets: {}
                 };
 
-            map.attributeSets[rootSet.id()] = {
-                set: rootSet,
-                parent: null,
-                children: _.map(rootSet.sets(), function(s) { return s.id(); })
-            };
+            if (rootSet) {
+                map.attributeSets[rootSet.id()] = {
+                    set: rootSet,
+                    parent: null,
+                    children: _.map(rootSet.sets(), function(s) { return s.id(); })
+                };
 
-            buildMapOfSets(rootSet.sets(), rootSet.id(), map);
+                buildMapOfSets(rootSet.sets(), rootSet.id(), map);
 
-            return map;
+                return map;
+            }
+
+            return null;
         })
 
         .method('getChangedAttributes', function() {
@@ -1745,8 +1752,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this._filterAttributes("invalid");
         })
 
-        .load('_attributeNames', function(impl) { impl._attributeNames([]) })
-        .load('_invariants', function(impl) { impl._invariants([]) })
+        .load('_systemInvariantSet', function(impl) { impl._systemInvariantSet(null); })
+        .load('_attributeNames', function(impl) { impl._attributeNames([]); })
+        .load('_invariants', function(impl) { impl._invariants([]); })
+        .load('_set', function(impl) { impl._set(null); })
 
         .load('defaultModel', function(impl) { impl.defaultModel(new DefaultModel(COMMON_DEFAULT_MODEL_KEY)) })
         .load('runtime', function(impl) { impl.runtime(null); })
@@ -2331,26 +2340,30 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
 
     // performance tuning
-    var rateLimit = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } };
+    var rateLimit0 = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } },
+        rateLimit250 = { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } };
 
-    Attribute.extend('*', rateLimit);
-    Attribute.extend('invariantNonblockingValue', rateLimit);
-    AttributeInfo.extend('*', rateLimit);
+    AttributeSet.extend('irrelevant', rateLimit0);
+    AttributeSet.extend('attributes', rateLimit0);
+    AttributeSet.extend('sets', rateLimit0);
+
+    Attribute.extend('*', rateLimit0);
+    Attribute.extend('invariantNonblockingValue', rateLimit0);
     
-    DDClass.extend('attributes', rateLimit);
+    AttributeInfo.extend('*', rateLimit0);
     
-    NodeImpl.extend('type', rateLimit);
-    NodeImpl.extend('_attributes', rateLimit);
-    NodeImpl.extend('attributes', rateLimit);
-    NodeImpl.extend('invariantSet', rateLimit);
+    DDClass.extend('attributes', rateLimit0);
+    
+    NodeImpl.extend('type', rateLimit0);
+    NodeImpl.extend('_attributes', rateLimit0);
+    NodeImpl.extend('attributes', rateLimit0);
+    NodeImpl.extend('invariantSet', rateLimit250);
 
+    GroupedInvariantSet.extend('invariants', rateLimit250);
+    MultiClassInvariantSet.extend('invariants', rateLimit250)
+    SingleClassInvariantSet.extend('invariants', rateLimit0)
 
-    GroupedInvariantSet.extend('invariants', rateLimit);
-
-    MultiClassInvariantSet.extend('invariants', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
-    SingleClassInvariantSet.extend('invariants', rateLimit)
-
-    Runtime.extend('loaded', { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } })
+    Runtime.extend('loaded', rateLimit250)
 
     // create common attributes statically:
     // _.each({
@@ -2589,7 +2602,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
             
-            console.log(this.runtime)
+            console.log("impl", this.runtime.node().impl())
         },
 
         initRuntimeCache: function() {

@@ -45,13 +45,13 @@
 		<#assign tabId = tab.id!tab.params.setId />
 
 		<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
-			<div class="tab-body" id="${args.htmlid}-${tabId}" data-tab-id="${tabId}" 
-				data-bind="css: { hidden: hidden }"
-			>
-				<!-- ko with: $root.node().impl() -->
-					<@views.renderElement tab />
-				<!-- /ko -->
-			</div>
+			<!-- ko if: selected -->
+				<div class="tab-body" id="${args.htmlid}-${tabId}" data-tab-id="${tabId}" >
+					<!-- ko with: $root.node().impl() -->
+						<@views.renderElement tab />
+					<!-- /ko -->
+				</div>
+			<!-- /ko -->
 		<!-- /ko -->
 	</#list>
 </div>

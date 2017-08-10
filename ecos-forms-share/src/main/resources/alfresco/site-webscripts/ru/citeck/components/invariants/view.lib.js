@@ -54,13 +54,6 @@ function getAttributeSet(args, view) {
 
     attributeSet.id = view.params.setId = view.id || makeId(34);
 
-    // TODO: replace many requests for one (optimize it!!!)
-    if (attributeSet.attributes.length) {
-        var invariantSet = getInvariantSet(args, attributeSet.attributes.map(function(attr) { return attr.name; })) || [],
-            viewScopeInvariants = getViewInvariants(view) || [];
-        attributeSet.invariants = invariantSet.invariants.concat(viewScopeInvariants);
-    }
-
     return attributeSet;
 }
 
