@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.model.IdocsModel;
 
 import java.io.File;
@@ -42,6 +43,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
     private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
     private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
+    private static final String PROPERTY_NAME = "propertyName";
+    private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
 
     /**
      * Constants
@@ -49,7 +52,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String[] KEYS = {
             "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
             "taskRole", "taskOutcome", "taskType", "initiator", "workflowInstanceId", "workflowDescription",
-            "taskEventInstanceId", "documentVersion", "propertyName"
+            "taskEventInstanceId", "documentVersion", "propertyName", "expectedPerformTime"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
     private static final String DELIMETER = ";";
@@ -174,6 +177,14 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             entryMap.put(WORKFLOW_DESCRIPTION, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_DESCRIPTION));
             entryMap.put(TASK_EVENT_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
             entryMap.put(INITIATOR, nodeService.getProperty(eventRef, HistoryModel.ASSOC_INITIATOR));
+            QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
+            entryMap.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
+            /** Event task */
+            NodeRef taskNodeRef = (NodeRef) nodeService.getProperty(eventRef, HistoryModel.PROP_CASE_TASK);
+            if (taskNodeRef != null) {
+                Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
+                entryMap.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
+            }
             /** Username and user id */
             String username = (String) nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY);
             NodeRef userNodeRef = personService.getPerson(username);

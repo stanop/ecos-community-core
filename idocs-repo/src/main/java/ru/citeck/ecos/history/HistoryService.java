@@ -29,13 +29,13 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
@@ -78,6 +78,7 @@ public class HistoryService {
     private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
     private static final String DOCUMENT_VERSION = "documentVersion";
     private static final String PROPERTY_NAME = "propertyName";
+    private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
 
     /**
      * Date-time format
@@ -246,6 +247,12 @@ public class HistoryService {
             now.setTime(now.getTime() - 5000);
         }
         requestParams.put(CREATION_TIME, dateFormat.format(now));
+        /** Expected perform time */
+        NodeRef taskCaseRef = (NodeRef) properties.get(HistoryModel.PROP_CASE_TASK);
+        if (taskCaseRef != null) {
+           Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
+           requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
+        }
         /** Event properties */
         requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
         requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
