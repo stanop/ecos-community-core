@@ -62,10 +62,10 @@
         <!-- ECOS build config -->
 
         <default.locale>en</default.locale>
-        <module.contracts.version>2.0.1.0-SNAPSHOT</module.contracts.version>
-        <module.letters.version>1.2.2-SNAPSHOT</module.letters.version>
-        <module.meetings.version>1.1.2-SNAPSHOT</module.meetings.version>
-        <module.orders.version>1.1.2-SNAPSHOT</module.orders.version>
+        <module.contracts.version>2.0.3.0-SNAPSHOT</module.contracts.version>
+        <module.letters.version>1.2.4-SNAPSHOT</module.letters.version>
+        <module.meetings.version>1.1.4-SNAPSHOT</module.meetings.version>
+        <module.orders.version>1.1.4-SNAPSHOT</module.orders.version>
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
