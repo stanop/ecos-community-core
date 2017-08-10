@@ -1119,7 +1119,8 @@ ko.bindingHandlers.journalControl = {
                 if (args[1].fieldId == data.name()) {
                     if (args[1].value) {
                         additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
-                        selectedElements.push(args[1].value); 
+                        if (!data.multiple()) selectedElements.removeAll();
+                        selectedElements.push(args[1].value);
                     }
                     
                     criteria(_.clone(criteria()));
