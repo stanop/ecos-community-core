@@ -620,7 +620,7 @@
                             <type>amp</type>
                         </moduleDependency>
 
-                        <moduleDependency>
+                        <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
@@ -642,7 +642,7 @@
                             <classifier>${ecos.project.classifier}</classifier>
                             <version>${module.orders.version}</version>
                             <type>amp</type>
-                        </moduleDependency>
+                        </moduleDependency>-->
 
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
@@ -714,7 +714,7 @@
                             <type>amp</type>
                         </moduleDependency>
 
-                        <moduleDependency>
+                        <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
@@ -736,7 +736,7 @@
                             <classifier>${ecos.project.classifier}</classifier>
                             <version>${module.orders.version}</version>
                             <type>amp</type>
-                        </moduleDependency>
+                        </moduleDependency>-->
 
                     </shareModules>
                 </configuration>
@@ -820,12 +820,12 @@
         <module>idocs-share</module>
         <module>contracts-repo</module>
         <module>contracts-share</module>
-        <module>letters-repo</module>
+        <!--<module>letters-repo</module>
         <module>letters-share</module>
         <module>meetings-repo</module>
         <module>meetings-share</module>
         <module>orders-repo</module>
-        <module>orders-share</module>
+        <module>orders-share</module>-->
     </modules>
 
     <repositories>
