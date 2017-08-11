@@ -13,7 +13,7 @@
                 </#list>
             ],
             "isDocument": ${node.isDocument?string},
-            "isContainer": ${node.isContainer?string},
+            "isContainer": ${node.isContainer?string}
         }<#if node_has_next>,</#if>
         </#list>
     ]
