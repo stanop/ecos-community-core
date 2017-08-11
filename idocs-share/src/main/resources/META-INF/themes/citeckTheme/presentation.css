@@ -733,6 +733,11 @@ span.navigation-separator-alt
 
 }
 
+.yui-skin-citeckTheme #bd .share-form > div:not([id*="mgr"])
+{
+    width: 800px;
+}
+
 .form-container textarea,
 .page-form-body textarea
 {
