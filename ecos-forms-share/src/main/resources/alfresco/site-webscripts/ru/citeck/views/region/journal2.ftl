@@ -3,6 +3,11 @@
 
 <#assign optionParameters = [ "optionsText", "optionsValue" ]>
 
+<#-- filters, search and create -->
+<#assign filters>
+	<#if params.filters??>${params.filters}<#elseif params.optionsText??>false<#else>true</#if>
+</#assign>
+
 <#-- createVariant & virtualParent -->
 <#assign createVariantsVisibility = params.createVariantsVisibility!"true" />
 <#assign createVariantsSource>
@@ -32,6 +37,7 @@
 			options: options,
 
 			mode: "table",
+			filters: ${filters?trim},
 
 			<#-- table mode parameters -->
 	        <#if params.journalTypeId??>journalTypeId: "${params.journalTypeId}",</#if>
@@ -53,6 +59,16 @@
 					return ko.computed(function() { return ${params.options}; });
 				},
 			</#if>
+
+			<#list optionParameters as op>
+				<#if params[op]??>
+					${op}: function(option) {
+						return ko.computed(function() {
+							return ${params[op]};
+						})
+					},
+				</#if>
+			</#list>
 
 			getValueTitle: function(value) {
 				return ko.computed(function() {

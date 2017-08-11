@@ -29,7 +29,8 @@ var $html = Alfresco.util.encodeHTML,
 var Event = YAHOO.util.Event,
     Dom = YAHOO.util.Dom;
 
-var JournalType = koclass('JournalType');
+var JournalType = koclass('JournalType'),
+    Node = koclass('invariants.Node');
 
 
 // TODO: refactoring
@@ -1593,7 +1594,6 @@ ko.components.register("select2", {
             self.value(self.multiple() ? _.union(self.value(), values) : values[0]);
         }
 
-
         // observables
         // -----------
 
@@ -1746,7 +1746,11 @@ ko.components.register("select2", {
             if (self._tableMode) {
                 var startIndex = self.step * self.page() - self.step, endIndex = self.step * self.page();
                 self.hasMore(self.step * self.page() < preparedOptions.length);
-                return preparedOptions.slice(startIndex, endIndex);
+
+                return _.map(preparedOptions.slice(startIndex, endIndex), function(option) {
+                    if (option.toString().indexOf("invariants.Node") == -1) return new Node(option);
+                    return option;
+                });
             }
 
             self.hasMore(false);
@@ -1907,17 +1911,19 @@ ko.components.register("select2", {
                 data.panel.setHeader(data.localization.title);
                 data.panel.setBody('\
                     <div class="journal-picker-header collapse" id="' + journalPickerHeaderId + '">\
-                        <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
-                        <!-- ko if: createVariantsVisibility -->\
-                            <!-- ko component: { name: "createObjectButton", params: {\
-                                scope: scope,\
-                                source: createVariantsSource,\
-                                callback: callback,\
-                                buttonTitle: labels.createTab,\
-                                virtualParent: virtualParent,\
-                                journalType: journalType\
-                            }} --><!-- /ko -->\
-                        <!-- /ko -->\
+                            <!-- ko if: filters -->\
+                                <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
+                            <!-- /ko -->\
+                            <!-- ko if: createVariantsVisibility -->\
+                                <!-- ko component: { name: "createObjectButton", params: {\
+                                    scope: scope,\
+                                    source: createVariantsSource,\
+                                    callback: callback,\
+                                    buttonTitle: labels.createTab,\
+                                    virtualParent: virtualParent,\
+                                    journalType: journalType\
+                                }} --><!-- /ko -->\
+                            <!-- /ko -->\
                         <div class="journal-search">\
                             <input type="search" class="journal-search-input" data-bind="\
                                 textInput: searchQuery,\
@@ -1926,47 +1932,49 @@ ko.components.register("select2", {
                         </div>\
                     </div>\
                     <div class="journal-picker-page-container">\
-                        <div class="filter-page hidden" id="' + filterPageId + '">\
-                            <!-- ko if: filterVisibility -->\
-                                <div class="selected-filter-criteria-container">\
-                                    <!-- ko component: { name: \'filter-criteria-table\',\
-                                        params: {\
-                                            htmlId: htmlId,\
-                                            itemId: itemId,\
-                                            journalType: journalType,\
-                                            selectedFilterCriteria: selectedFilterCriteria,\
-                                            defaultFilterCriteria: defaultFilterCriteria\
-                                        }\
-                                    } --> <!-- /ko -->\
-                                </div>\
-                                <div class="filter-criteria-actions">\
-                                    <ul>\
-                                        <li class="filter-criteria-option">\
-                                            <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria, text: labels.applyCriteria"></a>\
-                                        </li>\
-                                        <li class="filter-criteria-option">\
-                                            <a class="filter-criteria-button" data-bind="click: addFilterCriterion, text: labels.addFilterCriterion"></a>\
-                                            <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
-                                                <!-- ko if: journalType -->\
-                                                    <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
-                                                        <li class="filter-criteria-list-option">\
-                                                            <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
-                                                        </li>\
-                                                    </ul>\
-                                                <!-- /ko -->\
-                                                <!-- ko ifnot: journalType -->\
-                                                    <ul class="filter-criteria-list" data-bind="foreach: defaultSearchableAttributes">\
-                                                        <li class="filter-criteria-list-option">\
-                                                            <a class="filter-criterion" data-bind="text: title, click: $root.selectFilterCriterion"></a>\
-                                                        </li>\
-                                                    </ul>\
-                                                <!-- /ko -->\
-                                            </div>\
-                                        </li>\
-                                    </ul>\
-                                </div>\
-                            <!-- /ko -->\
-                        </div>\
+                        <!-- ko if: filters -->\
+                            <div class="filter-page hidden" id="' + filterPageId + '">\
+                                <!-- ko if: filterVisibility -->\
+                                    <div class="selected-filter-criteria-container">\
+                                        <!-- ko component: { name: \'filter-criteria-table\',\
+                                            params: {\
+                                                htmlId: htmlId,\
+                                                itemId: itemId,\
+                                                journalType: journalType,\
+                                                selectedFilterCriteria: selectedFilterCriteria,\
+                                                defaultFilterCriteria: defaultFilterCriteria\
+                                            }\
+                                        } --> <!-- /ko -->\
+                                    </div>\
+                                    <div class="filter-criteria-actions">\
+                                        <ul>\
+                                            <li class="filter-criteria-option">\
+                                                <a class="apply-criteria filter-criteria-button" data-bind="click: applyCriteria, text: labels.applyCriteria"></a>\
+                                            </li>\
+                                            <li class="filter-criteria-option">\
+                                                <a class="filter-criteria-button" data-bind="click: addFilterCriterion, text: labels.addFilterCriterion"></a>\
+                                                <div class="filter-criteria-variants" data-bind="visible: criteriaListShow">\
+                                                    <!-- ko if: journalType -->\
+                                                        <ul class="filter-criteria-list" data-bind="foreach: journalType.searchableAttributes">\
+                                                            <li class="filter-criteria-list-option">\
+                                                                <a class="filter-criterion" data-bind="text: displayName, click: $root.selectFilterCriterion"></a>\
+                                                            </li>\
+                                                        </ul>\
+                                                    <!-- /ko -->\
+                                                    <!-- ko ifnot: journalType -->\
+                                                        <ul class="filter-criteria-list" data-bind="foreach: defaultSearchableAttributes">\
+                                                            <li class="filter-criteria-list-option">\
+                                                                <a class="filter-criterion" data-bind="text: title, click: $root.selectFilterCriterion"></a>\
+                                                            </li>\
+                                                        </ul>\
+                                                    <!-- /ko -->\
+                                                </div>\
+                                            </li>\
+                                        </ul>\
+                                    </div>\
+                                <!-- /ko -->\
+                            </div>\
+                        <!-- /ko -->\
                         <div class="elements-page" id="' + elementsPageId + '">\
                             <div class="journal-container">\
                                 <!-- ko component: { name: \'journal\',\
@@ -2028,6 +2036,7 @@ ko.components.register("select2", {
                 ko.applyBindings({
                     // header
                     labels: data.localization,
+                    filters: data.filters,
                     searchQuery: data.searchQuery,
                     createVariantsVisibility: data.createVariantsVisibility,
                     callback: function(variant) {
