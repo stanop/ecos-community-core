@@ -27,7 +27,7 @@
              ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]}
     <#elseif params.excludeFields??>
          ${params.excludeFields}
-    <#else>""</#if>
+    <#else></#if>
 </#assign>
 
 <div id="${controlId}" class="orgstruct-control" data-bind="orgstructControl: { 
