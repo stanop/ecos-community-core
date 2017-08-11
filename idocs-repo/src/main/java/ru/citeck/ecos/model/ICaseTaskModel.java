@@ -29,6 +29,7 @@ public class ICaseTaskModel {
 
     // namespace
     public static final String NAMESPACE = "http://www.citeck.ru/model/icaseTask/1.0";
+    public static final String ACTIVITY_NAMESPACE = "http://www.citeck.ru/model/activity/1.0";
 
     // types
     public static final QName TYPE_TASK = QName.createQName(NAMESPACE, "task");
@@ -41,6 +42,7 @@ public class ICaseTaskModel {
     public static final QName PROP_WORKFLOW_VARIABLE_NAME = QName.createQName(NAMESPACE, "workflowVariableName");
     public static final QName PROP_DEADLINE = QName.createQName(NAMESPACE, "dueDate");
     public static final QName PROP_PRIORITY = QName.createQName(NAMESPACE, "priority");
+    public static final QName PROP_EXPECTED_PERFORM_TIME = QName.createQName(ACTIVITY_NAMESPACE, "expectedPerformTime");
 
     // association
     public static final QName ASSOC_ROLE = QName.createQName(NAMESPACE, "role");
