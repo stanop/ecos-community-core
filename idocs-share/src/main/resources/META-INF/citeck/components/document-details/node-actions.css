@@ -101,6 +101,22 @@
     content: '\f013'; /* cog settings */
 }
 
+.node-actions .doclist .action-set .document-take-ownership a span::before,
+.node-actions .doclist .action-set .custom-manage-permissions a span::before {
+    content: '\f084'; /* key */
+}
+
+.node-actions .doclist .action-set .de_fme_jsconsole-open-in-jsconsole a span::before {
+    content: '\f120'; /* terminal */
+}
+
+.node-actions .doclist .action-set .de_fme_jsconsole-dump-in-jsconsole a span::before {
+    content: '\f1c9'; /* file - html */
+}
+
+.node-actions .doclist .action-set .document-generate-barcode a span::before {
+    content: '\f02a'; /* barcode */
+}
 
 /* --------------------- */
 /*     special styles    */
