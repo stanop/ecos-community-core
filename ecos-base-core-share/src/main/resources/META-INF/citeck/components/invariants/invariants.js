@@ -289,7 +289,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return YAHOO.lang.substitute(value, _.rest(arguments));
         },
 
-        searchQuery: function(node, attrName, query, schema, cacheAge) {
+        searchQuery: function(node, attrName, query, schema, cacheAge, params) {
+            var originalFormat = params ? params.originalFormat : false;
 
             var attribute = node.impl().attribute(attrName),
                 attInfo = attribute.info();
@@ -298,6 +299,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 attInfo.searchQueryData = {
                     query: ko.observable(""),
                     nodes: ko.observableArray([]),
+                    result: ko.observable(),
                     schema: null,
                     cacheAge: null
                 };
@@ -315,12 +317,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         successCallback: {
                             scope: this,
                             fn: function(response) {
-                                var nodes = [];
                                 var results = response.json.results;
-                                for (var n in results) {
-                                    nodes.push(new Node(results[n]));
-                                }
-                                this.nodes(nodes);
+
+                                if (!originalFormat) {
+                                    var nodes = [];
+                                    for (var n in results) nodes.push(new Node(results[n]));
+                                    this.nodes(_.map(results, function(result) {
+                                       return new Node(result);
+                                    }));
+                                } else { attInfo.searchQueryData.result(results); }
+                                
                             }
                         }
                     });
@@ -331,6 +337,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             attInfo.searchQueryData.schema = schema;
             attInfo.searchQueryData.query(query);
 
+            if (originalFormat) return attInfo.searchQueryData.result();
             return attInfo.searchQueryData.nodes();
         },
         ko: ko,
