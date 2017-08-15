@@ -8,11 +8,6 @@
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
-	<#if element.attribute??>
-		<!-- ko with: attribute("${element.attribute}") -->
-		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
-	</#if>
-
 	<#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
 		<#assign wideBlockWidth>
 			<#-- field level -->
@@ -29,14 +24,30 @@
 			</#if>
 		</#assign>
 	</#if>
+
+	<#-- virtual elements for field -->
+	<#if element.attribute??>
+		<!-- ko with: getAttribute("${element.attribute}") -->
+		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
+	</#if>
+
+	<#-- virtual elements for view -->
+	<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
+		<!-- ko ifnot: ko.computed(function() {
+			var set = getAttributeSet('${element.params.setId}');
+			return set ? set.hidden() : false
+		}) -->
+	</#if>
 	
 	<div class="form-${element.type} template-${template}"
 		<#if element.attribute??>
-			data-bind="css: { invalid: invalid, hidden: irrelevant, 'with-help': description, 'inline-edit': inlineEditVisibility }"
+			data-bind="css: { 
+				invalid: invalid, 
+				hidden: irrelevant, 
+				'with-help': description, 
+				'inline-edit': inlineEditVisibility
+			}"
 			data-attribute-name="${element.attribute}"
-		</#if>
-		<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
-			data-bind="css: { hidden: set('${element.params.setId}').irrelevant() }"
 		</#if>
 
 		<#-- custom width for field -->
@@ -47,6 +58,10 @@
 		<@renderContent element />
 	</div>
 	
+	<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
+		<!-- /ko -->
+	</#if>
+
 	<#if element.attribute??>
 		<!-- /ko -->
 	</#if>
@@ -110,7 +125,7 @@
 						<div class="form-errors">
 							<div class="invalid-attributes">
 								<span>${msg('message.invalid-attributes.form-errors')}:</span>
-								<ul class="invalid-attributes-list" data-bind="foreach: invalidAttributes()">
+								<ul class="invalid-attributes-list" data-bind="foreach: getInvalidAttributes">
 									<li class="invalid-attribute" data-bind="click: $root.scrollToFormField, clickBubble: false">
 										<span class="invalid-attribute-name" data-bind="text: title"></span>:
 										<span class="invalid-attribute-message" data-bind="text: validationMessage"></span>
@@ -271,7 +286,6 @@
 <#macro nodeViewWidget nodeRef="" type="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
-		<#assign loadAttributesMethod = view.params.loadAttributesMethod!"default" />
 		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
 		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
 
@@ -283,7 +297,6 @@
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					formTemplate: "${view.template}",
 
-					loadAttributesMethod: "${loadAttributesMethod}",
 					loadGroupIndicator: ${loadGroupIndicator},
 					preloadInvariants: ${preloadInvariants},
 
@@ -296,35 +309,13 @@
 						type: <#if type?has_content>"${type}"<#else>null</#if>,
 						
 						classNames: <#if classNames??><@views.renderQNames classNames /><#else>null</#if>,
-						groups: [
-							<#if groups?? && groups?has_content>
-								<#list groups as group>
-								{
-									"id": <@views.renderValue group.id />,
-									"index": <@views.renderValue group.index />,
-									"_attributes": <@views.renderValue group.attributes />,
-									"invariants": <@views.renderInvariants group.invariants />
-								}<#if group_has_next>,</#if>
-								</#list>
-							</#if>
-						],
 
-						_sets: <@views.renderValue attributeSet />,
-
-						<#if loadAttributesMethod != "clickOnGroup">
-							forcedAttributes: <@views.renderValue attributes />,
-						</#if>
+						_set: <@views.renderValue attributeSet />,
+						_attributeNames: <@views.renderValue attributeNames />,
+						_invariants: <#if invariants??><@views.renderInvariants invariants /><#else>null</#if>,
 
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderDefaultModel defaultModel />,
-					},
-
-					invariantSet: {
-						key: "${runtimeKey}",
-
-						<#if loadAttributesMethod != "clickOnGroup">
-							forcedInvariants: <@views.renderInvariants invariants />
-						</#if>
 					}
 				}
 			});

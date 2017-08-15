@@ -678,24 +678,24 @@ define(['lib/knockout'], function(ko) {
 							value = instantiate(value, type);
 						}
 
-						var self = this,
-							writeProtoParentAssociation = function(obj) {
-								if (_.isObject(obj) && !_.any([Date], function(type) {
-									return obj instanceof type;
-								})) {
-									if (!obj.parentAssociation) {
-										Object.defineProperty(obj, "parentAssociation", {
-											value: self
-										});
-									}
-								}
-							};
+						// var self = this,
+						// 	writeProtoParentAssociation = function(obj) {
+						// 		if (_.isObject(obj) && !_.any([Date], function(type) {
+						// 			return obj instanceof type;
+						// 		})) {
+						// 			if (!obj.parentAssociation) {
+						// 				Object.defineProperty(obj, "parentAssociation", {
+						// 					value: self
+						// 				});
+						// 			}
+						// 		}
+						// 	};
 
-						if (_.isArray(value)) {
-							_.each(value, function(v_el) { writeProtoParentAssociation(v_el);  }, this);
-						} else if (_.isObject(value)) { 
-							writeProtoParentAssociation(value);
-						}
+						// if (_.isArray(value)) {
+						// 	_.each(value, function(v_el) { writeProtoParentAssociation(v_el);  }, this);
+						// } else if (_.isObject(value)) { 
+						// 	writeProtoParentAssociation(value);
+						// }
 
 						this[name](value);
 					}, this);

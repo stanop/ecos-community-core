@@ -1,3 +1,12 @@
+function makeId(length) {
+    var POSSIBLE_SYMBOLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    var text = "";
+    for (var i = 0; i < length; i++) text += POSSIBLE_SYMBOLS.charAt(Math.floor(Math.random() * POSSIBLE_SYMBOLS.length));
+
+    return text;
+}
+
 function getAttributes(view) {
     var attributes = [];
     getAttributesRecursively(view, attributes);
@@ -26,49 +35,35 @@ function get(view, type, template) {
     return objects;
 }
 
-function getAttributeSet(view) {
-    var sets = [];
-    for (var i in view.elements) {
-        if (view.elements[i].type == "view" && view.elements[i].template.indexOf("set") != -1) {
-            sets.push(buildAttributeSet(view.elements[i]));
-            buildAttributeSetId(view.elements[i]);
-        }
-    }
-    return sets;
-}
+function getAttributeSet(args, view) {
+    var attributeSet = { 
+            attributes: [], 
+            sets: [], 
+            id: "", 
+            template: view.template, 
+            params: view.params
+        };
 
-function buildAttributeSet(view) {
-    var attributeSet = { attributes: [], sets: [], id: "" };
-
-    for (var i in view.elements) {
-        var element = view.elements[i];
+    view.elements.forEach(function(element) {
         if (element.type == "field") {
             attributeSet.attributes.push({ name: element.attribute, template: element.template });
-        } else if (element.type == "view" && element.template.indexOf("set") != -1) {
-            attributeSet.sets.push(buildAttributeSet(element));
+        } else if (element.type == "view") {
+            attributeSet.sets.push(getAttributeSet(args, element));
         }
-    }
+    })
 
-    attributeSet.id = (function() {
-        var identificator = attributeSet.attributes.map(function(attr) { return attr.name; }).join("_");
-        identificator += "_" + attributeSet.attributes.length + "_" + attributeSet.sets.length;
-        return identificator;
-    })();
+    attributeSet.id = view.params.setId = view.id || makeId(34);
 
     return attributeSet;
 }
 
-function buildAttributeSetId(view) {
-    var attributes = [], setsCount = 0;
-    for (var i in view.elements) {
-        if (view.elements[i].type == "field") { attributes.push(view.elements[i].attribute); }
-        else if (view.elements[i].type == "view" && element.template.indexOf("set") != -1) { 
-            buildAttributeSetId(view.elements[i]);
-            setsCount++;
-        }
-    }
-
-    view.params.setId = attributes.join("_") + "_" + attributes.length + "_" + setsCount;
+function getViewInvariants(view) {
+    var invariants = [];
+    view.elements.forEach(function(element) {
+        if (element.type == "field" && element.invariants && element.invariants.length)
+            for(var i in element.invariants) invariants.push(element.invariants[i]);
+    });
+    return invariants;
 }
 
 function getInvariantSet(args, attributes) {
