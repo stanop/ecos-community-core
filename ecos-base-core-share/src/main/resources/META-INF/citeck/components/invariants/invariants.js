@@ -828,16 +828,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var params = this.params();
             if (params[name]) {
                 try {
-                    var evaluatedContextFunction = function() {
-                        var evaluatedExpression = eval("(" + params[name] + ")");
-                        if (_.isBoolean(evaluatedExpression)) return evaluatedExpression;
-                        if (_.isFunction(evaluatedExpression)) return evaluatedExpression.call(this);
-
-                        console.warn("featureParameter " + name + " have a not valid result of evaluatedExpression for AttributeSet.id:" + this.id());
-                        return null;
-                    }
-
-                    return evaluatedContextFunction.call(this);
+                    return Citeck.utils.eval(this, params[name]);
                 } catch (e) { 
                     console.error("featureParameter " + name + " have an error calculating value of evaluatedExpression for AttributeSet.id:" + this.id());
                     console.error(e);
@@ -2600,23 +2591,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             this.initRuntimeCache();
             this.initRuntime();
-
-            // if (!Citeck.mobile.isMobileDevice() && $(".template-tabs").length > 0) {
-            //     $(window).resize(function() {
-            //        $.each($(".template-tabs .tabs-title", Dom.get(this.id)), function(it, tabTitle) {
-            //             var ulWidth = parseInt($("ul", tabTitle).innerWidth()),
-            //                 tabsWidth = parseInt($("ul", tabTitle).parent().innerWidth());
-
-            //             console.log(tabsWidth, ulWidth)
-
-            //             if (tabsWidth > ulWidth) {
-            //                 $("span.scroll-tabs", tabTitle).removeClass("hidden");
-            //             } else { $("span.scroll-tabs", tabTitle).addClass("hidden"); }
-            //         }); 
-            //     });
-
-            //     $(window).resize();
-            // }
 
             if (this.options.model.inlineEdit) {
                 $("body").mousedown(function(e, a) {
