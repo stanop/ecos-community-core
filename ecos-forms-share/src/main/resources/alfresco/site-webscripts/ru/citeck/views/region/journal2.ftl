@@ -1,11 +1,11 @@
 <#assign params = viewScope.region.params!{} />
 <#assign controlId = fieldId + "-journal2Control">
 
-<#assign optionParameters = [ "optionsText", "optionsValue" ]>
+<#assign optionParameters = [ "optionsText", "optionsValue", "optionsFilter" ]>
 
 <#-- filters, search and create -->
 <#assign filters>
-	<#if params.filters??>${params.filters}<#elseif params.optionsText??>false<#else>true</#if>
+	<#if params.filters??>${params.filters}<#elseif params.optionsText?? && !params.optionsFilter??>false<#else>true</#if>
 </#assign>
 
 <#-- createVariant & virtualParent -->
@@ -62,11 +62,17 @@
 
 			<#list optionParameters as op>
 				<#if params[op]??>
-					${op}: function(option) {
-						return ko.computed(function() {
-							return ${params[op]};
-						})
-					},
+					<#switch op>
+						<#case "optionsFilter">
+							${op}: function(option, attributeName) { 
+								return ko.computed(function() { return ${params[op]}; }); 
+							},
+							<#break>
+						<#default>
+							${op}: function(option) {
+								return ko.computed(function() { return ${params[op]}; });
+							},
+					</#switch>
 				</#if>
 			</#list>
 

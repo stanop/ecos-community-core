@@ -1658,70 +1658,72 @@ ko.components.register("select2", {
         }, this, { deferEvaluation: true });
 
         this.label = ko.pureComputed(function() {
-            return self.value() ? self.getValueTitle(self.value())() : self.localization.label;
-        });
+            return this.value() ? this.getValueTitle(this.value())() : this.localization.label;
+        }, this);
       
         this.visibleOptions = ko.pureComputed(function() {
-            var preparedOptions = (self.forceOptions ? self.forceOptions() : self.options()) || [];
+            var preparedOptions = (this.forceOptions ? this.forceOptions() : this.options()) || [];
 
-            if (self.additionalOptions().length) {
-                preparedOptions = _.union(preparedOptions, self.additionalOptions()); 
+            if (this.additionalOptions().length) {
+                preparedOptions = _.union(preparedOptions, this.additionalOptions()); 
             }
 
-            if (self.criteria().length) {
-                self.criteria().forEach(function(criterion) {
+            if (this.criteria().length) {
+                this.criteria().forEach(function(criterion) {
                     preparedOptions = _.filter(preparedOptions, function(option) {
-                        var attribute = option.impl().attribute(criterion.attribute),
-                            attributeValue = attribute.value();
-
-                        if (criterion.predicate.indexOf("not-equals") != -1) {
-                            return attributeValue != criterion.value;
-                        } else if (criterion.predicate.indexOf("equals") != -1) {
-                            return attributeValue == criterion.value;
-                        } else if (criterion.predicate.indexOf("not-empty") != -1) {
-                            return !_.isEmpty(attributeValue);
-                        } else if (criterion.predicate.indexOf("empty") != -1) {
-                            return _.isEmpty(attributeValue);
-                        } else if (criterion.predicate.indexOf("not-contains") != -1) {
-                            return attributeValue.indexOf(criterion.value) == -1;
-                        } else if (criterion.predicate.indexOf("contains") != -1) {
-                            return attributeValue.indexOf(criterion.value) != -1;
-                        } else if (criterion.predicate.indexOf("not-empty") != -1) {
-                            return !_.isEmpty(attributeValue);
-                        } else if (criterion.predicate.indexOf("empty") != -1) {
-                            return _.isEmpty(attributeValue);
-                        }                    
+                        var attributeComputed = self._optionFilter(option, criterion.attribute),
+                            attributeValue = attributeComputed();
                         
-                        switch (criterion.predicate) {
-                            case "boolean-true":
-                                return attributeValue === true;
-                            case "boolean-false":
-                                return attributeValue === false;
+                        if (attributeValue != null) {
+                            if (criterion.predicate.indexOf("not-equals") != -1) {
+                                return attributeValue != criterion.value;
+                            } else if (criterion.predicate.indexOf("equals") != -1) {
+                                return attributeValue == criterion.value;
+                            } else if (criterion.predicate.indexOf("not-empty") != -1) {
+                                return !_.isEmpty(attributeValue);
+                            } else if (criterion.predicate.indexOf("empty") != -1) {
+                                return _.isEmpty(attributeValue);
+                            } else if (criterion.predicate.indexOf("not-contains") != -1) {
+                                return attributeValue.indexOf(criterion.value) == -1;
+                            } else if (criterion.predicate.indexOf("contains") != -1) {
+                                return attributeValue.indexOf(criterion.value) != -1;
+                            } else if (criterion.predicate.indexOf("not-empty") != -1) {
+                                return !_.isEmpty(attributeValue);
+                            } else if (criterion.predicate.indexOf("empty") != -1) {
+                                return _.isEmpty(attributeValue);
+                            }                    
+                            
+                            switch (criterion.predicate) {
+                                case "boolean-true":
+                                    return attributeValue === true;
+                                case "boolean-false":
+                                    return attributeValue === false;
 
-                            case "string-starts-with":
-                                return attributeValue.startsWith(criterion.value);
-                            case "string-ends-with":
-                                return attributeValue.endsWith(criterion.value);
+                                case "string-starts-with":
+                                    return attributeValue.startsWith(criterion.value);
+                                case "string-ends-with":
+                                    return attributeValue.endsWith(criterion.value);
 
-                            case "date-greater-or-equal":
-                                return new Date(attributeValue) >= new Date(criterion.value);
-                            case "date-less-or-equal":
-                                return new Date(attributeValue) <= new Date(criterion.value);
+                                case "date-greater-or-equal":
+                                    return new Date(attributeValue) >= new Date(criterion.value);
+                                case "date-less-or-equal":
+                                    return new Date(attributeValue) <= new Date(criterion.value);
 
-                            case "number-less-than":
-                                return attributeValue < Number(criterion.value);
-                            case "number-less-or-equal":
-                                return attributeValue <= Number(criterion.value);
-                            case "number-greater-than":
-                                return attributeValue > Number(criterion.value);
-                            case "number-greater-or-equal":
-                                return attributeValue >= Number(criterion.value);
+                                case "number-less-than":
+                                    return attributeValue < Number(criterion.value);
+                                case "number-less-or-equal":
+                                    return attributeValue <= Number(criterion.value);
+                                case "number-greater-than":
+                                    return attributeValue > Number(criterion.value);
+                                case "number-greater-or-equal":
+                                    return attributeValue >= Number(criterion.value);
+                            }
                         }
                     })
                 });
             }
                
-            if (self.searchQuery()) {
+            if (this.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
                         labelString  = self._optionTitle(option)();
@@ -1742,17 +1744,17 @@ ko.components.register("select2", {
             }
 
             // pagination for list
-            if (self._listMode) {
-                if (self.count() < preparedOptions.length) {
-                    self.hasMore(true);
-                    return preparedOptions.slice(0, self.count());
+            if (this._listMode) {
+                if (this.count() < preparedOptions.length) {
+                    this.hasMore(true);
+                    return preparedOptions.slice(0, this.count());
                 }
             }
 
             // pagination for table
-            if (self._tableMode) {
-                var startIndex = self.step * self.page() - self.step, endIndex = self.step * self.page();
-                self.hasMore(self.step * self.page() < preparedOptions.length);
+            if (this._tableMode) {
+                var startIndex = this.step * this.page() - this.step, endIndex = this.step * this.page();
+                this.hasMore(this.step * this.page() < preparedOptions.length);
 
                 return _.map(preparedOptions.slice(startIndex, endIndex), function(option) {
                     if (option.toString().indexOf("invariants.Node") == -1) return new Node(option);
@@ -1760,9 +1762,9 @@ ko.components.register("select2", {
                 });
             }
 
-            self.hasMore(false);
+            this.hasMore(false);
             return preparedOptions;
-        });
+        }, this);
 
 
         // extends
