@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -60,6 +61,7 @@ public class HistoryService {
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     private static final String MODIFIER_PROPERTY = "modifier";
     private static final String VERSION_LABEL_PROPERTY = "versionLabel";
+    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "default-sla-duration";
 
     private static final String HISTORY_EVENT_ID = "historyEventId";
     private static final String DOCUMENT_ID = "documentId";
@@ -91,6 +93,12 @@ public class HistoryService {
     @Autowired
     @Qualifier("global-properties")
     private Properties properties;
+
+    /**
+     * Ecos configuration service (system journals - configuration)
+     */
+    @Autowired
+    private EcosConfigService ecosConfigService;
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
 
@@ -251,7 +259,10 @@ public class HistoryService {
         NodeRef taskCaseRef = (NodeRef) properties.get(HistoryModel.PROP_CASE_TASK);
         if (taskCaseRef != null) {
            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
-           requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
+           if (expectedPerformTime == null) {
+               expectedPerformTime = getDefaultSLA();
+           }
+            requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
         }
         /** Event properties */
         requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
@@ -270,6 +281,16 @@ public class HistoryService {
         QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
         requestParams.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+    }
+
+    private Integer getDefaultSLA() {
+        String rawSla = (String) ecosConfigService.getParamValue(DEFAULT_SLA_JOURNAL_ITEM_ID);
+        try {
+            return Integer.valueOf(rawSla);
+        } catch (NumberFormatException exception) {
+            logger.error("Can't transform '" + rawSla + "' to the number", exception);
+            return null;
+        }
     }
 
     private boolean isDocumentForDelete(NodeRef documentRef) {
