@@ -116,7 +116,6 @@
             <invariant on="options" language="javascript" final="true">
                 (function() {
                 var parent = node.parent;
-                debugger;
                 while(parent &amp;&amp; parent.isSubType("activ:activity"))
                 parent = parent.parent;
                 return parent.childAssocs["icaseRole:roles"] || [];
