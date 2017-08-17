@@ -58,6 +58,7 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             List<String> assistants = deputyService.getUserAssistants(action == Action.CLAIM ? owner : claimOwner);
             boolean hasAssistants = assistants.size() > 0;
             if (hasAssistants) {
+                assistants.add(action == Action.CLAIM ? owner : claimOwner);
                 TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
                 delegateListener.updatePooledActors(Collections.singletonList(workflowTask), assistants, action == Action.CLAIM);
             }
@@ -65,8 +66,10 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             Map<QName, Serializable> props = setOwners(action, owner, hasAssistants);
             workflowTask = workflowService.updateTask(workflowTask.getId(), props, null, null);
 
-            workflowMirrorService.mirrorTask(workflowTask);
-            grantWorkflowTaskPermissionExecutor.grantPermissions(workflowTask);
+            if (hasAssistants) {
+                workflowMirrorService.mirrorTask(workflowTask);
+                grantWorkflowTaskPermissionExecutor.grantPermissions(workflowTask);
+            }
 
             Map<String, Object> model = new HashMap<>();
             model.put("workflowTask", modelBuilder.buildDetailed(workflowTask));
@@ -101,7 +104,7 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
     }
 
     private Map<QName, Serializable> setOwners(Action action, String owner, boolean hasAssistants) {
-        Serializable setOwner = (action == Action.CLAIM && hasAssistants) ? null : owner;
+        Serializable setOwner = (action == Action.CLAIM && !hasAssistants) ? owner : null;
         Serializable setClaimOwner = (action == Action.CLAIM) ? owner : null;
 
         Map<QName, Serializable> props = new HashMap<>();
