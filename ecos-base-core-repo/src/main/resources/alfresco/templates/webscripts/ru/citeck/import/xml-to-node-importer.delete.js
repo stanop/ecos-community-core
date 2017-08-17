@@ -55,8 +55,6 @@ var updateDescription = function(id, status) {
         model.success = "true";
     })();
 
-
-
 function setStatusAsync(node, status) {
     updateDescription(node.nodeRef, status);
     batchExecuter.processArray({
@@ -68,43 +66,4 @@ function setStatusAsync(node, status) {
             row.save();
         }
     });
-}
-
-function updateDescriptionNodeAsync(status) {
-    var node = search.findNode("workspace://SpacesStore/xni-parser-status");
-    batchExecuter.processArray({
-        items: [node],
-        batchSize: 1,
-        threads: 1,
-        onNode: function(row) {
-            row.properties["xni:prsStatus"] = status;
-            row.properties["xni:activeParsingDescription"] = transformDescriptionToText();
-            row.save();
-        }
-    });
-}
-
-function generateDescriptionNodeAsync(node) {
-    batchExecuter.processArray({
-        items: [node],
-        batchSize: 1,
-        threads: 1,
-        onNode: function(row) {
-            var properties = [];
-            properties['xni:activeParsingDescription'] = transformDescriptionToText();
-            properties['sys:node-uuid'] = "xni-parser-status";
-            properties['xni:prsStatus'] = "Executing";
-            row.createNode("xni-parser-status", "xni:parserStatus", properties);
-        }
-    });
-}
-
-function transformDescriptionToText () {
-    var descriptionText = "<table><tr><th>nodeRef</th><th>Status</th></tr>";
-    for (var i = 0; i < descriptions.length; i ++) {
-        descriptionText = descriptionText.concat("<tr><td>").concat(descriptions[i].id).concat('</td><td>')
-            .concat(descriptions[i].status).concat("</td></tr>");
-    }
-    descriptionText = descriptionText.concat('</table>');
-    return descriptionText;
 }
