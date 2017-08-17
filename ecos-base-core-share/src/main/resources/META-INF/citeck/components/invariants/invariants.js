@@ -921,8 +921,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }, this);
         })
 
-        .method('visible', function(newValue) { this._visibility(newValue); })
-        .method('enable', function(newValue) { this._activity(newValue); })
+        .method('visible', function(newValue) {
+            if (_.isUndefined(newValue)) return this._visibility();
+            this._visibility(newValue);
+        })
+        .method('enable', function(newValue) {
+            if (_.isUndefined(newValue)) return this._activity();
+            this._activity(newValue);
+        })
         .method('getAttributeTemplate', function(name) {
             var attribute = _.find(this._attributes(), function(attr) { return attr.name == name; });
             if (attribute) return attribute.template;
@@ -1321,6 +1327,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 mapObject = map.attributes[this.name()];
             return mapObject ? mapObject.set : null;
         })
+        .method('getRootAttributeSet', function() {
+            var map = this.node().impl().attributeSetMap(),
+                set = map.attributes[this.name()] ? map.attributes[this.name()].set : null;
+
+            if (set) {
+                while (set.parent) { set = set.parent; }
+            }
+        })
 
         // feature evaluators
         .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
@@ -1682,16 +1696,29 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        // get set by 'setId' and 'attributeName'
         .method('getAttributeSet', function(id) {
-            var setObject = this.attributeSetMap() ? this.attributeSetMap().attributeSets[id] : null;
-            if (setObject) return setObject.set;
+            var map = this.attributeSetMap(),
+                object =  map ? map.attributeSets[id] || map.attributes[id] : null;
+            return object ? object.set : null;
+        })
+        .method('getRootAttributeSet', function(id) {
+            var map = this.attributeSetMap(),
+                setObject =  map ? map.attributeSets[id] : null;
+
+            if (setObject) {
+                if (setObject.parent)
+                    while (setObject.parent) { setObject = setObject.parent; }
+                return setObject.set;
+            }
+
             return null;
         })
         .method('getAttribute', function(name) {
             var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
-            if (attributeObject) return attributeObject.attribute;
-            return null;
+            return attributeObject ? attributeObject.attribute : null;
         })
+
 
         .computed('attributeSetMap', function() {
             var buildMapOfAttributes = function(set, attributes, nMap) {
