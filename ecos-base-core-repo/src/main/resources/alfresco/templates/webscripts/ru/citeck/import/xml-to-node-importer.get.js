@@ -1,9 +1,13 @@
+<import resource="classpath:alfresco/templates/webscripts/ru/citeck/import/xni-webscripts-utils.js">
+/**
+* @author Roman Makarskiy
+*/
 (function () {
     var xniData = search.luceneSearch('TYPE\:"xni:data"');
-    var statusNode = search.findNode("workspace://SpacesStore/xni-parser-status");
+    var statusNode = search.findNode(GLOBAL_STATUS_NODEREF);
 
     if (!statusNode) {
-        path = "/app:company_home/app:dictionary/cm:xni-data";
+        path = XNI_ROOT_PATH;
         var folder = search.selectNodes(path)[0];
         var properties = [];
         properties['sys:node-uuid'] = "xni-parser-status";

@@ -18,7 +18,7 @@
         <#case "Error">
             <span style="color: red; ">${status}</span>
         <#break>
-        <#case "Deletion">
+        <#case "Deleting">
             <span style="color: black; ">${status}</span>
         <#break>
     </#switch>
@@ -58,7 +58,7 @@
             color: #009;
         }
         #loader {
-            position: absolute;
+            position: fixed;
             left: 50%;
             top: 50%;
             z-index: 1;
@@ -200,6 +200,7 @@
 
     <script>
         var refreshLoadingDescriptionTimer;
+        const CONFIRM_DELETION_KEY = "I confirm the deletion";
 
         function start() {
             document.getElementById("loader").style.display = "block";
@@ -260,7 +261,7 @@
                             if (refreshLoadingDescriptionTimer) {
                                 clearInterval(refreshLoadingDescriptionTimer);
                             }
-                            popUpMessage('<h2>Importing data finished</h2>',
+                            popUpMessage('<h2>Processing data finished</h2>',
                                     '<p>Please, check errors in alfresco.log</p>');
                         }
                     }
@@ -339,29 +340,6 @@
             }
         }
 
-        function executeSelected() {
-            var formData = new FormData();
-            var elements = document.getElementsByName("checkbox");
-            var formDataIsEmpty = true;
-
-            for (var i = 0; i < elements.length; i ++) {
-                if (elements[i].checked) {
-                    formData.append("nodeRef", elements[i].id);
-                    formDataIsEmpty = false;
-                }
-            }
-
-            if (formDataIsEmpty) {
-                popUpMessage('<h2>Cannot start execute</h2>', '<p>Select some data to start execute</p>');
-                return;
-            }
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", '${url.service}' + "execute/", true);
-            xhr.send(formData);
-            loadingStart();
-        }
-
         function filter() {
             var input, filter, table, tr, td, i;
             input = document.getElementById("inputForFilter");
@@ -379,12 +357,99 @@
                 }
             }
         }
+
+        function executeSelected() {
+            processing("execute");
+        }
+
+        function deleteSelected() {
+            processing("delete");
+        }
+
+        function processing(type) {
+            var formData = new FormData();
+            var elements = document.getElementsByName("checkbox");
+            var formDataIsEmpty = true;
+            var invalidElements = [];
+
+            switch (type+"") {
+                case "execute":
+                    for (i = 0; i < elements.length; i ++) {
+                        if (elements[i].checked) {
+                            var currentStatus = elements[i].getAttribute("xniStatus");
+                            currentStatus = currentStatus + "";
+                            if (currentStatus == "New" || currentStatus == "Ready") {
+                                formData.append("nodeRef", elements[i].id);
+                                formDataIsEmpty = false;
+                            } else {
+                                invalidElements.push(elements[i].id)
+                                formDataIsEmpty = false;
+                            }
+                        }
+                    }
+
+                    if (formDataIsEmpty) {
+                        popUpMessage('<h2>Cannot start processing</h2>', '<p>Select some data to start processing</p>');
+                        return;
+                    }
+
+                    if (invalidElements.length > 0) {
+                        popUpMessage(
+                            '<h2>Cannot start processing</h2>',
+                            '<p>Invalid selected data found. Importing data is only available for "New" and "Ready" statuses</p>'
+                        );
+                        return;
+                    }
+
+                    executeData(formData);
+                    break;
+                case "delete":
+                    for (var i = 0; i < elements.length; i ++) {
+                        if (elements[i].checked) {
+                            formData.append("nodeRef", elements[i].id);
+                            formDataIsEmpty = false;
+                        }
+                    }
+
+                    if (formDataIsEmpty) {
+                        popUpMessage('<h2>Cannot start processing</h2>', '<p>Select some data to start processing</p>');
+                        return;
+                    }
+
+                    var confirmDelete = prompt("Warning! All selected data will be removed. To confirm the deletion, " +
+                            "enter: \"" + CONFIRM_DELETION_KEY + "\"");
+
+                    if (confirmDelete === CONFIRM_DELETION_KEY) {
+                        deleteData(formData)
+                    } else {
+                        popUpMessage('<h2>Deleting not started</h2>', '<p>You did not confirm deletion of data</p>');
+                        return;
+                    }
+                    break;
+                default:
+                    alert("Incorrect processing type");
+            }
+
+            loadingStart();
+        }
+
+        function executeData(data) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", '${url.service}' + "execute/", true);
+            xhr.send(data);
+        }
+
+        function deleteData(data) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("DELETE", '${url.service}' + "delete/", true);
+            xhr.send(data);
+        }
     </script>
 
 </head>
 <body onload="start()">
 <h3 align="center">XML to node importer</h3>
-<p>On this moment import data available only for 'New' status of data objects.</p>
+<p>On this moment import data available only for 'New' and 'Ready' status of data objects.</p>
 <div style="display:none;" id="loadText" class="animate-bottom" align="center"></div>
 <div id="loader" class="loader" style="display: none"></div>
 
@@ -402,11 +467,12 @@
 
 <div id ="buttons" style="display: none">
     <input class="button" type="button" value="Execute selected" onclick="executeSelected()">
+    <input class="button" type="button" value="Delete selected" onclick="deleteSelected()">
     <input class="button" type="button" value="Select all" onclick="selectAll()">
     <input class="button" type="button" value="Deselect all" onclick="deSelectAll()">
 </div>
 
-<input class="input" type="text" id="inputForFilter" onkeyup="filter()" placeholder="Search for tag..."
+<input class="input" id="inputForFilter" onkeyup="filter()" placeholder="Search for tag..."
        title="Type in a tag" style="color: #6678b1">
 
 <table id="xniTable" class="moduletable" style="display: none">
@@ -424,8 +490,7 @@
         <tr>
             <td>
                 <label>
-                    <input type="checkbox" name="checkbox" id="${obj.nodeRef}" <#if obj.properties["xni:status"]
-                    != "New">disabled readonly</#if>/>
+                    <input type="checkbox" name="checkbox" id="${obj.nodeRef}" xniStatus="${obj.properties["xni:status"]}"/>
                 </label>
             </td>
             <td>${obj.properties["cm:name"]}</td>

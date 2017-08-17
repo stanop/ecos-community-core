@@ -1,7 +1,15 @@
 /**
  * @author Roman Makarskiy
  */
-var status = "Complete";
+const METHOD_CREATE = "create";
+const METHOD_DELETE = "delete";
+const STATUS_NEW = "New";
+const STATUS_READY = "Ready";
+const STATUS_IN_PROGRESS = "In progress";
+const STATUS_COMPLETE = "Complete";
+const STATUS_ERROR = "Error";
+const STATUS_DELETING = "Deleting";
+var status = STATUS_COMPLETE;
 
 var parser = {
     parserScriptName: "xml-to-node-parser.js",
@@ -15,9 +23,11 @@ var parser = {
         titles: {
             en: "",
             ru: ""
-        }
+        },
+        path: "",
+        type: ""
     },
-    createNodes: function(xmlData) {
+    processNodes: function (method, xmlData) {
         var xmlDataNode = search.findNode(xmlData);
 
         if (!xmlDataNode || xmlDataNode.typeShort != "xni:data") {
@@ -28,10 +38,10 @@ var parser = {
         var content = xmlDataNode.content;
         var xml = new XML(content.replaceAll("(?s)<\\?xml .*?\\?>\\s*", ""));
 
-        var path = xml.path;
-        var type = xml.type;
+        this.parserData.path = xml.path;
+        this.parserData.type = xml.type;
 
-        var root = this.helper.getRootNodeByPath(path);
+        var root = this.helper.getRootNodeByPath(this.parserData.path);
 
         if (!root) {
             return false;
@@ -48,9 +58,30 @@ var parser = {
         var objects = this.helper.getObjects(xml);
         var objCount = objects.length;
 
-        logger.warn(this.parserScriptName + " Start parse... type: " + type);
-        logger.warn(this.parserScriptName + " Found " + objCount + " objects. Parse in progress...");
+        logger.warn(this.parserScriptName + " Start processing...method: " + method + ", type: " + this.parserData.type);
+        logger.warn(this.parserScriptName + " Found " + objCount + " objects in XNI data. Processing in progress...");
 
+
+        switch (method+"") {
+            case METHOD_CREATE:
+                this.createNodes(root, objects);
+                status = STATUS_COMPLETE;
+                break;
+            case METHOD_DELETE:
+                this.deleteNodes(root);
+                status = STATUS_READY;
+                break;
+            default:
+                logger.error(this.parserScriptName + " Incorrect method: " + method);
+        }
+
+        setStatusAsync(xmlDataNode, status);
+        var endTime = new Date().getTime();
+        var executedTime = endTime - startTime;
+        logger.warn(this.parserScriptName + " Processing ends in " + this.helper.millisToMinAndSeconds(executedTime)
+            + " (min:sec)" + " (" + executedTime + " ms)");
+    },
+    createNodes: function(root, objects) {
         batchExecuter.processArray({
             items: objects,
             batchSize: 200,
@@ -62,24 +93,30 @@ var parser = {
                 if (parser.helper.uuidExists(propObj)) {
                     logger.warn(parser.parserScriptName + " Cannot create node, because node with uuid: '"
                         + propObj['sys:node-uuid'] +"' already exists.");
-                    status = "Error";
-                } else if (parser.helper.cmNameExists(path, propObj)) {
+                    status = STATUS_ERROR;
+                } else if (parser.helper.cmNameExists(parser.parserData.path, propObj)) {
                     logger.warn(parser.parserScriptName + " Cannot create node, because node with cm:name - '"
                         + propObj['cm:name'] +"' already exists.");
-                    status = "Error";
+                    status = STATUS_ERROR;
                 } else {
-                    var createdNode = root.createNode(null, type, propObj, "cm:contains");
+                    var createdNode = root.createNode(null, parser.parserData.type, propObj, "cm:contains");
                     parser.helper.fillNodeTitle(createdNode);
                     parser.helper.fillAssocs(row, createdNode);
                 }
             }
         });
+    },
+    deleteNodes: function (rootFolder) {
+        logger.warn(this.parserScriptName + " Actual object count: " + rootFolder.children.length);
+        batchExecuter.processArray({
+            items: rootFolder.children,
+            batchSize: 100,
+            threads: 4,
+            onNode: function(row) {
+                row.remove();
+            }
+        });
 
-        setStatusAsync(xmlDataNode, status);
-        var endTime = new Date().getTime();
-        var executedTime = endTime - startTime;
-        logger.warn(this.parserScriptName + " Parse ends in " + this.helper.millisToMinAndSeconds(executedTime)
-            + " (min:sec)" + " (" + executedTime + " ms)");
     },
     getProperties: function (obj) {
         var propObj = {};
