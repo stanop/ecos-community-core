@@ -75,8 +75,6 @@ var parser = {
                 logger.error(this.parserScriptName + " Incorrect method: " + method);
         }
 
-
-        logger.error("Complete, set status:" + status + "___" + xmlDataNode.nodeRef);
         setStatusAsync(xmlDataNode, status);
         var endTime = new Date().getTime();
         var executedTime = endTime - startTime;
