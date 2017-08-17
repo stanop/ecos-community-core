@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Delete xni data</shortname>
+    <description>Delete Xml to Node Importer data and change status to Ready</description>
+    <url>/import/xml-to-node/delete?nodeRef={nodeRef}</url>
+    <url>/import/xml-to-node/delete/</url>
+    <format default="json">argument</format>
+    <authentication>admin</authentication>
+</webscript>

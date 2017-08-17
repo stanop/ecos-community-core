@@ -1,4 +1,8 @@
 <import resource="classpath:alfresco/module/ecos-base-core-repo/bootstrap/scripts/xml-to-node-parser.js">
+<import resource="classpath:alfresco/templates/webscripts/ru/citeck/import/xni-webscripts-utils.js">
+/**
+ * @author Roman Makarskiy
+ */
 var descriptions = [];
 var globalStatus = "";
 
@@ -23,10 +27,9 @@ var updateDescription = function(id, status) {
         };
 
         if (formdata) {
-            var statusNode = search.findNode("workspace://SpacesStore/xni-parser-status");
+            var statusNode = search.findNode(GLOBAL_STATUS_NODEREF);
             if (!statusNode) {
-                path= "/app:company_home/app:dictionary/cm:xni-data";
-                var folder = search.selectNodes(path)[0];
+                var folder = search.selectNodes(XNI_ROOT_PATH)[0];
                 generateDescriptionNodeAsync(folder);
             }
 
@@ -52,40 +55,45 @@ var updateDescription = function(id, status) {
                 var currentNode = search.findNode(nodeRefsToExecute[0]);
                 var status = currentNode.properties["xni:status"];
 
+                logger.error("currentNode:" + currentNode.nodeRef);
+                logger.error("status:" + status);
+
                 if (!globalStatus) {
                     globalStatus = status;
                 } else {
+                    logger.error("globalStatus:" + globalStatus);
                     switch (globalStatus) {
-                        case "New":
-                            setStatusAsync(currentNode, "Ready");
+                        case STATUS_NEW:
+                            setStatusAsync(currentNode, STATUS_READY);
                             break;
-                        case "Ready":
-                            setStatusAsync(currentNode, "In progress");
-                            updateDescriptionNodeAsync("Executing");
-                            parser.createNodes(currentNode.nodeRef);
+                        case STATUS_READY:
+                            setStatusAsync(currentNode, STATUS_IN_PROGRESS);
+                            updateDescriptionNodeAsync(GLOBAL_STATUS_EXECUTING);
+                            parser.processNodes(METHOD_CREATE, currentNode.nodeRef);
                             break;
-                        case "In progress":
+                        case STATUS_IN_PROGRESS:
                             break;
-                        case "Complete":
-                            updateDescriptionNodeAsync("Executing");
+                        case STATUS_COMPLETE:
+                            updateDescriptionNodeAsync(GLOBAL_STATUS_EXECUTING);
                             nextItem();
                             break;
-                        case "Error":
-                            updateDescriptionNodeAsync("Executing");
+                        case STATUS_ERROR:
+                            updateDescriptionNodeAsync(GLOBAL_STATUS_EXECUTING);
                             nextItem();
                             break;
-                        case "Deleting":
+                        case STATUS_DELETING:
                             break;
                         default:
                             logger.error("DEFAULT: " + globalStatus);
-                            setStatusAsync(currentNode, "Error");
+                            setStatusAsync(currentNode, STATUS_ERROR);
                             nextItem();
                             break;
                     }
                 }
             }
             descriptions = [];
-            updateDescriptionNodeAsync("Wait");
+            logger.error("COMPLETE UPDATE");
+            updateDescriptionNodeAsync(GLOBAL_STATUS_WAIT);
         } else {
             status.code = 400;
             status.message = "formData is empty must be specified";
@@ -161,7 +169,7 @@ function setStatusAsync(node, status) {
 }
 
 function updateDescriptionNodeAsync(status) {
-    var node = search.findNode("workspace://SpacesStore/xni-parser-status");
+    var node = search.findNode(GLOBAL_STATUS_NODEREF);
     batchExecuter.processArray({
         items: [node],
         batchSize: 1,
