@@ -9,6 +9,8 @@
 <#assign printMargins = args.printMargins!'10,10,10,10' />
 <#assign viewFormat = args.viewFormat!'png' />
 <#assign barcodeType = args.barcodeType!'code-128' />
+<#assign width = args.width!'' />
+<#assign height = args.height!'' />
 <#assign rnd = args.rnd!'0' />
 <#assign barcodeURL = "${url.context}/proxy/alfresco/citeck/print/barcode?nodeRef=${args.nodeRef}&property=${args.property}&barcodeType=${barcodeType}" />
 
@@ -18,6 +20,8 @@
 		property: "${args.property}",
 		barcodeType: "${barcodeType}",
 		header: "${args.header}",
+		width: "${width}",
+		height: "${height}",
         printScale: "${printScale}",
         printMargins: "${printMargins}",
 		rnd: Math.random()
