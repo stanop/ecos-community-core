@@ -97,6 +97,16 @@ inputTypes = null;
 // UTILS
 // -----
 
+Citeck.utils.eval = function(context, string) {
+    var evaluatedContextFunction = function() {
+        var evaluatedExpression = eval("(" + string + ")");
+        if (_.isBoolean(evaluatedExpression)) return evaluatedExpression;
+        if (_.isFunction(evaluatedExpression)) return evaluatedExpression.call(this);
+        return null;
+    }
+    return evaluatedContextFunction.call(context);
+}
+
 Citeck.utils.concatOptions = function(defaultOptions, newOptions) {
     for (var key in newOptions) {
         var newValue = newOptions[key],
