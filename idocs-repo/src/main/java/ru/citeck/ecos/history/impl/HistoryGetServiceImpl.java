@@ -58,7 +58,7 @@ public class HistoryGetServiceImpl implements HistoryGetService {
             entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
             QName taskTypeValue = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
-            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskTypeValue != null ? taskTypeValue.getLocalName() : "");
+            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskTypeValue != null ? taskTypeValue.toString() : "");
             result.add(entryMap);
         }
         Collections.sort(result, (firstMap, secondMap) -> {
