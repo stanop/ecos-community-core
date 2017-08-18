@@ -44,6 +44,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
     private static final String TASK_EVENT_INSTANCE_ID = "taskEventInstanceId";
     private static final String PROPERTY_NAME = "propertyName";
+    private static final String FULL_TASK_TYPE = "fullTaskType";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
 
     /**
@@ -51,7 +52,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     private static final String[] KEYS = {
             "historyEventId", "documentId", "eventType", "comments", "version", "creationTime", "username", "userId",
-            "taskRole", "taskOutcome", "taskType", "initiator", "workflowInstanceId", "workflowDescription",
+            "taskRole", "taskOutcome", "taskType", "fullTaskType", "initiator", "workflowInstanceId", "workflowDescription",
             "taskEventInstanceId", "documentVersion", "propertyName", "expectedPerformTime"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
@@ -171,7 +172,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
             QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
-            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.toString() : "");
+            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.getLocalName() : "");
+            entryMap.put(FULL_TASK_TYPE,taskType != null ? taskType.toString() : "");
             /** Workflow */
             entryMap.put(WORKFLOW_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
             entryMap.put(WORKFLOW_DESCRIPTION, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_DESCRIPTION));

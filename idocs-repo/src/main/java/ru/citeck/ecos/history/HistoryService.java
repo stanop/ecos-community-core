@@ -74,6 +74,7 @@ public class HistoryService {
     private static final String TASK_ROLE = "taskRole";
     private static final String TASK_OUTCOME = "taskOutcome";
     private static final String TASK_TYPE = "taskType";
+    private static final String FULL_TASK_TYPE = "fullTaskType";
     private static final String INITIATOR = "initiator";
     private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
     private static final String WORKFLOW_DESCRIPTION = "workflowDescription";
@@ -272,6 +273,7 @@ public class HistoryService {
         requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);
         requestParams.put(TASK_TYPE, taskType != null ? taskType.getLocalName() : "");
+        requestParams.put(FULL_TASK_TYPE, taskType != null ? taskType.toString() : "");
         /** Workflow properties */
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
