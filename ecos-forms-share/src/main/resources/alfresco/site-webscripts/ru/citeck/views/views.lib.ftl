@@ -309,9 +309,9 @@
 						type: <#if type?has_content>"${type}"<#else>null</#if>,
 						
 						classNames: <#if classNames??><@views.renderQNames classNames /><#else>null</#if>,
+						viewAttributeNames: <@views.renderValue attributeNames />,
 
 						_set: <@views.renderValue attributeSet />,
-						_attributeNames: <@views.renderValue attributeNames />,
 						_invariants: <#if invariants??><@views.renderInvariants invariants /><#else>null</#if>,
 
 						runtime: "${runtimeKey}",

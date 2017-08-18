@@ -1038,7 +1038,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('mandatory', featuredProperty('mandatory'))
         .computed('invariantRelevant', featuredProperty('relevant'))
         .computed('relevant', function() {
-            var forcedAttributes = this.node().impl()._attributeNames();
+            var forcedAttributes = this.node().impl().viewAttributeNames();
             if(!_.isEmpty(forcedAttributes) && !_.contains(forcedAttributes, this.name())) return false;
             return this.invariantRelevant();
         })
@@ -1507,18 +1507,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('viewAttributeNames', [ s ])
-        .property('withoutView', b)
         .property('virtualParent', Node)
         .property('defaultModel', DefaultModel)
         .property('runtime', Runtime)
 
-        
         .property('_invariants', o)
-        .property('_attributeNames', [ s ])
-        .property('_definedAttributeNamesWasLoaded', b)
+        .property('_withoutView', b)
+        .property('_definedAttributeNamesLoaded', b)
+        .property('_viewAttributeNamesLoaded', b)
         .property('_attributes', o)
         .property('_set', o)
-        .property('_currentInvariantSet', o)
         .property('_cache', o)
 
         .shortcut('typeShort', 'type')
@@ -1536,14 +1534,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     invariants: this._invariants() 
                 });
             } else if (this.type.loaded()) {
-                var forcedAttributes = this._attributeNames(),
-                    validAttributeNames = [];
-
-                if (forcedAttributes.length) {
-                    validAttributeNames = forcedAttributes;
-                } else {
-                    validAttributeNames = !this.withoutView() ? this.viewAttributeNames() : this.definedAttributeNames();
-                }
+                var validAttributeNames = !this._withoutView() ? 
+                    this.viewAttributeNames() : this.definedAttributeNames();
 
                 if (validAttributeNames && validAttributeNames.length > 0) {
                     return new SingleClassInvariantSet({ 
@@ -1573,7 +1565,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return _.invoke(new DDClass(className).attributes(), 'shortQName');
             })));
 
-            if (attributeNames.length > 0) this._definedAttributeNamesWasLoaded(true);
+            if (attributeNames.length > 0) this._definedAttributeNamesLoaded(true);
             return attributeNames;
         })
         .computed('valid', function() {
@@ -1643,22 +1635,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     }
                 };
 
-                // first load forced attributes
-                _.each(this._attributeNames(), processAttributeName);
-
-                // second load defined attributes
-                if (!this.runtime()) {
-                    _.each(this.definedAttributeNames(), processAttributeName);
-                   
-                    // TODO: 
-                    // use only attributes defined on view. 
-                    // use mapping cells on journal
-
-                    // _.each(this.viewAttributeNames(), processAttributeName);
-                    // if (this.withoutView()) {
-                    //     _.each(this.definedAttributeNames(), processAttributeName);
-                    // }
-                }
+                _.each(this.viewAttributeNames(), processAttributeName);
+                if (this._withoutView()) _.each(this.definedAttributeNames(), processAttributeName);
 
                 return attributes;
             },
@@ -1670,56 +1648,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var parent = this.attribute('attr:parent');
             return parent ? parent.value() : null;
         })
-
-        .method('_filterAttributes', function(filterBy) {
-            return _.filter(this.attributes() || [], function(attr) {
-                return attr[filterBy]();
-            })
-        })
-        // Slow. Use 'getAttribute' to speed up your calculation
-        .method('attribute', function(name) {
-            return _.find(this.attributes() || [], function(attr) {
-                return attr.name() == name;
-            });
-        })
-        .method('reset', function(full) {
-            _.invoke(this.attributes(), 'reset', full);
-            if(full) this._attributes.reload();
-        })
-        .method('updateModel', function(model) {
-            if (model) {
-                this.model(_.omit(model, 'attributes'));
-
-                if(model.attributes) {
-                    this.model({ _attributes: model.attributes })
-                }
-            }
-        })
-
-        // get set by 'setId' and 'attributeName'
-        .method('getAttributeSet', function(id) {
-            var map = this.attributeSetMap(),
-                object =  map ? map.attributeSets[id] || map.attributes[id] : null;
-            return object ? object.set : null;
-        })
-        .method('getRootAttributeSet', function(id) {
-            var map = this.attributeSetMap(),
-                setObject =  map ? map.attributeSets[id] : null;
-
-            if (setObject) {
-                if (setObject.parent)
-                    while (setObject.parent) { setObject = setObject.parent; }
-                return setObject.set;
-            }
-
-            return null;
-        })
-        .method('getAttribute', function(name) {
-            var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
-            return attributeObject ? attributeObject.attribute : null;
-        })
-
-
         .computed('attributeSetMap', function() {
             var buildMapOfAttributes = function(set, attributes, nMap) {
                     attributes.forEach(function(attribute) {
@@ -1771,6 +1699,53 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return null;
         })
 
+        .method('_filterAttributes', function(filterBy) {
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr[filterBy]();
+            })
+        })
+        // Slow. Use 'getAttribute' to speed up your calculation
+        .method('attribute', function(name) {
+            return _.find(this.attributes() || [], function(attr) {
+                return attr.name() == name;
+            });
+        })
+        .method('reset', function(full) {
+            _.invoke(this.attributes(), 'reset', full);
+            if(full) this._attributes.reload();
+        })
+        .method('updateModel', function(model) {
+            if (model) {
+                this.model(_.omit(model, 'attributes'));
+
+                if(model.attributes) {
+                    this.model({ _attributes: model.attributes })
+                }
+            }
+        })
+
+        // get set by 'setId' and 'attributeName'
+        .method('getAttributeSet', function(id) {
+            var map = this.attributeSetMap(),
+                object =  map ? map.attributeSets[id] || map.attributes[id] : null;
+            return object ? object.set : null;
+        })
+        .method('getRootAttributeSet', function(id) {
+            var map = this.attributeSetMap(),
+                setObject =  map ? map.attributeSets[id] : null;
+
+            if (setObject) {
+                if (setObject.parent)
+                    while (setObject.parent) { setObject = setObject.parent; }
+                return setObject.set;
+            }
+
+            return null;
+        })
+        .method('getAttribute', function(name) {
+            var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
+            return attributeObject ? attributeObject.attribute : null;
+        })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
                 return attr.relevant() && (attr.changed() || attr.changedByInvariant() || (!attr.persisted() && attr.invariantDefault() != null));
@@ -1783,11 +1758,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('_cache', function(impl) {
             impl._cache(Alfresco.util.ComponentManager.get("InvariantsRuntimeCache"));
         })
-        .load('_systemInvariantSet', function(impl) { impl._systemInvariantSet(null); })
-        .load('_attributeNames', function(impl) { impl._attributeNames([]); })
         .load('_invariants', function(impl) { impl._invariants([]); })
         .load('_set', function(impl) { impl._set(null); })
 
+        .load([ '_withoutView', '_viewAttributeNamesLoaded' ], function(impl) { 
+            impl.setModel({ _withoutView: false, _viewAttributeNamesLoaded: false });
+        })
+        .load('', function(impl) { impl._definedAttributeNamesLoaded(false); })
         .load('defaultModel', function(impl) { impl.defaultModel(new DefaultModel(COMMON_DEFAULT_MODEL_KEY)) })
         .load('runtime', function(impl) { impl.runtime(null); })
         .load('viewAttributeNames', function(impl) {
@@ -1800,9 +1777,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                 var loader = function(nodeRef, attributes) {
                     var attributeCount = attributes ? Object.keys(attributes).length : -1;
-                    if (attributeCount <= 0) impl.withoutView(true);
+                    if (attributeCount <= 0) impl._withoutView(true);
                     else impl._cache().insert(["ViewAttributeNames"], impl.type(), attributes);
-                    impl.viewAttributeNames(attributes);
+                    impl.setModel({ viewAttributeNames: attributes, _viewAttributeNamesLoaded: true })
                 }
 
                 if (impl.nodeRef()) {
@@ -2268,26 +2245,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this._loading()) return true;
 
             if (this.node.loaded() && this.node().impl.loaded() && 
-                this.node().impl().attributes.loaded() && 
-                this.node().impl().invariantSet.loaded() && this.node().impl().invariantSet().invariants.loaded()) {
+                this.node().impl().attributes.loaded() && this.node().impl().invariantSet.loaded()) {
 
-                var attributes = this.node().impl().attributes(),
-                    loadedAttributes = [];
+                if (!this.node().impl()._withoutView()) {
+                    if (!this.node().impl()._viewAttributeNamesLoaded()) return false;
+                } else if (!this.node().impl()._definedAttributeNamesLoaded()) return false;
 
+                var attributes = this.node().impl().attributes(), loadedAttributes = [];
                 _.each(attributes, function(attribute) {
                     if (_.every([ "name", "valid", "relevant", "protected", "mandatory" ], function(p) {
                         return attribute[p].loaded();
                     })) loadedAttributes.push(true);
                 });
-
-                if (!this.node().impl()._definedAttributeNamesWasLoaded()) return false;
                 if (loadedAttributes.length != attributes.length) return false;
 
                 // delay while controls are loading (0.5 seconds enough)
                 if (this._loading())
                     setTimeout(function(scope) {  scope._loading(false); }, 500, this);
-
-                return !this._loading();
             }
 
             return false;
@@ -2616,6 +2590,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         onReady: function() {
             var self = this;
 
+            if (this.options.model.node.viewAttributeNames.length) {
+                this.options.model.node._viewAttributeNamesLoaded = true;
+                this.options.model.node._withoutView = false;
+            }
+
             this.initRuntimeCache();
             this.initRuntime();
 
@@ -2656,6 +2635,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
+
+            console.log("runtime", this.runtime);
+            console.log("impl", this.runtime.node().impl());
         },
 
         initRuntimeCache: function() {
