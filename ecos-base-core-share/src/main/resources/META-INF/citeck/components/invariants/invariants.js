@@ -1691,7 +1691,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     children: _.map(rootSet.sets(), function(s) { return s.id(); })
                 };
 
-                buildMapOfSets(rootSet.sets(), rootSet.id(), map);
+                if (rootSet.sets().length)
+                    buildMapOfSets(rootSet.sets(), rootSet.id(), map);
+
+                if (rootSet.attributes().length)
+                    buildMapOfAttributes(rootSet.set, rootSet.attributes(), map);
 
                 return map;
             }
