@@ -1635,6 +1635,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     }
                 };
 
+                // first use default attributes names
+                var defaultAttributeNames = [ 
+                    "attr:aspects", "attr:noderef", "attr:types", 
+                    "attr:parent", "attr:parentassoc",
+                    "invariants:isDraft"
+                ];
+                _.each(defaultAttributeNames, processAttributeName);
+
                 _.each(this.viewAttributeNames(), processAttributeName);
                 if (this._withoutView()) _.each(this.definedAttributeNames(), processAttributeName);
 
@@ -1759,16 +1767,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this._filterAttributes("invalid");
         })
 
+
         .load('_cache', function(impl) {
             impl._cache(Alfresco.util.ComponentManager.get("InvariantsRuntimeCache"));
         })
         .load('_invariants', function(impl) { impl._invariants([]); })
         .load('_set', function(impl) { impl._set(null); })
-
         .load([ '_withoutView', '_viewAttributeNamesLoaded' ], function(impl) { 
             impl.setModel({ _withoutView: false, _viewAttributeNamesLoaded: false });
         })
-        .load('', function(impl) { impl._definedAttributeNamesLoaded(false); })
+        .load('_definedAttributeNamesLoaded', function(impl) { impl._definedAttributeNamesLoaded(false); })
+        .load('isDraft', function(impl) {
+            var draftAttribute = impl.attribute("invariants:isDraft");
+            impl.isDraft(draftAttribute ? draftAttribute.value() : false);
+        })
+        .load('inSubmitProcess', function(impl) { impl.inSubmitProcess(false); })
         .load('defaultModel', function(impl) { impl.defaultModel(new DefaultModel(COMMON_DEFAULT_MODEL_KEY)) })
         .load('runtime', function(impl) { impl.runtime(null); })
         .load('viewAttributeNames', function(impl) {
@@ -1793,7 +1806,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
-        .load('classNames', function(impl) {
+        .load([ 'classNames', 'type' ], function(impl) {
             if(impl.isPersisted()) {
                 Citeck.utils.classNamesLoader.load(impl.nodeRef(), function(nodeRef, model) {
                     if (model) impl.updateModel(model);
@@ -1807,21 +1820,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 });
             }
         })
-        .load('*', function(impl) {
-            if(impl.isPersisted() && impl.nodeRef()) {
-                Citeck.utils.nodeInfoLoader.load(impl.nodeRef(), function(nodeRef, model) {
-                    for (var attr in model.attributes) {
-                        if (attr.indexOf("_added") != -1) delete model.attributes[attr];
-                    }
-
-                    if (model) impl.updateModel(model);
-                });
-            }
-        })
-
-        .init(function() {
-            this.inSubmitProcess(false);
-        })
+        // .load('*', function(impl) {
+        //     if(impl.isPersisted() && impl.nodeRef()) {
+        //         Citeck.utils.nodeInfoLoader.load(impl.nodeRef(), function(nodeRef, model) {
+        //             for (var attr in model.attributes) {
+        //                 if (attr.indexOf("_added") != -1) delete model.attributes[attr];
+        //             }
+        //             if (model) impl.updateModel(model);
+        //         });
+        //     }
+        // })
         ;
 
     var assocsComputed = function(type) {
@@ -2639,9 +2647,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
-
-            console.log("runtime", this.runtime);
-            console.log("impl", this.runtime.node().impl());
         },
 
         initRuntimeCache: function() {
