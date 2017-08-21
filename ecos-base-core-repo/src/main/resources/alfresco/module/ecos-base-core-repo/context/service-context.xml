@@ -297,4 +297,9 @@
         </property>
     </bean>
 
+    <bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
+        <property name="searchService" ref="searchService"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
 </beans>

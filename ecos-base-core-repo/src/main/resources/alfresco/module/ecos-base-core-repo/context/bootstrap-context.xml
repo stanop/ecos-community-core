@@ -17,7 +17,8 @@
             <list>
                 <value>alfresco/module/${project.artifactId}/model/attributeModel.xml</value>
                 <value>alfresco/module/${project.artifactId}/model/indexingModel.xml</value>
-                <value>alfresco/module/ecos-base-core-repo/model/xmlNodeImportModel.xml</value>
+                <value>alfresco/module/${project.artifactId}/model/xmlNodeImportModel.xml</value>
+                <value>alfresco/module/${project.artifactId}/model/ecosConfig.xml</value>
             </list>
         </property>
         <property name="labels">

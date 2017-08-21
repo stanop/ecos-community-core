@@ -42,7 +42,6 @@
                 <value>alfresco/module/idocs-repo/model/actOfAcceptance.xml</value>
                 <value>alfresco/module/idocs-repo/model/resultsRAndD.xml</value>
                 <value>alfresco/module/idocs-repo/model/invoiceModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/ecosConfig.xml</value>
                 <value>alfresco/module/idocs-repo/model/routeModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/notificationLoggingModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/ecosModel.xml</value>
