@@ -592,8 +592,9 @@
         <property name="titleTemplate">
             <value><![CDATA[
                 <#if !node.properties['cm:title']?? || node.properties['cm:title'] == ''>
-                    <#if node.properties['cm:name']>
-                        ${node.properties['cm:name']}
+                    <#if node.properties['cm:name']??>
+                        <#assign propName = node.properties['cm:name'] />
+                        ${propName}
                     <#else>
                         Документ
                     </#if>
