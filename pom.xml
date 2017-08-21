@@ -48,7 +48,7 @@
         <maven.build.timestamp.format>yy.MM.dd.HH.mm</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
 
-        <alfresco.platform.version>5.1.g</alfresco.platform.version>
+        <alfresco.platform.version>5.1.f</alfresco.platform.version>
         <alfresco.share.version>5.1.f</alfresco.share.version>
         <alfresco.platform.artifactId>alfresco</alfresco.platform.artifactId>
         <alfresco.surf.version>6.10</alfresco.surf.version>
