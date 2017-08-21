@@ -114,8 +114,9 @@ ko.components.register("help", {
 
 ko.components.register("select", {
     viewModel: function(params) {
-        kocomponents.initializeParameters.call(this, params);     
-        this.data.options.extend({ throttle: 500 });
+        kocomponents.initializeParameters.call(this, params);
+
+        if (this.trottle) this.data.options.extend({ throttle: 500 });
 
         if (!this.optionsText) {
             if (this.data.optionsText) { this.optionsText = this.data.optionsText; }
@@ -137,6 +138,7 @@ ko.components.register("select", {
                 options: data.options,\
                 optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue,\
                 optionsAfterRender: optionsAfterRender,\
+                valueAllowUnset: valueAllowUnset,\
                 value: data.value\
             "></select>\
         <!-- /ko -->\
@@ -146,6 +148,7 @@ ko.components.register("select", {
                 options: data.options,\
                 optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue,\
                 optionsAfterRender: optionsAfterRender,\
+                valueAllowUnset: valueAllowUnset,\
                 selectedOptions: data.multipleValues\
             "></select>\
         <!-- /ko -->'
