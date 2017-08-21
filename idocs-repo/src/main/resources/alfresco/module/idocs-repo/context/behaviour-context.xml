@@ -587,6 +587,21 @@
 		</property>
 	</bean>
 
+    <bean id="idocs.EcosDocumentTitleGenerationBehaviour">
+        <property name="className" value="ecos:document"/>
+        <property name="titleTemplate">
+            <value><![CDATA[
+                <#if !node.properties['cm:title']?? || node.properties['cm:title'] == ''>
+                    <#if node.properties['cm:name']>
+                        ${node.properties['cm:name']}
+                    <#else>
+                        Документ
+                    </#if>
+                </#if>
+            ]]></value>
+        </property>
+    </bean>
+
     <bean id="idocs.applicationFileNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="dms:applicationFile"/>
         <property name="nameTemplate" value="${node.properties['dms:applicationFileName']}"/>
