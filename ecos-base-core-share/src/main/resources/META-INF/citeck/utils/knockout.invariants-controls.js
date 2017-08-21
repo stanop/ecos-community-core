@@ -116,6 +116,14 @@ ko.components.register("select", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
 
+        if (this.data.single()) {
+            if (!this.valueAllowUnset) {
+                koutils.subscribeOnce(this.data.singleValue, function(newValue) {
+                    if (!_.contains(this.options(), newValue)) this.newValue(null);
+                }, this.data)
+            }
+        }
+
         if (this.trottle) this.data.options.extend({ throttle: 500 });
 
         if (!this.optionsText) {
@@ -139,7 +147,7 @@ ko.components.register("select", {
                 optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue,\
                 optionsAfterRender: optionsAfterRender,\
                 valueAllowUnset: valueAllowUnset,\
-                value: data.value\
+                value: data.singleValue\
             "></select>\
         <!-- /ko -->\
         <!-- ko if: data.multiple -->\
