@@ -264,13 +264,17 @@ define(['lib/knockout'], function(ko) {
 		},
 		
 		instantiate: function(data, valueClass) {
-		    if(data == null || valueClass == null || koutils.instanceOf(data, valueClass)) {
+		    if (data == null || valueClass == null || koutils.instanceOf(data, valueClass)) {
 		        return data;
-		    } else if(valueClass == Boolean) {
-		        // new Boolean("false") == true
+		    } else if (_.isBoolean(valueClass)) {
 		        return data != "false" && data != false && data != 0;
 		    } else {
-		        return new valueClass(data);
+		    	try {
+		    		return new valueClass(data);
+		    	} catch (e) {
+	                console.warn("Can not get a class instance of " + valueClass  + " for data: " + data);
+                	return null;
+		    	}
 		    }
 		},
 

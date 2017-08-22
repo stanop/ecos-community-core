@@ -1061,20 +1061,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this.inlineEditVisibility(!this.inlineEditVisibility());
         })
         .method('convertValue', function(value, multiple) {
-            var isArray = _.isArray(value),
-                instantiate = _.partial(koutils.instantiate, _, this.valueClass());
-            if(value == null) {
-                return multiple
-                        ? []
-                        : null;
-            } else if(isArray) {
-                return multiple
-                        ? _.map(value, instantiate)
-                        : instantiate(value[0]);
+            if(value == null) return multiple ? [] : null;
+
+            var instantiate = _.partial(koutils.instantiate, _, this.valueClass());
+            if(_.isArray(value)) {
+                return multiple ? _.map(value, instantiate) : instantiate(value[0]);
             } else {
-                return multiple
-                        ? [ instantiate(value) ]
-                        :   instantiate(value) ;
+                return multiple ? [ instantiate(value) ] : instantiate(value) ;
             }
         })
         .method('getInvariantsModel', function(value, cache) {
