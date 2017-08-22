@@ -263,6 +263,39 @@
 		}
 	};
 
+	var _onSelectAddProductOrServiceAssocsCommandItems = function(opts, items) {
+		if (items && items.length > 0) {
+			var nodeRefs = "";
+			for (var i = 0; i < items.length; i++) {
+				nodeRefs += items[i].nodeRef;
+				if (i < items.length - 1)
+					nodeRefs += ',';
+			}
+			var addAssocSript = "citeck/add-assocs";
+			if (opts.addAssocScript) {
+				addAssocSript = opts.addAssocScript;
+			}
+			Alfresco.util.Ajax.jsonPost({
+				//url: Alfresco.constants.PROXY_URI + "citeck/add-assocs",
+				url: Alfresco.constants.PROXY_URI + addAssocSript,
+				dataObj: {
+					sourceRef: opts.nodeRef,
+					targetRef: nodeRefs,
+					assocTypes: opts.assocType
+				},
+				method: Alfresco.util.Ajax.POST,
+				successCallback: {
+					fn: function (response) {
+						YAHOO.Bubbling.fire("metadataRefresh");
+					},
+					scope: this
+				},
+				failureMessage: Alfresco.util.message("message.cannot.add.assocs.to.node"),
+				scope: this
+			});
+		}
+	}
+
 	Citeck.widget.ButtonPanel.Commands.onPanelButtonDeleteAllAssoc = function (options) {
 
 		var headerMsg = Alfresco.util.message(options.header);
@@ -529,6 +562,70 @@
 							picker.subscribe("itemsSelected", function(args) {
 								picker.hide();
 								_onSelectAddAssocsCommandItems(opts, args);
+							}, this, true);
+							_addCommandPickers[opts.objectId] = picker;
+						});
+					},
+					scope: this
+				},
+				failureMessage: Alfresco.util.message("message.cannotloaddialog"),
+				scope: this,
+				execScripts: true
+			});
+		}
+	};
+
+	Citeck.widget.ButtonPanel.Commands.onPanelButtonAddProductOrService = function(options) {
+		var opts = _parseAddCommandOptions(options),
+			picker = _addCommandPickers[opts.objectId];
+		opts.assocType = "pas:containsProductsAndServices";
+		opts.addAssocScript = "/citeck/add-pas-assocs";
+
+		if (!opts.nodeRef) {
+			alert("Mandatory option node reference - 'nodeRef' is not specified");
+			return;
+		}
+
+		if (!opts.assocType) {
+			alert("Mandatory option 'assocType' is not specified");
+			return;
+		}
+
+		if (picker) {
+			picker.setSelectedItems([]);
+			picker.show();
+		} else {
+			var htmlid = Alfresco.util.generateDomId();
+			// load dialog from web-script
+			Alfresco.util.Ajax.request({
+				url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/dynamic-tree-picker",
+				dataObj: {
+					htmlid: htmlid,
+					itemType: opts.itemType,
+					itemKey: opts.itemKey,
+					itemTitle: opts.itemTitle,
+					itemURL: opts.itemURL,
+					itemURLresults: opts.itemURLresults,
+					searchURL: opts.searchURL,
+					searchURLresults: opts.searchURLresults,
+					rootURL: opts.rootURL,
+					rootURLresults: opts.rootURLresults,
+
+					// additional options
+					preloadSearchQuery: options.preloadSearchQuery ? options.preloadSearchQuery : null,
+					preloadSearchQueryEveryTime: options.preloadSearchQueryEveryTime ? options.preloadSearchQueryEveryTime : null
+				},
+				successCallback: {
+					fn: function (response) {
+						var element = document.createElement("DIV");
+						element.innerHTML = response.serverResponse.responseText;
+						YAHOO.util.Dom.addClass(element, "inner-panel-button-dialog");
+						document.getElementsByTagName('body')[0].appendChild(element);
+						YAHOO.util.Event.onContentReady(htmlid + "-picker", function() {
+							var picker = Alfresco.util.ComponentManager.get(htmlid + "-picker");
+							picker.subscribe("itemsSelected", function(args) {
+								picker.hide();
+								_onSelectAddProductOrServiceAssocsCommandItems(opts, args);
 							}, this, true);
 							_addCommandPickers[opts.objectId] = picker;
 						});
