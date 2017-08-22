@@ -56,7 +56,7 @@
         
             <#if editable?trim == "all" || (editable?trim == "admin" && user.isAdmin)>
                 <!-- ko if: $data instanceof koutils.koclass("invariants.Node") && $data.hasPermission("Write") -->
-                    <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }), clickBubble: false"></a>
+                    <a class="edit-value-item" title="${msg('button.edit')}" data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef, null, function(result) { result.impl().reset(true) }, null), clickBubble: false"></a>
                 <!-- /ko -->
             </#if>
 
