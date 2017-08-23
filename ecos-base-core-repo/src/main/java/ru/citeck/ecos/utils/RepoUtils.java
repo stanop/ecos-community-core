@@ -36,6 +36,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.behavior.AssociationIndexing;
 
 import java.io.Serializable;
 import java.util.*;
@@ -617,7 +618,7 @@ public class RepoUtils {
             QName assocType = assoc.getTypeQName();
             List<NodeRef> nodeRefs = assocMap.get(assocType);
             if (nodeRefs == null) {
-                nodeRefs = new LinkedList<>();
+                nodeRefs = new ArrayList<>();
                 assocMap.put(assocType, nodeRefs);
             }
             nodeRefs.add(assoc.getTargetRef());
@@ -640,7 +641,7 @@ public class RepoUtils {
         return assocMap;
     }
 
-    public static void setAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> assocs, boolean isTarget, boolean full, NodeService nodeService) {
+    public static void setAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> assocs, boolean isTarget, boolean full, NodeService nodeService, AssociationIndexing associationIndexing) {
         Map<QName, List<NodeRef>> existingAssocs = isTarget
                 ? getTargetAssocs(nodeRef, nodeService)
                 : getSourceAssocs(nodeRef, nodeService);
@@ -674,7 +675,12 @@ public class RepoUtils {
         if (full) {
             for (Map.Entry<QName, List<NodeRef>> entry : existingAssocs.entrySet()) {
                 QName name = entry.getKey();
-                if (assocs.containsKey(name)) continue;
+                if (assocs.containsKey(name)) {
+                    if (associationIndexing != null) {
+                        associationIndexing.updatePropertiesOnFullPersistedNodes(nodeRef, name, entry.getValue());
+                    }
+                    continue;
+                }
                 List<NodeRef> nodesToUnlink = entry.getValue();
                 for (NodeRef nodeToUnlink : nodesToUnlink) {
                     removeAssociation(nodeRef, nodeToUnlink, name, isTarget, nodeService);

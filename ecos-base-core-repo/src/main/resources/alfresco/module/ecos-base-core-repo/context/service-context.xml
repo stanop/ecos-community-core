@@ -58,6 +58,7 @@
         <property name="nodeService" ref="nodeService" />
         <property name="contentService" ref="contentService" />
         <property name="nodeAttributeService" ref="nodeAttributeService" />
+        <property name="associationIndexing" ref="associationIndexing" />
     </bean>
 
     <bean name="NodeInfoFactory" class="ru.citeck.ecos.node.NodeInfoFactoryImpl" init-method="init">

@@ -34,6 +34,7 @@ import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.attr.NodeAttributeService;
+import ru.citeck.ecos.behavior.AssociationIndexing;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -43,7 +44,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class NodeInfoFactoryImpl implements NodeInfoFactory 
 {
@@ -61,6 +61,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	private ContentService contentService;
 	private MimetypeService mimetypeService;
 	private NodeAttributeService nodeAttributeService;
+	private AssociationIndexing associationIndexing;
 	
 	/////////////////////////////////////////////////////////////////
 	//                     GENERAL INTERFACE                       //
@@ -236,11 +237,11 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 		}
 
 		if(targetAssocs != null) {
-			RepoUtils.setAssocs(nodeRef, targetAssocs, true, full, nodeService);
+			RepoUtils.setAssocs(nodeRef, targetAssocs, true, full, nodeService, associationIndexing);
 		}
 
 		if(sourceAssocs != null) {
-			RepoUtils.setAssocs(nodeRef, sourceAssocs, false, full, nodeService);
+			RepoUtils.setAssocs(nodeRef, sourceAssocs, false, full, nodeService, associationIndexing);
 		}
 		
 		if(childAssocs != null) {
@@ -527,4 +528,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 		    this.nodeAttributeService = (NodeAttributeService) serviceRegistry.getService(CiteckServices.NODE_ATTRIBUTE_SERVICE);
 	}
 
+	public void setAssociationIndexing(AssociationIndexing associationIndexing) {
+		this.associationIndexing = associationIndexing;
+	}
 }

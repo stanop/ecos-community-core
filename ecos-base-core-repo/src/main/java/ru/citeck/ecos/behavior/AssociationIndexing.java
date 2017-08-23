@@ -19,7 +19,6 @@
 package ru.citeck.ecos.behavior;
 
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnDeleteAssociationPolicy;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -38,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,29 +111,43 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
     }
 
     private void update(final NodeRef node, final QName assocQName) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            public Void doWork() throws Exception {
-                updateAssociationMirrorProperty(node, assocQName);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            updateAssociationMirrorProperty(node, assocQName);
+            return null;
         });
+    }
+
+    public void updatePropertiesOnFullPersistedNodes(NodeRef node, QName assocQName, List<NodeRef> nodeRefs) {
+        if (nodeRefs == null) {
+            nodeRefs = new ArrayList<>();
+        }
+        List<NodeRef> finalNodeRefs = nodeRefs;
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            updateMirrorProperties(node, assocQName, finalNodeRefs);
+            return null;
+        });
+
     }
 
     private void updateAssociationMirrorProperty(NodeRef node, QName assocQName) {
         // get nodeRefs
-        ArrayList<NodeRef> nodeRefs = new ArrayList<>();
+        List<NodeRef> nodeRefs = new ArrayList<>();
         List<AssociationRef> assocs = nodeService.getTargetAssocs(node, assocQName);
-        for(AssociationRef assoc : assocs) {
+        for (AssociationRef assoc : assocs) {
             nodeRefs.add(assoc.getTargetRef());
         }
 
+        updateMirrorProperties(node, assocQName, nodeRefs);
+    }
+
+    private void updateMirrorProperties(NodeRef node, QName assocQName, List<NodeRef> nodeRefs) {
         QName propQName = registry.getAssociationIndexProperty(assocQName);
 
         try {
             behaviourFilter.disableBehaviour(node);
 
             LockStatus lockStatus = lockService.getLockStatus(node);
-            switch(lockStatus) {
+            switch (lockStatus) {
                 case NO_LOCK:
                 case LOCK_EXPIRED:
                     setIndexProperty(node, propQName, nodeRefs);
@@ -145,7 +159,7 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
                             // new method not present in 4.2.c: unlock(nodeRef, unlockChildren, allowCheckedOut)
                             Method unlock = LockService.class.getMethod("unlock", NodeRef.class, boolean.class, boolean.class);
                             unlock.invoke(lockService, node, false, true);
-                        } catch(NoSuchMethodException e) {
+                        } catch (NoSuchMethodException e) {
                             lockService.unlock(node);
                         } catch (Exception e) {
                             throw AlfrescoRuntimeException.create(e, "Unexpected exception during unlock");
@@ -165,8 +179,8 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
         }
     }
 
-    private void setIndexProperty(NodeRef node, QName propQName, ArrayList<NodeRef> nodeRefs) {
-        if(nodeRefs.isEmpty()) {
+    private void setIndexProperty(NodeRef node, QName propQName, List<NodeRef> nodeRefs) {
+        if (nodeRefs.isEmpty()) {
             nodeService.removeProperty(node, propQName);
         } else {
             if (logger.isDebugEnabled()) {
@@ -177,7 +191,7 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
                 debugMessage.append("\nnode refs list: ").append(nodeRefs);
                 logger.debug(debugMessage);
             }
-            nodeService.setProperty(node, propQName, nodeRefs);
+            nodeService.setProperty(node, propQName, (Serializable) nodeRefs);
         }
     }
 
