@@ -2549,7 +2549,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     if (!defaultInvariants[invGroupKey]) defaultInvariants[invGroupKey] = [];
                     defaultInvariants[invGroupKey] = _.uniq(
                         defaultInvariants[invGroupKey].concat(invGroup), 
-                        function(inv, index) { return JSON.stringify(Object.values(inv.model())); }
+                        function(inv, index) { return JSON.stringify(_.values(inv.model())); }
                     );
                 }, this
             );

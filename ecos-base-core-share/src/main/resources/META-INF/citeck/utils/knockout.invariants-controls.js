@@ -231,18 +231,21 @@ ko.components.register("number", {
                 whitePeriod = [44, 46],
                 code = event.keyCode || event.charCode;
 
-            // return if code of key out of white list
-            if (!_.contains(_.union(whiteNumbers, whiteKeys, whitePeriod), code)) return false;
-
+            // only one period symbol in string
             if (_.contains(whitePeriod, event.charCode)) {
-                if (self.lastSymbolIsPeriod || self.hasPeriodSymbol || self.noValue) return false;
+                if (self.hasPeriodSymbol) return false;
+                if (self.noValue || self.lastSymbolIsPeriod) return false;
             };
+
+            // only predefined symbols
+            if (!_.contains(_.union(whiteNumbers, whiteKeys, whitePeriod), code)) return false;
 
             return true;
         };
 
         this.value.subscribe(function(newValue) {
-            self.hasPeriodSymbol = (newValue && newValue.indexOf(".") >= 0) ? true : false;
+            self.hasPeriodSymbol = newValue ? 
+                _.any([",", "."], function(period) { return newValue.indexOf(period) >= 0 }) : false;
             self.noValue = self.lastSymbolIsPeriod = _.isEmpty(newValue);
         });
     },
