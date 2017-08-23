@@ -1322,13 +1322,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 mapObject = map.attributes[this.name()];
             return mapObject ? mapObject.set : null;
         })
-        .method('getRootAttributeSet', function() {
+
+        .method('getFirstLevelAttributeSet', function() {
             var map = this.node().impl().attributeSetMap(),
+                rootSet = this.node().impl().attributeSet(),
                 set = map.attributes[this.name()] ? map.attributes[this.name()].set : null;
 
             if (set) {
-                while (set.parent) { set = set.parent; }
+                if (set == rootSet) return set;
+                while (set != rootSet) set = set.parentSet();
             }
+
+            return set;
         })
 
         // feature evaluators
