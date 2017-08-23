@@ -266,7 +266,7 @@ define(['lib/knockout'], function(ko) {
 		instantiate: function(data, valueClass) {
 		    if (data == null || valueClass == null || koutils.instanceOf(data, valueClass)) {
 		        return data;
-		    } else if (_.isBoolean(valueClass)) {
+		    } else if (valueClass == Boolean) {
 		        return data != "false" && data != false && data != 0;
 		    } else {
 		    	try {
