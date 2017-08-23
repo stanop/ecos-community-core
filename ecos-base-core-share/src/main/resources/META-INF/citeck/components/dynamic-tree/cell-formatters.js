@@ -1097,7 +1097,8 @@
 							reassignPanel.hide();
 							updateTaskProperties(
 							{
-								"cm_owner": args[1].userName
+								"cm_owner": args[1].userName,
+                                "action": "claim"
 							}, "reassign");
 						}
 					};
