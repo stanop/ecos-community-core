@@ -170,8 +170,11 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
-		sb.append("@tk\\:appliesToType:\"").append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_TYPE)).append("\" AND ISNULL:\""+ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND+"\"");
-        sb.append(")");
+		sb.append("@tk\\:appliesToType:\"")
+                .append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_TYPE))
+                .append("\" AND (ISNULL:\""+ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND+"\"")
+                .append("OR ISUNSET:\""+ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND+"\")")
+                .append(")");
 		NodeRef template = getTemplate(sb);
 		return template;
 	}
