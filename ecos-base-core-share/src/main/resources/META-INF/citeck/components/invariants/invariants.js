@@ -615,8 +615,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         ;
 
-    // TODO: enable and disable InvariantsRuntimeCache
-
     SingleClassInvariantSet
         .constructor([ Object ], function(model) { this.setModel(model); }, true)
 
@@ -629,13 +627,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_cache', o)
 
         .computed('invariants', function() {
-            var defaultInvariants = this.defaultInvariants(),
-                specifiedInvariants = this.specifiedInvariants();
+            var invariants = [];
+            if (this._cache()) {
+                var defaultInvariants = this.defaultInvariants(),
+                    specifiedInvariants = this.specifiedInvariants();
 
-            if (!defaultInvariants.length || !specifiedInvariants.length) return [];
-            
-            var invariants = defaultInvariants.concat(specifiedInvariants),
-                priorityGroups = _.groupBy(invariants, function(invariant) {
+                if (!defaultInvariants.length || !specifiedInvariants.length) return [];
+                invariants = defaultInvariants.concat(specifiedInvariants);
+            } else {
+                invariants = _.map(this._invariants(), function(invariant) {
+                    return new Invariant(invariant);
+                })
+            }
+           
+            var priorityGroups = _.groupBy(invariants, function(invariant) {
                     if (invariant.isFinal()) return 1;
 
                     if (invariant.attributeScopeKind().match(/_type$/)) return 2;
@@ -681,14 +686,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 successCallback: {
                     scope: invariantSet,
                     fn: function (response) {
-                        this.defaultInvariants(response.json.invariants);
+                        if (this._cache()) this.defaultInvariants(response.json.invariants);
                         this._invariants(response.json.invariants);
                     }
                 }
             });
-        })
-        .load('_defaultInvariants', function(invariantSet) {
-            this._cache().getDefaultInvariants();
         })
         .load('_cache', function(invariantSet) {
             invariantSet._cache(Alfresco.util.ComponentManager.get("InvariantsRuntimeCache"));
@@ -1786,16 +1788,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('runtime', function(impl) { impl.runtime(null); })
         .load('viewAttributeNames', function(impl) {
             if (!impl.viewAttributeNames.loaded()) {
-                var cachedViewAttributeNames = impl._cache().get(["ViewAttributeNames", impl.type()]);
-                if (cachedViewAttributeNames) {
-                    impl.viewAttributeNames(cachedViewAttributeNames);
-                    return;
+                if (impl._cache()) {
+                    var cachedViewAttributeNames = impl._cache().get(["ViewAttributeNames", impl.type()]);
+                    if (cachedViewAttributeNames) {
+                        impl.viewAttributeNames(cachedViewAttributeNames);
+                        return;
+                    }
                 }
 
                 var loader = function(nodeRef, attributes) {
                     var attributeCount = attributes ? Object.keys(attributes).length : -1;
                     if (attributeCount <= 0) impl._withoutView(true);
-                    else impl._cache().insert(["ViewAttributeNames"], impl.type(), attributes);
+                    else if (impl._cache()) impl._cache().insert(["ViewAttributeNames"], impl.type(), attributes);
                     impl.setModel({ viewAttributeNames: attributes, _viewAttributeNamesLoaded: true })
                 }
 
@@ -2245,7 +2249,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('node', Node)
         .property('parent', Runtime)
         .property('inlineEdit', b)
-        .property('loadGroupIndicator', b)
 
         .property('_loading', b)
 
@@ -2290,8 +2293,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             return isNotInSubmitProcess && isLoaded && isValid;
         })
-
-        .load('loadGroupIndicator', function() { this.loadGroupIndicator(false); })
 
 
         // PUBLIC METHODS
@@ -2607,7 +2608,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.options.model.node._withoutView = false;
             }
 
-            this.initRuntimeCache();
+            if (this.options.invariantsRuntimeCache) this.initRuntimeCache();
+            
             this.initRuntime();
 
             if (this.options.model.inlineEdit) {

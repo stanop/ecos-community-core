@@ -286,19 +286,17 @@
 <#macro nodeViewWidget nodeRef="" type="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
-		<#assign loadGroupIndicator = view.params.loadGroupIndicator!"false" />
-		<#assign preloadInvariants = view.params.preloadInvariants!"false" />
+		<#assign invariantsRuntimeCache = view.params.invariantsRuntimeCache!"true" />
 
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
 			new InvariantsRuntime("${args.htmlid}-form", "${runtimeKey}").setOptions({
+				invariantsRuntimeCache: ${invariantsRuntimeCache},
+
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					formTemplate: "${view.template}",
-
-					loadGroupIndicator: ${loadGroupIndicator},
-					preloadInvariants: ${preloadInvariants},
 
 					<#if inlineEdit!false>inlineEdit: true,</#if>
 
