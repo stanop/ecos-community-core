@@ -14,6 +14,9 @@
 	id: "${fieldId}",
 
 	data: $data,
+	
+	trottle: <#if params.trottle??>${params.trottle}<#else>false</#if>,
+	valueAllowUnset: <#if params.valueAllowUnset??>${params.valueAllowUnset}<#else>true</#if>,
 
     optionsCaption: "${msg(optionsCaption?trim)}",
 	optionsText: <#if params.optionsText??>function(option) { return ${params.optionsText?trim}; }<#else>null</#if>,
