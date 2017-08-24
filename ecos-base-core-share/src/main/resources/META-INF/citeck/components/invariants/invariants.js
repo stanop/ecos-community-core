@@ -2307,18 +2307,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .method('submit', function() {
             if(this.node().impl().valid()) {
-                if (this.node().hasAspect("invariants:draftAspect")) {
+                // if (this.node().hasAspect("invariants:draftAspect")) {
                     this.node().impl().isDraft(false);
-                }
+                // }
 
                 this.broadcast('node-view-submit');
             }
         })
         .method('submitDraft', function() {
-            if (this.node().hasAspect("invariants:draftAspect")) {
+            // if (this.node().hasAspect("invariants:draftAspect")) {
                 this.node().impl().isDraft(true);
                 this.broadcast('node-view-submit');
-            }
+            // }
         })
 
         .method('cancel', function() {
