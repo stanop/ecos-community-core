@@ -14,11 +14,10 @@
 
 <#macro renderView view><#escape x as jsonUtils.encodeJSONString(x)>
 	<#list view.elements as element>
-		<@renderElement element /><#if element_has_next>,</#if>
+		<@renderElement element />
 	</#list>
 </#escape></#macro>
 
-<#macro renderField field>
-<#escape x as jsonUtils.encodeJSONString(x)>
-	<#if field.attributeName??>"${shortQName(field.attributeName)}"<#else>null</#if>
+<#macro renderField field><#escape x as jsonUtils.encodeJSONString(x)>
+	<#if field.attributeName??>"${shortQName(field.attributeName)}",</#if>
 </#escape></#macro>
