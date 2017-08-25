@@ -1328,7 +1328,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 mapObject = map.attributes[this.name()];
             return mapObject ? mapObject.set : null;
         })
-
         .method('getFirstLevelAttributeSet', function() {
             var map = this.node().impl().attributeSetMap(),
                 rootSet = this.node().impl().attributeSet(),
@@ -1336,10 +1335,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             if (set) {
                 if (set == rootSet) return set;
-                while (set != rootSet) set = set.parentSet();
+                while (set.parentSet() != rootSet) set = set.parentSet();
+                return set;
             }
 
-            return set;
+            return null;
         })
 
         // feature evaluators
@@ -1748,14 +1748,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 object =  map ? map.attributeSets[id] || map.attributes[id] : null;
             return object ? object.set : null;
         })
-        .method('getRootAttributeSet', function(id) {
+        .method('getFirstLevelAttributeSet', function(id) {
             var map = this.attributeSetMap(),
-                setObject =  map ? map.attributeSets[id] : null;
+                object =  map ? map.attributeSets[id] || map.attributes[id] : null,
+                rootSet = this.attributeSet(),
+                set = object.set;
 
-            if (setObject) {
-                if (setObject.parent)
-                    while (setObject.parent) { setObject = setObject.parent; }
-                return setObject.set;
+            if (set) {
+                if (set == rootSet) return set;
+                while (set.parentSet() != rootSet) set = set.parentSet();
+                return set;
             }
 
             return null;
@@ -2653,6 +2655,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
+
+            console.log(this.runtime.node().impl())
         },
 
         initRuntimeCache: function() {
