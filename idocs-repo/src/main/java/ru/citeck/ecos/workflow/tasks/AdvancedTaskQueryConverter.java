@@ -62,6 +62,10 @@ public class AdvancedTaskQueryConverter implements QueryParameterConverter {
         if (assignees != null && !assignees.isEmpty()) {
             parametersMap.put("assignees", assignees);
         }
+        String claimOwner = taskQuery.getClaimOwner();
+        if (claimOwner != null && !claimOwner.isEmpty()) {
+            parametersMap.put("claimOwner", claimOwner);
+        }
         return parametersMap;
     }
 }

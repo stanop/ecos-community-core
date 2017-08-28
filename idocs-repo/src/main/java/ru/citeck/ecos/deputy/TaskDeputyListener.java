@@ -119,72 +119,50 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserAvailable(String userName) {
-        // user is available (new or old)
-        // reset owner for all tasks, that not assigned to any role
-        // where original owner is user
+        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(query);
 
-        // TODO combine two queries into one
-        AdvancedTaskQuery taskQuery = (AdvancedTaskQuery) new AdvancedTaskQuery()
-                .withoutGroupCandidates()
-                .taskOwner(userName);
-        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
+        if (workflowTasks.size() > 0) {
+            List<String> userDeputies = deputyService.getUserDeputies(userName);
+            userDeputies.add(userName);
 
-        taskQuery = (AdvancedTaskQuery) new AdvancedTaskQuery()
-                .withoutGroupCandidates()
-                .processVariableValueEquals("claimOwner", userName);
-        workflowTasks.addAll(advancedWorkflowService.queryTasks(taskQuery));
-
-        List<String> userDeputies = deputyService.getUserDeputies(userName);
-        userDeputies.add(userName);
-
-        removePooledActors(workflowTasks, userDeputies);
-
-        workflowTasks = workflowTasks.stream()
-                .map(workflowTask -> workflowService.getTaskById(workflowTask.getId())).collect(Collectors.toList());
-
-        // Keep in mind assistants. They always have permissions if user is owner
-        if (deputyService.getUserAssistants(userName).size() == 0)
-            setTaskOwner(workflowTasks, userName);
-        else {
-            resetTaskOwner(workflowTasks, userName);
             workflowTasks.forEach(workflowTask -> {
-                workflowMirrorService.mirrorTask(workflowTask);
-                grantWorkflowTaskPermissionExecutor.grantPermissions(workflowTask);
+                @SuppressWarnings("unchecked")
+                List<NodeRef> pooledActors = (List<NodeRef>) workflowTask.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
+                if (pooledActors != null && userDeputies.size() == pooledActors.size()) {
+                    removePooledActors(Collections.singletonList(workflowTask), userDeputies);
+                    setTaskOwner(workflowTask, userName);
+                }
+                else {
+                    resetTaskOwner(workflowTask, userName);
+                    workflowMirrorService.mirrorTask(workflowTask);
+                    grantWorkflowTaskPermissionExecutor.grantPermissions(workflowTask);
+                }
             });
         }
     }
 
     @Override
     public void onUserUnavailable(String userName) {
-        // user is unavailable (new or old)
-        // reset owner for all tasks, that are owned to him, but not assigned to any role
-        // and set pooled actors of user and his deputies
+        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+        List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
 
-        // TODO combine two queries into one
+        tasks.forEach(task -> {
+            resetTaskOwner(task, userName);
 
-        AdvancedTaskQuery taskQuery = (AdvancedTaskQuery) new AdvancedTaskQuery()
-                .withoutGroupCandidates()
-                .taskOwner(userName);
-        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(taskQuery);
+            @SuppressWarnings("unchecked")
+            List<NodeRef> candidates = (List<NodeRef>) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
+            if (candidates.size() == 0) {
+                List<String> actors = deputyService.getUserDeputies(userName);
+                actors.add(userName);
 
-        taskQuery = (AdvancedTaskQuery) new AdvancedTaskQuery()
-                .withoutGroupCandidates()
-                .processVariableValueEquals("claimOwner", userName);
-        workflowTasks.addAll(advancedWorkflowService.queryTasks(taskQuery));
+                addPooledActors(Collections.singletonList(task), actors);
 
-        List<String> actors = deputyService.getUserDeputies(userName);
-        actors.add(userName);
-
-        addPooledActors(workflowTasks, actors);
-        resetTaskOwner(workflowTasks, userName);
-
-        List<WorkflowTask> updatedTasks = workflowTasks.stream()
-                .map(workflowTask -> workflowService.getTaskById(workflowTask.getId())).collect(Collectors.toList());
-
-        for (WorkflowTask task : updatedTasks) {
-            workflowMirrorService.mirrorTask(task);
-            grantWorkflowTaskPermissionExecutor.grantPermissions(task);
-        }
+                WorkflowTask updatedTask = workflowService.getTaskById(task.getId());
+                workflowMirrorService.mirrorTask(updatedTask);
+                grantWorkflowTaskPermissionExecutor.grantPermissions(updatedTask);
+            }
+        });
     }
 
     @Override
@@ -245,26 +223,44 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     private void resetTaskOwner(List<WorkflowTask> tasks, String owner) {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(PROP_OWNER, null);
-        props.put(CLAIM_OWNER, owner);
+//        props.put(CLAIM_OWNER, owner);
         changeTaskOwner(tasks, props);
+    }
+
+    private void resetTaskOwner(WorkflowTask task, String owner) {
+        Map<QName, Serializable> props = new HashMap<>();
+        props.put(PROP_OWNER, null);
+//        props.put(CLAIM_OWNER, owner);
+        changeTaskOwner(task, props);
     }
 
     private void setTaskOwner(List<WorkflowTask> tasks, String owner) {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(PROP_OWNER, owner);
-        props.put(CLAIM_OWNER, null);
+//        props.put(CLAIM_OWNER, owner);
         changeTaskOwner(tasks, props);
+    }
+
+    private void setTaskOwner(WorkflowTask task, String owner) {
+        Map<QName, Serializable> props = new HashMap<>();
+        props.put(PROP_OWNER, owner);
+//        props.put(CLAIM_OWNER, owner);
+        changeTaskOwner(task, props);
     }
 
     private void changeTaskOwner(List<WorkflowTask> tasks, Map<QName, Serializable> props) {
         for (final WorkflowTask task : tasks) {
-            if (task.getProperties().get(PROP_OWNER) == null && props.get(CLAIM_OWNER) != null)
-                continue;
-            AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
-                workflowService.updateTask(task.getId(), props, null, null);
-                return null;
-            });
+            changeTaskOwner(task, props);
         }
+    }
+
+    private void changeTaskOwner(WorkflowTask task, Map<QName, Serializable> props) {
+//        if (task.getProperties().get(PROP_OWNER) == null && props.get(CLAIM_OWNER) != null)
+//            return;
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            workflowService.updateTask(task.getId(), props, null, null);
+            return null;
+        });
     }
 
     public void setWorkflowMirrorService(WorkflowMirrorService workflowMirrorService) {
@@ -276,5 +272,5 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     }
 
     private static final QName PROP_OWNER = ContentModel.PROP_OWNER;
-    private static final QName CLAIM_OWNER = QName.createQName(null, "claimOwner");
+//    private static final QName CLAIM_OWNER = QName.createQName(null, "claimOwner");
 }

@@ -36,6 +36,8 @@ public class AdvancedTaskQuery extends TaskQueryImpl {
 
     private List<String> assignees;
 
+    private String claimOwner;
+
     public AdvancedTaskQuery setAssignee(String assignee) {
         this.assignee = assignee;
         return this;
@@ -153,5 +155,14 @@ public class AdvancedTaskQuery extends TaskQueryImpl {
 
     public List<String> getAssignees() {
         return assignees;
+    }
+
+    public String getClaimOwner() {
+        return claimOwner;
+    }
+
+    public AdvancedTaskQuery setClaimOwner(String claimOwner) {
+        this.claimOwner = claimOwner;
+        return this;
     }
 }

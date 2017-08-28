@@ -86,6 +86,13 @@ public class AdvancedTaskSelectProvider {
             AND();
             WHERE("T.ASSIGNEE_ in " + listToSql((List<String>) params.get("assignees")));
         }
+        if (params.containsKey("claimOwner")) {
+            INNER_JOIN("ACT_RU_VARIABLE V2 on V2.TASK_ID_ = T.ID_");
+            AND();
+            WHERE("V2.NAME_ = 'claimOwner'");
+            AND();
+            WHERE("V2.TEXT_ = '" + params.get("claimOwner") + "'");
+        }
         return SQL();
     }
 
