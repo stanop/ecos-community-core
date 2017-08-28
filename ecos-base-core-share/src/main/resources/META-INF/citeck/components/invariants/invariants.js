@@ -892,7 +892,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('paramProtected', featureParameter("protected"))
 
         .computed('irrelevant', function() {
-            if (this.paramRelevant() != null && !this.paramRelevant()) return true;
+            if (this.paramRelevant() != null) return !this.paramRelevant();
             var a_irrelevant = _.every(this.attributes(), function(attr) { 
                     return attr.irrelevant() || this.getAttributeTemplate(attr.name()) == "none"; 
                 }, this),
@@ -1046,15 +1046,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('mandatory', featuredProperty('mandatory'))
         .computed('invariantRelevant', featuredProperty('relevant'))
         .computed('relevant', function() {
-            var forcedAttributes = this.node().impl().viewAttributeNames();
-            if(!_.isEmpty(forcedAttributes) && !_.contains(forcedAttributes, this.name())) return false;
+            var definedAttributeNames = this.node().impl().definedAttributeNames();
+            if(!_.isEmpty(definedAttributeNames) && !_.contains(definedAttributeNames, this.name())) return false;
             return this.invariantRelevant();
         })
         .computed('invariantProtected', featuredProperty('protected'))
         .computed('protected', function() {
             if(this.irrelevant()) return true;
+
+            // first value invariant
             var invariantValue = this.invariantValue();
             if(invariantValue != null && (!_.isArray(invariantValue) || invariantValue.length > 0)) return true;
+
+            // second own invariant
             return this.invariantProtected();
         })
         .computed('empty', function() {
@@ -1513,6 +1517,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('viewAttributeNames', [ s ])
+        .property('defaultAttributeNames', [ s ])
         .property('virtualParent', Node)
         .property('defaultModel', DefaultModel)
         .property('runtime', Runtime)
@@ -1541,7 +1546,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 });
             } else if (this.type.loaded()) {
                 var validAttributeNames = !this._withoutView() ? 
-                    this.viewAttributeNames() : this.definedAttributeNames();
+                    this.defaultAttributeNames().concat(this.viewAttributeNames()) : this.definedAttributeNames();
 
                 if (validAttributeNames && validAttributeNames.length > 0) {
                     return new SingleClassInvariantSet({ 
@@ -1559,11 +1564,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.resolve('defaultModel.view.mode') == "view";
         })
         .computed('types', function() {
-            var types = this.attribute('attr:types');
+            var types = this.getAttribute('attr:types');
             return types ? types.multipleValues() : [];
         })
         .computed('aspects', function() {
-            var aspects = this.attribute('attr:aspects');
+            var aspects = this.getAttribute('attr:aspects');
             return aspects ? aspects.multipleValues() : [];
         })
         .computed('definedAttributeNames', function() {
@@ -1630,23 +1635,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         createdNames[name] = true;
                         attributes.push(new Attribute(node, name, true, value));
                     });
+
+                    return attributes;
                 }
 
                 var processAttributeName = function(name) {
                     if(!createdNames[name]) {
                         createdNames[name] = true;
-                        // we can't be sure, whether this this attribute is persisted or not
+                        // we can't be sure, whether this attribute is persisted or not
                         // because not all persisted attributes are in the default attributes list
                         attributes.push(new Attribute(node, name));
                     }
                 };
 
                 // first use default attributes names
-                _.each([ 
-                    "attr:aspects", "attr:noderef", "attr:types", 
-                    "attr:parent", "attr:parentassoc",
-                    "invariants:isDraft"
-                ], processAttributeName);
+                _.each(this.defaultAttributeNames(), processAttributeName);
 
                 // second use viewAttributeNames or definedAttributeNames
                 _.each(this.viewAttributeNames(), processAttributeName);
@@ -1659,7 +1662,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('parent', function() {
             var virtualParent = this.virtualParent();
             if(virtualParent) return virtualParent;
-            var parent = this.attribute('attr:parent');
+            var parent = this.getAttribute('attr:parent');
             return parent ? parent.value() : null;
         })
         .computed('attributeSetMap', function() {
@@ -1699,6 +1702,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 };
 
             if (rootSet) {
+                buildMapOfAttributes(rootSet, _.map(this.defaultAttributeNames(), function(attributeName) {
+                    return this.attribute(attributeName);
+                }, this), map);
+
                 map.attributeSets[rootSet.id()] = {
                     set: rootSet,
                     parent: null,
@@ -1709,7 +1716,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     buildMapOfSets(rootSet.sets(), rootSet.id(), map);
 
                 if (rootSet.attributes().length)
-                    buildMapOfAttributes(rootSet.set, rootSet.attributes(), map);
+                    buildMapOfAttributes(rootSet, rootSet.attributes(), map);
 
                 return map;
             }
@@ -1722,7 +1729,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr[filterBy]();
             })
         })
-        // Slow. Use 'getAttribute' to speed up your calculation
+        
+        // Deprecated. Slow. Use 'getAttribute'
         .method('attribute', function(name) {
             return _.find(this.attributes() || [], function(attr) {
                 return attr.name() == name;
@@ -1741,8 +1749,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
-
-        // get set by 'setId' and 'attributeName'
         .method('getAttributeSet', function(id) {
             var map = this.attributeSetMap(),
                 object =  map ? map.attributeSets[id] || map.attributes[id] : null;
@@ -1764,7 +1770,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('getAttribute', function(name) {
             var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
-            return attributeObject ? attributeObject.attribute : null;
+            return attributeObject ? attributeObject.attribute : undefined;
         })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
@@ -1786,12 +1792,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .load('_definedAttributeNamesLoaded', function(impl) { impl._definedAttributeNamesLoaded(false); })
         .load('isDraft', function(impl) {
-            var draftAttribute = impl.attribute("invariants:isDraft");
+            var draftAttribute = impl.getAttribute("invariants:isDraft");
             impl.isDraft(draftAttribute ? draftAttribute.value() : false);
         })
         .load('inSubmitProcess', function(impl) { impl.inSubmitProcess(false); })
         .load('defaultModel', function(impl) { impl.defaultModel(new DefaultModel(COMMON_DEFAULT_MODEL_KEY)) })
         .load('runtime', function(impl) { impl.runtime(null); })
+        .load('defaultAttributeNames', function(impl) {
+            var defaultAttributeNames = [
+                "attr:aspects", "attr:noderef", "attr:types", 
+                "attr:parent", "attr:parentassoc"
+            ];
+
+            impl.defaultAttributeNames(defaultAttributeNames);
+        })
         .load('viewAttributeNames', function(impl) {
             if (!impl.viewAttributeNames.loaded()) {
                 if (impl._cache()) {
@@ -1830,16 +1844,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 });
             }
         })
-        // .load('*', function(impl) {
-        //     if(impl.isPersisted() && impl.nodeRef()) {
-        //         Citeck.utils.nodeInfoLoader.load(impl.nodeRef(), function(nodeRef, model) {
-        //             for (var attr in model.attributes) {
-        //                 if (attr.indexOf("_added") != -1) delete model.attributes[attr];
-        //             }
-        //             if (model) impl.updateModel(model);
-        //         });
-        //     }
-        // })
         ;
 
     var assocsComputed = function(type) {
@@ -2315,18 +2319,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .method('submit', function() {
             if(this.node().impl().valid()) {
-                // if (this.node().hasAspect("invariants:draftAspect")) {
+                if (this.node().hasAspect("invariants:draftAspect")) {
                     this.node().impl().isDraft(false);
-                // }
+                }
 
                 this.broadcast('node-view-submit');
             }
         })
         .method('submitDraft', function() {
-            // if (this.node().hasAspect("invariants:draftAspect")) {
+            if (this.node().hasAspect("invariants:draftAspect")) {
                 this.node().impl().isDraft(true);
                 this.broadcast('node-view-submit');
-            // }
+            }
         })
 
         .method('cancel', function() {
@@ -2655,8 +2659,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             koutils.enableUserPrompts();
             this.runtime.model(this.options.model);
             ko.applyBindings(this.runtime, Dom.get(this.id));
-
-            console.log(this.runtime.node().impl())
         },
 
         initRuntimeCache: function() {
