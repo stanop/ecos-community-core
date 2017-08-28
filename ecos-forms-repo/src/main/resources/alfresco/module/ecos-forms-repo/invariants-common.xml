@@ -21,7 +21,7 @@
 	
 	<properties type="d:int">
 		<invariant on="value-title" language="javascript">value</invariant>
-		<invariant on="valid" language="javascript" description="invariant.validation.wrong-format"><![CDATA[
+		<invariant on="valid" language="javascript" description="invariant.validation.no-more-then-2-after-decimal-point"><![CDATA[
 		(function() {
 			if (isNaN(value)) return false;
 			return true;
@@ -31,7 +31,7 @@
 	
 	<properties type="d:long">
 		<invariant on="value-title" language="javascript">value</invariant>
-		<invariant on="valid" language="javascript" description="invariant.validation.wrong-format"><![CDATA[
+		<invariant on="valid" language="javascript" description="invariant.validation.no-more-then-2-after-decimal-point"><![CDATA[
 		(function() {
 			if (isNaN(value)) return false;
 			return true;
@@ -41,7 +41,7 @@
 	
 	<properties type="d:float">
 		<invariant on="value-title" language="javascript">value</invariant>
-		<invariant on="valid" language="javascript" description="invariant.validation.wrong-format"><![CDATA[
+		<invariant on="valid" language="javascript" description="invariant.validation.no-more-then-2-after-decimal-point"><![CDATA[
 		(function() {
 			if (isNaN(value)) return false;
 			return true;
@@ -51,7 +51,7 @@
 	
 	<properties type="d:double">
 		<invariant on="value-title" language="javascript">value</invariant>
-		<invariant on="valid" language="javascript" description="invariant.validation.wrong-format"><![CDATA[
+		<invariant on="valid" language="javascript" description="invariant.validation.no-more-then-2-after-decimal-point"><![CDATA[
 		(function() {
 			if (isNaN(value)) return false;
 			return true;
