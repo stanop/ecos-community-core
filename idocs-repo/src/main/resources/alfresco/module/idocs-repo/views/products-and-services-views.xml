@@ -46,8 +46,14 @@
     </view>
 
     <view class="pas:pasEntityCopied">
-        <field prop="cm:title"/>
-        <field prop="cm:description"/>
+        <field prop="cm:title">
+            <region name="input" template="textarea">
+                <param name="height">60px</param>
+            </region>
+        </field>
+        <field prop="cm:description">
+            <region name="input" template="textarea"/>
+        </field>
         <field prop="pas:type">
             <region name="input" template="select"/>
             <invariant on="mandatory" language="explicit">true</invariant>
