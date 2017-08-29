@@ -1630,8 +1630,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     attributes = [],
                     createdNames = {};
 
-                if(this.isPersisted()) {
-                    _.each(this._attributes(), function(value, name) {
+                var validAttributeNames = !this._withoutView() ? this.viewAttributeNames() : this.definedAttributeNames();
+                validAttributeNames = validAttributeNames.concat(this.defaultAttributeNames());
+
+                if(this.isPersisted() && this._attributes() != null && this._attributes().length >= validAttributeNames.length) {
+                    var filteredAttributes = _.filter(this._attributes(), function(value, name) {
+                        return _.contains(validAttributeNames, name);
+                    });
+
+                    _.each(filteredAttributes, function(value, name) {
                         createdNames[name] = true;
                         attributes.push(new Attribute(node, name, true, value));
                     });
@@ -1648,12 +1655,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     }
                 };
 
-                // first use default attributes names
-                _.each(this.defaultAttributeNames(), processAttributeName);
-
-                // second use viewAttributeNames or definedAttributeNames
-                _.each(this.viewAttributeNames(), processAttributeName);
-                if (this._withoutView()) _.each(this.definedAttributeNames(), processAttributeName);
+                _.each(validAttributeNames, processAttributeName);
 
                 return attributes;
             },
@@ -1744,7 +1746,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (model) {
                 this.model(_.omit(model, 'attributes'));
 
-                if(model.attributes) {
+                if(model.attributes && model.attributes.length) {
                     this.model({ _attributes: model.attributes })
                 }
             }
