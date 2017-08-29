@@ -22,6 +22,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -32,6 +33,17 @@ import java.util.regex.Pattern;
  * @author Pavel Simonov
  */
 public class CasePerformUtils {
+
+    public static final String TASK_CONFIGS = "taskConfigs";
+    public static final String TASK_CONF_ASSIGNEE = "assignee";
+    public static final String TASK_CONF_CANDIDATE_USERS = "candidateUsers";
+    public static final String TASK_CONF_CANDIDATE_GROUPS = "candidateGroups";
+    public static final String TASK_CONF_FORM_KEY = "formKey";
+    public static final String TASK_CONF_DUE_DATE = "dueDate";
+    public static final String TASK_CONF_PRIORITY = "priority";
+    public static final String TASK_CONF_CATEGORY = "category";
+
+    public static final String WORKFLOW_VERSION_KEY = "WorkflowVersion";
 
     public static final String PROC_DEFINITION_NAME = "case-perform";
     public static final String SUB_PROCESS_NAME = "perform-sub-process";
@@ -166,6 +178,10 @@ public class CasePerformUtils {
         Map<K, V> varMap = new TreeMap<>(KEYS_COMPARATOR);
         scope.setVariable(key, varMap);
         return varMap;
+    }
+
+    public static <K, V> Map<K, V> createMap() {
+        return new TreeMap<>(KEYS_COMPARATOR);
     }
 
     String[] getSplitString(VariableScope scope, QName key) {
@@ -325,6 +341,10 @@ public class CasePerformUtils {
             }
             pool.put(performer, performerRoles);
         }
+    }
+
+    String getAuthorityName(NodeRef authority) {
+        return RepoUtils.getAuthorityName(authority, nodeService, dictionaryService);
     }
 
     public void setNodeService(NodeService nodeService) {

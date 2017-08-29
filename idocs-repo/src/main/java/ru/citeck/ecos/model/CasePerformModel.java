@@ -28,6 +28,7 @@ public interface CasePerformModel {
     QName ASSOC_PERFORMER = QName.createQName(NAMESPACE, "performer");
     QName ASSOC_CASE_ROLE = QName.createQName(NAMESPACE, "caseRole");
     QName ASSOC_PERFORMERS = QName.createQName(NAMESPACE, "performers");
+    QName ASSOC_CANDIDATES = QName.createQName(NAMESPACE, "candidates");
     QName ASSOC_RESULT_PERSON = QName.createQName(NAMESPACE, "resultPerson");
     QName ASSOC_RESULT_PERFORMER = QName.createQName(NAMESPACE, "resultPerformer");
     QName ASSOC_PERFORMERS_ROLES = QName.createQName(NAMESPACE, "performersRoles");

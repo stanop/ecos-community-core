@@ -15,16 +15,11 @@
     </extensionElements>
     <startEvent id="startevent1" name="Submit Perform Task" activiti:formKey="wfcf:submitConfirmTask"></startEvent>
     <subProcess id="perform-sub-process" name=" ">
-      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${performers}" activiti:elementVariable="wfcp_performer">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${taskConfigs}" activiti:elementVariable="taskConfig">
         <completionCondition>${abortPerforming}</completionCondition>
       </multiInstanceLoopCharacteristics>
-      <userTask id="confirm" name="Perform Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="${wfcp_formKey}">
+      <userTask id="confirm" name="Perform Task" activiti:assignee="${taskConfig.assignee}" activiti:candidateUsers="${taskConfig.candidateUsers}" activiti:candidateGroups="${taskConfig.candidateGroups}" activiti:dueDate="${taskConfig.dueDate}" activiti:category="${taskConfig.category}" activiti:formKey="${taskConfig.formKey}" activiti:priority="${taskConfig.priority}">
         <extensionElements>
-          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
-            <activiti:field name="authority">
-              <activiti:expression><![CDATA[${wfcp_performer}]]></activiti:expression>
-            </activiti:field>
-          </activiti:taskListener>
           <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
             <activiti:field name="script">
               <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onPerformTaskCreated(execution, task);]]></activiti:string>
@@ -44,7 +39,15 @@
       </userTask>
       <startEvent id="startevent3" name="Start"></startEvent>
       <endEvent id="endevent3" name="End"></endEvent>
-      <sequenceFlow id="flow4" sourceRef="startevent3" targetRef="confirm"></sequenceFlow>
+      <sequenceFlow id="flow4" sourceRef="startevent3" targetRef="confirm">
+        <extensionElements>
+          <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+            <activiti:field name="script">
+              <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onBeforePerformTaskCreated(execution);]]></activiti:string>
+            </activiti:field>
+          </activiti:executionListener>
+        </extensionElements>
+      </sequenceFlow>
       <sequenceFlow id="flow26" sourceRef="confirm" targetRef="endevent3"></sequenceFlow>
     </subProcess>
     <endEvent id="endevent4" name="completed"></endEvent>
@@ -77,6 +80,13 @@
     </exclusiveGateway>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow27" sourceRef="exclusivegateway1" targetRef="perform-sub-process">
+      <extensionElements>
+        <activiti:executionListener event="take" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[services.get("ecos.workflow.case-perform-events-handler").onPerformingFlowTake(execution);]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!skipPerforming}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow28" sourceRef="exclusivegateway2" targetRef="endevent4"></sequenceFlow>

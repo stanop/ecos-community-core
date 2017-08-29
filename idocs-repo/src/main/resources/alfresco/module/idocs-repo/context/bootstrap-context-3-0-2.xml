@@ -22,8 +22,6 @@
     <bean id="ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.workflow.perform.CasePerformWorkflowHandler"
                                                 init-method="init">
         <property name="utils" ref="ecos.workflow.case-perform-utils" />
-        <property name="nodeService" ref="nodeService" />
-        <property name="caseRoleService" ref="caseRoleService" />
         <property name="authorityService" ref="authorityService" />
     </bean>
 

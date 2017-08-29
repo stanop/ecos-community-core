@@ -15,6 +15,7 @@ import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.role.CaseRoleService;
 
+import javax.sql.rowset.serial.SerialArray;
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,18 +25,19 @@ import java.util.*;
 public class CasePerformWorkflowHandler implements Serializable {
 
     private static final long serialVersionUID = -2309572351324327537L;
+    private static final int WORKFLOW_VERSION = 1;
 
     private static final Logger logger = LoggerFactory.getLogger(CasePerformWorkflowHandler.class);
 
     private CasePerformUtils utils;
-    private NodeService nodeService;
     private AuthorityService authorityService;
-    private CaseRoleService caseRoleService;
 
     public void init() {
     }
 
     public void onWorkflowStart(ExecutionEntity execution) {
+
+        execution.setVariable(CasePerformUtils.WORKFLOW_VERSION_KEY, WORKFLOW_VERSION);
 
         if (execution.hasVariable(CasePerformUtils.OPTIONAL_PERFORMERS)) {
             Collection<NodeRef> optionalPerformers = utils.getCollection(execution, CasePerformUtils.OPTIONAL_PERFORMERS);
@@ -80,7 +82,17 @@ public class CasePerformWorkflowHandler implements Serializable {
                 break;
             }
         }
-        execution.setVariableLocal(CasePerformUtils.SKIP_PERFORMING, performers.size() == 0 || !hasMandatoryTasks);
+
+        boolean skipPerforming;
+        if (performers.size() == 0) {
+            String candidatesKey = utils.toString(CasePerformModel.ASSOC_CANDIDATES);
+            Collection<NodeRef> candidates = utils.getCollection(execution, candidatesKey);
+            skipPerforming = candidates.size() == 0;
+        } else {
+            skipPerforming = !hasMandatoryTasks;
+        }
+
+        execution.setVariableLocal(CasePerformUtils.SKIP_PERFORMING, skipPerforming);
     }
 
     /* skip way */
@@ -93,12 +105,105 @@ public class CasePerformWorkflowHandler implements Serializable {
 
     /* perform way */
 
+    public void onPerformingFlowTake(ExecutionEntity execution) {
+
+        Collection<NodeRef> performers = utils.getCollection(execution, CasePerformUtils.PERFORMERS);
+        Collection<Map<String, Serializable>> taskConfigs = utils.getCollection(execution, CasePerformUtils.TASK_CONFIGS);
+
+        if (performers.size() > 0) {
+
+            for (NodeRef performer : performers) {
+
+                String authorityName = utils.getAuthorityName(performer);
+
+                if (StringUtils.isNotBlank(authorityName)) {
+
+                    Map<String, Serializable> config = CasePerformUtils.createMap();
+                    config.put(CasePerformUtils.TASK_CONF_CANDIDATE_USERS, new ArrayList<>());
+                    ArrayList<String> candidateGroups = new ArrayList<>();
+                    config.put(CasePerformUtils.TASK_CONF_CANDIDATE_GROUPS, candidateGroups);
+
+                    if (authorityName.startsWith("GROUP_")) {
+                        candidateGroups.add(authorityName);
+                    } else {
+                        config.put(CasePerformUtils.TASK_CONF_ASSIGNEE, authorityName);
+                    }
+
+                    taskConfigs.add(config);
+                }
+            }
+
+        } else {
+
+            String candidatesKey = utils.toString(CasePerformModel.ASSOC_CANDIDATES);
+            Collection<NodeRef> candidates = utils.getCollection(execution, candidatesKey);
+
+            ArrayList<String> candidateGroups = new ArrayList<>();
+            ArrayList<String> candidateUsers = new ArrayList<>();
+
+            for (NodeRef candidateRef : candidates) {
+
+                String authorityName = utils.getAuthorityName(candidateRef);
+
+                if (StringUtils.isNotBlank(authorityName)) {
+                    if (authorityName.startsWith("GROUP_")) {
+                        candidateGroups.add(authorityName);
+                    } else {
+                        candidateUsers.add(authorityName);
+                    }
+                }
+            }
+
+            Map<String, Serializable> config = CasePerformUtils.createMap();
+            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_GROUPS, candidateGroups);
+            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_USERS, candidateUsers);
+            taskConfigs.add(config);
+        }
+
+        Date dueDate = (Date) execution.getVariable("bpm_workflowDueDate");
+        String formKey = (String) execution.getVariable("wfcp_formKey");
+        for (Map<String, Serializable> config : taskConfigs) {
+            config.put(CasePerformUtils.TASK_CONF_DUE_DATE, dueDate);
+            config.put(CasePerformUtils.TASK_CONF_FORM_KEY, formKey);
+        }
+    }
+
+    public void onBeforePerformTaskCreated(ExecutionEntity execution) {
+
+        Object taskConfig = execution.getVariableLocal("taskConfig");
+
+        if (taskConfig instanceof NodeRef) {
+
+            Map<String, Object> config = CasePerformUtils.createMap();
+            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_GROUPS, new ArrayList<>());
+            ArrayList<String> candidateGroups = new ArrayList<>();
+            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_USERS, candidateGroups);
+
+            String authorityName = utils.getAuthorityName((NodeRef) taskConfig);
+            if (StringUtils.isNotBlank(authorityName)) {
+                if (authorityName.startsWith("GROUP_")) {
+                    candidateGroups.add(authorityName);
+                } else {
+                    config.put(CasePerformUtils.TASK_CONF_ASSIGNEE, authorityName);
+                }
+            }
+
+            config.put(CasePerformUtils.TASK_CONF_DUE_DATE, execution.getVariable("bpm_workflowDueDate"));
+            config.put(CasePerformUtils.TASK_CONF_FORM_KEY, execution.getVariable("wfcp_formKey"));
+
+            execution.setVariableLocal("taskConfig", config);
+        }
+    }
+
     public void onPerformTaskCreated(ExecutionEntity execution, TaskEntity task) {
 
         utils.shareVariables(execution, task);
 
+        //task.setVariableLocal(utils.toString()) TODO
+        
         Collection<NodeRef> optionalPerformers = utils.getCollection(execution, CasePerformUtils.OPTIONAL_PERFORMERS);
         NodeRef performer = (NodeRef) task.getVariable(utils.toString(CasePerformModel.ASSOC_PERFORMER));
+
         boolean isOptional = optionalPerformers.contains(performer);
 
         task.setVariableLocal(utils.toString(CiteckWorkflowModel.PROP_IS_OPTIONAL_TASK), isOptional);
@@ -164,15 +269,8 @@ public class CasePerformWorkflowHandler implements Serializable {
         this.utils = utils;
     }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
     public void setAuthorityService(AuthorityService authorityService) {
         this.authorityService = authorityService;
     }
 
-    public void setCaseRoleService(CaseRoleService caseRoleService) {
-        this.caseRoleService = caseRoleService;
-    }
 }
