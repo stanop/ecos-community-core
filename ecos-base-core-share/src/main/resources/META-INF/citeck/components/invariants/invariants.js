@@ -1046,8 +1046,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('mandatory', featuredProperty('mandatory'))
         .computed('invariantRelevant', featuredProperty('relevant'))
         .computed('relevant', function() {
-            var definedAttributeNames = this.node().impl().definedAttributeNames();
-            if(!_.isEmpty(definedAttributeNames) && !_.contains(definedAttributeNames, this.name())) return false;
+            var allAttributeNames = this.node().impl().allAttributeNames();
+            if(!_.isEmpty(allAttributeNames) && !_.contains(allAttributeNames, this.name())) return false;
             return this.invariantRelevant();
         })
         .computed('invariantProtected', featuredProperty('protected'))
@@ -1630,8 +1630,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     attributes = [],
                     createdNames = {};
 
-                var validAttributeNames = !this._withoutView() ? this.viewAttributeNames() : this.definedAttributeNames();
-                validAttributeNames = validAttributeNames.concat(this.defaultAttributeNames());
+                var validAttributeNames = !this._withoutView() ? 
+                    this.viewAttributeNames().concat(this.defaultAttributeNames()) : this.definedAttributeNames();
+                validAttributeNames = validAttributeNames;
 
                 if(this.isPersisted() && this._attributes() != null && this._attributes().length >= validAttributeNames.length) {
                     var filteredAttributes = _.filter(this._attributes(), function(value, name) {
@@ -1831,6 +1832,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     viewAttributeNamesByTypeLoader.load(impl.type(), loader);
                 }
             }
+        })
+        .computed('allAttributeNames', function() {
+            return _.union(this.defaultAttributeNames(), this.viewAttributeNames(), this.definedAttributeNames());
         })
         .load([ 'classNames', 'type' ], function(impl) {
             if(impl.isPersisted()) {
