@@ -223,28 +223,24 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     private void resetTaskOwner(List<WorkflowTask> tasks, String owner) {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(PROP_OWNER, null);
-//        props.put(CLAIM_OWNER, owner);
         changeTaskOwner(tasks, props);
     }
 
     private void resetTaskOwner(WorkflowTask task, String owner) {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(PROP_OWNER, null);
-//        props.put(CLAIM_OWNER, owner);
         changeTaskOwner(task, props);
     }
 
     private void setTaskOwner(List<WorkflowTask> tasks, String owner) {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(PROP_OWNER, owner);
-//        props.put(CLAIM_OWNER, owner);
         changeTaskOwner(tasks, props);
     }
 
     private void setTaskOwner(WorkflowTask task, String owner) {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(PROP_OWNER, owner);
-//        props.put(CLAIM_OWNER, owner);
         changeTaskOwner(task, props);
     }
 
@@ -255,8 +251,6 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     }
 
     private void changeTaskOwner(WorkflowTask task, Map<QName, Serializable> props) {
-//        if (task.getProperties().get(PROP_OWNER) == null && props.get(CLAIM_OWNER) != null)
-//            return;
         AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
             workflowService.updateTask(task.getId(), props, null, null);
             return null;
@@ -272,5 +266,4 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     }
 
     private static final QName PROP_OWNER = ContentModel.PROP_OWNER;
-//    private static final QName CLAIM_OWNER = QName.createQName(null, "claimOwner");
 }

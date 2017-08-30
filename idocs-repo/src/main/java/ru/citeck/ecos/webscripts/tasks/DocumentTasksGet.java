@@ -177,9 +177,9 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         model.put(MODEL_DUE_DATE, properties.get(WorkflowModel.PROP_DUE_DATE));
         model.put(MODEL_SENDER, properties.get(CiteckWorkflowModel.PROP_SENDER_NAME));
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
+
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-        model.put(MODEL_IS_CLAIMABLE, (pooledActors!=null && pooledActors.size()>0 &&
-                properties.get(ContentModel.PROP_OWNER)==null && properties.get(MODEL_CLAIM_OWNER_PROP) == null));
+        model.put(MODEL_IS_CLAIMABLE, (pooledActors!=null && pooledActors.size()>0 && properties.get(ContentModel.PROP_OWNER)==null));
         model.put(MODEL_IS_RELEASABLE, (pooledActors!=null && pooledActors.size()>0 &&
                 (properties.get(ContentModel.PROP_OWNER)!=null || properties.get(MODEL_CLAIM_OWNER_PROP) != null)));
         model.put(MODEL_IS_REASSIGNABLE, ((Boolean)properties.get(WorkflowModel.PROP_REASSIGNABLE) && properties.get(ContentModel.PROP_OWNER)!=null));
