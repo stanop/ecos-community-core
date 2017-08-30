@@ -4,7 +4,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.apache.commons.lang.StringUtils;
@@ -13,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
-import ru.citeck.ecos.role.CaseRoleService;
 
-import javax.sql.rowset.serial.SerialArray;
 import java.io.Serializable;
 import java.util.*;
 
@@ -193,14 +190,16 @@ public class CasePerformWorkflowHandler implements Serializable {
 
             execution.setVariableLocal("taskConfig", config);
         }
+
+        Map<String, Object> config = CasePerformUtils.getMap(execution, "taskConfig");
+        NodeRef performerRef = utils.authorityToNodeRef(config.get(CasePerformUtils.TASK_CONF_ASSIGNEE));
+        execution.setVariableLocal("wfcp_performer", performerRef);
     }
 
     public void onPerformTaskCreated(ExecutionEntity execution, TaskEntity task) {
 
         utils.shareVariables(execution, task);
 
-        //task.setVariableLocal(utils.toString()) TODO
-        
         Collection<NodeRef> optionalPerformers = utils.getCollection(execution, CasePerformUtils.OPTIONAL_PERFORMERS);
         NodeRef performer = (NodeRef) task.getVariable(utils.toString(CasePerformModel.ASSOC_PERFORMER));
 

@@ -200,12 +200,21 @@ public class CasePerformUtils {
         return qname.toPrefixString(namespaceService).replaceAll(":", "_");
     }
 
-    NodeRef toNodeRef(IdentityLink identityLink) {
-        String id = identityLink.getGroupId();
-        if (id == null) {
-            id = identityLink.getUserId();
+    NodeRef authorityToNodeRef(Object authority) {
+        NodeRef result = null;
+        if (authority instanceof IdentityLink) {
+            IdentityLink identityLink = (IdentityLink) authority;
+            String id = identityLink.getGroupId();
+            if (id == null) {
+                id = identityLink.getUserId();
+            }
+            result = id != null ? authorityService.getAuthorityNodeRef(id) : null;
+        } else if (authority instanceof String) {
+            result = authorityService.getAuthorityNodeRef((String) authority);
+        } else if (authority instanceof NodeRef) {
+            result = (NodeRef) authority;
         }
-        return id != null ? authorityService.getAuthorityNodeRef(id) : null;
+        return result;
     }
 
     Set<NodeRef> getContainedAuthorities(NodeRef container, AuthorityType type, boolean recurse) {
@@ -233,7 +242,7 @@ public class CasePerformUtils {
         Set<IdentityLink> candidates = task.getCandidates();
 
         for (IdentityLink taskCandidate : candidates) {
-            NodeRef candidateRef = toNodeRef(taskCandidate);
+            NodeRef candidateRef = authorityToNodeRef(taskCandidate);
             if (candidate.equals(candidateRef)) {
                 return true;
             }
