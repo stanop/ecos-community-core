@@ -125,6 +125,7 @@ public class CasePerformWorkflowHandler implements Serializable {
                     } else {
                         config.put(CasePerformUtils.TASK_CONF_ASSIGNEE, authorityName);
                     }
+                    config.put("wfcp_performer", performer);
 
                     taskConfigs.add(config);
                 }
@@ -172,9 +173,9 @@ public class CasePerformWorkflowHandler implements Serializable {
         if (taskConfig instanceof NodeRef) {
 
             Map<String, Object> config = CasePerformUtils.createMap();
-            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_GROUPS, new ArrayList<>());
+            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_USERS, new ArrayList<>());
             ArrayList<String> candidateGroups = new ArrayList<>();
-            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_USERS, candidateGroups);
+            config.put(CasePerformUtils.TASK_CONF_CANDIDATE_GROUPS, candidateGroups);
 
             String authorityName = utils.getAuthorityName((NodeRef) taskConfig);
             if (StringUtils.isNotBlank(authorityName)) {
@@ -187,13 +188,13 @@ public class CasePerformWorkflowHandler implements Serializable {
 
             config.put(CasePerformUtils.TASK_CONF_DUE_DATE, execution.getVariable("bpm_workflowDueDate"));
             config.put(CasePerformUtils.TASK_CONF_FORM_KEY, execution.getVariable("wfcp_formKey"));
+            config.put("wfcp_performer", taskConfig);
 
             execution.setVariableLocal("taskConfig", config);
         }
 
         Map<String, Object> config = CasePerformUtils.getMap(execution, "taskConfig");
-        NodeRef performerRef = utils.authorityToNodeRef(config.get(CasePerformUtils.TASK_CONF_ASSIGNEE));
-        execution.setVariableLocal("wfcp_performer", performerRef);
+        execution.setVariableLocal("wfcp_performer", config.get("wfcp_performer"));
     }
 
     public void onPerformTaskCreated(ExecutionEntity execution, TaskEntity task) {
