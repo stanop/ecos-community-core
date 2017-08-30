@@ -1,14 +1,16 @@
 <#macro renderElement element>
-	<#if element.getClass??>
-		<#assign elementClass = element.getClass().toString() />
-	<#else/>
-		<#assign elementClass = "" />
-	</#if>
+	<#if !element?is_enumerable>
+		<#if element.getClass??>
+			<#assign elementClass = element.getClass().toString() />
+		<#else/>
+			<#assign elementClass = "" />
+		</#if>
 
-	<#if elementClass == "class ru.citeck.ecos.invariants.view.NodeView">
-		<@renderView element />
-	<#elseif elementClass == "class ru.citeck.ecos.invariants.view.NodeField">
-		<@renderField element />
+		<#if elementClass == "class ru.citeck.ecos.invariants.view.NodeView">
+			<@renderView element />
+		<#elseif elementClass == "class ru.citeck.ecos.invariants.view.NodeField">
+			<@renderField element />
+		</#if>
 	</#if>
 </#macro>
 

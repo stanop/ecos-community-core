@@ -524,9 +524,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             addFn: function(query, nodeRef) {
                 if (query.nodeRefs.indexOf(nodeRef) == -1) query.nodeRefs.push(nodeRef);
             },
-            getFn: function(response) { 
+            getFn: function(response) {
                 var result = response.json || eval("(" + response.serverResponse.responseText + ")");
-                return _.filter(result, function(a) { return !!a; });
+                _.each(result, function(value, key, object) {
+                    object[key] = _.filter(value, function(attributeName) { return !!attributeName; });
+                })
+                return result;
             }
         }),
         viewAttributeNamesByTypeLoader = new Citeck.utils.BulkLoader({
@@ -538,7 +541,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             },
             getFn: function(response) {
                 var result = response.json || eval("(" + response.serverResponse.responseText + ")");
-                return _.filter(result, function(a) { return !!a; });
+                _.each(result, function(value, key, object) {
+                    object[key] = _.filter(value, function(attributeName) { return !!attributeName; });
+                })
+                return result;
             }
         });
 
@@ -1540,12 +1546,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return qnameType.fullQName();
         })
         .computed('invariantSet', function() {
-            if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
-                return new ExplicitInvariantSet({ 
-                    className: this.type(), 
-                    invariants: this._invariants() 
-                });
-            } else if (this.type.loaded()) {
+            if (this.type.loaded()) {
                 var validAttributeNames = !this._withoutView() ? 
                     this.defaultAttributeNames().concat(this.viewAttributeNames()) : this.definedAttributeNames();
 
@@ -1557,6 +1558,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         attributeNames: validAttributeNames 
                     });
                 }
+            } else if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
+                return new ExplicitInvariantSet({ 
+                    className: this.type(), 
+                    invariants: this._invariants() 
+                });
             }
 
             return null;
@@ -1579,6 +1585,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             if (attributeNames.length > 0) this._definedAttributeNamesLoaded(true);
             return attributeNames;
+        })
+        .computed('allAttributeNames', function() {
+            return _.union(this.defaultAttributeNames(), this.viewAttributeNames(), this.definedAttributeNames());
         })
         .computed('valid', function() {
             return _.all(this.attributes(), function(attr) { return attr.valid(); });
@@ -1666,7 +1675,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('parent', function() {
             var virtualParent = this.virtualParent();
             if(virtualParent) return virtualParent;
-            var parent = this.getAttribute('attr:parent');
+            var parent = this.attribute('attr:parent');
             return parent ? parent.value() : null;
         })
         .computed('attributeSetMap', function() {
@@ -1814,7 +1823,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!impl.viewAttributeNames.loaded()) {
                 if (impl._cache()) {
                     var cachedViewAttributeNames = impl._cache().get(["ViewAttributeNames", impl.type()]);
-                    if (cachedViewAttributeNames) {
+                    if (!_.isEmpty(cachedViewAttributeNames)) {
                         impl.viewAttributeNames(cachedViewAttributeNames);
                         return;
                     }
@@ -1834,9 +1843,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
-        .computed('allAttributeNames', function() {
-            return _.union(this.defaultAttributeNames(), this.viewAttributeNames(), this.definedAttributeNames());
-        })
+
+
         .load([ 'classNames', 'type' ], function(impl) {
             if(impl.isPersisted()) {
                 Citeck.utils.classNamesLoader.load(impl.nodeRef(), function(nodeRef, model) {
@@ -2626,7 +2634,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             if (this.options.invariantsRuntimeCache) this.initRuntimeCache();
-            
             this.initRuntime();
 
             if (this.options.model.inlineEdit) {
