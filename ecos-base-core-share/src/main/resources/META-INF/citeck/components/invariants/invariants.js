@@ -1524,6 +1524,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('viewAttributeNames', [ s ])
+        .property('unviewAttributeNames', [ s ])
         .property('defaultAttributeNames', [ s ])
         .property('virtualParent', Node)
         .property('defaultModel', DefaultModel)
@@ -1641,8 +1642,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     createdNames = {};
 
                 var validAttributeNames = !this._withoutView() ? 
-                    this.viewAttributeNames().concat(this.defaultAttributeNames()) : this.definedAttributeNames();
-                validAttributeNames = validAttributeNames;
+                    _.union(this.viewAttributeNames(), this.defaultAttributeNames(), this.unviewAttributeNames()) : 
+                    this.definedAttributeNames();
 
                 if(this.isPersisted() && this._attributes() != null && this._attributes().length >= validAttributeNames.length) {
                     var filteredAttributes = _.filter(this._attributes(), function(value, name) {
@@ -1742,12 +1743,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr[filterBy]();
             })
         })
-        
-        // Deprecated. Slow. Use 'getAttribute'
+        // Deprecated. Temporary it is a alias for new method 'getAttribute'
         .method('attribute', function(name) {
-            return _.find(this.attributes() || [], function(attr) {
-                return attr.name() == name;
-            });
+            return this.getAttribute(name);
         })
         .method('reset', function(full) {
             _.invoke(this.attributes(), 'reset', full);
@@ -1782,8 +1780,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return null;
         })
         .method('getAttribute', function(name) {
+            // first, find attribute on map
             var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
-            return attributeObject ? attributeObject.attribute : undefined;
+            if (attributeObject) return attributeObject.attribute;
+
+            // second, find attribute in list of attributes
+            var attribute = _.find(this.attributes(), function(attr) { return attr.name() == name; });
+            if (attribute) return attribute;
+
+            // third, create new attribute if definedAttributeNames contains it
+            if (_.contains(this.definedAttributeNames(), name)) {
+                this.unviewAttributeNames(_.union(this.unviewAttributeNames(), [ name ]));
+            } 
+
+            return this.getAttribute(name);
         })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
@@ -1843,8 +1853,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 }
             }
         })
-
-
+        .load('unviewAttributeNames', function(impl) { impl.unviewAttributeNames([]); })
         .load([ 'classNames', 'type' ], function(impl) {
             if(impl.isPersisted()) {
                 Citeck.utils.classNamesLoader.load(impl.nodeRef(), function(nodeRef, model) {
