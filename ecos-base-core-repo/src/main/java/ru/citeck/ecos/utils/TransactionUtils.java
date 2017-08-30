@@ -3,13 +3,16 @@ package ru.citeck.ecos.utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.repo.transaction.TransactionListenerAdapter;
+import org.alfresco.util.transaction.TransactionListenerAdapter;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.surf.util.I18NUtil;
 
 import java.util.Locale;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public class TransactionUtils {
 
@@ -40,6 +43,20 @@ public class TransactionUtils {
                 prepareJobThread(job, errorHandler, currentUser, locale).start();
             }
         });
+    }
+
+    public static <T> void processBeforeCommit(String transactionKey, T element, Consumer<T> consumer) {
+        final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
+        if (elements.isEmpty()) {
+            TransactionUtils.doBeforeCommit(() -> {
+                AuthenticationUtil.runAsSystem(() -> {
+                    elements.forEach(consumer);
+                    return null;
+                });
+                elements.clear();
+            });
+        }
+        elements.add(element);
     }
 
     private static Thread prepareJobThread(final Runnable job, final Runnable errorHandler, final String currentUser, final Locale locale) {
