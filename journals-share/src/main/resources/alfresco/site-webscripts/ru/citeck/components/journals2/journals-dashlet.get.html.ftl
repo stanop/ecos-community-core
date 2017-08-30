@@ -3,14 +3,24 @@
 <@markup id="css" >
 	<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/journals2/journals.css" group="journals2" />
 	<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/journals2/journals-dashlet.css" group="journals2" />
+	<@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" group="journals2" />
+	<@link rel="stylesheet" href="${page.url.context}/res/yui/calendar/assets/calendar.css" group="journals2" />
+	<@link rel="stylesheet" href="${url.context}/res/citeck/utils/citeck.css" group="journals2" />
+	<@link type="text/css" href="${url.context}/res/citeck/components/document-journal/document-journal.css" group="journals2" />
 </@>
 
 <@markup id="js">
+	<@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/documentlibrary/custom-actions.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/form/constraints.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/modules/journals/buttons.js" group="journals2" />
 	<@script type="text/javascript" src="${page.url.context}/res/components/form/date.js" group="journals2" />
 </@>
 

@@ -39,6 +39,7 @@ DashletConfig
 	.property('journal', Journal)
 	.property('filter', Filter)
 	.property('settings', Settings)
+	.property('actionGroup', String)
 	;
 
 JournalsDashlet
@@ -52,7 +53,13 @@ JournalsDashlet
 		this._dashletConfig(this.dashletConfig().clone());
 	})
 	.property('mode', String)
-	.computed('actionGroupId', _.constant("none"))
+	// .computed('actionGroupId', _.constant("none"))
+	.computed('actionGroupId', function () {
+		if (this.dashletConfig().actionGroup()) {
+			return this.dashletConfig().actionGroup();
+		}
+		return _.constant("none")();
+    })
 
 	.init(function() {
 		this.dashletConfig.subscribe(function() {

@@ -3,6 +3,7 @@
 	journal: <#if journalId??>"${journalId}"<#else>null</#if>,
 	filter: <#if filterId??>"${filterId}"<#else>null</#if>,
 	settings: <#if settingsId??>"${settingsId}"<#else>null</#if>,
+	actionGroup: <#if actionGroupId??>"${actionGroupId}"<#else>"none"</#if>,
 </#macro>
 
 <#macro renderCacheJSON>

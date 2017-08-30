@@ -24,6 +24,10 @@ function getSettingsId() {
 	return args.settingsId || null;
 }
 
+function getActionGroupId() {
+	return args.actionGroupId || null;
+}
+
 function loadObject(url, urlArgs) {
 	var finalUrl = url + "?";
 	if(urlArgs) {
@@ -97,6 +101,8 @@ function fillModel() {
 		model.settingsListJSON = loadSettingsList(journalType);
 	}
 
+	var actionGroupId = model.actionGroupId = getActionGroupId();
+	model.actionGroupId = actionGroupId;
 }
 
 function getScopedConfig(scope, section, itemType, mapFunc) {
