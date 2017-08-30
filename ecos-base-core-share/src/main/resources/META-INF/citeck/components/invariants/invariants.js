@@ -289,19 +289,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         searchQuery: function(node, attrName, query, schema, cacheAge, params) {
             var originalFormat = params ? params.originalFormat : false;
+            var searchQueryDataName = params && params.invariantName ? "searchQueryData" + params.invariantName : "searchQueryData";
 
             var attribute = node.impl().attribute(attrName),
                 attInfo = attribute.info();
 
-            if (!attInfo.searchQueryData) {
-                attInfo.searchQueryData = {
+            if (!attInfo[searchQueryDataName] || attInfo[searchQueryDataName].query() != query) {
+                attInfo[searchQueryDataName] = {
                     query: ko.observable(""),
                     nodes: ko.observableArray([]),
                     result: ko.observable(),
                     schema: null,
                     cacheAge: null
                 };
-                attInfo.searchQueryData.query.subscribe(function(value) {
+                attInfo[searchQueryDataName].query.subscribe(function(value) {
 
                     var dataObj = { query: value };
                     if (this.schema)
@@ -322,20 +323,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                                     this.nodes(_.map(results, function(result) {
                                        return new Node(result);
                                     }));
-                                } else { attInfo.searchQueryData.result(results); }
+                                } else { attInfo[searchQueryDataName].result(results); }
                                 
                             }
                         }
                     });
-                }, attInfo.searchQueryData);
+                }, attInfo[searchQueryDataName]);
             }
 
-            attInfo.searchQueryData.cacheAge = cacheAge;
-            attInfo.searchQueryData.schema = schema;
-            attInfo.searchQueryData.query(query);
+            attInfo[searchQueryDataName].cacheAge = cacheAge;
+            attInfo[searchQueryDataName].schema = schema;
+            attInfo[searchQueryDataName].query(query);
 
-            if (originalFormat) return attInfo.searchQueryData.result();
-            return attInfo.searchQueryData.nodes();
+            if (originalFormat) return attInfo[searchQueryDataName].result();
+            return attInfo[searchQueryDataName].nodes();
         },
         ko: ko,
         koutils: koutils,
