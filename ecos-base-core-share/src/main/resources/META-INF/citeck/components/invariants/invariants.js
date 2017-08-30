@@ -1549,7 +1549,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('invariantSet', function() {
             if (this.type.loaded()) {
                 var validAttributeNames = !this._withoutView() ? 
-                    this.defaultAttributeNames().concat(this.viewAttributeNames()) : this.definedAttributeNames();
+                    _.union(this.defaultAttributeNames(), this.viewAttributeNames(), this.unviewAttributeNames()) : 
+                    this.definedAttributeNames();
 
                 if (validAttributeNames && validAttributeNames.length > 0) {
                     return new SingleClassInvariantSet({ 
@@ -1637,12 +1638,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .computed('attributes', {
             read: function() {
+                return _.union(this._mainAttributes(), this._additionalAttributes());
+            }, pure: true
+        })
+        .computed('_mainAttributes', {
+            read: function() {
                 var node = this.node(),
                     attributes = [],
                     createdNames = {};
 
                 var validAttributeNames = !this._withoutView() ? 
-                    _.union(this.viewAttributeNames(), this.defaultAttributeNames(), this.unviewAttributeNames()) : 
+                    _.union(this.viewAttributeNames(), this.defaultAttributeNames()) : 
                     this.definedAttributeNames();
 
                 if(this.isPersisted() && this._attributes() != null && this._attributes().length >= validAttributeNames.length) {
@@ -1658,20 +1664,31 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return attributes;
                 }
 
-                var processAttributeName = function(name) {
+                _.each(validAttributeNames, function(name) {
                     if(!createdNames[name]) {
                         createdNames[name] = true;
-                        // we can't be sure, whether this attribute is persisted or not
-                        // because not all persisted attributes are in the default attributes list
                         attributes.push(new Attribute(node, name));
                     }
-                };
-
-                _.each(validAttributeNames, processAttributeName);
+                });
 
                 return attributes;
-            },
-            pure: true
+            }, pure: true
+        })
+        .computed('_additionalAttributes', {
+            read: function() {
+                var node = this.node(),
+                    attributes = [],
+                    createdNames = {};
+
+                _.each(this.unviewAttributeNames(), function(name) {
+                    if(!createdNames[name]) {
+                        createdNames[name] = true;
+                        attributes.push(new Attribute(node, name));
+                    }
+                });
+
+                return attributes;
+            }, pure: true
         })
         .computed('parent', function() {
             var virtualParent = this.virtualParent();
@@ -1779,21 +1796,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             return null;
         })
-        .method('getAttribute', function(name) {
-            // first, find attribute on map
-            var attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
-            if (attributeObject) return attributeObject.attribute;
+        .method('getAttribute', function(name, params) {
+            var listName = params ? params.listName : "attributes",
+                attribute, attributeObject;
 
-            // second, find attribute in list of attributes
-            var attribute = _.find(this.attributes(), function(attr) { return attr.name() == name; });
-            if (attribute) return attribute;
+            // first, find attribute on map
+            attributeObject = this.attributeSetMap() ? this.attributeSetMap().attributes[name] : null;
+            if (attributeObject) { return attributeObject.attribute; }  
+
+            // second, find attribute in lists of attributes
+            attribute = _.find(this[listName](), function(attr) { return attr.name() == name; });
+            if (attribute) { return attribute; }
 
             // third, create new attribute if definedAttributeNames contains it
             if (_.contains(this.definedAttributeNames(), name)) {
-                this.unviewAttributeNames(_.union(this.unviewAttributeNames(), [ name ]));
-            } 
+                if (!_.contains(this.unviewAttributeNames(), name)) {
+                    this.unviewAttributeNames.push(name);               
+                    return new Attribute(this.node(), name);
+                }
+            }
 
-            return this.getAttribute(name);
+            return undefined;
         })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
