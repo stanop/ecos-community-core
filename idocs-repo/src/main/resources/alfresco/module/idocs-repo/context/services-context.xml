@@ -587,4 +587,7 @@
 		  parent="journals.groupActionEvaluator">
 	</bean>
 
+	<bean id="historyEventTitleMapperService" init-method="init" depends-on="applicationContextProvider"
+		  class="ru.citeck.ecos.history.impl.HistoryEventTitleMapperServiceImpl"/>
+
 </beans>
