@@ -1547,7 +1547,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return qnameType.fullQName();
         })
         .computed('invariantSet', function() {
-            if (this.type.loaded()) {
+            if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
+                return new ExplicitInvariantSet({ 
+                    className: this.type(), 
+                    invariants: this._invariants() 
+                });
+            } else if (this.type.loaded()) {
                 var validAttributeNames = !this._withoutView() ? 
                     _.union(this.defaultAttributeNames(), this.viewAttributeNames(), this.unviewAttributeNames()) : 
                     this.definedAttributeNames();
@@ -1560,11 +1565,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         attributeNames: validAttributeNames 
                     });
                 }
-            } else if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
-                return new ExplicitInvariantSet({ 
-                    className: this.type(), 
-                    invariants: this._invariants() 
-                });
             }
 
             return null;
