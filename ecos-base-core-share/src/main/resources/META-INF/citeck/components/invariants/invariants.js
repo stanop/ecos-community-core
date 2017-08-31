@@ -641,12 +641,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .computed('invariants', function() {
             var invariants = [];
-
-            if (_.isEmpty(this.specifiedInvariants())) { 
-                this._invariants.reload();
-                return invariants;
-            };
-
             if (this._cache()) {
                 var defaultInvariants = this.defaultInvariants(),
                     specifiedInvariants = this.specifiedInvariants();
@@ -700,8 +694,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (invariantSet.nodeRef()) { URLParams += "&nodeRef=" + invariantSet.nodeRef(); }
             else { URLParams += "&type=" + invariantSet.type(); }
 
-            console.log("load invariants for " + invariantSet.type())
-
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "citeck/invariants" + URLParams,
                 successCallback: {
@@ -709,7 +701,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     fn: function (response) {
                         if (this._cache()) this.defaultInvariants(response.json.invariants);
                         this._invariants(response.json.invariants);
-                        console.log("loaded invariants for " + invariantSet.type(), response.json.invariants);
                     }
                 }
             });
