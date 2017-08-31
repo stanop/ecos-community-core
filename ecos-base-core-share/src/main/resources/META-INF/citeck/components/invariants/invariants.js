@@ -641,6 +641,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .computed('invariants', function() {
             var invariants = [];
+
+            if (_.isEmpty(this.specifiedInvariants())) { 
+                this._invariants.reload();
+                return invariants;
+            };
+
             if (this._cache()) {
                 var defaultInvariants = this.defaultInvariants(),
                     specifiedInvariants = this.specifiedInvariants();
@@ -674,7 +680,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('defaultInvariants', {
             read: function() {
                 if (!this._invariants()) return [];
-                var defaultInvariantGroups = this.attributeNames().concat([ "general", "base" ]);
+                var defaultInvariantGroups = this.attributeNames().concat(["general", "base"]);
                 return this._cache().getDefaultInvariants(defaultInvariantGroups); 
             },
             write: function (invariants) { 
@@ -694,6 +700,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (invariantSet.nodeRef()) { URLParams += "&nodeRef=" + invariantSet.nodeRef(); }
             else { URLParams += "&type=" + invariantSet.type(); }
 
+            console.log("load invariants for " + invariantSet.type())
+
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "citeck/invariants" + URLParams,
                 successCallback: {
@@ -701,6 +709,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     fn: function (response) {
                         if (this._cache()) this.defaultInvariants(response.json.invariants);
                         this._invariants(response.json.invariants);
+                        console.log("loaded invariants for " + invariantSet.type(), response.json.invariants);
                     }
                 }
             });
@@ -1545,28 +1554,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var qnameType = new QName(this.type());
             return qnameType.fullQName();
         })
-        .computed('invariantSet', function() {
-            if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
-                return new ExplicitInvariantSet({ 
-                    className: this.type(), 
-                    invariants: this._invariants() 
-                });
-            } else if (this.type.loaded()) {
-                var validAttributeNames = !this._withoutView() ? 
-                    this.defaultAttributeNames().concat(this.viewAttributeNames()) : this.definedAttributeNames();
-
-                if (validAttributeNames && validAttributeNames.length > 0) {
-                    return new SingleClassInvariantSet({ 
-                        className: this.type(),
-                        nodeRef: this.nodeRef(),
-                        type: this.type(),
-                        attributeNames: validAttributeNames 
-                    });
-                }
-            }
-
-            return null;
-        })
         .computed('inViewMode', function() {
             return this.resolve('defaultModel.view.mode') == "view";
         })
@@ -1732,6 +1719,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     buildMapOfAttributes(rootSet, rootSet.attributes(), map);
 
                 return map;
+            }
+
+            return null;
+        })
+        .computed('invariantSet', function() {
+            if (!_.isNull(this._invariants()) && this._invariants().length > 0) {
+                return new ExplicitInvariantSet({ 
+                    className: this.type(), 
+                    invariants: this._invariants() 
+                });
+            } else if (this.type.loaded()) {
+                var validAttributeNames = !this._withoutView() ? 
+                    this.defaultAttributeNames().concat(this.viewAttributeNames()) : this.definedAttributeNames();
+                if (validAttributeNames.length > this.defaultAttributeNames().length) {
+                    return new SingleClassInvariantSet({ 
+                        className: this.type(),
+                        nodeRef: this.nodeRef(),
+                        type: this.type(),
+                        attributeNames: validAttributeNames 
+                    });
+                }
             }
 
             return null;
