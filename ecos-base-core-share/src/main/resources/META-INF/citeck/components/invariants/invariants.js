@@ -1720,15 +1720,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     className: this.type(), 
                     invariants: this._invariants() 
                 });
-            } else if (this.type.loaded()) {
-                var validAttributeNames = !this._withoutView() ? 
-                    this.defaultAttributeNames().concat(this.viewAttributeNames()) : this.definedAttributeNames();
-                if (validAttributeNames.length > this.defaultAttributeNames().length) {
+            } else if (this.type.loaded()) {               
+                if (this._withoutView()) {
+                    return new MultiClassInvariantSet({ classNames: this.classNames().join(",") });
+                } else if (this.viewAttributeNames().length > 0) {
                     return new SingleClassInvariantSet({ 
                         className: this.type(),
                         nodeRef: this.nodeRef(),
                         type: this.type(),
-                        attributeNames: validAttributeNames 
+                        attributeNames: this.defaultAttributeNames().concat(this.viewAttributeNames()) 
                     });
                 }
             }
@@ -2422,7 +2422,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     GroupedInvariantSet.extend('invariants', rateLimit250);
     MultiClassInvariantSet.extend('invariants', rateLimit250)
-    SingleClassInvariantSet.extend('invariants', rateLimit0)
+    SingleClassInvariantSet.extend('invariants', rateLimit250)
 
     Runtime.extend('loaded', rateLimit250)
 
