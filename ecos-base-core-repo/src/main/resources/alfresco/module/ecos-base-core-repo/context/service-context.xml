@@ -303,4 +303,6 @@
         <property name="nodeService" ref="nodeService"/>
     </bean>
 
+    <bean id="applicationContextProvider" class="ru.citeck.ecos.providers.ApplicationContextProvider"/>
+
 </beans>
