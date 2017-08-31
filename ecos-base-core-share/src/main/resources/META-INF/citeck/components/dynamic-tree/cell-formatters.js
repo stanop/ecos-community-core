@@ -280,7 +280,7 @@
 			};
 		},
 
-		userOrGroup: function(plainText) {
+		userOrGroup: function(showUsersOfGroup) {
 			return function(elCell, oRecord, oColumn, sData) {
 				if(!sData) {
 					elCell.innerHTML = "";
@@ -302,17 +302,42 @@
 								fn: function(response) {
 									if (response.json && response.json.props) {
 										var displayName ='';
-										if(response.json.props["cm:authorityDisplayName"])
-										{
-											displayName = response.json.props["cm:authorityDisplayName"];
+                                        if (elCell.innerHTML)
+                                            elCell.innerHTML += '<br />';
+
+										if(response.json.props["cm:authorityDisplayName"]) {
+                                            displayName = response.json.props["cm:authorityDisplayName"];
+											if (showUsersOfGroup) {
+                                                Alfresco.util.Ajax.request({
+                                                    url: Alfresco.constants.PROXY_URI + "api/orgstruct/group/" + response.json.props["cm:authorityName"] + "/children",
+                                                    successCallback: {
+                                                        scope: this,
+                                                        fn: function(response) {
+                                                            if (response.json && response.json.length) {
+                                                                var results = _.map(response.json, function(node) {
+                                                                    return {text: node.displayName,
+                                                                        value: node.nodeRef};
+                                                                });
+                                                                this.allUsersOfGroup = new YAHOO.widget.Button(elCell, {
+                                                                    type: "menu",
+                                                                    menu: results,
+                                                                    menuclassname: "users-of-group-menu-button",
+                                                                    label: displayName
+                                                                });
+
+                                                                this.allUsersOfGroup.addClass('users-of-group');
+                                                            }
+                                                        }
+                                                    }
+                                                });
+											} else {
+                                                elCell.innerHTML += displayName;
+											}
 										}
 										else if(response.json.props["cm:firstName"] || response.json.props["cm:lastName"])
 										{
-											displayName = response.json.props["cm:lastName"] +" "+response.json.props["cm:firstName"];
+                                            elCell.innerHTML += response.json.props["cm:lastName"] +" "+response.json.props["cm:firstName"];
 										}
-										if (elCell.innerHTML)
-											elCell.innerHTML += '<br />';
-										elCell.innerHTML += displayName;
 									}
 								}
 							}, failureCallback: { scope: this, fn: function(response) {} }, execScripts: true

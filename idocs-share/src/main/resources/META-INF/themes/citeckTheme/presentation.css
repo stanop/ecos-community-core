@@ -4579,3 +4579,15 @@ div#HEADER_USER_STATUS {
 .yui-skin-citeckTheme .invariants-form .form-field-inline-mode-changer:hover {
   color: red;
 }
+
+.yui-skin-citeckTheme .yui-button.users-of-group {
+    padding: 5px 10px;
+}
+
+.yui-skin-citeckTheme #bd .yuimenu.users-of-group-menu-button .bd ul li.yuimenuitem-selected {
+    background-color: inherit;
+}
+
+.yui-skin-citeckTheme #bd .yuimenu.users-of-group-menu-button .bd ul li.yuimenuitem-selected .yuimenuitemlabel {
+    color: #1c55da;
+}

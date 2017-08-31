@@ -18,3 +18,18 @@ th.yui-dt-col-taskType
     height: 100px;
     background: url(icons/large-loading.gif) no-repeat center center;
 }
+
+#Share .yui-button.users-of-group,
+#Share .yui-button.users-of-group .first-child {
+    border: none;
+    margin: auto;
+}
+
+.users-of-group-menu-button .bd {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.users-of-group-menu-button .bd li:hover {
+    background-color: inherit;
+}
