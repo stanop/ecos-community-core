@@ -152,6 +152,8 @@
                 <aspect>idocs:hasRegistrator</aspect>
                 <aspect>idocs:hasInitiator</aspect>
                 <aspect>dms:templateable</aspect>
+                <aspect>icase:case</aspect>
+                <aspect>icase:hasDocuments</aspect>
             </mandatory-aspects>
         </type>
 
