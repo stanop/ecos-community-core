@@ -326,7 +326,9 @@
                                                                 });
 
                                                                 this.allUsersOfGroup.addClass('users-of-group');
-                                                            }
+                                                            } else {
+                                                                elCell.innerHTML += displayName;
+															}
                                                         }
                                                     }
                                                 });
