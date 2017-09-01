@@ -912,9 +912,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return false;
         })
         .computed('invalid', function() {
-            return _.any(this.attributes(), function(attribute) {
-                return attribute.relevant() && attribute.invalid();
-            });
+            return _.any(this.attributes(), function(attr) { 
+                return attr.relevant() && attr.invalid(); 
+            }) || _.any(this.sets(), function(set) { return set.invalid(); });
         })
         .computed('hidden', function() {
             return this.irrelevant() || !this._visibility();
