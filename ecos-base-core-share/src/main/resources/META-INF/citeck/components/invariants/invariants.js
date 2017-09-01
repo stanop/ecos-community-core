@@ -1525,7 +1525,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('inSubmitProcess', b)
         .property('viewAttributeNames', [ s ])
         .property('defaultAttributeNames', [ s ])
-        .property('virtualParent', Node)
         .property('defaultModel', DefaultModel)
         .property('runtime', Runtime)
 
@@ -1549,11 +1548,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.resolve('defaultModel.view.mode') == "view";
         })
         .computed('types', function() {
-            var types = this.getAttribute('attr:types');
+            var types = this.attribute('attr:types');
             return types ? types.multipleValues() : [];
         })
         .computed('aspects', function() {
-            var aspects = this.getAttribute('attr:aspects');
+            var aspects = this.attribute('attr:aspects');
             return aspects ? aspects.multipleValues() : [];
         })
         .computed('definedAttributeNames', function() {
@@ -1651,8 +1650,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             pure: true
         })
         .computed('parent', function() {
-            var virtualParent = this.virtualParent();
-            if(virtualParent) return virtualParent;
+            if (this.runtime() && this.runtime().virtualParent()) {
+                var runtimeParent = this.runtime().parent();
+                if (runtimeParent) return runtimeParent.node();
+            }
+
             var parent = this.attribute('attr:parent');
             return parent ? parent.value() : null;
         })
@@ -1844,7 +1846,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
 
 
-        .load([ 'classNames', 'type' ], function(impl) {
+        .load(['classNames', 'type'], function(impl) {
             if(impl.isPersisted()) {
                 Citeck.utils.classNamesLoader.load(impl.nodeRef(), function(nodeRef, model) {
                     if (model) impl.updateModel(model);
@@ -2273,6 +2275,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('node', Node)
         .property('parent', Runtime)
         .property('inlineEdit', b)
+        .property('virtualParent', b)
 
         .property('_loading', b)
 
@@ -2402,6 +2405,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     // performance tuning
     var rateLimit0 = { rateLimit: { timeout: 0, method: "notifyWhenChangesStop" } },
+        rateLimit100 = { rateLimit: { timeout: 100, method: "notifyWhenChangesStop" } },
         rateLimit250 = { rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } };
 
     AttributeSet.extend('irrelevant', rateLimit0);
@@ -2418,11 +2422,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     NodeImpl.extend('type', rateLimit0);
     NodeImpl.extend('_attributes', rateLimit0);
     NodeImpl.extend('attributes', rateLimit0);
-    NodeImpl.extend('invariantSet', rateLimit250);
+    NodeImpl.extend('invariantSet', rateLimit100);
 
-    GroupedInvariantSet.extend('invariants', rateLimit250);
-    MultiClassInvariantSet.extend('invariants', rateLimit250)
-    SingleClassInvariantSet.extend('invariants', rateLimit250)
+    GroupedInvariantSet.extend('invariants', rateLimit100);
+    MultiClassInvariantSet.extend('invariants', rateLimit100)
+    SingleClassInvariantSet.extend('invariants', rateLimit100)
 
     Runtime.extend('loaded', rateLimit250)
 

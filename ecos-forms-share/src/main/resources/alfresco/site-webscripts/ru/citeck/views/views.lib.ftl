@@ -297,13 +297,13 @@
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
+					virtualParent: <#if virtualParent>"${args.param_parentRuntime}"<#else>null</#if>,
 					formTemplate: "${view.template}",
 
 					<#if inlineEdit!false>inlineEdit: true,</#if>
 
 					node: {
 						key: <#if nodeRef?has_content>"${nodeRef}"<#else>"${runtimeKey}"</#if>,
-						virtualParent: <#if virtualParent>"${args.param_parentRuntime}"<#else>null</#if>,
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						type: <#if type?has_content>"${type}"<#else>null</#if>,
 						
