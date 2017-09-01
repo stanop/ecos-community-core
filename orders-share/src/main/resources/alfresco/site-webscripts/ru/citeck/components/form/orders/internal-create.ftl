@@ -5,7 +5,6 @@ fieldNames = [
     "prop_tk_kind",
     "assoc_idocs_signatory",
     "prop_orders_header",
-    "assoc_orders_fileCode",
     "prop_idocs_summary",
     "assoc_idocs_initiator",
     "assoc_orders_branch"
