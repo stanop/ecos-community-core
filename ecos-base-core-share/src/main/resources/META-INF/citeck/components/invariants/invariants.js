@@ -1812,7 +1812,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('runtime', function(impl) { impl.runtime(null); })
         .load('defaultAttributeNames', function(impl) {
             var defaultAttributeNames = [
-                "attr:aspects", "attr:noderef", "attr:types", 
+                "cm:name", "attr:aspects", "attr:noderef", "attr:types",
                 "attr:parent", "attr:parentassoc"
             ];
 
