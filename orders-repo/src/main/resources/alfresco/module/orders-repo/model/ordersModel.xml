@@ -13,6 +13,7 @@
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
     </imports>
 
     <namespaces>
