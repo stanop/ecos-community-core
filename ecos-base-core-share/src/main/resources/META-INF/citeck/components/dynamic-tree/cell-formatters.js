@@ -1734,6 +1734,28 @@
                     }
                 }
             }
+        },
+
+        inactivityTaskPeriod: function () {
+            return function (elCell, oRecord, oColumn, sData) {
+                var _MS_PER_DAY = 1000 * 60 * 60 * 24;
+                var startDate = oRecord.getData()["attributes['bpm:startDate']"];
+                var status = oRecord.getData()["attributes['bpm:status']"];
+                if (startDate && startDate !== null && status && status !== null && status !== 'Completed') {
+                    var stDate = new Date(startDate);
+                    var currDate = new Date();
+                    var currUTC = Date.UTC(currDate.getFullYear(), currDate.getMonth(), currDate.getDate());
+                    var startUTC = Date.UTC(stDate.getFullYear(), stDate.getMonth(), stDate.getDate());
+                    var daysDiff = Math.floor((currUTC - startUTC) / _MS_PER_DAY);
+                    if (daysDiff !== 0) {
+                        elCell.innerHTML = daysDiff;
+                    } else {
+                        elCell.innerHTML = "";
+                    }
+                } else {
+                    elCell.innerHTML = "";
+                }
+            };
         }
 	});
 
