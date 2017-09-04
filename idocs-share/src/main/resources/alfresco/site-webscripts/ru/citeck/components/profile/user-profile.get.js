@@ -35,26 +35,39 @@
 
     var viewData = getViewData(viewArgs);
     if(viewData == null) return;
-    var view = viewData.view;
+    
+    var view = viewData.view,
+        attributeSet = getAttributeSet(args, view),
+        attributes = getAttributes(view), 
+        attributeNames = map(attributes, function(attr) { return attr.attribute; });
 
-    var attributes = map(getAttributes(view), function(attr) { return attr.attribute; });
-    var invariantSet = getInvariantSet(view['class'], attributes);
-    var viewScopedInvariants = getViewScopedInvariants(view);
-    var defaultModel = {};
-    for (var name in invariantSet.model) {
-        defaultModel[name] = invariantSet.model[name];
-    }
-    var publicViewProperties = ['class', 'id', 'kind', 'mode', 'template', 'params'];
-    // ATTENTION: this view model should comply to repository NodeView interface!
+    var defaultModel = {},
+        publicViewProperties = [ 'class', 'id', 'kind', 'mode', 'template', 'params' ];
+     
     defaultModel.view = {};
-    for (var i in publicViewProperties) {
+    for(var i in publicViewProperties) {
         var name = publicViewProperties[i];
         defaultModel.view[name] = view[name];
     }
 
+    var invariantSet = { invariants: [], classNames: [] }, viewScopedInvariants = [];
+    if (view.params.preloadInvariants == "true") {
+        invariantSet = getInvariantSet(args, attributeNames),
+        viewScopedInvariants = getViewScopedInvariants(view);
+
+        if (invariantSet.model) {
+            for(var name in invariantSet.model) { defaultModel[name] = invariantSet.model[name]; }
+        }
+
+        model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
+        model.classNames = invariantSet.classNames;
+    }
+
     model.view = view;
-    model.attributes = attributes;
-    model.invariants = viewScopedInvariants.concat(invariantSet.invariants);
     model.defaultModel = defaultModel;
-    model.inlineEdit = false;
+
+    model.attributeSet = attributeSet;
+    model.attributeNames = attributeNames;
+
+    model.canBeDraft = viewData.canBeDraft;
 })();
