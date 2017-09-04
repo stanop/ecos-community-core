@@ -14,7 +14,6 @@ fieldNames = [
     "prop_idocs_registrationDate",
     "assoc_idocs_signatory",
     "prop_orders_header",
-    "assoc_orders_fileCode",
     "prop_orders_expirationDate"
 ]/>
 

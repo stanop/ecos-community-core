@@ -12,6 +12,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.providers.ApplicationContextProvider;
 import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
@@ -87,6 +88,24 @@ public class HistoryUtils {
             return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
                     + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
         } else {
+            return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
+                    ? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
+                    : nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
+        }
+    }
+
+    private static String getCustomChangeValue(NodeRef nodeRef, NodeService nodeService) {
+        if (!nodeService.exists(nodeRef)) { return ""; }
+        if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
+            return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
+                    + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
+        } else {
+            QName titleQName = getHistoryEventTitleMapperService().getTitleQName(nodeService.getType(nodeRef));
+            if (titleQName != null) {
+                if (nodeService.getProperty(nodeRef, titleQName) != null) {
+                    return nodeService.getProperty(nodeRef, titleQName).toString();
+                }
+            }
             return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
                     ? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
                     : nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
@@ -286,17 +305,17 @@ public class HistoryUtils {
         if (added != null && removed != null) {
             return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
                     + ": "
-                    + HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService)
+                    + HistoryUtils.getCustomChangeValue(removed.getTargetRef(), nodeService)
                     + " -> "
-                    + HistoryUtils.getChangeValue(added.getTargetRef(), nodeService);
+                    + HistoryUtils.getCustomChangeValue(added.getTargetRef(), nodeService);
         } else if (added != null) {
             return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
                     + ": — -> "
-                    + HistoryUtils.getChangeValue(added.getTargetRef(), nodeService);
+                    + HistoryUtils.getCustomChangeValue(added.getTargetRef(), nodeService);
         } else if (removed != null) {
             return HistoryUtils.getAssocKeyValue(removed.getTypeQName(), dictionaryService)
                     + ": "
-                    + HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService)
+                    + HistoryUtils.getCustomChangeValue(removed.getTargetRef(), nodeService)
                     + " -> —";
         } else {
             return "Something went wrong... Contact the administrator.";
@@ -337,6 +356,10 @@ public class HistoryUtils {
             return true;
         }
         return false;
+    }
+
+    private static HistoryEventTitleMapperService getHistoryEventTitleMapperService() {
+        return ApplicationContextProvider.getBean(HistoryEventTitleMapperService.class);
     }
 
 }

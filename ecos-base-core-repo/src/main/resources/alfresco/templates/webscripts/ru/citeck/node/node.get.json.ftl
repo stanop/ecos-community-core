@@ -1,10 +1,10 @@
 <#include "/ru/citeck/search/search-macros.ftl">
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
-	<#if (props?size > 0) >
+	<#if (props?size > 0 || args.includeNodeRef??) >
 	"props": {
 		<#-- include nodeRef in result, id of this string will be contain value of includeNodeRef -->
-		<#if args.includeNodeRef??>"nodeRef": "${args.nodeRef}",</#if>
+		<#if args.includeNodeRef??>"nodeRef": "${args.nodeRef}"<#if (props?size > 0)>,</#if></#if>
 		<#list props as line>
 			<#if args.replaceColon??>
 				<#assign prop2=line.key?replace(":", args.replaceColon)>
