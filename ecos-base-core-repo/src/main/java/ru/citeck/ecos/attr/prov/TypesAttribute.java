@@ -41,20 +41,39 @@ public class TypesAttribute extends SingleAttributeProvider<List<?>> {
 
     @Override
     protected void setValue(NodeRef nodeRef, List<?> newTypes) {
-        if(newTypes == null) return;
-        QName oldType = nodeService.getType(nodeRef);
-        QName newType = convertToQName(newTypes.get(0));
-        if(oldType.equals(newType)) return;
-        if(!dictionaryService.isSubClass(newType, oldType)) {
-            throw new IllegalArgumentException("Can not change type from " + oldType + " to " + newType + ". Only type specializing is allowed");
+        QName newType = getLastType(newTypes);
+        if (newType != null) {
+            QName oldType = nodeService.getType(nodeRef);
+            if (!oldType.equals(newType)) {
+                if (!dictionaryService.isSubClass(newType, oldType)) {
+                    throw new IllegalArgumentException("Can not change type from " + oldType + " to " +
+                                                       newType + ". Only type specializing is allowed");
+                }
+                nodeService.setType(nodeRef, newType);
+            }
         }
-        nodeService.setType(nodeRef, newType);
     }
 
     @Override
     protected void setValue(NodeInfo nodeInfo, List<?> newTypes) {
-        if(newTypes == null) return;
-        nodeInfo.setType(convertToQName(newTypes.get(0)));
+        QName type = getLastType(newTypes);
+        if (type != null) {
+            nodeInfo.setType(type);
+        }
+    }
+
+    private QName getLastType(List<?> types) {
+        if (types == null || types.isEmpty()) {
+            return null;
+        }
+        QName type = convertToQName(types.get(0));
+        for (int i = 1; i < types.size(); i++) {
+            QName otherType = convertToQName(types.get(i));
+            if (!dictionaryService.isSubClass(type, otherType)) {
+                type = otherType;
+            }
+        }
+        return type;
     }
 
     @Override
