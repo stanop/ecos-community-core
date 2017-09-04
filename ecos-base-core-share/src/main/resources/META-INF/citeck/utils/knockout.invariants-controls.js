@@ -124,7 +124,7 @@ ko.components.register("select", {
             }
         }
 
-        if (this.trottle) this.data.options.extend({ throttle: 500 });
+        if (this.throttle) this.data.options.extend({ throttle: 500 });
 
         if (!this.optionsText) {
             if (this.data.optionsText) { this.optionsText = this.data.optionsText; }

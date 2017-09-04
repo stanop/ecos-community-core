@@ -15,7 +15,7 @@
 
 	data: $data,
 	
-	trottle: <#if params.trottle??>${params.trottle}<#else>false</#if>,
+	throttle: <#if params.throttle??>${params.throttle}<#else>false</#if>,
 	valueAllowUnset: <#if params.valueAllowUnset??>${params.valueAllowUnset}<#else>true</#if>,
 
     optionsCaption: "${msg(optionsCaption?trim)}",
