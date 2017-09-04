@@ -294,7 +294,7 @@
 				scope: this
 			});
 		}
-	}
+	};
 
 	Citeck.widget.ButtonPanel.Commands.onPanelButtonDeleteAllAssoc = function (options) {
 
