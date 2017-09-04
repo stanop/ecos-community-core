@@ -247,7 +247,7 @@
         </field>
     </view>
 
-    <!-- в моделе есть только model-type -->
+    <!-- в модели есть только model-type -->
     <view class="contracts:documentType" >
         <field prop="cm:name" />
     </view>
@@ -259,7 +259,7 @@
         <view>
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
-                    <param name="journalType">original-location</param>
+                    <param name="journalType">contract-agreements</param>
                     <param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
                     <param name="defaultCriteria">[{ attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment' }]</param>
                     <param name="defaultVisibleAttributes">cm:title, tk:type</param>
