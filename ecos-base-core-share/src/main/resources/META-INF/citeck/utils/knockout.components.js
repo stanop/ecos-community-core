@@ -279,7 +279,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     this.templateName = "select";
                     this.fakeViewModel.options(getSortPairs(this.labels));
                     this.fakeViewModel.optionsText = function(o) { return o[1]; };
-                    this.fakeViewModel.optionsValue = function(o) { return o[0]; } 
+                    this.fakeViewModel.optionsValue = function(o) { return o[0]; };
+                    this.fakeViewModel.single = function() { return true; } 
                 } else if (this.datatype == "category" && this.journalType && this.attribute().name() == "tk:kind") {
                     var docType = this.journalOptionsType();
                     if (!docType) return;
@@ -288,6 +289,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     self.fakeViewModel.options([["1", Alfresco.util.message('form.select.loading')]]);
                     self.fakeViewModel.optionsText = function(o) { return o[1]; };
                     self.fakeViewModel.optionsValue = function(o) { return o[0]; };
+                    this.fakeViewModel.single = function() { return true; } 
 
                     Alfresco.util.Ajax.jsonGet({
                         url: Alfresco.constants.PROXY_URI
