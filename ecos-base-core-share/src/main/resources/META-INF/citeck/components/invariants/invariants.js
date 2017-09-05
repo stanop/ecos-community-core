@@ -34,7 +34,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         GroupedInvariantSet = koclass('invariants.GroupedInvariantSet', InvariantSet),
         ClassInvariantSet = koclass('invariants.ClassInvariantSet', InvariantSet),
         MultiClassInvariantSet = koclass('invariants.MultiClassInvariantSet', InvariantSet),
-        SingleClassInvariantSet = koclass('invariants.SingleClassInvariantSet', InvariantSet),
+        AttributesInvariantSet = koclass('invariants.AttributesInvariantSet', InvariantSet),
         DefaultModel = koclass('invariants.DefaultModel'),
         Message = koclass('invariants.Message'),
         Feature = koclass('invariants.Feature'),
@@ -628,19 +628,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         ;
 
-    SingleClassInvariantSet
+    AttributesInvariantSet
         .constructor([ Object ], function(model) { this.setModel(model); }, true)
 
-        .key('className', s)
+        .key('id', s)
         .property('nodeRef', s)
         .property('type', s)
         .property('attributeNames', [ s ])
 
+        .property('_classNames', [ s ])
         .property('_invariants', o)
         .property('_cache', o)
 
         .computed('invariants', function() {
-            var invariants = [];
+            var invariants = [], classNames = this._classNames();
             if (this._cache()) {
                 var defaultInvariants = this.defaultInvariants(),
                     specifiedInvariants = this.specifiedInvariants();
@@ -700,7 +701,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     scope: invariantSet,
                     fn: function (response) {
                         if (this._cache()) this.defaultInvariants(response.json.invariants);
-                        this._invariants(response.json.invariants);
+                        this.setModel({
+                            _invariants: response.json.invariants,
+                            _classNames: response.json.classNames
+                        })
                     }
                 }
             });
@@ -710,10 +714,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         ;
 
+    // By default calculates only available invariants
+    var availableEvaluators = [ "relevant", "title", "description" ];
 
     var featureInvariants = function(featureName) {
         return function() {
-            if (featureName != "relevant") if (this.irrelevant()) return [];
+            if (!_.contains(availableEvaluators, featureName))
+                if (this.irrelevant()) return [];
 
             var invariantSet = this.invariantSet();
             if(!invariantSet) return [];
@@ -742,7 +749,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
         return function(model) {
-            if (featureName != "relevant") if (this.irrelevant()) return {};
+            if (!_.contains(availableEvaluators, featureName))
+                if (this.irrelevant()) return {};
 
             var invariantSet = this.invariantSet(),
                 invariant = null,
@@ -763,7 +771,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featuredProperty = function(featureName) {
         return function() {
-            if (featureName != "relevant") if (this.irrelevant()) return null;
+            if (!_.contains(availableEvaluators, featureName))
+                if (this.irrelevant()) return null;
             return this[featureName + 'Evaluator'](this.invariantsModel()).value;
         }
     };
@@ -995,9 +1004,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
                         this.predicates(predicates);
                     },
-
                     failure: function(response) { /* error */ },
-
                     scope: attributeInfo
                 }
             );
@@ -1046,7 +1053,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .computed('valueClass', function() { return classMapping[this.javaclass()] || null; })
         .computed('invariantSet', function() { return this.node().impl().invariantSet(); })
-        .computed('invariantsModel', function() { return this.getInvariantsModel(this.value, this.cache = this.cache || {}); })
+        .computed('invariantsModel', function() { 
+            return this.getInvariantsModel(this.value, this.cache = this.cache || {});
+        })
         .computed('title', featuredProperty('title'))
         .computed('description', featuredProperty('description'))
         .computed('multiple', featuredProperty('multiple'))
@@ -1751,14 +1760,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 if (this._withoutView()) {
                     return new MultiClassInvariantSet({ classNames: this.classNames().join(",") });
                 } else if (this.viewAttributeNames().length > 0) {
-                    return new SingleClassInvariantSet({ 
-                        className: this.type(),
+                    var attributeNames = _.union(
+                        this.defaultAttributeNames(), 
+                        this.viewAttributeNames(), this.unviewAttributeNames()
+                    );
+
+                    return new AttributesInvariantSet({ 
+                        id: attributeNames.join(","),
                         nodeRef: this.nodeRef(),
                         type: this.type(),
-                        attributeNames: _.union(
-                            this.defaultAttributeNames(), 
-                            this.viewAttributeNames(), this.unviewAttributeNames()
-                        )
+                        attributeNames: attributeNames
                     });
                 }
             }
@@ -1820,19 +1831,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (attribute) { return attribute; }
 
             // third, create new attribute if definedAttributeNames contains it
-            if (_.contains(this.definedAttributeNames(), name)) {
-                if (!_.contains(this.unviewAttributeNames(), name)) {
-                    console.warn(
-                        "The '" + name + "' attribute is not in the form definition '" + this.type() + "'.", 
-                        "Attribute '" + name + "' will be loaded automatically. "
-                    );
-                    
-                    this.unviewAttributeNames.push(name);               
-                    return new Attribute(this.node(), name);
+            if (this._definedAttributeNamesLoaded()) {
+                if (_.contains(this.definedAttributeNames(), name)) {
+                    if (!_.contains(this.unviewAttributeNames(), name)) {
+                        console.warn(
+                            "The '" + name + "' attribute is not in the form definition '" + this.type() + "'.", 
+                            "Attribute '" + name + "' will be loaded automatically. "
+                        );
+                        
+                        this.unviewAttributeNames.push(name);
+                    }
                 }
             }
 
-            return undefined;
+            return new Attribute(this.node(), name);
         })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
@@ -2482,86 +2494,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     AttributeInfo.extend('*', rateLimit0);
     
     DDClass.extend('attributes', rateLimit0);
-    
+
+    NodeImpl.extend('_mainInvariants', rateLimit0);
+    NodeImpl.extend('_unviewInvariants', rateLimit0);    
     NodeImpl.extend('type', rateLimit0);
-    NodeImpl.extend('invariantSet', rateLimit0);
-    NodeImpl.extend('_attributes', rateLimit0);
     NodeImpl.extend('attributes', rateLimit0);
-    NodeImpl.extend('_unviewInvariants', rateLimit0);
+    NodeImpl.extend('invariantSet', rateLimit100);
     NodeImpl.extend('unviewAttributeNames', rateLimit100);
 
     GroupedInvariantSet.extend('invariants', rateLimit100);
     MultiClassInvariantSet.extend('invariants', rateLimit100)
-    SingleClassInvariantSet.extend('invariants', rateLimit100)
+    AttributesInvariantSet.extend('invariants', rateLimit100)
 
     Runtime.extend('loaded', rateLimit250)
 
-    // create common attributes statically:
-    // _.each({
-    //     "attr:aspects": "d:qname",
-    //     "attr:noderef": "d:noderef",
-    //     "attr:types": "d:qname",
-    //     "attr:parent": "d:noderef",
-    //     "attr:parentassoc": "d:qname",
-    //     "cm:name": "d:text",
-    //     "cm:created": "d:datetime",
-    //     "cm:creator": "d:text",
-    //     "cm:modified": "d:datetime",
-    //     "cm:modifier": "d:text",
-    //     "cm:accessed": "d:datetime",
-    //     "cm:title": "d:mltext",
-    //     "cm:description": "d:mltext",
-    //     "cm:content": "d:content",
-    //     "cm:owner": "d:text",
-    //     "sys:store-protocol": "d:text",
-    //     "sys:store-identifier": "d:text",
-    //     "sys:node-uuid": "d:text",
-    //     "sys:node-dbid": "d:long",
-    //     "sys:locale": "d:locale",
-    // }, function(type, name) {
-    //     new AttributeInfo({
-    //             "name": name,
-    //             "type": "property",
-    //             "datatype": type,
-    //             "nodetype": datatypeNodetypeMapping[type] || null,
-    //             "javaclass": datatypeClassMapping[type]
-    //         });
-    // });
-
-    // create common aspects statically
-    // _.each({
-    //     "cm:auditable": [ "cm:created", "cm:creator", "cm:modified", "cm:modifier", "cm:accessed" ],
-    //     "sys:localized": [ "sys:locale" ],
-    //     "sys:referenceable": [ "sys:store-protocol", "sys:store-identifier", "sys:node-uuid", "sys:node-dbid", "attr:noderef" ],
-    //     "sys:incomplete": [],
-    //     "cm:ownable": ["cm:owner"],
-    // }, function(attributes, name) {
-    //     new DDClass({
-    //         name: name,
-    //         qname: name,
-    //         isAspect: true,
-    //         attributes: attributes
-    //     })
-    // });
-
-    // create common types statically
-    // _.each({
-    //     "sys:base": [ "attr:types", "attr:aspects", "attr:parent", "attr:parentassoc" ],
-    //     "cm:cmobject": ["cm:name"],
-    //     "cm:content": ["cm:content"],
-    //     "cm:folder": ["cm:contains"],
-    //     "cm:authority": [],
-    //     "cm:authorityContainer": ["cm:authorityName", "cm:authorityDisplayName", "cm:member"],
-    //     "cm:category": ["cm:subcategories"],
-    //     "dl:dataListItem": []
-    // }, function(attributes, name) {
-    //     new DDClass({
-    //         name: name,
-    //         qname: name,
-    //         isAspect: false,
-    //         attributes: attributes
-    //     })
-    // });
 
     var InvariantsRuntimeCache = function() {
         InvariantsRuntimeCache.superclass.constructor.call(this, "Citeck.invariants.InvariantsRuntimeCache", "InvariantsRuntimeCache");
