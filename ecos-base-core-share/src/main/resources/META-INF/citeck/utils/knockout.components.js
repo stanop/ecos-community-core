@@ -966,8 +966,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     ];
 
                     for (var a in authorityTypes) {
-                        if (authorityTypes[a] == nodetype) templateName = "orgstruct";
-                        break;
+                        if (authorityTypes[a] === nodetype) {
+                            templateName = "orgstruct";
+                            break;
+                        }
                     }
 
                     if (!templateName) templateName = "journal";
