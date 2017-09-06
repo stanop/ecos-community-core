@@ -983,7 +983,7 @@ ko.bindingHandlers.journalControl = {
                                     return _.defaults({ value: searchValue }, item);
                                 }));
                             } else {
-                               criteria([{ attribute: "all", predicate: "string-contains", value: searchValue }]);
+                               criteria([{ attribute: "cm:name", predicate: "string-contains", value: searchValue }]);
                             }
                         } else {
                             criteria([]);
@@ -1302,7 +1302,7 @@ ko.components.register("autocomplete", {
         var self = this;
 
         this.defaults = {
-            criteria: [{ attribute: "all", predicate: "string-contains" }],
+            criteria: [{ attribute: "cm:name", predicate: "string-contains" }],
             searchScript: "criteria-search",
             maxItems: 10
         }

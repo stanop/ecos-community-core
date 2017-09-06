@@ -1836,7 +1836,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     if (!_.contains(this.unviewAttributeNames(), name)) {
                         console.warn(
                             "The '" + name + "' attribute is not in the form definition '" + this.type() + "'.", 
-                            "Attribute '" + name + "' will be loaded automatically. "
+                            "Attribute will be loaded automatically. "
                         );
                         
                         this.unviewAttributeNames.push(name);
