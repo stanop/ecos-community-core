@@ -1607,7 +1607,7 @@ ko.components.register("select2", {
             help: Alfresco.util.message("autocomplete.help"),
             empty: Alfresco.util.message("autocomplete.empty"),
             more: Alfresco.util.message("autocomplete.more")
-        }
+        };
 
 
         // private methods
@@ -1655,7 +1655,7 @@ ko.components.register("select2", {
             if (this.journalType) {
                 return this.journalType.searchableAttributes();
             } else if (this.options().length) {
-                return this.options()[0].impl().attributes();;
+                return this.options()[0].impl().attributes();
             }
 
             return [];
@@ -1692,8 +1692,8 @@ ko.components.register("select2", {
             if (this.criteria().length) {
                 this.criteria().forEach(function(criterion) {
                     preparedOptions = _.filter(preparedOptions, function(option) {
-                        var attributeComputed = self._optionFilter(option, criterion.attribute),
-                            attributeValue = attributeComputed();
+                        var attributeComputed = self.optionFilter ? self.optionFilter(option, criterion.attribute) : option.impl().attribute(criterion.attribute),
+                            attributeValue = self.optionFilter ? attributeComputed() : attributeComputed.value();
                         
                         if (attributeValue != null) {
                             if (criterion.predicate.indexOf("not-equals") != -1) {
