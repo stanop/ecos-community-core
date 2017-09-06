@@ -597,6 +597,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     ClassInvariantSet
         .key('className', s)
         .property('invariants', [ Invariant ])
+       
         .load('invariants', koutils.bulkLoad(invariantsLoader, "className", "invariants"))
         ;
 
@@ -635,6 +636,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('nodeRef', s)
         .property('type', s)
         .property('attributeNames', [ s ])
+        .property('inlineEdit', b)
 
         .property('_classNames', [ s ])
         .property('_invariants', o)
@@ -694,6 +696,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var URLParams = "?attributes=" + invariantSet.attributeNames();
             if (invariantSet.nodeRef()) { URLParams += "&nodeRef=" + invariantSet.nodeRef(); }
             else { URLParams += "&type=" + invariantSet.type(); }
+            if (this.inlineEdit()) URLParams += "&inlineEdit=true"
 
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "citeck/invariants" + URLParams,
@@ -1769,7 +1772,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         id: attributeNames.join(","),
                         nodeRef: this.nodeRef(),
                         type: this.type(),
-                        attributeNames: attributeNames
+                        attributeNames: attributeNames,
+                        inlineEdit: this.runtime() ? this.runtime().inlineEdit() : false
                     });
                 }
             }
@@ -1910,6 +1914,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 var URLParams = "?attributes=" + this.unviewAttributeNames();
                 if (this.nodeRef()) { URLParams += "&nodeRef=" + this.nodeRef(); }
                 else { URLParams += "&type=" + this.type(); }
+                if (this.inlineEdit()) URLParams += "&inlineEdit=true"
 
                 Alfresco.util.Ajax.jsonGet({
                     url: Alfresco.constants.PROXY_URI + "citeck/invariants" + URLParams,
