@@ -75,8 +75,8 @@
         <profile>
             <id>enterprise</id>
             <properties>
-                <!--<alfresco.platform.version>5.1.3.3</alfresco.platform.version>-->
-                <!--<alfresco.share.version>5.1.3.3</alfresco.share.version>-->
+                <alfresco.platform.version>5.1.3.3</alfresco.platform.version>
+                <alfresco.share.version>5.1.3.3</alfresco.share.version>
                 <alfresco.platform.artifactId>alfresco-enterprise</alfresco.platform.artifactId>
                 <maven.alfresco.edition>enterprise</maven.alfresco.edition>
                 <ecos.project.classifier>${alfresco.platform.version}-ent</ecos.project.classifier>
