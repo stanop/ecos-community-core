@@ -69,40 +69,47 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
-        var self = this;
 
-        this.text.subscribe(function(newValue) {
-            if (newValue) {
-                if (!this.tooltip) {
-                    this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
-                        showDelay: 250,
-                        hideDelay: 250,
-                        xyoffset: [5, 0],
-                        text: newValue,
-                        autodismissdelay: 10000,
-                        context: [ this.id ]
-                    });
+        // private methods
+        this._createTooltip = _.bind(function(text) {
+            if (!this.tooltip) {
+                this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
+                    showDelay: 250,
+                    hideDelay: 250,
+                    xyoffset: [5, 0],
+                    text: text,
+                    autodismissdelay: 10000,
+                    context: [ this.id ]
+                });
 
-                    this.tooltip.cfg.addProperty("forceVisible", { value: false });
-                    this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
+                this.tooltip.cfg.addProperty("forceVisible", { value: false });
+                this.tooltip.body.setAttribute("style", "white-space: pre-wrap;");
 
-                    this.tooltip.contextMouseOverEvent.subscribe(function() {
-                        var parent = $("#" + self.id).closest(".yui-panel-container"),
-                            zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
-                        self.tooltip.cfg.setProperty("zIndex", zindex);
-                    });
-                }
+                this.tooltip.contextMouseOverEvent.subscribe(function() {
+                    var parent = $("#" + this.id).closest(".yui-panel-container"),
+                        zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+                    this.tooltip.cfg.setProperty("zIndex", zindex);
+                }, this);
             }
+        }, this);
 
+        // public methods
+        this.onclick = function(data, event) {
+            var tooltip = data.tooltip, cfg = tooltip ? tooltip.cfg : null;
+            if (cfg) cfg.setProperty("forceVisible",  !cfg.getProperty("forceVisible"));
+        };
+
+        // subscriptions
+        this.text.subscribe(function(newValue) {
+            if (newValue) this._createTooltip(newValue);
             if (this.tooltip) {
                 this.tooltip.cfg.setProperty("text", newValue);
                 this.tooltip.cfg.setProperty("disabled", !newValue);
             }
         }, this);
 
-        this.onclick = function(data, event) {
-            data.tooltip.cfg.setProperty("forceVisible",  !data.tooltip.cfg.getProperty("forceVisible"));
-        };
+        // create tooltip if text already calculated
+        this._createTooltip(this.text());
     },
     template:
        '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
