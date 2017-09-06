@@ -1781,11 +1781,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return null;
         })
 
-        .method('_filterAttributes', function(filterBy) {
-            return _.filter(this.attributes() || [], function(attr) {
-                return attr[filterBy]();
-            })
-        })
         // Deprecated. Temporary it is a alias for new method 'getAttribute'
         .method('attribute', function(name) {
             return this.getAttribute(name);
@@ -1855,8 +1850,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return attr.relevant() && (attr.changed() || attr.changedByInvariant() || (!attr.persisted() && attr.invariantDefault() != null));
             })
         })
-        .method('getInvalidAttributes', function() {
-            return this._filterAttributes("invalid");
+        .method('_filterAttributes', function(filterBy) {
+            return _.filter(this.attributes() || [], function(attr) {
+                return attr[filterBy]();
+            })
+        })
+        .method('getFilteredAttributes', function(filterBy) {
+            return ko.computed(function() {
+                if (this.attributes().length) return this._filterAttributes(filterBy);
+            }, this)
         })
 
 
