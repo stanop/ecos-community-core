@@ -1696,24 +1696,7 @@ ko.components.register("select2", {
                             attributeValue = self.optionFilter ? attributeComputed() : attributeComputed.value();
                         
                         if (attributeValue != null) {
-                            if (criterion.predicate.indexOf("not-equals") != -1) {
-                                return attributeValue != criterion.value;
-                            } else if (criterion.predicate.indexOf("equals") != -1) {
-                                return attributeValue == criterion.value;
-                            } else if (criterion.predicate.indexOf("not-empty") != -1) {
-                                return !_.isEmpty(attributeValue);
-                            } else if (criterion.predicate.indexOf("empty") != -1) {
-                                return _.isEmpty(attributeValue);
-                            } else if (criterion.predicate.indexOf("not-contains") != -1) {
-                                return attributeValue.indexOf(criterion.value) == -1;
-                            } else if (criterion.predicate.indexOf("contains") != -1) {
-                                return attributeValue.indexOf(criterion.value) != -1;
-                            } else if (criterion.predicate.indexOf("not-empty") != -1) {
-                                return !_.isEmpty(attributeValue);
-                            } else if (criterion.predicate.indexOf("empty") != -1) {
-                                return _.isEmpty(attributeValue);
-                            }                    
-                            
+
                             switch (criterion.predicate) {
                                 case "boolean-true":
                                     return attributeValue === true;
@@ -1738,6 +1721,26 @@ ko.components.register("select2", {
                                     return attributeValue > Number(criterion.value);
                                 case "number-greater-or-equal":
                                     return attributeValue >= Number(criterion.value);
+                                case "assoc-contains":
+                                    return attributeValue.nodeRef.indexOf(criterion.value) != -1;
+                            }
+
+                            if (criterion.predicate.indexOf("not-equals") != -1) {
+                                return attributeValue != criterion.value;
+                            } else if (criterion.predicate.indexOf("equals") != -1) {
+                                return attributeValue == criterion.value;
+                            } else if (criterion.predicate.indexOf("not-empty") != -1) {
+                                return !_.isEmpty(attributeValue);
+                            } else if (criterion.predicate.indexOf("empty") != -1) {
+                                return _.isEmpty(attributeValue);
+                            } else if (criterion.predicate.indexOf("not-contains") != -1) {
+                                return attributeValue.indexOf(criterion.value) == -1;
+                            } else if (criterion.predicate.indexOf("contains") != -1) {
+                                return attributeValue.indexOf(criterion.value) != -1;
+                            } else if (criterion.predicate.indexOf("not-empty") != -1) {
+                                return !_.isEmpty(attributeValue);
+                            } else if (criterion.predicate.indexOf("empty") != -1) {
+                                return _.isEmpty(attributeValue);
                             }
                         }
                     })
