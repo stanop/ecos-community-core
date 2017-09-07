@@ -1967,18 +1967,25 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     };
 
     Node
-        .key('key', s)
-        .property('impl', NodeImpl)
-
-        .constructor([String], function(key) {
-        }, true)
         .init(function() {
             if(this.impl.loaded() == false) {
                 this.impl(new NodeImpl(this, {
                     nodeRef: this.key()
                 }));
             }
+
+            YAHOO.Bubbling.on("activityWasUpdated", _.bind(function(l, args) {
+                var nodeRef = args[1].nodeRef;
+                if (this.nodeRef == nodeRef) {
+                    this.impl().getAttribute("activ:activities").reset(true);
+                }
+            }, this))
         })
+
+        .key('key', s)
+        .property('impl', NodeImpl)
+
+        .constructor([String], function(key) { }, true)
         .constructor([Object], function(model) {
             var that = Node.call(this, model.key || model.nodeRef);
             that.impl(new NodeImpl(that, model));
@@ -1997,19 +2004,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .nativeProperty('id', function() {
             return this.nodeRef.replace(/^(.+):\/\/(.+)\/(.+)$/, '$3');
         })
-
         .nativeProperty('type', function() {
             return this.impl().typeFull();
         })
         .nativeProperty('typeShort', function() {
             return this.impl().typeShort();
-        })
-        .method('isSubType', function(name) {
-            if(Citeck.utils.isShortQName(name)) {
-                return this.impl().typeShort() == name || _.contains(_.invoke(this.impl().types(), 'shortQName'), name);
-            } else {
-                return this.impl().typeFull() == name || _.contains(_.invoke(this.impl().types(), 'fullQName'), name);
-            }
         })
         .nativeProperty('isCategory', function() {
             this.isSubType('cm:category');
@@ -2020,22 +2019,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .nativeProperty('isDocument', function() {
             this.isSubType('cm:content');
         }, true)
-
         .nativeProperty('aspects', function() {
             return _.invoke(this.impl().aspects(), 'shortQName');
         }, true)
-        .method('hasAspect', function(name) {
-            if(Citeck.utils.isShortQName(name)) {
-                return _.contains(_.invoke(this.impl().aspects(), 'shortQName'), name);
-            } else {
-                return _.contains(_.invoke(this.impl().aspects(), 'fullQName'), name);
-            }
-        })
-
-        .method('hasClassName', function(name) {
-            return _.contains(this.impl().classNames(), name);
-        })
-
         .nativeProperty('parent', function() {
             return this.impl().parent();
         })
@@ -2070,6 +2056,23 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
         })
 
+        .method('hasAspect', function(name) {
+            if(Citeck.utils.isShortQName(name)) {
+                return _.contains(_.invoke(this.impl().aspects(), 'shortQName'), name);
+            } else {
+                return _.contains(_.invoke(this.impl().aspects(), 'fullQName'), name);
+            }
+        })
+        .method('isSubType', function(name) {
+            if(Citeck.utils.isShortQName(name)) {
+                return this.impl().typeShort() == name || _.contains(_.invoke(this.impl().types(), 'shortQName'), name);
+            } else {
+                return this.impl().typeFull() == name || _.contains(_.invoke(this.impl().types(), 'fullQName'), name);
+            }
+        })
+        .method('hasClassName', function(name) {
+            return _.contains(this.impl().classNames(), name);
+        })
         .method('hasPermission', function(permission) {
             return this.resolve('impl.permissions.' + permission, false) == true;
         })
