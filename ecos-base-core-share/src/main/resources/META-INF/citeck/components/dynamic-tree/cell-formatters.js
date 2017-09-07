@@ -1756,7 +1756,26 @@
                     elCell.innerHTML = "";
                 }
             };
+        },
+
+		scannerIcon: function () {
+            return function (elCell, oRecord, oColumn, sData) {
+				var nodeRef = oRecord.getData("attributes['wfm:document']").nodeRef;
+				if(!nodeRef) {return;}
+				Alfresco.util.Ajax.request({
+					url: Alfresco.constants.PROXY_URI + "/api/citeck/has-scan?nodeRef=" + nodeRef,
+					successCallback: {
+						fn: function(response) {
+							if (response.json && response.json.hasScan && response.json.hasScan == "true") {
+								elCell.innerHTML = '<img src="'+ Alfresco.constants.URL_RESCONTEXT +'citeck/components/dynamic-tree/icons/scanner.png">';
+							}
+						}
+					},
+					execScripts: true
+				});
+            };
         }
+
 	});
 
 })();
