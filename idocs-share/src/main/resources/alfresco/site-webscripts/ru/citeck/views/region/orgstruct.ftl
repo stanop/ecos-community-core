@@ -13,7 +13,7 @@
 <#if config.scoped["InvariantControlsConfiguration"]?? &&
      config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
      config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"]??>
-        <#assign userLabel = config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"][0].attributes["label"]>
+        <#assign groupLabel = config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"][0].attributes["label"]>
 </#if>
 
 <#assign allExcludeFields>
