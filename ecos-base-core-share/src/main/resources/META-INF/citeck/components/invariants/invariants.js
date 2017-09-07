@@ -1916,7 +1916,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 var URLParams = "?attributes=" + this.unviewAttributeNames();
                 if (this.nodeRef()) { URLParams += "&nodeRef=" + this.nodeRef(); }
                 else { URLParams += "&type=" + this.type(); }
-                if (this.inlineEdit()) URLParams += "&inlineEdit=true"
+                if (this.runtime() && this.runtime().inlineEdit()) URLParams += "&inlineEdit=true"
 
                 Alfresco.util.Ajax.jsonGet({
                     url: Alfresco.constants.PROXY_URI + "citeck/invariants" + URLParams,
