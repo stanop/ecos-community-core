@@ -1164,7 +1164,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (!this.inlineEditVisibility()) this.inlineEditVisibility(true);
         })
         .method('inlineEditChanger', function(data, event) {
-            var isDraft = this.node().properties["invariants:isDraft"];
+            var isDraft = this.resolve("node.impl.isDraft");
 
             // save node if it valid
             if (this.inlineEditVisibility()) {
@@ -1211,7 +1211,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             Object.defineProperty(model, 'cache', { value: cache });
             return model;
         })
-                .method('href', function(data) {
+        .method('href', function(data) {
             if (data && data.toString().indexOf("invariants.Node") != -1) {
                 if (data.typeShort == "cm:person") {
                     if (Alfresco.constants.URI_TEMPLATES["userprofilepage"]) {
@@ -1881,7 +1881,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .load('defaultAttributeNames', function(impl) {
             var defaultAttributeNames = [
                 "cm:name", "attr:aspects", "attr:noderef", "attr:types",
-                "attr:parent", "attr:parentassoc", "cm:title"
+                "attr:parent", "attr:parentassoc", "cm:title", "invariants:isDraft"
             ];
 
             impl.defaultAttributeNames(defaultAttributeNames);
