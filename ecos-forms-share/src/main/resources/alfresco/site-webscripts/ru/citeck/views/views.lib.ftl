@@ -183,12 +183,14 @@
 	<#return false />
 </#function>
 
-<#macro renderQNames qnames>
+<#macro renderQNames qnames=[]>
+	<#if qnames?has_content>
 	[
 		<#list qnames as qname>
 			"${qname}"<#if qname_has_next>,</#if>
 		</#list>
 	]
+	<#else>null</#if>
 </#macro>
 
 <#macro renderInvariant invariant><#escape x as jsonUtils.encodeJSONString(x)>{
@@ -226,12 +228,14 @@
 		</#if>
 }</#escape></#macro>
 
-<#macro renderInvariants invariants>
-	[
-		<#list invariants as invariant>
-			<@renderInvariant invariant /><#if invariant_has_next>,</#if>
-		</#list>
-	]
+<#macro renderInvariants invariants=[]>
+	<#if invariants?has_content>
+		[
+			<#list invariants as invariant>
+				<@renderInvariant invariant /><#if invariant_has_next>,</#if>
+			</#list>
+		]
+	<#else>null</#if>
 </#macro>
 
 <#macro renderDefaultModel model>
@@ -286,8 +290,15 @@
 <#macro nodeViewWidget nodeRef="" type="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
-		<#assign invariantsRuntimeCache = view.params.invariantsRuntimeCache!"true" />
 		<#assign virtualParent = (args.param_virtualParent!"false") == "true" />
+		<#assign invariantsRuntimeCache = view.params.invariantsRuntimeCache!"true" />
+		<#assign independent = (view.params.independent!"false") == "true" />
+		
+		<#assign nodeKey>
+			<#if independent>"${runtimeKey}"<#else>
+				<#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>
+			</#if>
+		</#assign>
 
 		<#escape x as x?js_string>
 		require(['citeck/components/invariants/invariants', 'citeck/utils/knockout.invariants-controls', 'citeck/utils/knockout.yui'], function(InvariantsRuntime) {
@@ -299,19 +310,20 @@
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					virtualParent: <#if virtualParent>"${args.param_parentRuntime}"<#else>null</#if>,
 					formTemplate: "${view.template}",
+					independent: "${independent?string}",
 
 					<#if inlineEdit!false>inlineEdit: true,</#if>
 
 					node: {
-						key: <#if nodeRef?has_content>"${nodeRef}"<#else>"${runtimeKey}"</#if>,
+						key: "${nodeKey?trim}",
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
-						type: <#if type?has_content>"${type}"<#else>null</#if>,
+						<#if type?has_content>type: "${type}",</#if>
 						
-						classNames: <#if classNames??><@views.renderQNames classNames /><#else>null</#if>,
-						viewAttributeNames: <@views.renderValue attributeNames />,
+						<#if classNames?has_content>classNames: <@views.renderQNames classNames />,</#if>
+						<#if attributeNames?has_content>viewAttributeNames: <@views.renderValue attributeNames />,</#if>
 
 						_set: <@views.renderValue attributeSet />,
-						_invariants: <#if invariants??><@views.renderInvariants invariants /><#else>null</#if>,
+						_invariants: <@views.renderInvariants invariants />,
 
 						runtime: "${runtimeKey}",
 						defaultModel: <@views.renderDefaultModel defaultModel />,
