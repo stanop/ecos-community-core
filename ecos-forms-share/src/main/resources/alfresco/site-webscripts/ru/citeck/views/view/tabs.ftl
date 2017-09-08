@@ -45,8 +45,10 @@
 		<#assign tabId = tab.id!tab.params.setId />
 
 		<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
-			<!-- ko if: selected -->
-				<div class="tab-body" id="${args.htmlid}-${tabId}" data-tab-id="${tabId}" >
+			<!-- ko if: _rendered -->
+				<div class="tab-body" id="${args.htmlid}-${tabId}" data-tab-id="${tabId}" 
+					data-bind="css: { hidden: !selected() }"
+				>
 					<!-- ko with: $root.node().impl() -->
 						<@views.renderElement tab />
 					<!-- /ko -->

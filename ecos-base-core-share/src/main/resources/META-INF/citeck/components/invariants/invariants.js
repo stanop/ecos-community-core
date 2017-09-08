@@ -934,7 +934,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('disabled', function() {
             return this["protected"]() || !this._activity();
         })
-        .computed('selected', function() { return !this.hidden() && !this.disabled(); })
+        .computed('selected', function() { 
+            var selected = !this.hidden() && !this.disabled();
+            if (selected && !this._rendered()) this._rendered(selected);
+            return selected;
+        })
 
         .computed('attributes', function() {
             var attributes = this.resolve('node.impl.attributes', []);
@@ -981,6 +985,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this._visibility(true);
         })
         .load('_activity', function() { this._activity(true) })
+        .load('_rendered', function() { this._rendered(this._visibility()); })
         ;
 
     AttributeInfo
