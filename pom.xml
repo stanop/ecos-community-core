@@ -834,12 +834,12 @@
         <module>idocs-share</module>
         <module>contracts-repo</module>
         <module>contracts-share</module>
-        <!--<module>letters-repo</module>
+        <module>letters-repo</module>
         <module>letters-share</module>
         <module>meetings-repo</module>
         <module>meetings-share</module>
         <module>orders-repo</module>
-        <module>orders-share</module>-->
+        <module>orders-share</module>
     </modules>
 
     <repositories>
