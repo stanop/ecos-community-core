@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceException;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,8 +25,9 @@ import java.util.*;
 public class NodeChildAssociationsGet extends DeclarativeWebScript {
 
     private static final String DELIMITER = ",";
-    private static final String DOWNLOAD_API_PREFIX = "/api/node/workspace/SpacesStore/";
+    private static final String DOWNLOAD_API_PREFIX = "/api/node/content/workspace/SpacesStore/";
     private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
+    private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,"filename");
 
     /**
      * Request params
@@ -94,7 +96,8 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             ChildAssociationDto associationDto = new ChildAssociationDto();
             associationDto.setParentRef(topNodeRef.toString());
             associationDto.setNodeRef(childNodeRef.toString());
-            associationDto.setContentUrl(DOWNLOAD_API_PREFIX + childNodeRef.getId() + DOWNLOAD_API_SUFFIX);
+            String downloadURL = getDownloadURL(childNodeRef);
+            associationDto.setContentUrl(downloadURL);
             associationDto.setProperties(transformProperties(nodeService.getProperties(childNodeRef)));
             /** Child associations */
             List<ChildAssociationRef> childChildAssociationRefs = getChildAssociations(childNodeRef, childQNames);
@@ -105,9 +108,10 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
                     continue;
                 }
                 ChildAssociationDto childChildDto = new ChildAssociationDto();
+                String childDownloadURL = getDownloadURL(childChildRef);
                 childChildDto.setNodeRef(childChildRef.toString());
                 childChildDto.setParentRef(childNodeRef.toString());
-                childChildDto.setContentUrl(DOWNLOAD_API_PREFIX + childChildRef.getId() + DOWNLOAD_API_SUFFIX);
+                childChildDto.setContentUrl(childDownloadURL);
                 childChildDto.setProperties(transformProperties(nodeService.getProperties(childChildRef)));
                 dtoAccos.add(new AbstractMap.SimpleEntry<QName, ChildAssociationDto>(
                         childChildAssocRef.getTypeQName(),
@@ -118,6 +122,15 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             childAssociationDtos.add(associationDto);
         }
         return childAssociationDtos;
+    }
+
+    private String getDownloadURL(NodeRef nodeRef) {
+        Object fileName = nodeService.getProperty(nodeRef, PROP_FILE_NAME);
+        String downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + DOWNLOAD_API_SUFFIX;
+        if (fileName != null) {
+            downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + "/" + fileName.toString();
+        }
+        return downloadURL;
     }
 
     /**
