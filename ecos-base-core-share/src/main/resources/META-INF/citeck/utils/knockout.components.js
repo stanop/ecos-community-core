@@ -136,6 +136,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     "relevant": ko.observable(true),
 
                     "value": self.value,
+                    "singleValue": self.value,
+                    "multipleValues": self.value,
 
                     "title": ko.computed(function() {
                         var displayName = function () {
