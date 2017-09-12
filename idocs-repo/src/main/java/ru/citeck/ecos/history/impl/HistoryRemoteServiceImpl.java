@@ -283,17 +283,16 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
             requiresNew = true;
         }
-        txnHelper.doInTransaction(() -> {
-            try {
-                if (documentNodeRef != null) {
+        try {
+            txnHelper.doInTransaction(() -> {
+                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
                     nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
                 }
-            } catch (Exception e) {
-                logger.error("Unexpected error", e);
-            }
-            return null;
-        }, false, requiresNew);
-
+                return null;
+            }, false, requiresNew);
+        } catch (Exception e) {
+            logger.error("Unexpected error", e);
+        }
     }
 
     /**
