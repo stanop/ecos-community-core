@@ -134,7 +134,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     "protected": ko.observable(false),
                     "multiple": ko.observable(false),
                     "relevant": ko.observable(true),
-                    "singleValue" : self.value,
                     "value": self.value,
                     "singleValue": self.value,
                     "multipleValues": self.value,
