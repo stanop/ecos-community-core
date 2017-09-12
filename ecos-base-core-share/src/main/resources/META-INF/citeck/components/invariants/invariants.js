@@ -934,7 +934,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .computed('disabled', function() {
             return this["protected"]() || !this._activity();
         })
-        .computed('selected', function() { return !this.hidden() && !this.disabled(); })
+        .computed('selected', function() { 
+            var selected = !this.hidden() && !this.disabled();
+            if (selected && !this._rendered()) this._rendered(selected);
+            return selected;
+        })
 
         .computed('attributes', function() {
             var attributes = this.resolve('node.impl.attributes', []);
@@ -981,6 +985,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             this._visibility(true);
         })
         .load('_activity', function() { this._activity(true) })
+        .load('_rendered', function() { this._rendered(this._visibility()); })
         ;
 
     AttributeInfo
@@ -1819,6 +1824,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('getAttribute', function(name, params) {
             var listName = params ? params.listName : "attributes",
+                createNew = params ? params.createNew : true,
                 attribute, attributeObject;
 
             // first, find attribute on map
@@ -1830,20 +1836,22 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (attribute) { return attribute; }
 
             // third, create new attribute if definedAttributeNames contains it
-            if (this._definedAttributeNamesLoaded()) {
-                if (_.contains(this.definedAttributeNames(), name)) {
-                    if (!_.contains(this.unviewAttributeNames(), name)) {
-                        console.warn(
-                            "The '" + name + "' attribute is not in the form definition '" + this.type() + "'.", 
-                            "Attribute will be loaded automatically. "
-                        );
-                        
-                        this.unviewAttributeNames.push(name);
+            if (createNew) {
+                if (this._definedAttributeNamesLoaded()) {
+                    if (_.contains(this.definedAttributeNames(), name)) {
+                        if (!_.contains(this.unviewAttributeNames(), name)) {
+                            console.warn(
+                                "The '" + name + "' attribute is not in the form definition '" + this.type() + "'.", 
+                                "Attribute will be loaded automatically. "
+                            );
+                            
+                            this.unviewAttributeNames.push(name);
+                        }
                     }
                 }
-            }
 
-            return new Attribute(this.node(), name);
+                return new Attribute(this.node(), name); 
+            } else { return undefined; }
         })
         .method('getChangedAttributes', function() {
             return _.filter(this.attributes() || [], function(attr) {
@@ -2362,6 +2370,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('parent', Runtime)
         .property('inlineEdit', b)
         .property('virtualParent', b)
+        .property('independent', b)
 
         .property('_loading', b)
 
