@@ -11,7 +11,7 @@
             attribute = request.get('attribute'),
             value = node ? attributes.get(node, attribute) : null;
 
-        if (value == null) {
+        if (isEmptyValue(value)) {
             values.push({
                 nodeRef: nodeRef,
                 attribute: attribute,
@@ -30,3 +30,14 @@
     model.values = values;
     
 })();
+
+function isEmptyValue(value) {
+
+    if (value == null) {
+        return true;
+    } else if (value instanceof Packages.java.util.Collection) {
+        return value.size() === 0;
+    }
+
+    return false;
+}
