@@ -296,7 +296,7 @@
 		
 		<#assign nodeKey>
 			<#if independent>"${runtimeKey}"<#else>
-				<#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>
+				<#if nodeRef?has_content>"${nodeRef}"<#else>"${runtimeKey}"</#if>
 			</#if>
 		</#assign>
 
