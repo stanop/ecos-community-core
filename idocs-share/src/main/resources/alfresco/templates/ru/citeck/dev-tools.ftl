@@ -77,8 +77,8 @@ iframe:hover {
         </form>
     </div>
     <iframe name="repo-webscripts" width="500px"></iframe>
-    <iframe name="repo-js-debugger" src="/alfresco/service/api/javascript/debugger"></iframe>
-    <iframe name="repo-modules" src="/alfresco/service/modules/info.html" width="500px"></iframe>
+    <iframe name="repo-js-debugger" src="/share/proxy/alfresco/api/javascript/debugger"></iframe>
+    <iframe name="repo-modules" src="/share/proxy/alfresco/modules/info.html" width="500px"></iframe>
 
     <h2>Share Tools</h2>
     
