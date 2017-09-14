@@ -1760,6 +1760,7 @@
 
 		scannerIcon: function () {
             return function (elCell, oRecord, oColumn, sData) {
+            	if(!oRecord.getData("attributes['wfm:document']")) {return;}
 				var nodeRef = oRecord.getData("attributes['wfm:document']").nodeRef;
 				if(!nodeRef) {return;}
 				Alfresco.util.Ajax.request({
