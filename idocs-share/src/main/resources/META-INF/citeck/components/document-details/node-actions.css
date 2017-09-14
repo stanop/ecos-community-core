@@ -118,6 +118,10 @@
     content: '\f02a'; /* barcode */
 }
 
+.node-actions .doclist .action-set [class*="server-node-action"] a span::before {
+    content: '\f045'; /* share-square-o */
+}
+
 /* --------------------- */
 /*     special styles    */
 /* --------------------- */
