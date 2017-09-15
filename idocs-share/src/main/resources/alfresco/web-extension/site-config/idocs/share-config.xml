@@ -10,6 +10,7 @@
               <js src="/modules/create-site.js"/>
              
               <js src="/modules/common/ie_fix.js"/>
+              <js src="/citeck/components/site/custom-create-site.js"/>
               <js src="/citeck/components/form/constraints.js"/>
 
               <js src="/citeck/mobile/mobile.js" />

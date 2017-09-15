@@ -211,7 +211,7 @@ if (siteMenuItems.length) {
 
 // APP MENU ITEMS
 var createSiteClickEvent = function(event, element) {
-  Alfresco.module.getCreateSiteInstance().show(); 
+    Citeck.module.getCreateSiteInstance().show();
 };
  
 var HEADER_SITES_VARIANTS = {
