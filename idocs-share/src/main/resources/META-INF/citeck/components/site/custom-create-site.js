@@ -303,15 +303,15 @@
                 {
                     // The site has been successfully created - add it to the user's favourites and navigate to it
                     var preferencesService = new Alfresco.service.Preferences(),
-                        shortName = response.config.dataObj.shortName;
+                        redirect =  response.config.dataObj.shortName + (response.config.dataObj.sitePreset == "document-site-dashboard" ? "/site-document-types" : "/dashboard");
 
-                    preferencesService.favouriteSite(shortName,
+                    preferencesService.favouriteSite(redirect,
                         {
                             successCallback:
                                 {
                                     fn: function CreateSite_onCreateSiteSuccess_successCallback()
                                     {
-                                        document.location.href = Alfresco.constants.URL_PAGECONTEXT + "site/" + shortName + "/site-document-types";
+                                        document.location.href = Alfresco.constants.URL_PAGECONTEXT + "site/" + redirect;
                                     }
                                 }
                         });
