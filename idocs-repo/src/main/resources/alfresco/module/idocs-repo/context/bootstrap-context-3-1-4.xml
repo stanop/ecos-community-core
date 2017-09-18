@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-1-4" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.1.4" />
+        <property name="appliesFromVersion" value="3.1.4" />
+    </bean>
+
+    <bean id="idocs.module-component.case-process-cardlets" parent="idocs.import-spaces.3-1-0">
+        <property name="name" value="case-process-cardlets" />
+        <property name="description" value="Case Process Cardlets" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+                <ref bean="idocs.module-component.system-journals.cardmodes" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-process-mode</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.update-case-tasks-configs" parent="idocs.import-spaces.3-1-0">
+        <property name="name" value="update-case-tasks-configs" />
+        <property name="description" value="Update case tasks configs" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.tasks-case-element-configs" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/update-config.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cases/case-tasks</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.update-tasks-and-roles-cardlets" parent="idocs.import-spaces.3-1-0">
+        <property name="name" value="update-tasks-and-roles-cardlets" />
+        <property name="description" value="Update tasks and roles cardlets" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.cardlets-cmobject" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case-tasks/case-tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case-roles/case-roles</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>
