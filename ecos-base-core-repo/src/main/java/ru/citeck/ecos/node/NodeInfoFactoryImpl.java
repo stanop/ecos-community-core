@@ -453,7 +453,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 				continue;
 			}
 			
-			logger.warn("Found non-registered property (association), ignoring it: " + name);
+			logger.debug("Found non-registered property (association), ignoring it: " + name);
 		}
 	}
 

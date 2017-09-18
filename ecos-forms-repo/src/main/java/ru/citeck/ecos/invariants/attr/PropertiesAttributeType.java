@@ -206,7 +206,7 @@ public class PropertiesAttributeType extends AbstractInvariantAttributeType {
                                 !reConstraint.getRequiresMatch()
                         )).build());
             } else {
-                logger.info("Constraint class not supported, ignoring: " + constraint.getClass());
+                logger.debug("Constraint class not supported, ignoring: " + constraint.getClass());
             }
         }
         return invariants;
