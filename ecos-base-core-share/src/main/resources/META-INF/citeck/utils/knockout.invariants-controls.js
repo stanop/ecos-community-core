@@ -557,7 +557,7 @@ ko.bindingHandlers.dateControl = {
                 input.setAttribute("max", (year + 50) + "-12-31");
                 input.setAttribute("min", (year - 25) + "-12-31");
 
-                Dom.setStyle(input, "color", "lightgray");
+                Dom.setStyle(input, "color", value() ? "" : "lightgray");
                 value.subscribe(function(value) {
                   Dom.setStyle(input, "color", value ? "" : "lightgray");
                 });
