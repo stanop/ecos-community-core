@@ -28,6 +28,7 @@ import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.ParameterCheck;
 import ru.citeck.ecos.model.CounterModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
@@ -38,8 +39,7 @@ import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.exception.ExceptionService;
 import ru.citeck.ecos.exception.ExceptionTranslator;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class EnumerationServiceImpl implements EnumerationService 
 {
@@ -57,20 +57,36 @@ public class EnumerationServiceImpl implements EnumerationService
     
     @Override
     public NodeRef getTemplate(String templateName) {
-        // search autonumber template by name
-        String query = String.format("TYPE:\"%s\" AND @%s: \"%s\"", 
-                CounterModel.TYPE_AUTONUMBER_TEMPLATE, 
-                ContentModel.PROP_NAME, 
-                templateName);
-        ResultSet results = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, 
-                SearchService.LANGUAGE_FTS_ALFRESCO, query);
-        if(results == null || results.length() == 0) {
-            return null;
+
+        ParameterCheck.mandatoryString("templateName", templateName);
+
+        StringBuilder query = new StringBuilder(String.format("TYPE:\"%s\"", CounterModel.TYPE_AUTONUMBER_TEMPLATE));
+        String[] nameTokens = templateName.split("-");
+        for (String nameToken : nameTokens) {
+            query.append(String.format(" AND @%s:\"%s\"", ContentModel.PROP_NAME, nameToken));
         }
-        
-        return results.getNodeRef(0);
+
+        ResultSet resultSet = null;
+        List<NodeRef> resultList = Collections.emptyList();
+        try {
+            resultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+                                            SearchService.LANGUAGE_FTS_ALFRESCO, query.toString());
+            if (resultSet != null) {
+                resultList = resultSet.getNodeRefs();
+            }
+        } finally {
+            if (resultSet != null) resultSet.close();
+        }
+
+        for (NodeRef ref : resultList) {
+            Object name = nodeService.getProperty(ref, ContentModel.PROP_NAME);
+            if (templateName.equals(name)) {
+                return ref;
+            }
+        }
+        return null;
     }
-    
+
     @Override
     public boolean isTemplate(NodeRef nodeRef) {
         if(!nodeService.exists(nodeRef)) {
