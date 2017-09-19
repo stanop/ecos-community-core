@@ -63,6 +63,7 @@ ko.bindingHandlers.yuiPaginator = {
         pag.subscribe("changeRequest", function(state) {
             cfg.recordOffset(state.recordOffset);
             cfg.rowsPerPage(state.rowsPerPage);
+            $('html,body').animate({ scrollTop: 0 }, 100 );
         });
     },
     update: function(element, valueAccessor) {
