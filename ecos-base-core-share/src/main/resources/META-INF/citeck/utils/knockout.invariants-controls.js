@@ -1696,6 +1696,10 @@ ko.components.register("select2", {
                             attributeValue = self.optionFilter ? attributeComputed() : attributeComputed.value();
                         
                         if (attributeValue != null) {
+                            if (criterion.predicate.indexOf("string") != -1) {
+                                attributeValue = attributeValue.toLowerCase();
+                                criterion.value = criterion.value.toLowerCase();
+                            }
 
                             switch (criterion.predicate) {
                                 case "boolean-true":
@@ -1723,6 +1727,8 @@ ko.components.register("select2", {
                                     return attributeValue >= Number(criterion.value);
                                 case "assoc-contains":
                                     return attributeValue.nodeRef.indexOf(criterion.value) != -1;
+                                case "assoc-not-contains":
+                                    return attributeValue.nodeRef.indexOf(criterion.value) == -1;
                             }
 
                             if (criterion.predicate.indexOf("not-equals") != -1) {
