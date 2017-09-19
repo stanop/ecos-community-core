@@ -54,7 +54,8 @@
         <property name="description" value="Update tasks and roles cardlets" />
         <property name="dependsOn">
             <list>
-                <ref bean="idocs.module-component.cardlets-cmobject" />
+                <ref bean="idocs.module-component.cardlets-case-roles" />
+                <ref bean="idocs.module-component.cardlets-case-tasks" />
             </list>
         </property>
         <property name="bootstrapViews">
