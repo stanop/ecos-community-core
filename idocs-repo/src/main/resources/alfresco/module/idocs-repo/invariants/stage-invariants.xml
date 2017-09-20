@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req" />
+        <import uri="http://www.citeck.ru/model/stages/1.0" prefix="stages" />
+    </imports>
+
+    <type name="activ:activity">
+        <associations type="req:completenessLevel">
+            <invariant on="relevant" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity")) parent = parent.parent;
+                    return parent.hasAspect("req:hasCompletenessLevels");
+                })();
+            </invariant>
+        </associations>
+        
+        <association name="stages:startCompletenessLevelsRestriction">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity")) parent = parent.parent;
+                    var result = [];
+                    if (parent) {
+                        var levels = parent.assocs["req:completenessLevels"];
+                        for (var i in levels) result.push(levels[i]);
+                    }
+                    return result;
+                })();
+            </invariant>
+        </association>
+
+        <association name="stages:stopCompletenessLevelsRestriction">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity")) parent = parent.parent;
+                    var result = [];
+                    if (parent) {
+                        var levels = parent.assocs["req:completenessLevels"];
+                        for (var i in levels) result.push(levels[i]);
+                    }
+                    return result;
+                })();
+            </invariant>
+        </association>
+
+    </type>
+
+</invariants>

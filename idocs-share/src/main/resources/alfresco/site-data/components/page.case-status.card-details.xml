@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+    <scope>page</scope>
+    <source-id>card-details</source-id>
+    <region-id>case-status</region-id>
+	<url>/citeck/components/case-status</url>
+	<properties>
+		<nodeRef>{nodeRef}</nodeRef>
+        <twisterKey>case-status</twisterKey>
+	</properties>
+</component>

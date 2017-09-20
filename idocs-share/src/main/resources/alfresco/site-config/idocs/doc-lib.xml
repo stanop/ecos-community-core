@@ -1,81 +1,89 @@
 <alfresco-config>
 
-	<config evaluator="string-compare" condition="DocLibActions" replace="false">
-		<actions>
-			<action id="document-download">
-				<param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}</param>
-				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
-			</action>
-			<action id="document-publish" type="javascript" label="actions.document.publish">
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-			</action>
-			<action id="document-view-content">
-				<param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}&amp;download=false</param>
-				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-			</action>
-			<action id="document-edit-metadata" type="pagelink">
-				<param name="page">node-edit?nodeRef={node.nodeRef}</param>
-			</action>
-			<action id="role-edit-properties" type="javascript" label="actions.role.edit-properties">
-				<param name="function">onActionDialogForm</param>
-				<param name="formId">journal</param>
-			</action>
-			<action id="role-edit-properties-cardlet" type="javascript" label="actions.role.edit-properties">
-				<param name="function">onActionDialogForm</param>
-				<param name="formId">case</param>
-			</action>
-			<action id="document-edit-properties" type="javascript">
-				<param name="function">onActionDialogForm</param>
-				<param name="formId">doclib-simple-metadata</param>
-			</action>
-			<action id="document-inline-edit" type="pagelink">
-				<param name="page">node-edit?nodeRef={node.nodeRef}&amp;viewId=doclib-inline-edit</param>
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-			</action>
-			<action id="document-move-to">
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-			</action>
-			<action id="document-assign-workflow">
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-				<evaluator negate="true">evaluator.doclib.ecos.document</evaluator>
-			</action>
-			<action id="document-manage-site-permissions">
-				<evaluator>evaluator.doclib.action.disableAction</evaluator>
-			</action>
-			<action id="document-manage-repo-permissions">
-				<evaluator>evaluator.doclib.action.disableAction</evaluator>
-			</action>
-			<action id="document-manage-granular-permissions">
-				<evaluator>evaluator.doclib.action.disableAction</evaluator>
-			</action>
-			<action id="document-manage-aspects">
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-			</action>
-			<action id="document-change-type">
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-			</action>
-			<action id="document-delete">
-				<evaluator negate="true">evaluator.doclib.action.isUndeletable</evaluator>
-			</action>
-			<action id="document-open-event" type="javascript" label="actions.document.open-event">
-				<param name="function">onActionOpenCalendarEvent</param>
-				<evaluator>evaluator.doclib.action.siteBased</evaluator>
-				<evaluator>evaluator.doclib.ia.calendarEvent</evaluator>
-				<evaluator>evaluator.doclib.ia.hasFromDate</evaluator>
-			</action>
-		</actions>
-	</config>
+    <config evaluator="string-compare" condition="DocLibActions" replace="false">
+        <actions>
+            <action id="document-download">
+                <param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}</param>
+                <evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
+            </action>
+            <action id="document-publish" type="javascript" label="actions.document.publish">
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+            </action>
+            <action id="document-view-content">
+                <param name="href">/share/proxy/alfresco/citeck/print/content?nodeRef={nodeRef}&amp;download=false</param>
+                <evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+            </action>
+            <action id="document-edit-metadata" type="pagelink">
+                <param name="page">node-edit?nodeRef={node.nodeRef}</param>
+            </action>
+            <action id="role-edit-properties" type="javascript" label="actions.role.edit-properties">
+                <param name="function">onActionDialogForm</param>
+                <param name="formId">journal</param>
+            </action>
+            <action id="role-edit-properties-cardlet" type="javascript" label="actions.role.edit-properties">
+                <param name="function">onActionDialogForm</param>
+                <param name="formId">case</param>
+            </action>
+            <action id="document-edit-properties" type="javascript">
+                <param name="function">onActionDialogForm</param>
+                <param name="formId">doclib-simple-metadata</param>
+            </action>
+            <action id="document-inline-edit" type="pagelink">
+                <param name="page">node-edit?nodeRef={node.nodeRef}&amp;viewId=doclib-inline-edit</param>
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+            </action>
+            <action id="document-move-to">
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+            </action>
+            <action id="document-assign-workflow">
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+                <evaluator negate="true">evaluator.doclib.ecos.document</evaluator>
+            </action>
+            <action id="document-manage-site-permissions">
+                <evaluator>evaluator.doclib.action.disableAction</evaluator>
+            </action>
+            <action id="document-manage-repo-permissions">
+                <evaluator>evaluator.doclib.action.disableAction</evaluator>
+            </action>
+            <action id="document-manage-granular-permissions">
+                <evaluator>evaluator.doclib.action.disableAction</evaluator>
+            </action>
+            <action id="document-manage-aspects">
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+            </action>
+            <action id="document-change-type">
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+            </action>
+            <action id="document-delete">
+                <evaluator negate="true">evaluator.doclib.action.isUndeletable</evaluator>
+            </action>
+            <action id="document-open-event" type="javascript" label="actions.document.open-event">
+                <param name="function">onActionOpenCalendarEvent</param>
+                <evaluator>evaluator.doclib.action.siteBased</evaluator>
+                <evaluator>evaluator.doclib.ia.calendarEvent</evaluator>
+                <evaluator>evaluator.doclib.ia.hasFromDate</evaluator>
+            </action>
+            <action id="export-case-template" type="link" label="actions.document.export-case-template"
+                    icon="export-case-template">
+                <param name="href">/share/proxy/alfresco/case/export?nodeRef={node.nodeRef}</param>
+            </action>
+            <action id="import-case-template" type="javascript" label="actions.document.import-case-template"
+                    icon="import-case-template">
+                <param name="function">importCaseTemplate</param>
+            </action>
+        </actions>
+    </config>
 
-	<config evaluator="string-compare" condition="DocLibActions">
-		<!--Action definitions -->
-		<actions>
+    <config evaluator="string-compare" condition="DocLibActions">
+        <!--Action definitions -->
+        <actions>
             <!-- Custom manage permissions -->
             <action id="custom-manage-permissions" type="pagelink" icon="document-manage-permissions" label="actions.document.manage-permissions">
                 <param name="page">manage-permissions?nodeRef={node.nodeRef}</param>
@@ -84,97 +92,97 @@
                 </permissions>
             </action>
 
-			<!-- Print -->
-			<action id="document-print" type="link" label="actions.document.print">
-				<param name="href">/share/proxy/alfresco/citeck/print/printpdf?nodeRef={node.nodeRef}&amp;print=true</param>
-				<param name="target">_blank</param>
-				<evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
-			</action>
+            <!-- Print -->
+            <action id="document-print" type="link" label="actions.document.print">
+                <param name="href">/share/proxy/alfresco/citeck/print/printpdf?nodeRef={node.nodeRef}&amp;print=true</param>
+                <param name="target">_blank</param>
+                <evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
+            </action>
 
-			<!-- Start confirm workflow -->
-			<action id="document-start-confirm" type="link" icon="document-assign-workflow" label="actions.document.start-confirm">
-				<param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$confirm</param>
-				<permissions>
-					<permission allow="true">Write</permission>
-				</permissions>
-				<evaluator>evaluator.doclib.ecos.document</evaluator>
-			</action>
+            <!-- Start confirm workflow -->
+            <action id="document-start-confirm" type="link" icon="document-assign-workflow" label="actions.document.start-confirm">
+                <param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$confirm</param>
+                <permissions>
+                    <permission allow="true">Write</permission>
+                </permissions>
+                <evaluator>evaluator.doclib.ecos.document</evaluator>
+            </action>
 
-			<!-- Start perform workflow -->
-			<action id="document-start-statement" type="link" icon="document-assign-workflow" label="actions.document.start-statement">
-				<param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$perform</param>
-			</action>
+            <!-- Start perform workflow -->
+            <action id="document-start-statement" type="link" icon="document-assign-workflow" label="actions.document.start-statement">
+                <param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$perform</param>
+            </action>
 
-			<!-- compare with latest fixed version -->
-			<action id="document-compare-with-fixed" label="actions.document.compare-with-fixed" icon="document-compare" type="link">
-				<param name="href">/share/page/versions-difference?nodeRef={node.nodeRef}&amp;versRef={node.properties.wfcf:confirmableVersion}</param>
-				<param name="target">_blank</param>
-				<evaluator>evaluator.doclib.dms.documentHasConfirmableVersion</evaluator>
-			</action>
+            <!-- compare with latest fixed version -->
+            <action id="document-compare-with-fixed" label="actions.document.compare-with-fixed" icon="document-compare" type="link">
+                <param name="href">/share/page/versions-difference?nodeRef={node.nodeRef}&amp;versRef={node.properties.wfcf:confirmableVersion}</param>
+                <param name="target">_blank</param>
+                <evaluator>evaluator.doclib.dms.documentHasConfirmableVersion</evaluator>
+            </action>
 
-			<!-- compare with latest considered version -->
-			<action id="document-compare-with-considered" label="actions.document.compare-with-considered" icon="document-compare" type="javascript">
-				<param name="function">onActionCompareWithConsidered</param>
-				<evaluator>evaluator.doclib.dms.documentHasConsideredVersion</evaluator>
-				<evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
-			</action>
+            <!-- compare with latest considered version -->
+            <action id="document-compare-with-considered" label="actions.document.compare-with-considered" icon="document-compare" type="javascript">
+                <param name="function">onActionCompareWithConsidered</param>
+                <evaluator>evaluator.doclib.dms.documentHasConsideredVersion</evaluator>
+                <evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
+            </action>
 
-			<!-- confirm current version -->
-			<action id="document-confirm" label="actions.document.confirm" type="javascript">
-				<param name="function">onActionConfirm</param>
-				<evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
-			</action>
+            <!-- confirm current version -->
+            <action id="document-confirm" label="actions.document.confirm" type="javascript">
+                <param name="function">onActionConfirm</param>
+                <evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
+            </action>
 
-			<!-- decline current version -->
-			<action id="document-decline" label="actions.document.decline" type="javascript">
-				<param name="function">onActionDecline</param>
-				<evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
-			</action>
+            <!-- decline current version -->
+            <action id="document-decline" label="actions.document.decline" type="javascript">
+                <param name="function">onActionDecline</param>
+                <evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
+            </action>
 
-			<!-- make in-place copy -->
-			<action id="document-copy-in-place" label="actions.document.copy.in-place" icon="document-copy-to" type="javascript">
-				<param name="function">onActionCopyInPlace</param>
-				<evaluator>evaluator.parent.canCreateChildren</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
-				<evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
-			</action>
+            <!-- make in-place copy -->
+            <action id="document-copy-in-place" label="actions.document.copy.in-place" icon="document-copy-to" type="javascript">
+                <param name="function">onActionCopyInPlace</param>
+                <evaluator>evaluator.parent.canCreateChildren</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+            </action>
 
-			<!-- delete case item -->
-			<action id="document-delete-case-item" label="actions.document.delete" icon="document-delete" type="javascript">
-				<param name="function">onActionRemoveCaseItem</param>
-				<permissions>
-					<permission allow="true">Delete</permission>
-				</permissions>
-				<evaluator negate="true">evaluator.doclib.action.isLocked</evaluator>
-				<evaluator negate="true">evaluator.doclib.action.isUndeletable</evaluator>
-			</action>
+            <!-- delete case item -->
+            <action id="document-delete-case-item" label="actions.document.delete" icon="document-delete" type="javascript">
+                <param name="function">onActionRemoveCaseItem</param>
+                <permissions>
+                    <permission allow="true">Delete</permission>
+                </permissions>
+                <evaluator negate="true">evaluator.doclib.action.isLocked</evaluator>
+                <evaluator negate="true">evaluator.doclib.action.isUndeletable</evaluator>
+            </action>
 
-			<!-- opens document-details page in new tab/window -->
-			<!-- caution: webapp context (share) is hardcoded in the link -->
-			<action id="document-view-details" type="link" label="actions.document.view-details">
-				<param name="href">/share/page/card-details?nodeRef={node.nodeRef}</param>
-				<param name="target">_blank</param>
-			</action>
+            <!-- opens document-details page in new tab/window -->
+            <!-- caution: webapp context (share) is hardcoded in the link -->
+            <action id="document-view-details" type="link" label="actions.document.view-details">
+                <param name="href">/share/page/card-details?nodeRef={node.nodeRef}</param>
+                <param name="target">_blank</param>
+            </action>
 
-			<action id="document-version-view-details" type="javascript" label="actions.document.view-details"
-					icon="document-view-details">
-				<param name="function">onVersionDocumentViewDetails</param>
-			</action>
+            <action id="document-version-view-details" type="javascript" label="actions.document.view-details"
+                    icon="document-view-details">
+                <param name="function">onVersionDocumentViewDetails</param>
+            </action>
 
-			<!-- Fill document template -->
-			<action id="document-fill-template" label="actions.document.fill-template"
-					type="javascript">
-				<param name="function">onDocumentFillTemplateDialog</param>
-				<permissions>
-					<permission allow="true">Write</permission>
-				</permissions>
-				<evaluator>evaluator.doclib.dms.hasTemplate</evaluator>
-			</action>
+            <!-- Fill document template -->
+            <action id="document-fill-template" label="actions.document.fill-template"
+                    type="javascript">
+                <param name="function">onDocumentFillTemplateDialog</param>
+                <permissions>
+                    <permission allow="true">Write</permission>
+                </permissions>
+                <evaluator>evaluator.doclib.dms.hasTemplate</evaluator>
+            </action>
 
-			<!-- unselect document in doclib-select control -->
-			<action id="document-unselect" label="actions.document.unselect" type="javascript">
-				<param name="function">onActionUnselect</param>
-			</action>
+            <!-- unselect document in doclib-select control -->
+            <action id="document-unselect" label="actions.document.unselect" type="javascript">
+                <param name="function">onActionUnselect</param>
+            </action>
 
             <!-- Download considerable document -->
             <action id="document-considerable-download" type="javascript" label="actions.document.download"
@@ -188,17 +196,17 @@
                 <param name="target">_blank</param>
             </action>
 
-			<!-- Confirm-list -->
-			<action id="document-download-confirm-list" type="link" label="actions.document.download-confirm-list" icon="document-approval-history">
-				<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=confirm-list&amp;format=docx&amp;download=true</param>
-				<evaluator>evaluator.doclib.idocs.isConfirmedDocument</evaluator>
-			</action>
+            <!-- Confirm-list -->
+            <action id="document-download-confirm-list" type="link" label="actions.document.download-confirm-list" icon="document-approval-history">
+                <param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=confirm-list&amp;format=docx&amp;download=true</param>
+                <evaluator>evaluator.doclib.idocs.isConfirmedDocument</evaluator>
+            </action>
 
-			<action id="document-print-confirm-list" type="link" label="actions.document.print-confirm-list" icon="document-approval-history">
-				<param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=confirm-list&amp;format=pdf&amp;download=false</param>
-				<param name="target">_blank</param>
-				<evaluator>evaluator.doclib.idocs.isConfirmedDocument</evaluator>
-			</action>
+            <action id="document-print-confirm-list" type="link" label="actions.document.print-confirm-list" icon="document-approval-history">
+                <param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=confirm-list&amp;format=pdf&amp;download=false</param>
+                <param name="target">_blank</param>
+                <evaluator>evaluator.doclib.idocs.isConfirmedDocument</evaluator>
+            </action>
 
             <!-- Update considerable document -->
             <action id="document-update-version" type="javascript" label="actions.document.update">
@@ -236,212 +244,229 @@
                 <param name="page">workflow-details?workflowId={node.properties.wfm:workflowId}&amp;taskId={node.properties.cm:name}</param>
             </action>
             
-			<action id="case-save-as-template" type="javascript" label="actions.case.save-as-template">
-				<param name="function">onActionCaseSaveAsTemplate</param>
-				<evaluator>evaluator.doclib.idocs.isCase</evaluator>
-				<evaluator>evaluator.doclib.dms.isAdmin</evaluator>
-			</action>
+            <action id="case-save-as-template" type="javascript" label="actions.case.save-as-template">
+                <param name="function">onActionCaseSaveAsTemplate</param>
+                <evaluator>evaluator.doclib.idocs.isCase</evaluator>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
+            </action>
 
-			<action id="document-start-task" type="javascript" label="actions.task.start">
-				<param name="function">onActionCaseStartTask</param>
-			</action>
-		</actions>
+            <action id="document-start-task" type="javascript" label="actions.task.start">
+                <param name="function">onActionCaseStartTask</param>
+            </action>
+        </actions>
 
-		<actionGroups>
-			<actionGroup id="document-browse">
-				<action index="99" id="custom-manage-permissions" />
-			</actionGroup>
+        <actionGroups>
+            <actionGroup id="document-browse">
+                <action index="99" id="custom-manage-permissions" />
+            </actionGroup>
 
-			<actionGroup id="document-details">
-				<action index="200" id="document-print" />
-				<action index="250" id="case-save-as-template" />
-				<action index="99" id="custom-manage-permissions" />
-				<action index="450" id="document-fill-template" />
-				<action index="500" id="document-start-statement" />
-				<action index="550" id="document-start-confirm" />
-			</actionGroup>
+            <actionGroup id="document-details">
+                <action index="200" id="document-print" />
+                <action index="250" id="case-save-as-template" />
+                <action index="99" id="custom-manage-permissions" />
+                <action index="450" id="document-fill-template" />
+                <action index="500" id="document-start-statement" />
+                <action index="550" id="document-start-confirm" />
+            </actionGroup>
 
-			<actionGroup id="folder-browse">
-				<action index="99" id="custom-manage-permissions" />
-			</actionGroup>
+            <actionGroup id="folder-browse">
+                <action index="99" id="custom-manage-permissions" />
+            </actionGroup>
 
-			<actionGroup id="folder-details">
-				<action index="250" id="case-save-as-template" />
-				<action index="99" id="custom-manage-permissions" />
-			</actionGroup>
+            <actionGroup id="folder-details">
+                <action index="250" id="case-save-as-template" />
+                <action index="99" id="custom-manage-permissions" />
+            </actionGroup>
 
-			<!-- special doclib picker action-groups -->
-			<actionGroup id="document-picker">
-				<action index="10" id="document-download" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-unselect" />
-			</actionGroup>
+            <!-- special doclib picker action-groups -->
+            <actionGroup id="document-picker">
+                <action index="10" id="document-download" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-unselect" />
+            </actionGroup>
 
-			<!-- doclib picker action-group for confirm task -->
-			<actionGroup id="document-confirm">
-				<action index="10" id="document-confirm" />
-				<action index="20" id="document-decline" />
-				<action index="30" id="document-compare-with-considered" />
-				<action index="40" id="document-version-view-details" />
-				<action index="50" id="document-considerable-download" />
-				<!--<action index="60" id="document-update-version" />-->
-				<!--<action index="40" id="document-compare-with-fixed" />-->
-			</actionGroup>
+            <!-- doclib picker action-group for confirm task -->
+            <actionGroup id="document-confirm">
+                <action index="10" id="document-confirm" />
+                <action index="20" id="document-decline" />
+                <action index="30" id="document-compare-with-considered" />
+                <action index="40" id="document-version-view-details" />
+                <action index="50" id="document-considerable-download" />
+                <!--<action index="60" id="document-update-version" />-->
+                <!--<action index="40" id="document-compare-with-fixed" />-->
+            </actionGroup>
 
-			<!-- doclib picker action-group for correct task -->
-			<actionGroup id="document-correct">
-				<action index="10" id="document-download" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-edit-online" />
-				<action index="40" id="document-upload-new-version" />
-			</actionGroup>
+            <!-- doclib picker action-group for correct task -->
+            <actionGroup id="document-correct">
+                <action index="10" id="document-download" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-edit-online" />
+                <action index="40" id="document-upload-new-version" />
+            </actionGroup>
 
-			<actionGroup id="document-supplementary-files">
-				<action index="10" id="document-download" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-delete" />
-			</actionGroup>
+            <actionGroup id="document-supplementary-files">
+                <action index="10" id="document-download" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-delete" />
+            </actionGroup>
 
-			<actionGroup id="document-incalendar-case">
-				<action index="10" id="document-open-event" />
-				<action index="20" id="document-edit-properties" />
-				<action index="30" id="document-delete-case-item" />
-			</actionGroup>
+            <actionGroup id="document-incalendar-case">
+                <action index="10" id="document-open-event" />
+                <action index="20" id="document-edit-properties" />
+                <action index="30" id="document-delete-case-item" />
+            </actionGroup>
 
-			<actionGroup id="document-incase">
-				<action index="10" id="document-download" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-delete-case-item" />
-			</actionGroup>
+            <actionGroup id="document-incase">
+                <action index="10" id="document-download" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-delete-case-item" />
+            </actionGroup>
 
-			<actionGroup id="document-injournal">
-				<action index="10" id="document-download" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-edit-properties" />
-				<action index="40" id="document-delete" />
-			</actionGroup>
+            <actionGroup id="document-injournal">
+                <action index="10" id="document-download" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-edit-properties" />
+                <action index="40" id="document-delete" />
+            </actionGroup>
 
-			<actionGroup id="folder-injournal">
-				<action index="10" id="document-view-details" />
-				<action index="20" id="document-edit-properties" />
-				<action index="30" id="document-delete" />
-			</actionGroup>
+            <actionGroup id="folder-injournal">
+                <action index="10" id="document-view-details" />
+                <action index="20" id="document-edit-properties" />
+                <action index="30" id="document-delete" />
+            </actionGroup>
 
-			<actionGroup id="folder-caseinjournal">
-				<action index="20" id="document-edit-properties" />
-				<action index="30" id="document-delete" />
-			</actionGroup>
+            <actionGroup id="folder-caseinjournal">
+                <action index="20" id="document-edit-properties" />
+                <action index="30" id="document-delete" />
+            </actionGroup>
 
-			<actionGroup id="document-task">
-				<action index="10" id="task-edit-metadata" />
-				<action index="20" id="task-view-details" />
-				<action index="30" id="task-view-workflow" />
-			</actionGroup>
+            <actionGroup id="document-task">
+                <action index="10" id="task-edit-metadata" />
+                <action index="20" id="task-view-details" />
+                <action index="30" id="task-view-workflow" />
+            </actionGroup>
             
-			<actionGroup id="document-listInjournal">
-				<action index="20" id="document-edit-properties" />
-				<action index="30" id="document-delete" />
-			</actionGroup>
+            <actionGroup id="document-listInjournal">
+                <action index="20" id="document-edit-properties" />
+                <action index="30" id="document-delete" />
+            </actionGroup>
 
-			<actionGroup id="document-case-tasks">
-				<action index="20" id="document-edit-properties"/>
-				<action index="30" id="document-delete"/>
-				<action index="40" id="document-start-task"/>
-			</actionGroup>
+            <actionGroup id="document-case-tasks">
+                <action index="20" id="document-edit-properties"/>
+                <action index="30" id="document-delete"/>
+                <action index="40" id="document-start-task"/>
+            </actionGroup>
 
-			<actionGroup id="document-case-roles">
-				<action index="20" id="role-edit-properties-cardlet"/>
-				<action index="30" id="document-delete"/>
-			</actionGroup>
+            <actionGroup id="document-case-roles">
+                <action index="20" id="role-edit-properties-cardlet"/>
+                <action index="30" id="document-delete"/>
+            </actionGroup>
 
-			<actionGroup id="document-products-and-services">
-				<action index="10" id="document-edit-properties" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-delete" />
-			</actionGroup>
+            <actionGroup id="document-products-and-services">
+                <action index="10" id="document-edit-properties" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-delete" />
+            </actionGroup>
 
-			<actionGroup id="document-role-injournal">
-				<action index="10" id="role-edit-properties" />
-				<action index="20" id="document-view-details" />
-				<action index="30" id="document-delete" />
-			</actionGroup>
-		</actionGroups>
+            <actionGroup id="document-role-injournal">
+                <action index="10" id="role-edit-properties" />
+                <action index="20" id="document-view-details" />
+                <action index="30" id="document-delete" />
+            </actionGroup>
 
-	</config>
+            <actionGroup id="document-case-template-actions">
+                <action index="10" id="document-view-details" />
+                <action index="20" id="document-edit-properties" />
+                <action index="30" id="document-delete" />
+                <action index="40" id="export-case-template" />
+                <action index="50" id="import-case-template" />
+            </actionGroup>
 
-	<config evaluator="string-compare" condition="DocumentLibrary">
-	
-		<aspects>
-			<visible>
-				<aspect name="icase:case" />
-			</visible>
-		</aspects>
-	
-		<indicators>
-			<indicator id="document-confirmed" index="10">
-				<evaluator>evaluator.confirm.inConfirmView</evaluator>
-				<evaluator>evaluator.confirm.currentVersionConfirmed</evaluator>
-			</indicator>
-			<indicator id="document-declined" index="10">
-				<evaluator>evaluator.confirm.inConfirmView</evaluator>
-				<evaluator>evaluator.confirm.currentVersionDeclined</evaluator>
-			</indicator>
-			<indicator id="version-not-considered" index="15">
-				<evaluator>evaluator.confirm.inConfirmView</evaluator>
-				<evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
-			</indicator>
-		</indicators>
-		
-		<metadata-templates>
-			<template id="document-confirm">
-				<evaluator>evaluator.confirm.inConfirmView</evaluator>
-				<line index="10" id="confirm-status">{confirmStatus}</line>
-				<line index="20" id="current-status">{currentConfirmStatus}</line>
-			</template>
-			<template id="document-correct">
-				<evaluator>evaluator.confirm.inCorrectView</evaluator>
-				<line index="10" id="confirm-status">{correctStatus}</line>
-			</template>
-			<template id="document-supplementary-files">
-				<evaluator>evaluator.confirm.inSupplementaryFiles</evaluator>
-				<line index="10" id="name">{name}</line>
-				<line index="20" id="size">{size}</line>
-			</template>
-		</metadata-templates>
+            <actionGroup id="folder-case-template-actions">
+                <action index="10" id="document-view-details" />
+                <action index="20" id="document-edit-properties" />
+                <action index="30" id="document-delete" />
+                <action index="40" id="export-case-template" />
+                <action index="50" id="import-case-template" />
+            </actionGroup>
 
-		<create-content>
-			<content id="template" label="create-content.template" type="pagelink" index="35" icon="text">
-				<param name="page">
-					node-create?destination={nodeRef}&amp;type=cm:content&amp;viewId=template
-				</param>
-			</content>
-		</create-content>
+        </actionGroups>
+
+    </config>
+
+    <config evaluator="string-compare" condition="DocumentLibrary">
+
+        <aspects>
+            <visible>
+                <aspect name="icase:case" />
+            </visible>
+        </aspects>
+
+        <indicators>
+            <indicator id="document-confirmed" index="10">
+                <evaluator>evaluator.confirm.inConfirmView</evaluator>
+                <evaluator>evaluator.confirm.currentVersionConfirmed</evaluator>
+            </indicator>
+            <indicator id="document-declined" index="10">
+                <evaluator>evaluator.confirm.inConfirmView</evaluator>
+                <evaluator>evaluator.confirm.currentVersionDeclined</evaluator>
+            </indicator>
+            <indicator id="version-not-considered" index="15">
+                <evaluator>evaluator.confirm.inConfirmView</evaluator>
+                <evaluator negate="true">evaluator.confirm.currentVersionConsidered</evaluator>
+            </indicator>
+        </indicators>
+
+        <metadata-templates>
+            <template id="document-confirm">
+                <evaluator>evaluator.confirm.inConfirmView</evaluator>
+                <line index="10" id="confirm-status">{confirmStatus}</line>
+                <line index="20" id="current-status">{currentConfirmStatus}</line>
+            </template>
+            <template id="document-correct">
+                <evaluator>evaluator.confirm.inCorrectView</evaluator>
+                <line index="10" id="confirm-status">{correctStatus}</line>
+            </template>
+            <template id="document-supplementary-files">
+                <evaluator>evaluator.confirm.inSupplementaryFiles</evaluator>
+                <line index="10" id="name">{name}</line>
+                <line index="20" id="size">{size}</line>
+            </template>
+        </metadata-templates>
+
+        <create-content>
+            <content id="template" label="create-content.template" type="pagelink" index="35" icon="text">
+                <param name="page">
+                    node-create?destination={nodeRef}&amp;type=cm:content&amp;viewId=template
+                </param>
+            </content>
+        </create-content>
         
         <!-- disable multi-select actions for task mirrors -->
-		<multi-select>
-			<action notAspect="wfm:attributes" id="onActionDownload" />
-			<action notAspect="wfm:attributes" id="onActionCopyTo" />
-			<action notAspect="wfm:attributes" id="onActionMoveTo" />
-			<!-- disable start-workflow -->
-			<!-- TODO configure hidden-workflows instead -->
-			<action notAspect="cm:auditable" id="onActionAssignWorkflow" />
-			<action notAspect="wfm:attributes" id="onActionDelete" isDoclib="false" />
-		</multi-select>
-		
-		<!-- global associations UI configuration -->
-		<associations>
-			<!-- associations that user can see in UI -->
-			<visible>
-				<association name="assoc:associatedWith" directed="false" />
-			</visible>
-			<!-- association that user can add in UI -->
-			<!-- same as visible if left empty -->
-			<addable></addable>
-			<!-- association that user can remove in UI -->
-			<!-- same as visible if left empty -->
-			<removeable></removeable>
-		</associations>
+        <multi-select>
+            <action notAspect="wfm:attributes" id="onActionDownload" />
+            <action notAspect="wfm:attributes" id="onActionCopyTo" />
+            <action notAspect="wfm:attributes" id="onActionMoveTo" />
+            <!-- disable start-workflow -->
+            <!-- TODO configure hidden-workflows instead -->
+            <action notAspect="cm:auditable" id="onActionAssignWorkflow" />
+            <action notAspect="wfm:attributes" id="onActionDelete" isDoclib="false" />
+        </multi-select>
 
-	</config>
+        <!-- global associations UI configuration -->
+        <associations>
+            <!-- associations that user can see in UI -->
+            <visible>
+                <association name="assoc:associatedWith" directed="false" />
+            </visible>
+            <!-- association that user can add in UI -->
+            <!-- same as visible if left empty -->
+            <addable></addable>
+            <!-- association that user can remove in UI -->
+            <!-- same as visible if left empty -->
+            <removeable></removeable>
+        </associations>
+
+    </config>
 
 </alfresco-config>

@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>case-status</shortname>
+  <description>case-status</description>
+  <url>/citeck/components/case-status</url>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>Case Completeness Levels</shortname>
+	<description>Information about: completeness levels, their requirements and matched documents</description>
+	<url>/citeck/cases/levels?nodeRef={nodeRef}</url>
+	<url>/citeck/cases/completeness?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

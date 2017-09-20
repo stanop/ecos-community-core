@@ -8,7 +8,7 @@ import ru.citeck.ecos.cmmn.model.Case;
 import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.service.util.CasePlanModelImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
-import ru.citeck.ecos.services.EnterpriseServices;
+import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.*;
 
@@ -42,6 +42,6 @@ public class CaseXmlService {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
         this.authorityService = serviceRegistry.getAuthorityService();
-        this.caseTemplateRegistry = (CaseTemplateRegistry) serviceRegistry.getService(EnterpriseServices.CASE_TEMPLATE_REGISTRY);
+        this.caseTemplateRegistry = (CaseTemplateRegistry) serviceRegistry.getService(EcosCoreServices.CASE_TEMPLATE_REGISTRY);
     }
 }

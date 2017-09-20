@@ -28,10 +28,10 @@
 				<value>alfresco/module/idocs-repo/model/counterModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/historyModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/idocsTemplateModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/icase/icaseActivityModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/icase/icaseModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/icase/icaseRoleModel.xml</value>
-				<value>alfresco/module/idocs-repo/model/icase/icaseTaskModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/icaseActivityModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/icaseModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/icaseRoleModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/icaseTaskModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/cardletModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
@@ -48,6 +48,14 @@
 				<value>alfresco/module/idocs-repo/model/documentSupervisorsModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/businessCalendarModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/productsAndServicesModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/actionModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/conditionModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/criterionModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/eventModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/icaseEventModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/requirementModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/stagesModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
 			</list>
 		</property>
 		<property name="labels">
@@ -62,10 +70,10 @@
 				<value>alfresco/module/idocs-repo/messages/workflow</value>
 				<value>alfresco/module/idocs-repo/messages/idocs</value>
 				<value>alfresco/module/idocs-repo/messages/history</value>
-				<value>alfresco/module/idocs-repo/messages/icase</value>
-				<value>alfresco/module/idocs-repo/messages/icaseActivityModel</value>
-				<value>alfresco/module/idocs-repo/messages/icaseRoleModel</value>
-				<value>alfresco/module/idocs-repo/messages/icaseTaskModel</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/icase</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/icaseActivityModel</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/icaseRoleModel</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/icaseTaskModel</value>
 				<value>alfresco/module/idocs-repo/messages/classification</value>
 				<value>alfresco/module/idocs-repo/messages/calendar</value>
 				<value>alfresco/module/idocs-repo/messages/passport</value>
@@ -79,6 +87,13 @@
 				<value>alfresco/module/idocs-repo/messages/business-calendar</value>
 				<value>alfresco/module/idocs-repo/messages/productsAndServices</value>
 				<value>alfresco/module/idocs-repo/messages/amount-in-word-converter</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/action</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/condition</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/criterion</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/event</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/requirement</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/stages</value>
+				<value>alfresco/module/idocs-repo/messages/case-mt/caseTimer</value>
 			</list>
 		</property>
 	</bean>

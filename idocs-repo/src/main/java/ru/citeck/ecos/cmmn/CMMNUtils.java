@@ -52,7 +52,7 @@ public class CMMNUtils {
 
     public static final Logger log = LoggerFactory.getLogger(CMMNUtils.class);
 
-    private static final String SCHEMA_LOCATION = "alfresco/module/ecos-enterprise-repo/cmmn/";
+    private static final String SCHEMA_LOCATION = "alfresco/module/idocs-repo/cmmn/";
     private static final String[] SCHEMA_FILES = {
             "CMMN11.xsd",
             "CMMN11CaseModel.xsd",

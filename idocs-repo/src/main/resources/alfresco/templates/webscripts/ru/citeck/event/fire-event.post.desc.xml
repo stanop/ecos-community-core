@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Fire event</shortname>
+    <description>Fire event with nodeRef as event source</description>
+    <url>/citeck/event/fire-events?nodeRef={nodeRef}&amp;eventType={eventType}&amp;document={document?}</url>
+    <url>/citeck/event/fire-event?eventRef={eventRef}&amp;document={document?}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+</webscript>

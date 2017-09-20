@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component>
+	<scope>page</scope>
+	<source-id>card-details</source-id>
+	<region-id>case-documents</region-id>
+	<url>/citeck/components/case-documents-uploader</url>
+	<properties>
+		<nodeRef>{nodeRef}</nodeRef>
+	    <documentUploadDefaultType>workspace://SpacesStore/category-document-type</documentUploadDefaultType>
+	    <!-- <documentUploadDefaultKind>workspace://SpacesStore/cat-document-other</documentUploadDefaultKind> -->
+	</properties>
+</component>

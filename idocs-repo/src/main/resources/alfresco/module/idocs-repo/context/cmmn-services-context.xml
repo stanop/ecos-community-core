@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    <context:component-scan base-package="ru.citeck.ecos"/>
+    <context:annotation-config/>
+
+    <bean id="cmmnExportService" class="ru.citeck.ecos.cmmn.service.CaseExportService" depends-on="ecos-enterprise.dictionaryBootstrap"
+          init-method="init">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="dictionaryService" ref="dictionaryService"/>
+    </bean>
+
+    <bean id="cmmnExportServiceJS" class="ru.citeck.ecos.cmmn.service.CaseExportServiceJS" parent="baseJavaScriptExtension"
+          depends-on="cmmnExportService">
+        <property name="extensionName" value="cmmnExportServiceJS"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="caseExportService" ref="cmmnExportService"/>
+    </bean>
+
+
+    <bean id="cmmnImportService" class="ru.citeck.ecos.cmmn.service.CaseImportService" depends-on="ecos-enterprise.dictionaryBootstrap"
+          init-method="init">
+        <property name="caseTemplatesRoot" value="/app:company_home/app:dictionary/cm:case-templates" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="contentService" ref="contentService" />
+        <property name="caseTemplateRegistry" ref="caseTemplateRegistry" />
+    </bean>
+
+    <bean id="caseXmlService" class="ru.citeck.ecos.cmmn.service.CaseXmlService" depends-on="ecos-enterprise.dictionaryBootstrap">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="cmmnImportServiceJS" class="ru.citeck.ecos.cmmn.service.CaseImportServiceJS" parent="baseJavaScriptExtension" depends-on="cmmnImportService">
+        <property name="extensionName" value="cmmnImportServiceJS"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="caseImportService" ref="cmmnImportService"/>
+    </bean>
+
+    <bean id="cmmnUtils.initialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="ru.citeck.ecos.cmmn.CMMNUtils.setServiceRegistry"/>
+        <property name="arguments">
+            <list>
+                <ref bean="ServiceRegistry"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="caseAutoDeployer" class="ru.citeck.ecos.icase.CaseTemplateDeployer" depends-on="cmmnUtils.initialization">
+        <property name="caseImportService" ref="cmmnImportService"/>
+        <property name="retryingTransactionHelper" ref="retryingTransactionHelper"/>
+        <property name="enabled" value="true"/>
+        <property name="locations">
+            <bean factory-bean="resourceResolver" factory-method="getResources">
+                <constructor-arg>
+                    <list>
+                        <value>classpath*:alfresco/case/templates/**/*.xml</value>
+                        <value>classpath*:alfresco/module/*/case/templates/**/*.xml</value>
+                        <value>classpath*:alfresco/extension/case/templates/**/*.xml</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+</beans>

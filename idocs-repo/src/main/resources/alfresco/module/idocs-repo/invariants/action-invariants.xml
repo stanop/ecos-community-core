@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/action/1.0" prefix="action" />
+    </imports>
+
+    <type name="action:action">
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <associations type="action:action">
+        <invariant on="value-title" language="javascript">value.properties.title</invariant>
+    </associations>
+
+    <child-associations type="action:action">
+        <invariant on="value-title" language="javascript">value.properties.title</invariant>
+    </child-associations>
+
+    <type name="action:set-property-value">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var property = node.properties['action:set-property-value:property'];
+                    var value = node.properties['action:set-property-value:value'];
+                    return utils.shortQName(property) + ' = ' + value;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="action:set-case-status">
+        <property name="cm:title">
+            <invariant on="default" language="javascript">
+                (function() {
+                    var status = (node.assocs['action:set-case-status:status'] || [])[0];
+                    return "Статус: " + (status ? status.properties['cm:title'] : "-");
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="action:set-process-variable">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var variable = node.properties['action:set-process-variable:variable'];
+                    var value = node.properties['action:set-process-variable:value'];
+                    return variable+' = '+value;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="action:mail">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var mail_to = node.properties['action:mail:to'];
+                    return 'Отправить письмо '+mail_to;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="action:fail">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var message = node.properties['action:fail:message'];
+                    return 'Показать сообщение об ошибке: '+message;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+</invariants>

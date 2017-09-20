@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Case Documents</shortname>
+	<description>Information about: the case, contained documents and containers, and their kinds</description>
+	<url>/citeck/cases/case-documents</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>
