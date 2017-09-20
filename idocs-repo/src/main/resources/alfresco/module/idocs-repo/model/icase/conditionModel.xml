@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="cond:conditionModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Actions and conditions model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/condition/1.0" prefix="cond" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="cond:compare-property-value:operation:variants" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>EQUALS</value>
+					<value>CONTAINS</value>
+					<value>BEGINS</value>
+					<value>ENDS</value>
+					<value>GREATER_THAN</value>
+					<value>GREATER_THAN_EQUAL</value>
+					<value>LESS_THAN</value>
+					<value>LESS_THAN_EQUAL</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+	
+		<type name="cond:condition">
+			<parent>cm:cmobject</parent>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+			</mandatory-aspects>
+		</type>
+		
+		<type name="cond:compare-property-value">
+			<parent>cond:condition</parent>
+			<properties>
+				<property name="cond:compare-property-value:property">
+					<type>d:qname</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="cond:compare-property-value:operation">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<constraints>
+						<constraint ref="cond:compare-property-value:operation:variants" />
+					</constraints>
+				</property>
+				<property name="cond:compare-property-value:value">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="cond:compare-process-variable">
+			<parent>cond:condition</parent>
+			<properties>
+				<property name="cond:compare-process-variable:variable">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="cond:compare-process-variable:value">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="cond:evaluate-script">
+			<parent>cond:condition</parent>
+			<properties>
+				<property name="cond:evaluate-script:script">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+			<!--<mandatory-aspects>-->
+				<!--<aspect>cond:doNotIndexTypeCompletely</aspect>-->
+			<!--</mandatory-aspects>-->
+		</type>
+		
+		<type name="cond:user-in-document">
+			<parent>cond:condition</parent>
+			<properties>
+				<property name="cond:user-in-document:property">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="cond:user-in-document:userName">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="cond:user-in-group">
+			<parent>cond:condition</parent>
+			<properties>
+				<property name="cond:user-in-group:groupName">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="cond:user-in-group:userName">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="cond:user-has-permission">
+			<parent>cond:condition</parent>
+			<properties>
+				<property name="cond:user-has-permission:permission">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="cond:user-has-permission:userName">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+	</types>
+
+	<aspects>
+		<aspect name="cond:doNotIndexTypeCompletely">
+			<title>Do Not Index</title>
+			<parent>cm:indexControl</parent>
+			<overrides>
+				<property name="cm:isIndexed">
+					<default>false</default>
+				</property>
+				<property name="cm:isContentIndexed">
+					<default>false</default>
+				</property>
+			</overrides>
+		</aspect>
+	</aspects>
+
+</model>

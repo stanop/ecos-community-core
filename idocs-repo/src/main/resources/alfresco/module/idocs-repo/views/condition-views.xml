@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		
+		<import uri="http://www.citeck.ru/model/condition/1.0" prefix="cond" />
+	</imports>
+	
+	<view class="cond:compare-property-value">
+		<field prop="cond:compare-property-value:property">
+			<region name="input" template="text" />
+		</field>
+		<field prop="cond:compare-property-value:operation">
+			<region name="input" template="select" />
+		</field>
+		<field prop="cond:compare-property-value:value" />
+	</view>
+	
+	<view class="cond:compare-process-variable">
+		<field prop="cond:compare-process-variable:variable" />
+		<field prop="cond:compare-process-variable:value" />
+	</view>
+	
+	<view class="cond:evaluate-script">
+		<field prop="cond:evaluate-script:script">
+			<region name="input" template="textarea">
+				<param name="height">200px</param>
+				<param name="validation">false</param>
+			</region>
+		</field>
+	</view>
+	
+	<view class="cond:user-in-document">
+		<field prop="cond:user-in-document:property" />
+		<field prop="cond:user-in-document:userName" />
+	</view>
+	
+	<view class="cond:user-in-group">
+		<field prop="cond:user-in-group:groupName" />
+		<field prop="cond:user-in-group:userName" />
+	</view>
+	
+	<view class="cond:user-has-permission">
+		<field prop="cond:user-has-permission:permission" />
+		<field prop="cond:user-has-permission:userName" />
+	</view>
+	
+</views>
