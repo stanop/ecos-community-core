@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Import case template from file</shortname>
+    <description>Import case template from file</description>
+    <url>/case/import</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

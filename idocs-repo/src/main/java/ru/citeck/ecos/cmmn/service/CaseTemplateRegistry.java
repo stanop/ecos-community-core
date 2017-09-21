@@ -134,8 +134,10 @@ public class CaseTemplateRegistry {
             }
             while (classDef != null && templateRef == null) {
                 classDef = classDef.getParentClassDefinition();
-                key = classDef.getName();
-                templateRef = templatesByClass.get(key);
+                if (classDef != null) {
+                    key = classDef.getName();
+                    templateRef = templatesByClass.get(key);
+                }
             }
         }
         if (templateRef != null && !nodeService.exists(templateRef)) {
