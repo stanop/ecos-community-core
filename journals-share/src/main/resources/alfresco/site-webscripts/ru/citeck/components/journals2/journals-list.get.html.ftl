@@ -247,6 +247,7 @@
                                     <!-- ko component: { name: "filter-criteria", params: {
                                         journalType: resolve("journal.type", null),
                                         filter: _filter,
+                                        applyCriteria: applyCriteria.bind($root),
                                         id: "${id}"
                                     }} --><!-- /ko -->                               
                                 <!-- /ko -->

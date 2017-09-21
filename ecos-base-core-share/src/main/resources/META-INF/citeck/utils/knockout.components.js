@@ -347,9 +347,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     self.value(newValue.nodeRef);
                 } else { self.value(newValue); }
             });
+
+            this.keyDownManagment = function(data, event) {
+                if (event.keyCode == 13 && "text,date,datetime,number".indexOf(data.templateName) != -1 && data.applyCriteria) {
+                    $.each($('#'+ this.valueContainerId +' input'), function(){
+                        this.blur();
+                        this.focus();
+                    });
+                    data.applyCriteria();
+                    return false;
+                }
+                return true;
+            };
         }, 
         template: 
-           '<div class="criterion-value" data-bind="attr: { id: valueContainerId }"></div>'
+           '<div class="criterion-value" data-bind="attr: { id: valueContainerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
     });
 
     ko.components.register('filter-criteria-table', {
@@ -399,6 +411,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                             labels: labels(),\
                                             datatype: resolve(\'datatype.name\', null),\
                                             value: value,\
+                                            applyCriteria: $component.applyCriteria,\
                                             attribute: $component.getAttribute($data),\
                                             journalOptionsType: $component.getJournalOptionsType($data)\
                                         }} --><!-- /ko -->\
@@ -419,6 +432,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                             fieldId: $component.htmlId + "-criterion-" + $index(),\
                                             datatype: resolve(\'datatype\', null),\
                                             value: value,\
+                                            applyCriteria: $component.applyCriteria,\
                                             attribute: $component.getAttribute($data),\
                                         }} --><!-- /ko -->\
                                     <!-- /ko -->\
@@ -490,6 +504,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             labels: resolve(\'field.labels\', null),\
                             value: value,\
                             attribute: $component.getAttribute($data),\
+                            applyCriteria: $component.applyCriteria,\
                             journalOptionsType: $component.getJournalOptionsType($data)\
                         }} --><!-- /ko -->\
                     <!-- /ko -->\

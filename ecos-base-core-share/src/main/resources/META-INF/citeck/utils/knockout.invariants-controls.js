@@ -814,6 +814,7 @@ ko.bindingHandlers.journalControl = {
                                     htmlId: htmlId,\
                                     itemId: itemId,\
                                     journalType: journalType,\
+                                    applyCriteria: applyCriteria,\
                                     selectedFilterCriteria: selectedFilterCriteria,\
                                     defaultFilterCriteria: defaultFilterCriteria\
                                 }\
