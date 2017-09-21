@@ -7,7 +7,7 @@
     <context:component-scan base-package="ru.citeck.ecos"/>
     <context:annotation-config/>
 
-    <bean id="cmmnExportService" class="ru.citeck.ecos.cmmn.service.CaseExportService" depends-on="ecos-enterprise.dictionaryBootstrap"
+    <bean id="cmmnExportService" class="ru.citeck.ecos.cmmn.service.CaseExportService" depends-on="idocs.dictionaryBootstrap"
           init-method="init">
         <property name="nodeService" ref="nodeService"/>
         <property name="caseActivityService" ref="caseActivityService"/>
@@ -22,7 +22,7 @@
     </bean>
 
 
-    <bean id="cmmnImportService" class="ru.citeck.ecos.cmmn.service.CaseImportService" depends-on="ecos-enterprise.dictionaryBootstrap"
+    <bean id="cmmnImportService" class="ru.citeck.ecos.cmmn.service.CaseImportService" depends-on="idocs.dictionaryBootstrap"
           init-method="init">
         <property name="caseTemplatesRoot" value="/app:company_home/app:dictionary/cm:case-templates" />
         <property name="nodeService" ref="nodeService" />
@@ -30,7 +30,7 @@
         <property name="caseTemplateRegistry" ref="caseTemplateRegistry" />
     </bean>
 
-    <bean id="caseXmlService" class="ru.citeck.ecos.cmmn.service.CaseXmlService" depends-on="ecos-enterprise.dictionaryBootstrap">
+    <bean id="caseXmlService" class="ru.citeck.ecos.cmmn.service.CaseXmlService" depends-on="idocs.dictionaryBootstrap">
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 

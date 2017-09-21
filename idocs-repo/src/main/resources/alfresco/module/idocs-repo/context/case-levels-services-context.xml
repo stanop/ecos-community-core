@@ -4,7 +4,7 @@
 <beans>
 
 	<!-- case levels services -->
-	<bean name="caseCompletenessService" class="ru.citeck.ecos.icase.CaseCompletenessServiceImpl" init-method="init" depends-on="ecos-enterprise.dictionaryBootstrap">
+	<bean name="caseCompletenessService" class="ru.citeck.ecos.icase.CaseCompletenessServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
 		<property name="nodeService" ref="nodeService" />
 		<property name="predicateService" ref="predicateService" />
 		<property name="caseElementService" ref="caseElementService" />
