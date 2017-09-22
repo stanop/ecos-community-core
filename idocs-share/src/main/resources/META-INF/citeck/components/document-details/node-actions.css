@@ -118,8 +118,25 @@
     content: '\f02a'; /* barcode */
 }
 
-.node-actions .doclist .action-set [class*="server-node-action"] a span::before {
+.node-actions .doclist .action-set [class*="server-node-action"] a span::before,
+.node-actions .doclist .action-set .document-start-confirm a span::before {
     content: '\f045'; /* share-square-o */
+}
+
+.node-actions .doclist .action-set .document-view-content a span::before {
+    content: '\f06e'; /* fa-eye */
+}
+
+.node-actions .doclist .action-set .document-move-to a span::before {
+    content: '\f047'; /* fa-arrows */
+}
+
+.node-actions .doclist .action-set .document-change-type a span::before {
+    content: '\f074'; /* fa-random */
+}
+
+.node-actions .doclist .action-set .document-change-type a span::before {
+    content: '\f074'; /* fa-random */
 }
 
 /* --------------------- */
