@@ -113,8 +113,6 @@
     </view>
 
     <view class="wfcp:performCaseTask">
-        <field prop="attr:parent" template="none"/>
-        <field prop="attr:parentassoc" template="none"/>
         <field prop="cm:title">
             <region name="input" template="text"/>
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -130,7 +128,7 @@
                     while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return parent.childAssocs["icaseRole:roles"] || [];
+                    return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
         </field>

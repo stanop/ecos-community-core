@@ -92,19 +92,6 @@
         </association>
     </type>
 
-    <type name="wfcp:performCaseTask">
-        <associations type="wfcp:performersRoles">
-            <invariant on="options" language="javascript" final="true">
-                (function() {
-                var parent = node.parent;
-                while(parent &amp;&amp; parent.isSubType("activ:activity"))
-                parent = parent.parent;
-                return parent.childAssocs["icaseRole:roles"] || [];
-                })()
-            </invariant>
-        </associations>
-    </type>
-
     <aspect name="wfcp:basePerformData">
         <property name="wfcp:formKey">
             <invariant on="options" language="javascript">dictionary.getSubTypes("wfcp:performTask")</invariant>

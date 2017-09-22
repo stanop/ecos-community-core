@@ -18,7 +18,6 @@
     <!-- concrete views -->
 
     <views any="true">
-        <field assoc="activ:activities" template="none"/>
         <fields assoc="stages:startCompletenessLevelsRestriction">
             <region name="input" template="checkbox"/>
         </fields>
