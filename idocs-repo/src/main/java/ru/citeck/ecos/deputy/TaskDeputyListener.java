@@ -33,7 +33,6 @@ import ru.citeck.ecos.workflow.tasks.AdvancedTaskQuery;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TaskDeputyListener extends AbstractDeputyListener {
     private WorkflowService workflowService;
@@ -119,7 +118,8 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserAvailable(String userName) {
-        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+//        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+        AdvancedTaskQuery query = new AdvancedTaskQuery().setOriginalOwner(userName).withoutGroupCandidates();
         List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(query);
 
         if (workflowTasks.size() > 0) {
@@ -144,7 +144,8 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserUnavailable(String userName) {
-        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+        //        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+        AdvancedTaskQuery query = new AdvancedTaskQuery().setAssignee(userName).withoutGroupCandidates();
         List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
 
         tasks.forEach(task -> {
