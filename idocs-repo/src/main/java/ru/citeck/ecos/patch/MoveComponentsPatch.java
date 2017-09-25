@@ -41,7 +41,7 @@ public class MoveComponentsPatch extends AbstractPatch {
             RegistryKey fromKey = createKey(fromModuleId, transitionProps.getProperty(FROM_KEY));
             RegistryKey toKey = createKey(toModuleId, transitionProps.getProperty(TO_KEY));
 
-            logger.info("Move " + fromKey + " to " + toKey);
+            logger.debug("Move " + fromKey + " to " + toKey);
 
             registryService.copy(fromKey, toKey);
             registryService.delete(fromKey);
