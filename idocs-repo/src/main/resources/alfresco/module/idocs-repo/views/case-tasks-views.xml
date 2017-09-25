@@ -3,7 +3,6 @@
     <imports>
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
-
         <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
         <import uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
         <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
@@ -11,6 +10,9 @@
         <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
         <import uri="http://www.citeck.ru/model/workflow/case-perform/1.0" prefix="wfcp" />
         <import uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
+        <import uri="http://www.citeck.ru/model/stages/1.0" prefix="stages" />
+        <import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
     </imports>
 
     <views any="true">
@@ -33,6 +35,12 @@
         <field prop="icaseTask:priority">
             <region name="input" template="select"/>
         </field>
+        <field prop="activ:manualStarted" />
+        <field prop="activ:repeatable" />
+        <field assoc="icaseEvent:activityStartEvents" />
+        <field assoc="icaseEvent:activityRestartEvents" />
+        <field assoc="stages:startCompletenessLevelsRestriction"/>
+        <field assoc="stages:stopCompletenessLevelsRestriction"/>
     </views>
 
     <view class="icaseTask:simpleTask">
@@ -42,11 +50,12 @@
         </field>
         <field assoc="icaseTask:performer">
             <invariant on="options" language="javascript" final="true">
-                (function() {
-                var parent = node.parent;
-                while(parent &amp;&amp; parent.isSubType("activ:activity"))
-                parent = parent.parent;
-                return parent.childAssocs["icaseRole:roles"] || [];
+                (function () {
+                    var parent = node.parent;
+                    while (parent &amp;&amp; parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return parent.childAssocs["icaseRole:roles"] || [];
                 })()
             </invariant>
         </field>
@@ -57,11 +66,12 @@
         <field assoc="icaseTask:confirmers">
             <region name="input" template="checkbox"/>
             <invariant on="options" language="javascript" final="true">
-                (function() {
-                var parent = node.parent;
-                while(parent &amp;&amp; parent.isSubType("activ:activity"))
-                parent = parent.parent;
-                return parent.childAssocs["icaseRole:roles"] || [];
+                (function () {
+                    var parent = node.parent;
+                    while (parent &amp;&amp; parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return parent.childAssocs["icaseRole:roles"] || [];
                 })()
             </invariant>
         </field>
@@ -81,10 +91,11 @@
         <field assoc="icaseTask:performers">
             <region name="input" template="checkbox"/>
             <invariant on="options" language="javascript" final="true">
-                (function() {
+                (function () {
                     var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity"))
+                    while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
+                    }
                     return parent.childAssocs["icaseRole:roles"] || [];
                 })()
             </invariant>
@@ -102,8 +113,6 @@
     </view>
 
     <view class="wfcp:performCaseTask">
-        <field prop="attr:parent" template="none"/>
-        <field prop="attr:parentassoc" template="none"/>
         <field prop="cm:title">
             <region name="input" template="text"/>
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -114,14 +123,16 @@
         <field assoc="wfcp:performersRoles">
             <region name="input" template="checkbox"/>
             <invariant on="options" language="javascript" final="true">
-                (function() {
-                var parent = node.parent;
-                while(parent &amp;&amp; parent.isSubType("activ:activity"))
-                parent = parent.parent;
-                return parent.childAssocs["icaseRole:roles"] || [];
+                (function () {
+                    var parent = node.parent;
+                    while (parent &amp;&amp; parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
         </field>
+        <field prop="activ:expectedPerformTime" />
         <field prop="wfcp:performOutcomes" />
         <field prop="wfcp:formKey">
             <region name="input" template="select"/>
@@ -130,6 +141,12 @@
         <field prop="wfcp:outcomesWithMandatoryComment" />
         <field prop="wfcp:syncRolesToWorkflow" />
         <field prop="wfcp:syncWorkflowToRoles" />
+        <field prop="activ:manualStarted" />
+        <field prop="activ:repeatable" />
+        <field assoc="icaseEvent:activityStartEvents" />
+        <field assoc="icaseEvent:activityRestartEvents" />
+        <field assoc="stages:startCompletenessLevelsRestriction"/>
+        <field assoc="stages:stopCompletenessLevelsRestriction"/>
     </view>
 
 </views>

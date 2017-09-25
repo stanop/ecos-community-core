@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="req:requirementModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Case requirements</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.citeck.ru/model/predicate/1.0" prefix="pred" />
+		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req" />
+	</namespaces>
+
+	<types>	
+
+		<type name="req:match">
+			<title>Match</title>
+			<parent>cm:cmobject</parent>
+			<properties>
+				<property name="req:matchLevel">
+					<type>d:noderef</type>
+					<protected>true</protected>
+					<mandatory enforced="true">true</mandatory>
+				</property>
+				<property name="req:matchRequirement">
+					<type>d:noderef</type>
+					<protected>true</protected>
+					<mandatory enforced="true">true</mandatory>
+				</property>
+				<property name="req:matchElement">
+					<type>d:noderef</type>
+					<protected>true</protected>
+					<mandatory enforced="true">true</mandatory>
+				</property>
+			</properties>
+			<!--<mandatory-aspects>-->
+				<!--<aspect>req:doNotIndexTypeCompletely</aspect>-->
+			<!--</mandatory-aspects>-->
+		</type>
+
+		<type name="req:completenessLevel">
+			<title>Level</title>
+			<parent>dl:dataListItem</parent>
+			<associations>
+				<child-association name="req:levelRequirement">
+					<title>Level requirement</title>
+					<source>
+						<many>false</many>
+					</source>
+					<target>
+						<class>req:requirement</class>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="req:requirement">
+			<title>Requirement</title>
+			<parent>pred:condition</parent>
+			<associations>
+				<association name="req:requirementScope">
+					<title>Requirement scope</title>
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>icase:elementConfig</class>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>pred:hasQuantifier</aspect>
+			</mandatory-aspects>
+		</type>
+		
+		<type name="req:requiredLevelsPredicate">
+			<parent>pred:predicate</parent>
+			<properties>
+				<property name="req:levelRequired">
+					<type>d:boolean</type>
+					<default>true</default>
+				</property>
+			</properties>
+			<associations>
+				<association name="req:requiredLevels">
+					<title>Required completeness levels</title>
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>req:completenessLevel</class>
+						<mandatory>true</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+		
+		<type name="req:subcaseTypePredicate">
+			<parent>pred:predicate</parent>
+			<properties>
+				<property name="req:requiredSubcaseType">
+					<type>d:qname</type>
+				</property>
+				<property name="req:requiredElementType">
+					<type>d:qname</type>
+				</property>
+			</properties>
+		</type>
+		
+	</types>
+
+	<aspects>
+
+		<aspect name="req:hasCompletenessLevels">
+			<title>has Completeness Levels</title>
+			<associations>
+				<association name="req:completenessLevels">
+					<title>Available completeness levels</title>
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>req:completenessLevel</class>
+						<many>true</many>
+					</target>
+				</association>
+				<association name="req:completedLevels">
+					<title>Completed levels</title>
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>req:completenessLevel</class>
+						<many>true</many>
+					</target>
+				</association>
+				<association name="req:passedRequirements">
+					<title>Completed levels</title>
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>req:requirement</class>
+						<many>true</many>
+					</target>
+				</association>
+				<child-association name="req:matches">
+					<title>Current matches</title>
+					<source>
+						<many>false</many>
+					</source>
+					<target>
+						<class>req:match</class>
+						<many>true</many>
+					</target>
+					<duplicate>false</duplicate>
+				</child-association>
+			</associations>
+		</aspect>
+
+		<aspect name="req:doNotIndexTypeCompletely">
+			<title>Do Not Index</title>
+			<parent>cm:indexControl</parent>
+			<overrides>
+				<property name="cm:isIndexed">
+					<default>false</default>
+				</property>
+				<property name="cm:isContentIndexed">
+					<default>false</default>
+				</property>
+			</overrides>
+		</aspect>
+
+	</aspects>
+
+</model>

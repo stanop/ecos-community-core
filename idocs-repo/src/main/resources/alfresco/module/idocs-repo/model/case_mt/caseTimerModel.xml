@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="caseTimer:timerModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Timer model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/case/timer/1.0" prefix="caseTimer" />
+    </namespaces>
+
+    <constraints>
+        <constraint name="caseTimer:expressionTypeOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>EXPRESSION</value>
+                    <value>CRON</value>
+                    <value>SCRIPT</value>
+                </list>
+            </parameter>
+        </constraint>
+
+        <constraint name="caseTimer:datePrecisionOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>DAY</value>
+                    <value>MONTH</value>
+                    <value>HOUR</value>
+                    <value>MINUTE</value>
+                    <value>SECOND</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+
+        <type name="caseTimer:timer">
+            <parent>activ:activity</parent>
+            <properties>
+                <!-- user properties -->
+                <property name="caseTimer:expressionType">
+                    <type>d:text</type>
+                    <default>EXPRESSION</default>
+                    <constraints>
+                        <constraint ref="caseTimer:expressionTypeOptions" />
+                    </constraints>
+                </property>
+                <property name="caseTimer:timerExpression">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="caseTimer:datePrecision">
+                    <type>d:text</type>
+                    <default>DAY</default>
+                    <constraints>
+                        <constraint ref="caseTimer:datePrecisionOptions" />
+                    </constraints>
+                </property>
+                <!-- internal properties -->
+                <property name="caseTimer:computedExpression">
+                    <type>d:text</type>
+                </property>
+                <property name="caseTimer:occurDate">
+                    <type>d:datetime</type>
+                </property>
+                <property name="caseTimer:repeatCounter">
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </type>
+
+    </types>
+
+</model>

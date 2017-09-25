@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="action:actionModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Actions and conditions model</description>
+	<author>Citeck</author>
+	<version>1.0</version>
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/action/1.0" prefix="action" />
+	</namespaces>
+
+	<types>
+	
+		<!-- Actions -->
+	
+		<type name="action:action">
+			<parent>activ:activity</parent>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="action:set-case-status">
+			<parent>action:action</parent>
+			<associations>
+				<association name="action:set-case-status:status">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>icase:caseStatus</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+
+		<type name="action:set-property-value">
+			<parent>action:action</parent>
+			<properties>
+				<property name="action:set-property-value:property">
+					<type>d:qname</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="action:set-property-value:value">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="action:set-process-variable">
+			<parent>action:action</parent>
+			<properties>
+				<property name="action:set-process-variable:variable">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="action:set-process-variable:value">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="action:execute-script">
+			<parent>action:action</parent>
+			<properties>
+				<property name="action:execute-script:script">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+			<!--<mandatory-aspects>-->
+				<!--<aspect>action:doNotIndexTypeCompletely</aspect>-->
+			<!--</mandatory-aspects>-->
+		</type>
+		
+		<type name="action:start-workflow">
+			<parent>action:action</parent>
+			<properties>
+				<property name="action:start-workflow:workflowName">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="action:mail">
+			<parent>action:action</parent>
+			<properties>
+				<property name="action:mail:to">
+					<type>d:text</type>
+				</property>
+				<property name="action:mail:to_many">
+					<type>d:text</type>
+				</property>
+				<property name="action:mail:subject">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="action:mail:from">
+					<type>d:text</type>
+				</property>
+				<property name="action:mail:text">
+					<type>d:text</type>
+				</property>
+				<property name="action:mail:html">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="action:fail">
+			<parent>action:action</parent>
+			<properties>
+				<property name="action:fail:message">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</type>
+		
+	</types>
+
+	<aspects>
+		<aspect name="action:doNotIndexTypeCompletely">
+			<title>Do Not Index</title>
+			<parent>cm:indexControl</parent>
+			<overrides>
+				<property name="cm:isIndexed">
+					<default>false</default>
+				</property>
+				<property name="cm:isContentIndexed">
+					<default>false</default>
+				</property>
+			</overrides>
+		</aspect>
+	</aspects>
+
+
+</model>

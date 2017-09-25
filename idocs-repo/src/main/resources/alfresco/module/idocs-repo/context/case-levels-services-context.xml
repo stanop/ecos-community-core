@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<!-- case levels services -->
+	<bean name="caseCompletenessService" class="ru.citeck.ecos.icase.CaseCompletenessServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
+		<property name="nodeService" ref="nodeService" />
+		<property name="predicateService" ref="predicateService" />
+		<property name="caseElementService" ref="caseElementService" />
+		<property name="policyComponent" ref="policyComponent" />
+	</bean>
+	
+	<bean name="caseCompletenessServiceJS" class="ru.citeck.ecos.icase.CaseCompletenessServiceJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="completeness" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="impl" ref="caseCompletenessService" />
+	</bean>
+
+    <bean id="completeLevelsChecker"
+          class="ru.citeck.ecos.icase.levels.api.CompleteLevelsCheckerImpl">
+        <property name="caseCompletenessService" ref="caseCompletenessService" />
+    </bean>
+
+    <bean id="completeLevelsCheckerJS" name="CompleteLevelsCheckerJS"
+          class="ru.citeck.ecos.icase.levels.api.CompleteLevelsCheckerJSImpl"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="completeLevelsChecker" />
+        <property name="completeLevelsChecker" ref="completeLevelsChecker" />
+    </bean>
+
+    <bean id="idocs.CaseCompletenessStageBehavior" class="ru.citeck.ecos.behavior.CaseCompletenessStageBehavior" init-method="init">
+        <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="caseCompletenessService" ref="caseCompletenessService"/>
+    </bean>
+
+    <bean id="copyCompletenessLevelsIgnoreBehaviour" parent="CopyDocumentIgnoreFieldBehaviour">
+        <property name="className" value="req:hasCompletenessLevels" />
+        <property name="ignoredAssociations">
+            <list>
+                <value>req_passedRequirements</value>
+                <value>req_completedLevels</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

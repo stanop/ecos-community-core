@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="criterion:criterionModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>Criterion model</description>
+	<author>citeck</author>
+	<version>1.0</version>
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.citeck.ru/model/predicate/1.0" prefix="pred" />
+		<namespace uri="http://www.citeck.ru/model/criterion/1.0" prefix="criterion" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="pred:quantifierTypes" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>EXISTS</value>
+					<value>SINGLE</value>
+					<value>EXACTLY_ONE</value>
+					<value>EXACTLY_ZERO</value>
+					<value>OPTIONAL</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+
+	<types>
+	
+		<type name="pred:predicate">
+			<title>Predicate</title>
+			<parent>cm:cmobject</parent>
+			<mandatory-aspects>
+				<aspect>cm:titled</aspect>
+			</mandatory-aspects>
+		</type>
+		
+		<type name="pred:javascriptPredicate">
+			<title>Javascript Predicate</title>
+			<parent>pred:predicate</parent>
+			<properties>
+				<property name="pred:javascriptExpression">
+					<title>Expression</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="criterion:criterion">
+			<title>Criterion</title>
+			<parent>pred:predicate</parent>
+			<properties>
+				<property name="criterion:attribute">
+					<title>Attribute</title>
+					<type>d:qname</type>
+				</property>
+				<property name="criterion:predicate">
+					<title>Predicate</title>
+					<type>d:text</type>
+				</property>
+				<property name="criterion:value">
+					<title>Criterion Value</title>
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="pred:condition">
+			<title>Condition</title>
+			<parent>pred:predicate</parent>
+			<associations>
+				<child-association name="pred:antecedent">
+					<title>Condition antecedent</title>
+					<source>
+						<many>false</many>
+					</source>
+					<target>
+						<class>pred:predicate</class>
+						<many>true</many>
+					</target>
+				</child-association>
+				<child-association name="pred:consequent">
+					<title>Condition consequent</title>
+					<source>
+						<many>false</many>
+					</source>
+					<target>
+						<class>pred:predicate</class>
+						<mandatory>true</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+			</associations>
+		</type>
+		
+		<type name="pred:kindPredicate">
+			<parent>pred:predicate</parent>
+			<properties>
+				<property name="pred:requiredType">
+					<type>d:category</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="pred:requiredKind">
+					<type>d:category</type>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="pred:completedLevelsPredicate">
+			<title>Level completed (obsolete)</title>
+			<parent>pred:predicate</parent>
+			<associations>
+				<association name="pred:completedLevels">
+					<title>Completed completeness levels</title>
+					<source>
+						<many>true</many>
+					</source>
+					<target>
+						<class>dl:dataListItem</class>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+		</type>
+		
+	</types>
+	
+	<aspects>
+	
+		<aspect name="pred:hasQuantifier">
+			<title>Has Quantifier</title>
+			<properties>
+				<property name="pred:quantifier">
+					<title>Quantifier</title>
+					<type>d:text</type>
+					<default>EXISTS</default>
+					<constraints>
+						<constraint ref="pred:quantifierTypes" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+	
+	</aspects>
+</model>

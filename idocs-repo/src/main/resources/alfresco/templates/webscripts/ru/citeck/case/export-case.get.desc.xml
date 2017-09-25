@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Export case template to file</shortname>
+    <description>Export case template to file</description>
+    <url>/case/export</url>
+    <format default=""></format>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

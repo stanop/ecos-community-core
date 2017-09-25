@@ -1,0 +1,60 @@
+/* overwrite yui */
+
+.document-versions-minimalistic .yui-dt-liner {
+   padding: 5px 0 !important;
+}
+
+.document-versions-minimalistic .current-version {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #CCC;
+}
+
+/* end overwrite yui*/
+
+.version-list {
+   overflow: auto;
+   max-height: 125px;
+}
+
+.version-list [class*="version-"] {
+    display: inline-block;
+    line-height: 150%;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.version-comments {
+  display: block;
+  width: 100%;
+  margin: 0 !important;
+}
+
+.version-number span {
+    background-color: #aaa;
+    color: white;
+    padding: 0px 3px;
+}
+
+.version-actions a {
+   background-repeat: no-repeat;
+   background-position: left;
+   padding: 0.5em;
+   text-decoration: none;
+}
+
+.version-actions a.download {
+   background-image: url(images/document-download-16.png);
+}
+
+.version-actions a.historicProperties {
+   background-image: url(images/document-view-metadata-16.png);
+}
+
+.version-actions a.revert {
+   background-image: url(images/revert-16.png);
+}
+
+.version-actions a.new-version {
+   background-image: url(images/document-upload-new-version-16.png);
+}

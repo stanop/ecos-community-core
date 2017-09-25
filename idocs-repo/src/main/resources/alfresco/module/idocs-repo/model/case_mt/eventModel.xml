@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="iEvent:eventModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Event model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/condition/1.0" prefix="cond"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+    </namespaces>
+
+    <types>
+        <type name="iEvent:event">
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="iEvent:type">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="iEvent:eventSource">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>sys:base</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <child-association name="iEvent:conditions">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </source>
+                    <target>
+                        <class>cond:condition</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+            <!--<mandatory-aspects>-->
+                <!--<aspect>iEvent:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
+        </type>
+
+        <type name="iEvent:userAction">
+            <parent>iEvent:event</parent>
+            <properties>
+                <property name="iEvent:additionalDataType">
+                    <type>d:text</type>
+                </property>
+                <property name="iEvent:confirmationMessage">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="iEvent:authorizedRoles">
+                    <title>Roles</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icaseRole:role</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <child-association name="iEvent:additionalDataItems">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>iEvent:additionalData</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+            <overrides>
+                <property name="iEvent:type">
+                    <default>user-action</default>
+                </property>
+            </overrides>
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="iEvent:additionalData">
+            <parent>cm:cmobject</parent>
+        </type>
+
+        <type name="iEvent:additionalConfirmer">
+            <parent>iEvent:additionalData</parent>
+            <mandatory-aspects>
+                <aspect>iEvent:hasComment</aspect>
+                <aspect>iEvent:hasConfirmer</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="iEvent:additionalPerformers">
+            <parent>iEvent:additionalData</parent>
+            <mandatory-aspects>
+                <aspect>iEvent:hasComment</aspect>
+                <aspect>iEvent:hasPerformers</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+
+        <aspect name="iEvent:hasPerformers">
+            <associations>
+                <association name="iEvent:performers">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:authority</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="iEvent:hasConfirmer">
+            <associations>
+                <association name="iEvent:confirmer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="iEvent:hasComment">
+            <properties>
+                <property name="iEvent:comment">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="iEvent:doNotIndexTypeCompletely">
+            <title>Do Not Index</title>
+            <parent>cm:indexControl</parent>
+            <overrides>
+                <property name="cm:isIndexed">
+                    <default>false</default>
+                </property>
+                <property name="cm:isContentIndexed">
+                    <default>false</default>
+                </property>
+            </overrides>
+        </aspect>
+    </aspects>
+
+</model>

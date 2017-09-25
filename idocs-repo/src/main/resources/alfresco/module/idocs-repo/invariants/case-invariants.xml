@@ -1,31 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
 
-	<imports>
-		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
-	</imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+        <import uri="http://www.citeck.ru/model/predicate/1.0" prefix="pred"/>
+        <import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req"/>
+    </imports>
 
-	<type name="icase:template">
-		<property name="icase:caseEcosType">
-			<invariant on="options" language="criteria">
-				<criterion attribute="type" predicate="type-equals" value="cm:category" />
-				<criterion attribute="parent" predicate="parent-equals" value="workspace://SpacesStore/category-document-type-root" />
-			</invariant>
-		</property>
-		<property name="icase:caseEcosKind">
-			<invariant on="options" language="javascript">
-				(function() {
-					var type = node.properties["icase:caseEcosType"];
-					if (!type) {
-						return [];
-					}
-					return type.childAssocs["cm:subcategories"] || [];
-				})()
-			</invariant>
-		</property>
-		<property name="icase:caseType">
-			<invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
-		</property>
-	</type>
+    <type name="icase:template">
+        <property name="icase:caseEcosType">
+            <invariant on="options" language="criteria">
+                <criterion attribute="type" predicate="type-equals" value="cm:category"/>
+                <criterion attribute="parent" predicate="parent-equals"
+                           value="workspace://SpacesStore/category-document-type-root"/>
+            </invariant>
+        </property>
+        <property name="icase:caseEcosKind">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var type = node.properties["icase:caseEcosType"];
+                    if (!type) {
+                        return [];
+                    }
+                    return type.childAssocs["cm:subcategories"] || [];
+                })()
+            </invariant>
+        </property>
+        <property name="icase:caseType">
+            <invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
+        </property>
+    </type>
+
+    <type name="req:completenessLevel">
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <type name="req:requirement">
+        <property name="pred:quantifier">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <associations type="icase:elementConfig">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </associations>
+
+    <associations type="req:completenessLevel">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </associations>
+
+    <associations type="req:requirement">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </associations>
+
+    <child-associations type="req:requirement">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </child-associations>
 
 </invariants>

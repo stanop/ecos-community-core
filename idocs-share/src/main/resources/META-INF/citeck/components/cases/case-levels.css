@@ -1,0 +1,58 @@
+.case-levels .message
+{
+    color: gray;
+}
+
+.case-levels .level .requirements,
+.case-levels .level .requirements .requirement .matches
+{
+    padding-left: 24px;
+}
+
+.case-levels .level .requirements,
+.case-levels .requirement .matches
+{
+    display: none;
+}
+
+.case-levels .level.opened .requirements,
+.case-levels .requirement.opened .matches
+{
+    display: block;
+}
+
+.case-levels .matches .match {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.case-levels .level > .title,
+.case-levels .requirement > .title
+{
+    line-height: 24px;
+    cursor: pointer;
+    padding-left: 20px;
+    
+    color: gray;
+    
+    background: url(images/twister-closed.png) no-repeat 0px;
+}
+
+.case-levels .level.completed > .title,
+.case-levels .requirement.passed > .title
+{
+    color: green !important;
+}
+
+.case-levels .level.current .title,
+.case-levels .level.current .requirement > .title
+{
+    color: red;
+}
+
+.case-levels .level.opened > .title,
+.case-levels .requirement.opened > .title
+{
+    background: url(images/twister-opened.png) no-repeat 0px;
+}
+

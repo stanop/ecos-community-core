@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Reset activity</shortname>
+    <description>Reset activity</description>
+    <url>/citeck/case/activity/reset?nodeRef={nodeRef}</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+</webscript>

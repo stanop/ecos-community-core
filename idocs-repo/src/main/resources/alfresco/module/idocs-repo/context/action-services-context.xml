@@ -95,4 +95,21 @@
         <property name="lifecycleService" ref="lifeCycleService" />
     </bean>
 
+    <bean name="EcoS.ActionDAO" class="ru.citeck.ecos.action.ActionConditionDAOImpl">
+        <property name="nodeService" ref="nodeService" />
+        <property name="actionService" ref="actionService" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="actionNamespace" value="http://www.citeck.ru/model/action/1.0" />
+        <property name="conditionNamespace" value="http://www.citeck.ru/model/condition/1.0" />
+    </bean>
+
+    <alias name="EcoS.ActionDAO" alias="EcoS.ConditionDAO" />
+
+    <bean id="caseActionsProvider" class="ru.citeck.ecos.action.CaseActionsProvider" parent="abstractNodeActionProvider">
+        <property name="eventService" ref="EcoS.EventService" />
+        <property name="authorityService" ref="authorityService" />
+        <property name="repositoryHelper" ref="repositoryHelper" />
+        <property name="namespaceService" ref="namespaceService" />
+    </bean>
+
 </beans>

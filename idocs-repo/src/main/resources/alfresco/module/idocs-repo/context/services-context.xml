@@ -590,4 +590,45 @@
 	<bean id="historyEventTitleMapperService" init-method="init" depends-on="applicationContextProvider"
 		  class="ru.citeck.ecos.history.impl.HistoryEventTitleMapperServiceImpl"/>
 
+	<!-- Case timer -->
+
+	<bean id="ru.citeck.ecos.caseTimerJob" class="org.alfresco.util.CronTriggerBean">
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass">
+					<value>ru.citeck.ecos.job.CaseTimerJob</value>
+				</property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="serviceRegistry" value-ref="ServiceRegistry"/>
+						<entry key="jobLockService" value-ref="jobLockService"/>
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="scheduler" ref="schedulerFactory"/>
+		<property name="cronExpression">
+			<value>${job.caseTimer.cronExpression}</value>
+		</property>
+		<property name="enabled" value="${job.caseTimer.enabled}"/>
+	</bean>
+
+	<bean id="caseTimerService" class="ru.citeck.ecos.icase.timer.CaseTimerService">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="ru.citeck.ecos.caseTimerEvaluator" class="ru.citeck.ecos.icase.timer.evaluator.Evaluator"
+		  init-method="init" abstract="true">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="ru.citeck.ecos.caseTimerEvaluator.expression" parent="ru.citeck.ecos.caseTimerEvaluator"
+		  class="ru.citeck.ecos.icase.timer.evaluator.ExpressionEvaluator" />
+
+	<bean id="ru.citeck.ecos.caseTimerEvaluator.script" parent="ru.citeck.ecos.caseTimerEvaluator"
+		  class="ru.citeck.ecos.icase.timer.evaluator.ScriptEvaluator" />
+
+	<bean id="ru.citeck.ecos.caseTimerEvaluator.cron" parent="ru.citeck.ecos.caseTimerEvaluator"
+		  class="ru.citeck.ecos.icase.timer.evaluator.CronEvaluator" />
+
 </beans>

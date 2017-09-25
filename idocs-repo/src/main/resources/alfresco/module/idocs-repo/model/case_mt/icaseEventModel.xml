@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="icaseEvent:icaseEventModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Case management in iDocs. Event description</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="icaseEvent:eventTypes" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>activity-started</value>
+                    <value>activity-stopped</value>
+                    <value>stage-children-stopped</value>
+                    <value>case-created</value>
+                    <value>case-properties-changed</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <types>
+        <type name="icaseEvent:activityEvent">
+            <parent>iEvent:event</parent>
+        </type>
+
+        <type name="icaseEvent:activityStartedEvent">
+            <parent>icaseEvent:activityEvent</parent>
+            <overrides>
+                <property name="iEvent:type">
+                    <default>activity-started</default>
+                    <constraints>
+                        <constraint ref="icaseEvent:eventTypes"/>
+                    </constraints>
+                </property>
+            </overrides>
+            <!--<mandatory-aspects>-->
+                <!--<aspect>icaseEvent:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
+        </type>
+
+        <type name="icaseEvent:activityStoppedEvent">
+            <parent>icaseEvent:activityEvent</parent>
+            <overrides>
+                <property name="iEvent:type">
+                    <default>activity-stopped</default>
+                    <constraints>
+                        <constraint ref="icaseEvent:eventTypes"/>
+                    </constraints>
+                </property>
+            </overrides>
+            <!--<mandatory-aspects>-->
+                <!--<aspect>icaseEvent:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
+        </type>
+
+        <type name="icaseEvent:stageChildrenStopped">
+            <parent>icaseEvent:activityEvent</parent>
+            <overrides>
+                <property name="iEvent:type">
+                    <default>stage-children-stopped</default>
+                    <constraints>
+                        <constraint ref="icaseEvent:eventTypes"/>
+                    </constraints>
+                </property>
+            </overrides>
+            <!--<mandatory-aspects>-->
+                <!--<aspect>icaseEvent:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
+        </type>
+
+        <type name="icaseEvent:caseCreated">
+            <parent>iEvent:event</parent>
+            <overrides>
+                <property name="iEvent:type">
+                    <default>case-created</default>
+                    <constraints>
+                        <constraint ref="icaseEvent:eventTypes"/>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="icaseEvent:casePropertiesChanged">
+            <parent>iEvent:event</parent>
+            <overrides>
+                <property name="iEvent:type">
+                    <default>case-properties-changed</default>
+                    <constraints>
+                        <constraint ref="icaseEvent:eventTypes"/>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="icaseEvent:hasActivityStartEvents">
+            <associations>
+                <child-association name="icaseEvent:activityStartEvents">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>iEvent:event</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="icaseEvent:hasActivityEndEvents">
+            <associations>
+                <child-association name="icaseEvent:activityEndEvents">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>iEvent:event</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="icaseEvent:hasActivityRestartEvents">
+            <associations>
+                <child-association name="icaseEvent:activityRestartEvents">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>iEvent:event</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="icaseEvent:hasActivityResetEvents">
+            <associations>
+                <child-association name="icaseEvent:activityResetEvents">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>iEvent:event</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="icaseEvent:doNotIndexTypeCompletely">
+            <title>Do Not Index</title>
+            <parent>cm:indexControl</parent>
+            <overrides>
+                <property name="cm:isIndexed">
+                    <default>false</default>
+                </property>
+                <property name="cm:isContentIndexed">
+                    <default>false</default>
+                </property>
+            </overrides>
+        </aspect>
+    </aspects>
+
+</model>

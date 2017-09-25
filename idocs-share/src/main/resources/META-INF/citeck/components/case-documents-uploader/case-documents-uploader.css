@@ -1,0 +1,362 @@
+.case-documents-uploader {
+    padding: 0 !important;
+}
+
+.case-documents-uploader,
+.case-documents-uploader .doc-uploader {
+    overflow: hidden;
+}
+
+.case-documents-uploader .case-documents-uploader-header {
+    border-bottom: 2px solid #ccc;
+    background-color: white;
+    padding: 5px 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.case-documents-uploader .case-documents-uploader-header > div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+/* buttons */
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-buttons {
+    margin-left: 25px;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-buttons button {
+    border: 0px;
+    padding: 0;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-buttons button:hover {
+    color: red;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-buttons button:not(:first-child) {
+    margin-left: 10px;
+}
+
+
+.upload-select {
+    padding: 5px;
+}
+
+
+/* search */
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-search {
+    margin-left: 25px;
+    position: relative;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-search input.kinds-filter  {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 200px;
+    height: 20px;
+    padding: 4px 10px 4px 30px;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-search input.kinds-filter:hover {
+    border-color: #aaa;
+}
+
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-search input.kinds-filter:focus {
+    border: 1px solid #1c55da;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-search:before {
+    content: "\f002";
+    font-family: FontAwesome;
+    position: absolute;
+    font-size: 16px;
+    top: 5px;
+    left: 9px;
+}
+
+
+/* filters */
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-filters {
+    margin-left: 25px;
+}
+
+.case-documents-uploader .case-documents-uploader-header .case-documents-uploader-filters .filter-field {
+    display: inline-block;
+}
+
+.case-documents-uploader .case-documents-uploader-header .filter-field {
+    margin-right: 10px;
+}
+
+.case-documents-uploader .case-documents-uploader-header .filter-field label {
+    padding: 0;
+    vertical-align: text-top;
+}
+
+.case-documents-uploader .case-documents-uploader-header .filter-field input[type="checkbox"] {
+    height: 13px;
+    width: 13px;
+    display: inline-block;
+    vertical-align: text-top;
+}
+
+
+/* filter presets */
+
+.case-documents-uploader .case-documents-uploader-filter-presets {
+    float: left;
+    border-right: 1px solid #ccc;
+    background-color: #fdfaf3;
+}
+
+.case-documents-uploader .case-documents-uploader-table {
+    overflow: auto;
+}
+
+.case-documents-uploader .case-documents-uploader-table table {
+    width: 100%;
+}
+
+
+.div-filter .menu-header {
+    padding: 10px 10px 10px 40px;
+    text-transform: uppercase;
+    color: #333;
+    font-weight: 900;
+    cursor: default;
+}
+
+.div-filter:not(:first-child) .menu-header {
+  margin-top: 30px;
+}
+
+.uploaded-status {
+    background-image: url("../../images/uploaded.png");
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+.mandatory-status {
+    background-image: url(../../images/mandatory.png);
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+}
+.not-mandatory-status {
+    background-image: url(../../images/not-mandatory.png);
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+}
+
+#doc3 {
+    margin: 0;
+}
+
+.yui-dt-col-kindName a:hover
+{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.yui-overlay-hidden .doclist
+{
+    visibility: hidden !important;
+}
+
+.yui-overlay .doclist
+{
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.yui-overlay .doclist > *
+{
+    max-height: 300px;
+    margin-right: 0px;
+}
+
+.yui-overlay .doclist span.item-social
+{
+    display: inline-block;
+    float: none;
+}
+
+
+/* doclist doclist-bar gallery */
+
+.yui-module .doclist .doclist-bar .yui-u {
+    margin-left: 0 !important;
+}
+
+.yui-module .doclist .doclist-bar .show-folders,
+.yui-module .doclist .doclist-bar .sort-field,
+.yui-module .doclist .doclist-bar .sort-direction {
+    display: none;
+}
+
+.yui-module  .doclist .doclist-bar .selected-items {
+    float: left;
+    margin-left: 15px;
+}
+
+.yui-module  .doclist .alf-gallery {
+    opacity: 1 !important;
+}
+
+.yui-module  .doclist .alf-gallery .alf-gallery-item .alf-label {
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 70%;
+}
+
+.yui-module  .doclist .alf-gallery .alf-gallery-item .alf-label a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+
+
+/* web-preview overwrite */
+
+.intermediate-dialog-title {
+    margin: 10px 0;
+    font-size: 14px;
+    float: right;
+    width: 25%;
+    font-weight: bold;
+    text-align: left;
+}
+
+.web-preview {
+    margin-top: 0px !important;
+}
+
+.preview {
+    width: 75%;
+    padding-right: 15px;
+    box-sizing: border-box;
+    float: left; 
+    min-height: 450px;
+}
+
+.properties,
+.versions,
+.versions-comparison,
+.actions {
+    width: 25%; 
+    float: right;
+}
+
+.versions,
+.versions-comparison,
+.actions {
+    clear: right;
+}
+
+.actions .action-set {
+    margin-left: -3px;
+}
+
+.actions .action-set > div {
+    display: inline-block;
+}
+
+.actions .action-set a {
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.actions {
+    margin: 0 0 15px 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+    padding-top: 7px;
+}
+
+.properties {
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #CCC;
+}
+
+
+.document-versions-minimalistic,
+.document-versions-comparison {
+   background-color: transparent;
+}
+
+
+/* overwrite document-versions-comparison */
+
+.document-versions-comparison .vers-menu {
+    margin-bottom: 5px;
+}
+
+.document-versions-comparison label {
+    font-family: 'Open Sans', arial, helvetica, clean, sans-serif;
+    padding: 0;
+    vertical-align: bottom;
+}
+
+.document-versions-comparison .yui-button-button {
+    margin-top: 5px;
+}
+
+.document-versions-comparison .yui-button-button button {
+   color: #1c55da;
+   font-weight: 900;
+   padding: 3px 10px;
+   border: 2px solid #1c55da;
+}
+
+.document-versions-comparison .yui-button-button-hover button {
+    background-color: #1c55da;
+    color: white;
+}
+
+
+/* overwrite forms */
+
+.properties .form-fields {
+    padding: 0 !important;
+    font-size: 12px;
+}
+
+.properties .form-fields .form-field {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+.properties span.viewmode-value {
+    white-space: nowrap;
+}
+
+
+/* overwrite skin */
+
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .upload-select .yui-push-button button {
+   color: #1c55da;
+   font-weight: 900;
+   padding: 0px 3px !important;
+   border: 2px solid #1c55da;
+}
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .upload-select .yui-push-button-hover button {
+    background-color: #1c55da;
+    color: white;
+}

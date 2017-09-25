@@ -302,4 +302,16 @@
         <property name="grantWorkflowTaskPermissionExecutor" ref="grantWorkflowTaskPermissionExecutor" />
     </bean>
 
+    <bean id="webscript.case.export-case.get"
+          class="ru.citeck.ecos.webscripts.icase.ExportCaseWebScript"
+          parent="webscript">
+        <property name="caseExportService" ref="cmmnExportService"/>
+    </bean>
+
+    <bean id="webscript.case.import-case.post"
+          class="ru.citeck.ecos.webscripts.icase.ImportCaseWebScript"
+          parent="webscript">
+        <property name="caseImportService" ref="cmmnImportService"/>
+    </bean>
+
 </beans>

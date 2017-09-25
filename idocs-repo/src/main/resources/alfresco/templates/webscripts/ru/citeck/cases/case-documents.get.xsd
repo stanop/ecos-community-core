@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://www.citeck.ru/ecos/cases/case-documents" 
+	xmlns:dd="http://www.citeck.ru/ecos/cases/case-documents" 
+	elementFormDefault="qualified">
+
+	<element name="response">
+		<complexType>
+			<sequence>
+				<element name="container" type="dd:container" minOccurs="1" maxOccurs="1" />
+				<element name="stage" type="string" minOccurs="1" maxOccurs="1" />
+				<element name="containerKinds">
+					<complexType>
+						<sequence>
+							<element name="containerKind" type="dd:containerKind" minOccurs="0" maxOccurs="unbounded" />
+						</sequence>
+					</complexType>
+				</element>
+				<element name="documentTypes">
+					<complexType>
+						<sequence>
+							<element name="documentType" type="dd:documentType" minOccurs="0" maxOccurs="unbounded" />
+						</sequence>
+					</complexType>
+				</element>
+				<element name="documentKinds">
+					<complexType>
+						<sequence>
+							<element name="documentKind" type="dd:documentKind" minOccurs="0" maxOccurs="unbounded" />
+						</sequence>
+					</complexType>
+				</element>
+				<element name="stages">
+					<complexType>
+						<sequence>
+							<element name="stage" type="string" minOccurs="0" maxOccurs="unbounded" />
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<complexType name="container">
+		<sequence>
+			<element name="nodeRef"      type="string" minOccurs="1" maxOccurs="1" />
+			<element name="name"         type="string" minOccurs="1" maxOccurs="1" />
+			<element name="kind"         type="string" minOccurs="1" maxOccurs="1" />
+			<element name="type"         type="string" minOccurs="0" maxOccurs="1" />
+			<element name="containers">
+				<complexType>
+					<sequence>
+						<element name="container" type="dd:container" minOccurs="0" maxOccurs="unbounded" />
+					</sequence>
+				</complexType>
+			</element>
+			<element name="documents">
+				<complexType>
+					<sequence>
+						<element name="document" type="dd:document" minOccurs="0" maxOccurs="unbounded" />
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="document">
+		<sequence>
+			<element name="nodeRef"      type="string" minOccurs="1" maxOccurs="1" />
+			<element name="name"         type="string" minOccurs="1" maxOccurs="1" />
+			<element name="type"         type="string" minOccurs="0" maxOccurs="1" />
+			<element name="kind"         type="string" minOccurs="0" maxOccurs="1" />
+			<element name="uploaded"     type="string" minOccurs="0" maxOccurs="1" />
+			<element name="uploader" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="userName"  type="string" minOccurs="1" maxOccurs="1" />
+						<element name="firstName" type="string" minOccurs="1" maxOccurs="1" />
+						<element name="lastName"  type="string" minOccurs="1" maxOccurs="1" />
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="containerKind">
+		<sequence>
+			<element name="nodeRef"      type="string" minOccurs="1" maxOccurs="1" />
+			<element name="name"         type="string" minOccurs="1" maxOccurs="1" />
+			<element name="documentKinds">
+				<complexType>
+					<sequence>
+						<element name="documentKind" type="dd:documentKindMapping" minOccurs="0" maxOccurs="unbounded" />
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="documentKindMapping">
+		<sequence>
+			<element name="nodeRef"      type="string" minOccurs="1" maxOccurs="1" />
+			<element name="mandatory"    type="string" minOccurs="1" maxOccurs="1" />
+			<element name="multiple"     type="boolean" minOccurs="1" maxOccurs="1" />
+			<element name="containerType" type="string" minOccurs="0" maxOccurs="unbounded" />
+			<element name="loanType" type="string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="documentType">
+		<sequence>
+			<element name="nodeRef"      type="string" minOccurs="1" maxOccurs="1" />
+			<element name="name"         type="string" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+
+	<complexType name="documentKind">
+		<sequence>
+			<element name="nodeRef"      type="string" minOccurs="1" maxOccurs="1" />
+			<element name="name"         type="string" minOccurs="1" maxOccurs="1" />
+			<element name="type"         type="string" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+
+</schema>
