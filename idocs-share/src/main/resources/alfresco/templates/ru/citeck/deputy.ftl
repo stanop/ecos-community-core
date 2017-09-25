@@ -9,6 +9,7 @@
     </@>
     <@markup id="bd">
     <div id="bd">
+        <@region id="toolbar" scope="template" />
         <@region id="deputy" scope="template"  />
     </div>
     </@>
