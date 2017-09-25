@@ -79,6 +79,53 @@
         </property>
     </bean>
 
+    <bean id="ecos-community.patch.move-case-management-components" class="ru.citeck.ecos.patch.MoveComponentsPatch" parent="basePatch">
+        <property name="id" value="ecos-community.patch.move-case-management-components" />
+        <property name="description" value="ecos-community.patch.move-case-management-components.description" />
+        <property name="fixesFromSchema" value="0" />
+        <property name="fixesToSchema" value="${version.schema}" />
+        <property name="targetSchema" value="100000" />
+        <property name="registryService" ref="registryService" />
+        <property name="fromModuleId" value="ecos-enterprise-repo" />
+        <property name="toModuleId" value="idocs-repo" />
+        <property name="transitions">
+            <list>
+                <props>
+                    <prop key="from">ecos-enterprise.module-component.import-statuses</prop>
+                    <prop key="to">ecos-community.module-component.import-statuses</prop>
+                </props>
+                <props>
+                    <prop key="from">ecos-enterprise.module-component.icase-documents-cardlet</prop>
+                    <prop key="to">ecos-community.module-component.icase-documents-cardlet</prop>
+                </props>
+                <props>
+                    <prop key="from">idocs.module-component.disable-document-status-for-case</prop>
+                    <prop key="to">ecos-community.module-component.disable-document-status-for-case</prop>
+                </props>
+                <props>
+                    <prop key="from">idocs.module-component.case-status</prop>
+                    <prop key="to">ecos-community.module-component.case-status</prop>
+                </props>
+                <props>
+                    <prop key="from">idocs.module-component.case-element-levels</prop>
+                    <prop key="to">ecos-community.module-component.case-element-levels</prop>
+                </props>
+                <props>
+                    <prop key="from">idocs.module-component.case-completeness-levels-cardlet</prop>
+                    <prop key="to">ecos-community.module-component.case-completeness-levels-cardlet</prop>
+                </props>
+                <props>
+                    <prop key="from">idocs.module-component.case-completeness-levels-journal</prop>
+                    <prop key="to">ecos-community.module-component.case-completeness-levels-journal</prop>
+                </props>
+                <props>
+                    <prop key="from">ecos-enterprise.module-component.cardlet.disable-document-status</prop>
+                    <prop key="to">ecos-community.module-component.cardlet.disable-document-status</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
     <!-- case management -->
 
     <bean id="ecos-community.module-component.case-completeness-levels-journal" parent="idocs.import-spaces.3-1-4">

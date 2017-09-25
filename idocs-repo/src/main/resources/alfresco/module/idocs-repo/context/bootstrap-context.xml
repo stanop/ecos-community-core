@@ -94,6 +94,7 @@
 				<value>alfresco/module/idocs-repo/messages/case-mt/requirement</value>
 				<value>alfresco/module/idocs-repo/messages/case-mt/stages</value>
 				<value>alfresco/module/idocs-repo/messages/case-mt/caseTimer</value>
+				<value>alfresco/module/idocs-repo/messages/patch</value>
 			</list>
 		</property>
 	</bean>
