@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.Collection;
 import java.util.Collections;
