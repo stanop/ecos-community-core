@@ -13,7 +13,8 @@ require(["lib/knockout", "citeck/utils/knockout.utils", "citeck/components/type-
 			<#list allTypes as type>
 			{
 				"nodeRef": "${type.nodeRef}",
-				"name": "${type.name}"
+				"name": "${type.name}",
+				"title": "${type.title}"
 			}<#if type_has_next>,</#if>
 			</#list>
 		],
