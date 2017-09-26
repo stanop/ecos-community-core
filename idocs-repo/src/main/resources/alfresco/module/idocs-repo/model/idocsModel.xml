@@ -100,6 +100,17 @@
             </parameter>
         </constraint>
 
+        <constraint name="idocs:constraint:attachmentStateOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>REPEAL_BY_COUNTERPARTY_REQUESTED</value>
+                    <value>REPEALED_BY_COUNTERPARTY</value>
+                    <value>CLARIFICATION_REQUESTED</value>
+                    <value/>
+                </list>
+            </parameter>
+        </constraint>
+
     </constraints>
 
     <types>
@@ -265,7 +276,7 @@
         </type>
         
         <type name="idocs:contractor">
-            <parent>idocs:entity</parent>
+            <parent>idocs:abstractContractor</parent>
             <properties>
                 <property name="idocs:CEOname">
                     <title>CEO name</title>
@@ -541,6 +552,11 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </type>
+
+        <type name="idocs:abstractContractor">
+            <title>Entity</title>
+            <parent>idocs:entity</parent>
         </type>
 
     </types>
@@ -1248,6 +1264,61 @@
                     <title>Comment</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasCopiedFrom">
+            <associations>
+                <association name="idocs:copiedFrom">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:doc</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:hasAttachmentRkkCreatedFrom">
+            <associations>
+                <association name="idocs:attachmentRkkCreatedFrom">
+                    <title>sam:package attachment RKK was created from</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:content</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="idocs:isContractAttachment"/>
+
+        <aspect name="idocs:hasBarcode">
+            <properties>
+                <property name="idocs:barcode">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasAttachmentState">
+            <properties>
+                <property name="idocs:attachmentState">
+                    <type>d:text</type>
+                    <default/>
+                    <constraints>
+                        <constraint ref="idocs:constraint:attachmentStateOptions" />
+                    </constraints>
                 </property>
             </properties>
         </aspect>
