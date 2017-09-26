@@ -79,13 +79,17 @@
         </property>
     </bean>
 
-    <bean id="ecos-community.patch.move-case-management-components" class="ru.citeck.ecos.patch.MoveComponentsPatch" parent="basePatch">
-        <property name="id" value="ecos-community.patch.move-case-management-components" />
-        <property name="description" value="ecos-community.patch.move-case-management-components.description" />
+    <bean id="ru.citeck.ecos.patch.MoveComponentsPatch" parent="basePatch"
+          class="ru.citeck.ecos.patch.MoveComponentsPatch" abstract="true">
         <property name="fixesFromSchema" value="0" />
         <property name="fixesToSchema" value="${version.schema}" />
         <property name="targetSchema" value="100000" />
         <property name="registryService" ref="registryService" />
+    </bean>
+
+    <bean id="ecos-community.patch.move-case-management-components" parent="ru.citeck.ecos.patch.MoveComponentsPatch">
+        <property name="id" value="ecos-community.patch.move-case-management-components" />
+        <property name="description" value="ecos-community.patch.move-case-management-components.description" />
         <property name="fromModuleId" value="ecos-enterprise-repo" />
         <property name="toModuleId" value="idocs-repo" />
         <property name="transitions">

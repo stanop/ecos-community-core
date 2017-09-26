@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.import-spaces.2-0-5" parent="contracts.import-spaces" abstract="true">
+        <property name="sinceVersion" value="2.0.5" />
+        <property name="appliesFromVersion" value="2.0.5" />
+    </bean>
+
+    <bean id="contracts.import-scripts.2-0-5" parent="contracts.import-scripts" abstract="true">
+        <property name="sinceVersion" value="2.0.5" />
+        <property name="appliesFromVersion" value="2.0.5" />
+    </bean>
+
+    <bean id="contracts.module-component.document-kinds" parent="contracts.import-spaces.2-0-5">
+        <property name="name" value="Document kinds" />
+        <property name="description" value="Document kinds" />
+        <property name="executeOnceOnly" value="false" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/category-document-type</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/data/document-kinds.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.script.completeness-levels" parent="contracts.import-scripts.2-0-5">
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.document-kinds" />
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="false" />
+        <property name="name" value="add-contracts-completeness-levels" />
+        <property name="description" value="Create or update completeness levels" />
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/completeness-levels.js"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0">
+
+    <view:reference view:pathref=".">
+        <view:associations>
+            <cm:subcategories>
+                <cm:category view:childName="cm:scan-documents">
+                    <view:properties>
+                        <sys:node-uuid>kind-d-scan-documents</sys:node-uuid>
+                        <cm:name>Scan documents</cm:name>
+                        <cm:title>
+                            <view:mlvalue view:locale="en_US">Scan documents</view:mlvalue>
+                            <view:mlvalue view:locale="ru_RU">Отсканированные документы</view:mlvalue>
+                        </cm:title>
+                    </view:properties>
+                </cm:category>
+                <cm:category view:childName="cm:counterparty-documents">
+                    <view:properties>
+                        <sys:node-uuid>kind-d-counterparty-documents</sys:node-uuid>
+                        <cm:name>Counterparty documents</cm:name>
+                        <cm:title>
+                            <view:mlvalue view:locale="en_US">Counterparty documents</view:mlvalue>
+                            <view:mlvalue view:locale="ru_RU">Документы контрагента</view:mlvalue>
+                        </cm:title>
+                    </view:properties>
+                </cm:category>
+            </cm:subcategories>
+        </view:associations>
+    </view:reference>
+
+</view:view>

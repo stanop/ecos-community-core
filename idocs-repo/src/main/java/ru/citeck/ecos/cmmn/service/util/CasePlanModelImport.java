@@ -5,15 +5,19 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.condition.Condition;
 import ru.citeck.ecos.cmmn.condition.ConditionProperty;
 import ru.citeck.ecos.cmmn.condition.ConditionsList;
 import ru.citeck.ecos.cmmn.model.*;
+import ru.citeck.ecos.icase.CaseConstants;
+import ru.citeck.ecos.icase.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.service.EcosCoreServices;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -36,6 +40,7 @@ public class CasePlanModelImport {
 
     private NodeService nodeService;
     private CaseStatusService caseStatusService;
+    private CaseElementService caseElementService;
 
     private Map<String, NodeRef> rolesRef;
     private Map<String, NodeRef> planItemsMapping = new HashMap<>();
@@ -44,11 +49,17 @@ public class CasePlanModelImport {
 
     public CasePlanModelImport(ServiceRegistry serviceRegistry) {
         this.nodeService = serviceRegistry.getNodeService();
-        this.caseStatusService = (CaseStatusService) serviceRegistry.getService(CiteckServices.CASE_STATUS_SERVICE);
+        this.caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
+        this.caseElementService = EcosCoreServices.getCaseElementService(serviceRegistry);
     }
 
-    public void importCasePlan(NodeRef templateRef, Case caseItem, Map<String, NodeRef> rolesRef) {
-        planItemsMapping.put(caseItem.getId(), templateRef);
+    public void importCasePlan(NodeRef caseRef, Case caseItem, Map<String, NodeRef> rolesRef) {
+
+        logger.info("Importing case plan... caseRef: " + caseRef);
+
+        importCaseElementTypes(caseRef, caseItem);
+
+        planItemsMapping.put(caseItem.getId(), caseRef);
         Stage casePlanModel = caseItem.getCasePlanModel();
         this.rolesRef = rolesRef;
 
@@ -66,23 +77,39 @@ public class CasePlanModelImport {
             }
             if (isCompletnessLevelsExists) {
                 for (NodeRef nodeRef : completnessLevelRefs.values()) {
-                    nodeService.createAssociation(templateRef, nodeRef, ASSOC_COMPLETENESS_LEVELS);
+                    nodeService.createAssociation(caseRef, nodeRef, ASSOC_COMPLETENESS_LEVELS);
                 }
             }
         }
 
-        logger.info("Importing case plan...");
         List<JAXBElement<? extends TPlanItemDefinition>> definitions = casePlanModel.getPlanItemDefinition();
         for (JAXBElement<? extends TPlanItemDefinition> jaxbElement : definitions) {
             if (CMMNUtils.isTask(jaxbElement) || CMMNUtils.isProcessTask(jaxbElement)) {
-                importTask(templateRef, (TTask) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                importTask(caseRef, (TTask) jaxbElement.getValue(), ASSOC_ACTIVITIES);
             } else if (CMMNUtils.isStage(jaxbElement)) {
-                importStage(templateRef, (Stage) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                importStage(caseRef, (Stage) jaxbElement.getValue(), ASSOC_ACTIVITIES);
             } else if (CMMNUtils.isTimer(jaxbElement)) {
-                importTimer(templateRef, (TTimerEventListener) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                importTimer(caseRef, (TTimerEventListener) jaxbElement.getValue(), ASSOC_ACTIVITIES);
             }
         }
         importEvents(casePlanModel);
+    }
+
+    private void importCaseElementTypes(NodeRef caseRef, Case caseItem) {
+
+        String elementsStr = caseItem.getOtherAttributes().get(CMMNUtils.QNAME_ELEMENT_TYPES);
+
+        if (StringUtils.isNotBlank(elementsStr)) {
+
+            String[] elements = elementsStr.split(",");
+
+            for (String element : elements) {
+                NodeRef elementRef = caseElementService.getConfig(element);
+                if (elementRef != null) {
+                    caseElementService.addElement(elementRef, caseRef, CaseConstants.ELEMENT_TYPES);
+                }
+            }
+        }
     }
 
     private void importTimer(NodeRef parentStageRef, TTimerEventListener timer, QName assocName) {

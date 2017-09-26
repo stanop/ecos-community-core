@@ -8,6 +8,7 @@
 		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
 		<import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
 		<import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+		<import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req"/>
 	</imports>
 
 	<journal id="cardlets">
@@ -109,6 +110,15 @@
 		<option name="actionGroupId">role-injournal</option>
 		<headers>
 			<header key="icaseRole:varName" default="true" />
+			<header key="cm:title" default="true" />
+			<header key="cm:description" />
+		</headers>
+	</journal>
+
+	<journal id="case-completeness-levels">
+		<option name="type">req:requirementSet</option>
+		<headers>
+			<header key="cm:name" default="true" />
 			<header key="cm:title" default="true" />
 			<header key="cm:description" />
 		</headers>
