@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +70,7 @@ public class ChangeStatusByDate extends AbstractScheduledLockedJob implements St
     private void makeTransition(ServiceRegistry serviceRegistry, String transitionData) {
         SearchService searchService = serviceRegistry.getSearchService();
         NamespaceService namespaceService = serviceRegistry.getNamespaceService();
-        CaseStatusService caseStatusService = (CaseStatusService) serviceRegistry.getService(CiteckServices.CASE_STATUS_SERVICE);
+        CaseStatusService caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
 
         Transition transition = new Transition(transitionData, namespaceService);
         List<NodeRef> nodeRefs = findNodes(caseStatusService, searchService, transition);

@@ -74,7 +74,7 @@ public class ChangeStatusJob extends AbstractScheduledLockedJob implements State
         String workName = "Change status work #" + index;
         logger.info(workName + ": " + changeStatusData);
 
-        CaseStatusService caseStatusService = (CaseStatusService) serviceRegistry.getService(CiteckServices.CASE_STATUS_SERVICE);
+        CaseStatusService caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
         TransactionService transactionService = serviceRegistry.getTransactionService();
         RetryingTransactionHelper transactionHelper = transactionService.getRetryingTransactionHelper();
 
