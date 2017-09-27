@@ -57,7 +57,7 @@ require(["lib/knockout", "citeck/utils/knockout.utils", "citeck/components/type-
 		<div class="available-types">
 			<h2>${msg("label.available-types")}</h2>
 			<ul data-bind="foreach: availableTypes">
-				<li data-bind="text: name, click: $parent.addType.bind($parent, $data)"></li>
+				<li data-bind="text: title, click: $parent.addType.bind($parent, $data)"></li>
 			</ul>
 		</div>
 		
@@ -65,7 +65,7 @@ require(["lib/knockout", "citeck/utils/knockout.utils", "citeck/components/type-
 			<h2>${msg("label.current-types")}</h2>
 			<ul data-bind="foreach: currentTypes">
 				<li>
-					<div class="type-name" data-bind="text: name"></div>
+					<div class="type-name" data-bind="text: title"></div>
 					<div class="remove" title="${msg("button.remove")}" data-bind="click: $parent.removeType.bind($parent, $data)"></div>
 				</li>
 			</ul>
