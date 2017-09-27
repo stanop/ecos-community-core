@@ -40,4 +40,33 @@
         <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/completeness-levels.js"/>
     </bean>
 
+    <bean id="contracts.import-scripts.add-case-types-to-site" parent="contracts.import-scripts.2-0-5">
+        <property name="name" value="add-case-types-to-site"/>
+        <property name="description" value="add-case-types-to-site"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.contracts-site"/>
+                <ref bean="contracts.module-component.doctype-categories1"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="/app:company_home/st:sites/cm:contracts" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:siteDocumentTypes">
+                            <list>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-contract</value>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-closing-doc</value>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-supp-agreement</value>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-payment</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
 </beans>

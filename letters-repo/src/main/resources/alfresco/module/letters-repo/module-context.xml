@@ -6,5 +6,6 @@
 	<import resource="classpath:alfresco/module/letters-repo/context/behaviour-context.xml" />
 	<import resource="classpath:alfresco/module/letters-repo/context/bootstrap-context-1-0-0.xml" />
 	<import resource="classpath:alfresco/module/letters-repo/context/bootstrap-context-1-2-2.xml" />
+	<import resource="classpath:alfresco/module/letters-repo/context/bootstrap-context-1-2-6.xml" />
 
 </beans>

@@ -18,12 +18,8 @@
  */
 package ru.citeck.ecos.repo.module;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.io.FileInputStream;
 
 import org.alfresco.repo.module.AbstractModuleComponent;
 import org.alfresco.service.cmr.repository.ScriptService;
@@ -31,37 +27,45 @@ import org.alfresco.util.PropertyCheck;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.alfresco.service.cmr.repository.ScriptLocation;
 import org.alfresco.repo.jscript.ClasspathScriptLocation;
 
-public class ScriptImporterModuleComponent extends AbstractModuleComponent
-{
+public class ScriptImporterModuleComponent extends AbstractModuleComponent  {
+
+    private static final String ARGS_KEY = "args";
+
 	private static final Log logger = LogFactory.getLog(ScriptImporterModuleComponent.class);
+
     private String bootstrapScript;
     private ScriptService scriptService;
-    private String scriptEngine;
+    private String scriptEngine = "javascript";
 
-    /**
-     * Set a bootstrap script to import.<br/>
-     * 
-     * @param bootstrapScript the bootstrap data location
-     */
-    public void setBootstrapScript(String bootstrapScript)
-    {
-        this.bootstrapScript = bootstrapScript;
-    }
+    private Map<String, Object> model = new HashMap<>();
 
     @Override
-    protected void checkProperties()
-    {
-        if (bootstrapScript == null)
-        {
+    protected void checkProperties() {
+        if (bootstrapScript == null) {
             PropertyCheck.mandatory(this, null, "bootstrapScript");
         }
         super.checkProperties();
+    }
+
+    @Override
+    protected void executeInternal() throws Throwable  {
+        ClasspathScriptLocation location = new ClasspathScriptLocation(bootstrapScript);
+        scriptService.executeScript(scriptEngine, location, model);
+    }
+
+    /**
+     * Set a bootstrap script to import.<br/>
+     *
+     * @param bootstrapScript the bootstrap data location
+     */
+    public void setBootstrapScript(String bootstrapScript) {
+        this.bootstrapScript = bootstrapScript;
+    }
+
+    public void setArgs(Map<String, Object> args) {
+        model.put(ARGS_KEY, args);
     }
 
     public void setScriptService(ScriptService scriptService) {
@@ -70,14 +74,5 @@ public class ScriptImporterModuleComponent extends AbstractModuleComponent
 
     public void setScriptEngine(String engine) {
         this.scriptEngine = engine;
-    }
-
-    @Override
-    protected void executeInternal() throws Throwable
-    {
-        Map<String, Object> model = new HashMap<String, Object>();
-        ClasspathScriptLocation location = new ClasspathScriptLocation(bootstrapScript);
-        Object result = scriptService.executeScript((ScriptLocation)location, model);
-        // Done
     }
 }

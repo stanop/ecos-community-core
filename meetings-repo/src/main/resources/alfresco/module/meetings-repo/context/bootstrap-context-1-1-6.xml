@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="meetings.import-scripts.add-case-types-to-site" parent="meetings.import-scripts">
+        <property name="name" value="add-case-types-to-site"/>
+        <property name="description" value="add-case-types-to-site"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="meetings.module-component.doctype-categories"/>
+                <ref bean="meetings.module-component.meetings-site" />
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="/app:company_home/st:sites/cm:meetings"/>
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:siteDocumentTypes">
+                            <list>
+                                <value>workspace://SpacesStore/meetings-cat-doctype</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>

@@ -30,6 +30,11 @@
 		<property name="moduleId" value="letters-repo" />
 		<property name="importer" ref="spacesBootstrap"/>
 	</bean>
+
+	<bean id="letters.import-scripts" abstract="true" class="ru.citeck.ecos.repo.module.ScriptImporterModuleComponent" parent="module.baseComponent">
+		<property name="moduleId" value="letters-repo" />
+		<property name="scriptService" ref="ScriptService"/>
+	</bean>
 	
 	<bean id="letters.enumeration.templates.spacesBootstrap" parent="spacesStoreImporter">
 		<property name="useExistingStore">

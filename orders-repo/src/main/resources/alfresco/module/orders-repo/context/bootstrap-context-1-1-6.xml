@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="orders.import-scripts.add-case-types-to-site" parent="orders.import-scripts">
+        <property name="name" value="add-case-types-to-site"/>
+        <property name="description" value="add-case-types-to-site"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.siteBootstrap"/>
+                <ref bean="orders.categoryBootstrap"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="/app:company_home/st:sites/cm:orders"/>
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:siteDocumentTypes">
+                            <list>
+                                <value>workspace://SpacesStore/orders-cat-doctype-internal</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>
