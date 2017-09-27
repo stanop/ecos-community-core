@@ -8,7 +8,9 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.journals.group.GroupActionEvaluator;
+import ru.citeck.ecos.journals.group.GroupActionStatus;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,6 +35,11 @@ public class CompleteTaskByMirrorEvaluator extends GroupActionEvaluator {
         String taskId = String.valueOf(nodeService.getProperty(mirrorRef, WorkflowModel.PROP_TASK_ID));
         String globalTaskId = ActivitiConstants.ENGINE_ID + "$" + taskId;
         workflowService.endTask(globalTaskId, params.get(TRANSITION_ID));
+    }
+
+    @Override
+    public Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params) {
+        return null;
     }
 
     @Override

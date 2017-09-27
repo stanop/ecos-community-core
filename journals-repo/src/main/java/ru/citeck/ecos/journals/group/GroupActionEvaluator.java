@@ -2,9 +2,11 @@ package ru.citeck.ecos.journals.group;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +18,8 @@ public abstract class GroupActionEvaluator {
     protected NamespaceService namespaceService;
     protected WorkflowService workflowService;
     protected NodeService nodeService;
+    protected PersonService personService;
+
 
     public void init() {
         groupActionService.register(this);
@@ -24,6 +28,8 @@ public abstract class GroupActionEvaluator {
     public abstract String getActionId();
 
     public abstract void invoke(NodeRef nodeRef, Map<String, String> params);
+
+    public abstract Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params);
 
     public abstract boolean isApplicable(NodeRef nodeRef, Map<String, String> params);
 

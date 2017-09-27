@@ -1,13 +1,11 @@
 package ru.citeck.ecos.journals.group;
 
-import org.alfresco.repo.jscript.ScriptNode;
-import org.alfresco.repo.jscript.ScriptableHashMap;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.javascript.Scriptable;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -18,13 +16,23 @@ import java.util.*;
  */
 public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
+    public static final String BATCH_PARAM_KEY = "evaluateBatch";
+
+
     private GroupActionService groupActionService;
     private ValueConverter converter = new ValueConverter();
 
     public GroupActionStatusesJS invoke(Object nodes, String actionId, Object paramsObj) throws JSONException {
         List<NodeRef> nodeRefs = toNodeRefList(nodes);
         Map<String, String> params = toStringMap(paramsObj);
-        Map<NodeRef, GroupActionStatus> statuses = groupActionService.invoke(nodeRefs, actionId, params);
+        Map<NodeRef, GroupActionStatus> statuses;
+
+        if (StringUtils.isNotEmpty(params.get(BATCH_PARAM_KEY)) && params.get(BATCH_PARAM_KEY).equals("true")) {
+            statuses = groupActionService.invokeBatch(nodeRefs, actionId, params);
+        } else {
+            statuses = groupActionService.invoke(nodeRefs, actionId, params);
+        }
+
         return new GroupActionStatusesJS(statuses, getScope(), serviceRegistry);
     }
 
@@ -32,7 +40,7 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
         Object jArray = converter.convertValueForJava(array);
         List<NodeRef> result = new ArrayList<>();
         if (jArray instanceof List) {
-            for (Object obj : (List)jArray) {
+            for (Object obj : (List) jArray) {
                 result.add(JavaScriptImplUtils.getNodeRef(obj));
             }
         } else if (jArray instanceof JSONArray) {
