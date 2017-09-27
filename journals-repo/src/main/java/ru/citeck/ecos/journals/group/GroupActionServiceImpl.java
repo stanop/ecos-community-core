@@ -77,24 +77,6 @@ public class GroupActionServiceImpl implements GroupActionService {
         return status;
     }
 
-    private GroupActionStatus processNodes(List<NodeRef> nodeRefs, GroupActionEvaluator evaluator, Map<String, String> params) {
-
-        final GroupActionStatus status = new GroupActionStatus();
-
-        try {
-            transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-                evaluator.invokeBatch(nodeRefs, params);
-                return null;
-            }, false, true);
-        } catch (Exception e) {
-            status.setStatus(GroupActionStatus.STATUS_ERROR);
-            status.setException(e);
-            logger.error("Error while node processing", e);
-        }
-        return status;
-    }
-
-
 
     private void checkParams(Map<String, String> params, String[] mandatoryParams) {
         List<String> missing = new ArrayList<>(mandatoryParams.length);
