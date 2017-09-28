@@ -29,7 +29,7 @@ public abstract class GroupActionEvaluator {
 
     public abstract void invoke(NodeRef nodeRef, Map<String, String> params);
 
-    public abstract Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params);
+    public abstract Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params);
 
     public abstract boolean isApplicable(NodeRef nodeRef, Map<String, String> params);
 

@@ -25,7 +25,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     private Map<String, GroupActionEvaluator> evaluators = new HashMap<>();
 
     @Override
-    public Map<NodeRef, GroupActionStatus> invoke(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
+    public Map<NodeRef, GroupActionResult> invoke(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
 
         GroupActionEvaluator evaluator = evaluators.get(actionId);
         if (evaluator == null) {
@@ -33,13 +33,13 @@ public class GroupActionServiceImpl implements GroupActionService {
         }
         checkParams(params, evaluator.getMandatoryParams());
 
-        Map<NodeRef, GroupActionStatus> statuses = new HashMap<>();
+        Map<NodeRef, GroupActionResult> statuses = new HashMap<>();
 
         for (NodeRef ref : nodeRefs) {
             if (evaluator.isApplicable(ref, params)) {
                 statuses.put(ref, processNode(ref, evaluator, params));
             } else {
-                statuses.put(ref, new GroupActionStatus(GroupActionStatus.STATUS_SKIPPED));
+                statuses.put(ref, new GroupActionResult(GroupActionResult.STATUS_SKIPPED));
             }
         }
 
@@ -47,7 +47,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
+    public Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
 
         GroupActionEvaluator evaluator = evaluators.get(actionId);
         if (evaluator == null) {
@@ -55,14 +55,14 @@ public class GroupActionServiceImpl implements GroupActionService {
         }
         checkParams(params, evaluator.getMandatoryParams());
 
-        Map<NodeRef, GroupActionStatus> statuses = evaluator.invokeBatch(nodeRefs, params);
+        Map<NodeRef, GroupActionResult> statuses = evaluator.invokeBatch(nodeRefs, params);
 
         return statuses;
     }
 
-    private GroupActionStatus processNode(NodeRef nodeRef, GroupActionEvaluator evaluator, Map<String, String> params) {
+    private GroupActionResult processNode(NodeRef nodeRef, GroupActionEvaluator evaluator, Map<String, String> params) {
 
-        final GroupActionStatus status = new GroupActionStatus();
+        final GroupActionResult status = new GroupActionResult();
 
         try {
             transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
@@ -70,7 +70,7 @@ public class GroupActionServiceImpl implements GroupActionService {
                 return null;
             }, false, true);
         } catch (Exception e) {
-            status.setStatus(GroupActionStatus.STATUS_ERROR);
+            status.setStatus(GroupActionResult.STATUS_ERROR);
             status.setException(e);
             logger.error("Error while node processing", e);
         }

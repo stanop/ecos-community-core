@@ -8,7 +8,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.journals.group.GroupActionEvaluator;
-import ru.citeck.ecos.journals.group.GroupActionStatus;
+import ru.citeck.ecos.journals.group.GroupActionResult;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class CompleteTaskByMirrorEvaluator extends GroupActionEvaluator {
     }
 
     @Override
-    public Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params) {
+    public Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params) {
         return null;
     }
 

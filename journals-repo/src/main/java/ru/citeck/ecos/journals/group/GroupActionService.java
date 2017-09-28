@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public interface GroupActionService {
 
-    Map<NodeRef, GroupActionStatus> invoke(List<NodeRef> nodeRefs, String actionId, Map<String, String> params);
+    Map<NodeRef, GroupActionResult> invoke(List<NodeRef> nodeRefs, String actionId, Map<String, String> params);
 
-    Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params);
+    Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params);
 
     void register(GroupActionEvaluator evaluator);
 }

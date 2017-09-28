@@ -12,11 +12,11 @@ import java.util.Map;
  */
 public class GroupActionStatusesJS {
 
-    private Map<NodeRef, GroupActionStatus> statuses;
+    private Map<NodeRef, GroupActionResult> statuses;
     private ServiceRegistry serviceRegistry;
     private Scriptable scope;
 
-    public GroupActionStatusesJS(Map<NodeRef, GroupActionStatus> statuses,
+    public GroupActionStatusesJS(Map<NodeRef, GroupActionResult> statuses,
                                  Scriptable scope, ServiceRegistry serviceRegistry) {
         this.statuses = statuses;
         this.scope = scope;

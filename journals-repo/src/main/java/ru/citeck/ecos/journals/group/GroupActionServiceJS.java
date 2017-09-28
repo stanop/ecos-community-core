@@ -25,7 +25,7 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
     public GroupActionStatusesJS invoke(Object nodes, String actionId, Object paramsObj) throws JSONException {
         List<NodeRef> nodeRefs = toNodeRefList(nodes);
         Map<String, String> params = toStringMap(paramsObj);
-        Map<NodeRef, GroupActionStatus> statuses;
+        Map<NodeRef, GroupActionResult> statuses;
 
         if (StringUtils.isNotEmpty(params.get(BATCH_PARAM_KEY)) && params.get(BATCH_PARAM_KEY).equals("true")) {
             statuses = groupActionService.invokeBatch(nodeRefs, actionId, params);
