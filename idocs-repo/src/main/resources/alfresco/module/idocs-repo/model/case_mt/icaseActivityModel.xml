@@ -43,6 +43,10 @@
                     <title>Expected perform time</title>
                     <type>d:int</type>
                 </property>
+                <property name="activ:autoEvents">
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
                 <property name="activ:manualStarted">
                     <title>Manual started</title>
                     <type>d:boolean</type>

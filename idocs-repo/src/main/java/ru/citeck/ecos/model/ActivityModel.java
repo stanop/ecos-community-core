@@ -35,6 +35,7 @@ public class ActivityModel {
     public static final QName PROP_INDEX = QName.createQName(NAMESPACE, "index");
     public static final QName PROP_REPEATABLE = QName.createQName(NAMESPACE, "repeatable");
     public static final QName PROP_EXPECTED_PERFORM_TIME = QName.createQName(NAMESPACE, "expectedPerformTime");
+    public static final QName PROP_AUTO_START_END = QName.createQName(NAMESPACE, "autoStartEnd");
 
     public static final QName ASPECT_HAS_ACTIVITIES = QName.createQName(NAMESPACE, "hasActivities");
     public static final QName ASPECT_SET_PLANNED_END_DATE = QName.createQName(NAMESPACE, "setPlannedEndDate");

@@ -18,6 +18,7 @@ import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.LifeCycleModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.icase.activity.CaseActivityPolicies.*;
 
 import java.util.*;
 
@@ -36,20 +37,23 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     private PolicyComponent policyComponent;
     private NodeService nodeService;
 
-    private ClassPolicyDelegate<CaseActivityPolicies.BeforeCaseActivityStartedPolicy> beforeActivityStartedDelegate;
-    private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStartedPolicy> onActivityStartedDelegate;
-    private ClassPolicyDelegate<CaseActivityPolicies.BeforeCaseActivityStoppedPolicy> beforeActivityStoppedDelegate;
-    private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStoppedPolicy> onActivityStoppedDelegate;
-    private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityResetPolicy> onActivityResetDelegate;
+    private ClassPolicyDelegate<BeforeCaseActivityStartedPolicy> beforeStartedDelegate;
+    private ClassPolicyDelegate<OnCaseActivityStartedPolicy> onStartedDelegate;
+    private ClassPolicyDelegate<BeforeCaseActivityStoppedPolicy> beforeStoppedDelegate;
+    private ClassPolicyDelegate<OnCaseActivityStoppedPolicy> onStoppedDelegate;
+    private ClassPolicyDelegate<OnCaseActivityResetPolicy> onResetDelegate;
+    private ClassPolicyDelegate<OnChildrenIndexChangedPolicy> onIndexChangedDelegate;
 
     private Map<String, List<String>> allowedTransitions = new HashMap<>();
 
     public void init() {
-        beforeActivityStartedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.BeforeCaseActivityStartedPolicy.class);
-        onActivityStartedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStartedPolicy.class);
-        beforeActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.BeforeCaseActivityStoppedPolicy.class);
-        onActivityStoppedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityStoppedPolicy.class);
-        onActivityResetDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityResetPolicy.class);
+
+        beforeStartedDelegate = policyComponent.registerClassPolicy(BeforeCaseActivityStartedPolicy.class);
+        onStartedDelegate = policyComponent.registerClassPolicy(OnCaseActivityStartedPolicy.class);
+        beforeStoppedDelegate = policyComponent.registerClassPolicy(BeforeCaseActivityStoppedPolicy.class);
+        onStoppedDelegate = policyComponent.registerClassPolicy(OnCaseActivityStoppedPolicy.class);
+        onResetDelegate = policyComponent.registerClassPolicy(OnCaseActivityResetPolicy.class);
+        onIndexChangedDelegate = policyComponent.registerClassPolicy(OnChildrenIndexChangedPolicy.class);
 
         allowedTransitions.put(STATE_NOT_STARTED, Lists.newArrayList(STATE_STARTED));
         allowedTransitions.put(STATE_STARTED, Lists.newArrayList(STATE_COMPLETED));
@@ -57,26 +61,22 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void startActivity(NodeRef activityRef) {
+
         if (!setState(activityRef, STATE_STARTED)) {
             return;
         }
 
         nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, new Date());
 
-        HashSet<QName> classes = new HashSet<QName>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
+        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
 
-        CaseActivityPolicies.BeforeCaseActivityStartedPolicy beforePolicy;
-        CaseActivityPolicies.OnCaseActivityStartedPolicy policy;
-
-        beforePolicy = beforeActivityStartedDelegate.get(classes);
-        beforePolicy.beforeCaseActivityStarted(activityRef);
-
-        policy = onActivityStartedDelegate.get(classes);
-        policy.onCaseActivityStarted(activityRef);
+        beforeStartedDelegate.get(classes).beforeCaseActivityStarted(activityRef);
+        onStartedDelegate.get(classes).onCaseActivityStarted(activityRef);
     }
 
     @Override
     public void stopActivity(NodeRef activityRef) {
+
         if (!setState(activityRef, STATE_COMPLETED)) {
             return;
         }
@@ -85,27 +85,19 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
 
-        CaseActivityPolicies.BeforeCaseActivityStoppedPolicy beforePolicy;
-        CaseActivityPolicies.OnCaseActivityStoppedPolicy policy;
-
-        beforePolicy = beforeActivityStoppedDelegate.get(classes);
-        beforePolicy.beforeCaseActivityStopped(activityRef);
-
-        policy = onActivityStoppedDelegate.get(classes);
-        policy.onCaseActivityStopped(activityRef);
+        beforeStoppedDelegate.get(classes).beforeCaseActivityStopped(activityRef);
+        onStoppedDelegate.get(classes).onCaseActivityStopped(activityRef);
     }
 
     @Override
     public void restartChildrenActivity(NodeRef parentActivityRef, NodeRef childActivityRef) {
+
         if (nodeService.exists(parentActivityRef) && nodeService.exists(childActivityRef)) {
+
             if (!isActive(parentActivityRef)) {
-//                nodeService.setProperty(parentActivityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
+
                 nodeService.setProperty(parentActivityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
                 nodeService.setProperty(parentActivityRef, LifeCycleModel.PROP_STATE, STATE_STARTED);
-
-//                HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(parentActivityRef, nodeService));
-//                CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
-//                policy.onCaseActivityReset(parentActivityRef);
                 resetActivitiesInChildren(childActivityRef);
                 startActivity(childActivityRef);
             }
@@ -134,10 +126,10 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type) {
-        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
 
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
         if (children == null || children.isEmpty()) {
-            return new ArrayList<>(0);
+            return new ArrayList<>();
         }
 
         List<Pair<NodeRef, Integer>> indexedChildren = new ArrayList<>(children.size());
@@ -149,13 +141,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             }
         }
 
-        Collections.sort(indexedChildren, new Comparator<Pair<NodeRef, Integer>>() {
-            @Override
-            public int compare(Pair<NodeRef, Integer> child0,
-                               Pair<NodeRef, Integer> child1) {
-                return Integer.compare(child0.getSecond(), child1.getSecond());
-            }
-        });
+        indexedChildren.sort(Comparator.comparingInt(Pair::getSecond));
 
         List<NodeRef> result = new ArrayList<>(indexedChildren.size());
         for (Pair<NodeRef, Integer> child : indexedChildren) {
@@ -197,6 +183,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void setParent(NodeRef activityRef, NodeRef newParent) {
+
         mandatoryActivity("activityRef", activityRef);
         mandatoryNodeRef("newParent", newParent);
 
@@ -214,31 +201,37 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     @Override
     public void setIndex(NodeRef activityRef, int newIndex) {
+
         mandatoryActivity("activityRef", activityRef);
 
         ChildAssociationRef assocRef = nodeService.getPrimaryParent(activityRef);
-        NodeRef parent = assocRef.getParentRef();
+        NodeRef parentRef = assocRef.getParentRef();
 
-        List<NodeRef> activities = getActivities(parent);
+        List<NodeRef> activities = getActivities(parentRef);
 
         if (newIndex >= activities.size()) {
             newIndex = activities.size() - 1;
-        }
-        if (newIndex < 0) {
+        } else if (newIndex < 0) {
             newIndex = 0;
         }
-        if (newIndex == activities.indexOf(activityRef)) return;
 
-        activities.remove(activityRef);
-        activities.add(newIndex, activityRef);
+        if (newIndex != activities.indexOf(activityRef)) {
 
-        for (int i = 0; i < activities.size(); i++) {
-            nodeService.setProperty(activities.get(i), ActivityModel.PROP_INDEX, i);
+            activities.remove(activityRef);
+            activities.add(newIndex, activityRef);
+
+            for (int index = 0; index < activities.size(); index++) {
+                nodeService.setProperty(activities.get(index), ActivityModel.PROP_INDEX, index);
+            }
         }
+
+        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(parentRef, nodeService));
+        onIndexChangedDelegate.get(classes).onChildrenIndexChanged(parentRef);
     }
 
     @Override
     public boolean hasActiveChildren(NodeRef nodeRef) {
+
         mandatoryNodeRef("nodeRef", nodeRef);
 
         List<NodeRef> children = RepoUtils.getChildrenByAssoc(nodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
@@ -264,8 +257,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
-        CaseActivityPolicies.OnCaseActivityResetPolicy policy = onActivityResetDelegate.get(classes);
-        policy.onCaseActivityReset(activityRef);
+        onResetDelegate.get(classes).onCaseActivityReset(activityRef);
 
         resetActivitiesInChildren(activityRef);
     }
@@ -278,6 +270,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     private boolean setState(NodeRef activityRef, String state) {
+
         if (!nodeService.exists(activityRef)) {
             return false;
         }

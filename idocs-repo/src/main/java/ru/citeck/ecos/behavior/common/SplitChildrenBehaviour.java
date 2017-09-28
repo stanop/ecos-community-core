@@ -19,7 +19,6 @@ import org.alfresco.util.Pair;
 import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.service.AlfrescoServices;
-import ru.citeck.ecos.utils.FolderUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
