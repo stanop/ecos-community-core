@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class ICaseDocumentNotificationSender extends DocumentNotificationSender {
 
-    private NodeService nodeService;
+    protected NodeService nodeService;
     private NamespaceService namespaceService;
     private TemplateService templateService;
     private CaseStatusService caseStatusService;

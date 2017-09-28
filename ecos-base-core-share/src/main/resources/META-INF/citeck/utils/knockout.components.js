@@ -624,28 +624,34 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     var assemblyValues = [],
                         attributeValues = attribute.value();
 
-                    _.each(attributeValues, function(value) {
+                    _.each(attributeValues, function (value) {
                         // if we have a labels
                         if (_.isString(value)) {
                             if (attribute.labels && attribute.labels().length) {
                                 assemblyValues.push(attribute.labels()[value]);
-                            } 
-                        }
-
-                        if (_.isObject(value)) {
+                            } else if (self.journalType && self.journalType.attributes && self.journalType.attributes() && self.journalType.attributes().length) {
+                                var attr = self.journalType.attributes().find(function (attr) {
+                                    return attr.name() == attribute.name();
+                                });
+                                if (attr && attr.labels && attr.labels()) assemblyValues.push(attr.labels()[value]);
+                            } else {
+                                assemblyValues.push(value);
+                            }
+                        } else if (_.isObject(value)) {
                             // if we have a invariant node
                             if (isInvariantsObject(value)) assemblyValues.push(attribute.valueTitle());
 
                             // if we have a date
                             if (_.isDate(value)) assemblyValues.push(value.toLocaleString());
+                        } else {
+                            // return original if not another
+                            assemblyValues.push(value);
                         }
-
-                        // return original if not another
-                        assemblyValues.push(value);
                     });
 
-                    return assemblyValues.join(", ")
-                })
+                    return assemblyValues.join(", ");
+                });
+
             };
 
             this.getCellValueTitle = function(attribute) {
@@ -656,6 +662,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     if (_.isString(attributeValue)) {
                         if (attribute.labels && attribute.labels().length) {
                             return attribute.labels()[attributeValue]
+                        } else if (self.journalType && self.journalType.attributes && self.journalType.attributes() && self.journalType.attributes().length) {
+                            var attr = self.journalType.attributes().find(function (attr) {
+                                return attr.name() == attribute.name();
+                            });
+                            if (attr && attr.labels && attr.labels() && attr.labels()[attributeValue]) return attr.labels()[attributeValue];
                         }
                     }
 
@@ -670,6 +681,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     // return original if not another
                     return attributeValue;
                 });
+
             };
 
             this.getDefaultHeaderTitle = function(attributeName) {

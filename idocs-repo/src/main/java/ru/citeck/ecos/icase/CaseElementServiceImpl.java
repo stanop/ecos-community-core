@@ -250,12 +250,6 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         registerElementCopy(caseNodeRef, templateRef);
 
         adjustCopies();
-
-        turnOffSavedTemplate(templateRef);
-    }
-
-    private void turnOffSavedTemplate(NodeRef templateRef) {
-        nodeService.setProperty(templateRef, ICaseModel.PROP_CONDITION, "false");
     }
 
     @Override

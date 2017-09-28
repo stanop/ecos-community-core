@@ -46,6 +46,20 @@ public class GroupActionServiceImpl implements GroupActionService {
         return statuses;
     }
 
+    @Override
+    public Map<NodeRef, GroupActionStatus> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
+
+        GroupActionEvaluator evaluator = evaluators.get(actionId);
+        if (evaluator == null) {
+            throw new IllegalArgumentException("Action not found: '" + actionId + "'");
+        }
+        checkParams(params, evaluator.getMandatoryParams());
+
+        Map<NodeRef, GroupActionStatus> statuses = evaluator.invokeBatch(nodeRefs, params);
+
+        return statuses;
+    }
+
     private GroupActionStatus processNode(NodeRef nodeRef, GroupActionEvaluator evaluator, Map<String, String> params) {
 
         final GroupActionStatus status = new GroupActionStatus();
@@ -62,6 +76,7 @@ public class GroupActionServiceImpl implements GroupActionService {
         }
         return status;
     }
+
 
     private void checkParams(Map<String, String> params, String[] mandatoryParams) {
         List<String> missing = new ArrayList<>(mandatoryParams.length);

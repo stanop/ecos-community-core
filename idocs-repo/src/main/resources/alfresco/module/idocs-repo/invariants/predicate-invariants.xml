@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+
+        <import uri="http://www.citeck.ru/model/predicate/1.0" prefix="pred" />
+        <import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+    </imports>
+
+    <associations type="pred:predicate">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </associations>
+
+    <child-associations type="pred:predicate">
+        <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+    </child-associations>
+
+    <type name="pred:javascriptPredicate">
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <type name="pred:condition">
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <type name="pred:kindPredicate">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+            (function() {
+                var type = node.properties['pred:requiredType'],
+                    kind = node.properties['pred:requiredKind'];
+                return "Имеет тип " + (kind ? kind.name : type.name);
+            })()
+            </invariant>
+        </property>
+
+        <property name="pred:requiredType">
+            <invariant on="options" language="criteria">
+                <criterion attribute="type" predicate="type-equals" value="cm:category" />
+                <criterion attribute="parent" predicate="parent-equals" value="workspace://SpacesStore/category-document-type-root" />
+            </invariant>
+        </property>
+
+        <property name="pred:requiredKind">
+            <invariant on="options" language="criteria">
+                <criterion attribute="type" predicate="type-equals" value="cm:category" />
+                <criterion attribute="parent" predicate="parent-equals" value="${node.properties['pred:requiredType'].nodeRef}" />
+            </invariant>
+            <invariant on="relevant" language="javascript">node.properties["pred:requiredType"] != null</invariant>
+        </property>
+    </type>
+
+    <type name="req:requiredLevelsPredicate">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (node.properties['req:levelRequired'] ? "Выполнены требования " : "Не выполнены требования ") + node.assocs["req:requiredLevels"][0].properties["cm:title"]
+            </invariant>
+        </property>
+        <association name="req:requiredLevels">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+    </type>
+
+    <type name="req:subcaseTypePredicate">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+            (function() {
+                var subcaseType = value.properties["req:requiredSubcaseType"];
+                var elementType = value.properties["req:requiredElementType"];
+                return "Требуется тип "
+                    + (subcaseType ? "подкейса " + utils.shortQName(subcaseType) : "")
+                    + (elementType ? "элемента " + utils.shortQName(elementType) : "");
+            })()
+            </invariant>
+        </property>
+        <property name="req:requiredSubcaseType">
+            <invariant on="mandatory" language="javascript">node.properties["req:requiredElementType"] == null</invariant>
+            <invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
+        </property>
+        <property name="req:requiredElementType">
+            <invariant on="mandatory" language="javascript">node.properties["req:requiredSubcaseType"] == null</invariant>
+            <invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
+        </property>
+    </type>
+
+</invariants>

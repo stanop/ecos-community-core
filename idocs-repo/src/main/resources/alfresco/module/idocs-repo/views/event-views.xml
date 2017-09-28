@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+        <import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
+    </imports>
+
+    <views any="true">
+
+        <fields assoc="icaseEvent:activityStartEvents">
+            <region name="input" template="view-table">
+                <param name="columns">iEvent:type,iEvent:eventSource</param>
+            </region>
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+        </fields>
+
+        <fields assoc="icaseEvent:activityEndEvents">
+            <region name="input" template="view-table">
+                <param name="columns">iEvent:type,iEvent:eventSource</param>
+            </region>
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+        </fields>
+
+        <fields assoc="icaseEvent:activityRestartEvents">
+            <region name="input" template="view-table">
+                <param name="columns">iEvent:type,iEvent:eventSource</param>
+            </region>
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+        </fields>
+
+        <fields assoc="icaseEvent:activityResetEvents">
+            <region name="input" template="view-table">
+                <param name="columns">iEvent:type,iEvent:eventSource</param>
+            </region>
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+        </fields>
+
+        <fields assoc="iEvent:eventSource">
+            <region name="input" template="select" />
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </fields>
+
+        <fields assoc="iEvent:conditions">
+            <region name="input" template="view" />
+            <region name="select" template="select-create-object">
+                <param name="source">create-views</param>
+            </region>
+        </fields>
+    </views>
+
+    <view class="icaseEvent:activityStartedEvent">
+        <field assoc="iEvent:eventSource" />
+        <field assoc="iEvent:conditions" />
+    </view>
+
+    <view class="icaseEvent:activityStoppedEvent">
+        <field assoc="iEvent:eventSource" />
+        <field assoc="iEvent:conditions" />
+    </view>
+
+    <view class="icaseEvent:stageChildrenStopped">
+        <field assoc="iEvent:eventSource" />
+        <field assoc="iEvent:conditions" />
+    </view>
+
+    <view class="iEvent:userAction">
+        <field prop="cm:title" />
+        <field assoc="iEvent:eventSource" />
+        <field prop="iEvent:confirmationMessage" />
+        <field prop="iEvent:additionalDataType">
+            <region name="input" template="select" />
+        </field>
+        <field assoc="iEvent:conditions" />
+        <field assoc="iEvent:authorizedRoles" >
+            <region name="input" template="checkbox"/>
+        </field>
+    </view>
+
+    <view class="icaseEvent:caseCreated">
+        <field prop="attr:parent" template="none"/>
+        <field prop="attr:parentassoc" template="none"/>
+        <field prop="cm:title" />
+        <field assoc="iEvent:eventSource" />
+        <field assoc="iEvent:conditions" />
+    </view>
+
+    <view class="icaseEvent:casePropertiesChanged">
+        <field prop="cm:title" />
+        <field assoc="iEvent:eventSource" />
+        <field assoc="iEvent:conditions" />
+    </view>
+
+    <view class="iEvent:additionalConfirmer">
+        <field assoc="iEvent:confirmer">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="iEvent:comment">
+            <region name="input" template="textarea">
+                <param name="height">70px</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="iEvent:additionalPerformers">
+        <field assoc="iEvent:performers">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="iEvent:comment">
+            <region name="input" template="textarea">
+                <param name="height">70px</param>
+            </region>
+        </field>
+    </view>
+
+</views>

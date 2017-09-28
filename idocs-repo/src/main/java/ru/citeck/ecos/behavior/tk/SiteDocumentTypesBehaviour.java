@@ -68,6 +68,10 @@ public class SiteDocumentTypesBehaviour implements
                 ClassificationModel.PROP_RELATES_TO_TYPE, type, nodeService);
         NodeRef documentsFolder;
         if(containers.isEmpty()) {
+            NodeRef child = nodeService.getChildByName(doclib, ContentModel.ASSOC_CONTAINS, typeName);
+            if (child != null) {
+                typeName += "_documents";
+            }
             Map<QName, Serializable> containerProps = new HashMap<>();
             containerProps.put(ClassificationModel.PROP_RELATES_TO_TYPE, type);
             containerProps.put(ContentModel.PROP_NAME, typeName);

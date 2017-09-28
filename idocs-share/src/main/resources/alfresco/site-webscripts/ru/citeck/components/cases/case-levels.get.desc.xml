@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>case-completeness</shortname>
+    <description>Case Completeness</description>
+    <url>/citeck/components/cases/levels</url>
+    <url>/citeck/components/cases/completeness</url>
+</webscript>

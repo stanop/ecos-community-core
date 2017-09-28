@@ -907,6 +907,108 @@ YAHOO.Bubbling.fire("registerAction", {
         }
     });
 
+    YAHOO.Bubbling.fire("registerAction", {
+        actionName: "onUserActionEvent",
+        fn: function (record) {
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "/citeck/event/fire-events?nodeRef=" + record.nodeRef + "&eventType=user-action",
+                successCallback: {
+                    scope: this,
+                    fn: function () {
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: this.msg("message.transitionSuccess")
+                        });
+                        _.delay(function () {
+                            window.location.reload();
+                        }, 3000);
+                    }
+                },
+                failureCallback: {
+                    scope: this,
+                    fn: function (response) {
+                        var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: json.message
+                        });
+                    }
+                }
+            });
+        }
+    });
 
+    YAHOO.Bubbling.fire("registerAction", {
+
+        actionName: "onUserActionEventReset",
+
+		fn: function (record) {
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "/citeck/case/activity/reset?nodeRef=" + record.nodeRef,
+                successCallback: {
+                    scope: this,
+                    fn: function () {
+                        Alfresco.util.Ajax.jsonPost({
+                            url: Alfresco.constants.PROXY_URI + "/citeck/event/fire-events?nodeRef=" + record.nodeRef + "&eventType=user-action",
+                            successCallback: {
+                                scope: this,
+                                fn: function () {
+                                    Alfresco.util.PopupManager.displayMessage({
+                                        text: this.msg("message.transitionSuccess")
+                                    });
+                                    _.delay(function () {
+                                        window.location.reload();
+                                    }, 3000);
+                                }
+                            },
+                            failureCallback: {
+                                scope: this,
+                                fn: function (response) {
+                                    var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+                                    Alfresco.util.PopupManager.displayMessage({
+                                        text: json.message
+                                    });
+                                }
+                            }
+                        })
+                    }
+                },
+                failureCallback: {
+                    scope: this,
+                    fn: function (response) {
+                        var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: json.message
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    YAHOO.Bubbling.fire("registerAction", {
+
+    	actionName: "importCaseTemplate",
+
+		fn: function (record) {
+
+			var fileUpload = Alfresco.getFileUploadInstance();
+			var uploadUrl = "/case/import";
+			var uploadConfig = {
+				destination: record.nodeRef,
+				htmlUploadURL: uploadUrl,
+				flashUploadURL: uploadUrl,
+				mode: fileUpload.MODE_SINGLE_UPLOAD,
+				username: Alfresco.constants.USERNAME,
+				uploadDirectory: '/',
+				filter: [{description: "Case template", extensions: "*.xml"}],
+				onFileUploadComplete: {
+					scope: this,
+					fn: function(response) {
+						var files = response.successful;
+					}
+				}
+			};
+			fileUpload.show(uploadConfig);
+		}
+	});
 
 })();

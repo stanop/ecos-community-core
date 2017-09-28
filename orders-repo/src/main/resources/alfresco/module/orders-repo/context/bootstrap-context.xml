@@ -22,6 +22,11 @@
 		<property name="importer" ref="spacesBootstrap"/>
 	</bean>
 
+    <bean id="orders.import-scripts" abstract="true" class="ru.citeck.ecos.repo.module.ScriptImporterModuleComponent" parent="module.baseComponent">
+        <property name="moduleId" value="orders-repo" />
+        <property name="scriptService" ref="ScriptService"/>
+    </bean>
+
     <!-- orders site -->
 	<bean id="orders.siteBootstrap" parent="orders.import-spaces">
 		<property name="name" value="orders-site" />

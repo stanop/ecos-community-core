@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+    </imports>
+
+    <type name="iEvent:event">
+        <association name="iEvent:eventSource">
+            <invariant on="value-title" language="javascript">value.properties["cm:title"] || value.name</invariant>
+        </association>
+    </type>
+
+    <type name="iEvent:userAction">
+        <association name="iEvent:eventSource">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return [parent];
+                })()
+            </invariant>
+        </association>
+        <association name="iEvent:authorizedRoles">
+            <invariant on="options" language="javascript" final="true">
+                (function() {
+                    var parent = node.parent;
+                    while(parent &amp;&amp; parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
+        </association>
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+
+        <property name="iEvent:additionalDataType">
+            <invariant on="options" language="javascript">dictionary.getSubTypes("iEvent:additionalData")</invariant>
+        </property>
+    </type>
+
+    <type name="icaseEvent:caseCreated">
+        <association name="iEvent:eventSource">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return [parent];
+                })()
+            </invariant>
+        </association>
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <type name="icaseEvent:casePropertiesChanged">
+        <association name="iEvent:eventSource">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while(parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return [parent];
+                })()
+            </invariant>
+        </association>
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <type name="icaseEvent:activityEvent">
+        <association name="iEvent:eventSource">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var task = node.parent;
+                    var taskContainer = task.parent;
+                    var options = [];
+                    // add taskContainer if it is also a task
+                    if(taskContainer.isSubType("activ:activity"))
+                        options.push(taskContainer);
+                    // add all neighbours, including parentTask
+                    var neighbours = taskContainer.childAssocs['activ:activities'] || [];
+                    for(var i in neighbours)
+                        options.push(neighbours[i]);
+                    // add all child tasks, if any
+                    var children = task.childAssocs['activ:activities'] || [];
+                    for(var i in children)
+                        options.push(children[i]);
+                    return options;
+                })()
+            </invariant>
+
+            <invariant on="value-title" language="javascript">
+                value.properties.title + (function() {
+                    var task = node.parent;
+                    if(!task) return "";
+                    if(value.id == task.id) return " (self)";
+                    var taskContainer = task.parent;
+                    if(!taskContainer) return "";
+                    if(value.id == taskContainer.id) return " (parent)";
+                    if(value.parent.id == taskContainer.id) return " (neighbour)";
+                    if(value.parent.id == task.id) return " (child)";
+                    return "";
+                })()
+            </invariant>
+        </association>
+    </type>
+
+    <type name="icaseEvent:stageChildrenStopped">
+        <association name="iEvent:eventSource">
+            <!--<invariant on="default" language="javascript">
+                node.parent.isSubType("stages:stage") ? node.parent : null
+            </invariant>
+            <invariant on="options" language="javascript">
+                node.parent.isSubType("stages:stage") ? [node.parent] : []
+            </invariant>-->
+            <invariant on="options" language="javascript">
+                (function() {
+                var task = node.parent;
+                var taskContainer = task.parent;
+                var options = [];
+                var neighbours = taskContainer.childAssocs['activ:activities'] || [];
+                for(var i in neighbours)
+                    if(neighbours[i].isSubType("stages:stage")) options.push(neighbours[i]);
+                // add all child tasks, if any
+                var children = task.childAssocs['activ:activities'] || [];
+                for(var i in children)
+                    if(children[i].isSubType("stages:stage")) options.push(children[i]);
+                return options;
+                })()
+            </invariant>
+
+            <invariant on="value-title" language="javascript">
+                value.properties.title + (function() {
+                var task = node.parent;
+                if(!task) return "";
+                if(value.id == task.id) return " (self)";
+                var taskContainer = task.parent;
+                if(!taskContainer) return "";
+                if(value.id == taskContainer.id) return " (parent)";
+                if(value.parent.id == taskContainer.id) return " (neighbour)";
+                if(value.parent.id == task.id) return " (child)";
+                return "";
+                })()
+            </invariant>
+        </association>
+    </type>
+
+    <type name="icaseEvent:activityStartedEvent">
+        <association name="iEvent:eventSource">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var task = node.parent;
+                    var taskContainer = task.parent;
+                    var options = [];
+                if(taskContainer.isSubType("activ:activity"))
+                options.push(taskContainer);
+                    var neighbours = taskContainer.childAssocs['activ:activities'] || [];
+                    for(var i in neighbours)
+                        if(neighbours[i].isSubType("activ:activity") || neighbours[i].isSubType("stages:stage")) options.push(neighbours[i]);
+                        // add all child tasks, if any
+                    var children = task.childAssocs['activ:activities'] || [];
+                    for(var c in children)
+                if(children[c].isSubType("activ:activity") || children[c].isSubType("stages:stage")) options.push(children[c]);
+                    return options;
+                })()
+            </invariant>
+
+            <invariant on="value-title" language="javascript">
+                value.properties.title + (function() {
+                var task = node.parent;
+                if(!task) return "";
+                if(value.id == task.id) return " (self)";
+                var taskContainer = task.parent;
+                if(!taskContainer) return "";
+                if(value.id == taskContainer.id) return " (parent)";
+                if(value.parent.id == taskContainer.id) return " (neighbour)";
+                if(value.parent.id == task.id) return " (child)";
+                return "";
+                })()
+            </invariant>
+        </association>
+    </type>
+
+    <type name="icaseEvent:activityStoppedEvent">
+        <association name="iEvent:eventSource">
+            <invariant on="options" language="javascript">
+                (function() {
+                var task = node.parent;
+                var taskContainer = task.parent;
+                var options = [];
+                if(taskContainer.isSubType("activ:activity"))
+                options.push(taskContainer);
+                var neighbours = taskContainer.childAssocs['activ:activities'] || [];
+                for(var i in neighbours)
+                if(neighbours[i].isSubType("activ:activity") || neighbours[i].isSubType("stages:stage")) options.push(neighbours[i]);
+                // add all child tasks, if any
+                var children = task.childAssocs['activ:activities'] || [];
+                for(var c in children)
+                if(children[c].isSubType("activ:activity") || children[c].isSubType("stages:stage")) options.push(children[c]);
+                return options;
+                })()
+            </invariant>
+
+            <invariant on="value-title" language="javascript">
+                value.properties.title + (function() {
+                var task = node.parent;
+                if(!task) return "";
+                if(value.id == task.id) return " (self)";
+                var taskContainer = task.parent;
+                if(!taskContainer) return "";
+                if(value.id == taskContainer.id) return " (parent)";
+                if(value.parent.id == taskContainer.id) return " (neighbour)";
+                if(value.parent.id == task.id) return " (child)";
+                return "";
+                })()
+            </invariant>
+        </association>
+    </type>
+
+    <aspect name="icaseEvent:hasActivityStartEvents">
+        <child-association name="icaseEvent:activityStartEvents">
+            <invariant on="mandatory" language="javascript"><![CDATA[
+                !node.properties['activ:manualStarted'] && !node.childAssocs['icaseEvent:activityRestartEvents']
+            ]]></invariant>
+        </child-association>
+    </aspect>
+
+    <aspect name="icaseEvent:hasActivityRestartEvents">
+        <child-association name="icaseEvent:activityRestartEvents">
+            <invariant on="mandatory" language="javascript"><![CDATA[
+                !node.properties['activ:manualStarted'] && !node.childAssocs['icaseEvent:activityStartEvents']
+            ]]></invariant>
+        </child-association>
+    </aspect>
+
+    <aspect name="icaseEvent:hasActivityEndEvents">
+        <child-association name="icaseEvent:activityEndEvents">
+            <invariant on="mandatory" language="javascript">!node.properties['activ:manualStopped']</invariant>
+        </child-association>
+    </aspect>
+
+</invariants>

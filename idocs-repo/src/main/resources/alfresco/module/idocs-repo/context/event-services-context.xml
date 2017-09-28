@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+        "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+    <bean id="EcoS.EventService" class="ru.citeck.ecos.event.EventServiceImpl" init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="conditionDAO" ref="EcoS.ConditionDAO"/>
+        <property name="actionService" ref="actionService"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
+    <bean id="EcoS.EventServiceJS" name="EventServiceJS" class="ru.citeck.ecos.event.EventServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="events"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="eventService" ref="EcoS.EventService"/>
+    </bean>
+</beans>

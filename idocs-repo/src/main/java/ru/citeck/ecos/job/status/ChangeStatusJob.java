@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +75,7 @@ public class ChangeStatusJob extends AbstractScheduledLockedJob implements State
         String workName = "Change status work #" + index;
         logger.info(workName + ": " + changeStatusData);
 
-        CaseStatusService caseStatusService = (CaseStatusService) serviceRegistry.getService(CiteckServices.CASE_STATUS_SERVICE);
+        CaseStatusService caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
         TransactionService transactionService = serviceRegistry.getTransactionService();
         RetryingTransactionHelper transactionHelper = transactionService.getRetryingTransactionHelper();
 

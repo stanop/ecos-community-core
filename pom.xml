@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.1.4.0-SNAPSHOT</version>
+    <version>3.2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -62,10 +62,10 @@
         <!-- ECOS build config -->
 
         <default.locale>en</default.locale>
-        <module.contracts.version>2.0.4.0-SNAPSHOT</module.contracts.version>
-        <module.letters.version>1.2.5-SNAPSHOT</module.letters.version>
-        <module.meetings.version>1.1.5-SNAPSHOT</module.meetings.version>
-        <module.orders.version>1.1.5-SNAPSHOT</module.orders.version>
+        <module.contracts.version>2.0.5.0-SNAPSHOT</module.contracts.version>
+        <module.letters.version>1.2.6-SNAPSHOT</module.letters.version>
+        <module.meetings.version>1.1.6-SNAPSHOT</module.meetings.version>
+        <module.orders.version>1.1.6-SNAPSHOT</module.orders.version>
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
@@ -91,44 +91,6 @@
     </profiles>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-rabbit</artifactId>
-            <version>${spring.rabbitmq.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-tx</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-spring</artifactId>
-            <version>${activemq.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jms</artifactId>
-            <version>${spring.jms.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-tx</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <!-- The main Alfresco Repo dependency for compiling Java code in src/main/java -->
         <dependency>
@@ -298,6 +260,47 @@
                 <groupId>org.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>3.3.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.amqp</groupId>
+                <artifactId>spring-rabbit</artifactId>
+                <version>${spring.rabbitmq.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-tx</artifactId>
+                    </exclusion>
+                </exclusions>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-spring</artifactId>
+                <version>${activemq.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jms</artifactId>
+                <version>${spring.jms.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-tx</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-aop</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                </exclusions>
                 <scope>provided</scope>
             </dependency>
 

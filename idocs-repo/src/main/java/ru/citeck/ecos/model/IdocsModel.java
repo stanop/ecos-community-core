@@ -78,12 +78,22 @@ public final class IdocsModel {
     public static final QName PROP_TOTAL_SUM = QName.createQName(IDOCS_NAMESPACE, "totalSum");
     public static final QName PROP_VAT_PART = QName.createQName(IDOCS_NAMESPACE, "vatPart");
     public static final QName PROP_COMMENT = QName.createQName(IDOCS_NAMESPACE, "comment");
+
+    public static final QName PROP_ATTACHMENT_STATE = QName.createQName(IDOCS_NAMESPACE, "attachmentState");
+
+    public static final QName PROP_ABSTRACT_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "abstractContractor");
+
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
     public static final QName ASSOC_ACCOUNTANT_GENERAL = QName.createQName(IDOCS_NAMESPACE, "accountantGeneral");
     public static final QName ASSOC_DOC_ATTORNEYS = QName.createQName(IDOCS_NAMESPACE, "docAttorneys");
     public static final QName ASSOC_SIGNER = QName.createQName(IDOCS_NAMESPACE, "signatory");
     public static final QName ASSOC_CURRENCY_DOCUMENT = QName.createQName(IDOCS_NAMESPACE, "currencyDocument");
+
+    // constraints
+    public static final String CONSTR_REPEAL_BY_COUNTERPARTY_REQUESTED = "REPEAL_BY_COUNTERPARTY_REQUESTED";
+    public static final String CONSTR_REPEALED_BY_COUNTERPARTY = "REPEALED_BY_COUNTERPARTY";
+    public static final String CONSTR_CLARIFICATION_REQUESTED = "CLARIFICATION_REQUESTED";
 
     public static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
 

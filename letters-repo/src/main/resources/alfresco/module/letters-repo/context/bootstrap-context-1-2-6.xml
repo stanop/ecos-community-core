@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="letters.import-spaces.1-2-6" abstract="true" parent="letters.import-spaces.1-2-2">
+        <property name="sinceVersion" value="1.2.6"/>
+        <property name="appliesFromVersion" value="1.2.6"/>
+    </bean>
+
+    <bean id="letters.import-scripts.1-2-6" abstract="true" parent="letters.import-scripts">
+        <property name="sinceVersion" value="1.2.6"/>
+        <property name="appliesFromVersion" value="1.2.6"/>
+    </bean>
+
+    <bean id="letters.import-scripts.add-case-types-to-site" parent="letters.import-scripts.1-2-6">
+        <property name="name" value="add-case-types-to-site"/>
+        <property name="description" value="add-case-types-to-site"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="letters.module-component.letters-site"/>
+                <ref bean="letters.module-component.doctype-categories-ext"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="/app:company_home/st:sites/cm:letters" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:siteDocumentTypes">
+                            <list>
+                                <value>workspace://SpacesStore/letter-doctype-income</value>
+                                <value>workspace://SpacesStore/letter-doctype-outcome</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>

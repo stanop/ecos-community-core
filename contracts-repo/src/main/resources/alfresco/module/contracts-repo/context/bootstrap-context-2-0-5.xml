@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.import-spaces.2-0-5" parent="contracts.import-spaces" abstract="true">
+        <property name="sinceVersion" value="2.0.5" />
+        <property name="appliesFromVersion" value="2.0.5" />
+    </bean>
+
+    <bean id="contracts.import-scripts.2-0-5" parent="contracts.import-scripts" abstract="true">
+        <property name="sinceVersion" value="2.0.5" />
+        <property name="appliesFromVersion" value="2.0.5" />
+    </bean>
+
+    <bean id="contracts.module-component.document-kinds" parent="contracts.import-spaces.2-0-5">
+        <property name="name" value="Document kinds" />
+        <property name="description" value="Document kinds" />
+        <property name="executeOnceOnly" value="false" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/category-document-type</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/data/document-kinds.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.script.completeness-levels" parent="contracts.import-scripts.2-0-5">
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.document-kinds" />
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="false" />
+        <property name="name" value="add-contracts-completeness-levels" />
+        <property name="description" value="Create or update completeness levels" />
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/completeness-levels.js"/>
+    </bean>
+
+    <bean id="contracts.import-scripts.add-case-types-to-site" parent="contracts.import-scripts.2-0-5">
+        <property name="name" value="add-case-types-to-site"/>
+        <property name="description" value="add-case-types-to-site"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.contracts-site"/>
+                <ref bean="contracts.module-component.doctype-categories1"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="/app:company_home/st:sites/cm:contracts" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:siteDocumentTypes">
+                            <list>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-contract</value>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-closing-doc</value>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-supp-agreement</value>
+                                <value>workspace://SpacesStore/contracts-cat-doctype-payment</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>

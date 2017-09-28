@@ -36,6 +36,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
     DocumentType
         .key('nodeRef', s)
         .property('name', s)
+        .property('title', s)
         .property('folder', s)
         .property('journal', s)
         .property('createVariant', CreateVariant)

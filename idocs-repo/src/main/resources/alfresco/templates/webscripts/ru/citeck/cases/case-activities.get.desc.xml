@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Case Activities</shortname>
+	<description>Case Activities: tasks and stages</description>
+	<url>/citeck/cases/activities?nodeRef={nodeRef}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

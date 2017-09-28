@@ -3,33 +3,8 @@
     <scope>page</scope>
     <source-id>card-details</source-id>
     <region-id>case-tasks</region-id>
-    <url>/citeck/components/document-children</url>
+    <url>/citeck/components/cases/activities</url>
     <properties>
         <nodeRef>{nodeRef}</nodeRef>
-        <destination>{nodeRef}</destination>
-        <header>case-tasks.table.header</header>
-        <contentType>icaseTask:task</contentType>
-        <assocType>icaseTask:tasks</assocType>
-        <childrenUrl>Alfresco.constants.PROXY_URI + "citeck/case-tasks/get?nodeRef={nodeRef}"</childrenUrl>
-        <columns>
-            [
-            {key: 'attributes["cm:title"]', label: Alfresco.util.message("case-tasks.table.header.name")},
-            {key: 'attributes["lc:state"]', label: Alfresco.util.message("case-tasks.table.header.state")},
-            {key: 'attributes["icaseTask:workflowDefinitionName"]', label: Alfresco.util.message("case-tasks.table.header.taskDefinitionName")},
-            {key: 'attributes["icaseTask:workflowInstanceId"]', label: Alfresco.util.message("case-tasks.table.header.instanceId")},
-            {key: 'actions', label: 'Действия', formatter: Citeck.format.actions('case-tasks', 'nodeRef')}
-            ]
-        </columns>
-        <responseSchema>
-            {resultsList: 'tasks', fields: [
-            {key: 'nodeRef'},
-            {key: 'attributes["cm:title"]'},
-            {key: 'attributes["lc:state"]'},
-            {key: 'attributes["icaseTask:workflowDefinitionName"]'},
-            {key: 'attributes["icaseTask:workflowInstanceId"]'}
-            ]}
-        </responseSchema>
-        <buttonsInHeader>onPanelButtonCreate</buttonsInHeader>
-        <twisterKey>case-task</twisterKey>
     </properties>
 </component>

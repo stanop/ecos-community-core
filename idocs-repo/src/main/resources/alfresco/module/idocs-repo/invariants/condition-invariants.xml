@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/condition/1.0" prefix="cond" />
+    </imports>
+
+    <type name="cond:condition">
+        <property name="cm:title">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+    <associations type="cond:condition">
+        <invariant on="value-title" language="javascript">value.properties.title</invariant>
+    </associations>
+
+    <child-associations type="cond:condition">
+        <invariant on="value-title" language="javascript">value.properties.title</invariant>
+    </child-associations>
+
+    <type name="cond:compare-property-value">
+        <property name="cm:title">
+            <invariant on="value" language="freemarker">${shortQName(node.properties['cond:compare-property-value:property'])} ${message('listconstraint.cond_compare-property-value_operation_variants.short.'+node.properties['cond:compare-property-value:operation'])} "${node.properties['cond:compare-property-value:value']}"</invariant>
+        </property>
+    </type>
+
+    <type name="cond:compare-process-variable">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var variable = node.properties['cond:compare-process-variable:variable'];
+                    var value = node.properties['cond:compare-process-variable:value'];
+                    return variable + ' = ' + value;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="cond:evaluate-script">
+        <property name="cm:title">
+            <invariant on="default" language="javascript">node.properties["cond:evaluate-script:script"].substr(0, 50)</invariant>
+        </property>
+    </type>
+
+    <type name="cond:user-in-document">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var property = node.properties['cond:user-in-document:property'];
+                    var user = node.properties['cond:user-in-document:userName'] || "Current user";
+                    return user + " in property " + utils.shortQName(property);
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="cond:user-in-group">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var group = node.properties['cond:user-in-group:groupName'];
+                    var user = node.properties['cond:user-in-group:userName'] || "Current user";
+                    return user + " in group " + group;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+    <type name="cond:user-has-permission">
+        <property name="cm:title">
+            <invariant on="value" language="javascript">
+                (function() {
+                    var permission = node.properties['cond:user-has-permission:permission'];
+                    var user = node.properties['cond:user-has-permission:userName'] || "Current user";
+                    return user + " has permission " + permission;
+                })();
+            </invariant>
+        </property>
+    </type>
+
+</invariants>

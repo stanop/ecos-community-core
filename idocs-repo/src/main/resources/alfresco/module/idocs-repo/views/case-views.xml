@@ -4,6 +4,11 @@
         <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/predicate/1.0" prefix="pred" />
+        <import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req" />
+        <import uri="http://www.citeck.ru/model/case/timer/1.0" prefix="caseTimer" />
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
     </imports>
 
     <view class="icase:template">
@@ -20,5 +25,70 @@
             </region>
         </field>
     </view>
+
+    <!-- concrete views -->
+
+    <view class="req:completenessLevel">
+        <field prop="cm:name" />
+        <field prop="cm:title" />
+        <field prop="cm:description" />
+        <field assoc="req:levelRequirement">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="req:requirement">
+        <field prop="cm:title" />
+        <field prop="cm:description" />
+        <field assoc="req:requirementScope" />
+        <field prop="pred:quantifier" />
+        <field assoc="pred:antecedent">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+            </region>
+        </field>
+        <field assoc="pred:consequent">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="caseTimer:timer">
+        <field prop="cm:title" />
+        <field prop="caseTimer:datePrecision">
+            <region name="input" template="select"/>
+        </field>
+        <field prop="caseTimer:expressionType">
+            <region name="input" template="select"/>
+        </field>
+        <field prop="caseTimer:timerExpression">
+            <region name="input" template="textarea">
+                <param name="height">120px</param>
+                <param name="validation">false</param>
+            </region>
+        </field>
+        <field prop="activ:repeatable" />
+        <field prop="activ:manualStarted" />
+        <field assoc="icaseEvent:activityStartEvents" />
+        <field assoc="icaseEvent:activityResetEvents" />
+    </view>
+
+    <!-- rules -->
+
+    <views any="true">
+        <fields nodetype="icase:elementConfig">
+            <region name="input" template="view" />
+            <region name="select" template="select-journal">
+                <param name="journalType">case-element-configs</param>
+            </region>
+        </fields>
+        <fields nodetype="req:requirement">
+            <region name="input" template="view" />
+            <region name="select" template="create-object" />
+        </fields>
+    </views>
 
 </views>

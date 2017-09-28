@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		
+		<import uri="http://www.citeck.ru/model/action/1.0" prefix="action" />
+		<import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
+		<import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+		<import uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
+	</imports>
+
+	<view class="action:set-property-value">
+		<field prop="action:set-property-value:property">
+			<region name="input" template="text" />
+		</field>
+		<field prop="action:set-property-value:value" />
+		<field prop="activ:repeatable" />
+		<field prop="activ:manualStarted" />
+		<field assoc="icaseEvent:activityStartEvents" />
+	</view>
+
+	<view class="action:set-case-status">
+		<field prop="cm:title" />
+		<field assoc="action:set-case-status:status">
+			<region name="input" template="view"/>
+			<region name="select" template="select-journal" >
+				<param name="journalType">case-status</param>
+			</region>
+		</field>
+		<field prop="activ:repeatable" />
+		<field prop="activ:manualStarted" />
+		<field assoc="icaseEvent:activityStartEvents" />
+	</view>
+	
+	<view class="action:set-process-variable">
+		<field prop="action:set-process-variable:variable" />
+		<field prop="action:set-process-variable:value" />
+		<field prop="activ:repeatable" />
+		<field prop="activ:manualStarted" />
+		<field assoc="icaseEvent:activityStartEvents" />
+	</view>
+	
+	<view class="action:execute-script">
+		<field prop="attr:parent" template="none"/>
+		<field prop="attr:parentassoc" template="none"/>
+		<field prop="cm:title" />
+		<field prop="action:execute-script:script">
+			<region name="input" template="textarea">
+				<param name="height">200px</param>
+				<param name="validation">false</param>
+			</region>
+		</field>
+		<field prop="activ:repeatable" />
+		<field prop="activ:manualStarted" />
+		<field assoc="icaseEvent:activityStartEvents" />
+		<field assoc="icaseEvent:activityRestartEvents" />
+	</view>
+	
+	<view class="action:mail">
+		<field prop="action:mail:subject" />
+		<field prop="action:mail:to">
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+		<field prop="action:mail:text">
+			<region name="input" template="textarea" />
+			<invariant on="mandatory" language="explicit">true</invariant>
+		</field>
+		<field prop="activ:repeatable" />
+		<field prop="activ:manualStarted" />
+		<field assoc="icaseEvent:activityStartEvents" />
+	</view>
+
+	<view class="action:fail">
+		<field prop="action:fail:message">
+			<region name="input" template="textarea" />
+		</field>
+		<field prop="activ:repeatable" />
+		<field prop="activ:manualStarted" />
+		<field assoc="icaseEvent:activityStartEvents" />
+	</view>
+	
+</views>
