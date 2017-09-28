@@ -20,10 +20,7 @@ package ru.citeck.ecos.processor;
 
 import java.util.Map;
 
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.ContentWriter;
-import org.alfresco.service.cmr.repository.TransformationOptions;
+import org.alfresco.service.cmr.repository.*;
 
 /**
  * Transform content is a Data Bundle Line, that transforms given content from any supported format to the format specified.
@@ -59,12 +56,12 @@ public class TransformContent extends AbstractDataBundleLine
 		writer.setEncoding(evaluateExpression(outputEncoding, model).toString());
 		writer.setMimetype(evaluateExpression(outputMimetype, model).toString());
 		
-		if(!contentService.isTransformable(reader, writer, options)) {
-			throw new IllegalStateException("Can not transform " + reader.getMimetype() + " to " + outputMimetype);
+		try {
+			contentService.transform(reader, writer, options);
+		} catch (NoTransformerException | ContentIOException e) {
+			throw new IllegalStateException("Can not transform " + reader.getMimetype() + " to " + outputMimetype, e);
 		}
 
-		contentService.transform(reader, writer, options);
-		
 		ContentReader resultReader = writer.getReader();
 		return helper.getDataBundle(resultReader, model);
 	}
