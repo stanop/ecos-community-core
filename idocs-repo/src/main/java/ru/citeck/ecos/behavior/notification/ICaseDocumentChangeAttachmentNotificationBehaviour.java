@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
 

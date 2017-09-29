@@ -3,8 +3,6 @@ package org.alfresco.repo.policy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -73,7 +71,7 @@ public class TransactionBehaviourQueue implements TransactionListener {
             executionContext.method = method;
             executionContext.args = args;
             executionContext.policyInterface = policyInterface;
-            executionContext.order = behaviour instanceof OrderedBehaviour ? ((OrderedBehaviour) behaviour).getOrder() : 50;
+            executionContext.order = getOrder(behaviour);
 
             // Defer or execute now?
             if (!queueContext.committed)
@@ -100,6 +98,14 @@ public class TransactionBehaviourQueue implements TransactionListener {
                     executionContext.args[i] = args[i];
                 }
             }
+        }
+    }
+
+    private int getOrder(Behaviour behaviour) {
+        if (behaviour instanceof TransactionBehaviourOrder) {
+            return ((TransactionBehaviourOrder) behaviour).getOrder();
+        } else {
+            return TransactionBehaviourOrder.DEFAULT_ORDER;
         }
     }
 
@@ -176,8 +182,6 @@ public class TransactionBehaviourQueue implements TransactionListener {
 
     /**
      * Execution Instance Key - to uniquely identify an ExecutionContext
-     * 
-     * @param <P>
      */
     private class ExecutionInstanceKey
     {

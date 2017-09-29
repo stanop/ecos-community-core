@@ -139,6 +139,7 @@
             </associations>
         </aspect>
 
+        <!--deprecated. use flag activ:repeatable instead -->
         <aspect name="icaseEvent:hasActivityRestartEvents">
             <associations>
                 <child-association name="icaseEvent:activityRestartEvents">

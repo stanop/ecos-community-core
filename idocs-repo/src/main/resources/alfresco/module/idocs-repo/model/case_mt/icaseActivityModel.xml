@@ -59,8 +59,17 @@
                     <type>d:int</type>
                     <default>999999</default>
                 </property>
+                <property name="activ:autoEvents">
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
                 <property name="activ:repeatable">
                     <type>d:boolean</type>
+                    <default>true</default>
+                </property>
+                <property name="activ:typeVersion">
+                    <type>d:int</type>
+                    <default>1</default>
                 </property>
             </properties>
             <mandatory-aspects>

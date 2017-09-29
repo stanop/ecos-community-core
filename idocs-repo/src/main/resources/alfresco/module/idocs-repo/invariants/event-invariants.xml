@@ -16,31 +16,28 @@
 
     <type name="iEvent:userAction">
         <association name="iEvent:eventSource">
-            <invariant on="options" language="javascript">
+            <invariant on="value" language="javascript">
                 (function() {
                     var parent = node.parent;
-                    while(parent.isSubType("activ:activity")) {
+                    while (parent.hasClassName("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return [parent];
+                    return parent;
                 })()
+            </invariant>
+            <invariant on="options" language="javascript">
+                node.assocs['iEvent:eventSource'] || []
             </invariant>
         </association>
         <association name="iEvent:authorizedRoles">
             <invariant on="options" language="javascript" final="true">
-                (function() {
-                    var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity")) {
-                        parent = parent.parent;
-                    }
-                    return parent.childAssocs["icaseRole:roles"] || [];
-                })()
+                var caseNode = (node.assocs['iEvent:eventSource'] || [])[0];
+                caseNode &amp;&amp; caseNode['impl'] ? caseNode.impl().attribute("icaseRole:roles").value() || []: [];
             </invariant>
         </association>
         <property name="cm:title">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
-
         <property name="iEvent:additionalDataType">
             <invariant on="options" language="javascript">dictionary.getSubTypes("iEvent:additionalData")</invariant>
         </property>
@@ -48,62 +45,66 @@
 
     <type name="icaseEvent:caseCreated">
         <association name="iEvent:eventSource">
-            <invariant on="options" language="javascript">
+            <invariant on="value" language="javascript">
                 (function() {
                     var parent = node.parent;
-                    while(parent.isSubType("activ:activity")) {
+                    while (parent.hasClassName("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return [parent];
+                    return parent;
                 })()
             </invariant>
+            <invariant on="options" language="javascript">
+                node.assocs['iEvent:eventSource'] || []
+            </invariant>
         </association>
-        <property name="cm:title">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </property>
     </type>
 
     <type name="icaseEvent:casePropertiesChanged">
         <association name="iEvent:eventSource">
-            <invariant on="options" language="javascript">
+            <invariant on="value" language="javascript">
                 (function() {
                     var parent = node.parent;
-                    while(parent.isSubType("activ:activity")) {
+                    while (parent.hasClassName("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return [parent];
+                    return parent;
                 })()
             </invariant>
+            <invariant on="options" language="javascript">
+                node.assocs['iEvent:eventSource'] || []
+            </invariant>
         </association>
-        <property name="cm:title">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </property>
     </type>
 
     <type name="icaseEvent:activityEvent">
         <association name="iEvent:eventSource">
             <invariant on="options" language="javascript">
                 (function() {
+                    if (!node['impl']) return [];
                     var task = node.parent;
                     var taskContainer = task.parent;
                     var options = [];
                     // add taskContainer if it is also a task
-                    if(taskContainer.isSubType("activ:activity"))
+                    if (taskContainer.hasClassName("activ:activity")) {
                         options.push(taskContainer);
+                    }
                     // add all neighbours, including parentTask
-                    var neighbours = taskContainer.childAssocs['activ:activities'] || [];
-                    for(var i in neighbours)
+                    var neighbours = taskContainer.impl().attribute('activ:activities').value() || [];
+                    for (var i in neighbours) {
                         options.push(neighbours[i]);
+                    }
                     // add all child tasks, if any
-                    var children = task.childAssocs['activ:activities'] || [];
-                    for(var i in children)
+                    var children = task.impl().attribute('activ:activities').value() || [];
+                    for (var i in children) {
                         options.push(children[i]);
+                    }
                     return options;
                 })()
             </invariant>
 
             <invariant on="value-title" language="javascript">
-                value.properties.title + (function() {
+                value.properties["cm:title"] + (function() {
                     var task = node.parent;
                     if(!task) return "";
                     if(value.id == task.id) return " (self)";
@@ -120,39 +121,40 @@
 
     <type name="icaseEvent:stageChildrenStopped">
         <association name="iEvent:eventSource">
-            <!--<invariant on="default" language="javascript">
-                node.parent.isSubType("stages:stage") ? node.parent : null
-            </invariant>
-            <invariant on="options" language="javascript">
-                node.parent.isSubType("stages:stage") ? [node.parent] : []
-            </invariant>-->
             <invariant on="options" language="javascript">
                 (function() {
-                var task = node.parent;
-                var taskContainer = task.parent;
-                var options = [];
-                var neighbours = taskContainer.childAssocs['activ:activities'] || [];
-                for(var i in neighbours)
-                    if(neighbours[i].isSubType("stages:stage")) options.push(neighbours[i]);
-                // add all child tasks, if any
-                var children = task.childAssocs['activ:activities'] || [];
-                for(var i in children)
-                    if(children[i].isSubType("stages:stage")) options.push(children[i]);
-                return options;
+                    if (!node['impl']) return [];
+                    var task = node.parent;
+                    var taskContainer = task.parent;
+                    var options = [];
+                    var neighbours = taskContainer.impl().attribute('activ:activities').value() || [];
+                    for (var i in neighbours) {
+                        if (neighbours[i].hasClassName("stages:stage")) {
+                            options.push(neighbours[i]);
+                        }
+                    }
+                    // add all child tasks, if any
+                    var children = task.impl().attribute('activ:activities').value() || [];
+                    for (var i in children) {
+                        if(children[i].hasClassName("stages:stage")) {
+                            options.push(children[i]);
+                        }
+                    }
+                    return options;
                 })()
             </invariant>
 
             <invariant on="value-title" language="javascript">
-                value.properties.title + (function() {
-                var task = node.parent;
-                if(!task) return "";
-                if(value.id == task.id) return " (self)";
-                var taskContainer = task.parent;
-                if(!taskContainer) return "";
-                if(value.id == taskContainer.id) return " (parent)";
-                if(value.parent.id == taskContainer.id) return " (neighbour)";
-                if(value.parent.id == task.id) return " (child)";
-                return "";
+                value.properties["cm:title"] + (function() {
+                    var task = node.parent;
+                    if(!task) return "";
+                    if(value.id == task.id) return " (self)";
+                    var taskContainer = task.parent;
+                    if(!taskContainer) return "";
+                    if(value.id == taskContainer.id) return " (parent)";
+                    if(value.parent.id == taskContainer.id) return " (neighbour)";
+                    if(value.parent.id == task.id) return " (child)";
+                    return "";
                 })()
             </invariant>
         </association>
@@ -162,33 +164,41 @@
         <association name="iEvent:eventSource">
             <invariant on="options" language="javascript">
                 (function() {
+                    if (!node['impl']) return [];
+
                     var task = node.parent;
                     var taskContainer = task.parent;
                     var options = [];
-                if(taskContainer.isSubType("activ:activity"))
-                options.push(taskContainer);
-                    var neighbours = taskContainer.childAssocs['activ:activities'] || [];
-                    for(var i in neighbours)
-                        if(neighbours[i].isSubType("activ:activity") || neighbours[i].isSubType("stages:stage")) options.push(neighbours[i]);
-                        // add all child tasks, if any
-                    var children = task.childAssocs['activ:activities'] || [];
-                    for(var c in children)
-                if(children[c].isSubType("activ:activity") || children[c].isSubType("stages:stage")) options.push(children[c]);
+                    if (taskContainer.hasClassName("activ:activity")) {
+                        options.push(taskContainer);
+                    }
+                    var neighbours = taskContainer.impl().attribute('activ:activities').value() || [];
+                    for (var i in neighbours) {
+                        if (neighbours[i].hasClassName("activ:activity")) {
+                            options.push(neighbours[i]);
+                        }
+                    }
+                    // add all child tasks, if any
+                    var children = task.impl().attribute('activ:activities').value() || [];
+                    for (var c in children)
+                    if (children[c].hasClassName("activ:activity")) {
+                        options.push(children[c]);
+                    }
                     return options;
                 })()
             </invariant>
 
             <invariant on="value-title" language="javascript">
-                value.properties.title + (function() {
-                var task = node.parent;
-                if(!task) return "";
-                if(value.id == task.id) return " (self)";
-                var taskContainer = task.parent;
-                if(!taskContainer) return "";
-                if(value.id == taskContainer.id) return " (parent)";
-                if(value.parent.id == taskContainer.id) return " (neighbour)";
-                if(value.parent.id == task.id) return " (child)";
-                return "";
+                value.properties['cm:title'] + (function() {
+                    var task = node.parent;
+                    if(!task) return "";
+                    if(value.id == task.id) return " (self)";
+                    var taskContainer = task.parent;
+                    if(!taskContainer) return "";
+                    if(value.id == taskContainer.id) return " (parent)";
+                    if(value.parent.id == taskContainer.id) return " (neighbour)";
+                    if(value.parent.id == task.id) return " (child)";
+                    return "";
                 })()
             </invariant>
         </association>
@@ -198,33 +208,42 @@
         <association name="iEvent:eventSource">
             <invariant on="options" language="javascript">
                 (function() {
-                var task = node.parent;
-                var taskContainer = task.parent;
-                var options = [];
-                if(taskContainer.isSubType("activ:activity"))
-                options.push(taskContainer);
-                var neighbours = taskContainer.childAssocs['activ:activities'] || [];
-                for(var i in neighbours)
-                if(neighbours[i].isSubType("activ:activity") || neighbours[i].isSubType("stages:stage")) options.push(neighbours[i]);
-                // add all child tasks, if any
-                var children = task.childAssocs['activ:activities'] || [];
-                for(var c in children)
-                if(children[c].isSubType("activ:activity") || children[c].isSubType("stages:stage")) options.push(children[c]);
-                return options;
+                    if (!node['impl']) return [];
+
+                    var task = node.parent;
+                    var taskContainer = task.parent;
+                    var options = [];
+                    if(taskContainer.hasClassName("activ:activity")) {
+                        options.push(taskContainer);
+                    }
+                    var neighbours = taskContainer.impl().attribute('activ:activities').value() || [];
+                    for(var i in neighbours) {
+                        if (neighbours[i].hasClassName("activ:activity")) {
+                            options.push(neighbours[i]);
+                        }
+                    }
+                    // add all child tasks, if any
+                    var children = task.impl().attribute('activ:activities').value() || [];
+                    for (var c in children) {
+                        if (children[c].hasClassName("activ:activity")) {
+                            options.push(children[c]);
+                        }
+                    }
+                    return options;
                 })()
             </invariant>
 
             <invariant on="value-title" language="javascript">
-                value.properties.title + (function() {
-                var task = node.parent;
-                if(!task) return "";
-                if(value.id == task.id) return " (self)";
-                var taskContainer = task.parent;
-                if(!taskContainer) return "";
-                if(value.id == taskContainer.id) return " (parent)";
-                if(value.parent.id == taskContainer.id) return " (neighbour)";
-                if(value.parent.id == task.id) return " (child)";
-                return "";
+                value.properties['cm:title'] + (function() {
+                    var task = node.parent;
+                    if(!task) return "";
+                    if(value.id == task.id) return " (self)";
+                    var taskContainer = task.parent;
+                    if(!taskContainer) return "";
+                    if(value.id == taskContainer.id) return " (parent)";
+                    if(value.parent.id == taskContainer.id) return " (neighbour)";
+                    if(value.parent.id == task.id) return " (child)";
+                    return "";
                 })()
             </invariant>
         </association>
@@ -232,22 +251,27 @@
 
     <aspect name="icaseEvent:hasActivityStartEvents">
         <child-association name="icaseEvent:activityStartEvents">
-            <invariant on="mandatory" language="javascript"><![CDATA[
-                !node.properties['activ:manualStarted'] && !node.childAssocs['icaseEvent:activityRestartEvents']
-            ]]></invariant>
+            <invariant on="relevant" language="javascript">!node.properties['activ:autoEvents']</invariant>
+            <invariant on="mandatory" language="javascript">!node.properties['activ:manualStarted']</invariant>
         </child-association>
     </aspect>
 
     <aspect name="icaseEvent:hasActivityRestartEvents">
         <child-association name="icaseEvent:activityRestartEvents">
-            <invariant on="mandatory" language="javascript"><![CDATA[
-                !node.properties['activ:manualStarted'] && !node.childAssocs['icaseEvent:activityStartEvents']
-            ]]></invariant>
+            <!-- Deprecated field. show only if it is not empty -->
+            <invariant on="relevant" language="javascript">(function() {
+                if (node['impl']) {
+                    var attr = node.impl().attribute('icaseEvent:activityRestartEvents');
+                    return (attr.persistedValue() || []).length > 0
+                }
+                return true;
+            })()</invariant>
         </child-association>
     </aspect>
 
     <aspect name="icaseEvent:hasActivityEndEvents">
         <child-association name="icaseEvent:activityEndEvents">
+            <invariant on="relevant" language="javascript">!node.properties['activ:autoEvents']</invariant>
             <invariant on="mandatory" language="javascript">!node.properties['activ:manualStopped']</invariant>
         </child-association>
     </aspect>

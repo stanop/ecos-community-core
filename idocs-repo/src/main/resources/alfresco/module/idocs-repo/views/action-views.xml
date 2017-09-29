@@ -18,6 +18,7 @@
 		<field prop="action:set-property-value:value" />
 		<field prop="activ:repeatable" />
 		<field prop="activ:manualStarted" />
+		<field prop="activ:autoEvents" />
 		<field assoc="icaseEvent:activityStartEvents" />
 	</view>
 
@@ -31,6 +32,7 @@
 		</field>
 		<field prop="activ:repeatable" />
 		<field prop="activ:manualStarted" />
+		<field prop="activ:autoEvents" />
 		<field assoc="icaseEvent:activityStartEvents" />
 	</view>
 	
@@ -39,6 +41,7 @@
 		<field prop="action:set-process-variable:value" />
 		<field prop="activ:repeatable" />
 		<field prop="activ:manualStarted" />
+		<field prop="activ:autoEvents" />
 		<field assoc="icaseEvent:activityStartEvents" />
 	</view>
 	
@@ -53,6 +56,7 @@
 			</region>
 		</field>
 		<field prop="activ:repeatable" />
+		<field prop="activ:autoEvents" />
 		<field prop="activ:manualStarted" />
 		<field assoc="icaseEvent:activityStartEvents" />
 		<field assoc="icaseEvent:activityRestartEvents" />
@@ -68,6 +72,7 @@
 			<invariant on="mandatory" language="explicit">true</invariant>
 		</field>
 		<field prop="activ:repeatable" />
+		<field prop="activ:autoEvents" />
 		<field prop="activ:manualStarted" />
 		<field assoc="icaseEvent:activityStartEvents" />
 	</view>
@@ -77,6 +82,7 @@
 			<region name="input" template="textarea" />
 		</field>
 		<field prop="activ:repeatable" />
+		<field prop="activ:autoEvents" />
 		<field prop="activ:manualStarted" />
 		<field assoc="icaseEvent:activityStartEvents" />
 	</view>

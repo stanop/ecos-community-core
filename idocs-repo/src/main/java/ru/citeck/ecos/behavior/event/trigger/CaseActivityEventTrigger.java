@@ -7,6 +7,7 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
+import ru.citeck.ecos.cmmn.model.Stage;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
@@ -51,6 +52,13 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
         eventService.fireEvent(activityRef, document, ICaseEventModel.CONSTR_ACTIVITY_STARTED);
 
+        if (dictionaryService.isSubClass(nodeService.getType(activityRef), StagesModel.TYPE_STAGE)) {
+            Integer version = (Integer) nodeService.getProperty(activityRef, ActivityModel.PROP_TYPE_VERSION);
+            if (version != null && version >= 1) {
+                data.stagesToTryComplete.add(activityRef);
+            }
+        }
+
         if (isDataOwner) {
             tryToFireStageChildrenStoppedEvents(data, document);
             data.hasOwner = false;
@@ -71,7 +79,7 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
         NodeRef parent = nodeService.getPrimaryParent(activityRef).getParentRef();
         if (parent != null && dictionaryService.isSubClass(nodeService.getType(parent), StagesModel.TYPE_STAGE)) {
-            data.stagesWithStoppedChildren.add(parent);
+            data.stagesToTryComplete.add(parent);
         }
 
         if (isDataOwner) {
@@ -81,20 +89,20 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
     }
 
     private void tryToFireStageChildrenStoppedEvents(TransactionData data, NodeRef document) {
-        Queue<NodeRef> stages = new ArrayDeque<>(data.stagesWithStoppedChildren);
-        data.stagesWithStoppedChildren.clear();
+        Queue<NodeRef> stages = new ArrayDeque<>(data.stagesToTryComplete);
+        data.stagesToTryComplete.clear();
 
         while (!stages.isEmpty()) {
             NodeRef stage = stages.poll();
             if (!caseActivityService.hasActiveChildren(stage)) {
                 eventService.fireEvent(stage, document, ICaseEventModel.CONSTR_STAGE_CHILDREN_STOPPED);
             }
-            for (NodeRef st : data.stagesWithStoppedChildren) {
+            for (NodeRef st : data.stagesToTryComplete) {
                 if (!stages.contains(st)) {
                     stages.add(st);
                 }
             }
-            data.stagesWithStoppedChildren.clear();
+            data.stagesToTryComplete.clear();
         }
     }
 
@@ -109,7 +117,7 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
     private static class TransactionData {
         boolean hasOwner = false;
-        Set<NodeRef> stagesWithStoppedChildren = new HashSet<>();
+        Set<NodeRef> stagesToTryComplete = new HashSet<>();
     }
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {

@@ -8,6 +8,8 @@ package org.alfresco.repo.policy;
  */
 public interface TransactionBehaviourOrder {
 
+	int DEFAULT_ORDER = 50;
+
 	int getOrder();
 
 }
