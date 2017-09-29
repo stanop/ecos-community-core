@@ -223,10 +223,10 @@ public class CaseActivityServiceImpl implements CaseActivityService {
             for (int index = 0; index < activities.size(); index++) {
                 nodeService.setProperty(activities.get(index), ActivityModel.PROP_INDEX, index);
             }
-        }
 
-        HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(parentRef, nodeService));
-        onIndexChangedDelegate.get(classes).onChildrenIndexChanged(parentRef);
+            HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(parentRef, nodeService));
+            onIndexChangedDelegate.get(classes).onChildrenIndexChanged(parentRef);
+        }
     }
 
     @Override

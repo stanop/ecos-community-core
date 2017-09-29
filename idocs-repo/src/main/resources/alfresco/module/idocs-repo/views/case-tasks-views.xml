@@ -37,6 +37,7 @@
         </field>
         <field prop="activ:manualStarted" />
         <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
         <field assoc="icaseEvent:activityStartEvents" />
         <field assoc="icaseEvent:activityRestartEvents" />
         <field assoc="stages:startCompletenessLevelsRestriction"/>
@@ -141,8 +142,9 @@
         <field prop="wfcp:outcomesWithMandatoryComment" />
         <field prop="wfcp:syncRolesToWorkflow" />
         <field prop="wfcp:syncWorkflowToRoles" />
-        <field prop="activ:manualStarted" />
         <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
+        <field prop="activ:manualStarted" />
         <field assoc="icaseEvent:activityStartEvents" />
         <field assoc="icaseEvent:activityRestartEvents" />
         <field assoc="stages:startCompletenessLevelsRestriction"/>

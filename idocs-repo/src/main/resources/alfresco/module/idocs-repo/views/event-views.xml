@@ -93,15 +93,11 @@
     </view>
 
     <view class="icaseEvent:caseCreated">
-        <field prop="attr:parent" template="none"/>
-        <field prop="attr:parentassoc" template="none"/>
-        <field prop="cm:title" />
         <field assoc="iEvent:eventSource" />
         <field assoc="iEvent:conditions" />
     </view>
 
     <view class="icaseEvent:casePropertiesChanged">
-        <field prop="cm:title" />
         <field assoc="iEvent:eventSource" />
         <field assoc="iEvent:conditions" />
     </view>

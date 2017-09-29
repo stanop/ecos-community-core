@@ -32,10 +32,6 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
 
-        <field prop="cm:description">
-            <region name="input" template="textarea"/>
-        </field>
-
         <field prop="stages:documentStatus" >
             <invariant on="relevant" language="javascript">node.properties["stages:documentStatus"] != null</invariant>
         </field>
@@ -52,13 +48,11 @@
         <field prop="activ:expectedPerformTime" />
 
         <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
         <field prop="activ:manualStarted" />
         <field assoc="icaseEvent:activityStartEvents" />
         <field assoc="icaseEvent:activityRestartEvents" />
         <field prop="activ:manualStopped" />
-        <field prop="attr:parent" template="none"/>
-        <field prop="attr:parentassoc" template="none"/>
-        <field prop="attr:types" template="none"/>
         <field assoc="icaseEvent:activityEndEvents" />
 
         <field assoc="stages:startCompletenessLevelsRestriction"/>

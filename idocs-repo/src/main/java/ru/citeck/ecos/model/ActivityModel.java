@@ -21,6 +21,7 @@ package ru.citeck.ecos.model;
 import org.alfresco.service.namespace.QName;
 
 public class ActivityModel {
+
     public static final String PREFIX = "activ";
     public static final String NAMESPACE = "http://www.citeck.ru/model/activity/1.0";
 
@@ -35,7 +36,8 @@ public class ActivityModel {
     public static final QName PROP_INDEX = QName.createQName(NAMESPACE, "index");
     public static final QName PROP_REPEATABLE = QName.createQName(NAMESPACE, "repeatable");
     public static final QName PROP_EXPECTED_PERFORM_TIME = QName.createQName(NAMESPACE, "expectedPerformTime");
-    public static final QName PROP_AUTO_START_END = QName.createQName(NAMESPACE, "autoStartEnd");
+    public static final QName PROP_AUTO_EVENTS = QName.createQName(NAMESPACE, "autoEvents");
+    public static final QName PROP_TYPE_VERSION = QName.createQName(NAMESPACE, "typeVersion");
 
     public static final QName ASPECT_HAS_ACTIVITIES = QName.createQName(NAMESPACE, "hasActivities");
     public static final QName ASPECT_SET_PLANNED_END_DATE = QName.createQName(NAMESPACE, "setPlannedEndDate");
