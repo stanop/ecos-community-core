@@ -43,9 +43,22 @@ public interface CaseActivityService {
 
     /**
      * @param nodeRef node with activities in children
+     * @param recurse recurse into sub-activities
+     */
+    List<NodeRef> getActivities(NodeRef nodeRef, boolean recurse);
+
+    /**
+     * @param nodeRef node with activities in children
      * @param type activity type
      */
     List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type);
+
+    /**
+     * @param nodeRef node with activities in children
+     * @param type activity type
+     * @param recurse recurse into sub-activities
+     */
+    List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type, boolean recurse);
 
     /**
      * @param nodeRef node with activities in children
@@ -53,6 +66,14 @@ public interface CaseActivityService {
      * @param type activity type
      */
     List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type);
+
+    /**
+     * @param nodeRef node with activities in children
+     * @param assocType association type between node and activities in children
+     * @param type activity type
+     * @param recurse recurse into sub-activities
+     */
+    List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type, boolean recurse);
 
     /**
      * Get all started activities of node

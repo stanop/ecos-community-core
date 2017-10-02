@@ -120,12 +120,27 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
+    public List<NodeRef> getActivities(NodeRef nodeRef, boolean recurse) {
+        return getActivities(nodeRef, RegexQNamePattern.MATCH_ALL, recurse);
+    }
+
+    @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type) {
         return getActivities(nodeRef, ActivityModel.ASSOC_ACTIVITIES, type);
     }
 
     @Override
+    public List<NodeRef> getActivities(NodeRef nodeRef, QNamePattern type, boolean recurse) {
+        return getActivities(nodeRef, ActivityModel.ASSOC_ACTIVITIES, type, recurse);
+    }
+
+    @Override
     public List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type) {
+        return getActivities(nodeRef, assocType, type, false);
+    }
+
+    @Override
+    public List<NodeRef> getActivities(NodeRef nodeRef, QName assocType, QNamePattern type, boolean recurse) {
 
         List<ChildAssociationRef> children = nodeService.getChildAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
         if (children == null || children.isEmpty()) {
@@ -147,6 +162,13 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         for (Pair<NodeRef, Integer> child : indexedChildren) {
             result.add(child.getFirst());
         }
+
+        if (recurse) {
+            for (ChildAssociationRef child : children) {
+                result.addAll(getActivities(child.getChildRef(), assocType, type, true));
+            }
+        }
+
         return result;
     }
 
