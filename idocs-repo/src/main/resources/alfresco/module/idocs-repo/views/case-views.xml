@@ -71,6 +71,7 @@
             </region>
         </field>
         <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
         <field prop="activ:manualStarted" />
         <field assoc="icaseEvent:activityStartEvents" />
         <field assoc="icaseEvent:activityResetEvents" />

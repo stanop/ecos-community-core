@@ -49,10 +49,12 @@
 
         <field prop="activ:repeatable" />
         <field prop="activ:autoEvents" />
-        <field prop="activ:manualStarted" />
+        <view kind="2-column">
+            <field prop="activ:manualStarted" />
+            <field prop="activ:manualStopped" />
+        </view>
         <field assoc="icaseEvent:activityStartEvents" />
         <field assoc="icaseEvent:activityRestartEvents" />
-        <field prop="activ:manualStopped" />
         <field assoc="icaseEvent:activityEndEvents" />
 
         <field assoc="stages:startCompletenessLevelsRestriction"/>
