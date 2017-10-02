@@ -61,7 +61,6 @@
                 </property>
                 <property name="activ:autoEvents">
                     <type>d:boolean</type>
-                    <default>true</default>
                 </property>
                 <property name="activ:repeatable">
                     <type>d:boolean</type>
