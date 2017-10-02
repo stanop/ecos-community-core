@@ -6,6 +6,7 @@
         <import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
         <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
         <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
     </imports>
 
     <type name="iEvent:event">
@@ -250,6 +251,9 @@
     </type>
 
     <aspect name="icaseEvent:hasActivityStartEvents">
+        <property name="activ:autoEvents">
+            <invariant on="default" language="javascript">view &amp;&amp; view.mode == "create"</invariant>
+        </property>
         <child-association name="icaseEvent:activityStartEvents">
             <invariant on="relevant" language="javascript">!node.properties['activ:autoEvents']</invariant>
             <invariant on="mandatory" language="javascript">!node.properties['activ:manualStarted']</invariant>
