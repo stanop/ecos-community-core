@@ -66,5 +66,5 @@
 		}).setMessages(${messages});
 		Alfresco.util.createTwister("${id}-heading", "${args.twisterKey!'child-forms'}");
 	</#escape>
-	//]]></>
+	//]]></script>
 </div>
