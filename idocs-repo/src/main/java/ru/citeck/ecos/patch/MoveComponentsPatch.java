@@ -44,7 +44,7 @@ public class MoveComponentsPatch extends AbstractPatch {
             logger.debug("Move " + fromKey + " to " + toKey);
 
             registryService.copy(fromKey, toKey);
-            registryService.delete(fromKey);
+            //registryService.delete(fromKey);
         }
 
         return "Success";
