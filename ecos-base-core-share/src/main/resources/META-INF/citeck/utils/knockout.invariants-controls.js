@@ -653,7 +653,8 @@ ko.bindingHandlers.journalControl = {
         selectedJournalId        = panelId + "-selectedElementsTable",
         searchId                 = panelId + "-search",
         filterCriteriaVariantsId = panelId + "-filterCriteriaVariants",
-        journalPickerHeaderId    = panelId + "-journal-picker-header";
+        journalPickerHeaderId    = panelId + "-journal-picker-header",
+        iframeId                 = panelId + "-iframe-for-resize-catching";
 
     // open dialog
     Event.on(button, "click", function(event) {
@@ -758,7 +759,7 @@ ko.bindingHandlers.journalControl = {
             }), defaultCriteria.dispose);
 
             var optimalWidth = (function() {
-                var maxContainerWidth = screen.width - 200,
+                var maxContainerWidth = screen.width - 60,
                     countOfAttributes = (function() {
                         if (defaultVisibleAttributes) return defaultVisibleAttributes.length;
                         if (journalType.defaultAttributes()) return journalType.defaultAttributes().length;
@@ -773,7 +774,7 @@ ko.bindingHandlers.journalControl = {
             })();
 
             panel = new YAHOO.widget.Panel(panelId, {
-                width:          optimalWidth,
+                //width:          optimalWidth,
                 visible:        false, 
                 fixedcenter:    true,  
                 draggable:      true,
@@ -791,6 +792,7 @@ ko.bindingHandlers.journalControl = {
 
             panel.setHeader(localization.title || 'Journal Picker');
             panel.setBody('\
+                <iframe id="'+iframeId+'" name="zFrame" style="position:absolute;z-index:-1;width:50%;height:50%;border:none;outline:none;"></iframe>\
                 <div class="journal-picker-header ' + mode + ' ' + dockMode + '" id="' + journalPickerHeaderId + '">\
                     <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
                     <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
@@ -1152,7 +1154,32 @@ ko.bindingHandlers.journalControl = {
         }
         
         panel.show();
-    })
+        panel.center();
+
+        // calc max height
+        var clientHeightZ = panel.element.clientHeight - panel.body.clientHeight;
+        if (clientHeightZ > 100) { clientHeightZ = 82; };
+        var maxHeight = YAHOO.util.Dom.getViewportHeight()
+            - clientHeightZ
+            - 60 // gap to screen edge
+        ;
+
+        // set min & max height for panel container
+        panel.body.style.minHeight = '423px';
+        panel.body.style.maxHeight = maxHeight + 'px';
+        panel.body.style.overflowY = 'auto';
+        panel.element.style.minWidth = '320px';
+        panel.element.style.maxWidth = 'calc(100% - 20px)';
+
+        // set min height for create page
+        $(panel.body).find('.create-page').css({'min-height':'385px', 'height':'initial'});
+
+        vIFrame = $('#'+iframeId)[0].contentWindow;
+        // center the panel on resize
+        vIFrame.addEventListener('resize', _.throttle(function() {
+            panel.center();
+        }, 200));
+     })
   }
 }
 
