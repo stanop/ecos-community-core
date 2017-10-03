@@ -622,7 +622,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.getCellValueTitleList = function(attribute) {
                 return ko.computed(function() {
                     var assemblyValues = [],
-                        attributeValues = attribute.value();
+                        attributeValues = attribute.value(),
+                        attr;
 
                     _.each(attributeValues, function (value) {
                         // if we have a labels
@@ -630,9 +631,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             if (attribute.labels && attribute.labels().length) {
                                 assemblyValues.push(attribute.labels()[value]);
                             } else if (self.journalType && self.journalType.attributes && self.journalType.attributes() && self.journalType.attributes().length) {
-                                var attr = self.journalType.attributes().find(function (attr) {
-                                    return attr.name() == attribute.name();
-                                });
+                                for (var a in self.journalType.attributes()) {
+                                    if (self.journalType.attributes()[a].name() == attribute.name()) {
+                                        attr = self.journalType.attributes()[a];
+                                        break;
+                                    }
+                                }
                                 if (attr && attr.labels && attr.labels()) assemblyValues.push(attr.labels()[value]);
                             } else {
                                 assemblyValues.push(value);
@@ -656,16 +660,20 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.getCellValueTitle = function(attribute) {
                 return ko.computed(function() {
-                    var attributeValue = attribute.value();
+                    var attributeValue = attribute.value(),
+                    attr;
 
                     // if we have a labels
                     if (_.isString(attributeValue)) {
                         if (attribute.labels && attribute.labels().length) {
                             return attribute.labels()[attributeValue]
                         } else if (self.journalType && self.journalType.attributes && self.journalType.attributes() && self.journalType.attributes().length) {
-                            var attr = self.journalType.attributes().find(function (attr) {
-                                return attr.name() == attribute.name();
-                            });
+                            for (var a in self.journalType.attributes()) {
+                                if (self.journalType.attributes()[a].name() == attribute.name()) {
+                                    attr = self.journalType.attributes()[a];
+                                    break;
+                                }
+                            }
                             if (attr && attr.labels && attr.labels() && attr.labels()[attributeValue]) return attr.labels()[attributeValue];
                         }
                     }
