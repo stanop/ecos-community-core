@@ -41,6 +41,7 @@ public class ICaseModel {
 	public static final QName ASPECT_CASE = QName.createQName(NAMESPACE, "case");
 	public static final QName ASPECT_CASE_TEMPLATE = QName.createQName(NAMESPACE, "caseTemplate");
 	public static final QName ASPECT_COPIED_FROM_TEMPLATE = QName.createQName(NAMESPACE, "copiedFromTemplate");
+	public static final QName ASPECT_HAS_DOCUMENTS = QName.createQName(NAMESPACE, "hasDocuments");
 
 	// properties
 	public static final QName PROP_CASE_CLASS = QName.createQName(NAMESPACE, "caseClass");
