@@ -22,7 +22,8 @@
         results.push({
             nodeRef: node.nodeRef.toString(),
             status: statuses.getStatus(node),
-            message: statuses.getMessage(node)
+            message: statuses.getMessage(node),
+            url: statuses.getUrl(node)
         });
     }
 

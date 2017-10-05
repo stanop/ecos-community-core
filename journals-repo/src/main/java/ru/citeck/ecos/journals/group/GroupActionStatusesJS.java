@@ -39,4 +39,8 @@ public class GroupActionStatusesJS {
     public String getMessage(ScriptNode node) {
         return statuses.get(node.getNodeRef()).getMessage();
     }
+
+    public String getUrl(ScriptNode node) {
+        return statuses.get(node.getNodeRef()).getUrl();
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.dto.ChildAssociationDto;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -25,9 +26,6 @@ import java.util.*;
 public class NodeChildAssociationsGet extends DeclarativeWebScript {
 
     private static final String DELIMITER = ",";
-    private static final String DOWNLOAD_API_PREFIX = "/api/node/content/workspace/SpacesStore/";
-    private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
-    private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,"filename");
 
     /**
      * Request params
@@ -96,7 +94,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             ChildAssociationDto associationDto = new ChildAssociationDto();
             associationDto.setParentRef(topNodeRef.toString());
             associationDto.setNodeRef(childNodeRef.toString());
-            String downloadURL = getDownloadURL(childNodeRef);
+            String downloadURL = RepoUtils.getDownloadURL(childNodeRef, nodeService);
             associationDto.setContentUrl(downloadURL);
             associationDto.setProperties(transformProperties(nodeService.getProperties(childNodeRef)));
             /** Child associations */
@@ -108,12 +106,12 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
                     continue;
                 }
                 ChildAssociationDto childChildDto = new ChildAssociationDto();
-                String childDownloadURL = getDownloadURL(childChildRef);
+                String childDownloadURL = RepoUtils.getDownloadURL(childChildRef, nodeService);
                 childChildDto.setNodeRef(childChildRef.toString());
                 childChildDto.setParentRef(childNodeRef.toString());
                 childChildDto.setContentUrl(childDownloadURL);
                 childChildDto.setProperties(transformProperties(nodeService.getProperties(childChildRef)));
-                dtoAccos.add(new AbstractMap.SimpleEntry<QName, ChildAssociationDto>(
+                dtoAccos.add(new AbstractMap.SimpleEntry<>(
                         childChildAssocRef.getTypeQName(),
                         childChildDto
                 ));
@@ -122,15 +120,6 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             childAssociationDtos.add(associationDto);
         }
         return childAssociationDtos;
-    }
-
-    private String getDownloadURL(NodeRef nodeRef) {
-        Object fileName = nodeService.getProperty(nodeRef, PROP_FILE_NAME);
-        String downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + DOWNLOAD_API_SUFFIX;
-        if (fileName != null) {
-            downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + "/" + fileName.toString();
-        }
-        return downloadURL;
     }
 
     /**
@@ -215,7 +204,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
     private List<AbstractMap.SimpleEntry<QName, Serializable>> transformProperties(Map<QName, Serializable> properties) {
         List<AbstractMap.SimpleEntry<QName, Serializable>> result = new ArrayList<>(properties.size());
         for (QName qName : properties.keySet()) {
-            result.add(new AbstractMap.SimpleEntry<QName, Serializable>(qName, properties.get(qName)));
+            result.add(new AbstractMap.SimpleEntry<>(qName, properties.get(qName)));
         }
         return result;
     }

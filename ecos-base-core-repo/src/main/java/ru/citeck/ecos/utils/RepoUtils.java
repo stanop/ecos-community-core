@@ -45,6 +45,10 @@ public class RepoUtils {
 
     private static final Log LOGGER = LogFactory.getLog(RepoUtils.class);
 
+    private static final String DOWNLOAD_API_PREFIX = "/api/node/content/workspace/SpacesStore/";
+    private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
+    private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,"filename");
+
     /**
      * It returns a property value or throws an exception.
      *
@@ -913,5 +917,14 @@ public class RepoUtils {
             return null;
         }
         return clazz.cast(serializable);
+    }
+
+    public static String getDownloadURL(NodeRef nodeRef, NodeService nodeService) {
+        Object fileName = nodeService.getProperty(nodeRef, PROP_FILE_NAME);
+        String downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + DOWNLOAD_API_SUFFIX;
+        if (fileName != null) {
+            downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + "/" + fileName.toString();
+        }
+        return downloadURL;
     }
 }
