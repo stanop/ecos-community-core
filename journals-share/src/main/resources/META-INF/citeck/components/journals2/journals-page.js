@@ -275,6 +275,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                         scope: this,
                         fn: function(response) {
                             var results = response.json;
+                            var downloadReportUrl = results && results[0] && results[0].url;
 
                             if (!this.widgets.gard) {
                                 this.widgets.gard = new YAHOO.widget.SimpleDialog("group-action-result-dialog", {
@@ -292,50 +293,62 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                 });
 
                                 this.widgets.gard.setHeader(msg("group-action.label.header"));
-                                this.widgets.gard.setBody(
-                                    $("<table>").append(
-                                        $("<thead>").append(
-                                            $("<tr>")
-                                                .append($("<th>", { text: msg("group-action.label.record") }))
-                                                .append($("<th>", { text: msg("group-action.label.status") }))
-                                                .append($("<th>", { text: msg("group-action.label.message") }))
-                                        )
-                                    ).get(0)
-                                );
+
+                                if (!downloadReportUrl) {
+                                    this.widgets.gard.setBody(
+                                        $("<table>").append(
+                                            $("<thead>").append(
+                                                $("<tr>")
+                                                    .append($("<th>", { text: msg("group-action.label.record") }))
+                                                    .append($("<th>", { text: msg("group-action.label.status") }))
+                                                    .append($("<th>", { text: msg("group-action.label.message") }))
+                                            )
+                                        ).get(0)
+                                    );
+                                }
 
                                 this.widgets.gard.render(document.body);
                             }
+                            if (downloadReportUrl) {
+                                this.widgets.gard.setBody(
+                                   '<table  style="width: 100%; height: 60px">' +
+                                        '<tr style="text-align: center">' +
+                                            '<td>' + msg("group-action.label.report") + '</td>' +
+                                            '<td><a class="document-link" onclick="event.stopPropagation()" '
+                                                + 'href="' + Alfresco.constants.PROXY_URI + downloadReportUrl + '">' + msg("actions.document.download") + '</a></td>' +
+                                        '</tr>' +
+                                    '</table>'
+                                )
+                            } else {
+                                $("table tbody", this.widgets.gard.body).remove();
 
-                            $("table tbody", this.widgets.gard.body).remove();
+                                var rtbody = $("<tbody>");
+                                _.each(results, function(result) {
+                                    var record = _.find(records, function(rec) {
+                                        return rec.nodeRef() == result.nodeRef;
+                                    });
 
+                                    if (record) {
+                                        var id = record.attributes()["cm:name"];
 
-                            var rtbody = $("<tbody>");
-                            _.each(results, function(result) {
-                                var record = _.find(records, function(rec) {
-                                    return rec.nodeRef() == result.nodeRef;
+                                        if (record.isDocument()) {
+                                            var doc = record.attributes()["wfm:document"];
+                                            id = doc.displayName;
+                                        }
+
+                                        rtbody.append(
+                                            $("<tr>")
+                                                .append($("<td>", { text: id }))
+                                                .append($("<td>", {
+                                                    text: msg("batch-edit.message." + result.status)
+                                                }))
+                                                .append($("<td>", { text: result.message }))
+                                        );
+                                    }
                                 });
 
-                                if (record) {
-                                    var id = record.attributes()["cm:name"];
-
-                                    if (record.isDocument()) {
-                                        var doc = record.attributes()["wfm:document"];
-                                        id = doc.displayName;
-                                    }
-
-                                    rtbody.append(
-                                        $("<tr>")
-                                            .append($("<td>", { text: id }))
-                                            .append($("<td>", { 
-                                                text: msg("batch-edit.message." + result.status)
-                                            }))
-                                            .append($("<td>", { text: result.message }))
-                                    );
-                                }
-                            });
-
-                            $("table", this.widgets.gard.body).append(rtbody);
-                            
+                                $("table", this.widgets.gard.body).append(rtbody);
+                            }
                             this.widgets.gard.show();
                         }
                   },
