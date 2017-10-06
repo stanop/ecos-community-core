@@ -1687,7 +1687,7 @@
 			}
 		},
 
-        downloadSign: function (attributeName) {
+        downloadSign: function (attributeName, message) {
             return function (elCell, oRecord, oColumn, sData) {
                 var linkValue = sData ? sData : oRecord.getData(attributeName),
                     redirection = sData ? Alfresco.constants.PROXY_URI + sData : Alfresco.constants.PROXY_URI + "/acm/getDecodeESign?nodeRef=" + linkValue.nodeRef,
@@ -1715,7 +1715,12 @@
                     }
                 };
                 signLink.href = '#';
-                signLink.text = Alfresco.util.message("button.financial-request-documents.download-sign");
+                if (message) {
+                    signLink.text = Alfresco.util.message(message);
+				} else {
+                    signLink.text = Alfresco.util.message("button.financial-request-documents.download-sign");
+				}
+
                 elCell.appendChild(signLink);
             }
         },
