@@ -201,9 +201,9 @@
   background-color: white;
 }
 
-
+/*
   background-color: rgba(0,0,0,0.3);
-}
+}*/
 
 .static .invariants-form.loading .loading-overlay {
   background-color: white;
@@ -2061,6 +2061,20 @@
   font-family: Open Sans Bold, Arial, sans-serif;
   float: right;
   width: 54.5%;
+}
+
+.invariants-form.view-form .template-table .template-half-width .template-view {
+  float: initial;
+  font-family: Open Sans,Arial,sans-serif;
+  margin-bottom: 15px;
+}
+
+.invariants-form.view-form .template-table .template-half-width .template-label {
+  min-height: initial;
+}
+
+.invariants-form.view-form .template-table .template-half-width .template-label label {
+  font-weight: bold;
 }
 
 .inline-edit-form .template-table .with-help .template-view,
