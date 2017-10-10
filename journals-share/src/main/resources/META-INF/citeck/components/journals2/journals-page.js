@@ -605,7 +605,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                     fireHideShowEvents: true
                 });
 
-                panel.setHeader("Batch edit");
+                panel.setHeader(msg("batch-edit.header.edit-attribute") + " " +  action.attribute().displayName());
 
                 var body =
                     '<div id="batch-edit-div">' +
