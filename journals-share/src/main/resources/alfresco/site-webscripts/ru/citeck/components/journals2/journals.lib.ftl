@@ -287,8 +287,11 @@
                 </li> -->
                 <li class="yuimenuitem">
                     <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'xlsx', true)">Excel</a>
-                </li>    
-            </ul>
+                </li>
+                <li class="yuimenuitem">
+                    <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'csv', true)">CSV</a>
+                </li>
+			</ul>
         </div>
     </div>
 </#macro>

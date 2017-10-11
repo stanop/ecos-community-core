@@ -434,5 +434,8 @@
 
     <bean id="ReportOutputExcel" class="ru.citeck.ecos.processor.report.ReportOutputExcel"
           name="dbp.report.template.xlsx" parent="AbstractDataBundleLine" abstract="true" />
+    
+    <bean id="ReportOutputCSV" class="ru.citeck.ecos.processor.report.ReportOutputCSV"
+          name="dbp.report.template.csv" parent="AbstractDataBundleLine" abstract="true" />
 
 </beans>
