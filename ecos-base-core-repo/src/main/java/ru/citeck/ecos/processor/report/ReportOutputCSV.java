@@ -108,7 +108,7 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
             for (int i = 0; i < reportData.size(); i++) {
                 List<Map<String, Object>> rowData = reportData.get(i);
 
-                if (rowData != null) {
+                if (rowData != null && !rowData.isEmpty()) {
                     for (int j = 0; j < rowData.size(); j++) {
                         Map<String, Object> cellData = rowData.get(j);
 
@@ -122,11 +122,15 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
 
                         builder.append(value);
 
+                        // add delimeter between cells in the row only if the cell is not the last
                         if (j != rowData.size() - 1) {
                             builder.append(delimeter);
-                        } else if (i != reportData.size() - 1) {
-                            builder.append(separator);
                         }
+                    }
+
+                    // add separator only if the row is not the last
+                    if (i != reportData.size() - 1) {
+                        builder.append(separator);
                     }
                 }
             }
