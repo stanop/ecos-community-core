@@ -1,5 +1,6 @@
 package ru.citeck.ecos.spring.aop;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import ru.citeck.ecos.deputy.DeputyService;
@@ -43,7 +44,7 @@ public class UserAuthoritiesInterceptor implements MethodInterceptor {
     }
 
     private List<String> getAuthorities(String userName) {
-        if (userName == null) {
+        if (userName == null || AuthenticationUtil.SYSTEM_USER_NAME.equals(userName)) {
             return Collections.emptyList();
         }
         List<String> deputies = deputyService.getUsersWhoHaveThisUserDeputy(userName);
