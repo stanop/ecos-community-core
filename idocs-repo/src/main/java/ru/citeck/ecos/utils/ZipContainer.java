@@ -69,8 +69,10 @@ public class ZipContainer {
             Enumeration<? extends ZipEntry> entries;
             for (entries = zip.entries(); entries.hasMoreElements(); ) {
                 ZipEntry entry = entries.nextElement();
-                try (InputStream inStream = zip.getInputStream(entry)) {
-                    work.doWork(entry, inStream);
+                if (!entry.isDirectory()) {
+                    try (InputStream inStream = zip.getInputStream(entry)) {
+                        work.doWork(entry, inStream);
+                    }
                 }
             }
         } catch (IOException exception) {
