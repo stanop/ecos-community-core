@@ -173,6 +173,16 @@
                     <property name="expression" value="${reportType!'html'}" />
                     <property name="cases">
                         <map>
+                            <entry key="csv">
+                                <bean parent="dbp.report.template.csv"/>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+                <bean parent="dbp.switch">
+                    <property name="expression" value="${reportType!'html'}" />
+                    <property name="cases">
+                        <map>
                             <entry key="pdf" value-ref="dbp.transform.pdf" />
                         </map>
                     </property>

@@ -1551,8 +1551,10 @@
 		},
 
 
-		assocOrProps: function(props) {
+		assocOrProps: function(props, delimeter) {
 			if (!props) props = "cm:name";
+			
+			if (delimeter == null) delimeter = ", ";
 
 			return function(elCell, oRecord, oColumn, sData) {
 				var request = function(nodeRef) {
@@ -1562,7 +1564,7 @@
 							fn: function(response) {
 								if (response.json && response.json.props) {
 									if (elCell.innerHTML) elCell.innerHTML += "<br>";
-									elCell.innerHTML += _.values(response.json.props).join(", ");
+									elCell.innerHTML += _.values(response.json.props).join(delimeter);
 								}
 							}
 						},
@@ -1592,7 +1594,7 @@
 							request(object.nodeRef) 
 						} else {
 							if (elCell.innerHTML) elCell.innerHTML += "<br>";
-							elCell.innerHTML = _.values(object).join(", ") 
+							elCell.innerHTML = _.values(object).join(delimeter) 
 						}
 					};
 
