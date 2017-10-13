@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.policy.Policy.Arg;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListener;
 import org.alfresco.util.GUID;
@@ -72,6 +73,7 @@ public class TransactionBehaviourQueue implements TransactionListener {
             executionContext.args = args;
             executionContext.policyInterface = policyInterface;
             executionContext.order = getOrder(behaviour);
+            executionContext.authenticatedUser = AuthenticationUtil.getFullyAuthenticatedUser();
 
             // Defer or execute now?
             if (!queueContext.committed)
@@ -152,7 +154,16 @@ public class TransactionBehaviourQueue implements TransactionListener {
 				logger.debug("queue.poll: order=" + order + "; queue.size=" + queueSize +
 						";\npolicyInterface=" + context.policyInterface);
 			}
-            execute(context);
+            String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+            if (currentUser == null && context.authenticatedUser != null) {
+                final ExecutionContext finalContext = context;
+                AuthenticationUtil.runAs(() -> {
+                    execute(finalContext);
+                    return null;
+                }, context.authenticatedUser);
+            } else {
+                execute(context);
+            }
             context = queueContext.queue.poll();
         }
         queueContext.committed = true;
@@ -323,6 +334,7 @@ public class TransactionBehaviourQueue implements TransactionListener {
         Object[] args;
         P policyInterface;
         int order;
+        String authenticatedUser;
     }
 
 
