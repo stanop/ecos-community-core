@@ -51,6 +51,7 @@ public final class IdocsModel {
 
     public static final QName PROP_CODE = QName.createQName(IDOCS_NAMESPACE, "code");
     public static final QName PROP_FULL_NAME = QName.createQName(IDOCS_NAMESPACE, "fullName");
+    public static final QName PROP_FULL_ORG_NAME = QName.createQName(IDOCS_NAMESPACE, "fullOrganizationName");
     public static final QName PROP_LEGAL_ADDRESS = QName.createQName(IDOCS_NAMESPACE, "legalAddress");
     public static final QName PROP_PHONE_NUMBER = QName.createQName(IDOCS_NAMESPACE, "phoneNumber");
     public static final QName PROP_OKPO = QName.createQName(IDOCS_NAMESPACE, "okpo");
