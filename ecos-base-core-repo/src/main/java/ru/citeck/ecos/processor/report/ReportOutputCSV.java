@@ -92,7 +92,7 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
                     title = "";
                 }
 
-                builder.append(title);
+                builder.append(clean(title));
 
                 if (i != reportColumns.size() - 1) {
                     builder.append(delimeter);
@@ -120,7 +120,7 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
                             value = "";
                         }
 
-                        builder.append(value);
+                        builder.append(clean(value));
 
                         // add delimeter between cells in the row only if the cell is not the last
                         if (j != rowData.size() - 1) {
@@ -135,5 +135,17 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
                 }
             }
         }
+    }
+
+    /**
+     * Clear original data from newline symbols. Prevents distortion of
+     * csv-file structure.
+     */
+    private String clean(String source) {
+        if (source != null) {
+            return source.replaceAll("[\r\n]", " ").trim();
+        }
+
+        return null;
     }
 }
