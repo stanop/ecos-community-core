@@ -90,6 +90,7 @@ public final class IdocsModel {
     public static final QName ASSOC_DOC_ATTORNEYS = QName.createQName(IDOCS_NAMESPACE, "docAttorneys");
     public static final QName ASSOC_SIGNER = QName.createQName(IDOCS_NAMESPACE, "signatory");
     public static final QName ASSOC_CURRENCY_DOCUMENT = QName.createQName(IDOCS_NAMESPACE, "currencyDocument");
+    public static final QName ASSOC_INITIATOR = QName.createQName(IDOCS_NAMESPACE, "initiator");
 
     // constraints
     public static final String CONSTR_REPEAL_BY_COUNTERPARTY_REQUESTED = "REPEAL_BY_COUNTERPARTY_REQUESTED";
