@@ -118,6 +118,9 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
     }
 
     public void updatePropertiesOnFullPersistedNodes(NodeRef node, QName assocQName, List<NodeRef> nodeRefs) {
+        if (!nodeService.exists(node)) {
+            return;
+        }
         if (nodeRefs == null) {
             nodeRefs = new ArrayList<>();
         }
