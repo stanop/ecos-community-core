@@ -2,6 +2,7 @@
 
 <#escape x as jsonUtils.encodeJSONString(x)>{
 "view": <@views.renderView view />,
-"canBeDraft": ${canBeDraft?string}
+"canBeDraft": ${canBeDraft?string},
+"nodeRef": "${nodeRef!}"
 }</#escape>
 

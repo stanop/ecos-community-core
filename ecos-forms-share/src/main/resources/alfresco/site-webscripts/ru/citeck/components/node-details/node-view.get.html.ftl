@@ -8,7 +8,7 @@
          ${msg(args.header!"header.view")}
          <span class="alfresco-twister-actions <#if args.hideEditAction?? && args.hideEditAction == "true">hidden</#if>">
             <#if writePermission?? && writePermission>
-               <a class="edit" href="${url.context}/page/node-edit?nodeRef=${args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
+               <a class="edit" href="${url.context}/page/node-edit?nodeRef=${viewNodeRef!args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
             </#if>
          </span>
       </h2>

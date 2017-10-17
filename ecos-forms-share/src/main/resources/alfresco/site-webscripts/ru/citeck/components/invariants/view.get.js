@@ -11,14 +11,16 @@
     var view = viewData.view,
         attributeSet = getAttributeSet(args, view),
         attributes = getAttributes(view), 
-        attributeNames = map(attributes, function(attr) { return attr.attribute; });
+        attributeNames = map(attributes, function(attr) { return attr.attribute; }),
+        viewNodeRef = viewData.nodeRef;
 
     var writePermission = false,
         inlineEdit = false,
         viewMode = view.mode == "view";
 
-    if (args.nodeRef) {
-        writePermission = getWritePermission(args.nodeRef);
+    if (viewNodeRef) {
+
+        writePermission = getWritePermission(viewNodeRef);
 
         if (writePermission && viewMode) {
             args.inlineEdit = view.params.inlineEdit;
@@ -60,7 +62,7 @@
         model.classNames = invariantSet.classNames;
     }
    
-
+    model.viewNodeRef = viewNodeRef ? viewNodeRef : null;
     model.view = view;
     model.defaultModel = defaultModel;
 

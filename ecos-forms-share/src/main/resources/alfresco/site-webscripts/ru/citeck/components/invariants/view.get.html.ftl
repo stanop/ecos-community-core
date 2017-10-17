@@ -10,7 +10,7 @@
 	</@>
 
 	<@markup id="widgets">
-		<@views.nodeViewWidget nodeRef=args.nodeRef type=args.type />
+		<@views.nodeViewWidget nodeRef=viewNodeRef!args.nodeRef type=args.type />
 	</@>
 
 	<@markup id="html">
