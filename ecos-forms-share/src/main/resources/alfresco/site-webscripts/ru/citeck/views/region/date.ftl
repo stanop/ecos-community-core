@@ -17,10 +17,16 @@
     }'>
 
     <#if config.scoped["DateFormatMask"]?? && config.scoped["DateFormatMask"]["mask"]??>
-        <#assign mask = config.scoped["DateFormatMask"]["mask"].value!"">
-        <#assign placeholder = config.scoped["DateFormatMask"]["placeholder"].value!mask>
+        <#assign mask = config.scoped["DateFormatMask"]["mask"].value?trim!"">
+        <#assign placeholder>
+            <#if config.scoped["DateFormatMask"]["placeholder"]?? && config.scoped["DateFormatMask"]["placeholder"].value>
+                ${config.scoped["DateFormatMask"]["placeholder"].value?trim}
+            <#else>
+                ${mask}
+            </#if>
+        </#assign>
 
-        <input id="${fieldId}" type="text" placeholder="${placeholder}" data-bind="value: ko.computed({
+        <input id="${fieldId}" type="text" placeholder="${placeholder?trim}" data-bind="value: ko.computed({
             read: function() {
                 return value() ? moment(value()).format('${mask}') : null; 
             },
