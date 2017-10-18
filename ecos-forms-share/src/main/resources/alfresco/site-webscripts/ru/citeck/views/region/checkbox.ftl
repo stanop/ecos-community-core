@@ -8,6 +8,7 @@
       options: options,
       value: value,
       multiple: multiple,
+      protected: protected,
       optionText: function(object) { return getValueTitle(object); }
     }} --><!-- /ko -->
   <!-- /ko -->

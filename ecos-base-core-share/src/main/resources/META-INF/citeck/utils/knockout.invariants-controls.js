@@ -310,26 +310,47 @@ ko.components.register("checkbox-radio", {
         this.options = params["options"];
         this.value = params["value"];
         this.multiple = params["multiple"] || false;
+        this.disabled = params["protected"];
     },
     template: 
         '<!-- ko foreach: options -->\
             <span class="checkbox-option">\
                 <label>\
                     <!-- ko if: $parent.multiple -->\
-                      <input type="checkbox" data-bind="checked: ko.computed({\
-                        read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
-                        write: function(newValue) {\
-                          var selectedOptions = $parent.value() || [];\
-                          newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
-                          $parent.value(selectedOptions);\
-                        }\
-                      })" />\
+                        <!-- ko if: $parent.disabled -->\
+                        <input type="checkbox" disabled data-bind="checked: ko.computed({\
+                            read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                            write: function(newValue) {\
+                                var selectedOptions = $parent.value() || [];\
+                                newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                $parent.value(selectedOptions);\
+                            }\
+                        })" />\
+                        <!-- /ko -->\
+                        <!-- ko ifnot: $parent.disabled -->\
+                        <input type="checkbox" data-bind="checked: ko.computed({\
+                            read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                            write: function(newValue) {\
+                                var selectedOptions = $parent.value() || [];\
+                                newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                $parent.value(selectedOptions);\
+                            }\
+                        })" />\
+                      <!-- /ko -->\
                     <!-- /ko -->\
                     <!-- ko ifnot: $parent.multiple -->\
-                      <input type="radio" data-bind="checked: ko.computed({\
-                        read: function() { if ($parent.value()) return $parent.value().id; },\
-                        write: function(newValue) { $parent.value($data.nodeRef); }\
-                      }), attr: { value: $data.id, name: $parent.groupName }" />\
+                        <!-- ko if: $parent.disabled -->\
+                        <input type="radio" disabled data-bind="checked: ko.computed({\
+                            read: function() { if ($parent.value()) return $parent.value().id; },\
+                            write: function(newValue) { $parent.value($data.nodeRef); }\
+                        }), attr: { value: $data.id, name: $parent.groupName }" />\
+                        <!-- /ko -->\
+                        <!-- ko ifnot: $parent.disabled -->\
+                        <input type="radio"  data-bind="checked: ko.computed({\
+                            read: function() { if ($parent.value()) return $parent.value().id; },\
+                            write: function(newValue) { $parent.value($data.nodeRef); }\
+                        }), attr: { value: $data.id, name: $parent.groupName }" />\
+                        <!-- /ko -->\
                     <!-- /ko -->\
                     <!-- ko text: $parent.optionText($data) --><!-- /ko -->\
                 </label>\
