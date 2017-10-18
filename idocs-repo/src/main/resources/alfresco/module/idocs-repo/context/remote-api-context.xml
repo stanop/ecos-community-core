@@ -113,6 +113,58 @@
         </property>
     </bean>
 
+    <bean id="dataBundleProcessorService" class="ru.citeck.ecos.service.DataBundleProcessorService">
+        <property name="processor">
+            <bean parent="dbp.sequential" />
+        </property>
+        <property name="mimetypeService" ref="mimetypeService" />
+        <property name="processors">
+            <list>
+                <bean parent="dbp.select-template">
+                    <property name="nodeExpr" value="${args.nodeRef}" />
+                    <property name="templateType" value="${args.templateType!}" />
+                    <property name="variable" value="template" />
+                </bean>
+                <bean parent="dbp.template">
+                    <property name="template" value="${template}" />
+                    <property name="engine">
+                        <value><![CDATA[<#assign engine=companyhome.nodeByReference[template].properties['dms:templateProcessor']>${engine}]]></value>
+                    </property>
+                    <property name="mimetype">
+                        <value><![CDATA[<#assign mimetype=companyhome.nodeByReference[template].properties['cm:content'].mimetype>${mimetype}]]></value>
+                    </property>
+                    <property name="encoding">
+                        <value><![CDATA[<#assign encoding=companyhome.nodeByReference[template].properties['cm:content'].encoding>${encoding}]]></value>
+                    </property>
+                </bean>
+                <bean parent="dbp.model">
+                    <property name="model">
+                        <map>
+                            <entry key="filename">
+                                <value>[#ftl /][#compress]
+                                    [#assign template = companyhome.nodeByReference[template] /]
+                                    [#assign filenameTemplate = (template.properties['dms:filenameTemplate']!template.properties['dms:templateType'])?interpret /]
+                                    [@filenameTemplate /]
+                                    [/#compress]</value>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+                <bean parent="dbp.switch">
+                    <property name="expression" value="${args.format!'original'}" />
+                    <property name="cases">
+                        <map>
+                            <entry key="pdf"  value-ref="dbp.transform.pdf" />
+                            <entry key="doc"  value-ref="dbp.transform.doc" />
+                            <entry key="docx" value-ref="dbp.transform.docx" />
+                            <entry key="html" value-ref="dbp.transform.html" />
+                        </map>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 	<bean id="webscript.ru.citeck.workflow.inactive-instances-for-node.get"
 		class="ru.citeck.ecos.webscripts.workflow.InactiveWorkflowInstancesForNodeGet"
 		parent="abstractWorkflowWebScript"></bean>
