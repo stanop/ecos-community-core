@@ -967,7 +967,7 @@ JournalsWidget
 							for (var i = 0; i < visibleAttributes.length; i++) {
 								reportColumns.push({
 									attribute: visibleAttributes[i].name._value(),
-									title: visibleAttributes[i].displayName()
+									title: visibleAttributes[i].customDisplayName()
 								});
 							}
 						}
