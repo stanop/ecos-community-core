@@ -113,7 +113,7 @@
         </property>
     </bean>
 
-    <bean id="dataBundleProcessorService" class="ru.citeck.ecos.service.DataBundleProcessorService">
+    <bean id="dataBundleProcessorService" class="ru.citeck.ecos.service.DataBundleProcessorService" init-method="init">
         <property name="processor">
             <bean parent="dbp.sequential" />
         </property>
