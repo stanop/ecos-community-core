@@ -1599,6 +1599,10 @@ ko.components.register("select2", {
             this.forceOptions.extend({ rateLimit: { timeout: 250, method: "notifyWhenChangesStop" } });
         }
 
+        if (this.optionsFilter && this.optionsFilter()) {
+            this.optionsFilter = this.optionsFilter();
+        }
+
         if (this._tableMode) {
             if (this.defaultVisibleAttributes)
                 this.defaultVisibleAttributes =  _.map(this.defaultVisibleAttributes.split(","), function(a) { return trim(a); })
@@ -1855,11 +1859,25 @@ ko.components.register("select2", {
                     dc = validAttributes;
                 }
 
+                // add default option's filter criteria from view
+                var optionsFilter = self.optionsFilter && self.optionsFilter() ? self.optionsFilter() : [];
+                if (optionsFilter && optionsFilter.length) {
+                    self.criteria(optionsFilter);
+                }
+
                 if (dc.length) {
                     for (var i in dc) {
                         var newCriterion = _.clone(dc[i]);
                         newCriterion.value = ko.observable();
                         newCriterion.predicateValue = ko.observable();
+
+                        // add value of default option's filter criteria on filter form
+                        if (optionsFilter.length && newCriterion.name) {
+                            var filterCriterion = _.find(optionsFilter, function(item) {
+                                return item.attribute == newCriterion.name();
+                            });
+                            if (filterCriterion) newCriterion.value(filterCriterion.value);
+                        }
                         self.selectedFilterCriteria.push(newCriterion);
                     }
                 }
