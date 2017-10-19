@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0"
+           xmlns:cardlet="http://www.citeck.ru/model/cardlet/1.0">
+    <cardlet:cardMode view:childName="cardlet:${cardmode.id}">
+        <view:properties>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${cardmode.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${cardmode.title_ru}</view:mlvalue>
+            </cm:title>
+            <cm:description>
+                <view:mlvalue view:locale="en_US">${cardmode.description_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${cardmode.description_ru}</view:mlvalue>
+            </cm:description>
+            <cardlet:cardModeId>${cardmode.id}</cardlet:cardModeId>
+            <cardlet:cardModeOrder>${cardmode.order}</cardlet:cardModeOrder>
+            <cardlet:allowedType>${cardmode.allowedType}</cardlet:allowedType>
+            <cardlet:allowedAuthorities>${cardmode.allowedAuthorities}</cardlet:allowedAuthorities>
+            <cardlet:condition>${cardmode.condition}</cardlet:condition>
+        </view:properties>
+    </cardlet:cardMode>
+</view:view>
