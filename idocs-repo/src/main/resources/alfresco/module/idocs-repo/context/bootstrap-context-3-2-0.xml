@@ -16,6 +16,7 @@
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.cardlets-tabs" />
+                <ref bean="idocs.module-component.case-process-cardlets" />
             </list>
         </property>
         <property name="bootstrapViews">
