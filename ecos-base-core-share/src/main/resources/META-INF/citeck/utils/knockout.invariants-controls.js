@@ -296,6 +296,75 @@ ko.components.register("free-content", {
     template: 
        '<div data-bind="html: content">'
 })
+    
+
+// ---------------
+// MULTIPLE-TEXT
+// ---------------
+
+ko.components.register("multiple-text", {
+    viewModel: function(params) {
+        this.value = params["value"];
+        this.title = params["title"];
+        this.disabled = params["disabled"];
+        var self = this;
+
+        this.strings = ko.observableArray([]);
+
+        var String = function(stringValue) {
+            this.stringValue = ko.observable(stringValue);
+
+            this.stringValue.subscribe(function(newValue) {
+                var stringArray = [];
+                if (self.strings().length) {
+                    for (var i in self.strings()) {
+                        if (self.strings()[i].stringValue()) stringArray.push(self.strings()[i].stringValue());
+                    }
+                }
+                self.value(stringArray)
+            });
+        };
+
+        koutils.subscribeOnce(this.value, function(newValue) {
+            var stringsArray = [];
+            if (newValue && newValue.length) {
+                for (var i in newValue) {
+                    stringsArray.push(new String(newValue[i]));
+                }
+            }
+            self.strings(stringsArray);
+        });
+
+        this.removeString = function(data) {
+            self.strings.remove(data);
+        };
+
+        this.addString = function() {
+            self.strings.push(new String(''));
+        };
+
+        this.strings.subscribe(function(newArray) {
+            var stringArray = [];
+            if (newArray.length) {
+                for (var i in newArray) {
+                    if (newArray[i].stringValue()) stringArray.push(newArray[i].stringValue());
+                }
+            }
+            self.value(stringArray)
+        });
+
+    },
+    template:
+        '<div class="multiple-text-control">\
+            <button class="multiple-text-control-button" data-bind="text: title, click: addString, disable: disabled"></button>\
+            <div data-bind="foreach: strings">\
+                    <input type="text" data-bind="value: stringValue, disable: $component.disabled" />\
+                    <!-- ko ifnot: $component.disabled -->\
+                        <a href="#" data-bind="click: $component.removeString"> x </a>\
+                    <!-- /ko -->\
+            </div>\
+        </div>'
+});
 
 // ---------------
 // CHECKBOX
@@ -2227,7 +2296,7 @@ ko.components.register("select2", {
                         } 
 
                         self.criteria(_.map(_.filter(self.selectedFilterCriteria(), function(c) {
-                            if (c.predicateValue().indexOf("empty") != -1) return c.predicateValue() && c.name();
+                            if (c.predicateValue() && c.predicateValue().indexOf("empty") != -1) return c.predicateValue() && c.name();
                             return c.value() && c.predicateValue() && c.name();
                         }), function(c) {
                             return { attribute: c.name(), predicate: c.predicateValue(), value: c.value() }; 

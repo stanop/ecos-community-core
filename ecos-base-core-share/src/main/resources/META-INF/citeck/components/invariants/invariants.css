@@ -808,6 +808,7 @@
 .invariants-form .template-table .template-row .template-autocomplete,
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number,
+.invariants-form .template-table .template-row .template-multiple-text,
 .invariants-form .template-table .template-row .template-free-content {
   width: 54.5%;
   float: right;
@@ -1703,6 +1704,12 @@
   font-weight: 900;
 }
 
+/* multiple-text control */
+div[id*="multiple-text"] .multiple-text-control input {
+  height: 22px;
+  width: 90%;
+  margin-top: 5px;
+}
 
 /* journal */
 .journal-picker-header {
