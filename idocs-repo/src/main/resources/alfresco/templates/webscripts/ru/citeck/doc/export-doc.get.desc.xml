@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Exporting documents</shortname>
+    <description>Converts node content to the required format</description>
+    <url>/doc/export?nodeRef={nodeRef}&amp;ext={ext}</url>
+    <format default=""></format>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>
