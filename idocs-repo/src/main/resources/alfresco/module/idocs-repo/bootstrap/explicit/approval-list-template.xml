@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<view:view xmlns="" xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:view="http://www.alfresco.org/view/repository/1.0" xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:dms="http://www.citeck.ru/model/content/dms/1.0">
+<view:view xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:view="http://www.alfresco.org/view/repository/1.0"
+		   xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:dms="http://www.citeck.ru/model/content/dms/1.0">
 	<view:reference view:pathref=".">
 		<view:associations>
 			<cm:contains>
@@ -8,7 +9,7 @@
 					<cm:name>default-approve-list-template.html.ftl</cm:name>
 					<sys:node-uuid>default-approve-list-template</sys:node-uuid>
 					<cm:content>contentUrl=classpath:alfresco/module/idocs-repo/bootstrap/explicit/card-templates/default-approve-list-template.html.ftl|mimetype=text/html|encoding=UTF-8</cm:content>
-					<dms:cardType>{http://www.alfresco.org/model/content/1.0}content</dms:cardType>
+					<dms:cardType>{http://www.citeck.ru/model/content/ecos/1.0}document</dms:cardType>
 					<dms:templateType>confirm-list</dms:templateType>
 					<dms:filenameTemplate>Confirm List.docx</dms:filenameTemplate>
 					<dms:templateProcessor>freemarker</dms:templateProcessor>

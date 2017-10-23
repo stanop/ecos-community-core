@@ -1,12 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/util
-        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="idocs.import-spaces.2-10-0" abstract="true" parent="idocs.import-spaces">
 		<property name="sinceVersion" value="2.10.0" />
@@ -46,6 +42,7 @@
 	<bean id="idocs.module-component.idocs-approval-list-template" parent="idocs.import-spaces.2-10-0" depends-on="idocs.dictionaryBootstrap">
 		<property name="name" value="idocs-approval-list-template" />
 		<property name="description" value="approval-list-template" />
+		<property name="executeOnceOnly" value="false" />
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.templates-journals.card-template" />
