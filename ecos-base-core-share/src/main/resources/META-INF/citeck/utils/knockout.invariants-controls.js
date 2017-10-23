@@ -331,8 +331,9 @@ ko.components.register("multiple-text", {
                 for (var i in newValue) {
                     stringsArray.push(new String(newValue[i]));
                 }
+                self.strings(stringsArray);
             }
-            self.strings(stringsArray);
+
         });
 
         this.removeString = function(data) {
