@@ -426,7 +426,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                         fireHideShowEvents: true
                     });
 
-                    panel.setHeader("Batch edit results");
+                    panel.setHeader(msg("batch-edit.header.results") + " " +  action.attribute().displayName());
 
                     for (ref in editStatus) {
                         if (editStatus[ref].status == "PENDING") {
