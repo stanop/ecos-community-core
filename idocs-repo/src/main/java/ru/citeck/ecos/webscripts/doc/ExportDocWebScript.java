@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * File conversion controller.
+ * File conversion controller. See also webscript
+ * export-doc.get.desc.xml in idocs-repo.
  * 
  * @author Andrew Timokhin
  */
@@ -68,11 +69,9 @@ public class ExportDocWebScript extends AbstractWebScript {
     }
 
     private String getMimetypeByExt(String ext) {
-        if (ext == null || ext.isEmpty()) {
-            return null;
-        }
-
-        return mimetypeService.getMimetype(ext);
+        return ext != null && !ext.isEmpty()
+                ? mimetypeService.getMimetype(ext)
+                : null;
     }
 
     private static byte[] getByteArray(ContentReader contentReader) throws IOException {
