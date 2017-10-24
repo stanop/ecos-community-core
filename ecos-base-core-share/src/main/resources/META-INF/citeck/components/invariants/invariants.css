@@ -2050,7 +2050,8 @@ div[id*="multiple-text"] .multiple-text-control input {
   margin-bottom: 5px;
 }
 
-.invariants-form .template-view span.value-item span.value-item-text {
+.invariants-form .template-view span.value-item span.value-item-text,
+.view-form.invariants-form .template-multiple-text span.value-item span.value-item-text{
   display: block;
   overflow: hidden;
 }
