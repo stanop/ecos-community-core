@@ -65,10 +65,7 @@ public class CriteriaSearchService {
             throw new IllegalArgumentException("Unsupported query language");
         }
         String query = queryBuilder.buildQuery(criteria);
-        SearchParameters parameters = new SearchParameters();
-        parameters.setLanguage(language);
-        parameters.setQuery(query);
-        parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        SearchParameters parameters = createSearchParameters(language, query);
         if (criteria.isLimitSet()) {
             // as ResultSet.hasMore() throws UnsupportedOperationException
             // we submit maxItems+1 to simulate it
@@ -95,13 +92,26 @@ public class CriteriaSearchService {
             throw new IllegalArgumentException("Field " + field + " is neither property, nor association");
         }
         ResultSet resultSet = null;
+        ResultSet countResultSet = null;
         List<NodeRef> results = null;
+        long totalCount;
         try {
             resultSet = searchService.query(parameters);
             results = resultSet.getNodeRefs();
+            totalCount = resultSet.getNumberFound();
+            if (resultSet.hasMore() && (totalCount == (parameters.getMaxItems() + parameters.getSkipCount()))) {
+                SearchParameters countParameters = createSearchParameters(language, query);
+                countParameters.setMaxItems(1);
+                countParameters.setSkipCount(Integer.MAX_VALUE - 1);
+                countResultSet = searchService.query(countParameters);
+                totalCount = countResultSet.getNumberFound();
+            }
         } finally {
             if(resultSet != null) {
                 resultSet.close();
+            }
+            if(countResultSet != null) {
+                countResultSet.close();
             }
         }
         
@@ -117,10 +127,19 @@ public class CriteriaSearchService {
                 .criteria(criteria)
                 .results(results)
                 .hasMore(hasMore)
+                .totalCount(totalCount)
                 .query(query)
                 .build();
     }
     
+    private SearchParameters createSearchParameters(String language, String query) {
+        SearchParameters parameters = new SearchParameters();
+        parameters.setLanguage(language);
+        parameters.setQuery(query);
+        parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        return parameters;
+    }
+
     private SearchQueryBuilder getMatchingQueryBuilder(String language) {
         for (SearchQueryBuilder queryBuilder : queryBuilders) {
             if (queryBuilder.supports(language)) {

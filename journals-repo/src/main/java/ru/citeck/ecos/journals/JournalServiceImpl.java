@@ -35,7 +35,7 @@ import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
 import ru.citeck.ecos.model.JournalsModel;
-import ru.citeck.ecos.search.LuceneQuery;
+import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
 import ru.citeck.ecos.utils.XMLUtils;
@@ -46,7 +46,7 @@ class JournalServiceImpl implements JournalService {
 
     private NodeService nodeService;
     private ServiceRegistry serviceRegistry;
-    private LuceneQuery luceneQueryBuilder;
+    private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new TreeMap<>();
@@ -63,7 +63,7 @@ class JournalServiceImpl implements JournalService {
             this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver, serviceRegistry));
             String staticQuery = journalTypes.get(journal.getId()).getOptions().get("staticQuery");
             if (staticQuery != null) {
-                luceneQueryBuilder.registerJournalStaticQuery(journal.getId(), staticQuery);
+                searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
         }
     }
@@ -120,7 +120,7 @@ class JournalServiceImpl implements JournalService {
         this.nodeService = serviceRegistry.getNodeService();
     }
 
-    public void setLuceneQueryBuilder(LuceneQuery luceneQueryBuilder) {
-        this.luceneQueryBuilder = luceneQueryBuilder;
+    public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
+        this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
     }
 }
