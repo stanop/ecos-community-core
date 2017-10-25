@@ -350,7 +350,7 @@ AttributeInfo
 
 	.method('customDisplayName', function() {
 		var optionLabel = null;
-		if (this.attribute().settings()) {
+		if (this.attribute() && this.attribute().settings()) {
 			optionLabel = this.attribute().settings().customLabel;
 		}
 		if (optionLabel) {
