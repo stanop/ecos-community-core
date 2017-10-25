@@ -1,4 +1,4 @@
-var language = "lucene";
+var language = "fts-alfresco";
 var data = criteriaSearch.query(requestbody.getContent(), language);
 
 for (var key in data) {

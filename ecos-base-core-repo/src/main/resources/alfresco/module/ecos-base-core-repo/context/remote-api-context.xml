@@ -146,10 +146,10 @@
                 <bean parent="dbp.filter.formtojson" />
                 <bean parent="dbp.report.filter" />
                 <bean parent="dbp.query.construct">
-                    <property name="builder" ref="luceneQueryBuilder"/>
+                    <property name="builder" ref="ftsAlfrescoQueryBuilder"/>
                 </bean>
                 <bean parent="dbp.query.execute">
-                    <property name="language" value="lucene"/>
+                    <property name="language" value="fts-alfresco"/>
                 </bean>
                 <bean parent="dbp.report.producer" />
                 <bean parent="dbp.switch">

@@ -48,7 +48,7 @@
 			<type><![CDATA[
 {
 	"query": {
-		"language": "lucene",
+		"language": "fts-alfresco",
 		"value": "TYPE:\"cm:content\""
 	},
 	"paging": {

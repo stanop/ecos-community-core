@@ -20,9 +20,7 @@ package ru.citeck.ecos.search;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.search.adaptor.lucene.QueryConstants;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.Path;
@@ -48,6 +46,10 @@ public class LuceneQuery implements SearchQueryBuilder {
 
     private static final String SEPARATOR = ":";
 
+    private static final String NAME_SEPARATOR = "-";
+
+    private static final String ESCAPE = "\\";
+
     private static final String QUOTE = "\"";
 
     private static final String FROM_MIN = "MIN TO ";
@@ -70,7 +72,7 @@ public class LuceneQuery implements SearchQueryBuilder {
     private NodeService nodeService;
 
     private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
-    private Map<String, String> journalStaticQuery = new HashMap<>();
+    private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
 
 
     public void setNamespaceService(NamespaceService namespaceService) {
@@ -103,15 +105,21 @@ public class LuceneQuery implements SearchQueryBuilder {
         return SearchService.LANGUAGE_LUCENE.equals(language);
     }
 
+    public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
+        this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
+    }
+
     private class QueryBuilder {
 
         private StringBuilder query = new StringBuilder();
         private List<QueryElement> queryElementList = new ArrayList<>();
         Boolean shouldAppendQuery;
         QueryElement queryElement;
+        private String typeName;
 
         public String buildQuery(SearchCriteria criteria) {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
+            extractType(criteria);
             while (iterator.hasNext()) {
                 CriteriaTriplet criteriaTriplet = iterator.next();
                 boolean ignore = ignoreIfValueEmpty(criteriaTriplet);
@@ -146,6 +154,20 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
 
             return finalQuery;
+        }
+
+        private void extractType(SearchCriteria criteria) {
+            Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
+            while (iterator.hasNext()) {
+                CriteriaTriplet criteriaTriplet = iterator.next();
+                boolean ignore = ignoreIfValueEmpty(criteriaTriplet);
+                if (!ignore) {
+                    SearchPredicate criterion = SearchPredicate.forName(criteriaTriplet.getPredicate());
+                    if (SearchPredicate.TYPE_EQUALS.equals(criterion)) {
+                        typeName = criteriaTriplet.getValue();
+                    }
+                }
+            }
         }
 
         private void buildSearchTerm(CriteriaTriplet triplet) {
@@ -310,7 +332,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             String query = "PATH:\"" + path.toPrefixString(namespaceService) + "//.\" " +
                     "AND TYPE:\"" + valueType.toPrefixString(namespaceService) + "\"";
             ResultSet queryResults =
-                    searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "fts-alfresco", query);
+                    searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
             return queryResults.getNodeRefs();
         }
 
@@ -323,9 +345,17 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private String escape(String string) {
-            return string.contains(SEPARATOR) ?
-                    new StringBuilder(string).insert(string.indexOf(SEPARATOR), "\\").toString() :
-                    string;
+            StringBuilder result = new StringBuilder(string);
+            int iSeparator = 0;
+            while ((iSeparator = result.indexOf(NAME_SEPARATOR, iSeparator)) != -1) {
+                result.insert(iSeparator, ESCAPE);
+                iSeparator +=2;
+            }
+            iSeparator = result.indexOf(SEPARATOR, iSeparator);
+            if (iSeparator != -1) {
+                result.insert(iSeparator, ESCAPE);
+            }
+            return result.toString();
         }
 
         private boolean ignoreIfValueEmpty(CriteriaTriplet triplet) {
@@ -389,7 +419,17 @@ public class LuceneQuery implements SearchQueryBuilder {
 
         private void buildEqualsTerm(String field, String value) {
             if (FieldType.ALL.name().equals(field)) {
-                Collection<QName> contentAttributes = dictionaryService.getAllProperties(DataTypeDefinition.TEXT);
+                Collection<QName> contentAttributes;
+                QName type = null;
+                if (typeName != null) {
+                    type = QName.resolveToQName(namespaceService, typeName);
+                }
+                if (type != null) {
+                    contentAttributes = getTextAttributesByType(type);
+                } else {
+                    contentAttributes = dictionaryService.getAllProperties(DataTypeDefinition.TEXT);
+                    excludeSysAttributes(contentAttributes);
+                }
                 StringBuilder allQuery = new StringBuilder();
 
                 for (QName qname : contentAttributes) {
@@ -414,6 +454,47 @@ public class LuceneQuery implements SearchQueryBuilder {
                     query.append(term);
                 }
             }
+        }
+
+        private void excludeSysAttributes(Collection<QName> contentAttributes) {
+            Collection<QName> sysAttributes = new HashSet<>();
+            for (QName qName : contentAttributes) {
+                if (isSysModel(qName)) {
+                    sysAttributes.add(qName);
+                }
+            }
+            if (!sysAttributes.isEmpty()) {
+                contentAttributes.removeAll(sysAttributes);
+            }
+        }
+
+        private boolean isSysModel(QName qName) {
+            return NamespaceService.SYSTEM_MODEL_1_0_URI.equals(qName.getNamespaceURI());
+        }
+
+        private Collection<QName> getTextAttributesByType(QName type) {
+            Collection<QName> textAttributes = new HashSet<>();
+            TypeDefinition typeDef = dictionaryService.getType(type);
+            extractTextAttribute(typeDef, textAttributes);
+            return textAttributes;
+        }
+
+        private void extractTextAttribute(ClassDefinition classDef, Collection<QName> textAttributes) {
+            if (classDef == null || isSysModel(classDef.getName())) {
+                return;
+            }
+            Map<QName, PropertyDefinition> properties = classDef.getProperties();
+            List<AspectDefinition> aspects = classDef.getDefaultAspects();
+            ClassDefinition parent = classDef.getParentClassDefinition();
+            for (PropertyDefinition pDef : properties.values()) {
+                if (DataTypeDefinition.TEXT.equals(pDef.getDataType().getName())) {
+                    textAttributes.add(pDef.getName());
+                }
+            }
+            for (AspectDefinition aDef : aspects) {
+                extractTextAttribute(aDef, textAttributes);
+            }
+            extractTextAttribute(parent, textAttributes);
         }
 
         private void buildEqualsTermWithRoundBracket(String field, String value) {
@@ -579,7 +660,7 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
     }
 
-    public void registerJournalStaticQuery(String journalId, String subQuery) {
-        journalStaticQuery.put(journalId, subQuery);
+    private String getStaticQuery(String journalId) {
+        return searchCriteriaSettingsRegistry.getStaticQuery(journalId);
     }
 }

@@ -79,6 +79,11 @@
         <property name="dictionaryService" ref="dictionaryService" />
         <property name="searchService" ref="searchService" />
         <property name="nodeService" ref="nodeService" />
+        <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
+    </bean>
+
+    <bean id="ftsAlfrescoQueryBuilder" class="ru.citeck.ecos.search.FtsAlfrescoQuery">
+        <property name="luceneQuery" ref="luceneQueryBuilder" />
     </bean>
 
     <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
@@ -89,6 +94,7 @@
         <property name="searchService" ref="SearchService"/>
         <property name="queryBuilders">
             <list value-type="ru.citeck.ecos.search.SearchQueryBuilder">
+                <ref bean="ftsAlfrescoQueryBuilder"/>
                 <ref bean="luceneQueryBuilder"/>
             </list>
         </property>
@@ -102,6 +108,9 @@
         <property name="extensionName" value="criteriaSearch" />
         <property name="searchService" ref="criteriaSearchService" />
         <property name="parser" ref="criteriaParser" />
+    </bean>
+
+    <bean id="searchCriteriaSettingsRegistry" class="ru.citeck.ecos.search.SearchCriteriaSettingsRegistry">
     </bean>
 
     <bean id="AssociationIndexPropertyRegistry" class="ru.citeck.ecos.search.AssociationIndexPropertyRegistry">
