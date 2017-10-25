@@ -1,6 +1,6 @@
-<import resource="classpath:alfresco/module/idocs-repo/script/case-mt/case-cm-roles.js">
-<import resource="classpath:alfresco/module/idocs-repo/script/case-mt/case-cm-email.js">
-<import resource="classpath:alfresco/module/idocs-repo/script/case-mt/case-cm-status.js">
+<import resource="classpath:alfresco/module/idocs-repo/scripts/case-mt/case-cm-roles.js">
+<import resource="classpath:alfresco/module/idocs-repo/scripts/case-mt/case-cm-email.js">
+<import resource="classpath:alfresco/module/idocs-repo/scripts/case-mt/case-cm-status.js">
 
 const TASK_CONFIRM = "ctrwf:confirmTask";
 const OPTIONAL_PERFORMERS = "optionalPerformers";

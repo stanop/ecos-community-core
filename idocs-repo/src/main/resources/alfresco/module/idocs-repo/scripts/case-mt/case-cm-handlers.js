@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/idocs-repo/script/case-mt/case-cm-confirm-utils.js">
+<import resource="classpath:alfresco/module/idocs-repo/scripts/case-mt/case-cm-confirm-utils.js">
 
 function onCaseCreate() {
 }
