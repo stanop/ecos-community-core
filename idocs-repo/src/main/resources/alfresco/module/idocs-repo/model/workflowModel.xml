@@ -200,6 +200,20 @@
                 </property>
             </properties>
         </aspect>
+
+        <aspect name="cwf:hasTaskAssignState">
+            <properties>
+                <property name="cwf:isTaskClaimable">
+                    <type>d:boolean</type>
+                </property>
+                <property name="cwf:isTaskReleasable">
+                    <type>d:boolean</type>
+                </property>
+                <property name="cwf:isTaskReassignable">
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
 	</aspects>
 
 </model>

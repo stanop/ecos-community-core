@@ -179,10 +179,13 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
 
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-        model.put(MODEL_IS_CLAIMABLE, (pooledActors!=null && pooledActors.size()>0 && properties.get(ContentModel.PROP_OWNER)==null));
-        model.put(MODEL_IS_RELEASABLE, (pooledActors!=null && pooledActors.size()>0 &&
-                (properties.get(ContentModel.PROP_OWNER)!=null || properties.get(MODEL_CLAIM_OWNER_PROP) != null)));
-        model.put(MODEL_IS_REASSIGNABLE, ((Boolean)properties.get(WorkflowModel.PROP_REASSIGNABLE) && properties.get(ContentModel.PROP_OWNER)!=null));
+
+        boolean hasPooledActors = pooledActors != null && pooledActors.size() > 0;
+        boolean hasOwner = properties.get(ContentModel.PROP_OWNER) != null;
+        model.put(MODEL_IS_CLAIMABLE, isTaskClaimable(properties, hasOwner, hasPooledActors));
+        model.put(MODEL_IS_RELEASABLE, isTaskReleasable(properties, hasOwner, hasPooledActors));
+        model.put(MODEL_IS_REASSIGNABLE, isTaskReassignable(properties, hasOwner));
+
         QName outcomeProperty = (QName) properties.get(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
         if(outcomeProperty != null) {
             model.put(MODEL_OUTCOME_PROP, outcomeProperty);
@@ -192,6 +195,24 @@ public class DocumentTasksGet extends DeclarativeWebScript {
             model.put(MODEL_OUTCOMES, Collections.emptyMap());
         }
         return model;
+    }
+
+    private boolean isTaskClaimable(Map<QName, Serializable> properties, boolean hasOwner, boolean hasPooledActors) {
+        boolean isAllowed = hasPooledActors && !hasOwner;
+        boolean isDisabled = Boolean.FALSE.equals(properties.get(CiteckWorkflowModel.PROP_IS_TASK_CLAIMABLE));
+        return isAllowed && !isDisabled;
+    }
+
+    private boolean isTaskReleasable(Map<QName, Serializable> properties, boolean hasOwner, boolean hasPooledActors) {
+        boolean isAllowed = hasPooledActors && (hasOwner || properties.get(MODEL_CLAIM_OWNER_PROP) != null);
+        boolean isDisabled = Boolean.FALSE.equals(properties.get(CiteckWorkflowModel.PROP_IS_TASK_RELEASABLE));
+        return isAllowed && !isDisabled;
+    }
+
+    private boolean isTaskReassignable(Map<QName, Serializable> properties, boolean hasOwner) {
+        boolean isAllowed = Boolean.TRUE.equals(properties.get(WorkflowModel.PROP_REASSIGNABLE)) && hasOwner;
+        boolean isDisabled = Boolean.FALSE.equals(properties.get(CiteckWorkflowModel.PROP_IS_TASK_REASSIGNABLE));
+        return isAllowed && !isDisabled;
     }
 
     private Map<String, String> getAllowedValues(QName property) {
