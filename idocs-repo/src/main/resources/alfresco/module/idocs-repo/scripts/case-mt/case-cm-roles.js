@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/idocs-repo/scripts/utils.js">
+<import resource="classpath:alfresco/module/idocs-repo/scripts/case-mt/utils.js">
 
 const ROLE_CONFIRMERS = "confirmers";
 const ROLE_INITIATOR = "initiator";
