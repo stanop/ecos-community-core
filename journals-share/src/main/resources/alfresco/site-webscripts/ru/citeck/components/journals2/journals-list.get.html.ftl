@@ -295,20 +295,21 @@
 
                     </div>
 
-                    <!-- ko if: journal() != null -->
-                        <div id="${id}-content" class="journal-content">
-                            <@journals.renderJournalTable />
+                  <!-- ko if: journal() != null -->
+                  <div id="${id}-content" class="journal-content">
+                      <@journals.renderJournalTable />
+                    <div>${msg('label.total')?html}: <span data-bind="text: totalEstimate"></span></div>
 
-                            <#assign pagingTemplate = '{PreviousPageLink} {PageLinks} {NextPageLink} <span class=rows-per-page-label>' + (msg('label.rows-per-page')?html) + '</span> {RowsPerPageDropdown}' />
+                      <#assign pagingTemplate = '{PreviousPageLink} {PageLinks} {NextPageLink} <span class=rows-per-page-label>' + (msg('label.rows-per-page')?html) + '</span> {RowsPerPageDropdown}' />
 
-                            <div id="${id}-paging" class="journal-content-pagination"
-                                 data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />"></div>
-                        </div>
-                    <!-- /ko -->
+                    <div id="${id}-paging" class="journal-content-pagination"
+                         data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />"></div>
+                  </div>
+                  <!-- /ko -->
 
-                    <!-- ko if: journal() == null && journalsList() != null && journalsList().journals().length > 0 -->
+                  <!-- ko if: journal() == null && journalsList() != null && journalsList().journals().length > 0 -->
                     <@journals.renderJournalsExpressMenu />
-                    <!-- /ko -->
+                  <!-- /ko -->
                 </div>
             </div>
             <div class="yui-b" id="alf-filters">
