@@ -117,7 +117,7 @@ public class ExportDocWebScript extends AbstractWebScript {
 
         ContentReader reader = getContentReader(node);
 
-        if ((reader = getContentReader(node)) == null) {
+        if (reader == null) {
             throw new WebScriptException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not create content for a node " + nodeRef);
         }
 
