@@ -304,10 +304,10 @@
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
         </association>
         <property name="contracts:agreementAmount">
-            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value > 0</invariant>
+            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
         </property>
         <property name="contracts:VAT">
-            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value > 0</invariant>
+            <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
         </property>
         <property name="cm:content">
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
