@@ -110,17 +110,15 @@ public class ExportDocWebScript extends AbstractWebScript {
         if (mimetypeByExt == null) {
             throw new WebScriptException(HttpServletResponse.SC_BAD_REQUEST, "Mimetype for the extension " + ext + " is not registered");
         }
+        
+        Action action = actionService.createAction(GENERATE_CONTENT);
+        action.setParameterValue(CREATE_MODE, createMode);
+        actionService.executeAction(action, node, false, false);
 
         ContentReader reader = getContentReader(node);
 
-        if (reader == null) {
-            Action action = actionService.createAction(GENERATE_CONTENT);
-            action.setParameterValue(CREATE_MODE, createMode);
-            actionService.executeAction(action, node, false, false);
-
-            if ((reader = getContentReader(node)) == null) {
-                throw new WebScriptException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not create content for a node " + nodeRef);
-            }
+        if ((reader = getContentReader(node)) == null) {
+            throw new WebScriptException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not create content for a node " + nodeRef);
         }
 
         if (reader.getMimetype().equalsIgnoreCase(mimetypeByExt)) {
