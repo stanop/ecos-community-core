@@ -77,6 +77,7 @@
 								<span class="type" data-bind="text: typeTitle, attr: { title: typeTitle }" />
 								<span class="start" data-bind="text: startDateText, attr: { title: startTimeText }" />
 								<span class="end" data-bind="text: endDateText, attr: { title: endTimeText }" />
+                                <span class="sla" data-bind="text: expectedPerformTime, attr: { title: expectedPerformTime }" />
 								
 								<!-- ko if: startable -->
 									<a class="action start" title="${msg("action.start")}" data-bind="click: start, clickBubble: false">&nbsp;</a>
@@ -123,6 +124,7 @@
 					<span class="type">${msg('header.type')}</span>
 					<span class="start">${msg('header.start')}</span>
 					<span class="end">${msg('header.end')}</span>
+					<span class="expTime">${msg('header.expTime')}</span>
 				</span>
 				
 				<#assign errorMessage = msg("move.failure")>

@@ -56,6 +56,7 @@ Activity
     .property('plannedEndDate', d)
     .property('actualStartDate', d)
     .property('actualEndDate', d)
+    .property('expectedPerformTime', n)
     
     .computed('started', function() { return this.actualStartDate() != null; })
     .computed('stopped', function() { return this.actualEndDate() != null; })
