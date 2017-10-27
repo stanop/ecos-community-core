@@ -62,7 +62,7 @@
                <url>/components/form</url>
                <properties>
                   <itemKind>workflow</itemKind>
-                  <itemId>activiti$confirm</itemId>
+                  <itemId>flowable$confirm</itemId>
                   <formId>workflow-confirm-with-route</formId>
                   <mode>create</mode>
                   <submitType>json</submitType>
@@ -73,7 +73,7 @@
             <sub-component id="manager">
                <url>/citeck/start-specified-workflow/manager</url>
                <properties>
-                  <workflowId>activiti$confirm</workflowId>
+                  <workflowId>flowable$confirm</workflowId>
                </properties>
             </sub-component>
          </sub-components>

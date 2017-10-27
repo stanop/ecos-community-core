@@ -90,7 +90,7 @@
                         <entry key="wfperf:controllerPermission" value="wfperf:controllerPermission"/>
                     </map>
                 </entry>
-                <entry key="activiti$confirm-stage">
+                <entry key="flowable$confirm-stage">
                     <map>
                         <entry key="icaseTask:confirmers" value="wfcf:confirmers"/>
                         <entry key="wfcf:skipCorrectTask" value="wfcf:skipCorrectTask"/>
@@ -102,7 +102,7 @@
                         <entry key="wfcf:partialConfirmsCount" value="wfcf:partialConfirmsCount"/>
                     </map>
                 </entry>
-                <entry key="activiti$case-perform">
+                <entry key="flowable$case-perform">
                     <map>
                         <entry key="wfcp:performOutcomes" value="wfcp:performOutcomes" />
                         <entry key="wfcp:formKey" value="wfcp:formKey" />
@@ -117,7 +117,7 @@
         </property>
         <property name="workflowTransmittedVariables">
             <map>
-                <entry key="activiti$case-perform">
+                <entry key="flowable$case-perform">
                     <list>
                         <value>optionalPerformers</value>
                         <value>excludedPerformers</value>

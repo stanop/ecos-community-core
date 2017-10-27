@@ -21,6 +21,8 @@ package ru.citeck.ecos.workflow.mirror;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.processor.BaseProcessorExtension;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
@@ -47,15 +49,13 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService
 {
 	private static final String QUERY_TASK_BY_ID = "TYPE:\"bpm:task\" AND =cm\\:name:\"%s\"";
 	private static final String QUERY_TASKS_BY_WORKFLOW_ID = "TYPE:\"bpm:task\" AND =wfm\\:workflowId:\"%s\"";
+	public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
 	private static Log logger = LogFactory.getLog(WorkflowMirrorServiceImpl.class);
 	
@@ -196,6 +196,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
             }
 
+			if(!nodeService.exists(taskMirror) || isNodeForDelete(taskMirror)) {
+				return;
+			}
             nodeInfoFactory.persist(taskMirror, nodeInfo, true);
 
         // delete
@@ -204,8 +207,20 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 				String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
 				logger.debug("Deleting mirror for task " + taskId + " (" + taskMirror + ")");
 			}
+			if(!nodeService.exists(taskMirror) || isNodeForDelete(taskMirror)) {
+				return;
+			}
 			nodeService.deleteNode(taskMirror);
         }
+	}
+
+	private boolean isNodeForDelete(NodeRef documentRef) {
+		if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+			return false;
+		} else {
+			Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
+			return nodesPendingDelete.contains(documentRef);
+		}
 	}
 
 	private NodeRef createTaskMirror(String taskId, QName taskType) {

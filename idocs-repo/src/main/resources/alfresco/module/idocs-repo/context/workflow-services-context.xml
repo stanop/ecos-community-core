@@ -104,7 +104,7 @@
         <property name="messageService" ref="messageService" />
         <property name="workflowNames">
             <set>
-                <value>activiti$confirm</value>
+                <value>flowable$confirm</value>
             </set>
         </property>
         <property name="taskNames">
@@ -133,7 +133,7 @@
 		parent="activitiBusinessCalendar" abstract="true">
 		<!-- subclass should specify 'name' and 'calendar' properties -->
 	</bean>
-	
+
 	<!-- Activiti Global Listeners -->
 	<bean id="idocs.workflows.ActivitiListenerLoaderProcessor" class="ru.citeck.ecos.workflow.activiti.ActivitiListenerLoaderProcessor">
 		<property name="beanName">

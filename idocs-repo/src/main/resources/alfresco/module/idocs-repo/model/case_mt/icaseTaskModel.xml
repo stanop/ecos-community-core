@@ -96,7 +96,7 @@
             </associations>
             <overrides>
                 <property name="icaseTask:workflowDefinitionName">
-                    <default>activiti$confirm-stage</default>
+                    <default>flowable$confirm-stage</default>
                 </property>
             </overrides>
         </type>

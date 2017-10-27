@@ -22,12 +22,17 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import java.util.Set;
 
 public class MirrorBehaviour implements NodeServicePolicies.OnDeleteAssociationPolicy {
+
+	public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
@@ -40,10 +45,19 @@ public class MirrorBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 	@Override
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
 		NodeRef taskMirror = nodeAssocRef.getSourceRef();
-		if(!nodeService.exists(taskMirror)) {
+		if(!nodeService.exists(taskMirror) || isNodeForDelete(taskMirror)) {
 			return;
 		}
 		nodeService.deleteNode(taskMirror);
+	}
+
+	private boolean isNodeForDelete(NodeRef documentRef) {
+		if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+			return false;
+		} else {
+			Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
+			return nodesPendingDelete.contains(documentRef);
+		}
 	}
 
 	public void setPolicyComponent(PolicyComponent policyComponent) {

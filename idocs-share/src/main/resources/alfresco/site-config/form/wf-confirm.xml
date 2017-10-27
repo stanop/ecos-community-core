@@ -1,7 +1,7 @@
 <alfresco-config>
 
 
-	<config evaluator="string-compare" condition="activiti$confirm">
+	<config evaluator="string-compare" condition="flowable$confirm">
 		<forms>
 			<form>
 				<create-form template="/ru/citeck/components/form/workflow/confirm/submit-confirm-task.ftl" />
@@ -15,7 +15,7 @@
 		</forms>
 	</config>
 
-	<config evaluator="string-compare" condition="activiti$confirm-stage" >
+	<config evaluator="string-compare" condition="flowable$confirm-stage" >
 		<forms>
 			<form>
 				<create-form template="/ru/citeck/components/form/workflow/confirm/confirm-stage.ftl" />

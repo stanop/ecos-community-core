@@ -20,6 +20,8 @@ package ru.citeck.ecos.utils;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
@@ -48,6 +50,7 @@ public class RepoUtils {
     private static final String DOWNLOAD_API_PREFIX = "/api/node/content/workspace/SpacesStore/";
     private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
     private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,"filename");
+    public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     /**
      * It returns a property value or throws an exception.
@@ -791,6 +794,9 @@ public class RepoUtils {
         }
 
         if (full) {
+            if (!nodeService.exists(nodeRef) || isNodeForDelete(nodeRef)) {
+                return;
+            }
             List<ChildAssociationRef> allChildAssocs = nodeService.getChildAssocs(nodeRef);
             for (ChildAssociationRef childAssoc : allChildAssocs) {
                 if (!childAssocs.containsKey(childAssoc.getTypeQName()))
@@ -798,6 +804,16 @@ public class RepoUtils {
             }
         }
     }
+
+    private static boolean isNodeForDelete(NodeRef documentRef) {
+        if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+            return false;
+        } else {
+            Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
+            return nodesPendingDelete.contains(documentRef);
+        }
+    }
+
 
     private static void createChildAssociation(NodeRef nodeRef, NodeRef child,
                                                QName assocName, boolean primary, NodeService nodeService) {
