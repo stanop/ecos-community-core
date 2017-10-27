@@ -365,5 +365,13 @@
           parent="webscript">
         <property name="caseImportService" ref="cmmnImportService"/>
     </bean>
+    
+    <bean id="webscript.ru.citeck.doc.export-doc.get" class="ru.citeck.ecos.webscripts.doc.ExportDocWebScript" parent="webscript">
+        <property name="createMode"      value="true"/>
+        <property name="actionService"   ref="actionService"/>
+        <property name="nodeService"     ref="nodeService"/>
+        <property name="contentService"  ref="contentService"/>
+        <property name="mimetypeService" ref="mimetypeService"/>
+    </bean>
 
 </beans>
