@@ -30,14 +30,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.action.executer.MailActionExecuter;
 import org.alfresco.service.cmr.action.Action;
-import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +48,7 @@ public class MailAttachActionExecutor extends MailActionExecuter
 	private NodeService dbNodeService;
 	private ContentService contentService;
 
+	@Override
 	public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender)
 	{
 		MimeMessageHelper mimeMessageHelper = super.prepareEmail(ruleAction, actionedUponNodeRef, recipient, sender);
@@ -118,7 +116,7 @@ public class MailAttachActionExecutor extends MailActionExecuter
 	public void setNodeService(NodeService dbNodeService) {
 		super.setNodeService(dbNodeService);
 		this.dbNodeService = dbNodeService;
-  }
+	}
 
 	public void setContentService(ContentService contentService) {
 		this.contentService = contentService;
