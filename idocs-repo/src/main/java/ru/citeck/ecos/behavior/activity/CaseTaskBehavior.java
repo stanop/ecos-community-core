@@ -21,7 +21,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
@@ -45,6 +44,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
     private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "default-sla-duration";
+    private static final String defaultRawSla = "8";
 
     private final ValueConverter valueConverter = new ValueConverter();
 
@@ -175,9 +175,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             }
         }
 
-        if (workflowDueDate == null) {
-            workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
-        }
+        //if (workflowDueDate == null) {
+        //    workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
+        //}
         return workflowDueDate;
     }
 
@@ -194,6 +194,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private Integer getDefaultSLA() {
         String rawSla = (String) ecosConfigService.getParamValue(DEFAULT_SLA_JOURNAL_ITEM_ID);
+        if (rawSla == null)
+            log.info("No default-sla-duration config found. Using 8 hours constant as an SLA");
+            rawSla = defaultRawSla;
         try {
             return Integer.valueOf(rawSla);
         } catch (NumberFormatException exception) {
