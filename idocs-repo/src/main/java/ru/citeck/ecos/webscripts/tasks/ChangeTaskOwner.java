@@ -19,10 +19,7 @@ import ru.citeck.ecos.workflow.listeners.GrantWorkflowTaskPermissionExecutor;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ChangeTaskOwner extends AbstractWorkflowWebscript implements ApplicationContextAware {
 
@@ -46,8 +43,7 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             Action action;
             try {
                 action = Action.valueOf(parameters.getString(ACTION_PARAM).toUpperCase());
-            }
-            catch (IllegalArgumentException | NullPointerException e) {
+            } catch (IllegalArgumentException | NullPointerException e) {
                 throw new Exception("Unrecognized parameter value. Parameter " + ACTION_PARAM + " is expected to be either claim or release");
             }
 
@@ -55,7 +51,12 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             String claimOwner = (String) workflowTask.getProperties().get(QName.createQName(null, CLAIM_OWNER));
             if ("null".equals(claimOwner)) claimOwner = null;
 
-            List<String> assistants = deputyService.getUserAssistants(action == Action.CLAIM ? owner : claimOwner);
+
+            List<String> assistants = new ArrayList<>();
+            if (!(action == Action.RELEASE && claimOwner == null)) {
+                assistants.addAll(deputyService.getUserAssistants(action == Action.CLAIM ? owner : claimOwner));
+            }
+
             boolean hasAssistants = assistants.size() > 0;
             if (hasAssistants) {
                 assistants.add(action == Action.CLAIM ? owner : claimOwner);
@@ -74,11 +75,9 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             Map<String, Object> model = new HashMap<>();
             model.put("workflowTask", modelBuilder.buildDetailed(workflowTask));
             return model;
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             throw new WebScriptException(400, "Could not parse JSON from request.", e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WebScriptException(400, e.getMessage(), e);
         }
     }
