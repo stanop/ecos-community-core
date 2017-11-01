@@ -70,6 +70,92 @@
     <bean id="TransformContentLine" name="dbp.transform" class="ru.citeck.ecos.processor.TransformContent" parent="AbstractDataBundleLine" abstract="true">
     </bean>
 
+    <bean id="transformer.worker.RuntimeTransformerWorker"
+          name="RuntimeTransformerWorker"
+          class="org.alfresco.repo.content.transform.RuntimeExecutableContentTransformerWorker">
+        <property name="mimetypeService">
+            <ref bean="mimetypeService"/>
+        </property>
+        <property name="checkCommand">
+            <bean class="org.alfresco.util.exec.RuntimeExec">
+                <property name="commandsAndArguments">
+                    <map>
+                        <entry key=".*">
+                            <list>
+                                <value>${wkhtmltopdf.exe}</value>
+                                <value>-V</value>
+                            </list>
+                        </entry>
+                    </map>
+                </property>
+                <property name="errorCodes">
+                    <value>2</value>
+                </property>
+            </bean>
+        </property>
+        <property name="transformCommand">
+            <bean class="org.alfresco.util.exec.RuntimeExec">
+                <property name="commandsAndArguments">
+                    <map>
+                        <entry key=".*">
+                            <list>
+                                <value>${wkhtmltopdf.exe}</value>
+                                <value>${source}</value>
+                                <value>${target}</value>
+                            </list>
+                        </entry>
+                    </map>
+                </property>
+                <property name="errorCodes">
+                    <value>1,2</value>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="dbp.runtime.transform"
+          name="RuntimeTransformContent"
+          class="ru.citeck.ecos.processor.RuntimeExecutableTransformContent"
+          parent="AbstractDataBundleLine">
+
+        <property name="worker" ref="transformer.worker.RuntimeTransformerWorker"/>
+        <property name="outputMimetype" value="application/pdf" />
+        <property name="outputEncoding" value="UTF-8" />
+    </bean>
+
+    <bean id="dbp.runtime.transform-album"
+          name="RuntimeTransformContentAlbum"
+          class="ru.citeck.ecos.processor.RuntimeExecutableTransformContent"
+          parent="AbstractDataBundleLine">
+
+        <property name="worker">
+            <bean parent="transformer.worker.RuntimeTransformerWorker">
+                <property name="transformCommand">
+                    <bean class="org.alfresco.util.exec.RuntimeExec">
+                        <property name="commandsAndArguments">
+                            <map>
+                                <entry key=".*">
+                                    <list>
+                                        <value>${wkhtmltopdf.exe}</value>
+                                        <value>-O</value>
+                                        <value>Landscape</value>
+                                        <value>${source}</value>
+                                        <value>${target}</value>
+                                    </list>
+                                </entry>
+                            </map>
+                        </property>
+                        <property name="errorCodes">
+                            <value>2</value>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="outputMimetype" value="application/pdf" />
+        <property name="outputEncoding" value="UTF-8" />
+    </bean>
+
     <!-- update model -->
     <bean id="UpdateModelLine" name="dbp.model" class="ru.citeck.ecos.processor.UpdateModel" parent="AbstractDataBundleLine" abstract="true">
     </bean>
@@ -122,6 +208,16 @@
         <property name="outputMimetype" value="application/pdf" />
         <property name="outputEncoding" value="UTF-8" />
     </bean>
+
+    <!--<bean id="TransformContentLine.PDF2" name="dbp.transform.pdf2" parent="TransformContentLine">-->
+        <!--<property name="outputMimetype" value="application/pdf" />-->
+        <!--<property name="outputEncoding" value="UTF-8" />-->
+        <!--<property name="options">-->
+            <!--<map>-->
+                <!--<entry key="orientation" value="${args.orientation}"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <!-- transform contents into doc -->
     <bean id="TransformContentLine.DOC" name="dbp.transform.doc" parent="TransformContentLine">
