@@ -44,7 +44,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
     private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "default-sla-duration";
-    private static final String defaultRawSla = "8";
+    private static final String DEFAULT_RAW_SLA = "8";
 
     private final ValueConverter valueConverter = new ValueConverter();
 
@@ -165,19 +165,15 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         if (startDate != null) {
 
             Integer expectedPerformTime = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
-            if (expectedPerformTime == null) expectedPerformTime = getDefaultSLA();
 
-            //Integer numberDaysToDueDate = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_DAYS_NUMBER_TO_PLANNED_END_DATE);
-            if (expectedPerformTime != null) {
-                workflowDueDate = addDays(startDate, hoursToDays(expectedPerformTime));
-                // set planned end date for icaseTask:task
-                nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
+            if (expectedPerformTime == null) {
+                expectedPerformTime = getDefaultSLA();
             }
+
+            workflowDueDate = addDays(startDate, hoursToDays(expectedPerformTime));
+            nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
         }
 
-        //if (workflowDueDate == null) {
-        //    workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
-        //}
         return workflowDueDate;
     }
 
@@ -189,22 +185,21 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     }
 
     private static int hoursToDays(int hoursToAdd) {
-        return (int)Math.round(hoursToAdd/8);
+        return Math.round(hoursToAdd / 8f);
     }
 
-    private Integer getDefaultSLA() {
+    private int getDefaultSLA() {
         String rawSla = (String) ecosConfigService.getParamValue(DEFAULT_SLA_JOURNAL_ITEM_ID);
-        if (rawSla == null)
+        if (rawSla == null) {
             log.info("No default-sla-duration config found. Using 8 hours constant as an SLA");
-            rawSla = defaultRawSla;
+            rawSla = DEFAULT_RAW_SLA;
+        }
         try {
             return Integer.valueOf(rawSla);
         } catch (NumberFormatException exception) {
             throw new AlfrescoRuntimeException("Can't transform '" + rawSla + "' to the number", exception);
         }
     }
-
-
 
     /**
      * @param taskRef reference to task node
