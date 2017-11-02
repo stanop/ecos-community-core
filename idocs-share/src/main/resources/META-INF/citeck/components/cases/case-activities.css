@@ -109,7 +109,8 @@
 
 .case-activities .right > span.type,
 .case-activities .right > span.start,
-.case-activities .right > span.end {
+.case-activities .right > span.end,
+.case-activities .right > span.expTime {
     line-height: 24px;
     vertical-align: bottom;
     display: inline-block;
