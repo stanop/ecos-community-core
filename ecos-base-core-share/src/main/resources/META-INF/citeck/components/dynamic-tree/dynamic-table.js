@@ -206,23 +206,37 @@
 			this._updateResponseSchema();
 			if (this.deferredItems) this.loadData(this.deferredItems);
 
-
 			var table = this.widgets.table;
 
-			// SELECTION
-			if (this.config.selection == "checkbox") {
-				table.subscribe("checkboxClickEvent", function(event) {
-					if (event.target.checked) {
-						table.selectRow(event.target);
-					} else { table.unselectRow(event.target) }
-				});
+            // SELECTION
+            if (this.config.selection == "checkbox") {
 
-				$("input[id*='select-all']:checkbox", table.getTheadEl()).on("change", function(event) {
-					var checked = event.target.checked,
-						selector = ":checkbox" + (checked ? ":not(:checked)" : ":checked");
-					$(selector, table.getBody()).trigger("click");
-				});
-			};
+                var multipleSelect = this.config.checkboxMultipleSelectMode;
+
+                table.subscribe("checkboxClickEvent", function(event) {
+                    if (event.target.checked) {
+
+                        table.selectRow(event.target);
+
+                        if (!multipleSelect) {
+                            $(":checkbox:checked", table.getBody()).filter(function (idx, box) {
+                                return event.target.id != box.id;
+                            }).trigger("click");
+                        }
+
+                    } else {
+                        table.unselectRow(event.target);
+                    }
+                });
+
+                if (this.config.checkboxMultipleSelectMode) {
+                    $("input[id*='select-all']:checkbox", table.getTheadEl()).on("change", function(event) {
+                        var checked = event.target.checked,
+                            selector = ":checkbox" + (checked ? ":not(:checked)" : ":checked");
+                        $(selector, table.getBody()).trigger("click");
+                    });
+                }
+            }
 
 			// PREVIEW
 			if (this.config.preview) {
@@ -246,6 +260,10 @@
 			if (this.config.beforeRender) {
 				table.subscribe("beforeRenderEvent", this.config.beforeRender);
 			}
+
+            YAHOO.Bubbling.fire("tableViewReady", {
+                eventGroup: this
+            });
 		},
 
 		/**
@@ -889,9 +907,12 @@
 				config = { responseSchema: this.options.responseSchema, columns: this.options.columns };
 
 			if (this.options.selection == "checkbox") {
+
+				var allowSelectAll = this.options.checkboxMultipleSelectMode;
+
 				config.columns.unshift({
 					key: "checkbox-selection",
-					label: '<input type="checkbox" id="' + this.id + '-select-all"/>',
+					label: allowSelectAll ? '<input type="checkbox" id="' + this.id + '-select-all"/>' : '',
 		            formatter: function(elCell, oRecord) {
 		            	var checked = this.getSelectedRows().indexOf(oRecord.getId()) != -1,
 		            		disabled = oRecord.getData().disabled;
@@ -900,9 +921,11 @@
 		            },
 					resizeable: false 
 				});
-				
+
 				config.selection = this.options.selection
 			}
+
+			config.checkboxMultipleSelectMode = this.options.checkboxMultipleSelectMode;
 
 			if (this.options.preview) {
 				config.preview = this.options.preview;

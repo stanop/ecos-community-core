@@ -23,6 +23,7 @@
 <#assign controlId = fieldHtmlId + "-tc-cntrl">
 <#assign childrenUrl = field.control.params.childrenUrl!"">
 <#assign is_property = field.type == "property" />
+<#assign checkboxMultipleSelectMode = field.control.params.checkboxMultipleSelectMode!"true" />
 
 <script type="text/javascript">//<![CDATA[
 (function() {
@@ -78,6 +79,7 @@
         </#if>
         responseSchema: ${field.control.params.responseSchema},
         field: "${field.name?js_string}",
+        checkboxMultipleSelectMode: ${checkboxMultipleSelectMode},
         forms: {
             nodeId: "nodeRef"
         },
