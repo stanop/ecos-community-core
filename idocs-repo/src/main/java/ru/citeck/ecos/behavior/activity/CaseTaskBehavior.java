@@ -43,7 +43,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                                          CaseActivityPolicies.OnCaseActivityResetPolicy {
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
-    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "default-sla-duration";
+    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "new-default-sla-duration";
     private static final String DEFAULT_RAW_SLA = "8";
 
     private final ValueConverter valueConverter = new ValueConverter();
