@@ -84,4 +84,19 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.newDefaultSLADuration" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="new-default-sla-duration" />
+        <property name="description" value="new-default-sla-duration" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/new-default-sla-duration</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
