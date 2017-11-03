@@ -747,22 +747,45 @@ JournalsWidget
 		}).concat(defaultFields);
 	})
 	.property('sortBy', [ SortBy ])
+    .computed('propSortBy', {
+        read: function () {
+            var result = this.sortBy();
+            if (!result || result.length == 0) {
+                result = this.defaultSortBy();
+            }
+            return result;
+        },
+        write: function (value) {
+            this.sortBy(value);
+        }
+    })
+    .computed('defaultSortBy', function () {
+        var options = this.resolve('journal.type.options');
+        var result = [];
+        if (options && options['defaultSortBy']) {
+            var data = eval(options['defaultSortBy']);
+            for (var i in data) {
+                result.push(new SortBy(data[i]));
+            }
+        }
+        return result;
+    })
 	.computed('sortByQuery', function() {
-		return _.invoke(this.sortBy() || [], 'query');
+		return _.invoke(this.propSortBy() || [], 'query');
 	})
 	.computed('sortByFirst', {
 		read: function() {
-			if(this.sortBy().length == 0) {
+			if(this.propSortBy().length == 0) {
 				return null;
 			}
-			var sortBy = this.sortBy()[0];
+			var sortBy = this.propSortBy()[0];
 			return {
 				key: 'attributes[\'' + sortBy.id() + '\']',
 				dir: sortBy.order() == 'asc' ? 'yui-dt-asc' : 'yui-dt-desc'
 			};
 		},
 		write: function(value) {
-			this.sortBy([
+			this.propSortBy([
 				new SortBy({
 					id: value.key.replace(/^attributes\[\'(.*)\'\]$/, '$1'),
 					order: value.dir == 'yui-dt-asc' ? 'asc' : 'desc'
@@ -892,13 +915,14 @@ JournalsWidget
 			this.filter(null);
 			this.settings(null);
 
-			this.sortBy([]);
+			this.propSortBy([]);
 			this.skipCount(0);
 			this.selectedId(null);
 
 			this.performSearch();
 		}, this);
 		this.currentFilter.subscribe(function() {
+			this.skipCount(0);
 			this._filter(this.resolve('currentFilter.clone'));
 			this.performSearch();
 		}, this);
