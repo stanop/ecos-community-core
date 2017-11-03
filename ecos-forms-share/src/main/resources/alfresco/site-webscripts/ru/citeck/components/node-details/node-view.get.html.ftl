@@ -26,12 +26,15 @@
 
                 var refreshArgs = "<#list refreshArgs?keys as arg>${arg}=${refreshArgs[arg]}<#if arg_has_next>&</#if></#list>";
 
+                var component = Alfresco.util.ComponentManager.get("${el}-form");
+                var full = true;
+                component.runtime.node().impl().reset(full);
+
                 Alfresco.util.Ajax.request({
                     url: "citeck/components/node-details/node-view?" + refreshArgs,
                     successCallback: {
                         fn: function (response) {
 
-                            var component = Alfresco.util.ComponentManager.get("${el}-form");
                             Alfresco.util.ComponentManager.unregister(component);
 
                             var q = Alfresco.util.Ajax.sanitizeMarkup(response.serverResponse.responseText);
