@@ -82,8 +82,10 @@
         <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
     </bean>
 
+    <bean id="ftsAlfrescoQueryMigration" class="ru.citeck.ecos.search.FtsAlfrescoQueryMigration"/>
+
     <bean id="ftsAlfrescoQueryBuilder" class="ru.citeck.ecos.search.FtsAlfrescoQuery">
-        <property name="luceneQuery" ref="luceneQueryBuilder" />
+        <property name="ftsAlfrescoQueryMigration" ref="ftsAlfrescoQueryMigration" />
     </bean>
 
     <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
