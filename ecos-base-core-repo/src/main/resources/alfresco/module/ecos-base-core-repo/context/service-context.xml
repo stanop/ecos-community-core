@@ -82,7 +82,14 @@
         <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
     </bean>
 
-    <bean id="ftsAlfrescoQueryMigration" class="ru.citeck.ecos.search.FtsAlfrescoQueryMigration"/>
+    <bean id="ftsAlfrescoQueryMigration" class="ru.citeck.ecos.search.FtsAlfrescoQueryMigration">
+        <property name="namespaceService" ref="NamespaceService" />
+        <property name="associationIndexPropertyRegistry" ref="AssociationIndexPropertyRegistry" />
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="searchService" ref="searchService" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
+    </bean>
 
     <bean id="ftsAlfrescoQueryBuilder" class="ru.citeck.ecos.search.FtsAlfrescoQuery">
         <property name="ftsAlfrescoQueryMigration" ref="ftsAlfrescoQueryMigration" />
