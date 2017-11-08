@@ -4,7 +4,7 @@ public class FtsAlfrescoQueryMigration extends LuceneQuery {
 
     @Override
     public String buildQuery(SearchCriteria criteria) {
-        LuceneQuery.QueryBuilder queryBuilder = new LuceneQuery.QueryBuilder() {
+        QueryBuilder queryBuilder = new QueryBuilder() {
             @Override
             protected void buildRangeTerm(String field, String value, boolean inclusive, boolean lessThan) {
                 StringBuilder range = new StringBuilder();
