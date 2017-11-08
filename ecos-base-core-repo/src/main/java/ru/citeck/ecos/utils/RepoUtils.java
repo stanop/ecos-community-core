@@ -717,9 +717,13 @@ public class RepoUtils {
                                          QName name, boolean isTarget, NodeService nodeService) {
         try {
             if (isTarget) {
-                nodeService.removeAssociation(nodeRef, linkedNode, name);
+                if (!isNodeForDelete(nodeRef, nodeService) && !isNodeForDelete(linkedNode, nodeService)) {
+                    nodeService.removeAssociation(nodeRef, linkedNode, name);
+                }
             } else {
-                nodeService.removeAssociation(linkedNode, nodeRef, name);
+                if (!isNodeForDelete(linkedNode, nodeService) && !isNodeForDelete(linkedNode, nodeService)) {
+                    nodeService.removeAssociation(linkedNode, nodeRef, name);
+                }
             }
         } catch (InvalidNodeRefException e) {
             LOGGER.error(
@@ -794,7 +798,7 @@ public class RepoUtils {
         }
 
         if (full) {
-            if (!nodeService.exists(nodeRef) || isNodeForDelete(nodeRef)) {
+            if (!nodeService.exists(nodeRef) || isNodeForDelete(nodeRef, nodeService)) {
                 return;
             }
             List<ChildAssociationRef> allChildAssocs = nodeService.getChildAssocs(nodeRef);
@@ -805,7 +809,10 @@ public class RepoUtils {
         }
     }
 
-    private static boolean isNodeForDelete(NodeRef documentRef) {
+    private static boolean isNodeForDelete(NodeRef documentRef, NodeService nodeService) {
+        if (!nodeService.exists(documentRef)) {
+            return true;
+        }
         if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
             return false;
         } else {
