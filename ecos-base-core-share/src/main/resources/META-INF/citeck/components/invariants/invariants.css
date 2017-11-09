@@ -2313,6 +2313,12 @@ div[id*="multiple-text"] .multiple-text-control input {
   }
 }
 
+/* TEMPLATE FILE IMPORT */
+.invariants-form .form-region.template-file-import .file-upload-control,
+.invariants-form .form-region.template-file-import .create-object-control {
+  display: inline-block;
+}
+
 
 /* TEMPLATE TABS */
 .static .invariants-form .template-tabs .template-table {
