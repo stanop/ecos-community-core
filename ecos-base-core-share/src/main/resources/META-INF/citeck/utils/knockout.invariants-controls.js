@@ -2523,8 +2523,20 @@ ko.bindingHandlers.fileUploadControl = {
                                 // push new file to uploaded files library
                                 if (multiple()) {
                                     var currentValues = value();
-                                    currentValues.push(result.nodeRef);
-                                    value(currentValues);
+                                    if (result.strings && result.strings.length) {
+                                        result.strings.forEach(function(item) {
+                                            currentValues.push(item);
+                                        });
+                                        value(currentValues);
+                                    } else if (result.errorMessage) {
+                                        Alfresco.util.PopupManager.displayPrompt({
+                                            title: Alfresco.util.message("message.import-errors"),
+                                            text: result.errorMessage });
+                                    } else if (result.nodeRef) {
+                                        currentValues.push(result.nodeRef);
+                                        value(currentValues);
+                                    }
+
                                 } else {
                                     //TODO: remove previous node if parent == attachments-root?
                                     value(result.nodeRef);
