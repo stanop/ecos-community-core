@@ -44,7 +44,7 @@ public class LuceneQuery implements SearchQueryBuilder {
 
     private static final String WILD = "*";
 
-    private static final String SEPARATOR = ":";
+    protected static final String SEPARATOR = ":";
 
     private static final String NAME_SEPARATOR = "-";
 
@@ -52,9 +52,9 @@ public class LuceneQuery implements SearchQueryBuilder {
 
     private static final String QUOTE = "\"";
 
-    private static final String FROM_MIN = "MIN TO ";
+    protected static final String FROM_MIN = "MIN TO ";
 
-    private static final String TO_MAX = " TO MAX";
+    protected static final String TO_MAX = " TO MAX";
 
     private static final String AND = " AND ";
 
@@ -109,12 +109,12 @@ public class LuceneQuery implements SearchQueryBuilder {
         this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
     }
 
-    private class QueryBuilder {
+    protected class QueryBuilder {
 
-        private StringBuilder query = new StringBuilder();
+        protected StringBuilder query = new StringBuilder();
         private List<QueryElement> queryElementList = new ArrayList<>();
         Boolean shouldAppendQuery;
-        QueryElement queryElement;
+        protected QueryElement queryElement;
         private String typeName;
 
         public String buildQuery(SearchCriteria criteria) {
@@ -507,7 +507,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
         }
 
-        private void buildRangeTerm(String field, String value, boolean inclusive, boolean lessThan) {
+        protected void buildRangeTerm(String field, String value, boolean inclusive, boolean lessThan) {
             StringBuilder range = new StringBuilder();
             range.append(inclusive ? "[" : "{");
             if (lessThan) {
@@ -611,7 +611,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             return query;
         }
 
-        private class QueryElement {
+        protected class QueryElement {
             SearchPredicate criterion;
             String field;
             String value;

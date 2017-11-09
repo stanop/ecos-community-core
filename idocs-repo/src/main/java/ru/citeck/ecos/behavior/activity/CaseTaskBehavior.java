@@ -6,6 +6,7 @@ import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -20,6 +21,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
@@ -30,6 +32,7 @@ import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.config.EcosConfigService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -41,6 +44,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                                          CaseActivityPolicies.OnCaseActivityResetPolicy {
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
+    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "new-default-sla-duration";
+    private static final String DEFAULT_RAW_SLA = "8";
 
     private final ValueConverter valueConverter = new ValueConverter();
 
@@ -54,6 +59,14 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     private PolicyComponent policyComponent;
     private CaseRoleService caseRoleService;
     private NodeService nodeService;
+
+    private WorkflowQNameConverter qnameConverter;
+
+    /**
+     * Ecos configuration service (system journals - configuration)
+     */
+    @Autowired
+    private EcosConfigService ecosConfigService;
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
@@ -73,6 +86,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         if (workflowTransmittedVariables == null) {
             workflowTransmittedVariables = new HashMap<>();
         }
+        qnameConverter = new WorkflowQNameConverter(namespaceService);
     }
 
     @Override
@@ -116,18 +130,40 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             workflowProperties.put(value, getAttribute(taskRef, key, value));
         }
 
+        workflowProperties.putAll(getTransmittedVariables(workflowDefinitionName));
+
+        return workflowProperties;
+    }
+
+    private Map<QName, Serializable> getTransmittedVariables(String workflowDefinitionName) {
+
+        Map<QName, Serializable> result = new HashMap<>();
+
         List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
+
         if (transmittedParameters != null && transmittedParameters.size() > 0) {
+
             Map<String, Object> processVariables = ActionConditionUtils.getProcessVariables();
+
             for (String parameter : transmittedParameters) {
-                Serializable value = convertForRepo(processVariables.get(parameter));
+
+                QName parameterQName;
+                if (parameter.indexOf(":") > 0 || parameter.startsWith("{")) {
+                    parameterQName = QName.resolveToQName(namespaceService, parameter);
+                } else {
+                    parameterQName = QName.createQName(parameter);
+                }
+
+                String procParamName = qnameConverter.mapQNameToName(parameterQName);
+                Serializable value = convertForRepo(processVariables.get(procParamName));
+
                 if (value != null) {
-                    workflowProperties.put(QName.createQName(parameter), value);
+                    result.put(parameterQName, value);
                 }
             }
         }
 
-        return workflowProperties;
+        return result;
     }
 
     private Serializable convertForRepo(Object value) {
@@ -149,19 +185,21 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private Date getWorkflowDueDate(NodeRef taskRef) {
 
-        Date workflowDueDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE);
+        Date workflowDueDate = new Date();
 
-        if (workflowDueDate == null && nodeService.hasAspect(taskRef, ActivityModel.ASPECT_SET_PLANNED_END_DATE)) {
-            Date startDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_ACTUAL_START_DATE);
-            if (startDate != null) {
-                Integer numberDaysToDueDate = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_DAYS_NUMBER_TO_PLANNED_END_DATE);
-                if (numberDaysToDueDate != null && numberDaysToDueDate > 0) {
-                    workflowDueDate = addDays(startDate, numberDaysToDueDate);
-                    // set planned end date for icaseTask:task
-                    nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
-                }
+        Date startDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_ACTUAL_START_DATE);
+        if (startDate != null) {
+
+            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
+
+            if (expectedPerformTime == null) {
+                expectedPerformTime = getDefaultSLA();
             }
+
+            workflowDueDate = addDays(startDate, hoursToDays(expectedPerformTime));
+            nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
         }
+
         return workflowDueDate;
     }
 
@@ -172,7 +210,22 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         return calendar.getTime();
     }
 
+    private static int hoursToDays(int hoursToAdd) {
+        return Math.round(hoursToAdd / 8f);
+    }
 
+    private int getDefaultSLA() {
+        String rawSla = (String) ecosConfigService.getParamValue(DEFAULT_SLA_JOURNAL_ITEM_ID);
+        if (rawSla == null) {
+            log.info("No default-sla-duration config found. Using 8 hours constant as an SLA");
+            rawSla = DEFAULT_RAW_SLA;
+        }
+        try {
+            return Integer.valueOf(rawSla);
+        } catch (NumberFormatException exception) {
+            throw new AlfrescoRuntimeException("Can't transform '" + rawSla + "' to the number", exception);
+        }
+    }
 
     /**
      * @param taskRef reference to task node
