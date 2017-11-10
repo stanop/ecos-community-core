@@ -61,7 +61,7 @@ public class HistoryService {
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     private static final String MODIFIER_PROPERTY = "modifier";
     private static final String VERSION_LABEL_PROPERTY = "versionLabel";
-    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "new-default-sla-duration";
+    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "actual-default-sla-duration";
 
     private static final String HISTORY_EVENT_ID = "historyEventId";
     private static final String DOCUMENT_ID = "documentId";
