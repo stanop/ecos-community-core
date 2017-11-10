@@ -1,5 +1,9 @@
 <#assign params = viewScope.region.params!{} />
 
+<#if params.columns??>
+    <#assign columns = params.columns?replace("\\s+", "", "rm")>
+</#if>
+
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
         * columns     - attributes name on string ("cm:name,tk:type") [optional]
@@ -27,8 +31,8 @@
             <th data-bind="text: displayName"></th>
             <!-- /ko -->
             <!-- /ko -->
-        <#elseif params.columns??>
-            <!-- ko foreach: "${params.columns}".split(",") -->
+        <#elseif columns??>
+            <!-- ko foreach: "${columns}".split(",") -->
             <!-- ko if: $parent.attribute($data) -->
             <th data-bind="text: $parent.attribute($data).title"></th>
             <!-- /ko -->
@@ -81,8 +85,8 @@
             <!-- /ko -->
             <!-- /ko -->
             <!-- /ko -->
-        <#elseif params.columns??>
-            <#list params.columns?split(",") as column>
+        <#elseif columns??>
+            <#list columns?split(",") as column>
                 <!-- ko with: attribute("${column}") -->
                 <#if has_column_formatter(column) >
                     <td data-bind="html: ko.computed(function() {
