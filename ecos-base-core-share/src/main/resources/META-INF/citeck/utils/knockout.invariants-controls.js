@@ -2496,6 +2496,9 @@ ko.bindingHandlers.fileUploadControl = {
                     // enable button
                     $(element).removeClass("loading");
                     $(openFileUploadDialogButton).removeAttr("disabled");
+
+                    //for reload file
+                    $(input).val("");
                 }
             });
 
@@ -2544,13 +2547,14 @@ ko.bindingHandlers.fileUploadControl = {
                             }
 
                             if (target.status == 500) {
-                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: result.message });
+                                var errorMessage = result.message ? result.message : Alfresco.util.message("message.load-failed");
+                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: errorMessage });
                             }
 
                             loadedFiles(loadedFiles() + 1);
                         }
                     }, false)
-                })(files[i])
+                })(files[i]);
 
                 var formData = new FormData;
                 formData.append("filedata", files[i]);
