@@ -2,7 +2,7 @@
 
 (function () {
 
-    var refreshArgKeys = ['nodeRef', 'htmlid', 'type', 'viewId', 'mode'];
+    var refreshArgKeys = ['nodeRef', 'htmlid', 'type', 'viewId', 'mode', 'nodeRefAttr', 'style'];
     var refreshArgs = {};
 
     for (var i in refreshArgKeys) {
