@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Convert Amount In Words class, essential for convert amount to amount in words.
+ * Convert Amount In Words class, essential for convert numeric amount to amount in words.
  * <p>
  * The need to add this class occurred during the creation of templates for payments and closing documents
  *
  * @author Roman.Makarskiy on 10.07.2016.
+ * @author Oleg.Onischuk on 11.11.2017. Ukrainian language realization, possibility to set specific language.
  */
 public abstract class AmountInWordConverter {
 
-    private final ConverterResources resources = new ConverterResources();
+    protected final ConverterResources resources = new ConverterResources();
 
     /**
-     * Return a amount in words
+     * Convert an amount to words using language from current locale
      *
      * @param amount   - amount to convert
      * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
@@ -52,7 +53,7 @@ public abstract class AmountInWordConverter {
         return form5;
     }
 
-    private String processConvert(double amount) {
+    protected String processConvert(double amount) {
 
         BigDecimal BigDecimalAmount = new BigDecimal(amount);
         BigDecimalAmount = BigDecimalAmount.setScale(2, BigDecimal.ROUND_HALF_DOWN);

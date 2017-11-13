@@ -3,23 +3,23 @@ package ru.citeck.ecos.utils.converter.amount;
 import java.util.Locale;
 
 /**
- * Russian realization of converter
+ * Ukrainian realization of converter
  *
- * @author Roman.Makarskiy on 10.07.2016.
+ * @author Oleg.Onischuk on 11.11.2017.
  */
-class AmountInWordRuConverter extends AmountInWordConverter {
+class AmountInWordUkConverter extends AmountInWordConverter {
 
-    private final Locale locale = new Locale("ru", "");
+    private final Locale locale = new Locale("uk", "");
 
-    private static final String ONE_HRYVNIA = "один гривна";
-    private static final String FEMININE_ONE_HRYVNIA = "одна гривна";
-    private static final String TWO_HRYVNIA = "два гривны";
-    private static final String FEMININE_TWO_HRYVNIA = "две гривны";
+    private static final String ONE_HRYVNIA = "один гривня";
+    private static final String FEMININE_ONE_HRYVNIA = "одна гривня";
+    private static final String TWO_HRYVNIA = "два гривні";
+    private static final String FEMININE_TWO_HRYVNIA = "дві гривні";
 
-    private static final String ONE_YEN = "один японская иена";
-    private static final String FEMININE_ONE_YEN = "одна японская иена";
-    private static final String TWO_YEN = "два японских иены";
-    private static final String FEMININE_TWO_YEN = "две японских иены";
+    private static final String ONE_YEN = "один японська єна";
+    private static final String FEMININE_ONE_YEN = "одна японська єна";
+    private static final String TWO_YEN = "два японських єни";
+    private static final String FEMININE_TWO_YEN = "дві японських єни";
 
     @Override
     public String convert(double amount, String currencyCode) {
