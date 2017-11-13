@@ -7,9 +7,6 @@ import java.util.Locale;
  */
 class CurrencyUsd extends Currency{
 
-//    public CurrencyUsd (){
-//        super();
-//    }
     CurrencyUsd (Locale locale){
         super(locale);
     }

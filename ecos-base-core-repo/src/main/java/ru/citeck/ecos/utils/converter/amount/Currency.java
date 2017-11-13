@@ -13,11 +13,6 @@ import java.util.Locale;
     private String fractional1, fractional2, fractional3;
     private String intact1, intact2, intact3;
 
-//    public Currency () {
-//        this.locale = I18NUtil.getLocale();
-//        initializationResources();
-//    }
-
     public Currency (Locale locale) {
         this.locale = locale;
         initializationResources();
