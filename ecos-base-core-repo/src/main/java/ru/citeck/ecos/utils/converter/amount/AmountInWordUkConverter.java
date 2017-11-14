@@ -7,7 +7,7 @@ import java.util.Locale;
  *
  * @author Oleg.Onischuk on 11.11.2017.
  */
-class AmountInWordUkConverter extends AmountInWordRuConverter {
+class AmountInWordUkConverter extends AmountInWordConverterFixedFemininely {
 
     AmountInWordUkConverter() {
         locale = new Locale("uk", "");
