@@ -2,10 +2,14 @@ package ru.citeck.ecos.utils.converter.amount;
 
 import org.springframework.extensions.surf.util.I18NUtil;
 
+import java.util.Locale;
+
 /**
  * @author Roman.Makarskiy on 10.07.2016.
  */
 class ConverterResources {
+
+    private Locale locale;
 
     String[][] ONE = {};
     String[] THOUSAND = {};
@@ -77,92 +81,96 @@ class ConverterResources {
     private static final String TRILLION_DECLENSION_2 = "amount-in-word-converter.trillion.2";
     private static final String TRILLION_DECLENSION_3 = "amount-in-word-converter.trillion.3";
 
-    void initializationResources(Currency currency) {
+    void initializationResources(Currency currency, Locale locale) {
+
+        this.locale = locale;
 
         DECLINATION = new String[][]{
                 {currency.getFractional1(), currency.getFractional2(), currency.getFractional3(), "1"},
                 {currency.getIntact1(), currency.getIntact2(), currency.getIntact3(), "0"},
                 {
-                        I18NUtil.getMessage(THOUSAND_DECLENSION_1),
-                        I18NUtil.getMessage(THOUSAND_DECLENSION_2),
-                        I18NUtil.getMessage(THOUSAND_DECLENSION_3), "1"
+                        getMessage(THOUSAND_DECLENSION_1),
+                        getMessage(THOUSAND_DECLENSION_2),
+                        getMessage(THOUSAND_DECLENSION_3), "1"
                 },
                 {
-                        I18NUtil.getMessage(MILLION_DECLENSION_1),
-                        I18NUtil.getMessage(MILLION_DECLENSION_2),
-                        I18NUtil.getMessage(MILLION_DECLENSION_3), "0"
+                        getMessage(MILLION_DECLENSION_1),
+                        getMessage(MILLION_DECLENSION_2),
+                        getMessage(MILLION_DECLENSION_3), "0"
                 },
                 {
-                        I18NUtil.getMessage(BILLION_DECLENSION_1),
-                        I18NUtil.getMessage(BILLION_DECLENSION_2),
-                        I18NUtil.getMessage(BILLION_DECLENSION_3), "0"
+                        getMessage(BILLION_DECLENSION_1),
+                        getMessage(BILLION_DECLENSION_2),
+                        getMessage(BILLION_DECLENSION_3), "0"
                 },
                 {
-                        I18NUtil.getMessage(TRILLION_DECLENSION_1),
-                        I18NUtil.getMessage(TRILLION_DECLENSION_2),
-                        I18NUtil.getMessage(TRILLION_DECLENSION_3), "0"
+                        getMessage(TRILLION_DECLENSION_1),
+                        getMessage(TRILLION_DECLENSION_2),
+                        getMessage(TRILLION_DECLENSION_3), "0"
                 },
         };
 
         ONE = new String[][]{
-                {"", I18NUtil.getMessage(NUMERAL_ONE),
-                        I18NUtil.getMessage(NUMERAL_TWO),
-                        I18NUtil.getMessage(NUMERAL_THREE),
-                        I18NUtil.getMessage(NUMERAL_FOUR),
-                        I18NUtil.getMessage(NUMERAL_FIVE),
-                        I18NUtil.getMessage(NUMERAL_SIX),
-                        I18NUtil.getMessage(NUMERAL_SEVEN),
-                        I18NUtil.getMessage(NUMERAL_EIGHT),
-                        I18NUtil.getMessage(NUMERAL_NINE)
+                {"", getMessage(NUMERAL_ONE),
+                        getMessage(NUMERAL_TWO),
+                        getMessage(NUMERAL_THREE),
+                        getMessage(NUMERAL_FOUR),
+                        getMessage(NUMERAL_FIVE),
+                        getMessage(NUMERAL_SIX),
+                        getMessage(NUMERAL_SEVEN),
+                        getMessage(NUMERAL_EIGHT),
+                        getMessage(NUMERAL_NINE)
                 },
-                {"", I18NUtil.getMessage(NUMERAL_DECLENSION_ONE),
-                        I18NUtil.getMessage(NUMERAL_DECLENSION_TWO),
-                        I18NUtil.getMessage(NUMERAL_THREE),
-                        I18NUtil.getMessage(NUMERAL_FOUR),
-                        I18NUtil.getMessage(NUMERAL_FIVE),
-                        I18NUtil.getMessage(NUMERAL_SIX),
-                        I18NUtil.getMessage(NUMERAL_SEVEN),
-                        I18NUtil.getMessage(NUMERAL_EIGHT),
-                        I18NUtil.getMessage(NUMERAL_NINE)
+                {"", getMessage(NUMERAL_DECLENSION_ONE),
+                        getMessage(NUMERAL_DECLENSION_TWO),
+                        getMessage(NUMERAL_THREE),
+                        getMessage(NUMERAL_FOUR),
+                        getMessage(NUMERAL_FIVE),
+                        getMessage(NUMERAL_SIX),
+                        getMessage(NUMERAL_SEVEN),
+                        getMessage(NUMERAL_EIGHT),
+                        getMessage(NUMERAL_NINE)
                 }
         };
         THOUSAND = new String[]{"",
-                I18NUtil.getMessage(ONE_HUNDRED),
-                I18NUtil.getMessage(TWO_HUNDRED),
-                I18NUtil.getMessage(THREE_HUNDRED),
-                I18NUtil.getMessage(FOUR_HUNDRED),
-                I18NUtil.getMessage(FIVE_HUNDRED),
-                I18NUtil.getMessage(SIX_HUNDRED),
-                I18NUtil.getMessage(SEVEN_HUNDRED),
-                I18NUtil.getMessage(EIGHT_HUNDRED),
-                I18NUtil.getMessage(NINE_HUNDRED)
+                getMessage(ONE_HUNDRED),
+                getMessage(TWO_HUNDRED),
+                getMessage(THREE_HUNDRED),
+                getMessage(FOUR_HUNDRED),
+                getMessage(FIVE_HUNDRED),
+                getMessage(SIX_HUNDRED),
+                getMessage(SEVEN_HUNDRED),
+                getMessage(EIGHT_HUNDRED),
+                getMessage(NINE_HUNDRED)
         };
         TEN = new String[]{"",
-                I18NUtil.getMessage(TEN_TEN),
-                I18NUtil.getMessage(TEN_ELEVEN),
-                I18NUtil.getMessage(TEN_TWELVE),
-                I18NUtil.getMessage(TEN_THIRTEEN),
-                I18NUtil.getMessage(TEN_FOURTEEN),
-                I18NUtil.getMessage(TEN_FIFTEEN),
-                I18NUtil.getMessage(TEN_SIXTEEN),
-                I18NUtil.getMessage(TEN_SEVENTEEN),
-                I18NUtil.getMessage(TEN_EIGHTEEN),
-                I18NUtil.getMessage(TEN_NINETEEN),
-                I18NUtil.getMessage(TEN_TWENTY)};
+                getMessage(TEN_TEN),
+                getMessage(TEN_ELEVEN),
+                getMessage(TEN_TWELVE),
+                getMessage(TEN_THIRTEEN),
+                getMessage(TEN_FOURTEEN),
+                getMessage(TEN_FIFTEEN),
+                getMessage(TEN_SIXTEEN),
+                getMessage(TEN_SEVENTEEN),
+                getMessage(TEN_EIGHTEEN),
+                getMessage(TEN_NINETEEN),
+                getMessage(TEN_TWENTY)};
         DECADE = new String[]{"",
-                I18NUtil.getMessage(DECADE_TEN),
-                I18NUtil.getMessage(DECADE_TWENTY),
-                I18NUtil.getMessage(DECADE_THIRTY),
-                I18NUtil.getMessage(DECADE_FORTY),
-                I18NUtil.getMessage(DECADE_FIFTY),
-                I18NUtil.getMessage(DECADE_SIXTY),
-                I18NUtil.getMessage(DECADE_SEVENTY),
-                I18NUtil.getMessage(DECADE_EIGHTY),
-                I18NUtil.getMessage(DECADE_NINETY)};
+                getMessage(DECADE_TEN),
+                getMessage(DECADE_TWENTY),
+                getMessage(DECADE_THIRTY),
+                getMessage(DECADE_FORTY),
+                getMessage(DECADE_FIFTY),
+                getMessage(DECADE_SIXTY),
+                getMessage(DECADE_SEVENTY),
+                getMessage(DECADE_EIGHTY),
+                getMessage(DECADE_NINETY)};
 
+        zero = getMessage(NUMERAL_ZERO);
+    }
 
-
-        zero = I18NUtil.getMessage(NUMERAL_ZERO);
+    private String getMessage(String id) {
+        return I18NUtil.getMessage(id, this.locale);
     }
 
 }
