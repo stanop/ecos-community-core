@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="description"/>
  *     &lt;enumeration value="value-title"/>
  *     &lt;enumeration value="value-description"/>
+ *     &lt;enumeration value="value-order"/>
  *     &lt;enumeration value="datatype"/>
  *     &lt;enumeration value="nodetype"/>
  *     &lt;enumeration value="nonblocking-value"/>
@@ -62,6 +63,8 @@ public enum Feature {
     VALUE_TITLE("value-title"),
     @XmlEnumValue("value-description")
     VALUE_DESCRIPTION("value-description"),
+    @XmlEnumValue("value-order")
+    VALUE_ORDER("value-order"),
     @XmlEnumValue("datatype")
     DATATYPE("datatype"),
     @XmlEnumValue("nodetype")

@@ -1379,6 +1379,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('descriptionEvaluator', featureEvaluator('description', s, '', notNull))
         .method('valueTitleEvaluator', featureEvaluator('value-title', s, '', notNull))
         .method('valueDescriptionEvaluator', featureEvaluator('value-description', s, '', notNull))
+        .method('valueOrderEvaluator', featureEvaluator('value-order', n, 0, notNull))
         .method('relevantEvaluator', featureEvaluator('relevant', b, true, notNull))
         .method('multipleEvaluator', featureEvaluator('multiple', b, false, notNull))
         .method('mandatoryEvaluator', featureEvaluator('mandatory', b, false, notNull))
@@ -1436,7 +1437,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             write: function(value) { this.value(value); }
         })
         .computed('multipleValues', {
-            read: function() { return this.convertValue(this.rawValue(), true); },
+            read: function() {
+                var values = this.convertValue(this.rawValue(), true);
+                return _.sortBy(values, this.getValueOrder, this);
+            },
             write: function(value) { this.value(value); }
         })
         .computed('lastValue', {
@@ -1508,6 +1512,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .computed('valueDescription', function() { return this.getValueDescription(this.singleValue()); })
         .shortcut('value-description', 'valueDescription')
+
+        // value order
+        .method('getValueOrder', function(value) {
+            var model = this.getInvariantsModel(value);
+            return this.valueOrderEvaluator(model).value;
+        })
 
         // persisted value loading
         .load(['persisted', 'persistedValue'], function(attr) {
