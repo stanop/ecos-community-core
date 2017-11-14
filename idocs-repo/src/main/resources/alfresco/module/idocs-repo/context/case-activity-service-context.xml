@@ -128,6 +128,11 @@
                         <value>wfrg:autoNumberTemplate</value>
                     </list>
                 </entry>
+                <entry key="activiti$simple-payment">
+                    <list>
+                        <value>wfsp:extendDate</value>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>
