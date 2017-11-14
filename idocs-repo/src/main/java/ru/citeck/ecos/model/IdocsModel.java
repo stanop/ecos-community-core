@@ -96,6 +96,22 @@ public final class IdocsModel {
     public static final String CONSTR_REPEAL_BY_COUNTERPARTY_REQUESTED = "REPEAL_BY_COUNTERPARTY_REQUESTED";
     public static final String CONSTR_REPEALED_BY_COUNTERPARTY = "REPEALED_BY_COUNTERPARTY";
     public static final String CONSTR_CLARIFICATION_REQUESTED = "CLARIFICATION_REQUESTED";
+    public static final String CONSTR_SIGN_REQUIRED = "SIGN_REQUIRED";
+    public static final String CONSTR_RECEIVED = "RECEIVED";
+    public static final String CONSTR_SIGNED = "SIGNED";
+    public static final String CONSTR_COUNTERPARTY_SIGNED = "COUNTERPARTY_SIGNED";
+    public static final String CONSTR_COUNTERPARTY_SIGN_REQUESTED = "COUNTERPARTY_SIGN_REQUESTED";
+    public static final String DELIVERY_FAILED = "DELIVERY_FAILED";
+    public static final String REQUESTS_MY_REVOCATION = "REQUESTS_MY_REVOCATION";
+    public static final String REVOCATION_IS_REQUESTED_BY_ME = "REVOCATION_IS_REQUESTED_BY_ME";
+    public static final String REVOCATION_ACCEPTED = "REVOCATION_ACCEPTED";
+    public static final String REVOCATION_REJECTED = "REVOCATION_REJECTED";
+    public static final String REJECTION_SENT = "REJECTION_SENT";
+    public static final String REJECTED = "REJECTED";
+    public static final String REVISIONED = "REVISIONED";
+    public static final String CORRECTED = "CORRECTED";
+    public static final String REVISION_CORRECTED = "REVISION_CORRECTED";
+
 
     public static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
 
