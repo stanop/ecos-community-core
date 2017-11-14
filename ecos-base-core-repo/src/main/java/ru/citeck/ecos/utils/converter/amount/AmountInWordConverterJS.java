@@ -4,54 +4,39 @@ import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.springframework.extensions.surf.util.I18NUtil;
 
 /**
- * JavaScript interface of {@link AmountInWordConverter} for testing purpose.
+ * JavaScript implementation of {@link AmountInWordConverter}.
  */
 public class AmountInWordConverterJS extends BaseScopableProcessorExtension {
-    private final AmountInWordConverter aiwConverterEn = new AmountInWordConverterFactory().getConverter("en");
-    private final AmountInWordConverter aiwConverterRu = new AmountInWordConverterFactory().getConverter("ru");
-    private final AmountInWordConverter aiwConverterUk = new AmountInWordConverterFactory().getConverter("uk");
-
+    //private AmountInWordConverter aiwConverter = new AmountInWordConverterFactory().getConverter(I18NUtil.getLocale().getLanguage());
 
     /**
-     * Convert an amount to words using language from current locale
+     * Convert an amount to words.
+     * Using language from current locale by default
+     * or En if current locale is not supported by converter.
      * @param amount   - amount to convert
      * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
+     *                     using USD if currency is not supported by converter.
+     *                     Supported currency codes: USD, RUB, RUR, EUR, BYR, GBP, GPY, UAH
      * @return amount in words
      */
     public String convert(double amount, String currencyCode){
-        String lang = I18NUtil.getLocale().getLanguage();
-        return convert(amount, currencyCode, lang);
+        AmountInWordConverter aiwConverter = new AmountInWordConverterFactory().getConverter(I18NUtil.getLocale().getLanguage());
+        return aiwConverter.convert(amount, currencyCode);
     }
 
     /**
+     * Convert an amount to words.
      * @param amount   - amount to convert
      * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
      * @param language - language param "en", "ru", "uk".
-     *                 ISO 639 alpha-2 code for supported languages (English, Russian, Ukrainian)
+     *                 ISO 639 alpha-2 code for supported languages
+     *                 (English, Russian, Ukrainian)
      * @return amount in words
      */
-    public String convert(double amount, String currencyCode, String language) {
-        switch (language) {
-            case "en":
-                return convertEn(amount, currencyCode);
-            case "ru":
-                return convertRu(amount, currencyCode);
-            case "uk":
-                return convertUk(amount, currencyCode);
-            default:
-                return convertEn(amount, currencyCode);
-        }
+    public String convert(double amount, String currencyCode, String language){
+        AmountInWordConverter converter = new AmountInWordConverterFactory().getConverter(language);
+        return converter.convert(amount, currencyCode);
     }
 
-    public String convertEn(double amount, String currencyCode) {
-        return aiwConverterEn.convert(amount, currencyCode);
-    }
 
-    public String convertRu(double amount, String currencyCode) {
-        return aiwConverterRu.convert(amount, currencyCode);
-    }
-
-    public String convertUk(double amount, String currencyCode) {
-        return aiwConverterUk.convert(amount, currencyCode);
-    }
 }

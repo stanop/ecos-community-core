@@ -3,6 +3,7 @@ package ru.citeck.ecos.utils.converter.amount;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Convert Amount In Words class, essential for convert numeric amount to amount in words.
@@ -16,15 +17,20 @@ public abstract class AmountInWordConverter {
 
     protected final ConverterResources resources = new ConverterResources();
 
+    protected Locale locale;
+
     /**
      * Convert an amount to words using language from current locale
      *
      * @param amount   - amount to convert
      * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
+     *                     using USD if currency is not supported by converter.
+     *                     Supported currency codes: USD, RUB, RUR, EUR, BYR, GBP, GPY, UAH
      * @return amount in words
      */
     public String convert(double amount, String currencyCode) {
-        resources.initializationResources(new CurrencyFactory().getCurrency(currencyCode));
+        Currency currency = new CurrencyFactory().getCurrency(currencyCode, locale);
+        resources.initializationResources(currency, locale);
         return processConvert(amount);
     }
 

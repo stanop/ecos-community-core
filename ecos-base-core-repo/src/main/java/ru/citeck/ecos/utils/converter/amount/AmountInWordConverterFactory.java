@@ -8,16 +8,19 @@ import java.util.Locale;
 
 /**
  * @author Roman.Makarskiy on 10.07.2016.
- * @author Added the ability to set specific language by Oleg.Onischuk on 11.11.2017
+ * @author Oleg.Onischuk on 11.11.2017. Added the ability to set specific language.
  */
 public class AmountInWordConverterFactory {
 
     private static Log logger = LogFactory.getLog(AmountInWordConverter.class);
 
     /**
-     * @return language specific (Ru or En) AmountInWordConverter according to current locale
+     * Return language specific (Ru, En or Uk) AmountInWordConverter
+     * according to current locale or En version of converter if locale is not supported.
+     * @return AmountInWordConverter
      * @see AmountInWordRuConverter
      * @see AmountInWordEnConverter
+     * @see AmountInWordUkConverter
      */
     public AmountInWordConverter getConverter() {
         Locale ruLocale = new Locale("ru", "");
@@ -25,7 +28,9 @@ public class AmountInWordConverterFactory {
 
         if (locale.equals(ruLocale)) {
             return new AmountInWordRuConverter();
-        } else if (locale.equals(Locale.ENGLISH) || locale.equals(Locale.US)) {
+        } else if (locale.getLanguage().equals("uk")){
+            return new AmountInWordUkConverter();
+        }else if (locale.equals(Locale.ENGLISH) || locale.equals(Locale.US)) {
             return new AmountInWordEnConverter();
         }
         logger.warn("Converter with locale: <" + locale + "> not found.");
@@ -35,7 +40,7 @@ public class AmountInWordConverterFactory {
     /**
      * @param language - language param "en", "ru", "uk".
      *                 ISO 639 alpha-2 code for supported languages (English, Russian, Ukrainian)
-     * @return language specific AmountInWordConverter (En, Ru or Uk) according to language param
+     * @return language specific AmountInWordConverter according to language param
      * @see AmountInWordEnConverter
      * @see AmountInWordRuConverter
      * @see AmountInWordUkConverter

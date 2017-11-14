@@ -9,10 +9,12 @@ import java.util.Locale;
  */
  class AmountInWordEnConverter extends AmountInWordConverter {
 
-    private final Locale locale = new Locale("en", "");
-
     private static final String EN_DECADE_HYPHEN = "-";
     private static final String INDENT =" ";
+
+    public AmountInWordEnConverter(){
+        locale = new Locale("en", "");
+    }
 
     @Override
     String getDecade(int position) {
@@ -22,9 +24,7 @@ import java.util.Locale;
 
     @Override
     public String convert(double amount, String currencyCode) {
-        Currency currency = new CurrencyFactory().getCurrency(currencyCode, locale);
-        resources.initializationResources(currency, locale);
-        String result = processConvert(amount);
+        String result = super.convert(amount, currencyCode);
         return result.replace("- ", INDENT);
     }
 }

@@ -9,8 +9,6 @@ import java.util.Locale;
  */
 class AmountInWordUkConverter extends AmountInWordConverter {
 
-    private final Locale locale = new Locale("uk", "");
-
     private static final String ONE_HRYVNIA = "один гривня";
     private static final String FEMININE_ONE_HRYVNIA = "одна гривня";
     private static final String TWO_HRYVNIA = "два гривні";
@@ -21,11 +19,13 @@ class AmountInWordUkConverter extends AmountInWordConverter {
     private static final String TWO_YEN = "два японських єни";
     private static final String FEMININE_TWO_YEN = "дві японських єни";
 
+    public AmountInWordUkConverter(){
+        locale = new Locale("uk", "");
+    }
+
     @Override
     public String convert(double amount, String currencyCode) {
-        Currency currency = new CurrencyFactory().getCurrency(currencyCode, locale);
-        resources.initializationResources(currency, locale);
-        String result = getFixedFeminineOfCurrency(processConvert(amount));
+        String result = getFixedFeminineOfCurrency(super.convert(amount, currencyCode));
         result = result.substring(0, 1).toUpperCase() + result.substring(1);
         return result;
     }
