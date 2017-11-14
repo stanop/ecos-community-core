@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -86,7 +83,18 @@ public class MailAttachActionExecutor extends MailActionExecuter
 						logger.debug("attachment1 "+attachment1);
 						String name1 = (String)attachment1.get("name");
 						logger.debug("name1 "+name1);
-						final byte[] attachmentContent = (byte[])attachment1.get("attachmentContent");
+						final Object attachmentContentObject = attachment1.get("attachmentContent");
+						byte[] attachmentContent;
+						if (attachmentContentObject instanceof List) {
+							attachmentContent = new byte[((List)attachmentContentObject).size()];
+							for (int i = 0; i < ((List)attachmentContentObject).size(); i++) {
+								byte b = (byte)((List)attachmentContentObject).get(i);
+								attachmentContent[i] = b;
+							}
+						} else {
+							attachmentContent = (byte[])attachmentContentObject;
+						}
+						//final byte[] attachmentContent = (byte[])attachment1.get("attachmentContent");
 						logger.debug("attachmentContent "+attachmentContent.length);
 
 						InputStreamSource inputStreamSource = new InputStreamSource() {
@@ -107,5 +115,10 @@ public class MailAttachActionExecutor extends MailActionExecuter
 		
 
 		return helper;
+	}
+
+	@Override
+	public void init() {
+		//do nothing: not to send test message
 	}
 }

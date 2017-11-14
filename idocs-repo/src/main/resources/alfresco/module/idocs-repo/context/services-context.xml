@@ -504,7 +504,59 @@
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 
-	<bean id="mailWithAttachments" class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="mail"/>
+	<bean id="mailWithAttachments" class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="action-executer">
+		<property name="preferenceService">
+			<ref bean="preferenceService"/>
+		</property>
+		<property name="tenantService">
+			<ref bean="tenantService"/>
+		</property>
+        <property name="mailService">
+            <ref bean="mailService"></ref>
+        </property>
+        <property name="nodeService">
+            <ref bean="nodeService"></ref>
+        </property>
+		<property name="templateService">
+			<ref bean="templateService"></ref>
+		</property>
+        <property name="personService">
+            <ref bean="personService"></ref>
+        </property>
+        <property name="authenticationService">
+            <ref bean="authenticationService"></ref>
+        </property>
+        <property name="authorityService">
+            <ref bean="authorityService"></ref>
+        </property>
+        <property name="serviceRegistry">
+            <ref bean="ServiceRegistry"></ref>
+        </property>
+        <property name="headerEncoding">
+            <value>${mail.header}</value>
+        </property>
+        <property name="fromAddress">
+            <value>${mail.from.default}</value>
+        </property>
+        <property name="fromEnabled">
+            <value>${mail.from.enabled}</value>
+        </property>
+        <property name="sysAdminParams">
+            <ref bean="sysAdminParams"></ref>
+        </property>
+        <property name="sendTestMessage">
+            <value>${mail.testmessage.send}</value>
+        </property>
+        <property name="testMessageTo">
+            <value>${mail.testmessage.to}</value>
+        </property>
+        <property name="testMessageSubject">
+            <value>${mail.testmessage.subject}</value>
+        </property>
+        <property name="testMessageText">
+            <value>${mail.testmessage.text}</value>
+        </property>
+	</bean>
 
 	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
 		<property name="searchService" ref="searchService" />
