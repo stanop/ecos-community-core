@@ -9,7 +9,7 @@ import java.util.Locale;
  */
 class AmountInWordUkConverter extends AmountInWordRuConverter {
 
-    public AmountInWordUkConverter(){
+    AmountInWordUkConverter() {
         locale = new Locale("uk", "");
 
         one_hryvnia = "один гривня";

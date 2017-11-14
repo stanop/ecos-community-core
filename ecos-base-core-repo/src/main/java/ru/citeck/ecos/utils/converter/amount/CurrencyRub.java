@@ -7,7 +7,7 @@ import java.util.Locale;
  */
 class CurrencyRub extends Currency {
 
-    public CurrencyRub (Locale locale){
+    public CurrencyRub(Locale locale) {
         super(locale);
     }
 

@@ -7,7 +7,7 @@ import java.util.Locale;
  */
 class CurrencyJpy extends Currency {
 
-    CurrencyJpy (Locale locale){
+    CurrencyJpy(Locale locale) {
         super(locale);
     }
 

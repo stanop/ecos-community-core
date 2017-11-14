@@ -2,7 +2,6 @@ package ru.citeck.ecos.utils.converter.amount;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.extensions.surf.util.I18NUtil;
 
 import java.util.Locale;
 
@@ -10,10 +9,6 @@ import java.util.Locale;
  * @author Roman.Makarskiy on 10.07.2016.
  */
 class CurrencyFactory {
-
-    Currency getCurrency(String currencyCode) {
-        return getCurrency(currencyCode, I18NUtil.getLocale());
-    }
 
     Currency getCurrency(String currencyCode, Locale locale) {
         Log logger = LogFactory.getLog(CurrencyFactory.class);

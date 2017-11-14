@@ -7,12 +7,12 @@ import java.util.Locale;
  *
  * @author Roman.Makarskiy on 10.07.2016.
  */
- class AmountInWordEnConverter extends AmountInWordConverter {
+class AmountInWordEnConverter extends AmountInWordConverter {
 
     private static final String EN_DECADE_HYPHEN = "-";
-    private static final String INDENT =" ";
+    private static final String INDENT = " ";
 
-    public AmountInWordEnConverter(){
+    AmountInWordEnConverter() {
         locale = new Locale("en", "");
     }
 

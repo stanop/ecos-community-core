@@ -7,22 +7,23 @@ import java.util.Locale;
 
 /**
  * Convert Amount In Words class, essential for convert numeric amount to amount in words.
- * <p>
- * The need to add this class occurred during the creation of templates for payments and closing documents
+ * The maximum degree of the number - is trillions.
  *
  * @author Roman.Makarskiy on 10.07.2016.
  * @author Oleg.Onischuk on 11.11.2017. Ukrainian language realization, possibility to set specific language.
  */
 public abstract class AmountInWordConverter {
 
-    protected final ConverterResources resources = new ConverterResources();
+    private static final int MAX_SEGMENTS_COUNT = 5;
 
-    protected Locale locale;
+    private final ConverterResources resources = new ConverterResources();
+
+    Locale locale;
 
     /**
      * Convert an amount to words using language from current locale
      *
-     * @param amount   - amount to convert
+     * @param amount       - amount to convert
      * @param currencyCode - code of currency in ISO 4217 alpha 3 standard.
      *                     using USD if currency is not supported by converter.
      *                     Supported currency codes: USD, RUB, RUR, EUR, BYR, GBP, GPY, UAH
@@ -38,15 +39,15 @@ public abstract class AmountInWordConverter {
         return resources.DECADE[position] + resources.INDENT;
     }
 
-    String getOne(int kind, int position) {
+    private String getOne(int kind, int position) {
         return resources.ONE[kind][position] + resources.INDENT;
     }
 
-    String getThousand(int position) {
+    private String getThousand(int position) {
         return resources.THOUSAND[position] + resources.INDENT;
     }
 
-    String getTen(int position) {
+    private String getTen(int position) {
         return resources.TEN[position] + resources.INDENT;
     }
 
@@ -59,7 +60,7 @@ public abstract class AmountInWordConverter {
         return form5;
     }
 
-    protected String processConvert(double amount) {
+    private String processConvert(double amount) {
 
         BigDecimal BigDecimalAmount = new BigDecimal(amount);
         BigDecimalAmount = BigDecimalAmount.setScale(2, BigDecimal.ROUND_HALF_DOWN);
@@ -88,13 +89,21 @@ public abstract class AmountInWordConverter {
         segments.add(totalSegment);
         Collections.reverse(segments);
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (total == 0) {
-            result = resources.zero + resources.INDENT + getDeclination(0, resources.DECLINATION[1][0], resources.DECLINATION[1][1], resources.DECLINATION[1][2]);
-            return result + resources.INDENT + fraction + resources.INDENT + getDeclination(fraction, resources.DECLINATION[0][0], resources.DECLINATION[0][1], resources.DECLINATION[0][2]);
+            result = new StringBuilder(resources.zero + resources.INDENT + getDeclination(0, resources.DECLINATION[1][0],
+                    resources.DECLINATION[1][1], resources.DECLINATION[1][2]));
+            return result + resources.INDENT + fraction + resources.INDENT + getDeclination(fraction,
+                    resources.DECLINATION[0][0], resources.DECLINATION[0][1], resources.DECLINATION[0][2]);
         }
 
         int amt = segments.size();
+
+        if (amt > MAX_SEGMENTS_COUNT) {
+            throw new IllegalArgumentException("Amount (" + amount + ") to convert is too large. " +
+                    "The maximum degree of the number - is trillions.");
+        }
+
         for (Long segment : segments) {
             int kind = Integer.valueOf(resources.DECLINATION[amt][3]);
             int currentSegment = Integer.valueOf(segment.toString());
@@ -112,23 +121,26 @@ public abstract class AmountInWordConverter {
             int number3 = Integer.valueOf(stringNumber.substring(2, 3));
             int number23 = Integer.valueOf(stringNumber.substring(1, 3));
 
-            if (currentSegment > 99) result += getThousand(number1) + resources.INDENT;
+            if (currentSegment > 99) result.append(getThousand(number1)).append(resources.INDENT);
             if (number23 > 20) {
-                result += getDecade(number2);
-                result += getOne(kind, number3);
+                result.append(getDecade(number2));
+                result.append(getOne(kind, number3));
             } else {
-                if (number23 > 9) result += getTen(number23 - 9);
-                else result += getOne(kind, number3);
+                if (number23 > 9) result.append(getTen(number23 - 9));
+                else result.append(getOne(kind, number3));
             }
 
-            result += getDeclination(currentSegment, resources.DECLINATION[amt][0], resources.DECLINATION[amt][1], resources.DECLINATION[amt][2]) + resources.INDENT;
+            result.append(getDeclination(currentSegment, resources.DECLINATION[amt][0], resources.DECLINATION[amt][1],
+                    resources.DECLINATION[amt][2])).append(resources.INDENT);
             amt--;
         }
-        result = result + "" + fractions + resources.INDENT + getDeclination(fraction, resources.DECLINATION[0][0], resources.DECLINATION[0][1], resources.DECLINATION[0][2]);
-        result = result.replaceAll(" {2,}", resources.INDENT);
-        result = result.substring(0, 1).toUpperCase() + result.substring(1);
+        result.append("").append(fractions).append(resources.INDENT).append(getDeclination(fraction,
+                resources.DECLINATION[0][0],
+                resources.DECLINATION[0][1], resources.DECLINATION[0][2]));
+        result = new StringBuilder(result.toString().replaceAll(" {2,}", resources.INDENT));
+        result = new StringBuilder(result.substring(0, 1).toUpperCase() + result.substring(1));
 
-        return result;
+        return result.toString();
     }
 
     @Override

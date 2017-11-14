@@ -12,11 +12,12 @@ import java.util.Locale;
  */
 public class AmountInWordConverterFactory {
 
-    private static Log logger = LogFactory.getLog(AmountInWordConverter.class);
+    private static final Log logger = LogFactory.getLog(AmountInWordConverter.class);
 
     /**
      * Return language specific (Ru, En or Uk) AmountInWordConverter
      * according to current locale or En version of converter if locale is not supported.
+     *
      * @return AmountInWordConverter
      * @see AmountInWordRuConverter
      * @see AmountInWordEnConverter
@@ -28,11 +29,12 @@ public class AmountInWordConverterFactory {
 
         if (locale.equals(ruLocale)) {
             return new AmountInWordRuConverter();
-        } else if (locale.getLanguage().equals("uk")){
+        } else if (locale.getLanguage().equals("uk")) {
             return new AmountInWordUkConverter();
-        }else if (locale.equals(Locale.ENGLISH) || locale.equals(Locale.US)) {
+        } else if (locale.equals(Locale.ENGLISH) || locale.equals(Locale.US)) {
             return new AmountInWordEnConverter();
         }
+
         logger.warn("Converter with locale: <" + locale + "> not found.");
         return getDefaultConverter();
     }
@@ -59,7 +61,7 @@ public class AmountInWordConverterFactory {
         }
     }
 
-    private AmountInWordConverter getDefaultConverter(){
+    private AmountInWordConverter getDefaultConverter() {
         AmountInWordConverter defaultConverter = new AmountInWordEnConverter();
         logger.warn("Using default converter: " + defaultConverter);
         return defaultConverter;

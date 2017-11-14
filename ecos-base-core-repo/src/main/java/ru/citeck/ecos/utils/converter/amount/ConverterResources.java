@@ -8,7 +8,7 @@ import java.util.Locale;
  * @author Roman.Makarskiy on 10.07.2016.
  */
 class ConverterResources {
-    
+
     private Locale locale;
 
     String[][] ONE = {};
@@ -80,10 +80,6 @@ class ConverterResources {
     private static final String TRILLION_DECLENSION_1 = "amount-in-word-converter.trillion.1";
     private static final String TRILLION_DECLENSION_2 = "amount-in-word-converter.trillion.2";
     private static final String TRILLION_DECLENSION_3 = "amount-in-word-converter.trillion.3";
-
-    void initializationResources(Currency currency) {
-        initializationResources(currency, I18NUtil.getLocale());
-    }
 
     void initializationResources(Currency currency, Locale locale) {
 
@@ -170,12 +166,10 @@ class ConverterResources {
                 getMessage(DECADE_EIGHTY),
                 getMessage(DECADE_NINETY)};
 
-
-
         zero = getMessage(NUMERAL_ZERO);
     }
-    
-    private String getMessage(String id){
+
+    private String getMessage(String id) {
         return I18NUtil.getMessage(id, this.locale);
     }
 

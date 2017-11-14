@@ -25,8 +25,9 @@
     </bean>
 
     <!-- JavaScript implementation of AmountInWordConverter - Convert an amount to words. -->
-    <bean id="amountInWordConverter" class="ru.citeck.ecos.utils.converter.amount.AmountInWordConverterJS" parent="baseJavaScriptExtension">
-        <property name="extensionName" value="amountInWordConverter" />
+    <bean id="amountInWordConverter" class="ru.citeck.ecos.utils.converter.amount.AmountInWordConverterJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="amountInWordConverter"/>
     </bean>
 
     <bean id="CiteckUtilsJS" class="ru.citeck.ecos.utils.CiteckUtilsJS" parent="baseJavaScriptExtension">

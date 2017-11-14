@@ -7,18 +7,19 @@ import java.util.Locale;
 /**
  * @author Roman.Makarskiy on 10.07.2016.
  */
- abstract class Currency {
-    protected Locale locale;
+abstract class Currency {
+
+    private Locale locale;
 
     private String fractional1, fractional2, fractional3;
     private String intact1, intact2, intact3;
 
-    public Currency (Locale locale) {
+    Currency(Locale locale) {
         this.locale = locale;
         initializationResources();
     }
 
-    abstract void initializationResources  ();
+    abstract void initializationResources();
 
     String getFractional1() {
         return fractional1;
@@ -68,7 +69,7 @@ import java.util.Locale;
         this.intact3 = intact3;
     }
 
-    protected String getMessage(String id){
+    String getMessage(String id) {
         return I18NUtil.getMessage(id, this.locale);
     }
 }

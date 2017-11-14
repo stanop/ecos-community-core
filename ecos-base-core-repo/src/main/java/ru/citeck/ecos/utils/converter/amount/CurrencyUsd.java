@@ -5,9 +5,9 @@ import java.util.Locale;
 /**
  * @author Roman.Makarskiy on 10.07.2016.
  */
-class CurrencyUsd extends Currency{
+class CurrencyUsd extends Currency {
 
-    CurrencyUsd (Locale locale){
+    CurrencyUsd(Locale locale) {
         super(locale);
     }
 

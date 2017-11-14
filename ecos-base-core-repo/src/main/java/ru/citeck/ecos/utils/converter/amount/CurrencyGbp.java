@@ -7,7 +7,7 @@ import java.util.Locale;
  */
 class CurrencyGbp extends Currency {
 
-    CurrencyGbp (Locale locale){
+    CurrencyGbp(Locale locale) {
         super(locale);
     }
 
