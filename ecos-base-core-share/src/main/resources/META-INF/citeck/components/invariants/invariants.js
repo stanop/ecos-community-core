@@ -854,8 +854,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         return function() {
             var params = this.params();
             if (params[name]) {
+                var context = this['invariantsModel'] ? this['invariantsModel']() : this;
                 try {
-                    return Citeck.utils.eval(this, params[name]);
+                    return Citeck.utils.eval(context, params[name]);
                 } catch (e) { 
                     console.error("featureParameter " + name + " have an error calculating value of evaluatedExpression for AttributeSet.id:" + this.id());
                     console.error(e);
@@ -864,7 +865,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             return defaultValue || null;
         }
-    }
+    };
 
     AttributeSet
         .constructor([ Object, Node], function(data, node) {
@@ -906,6 +907,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_attributes', o)
         .property('_sets', o)
         .property('_rendered', b)
+
+        .computed('invariantsModel', function() {
+
+            var model = {};
+
+            _.each(this.node().impl().defaultModel(), function(property, name) {
+                Object.defineProperty(model, name, _.isFunction(property) ? { get: property } : { value: property });
+            });
+            Object.defineProperty(model, 'node', { value: this.node });
+            Object.defineProperty(model, 'attributeSet', { value: this });
+
+            return model;
+        })
 
         .computed('paramRelevant', featureParameter("relevant"))
         .computed('paramProtected', featureParameter("protected"))
