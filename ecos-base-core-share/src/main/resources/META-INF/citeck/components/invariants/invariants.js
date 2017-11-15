@@ -347,11 +347,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         moment: moment
     };
 
-    function evalJavaScript(expression, model) {
+    function evalJavaScript(expression, model, thisArg) {
         with(rootObjects) {
             with(model) {
                 try {
-                    return eval(expression);
+                    var result = eval(expression);
+                    if (_.isFunction(result)) {
+                        result = result.call(thisArg);
+                    }
+                    return result;
                 } catch(e) {
                     return undefined;
                 }
@@ -852,15 +856,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featureParameter = function(name, defaultValue) {
         return function() {
-            var params = this.params();
-            if (params[name]) {
-                var context = this['invariantsModel'] ? this['invariantsModel']() : this;
-                try {
-                    return Citeck.utils.eval(context, params[name]);
-                } catch (e) { 
-                    console.error("featureParameter " + name + " have an error calculating value of evaluatedExpression for AttributeSet.id:" + this.id());
-                    console.error(e);
+            var expression = this.params()[name];
+            if (expression) {
+                var model = this['invariantsModel'] ? this['invariantsModel']() : {};
+                if (/^\s*function/.test(expression)) {
+                    expression = '(' + expression + ')';
                 }
+                return evalJavaScript(expression, model, this);
             }
 
             return defaultValue || null;
@@ -915,7 +917,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             _.each(this.node().impl().defaultModel(), function(property, name) {
                 Object.defineProperty(model, name, _.isFunction(property) ? { get: property } : { value: property });
             });
-            Object.defineProperty(model, 'node', { value: this.node });
+            Object.defineProperty(model, 'node', { get: this.node });
             Object.defineProperty(model, 'attributeSet', { value: this });
 
             return model;
