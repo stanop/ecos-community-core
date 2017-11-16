@@ -151,4 +151,32 @@
         <field assoc="stages:stopCompletenessLevelsRestriction"/>
     </view>
 
+    <!-- Default task view -->
+    <view class="wfcf:defaultTask">
+        <field prop="cm:title">
+            <region name="input" template="text"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <!-- Mandatory fields -->
+        <field prop="icaseTask:workflowDefinitionName">
+            <invariant on="protected" language="explicit">true</invariant>
+            <invariant on="value" language="javascript">view.params.workflowDefinitionName</invariant>
+        </field>
+        <field prop="wfcp:formKey">
+            <invariant on="protected" language="explicit">true</invariant>
+            <invariant on="value" language="javascript">view.params.workflowFormKey</invariant>
+        </field>
+        <!-- Optional fields -->
+        <field prop="icaseTask:priority">
+            <region name="input" template="select"/>
+        </field>
+        <field prop="activ:expectedPerformTime" />
+        <field prop="wfcp:performOutcomes" />
+        <field prop="wfcp:abortOutcomes" />
+        <field prop="wfcp:outcomesWithMandatoryComment" />
+        <field prop="activ:manualStarted">
+            <invariant on="value" language="explicit">true</invariant>
+        </field>
+    </view>
+
 </views>

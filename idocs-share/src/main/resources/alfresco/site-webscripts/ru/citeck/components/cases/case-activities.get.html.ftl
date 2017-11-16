@@ -44,7 +44,7 @@
 										<ul>
 										<#list submenu.variants as variant>
 											<li class="yuimenuitem">
-												<a class="yuimenuitemlabel" data-bind="click: $data.add.bind($data, '${variant.type}', '${variant.formId!}')">${variant.title}</a>
+												<a class="yuimenuitemlabel" data-bind="click: $data.add.bind($data, '${variant.type}', '${variant.formId!}', ${jsonUtils.toJSONString(variant.viewParams!{})})">${variant.title}</a>
 											</li>
 										</#list>
 										</ul>

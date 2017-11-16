@@ -19,8 +19,10 @@
 package ru.citeck.ecos.webscripts.invariants;
 
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -30,6 +32,7 @@ import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.attr.NodeAttributeService;
+import ru.citeck.ecos.invariants.utils.WorkflowServiceUtils;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
 import ru.citeck.ecos.model.InvariantsModel;
@@ -53,6 +56,7 @@ public class NodeViewGet extends DeclarativeWebScript {
     private static final String MODEL_NODEREF = "nodeRef";
 
     private static final String TEMPLATE_PARAM_PREFIX = "param_";
+    private static final String DEFAULT_TASK_VIEW = "wfcf:defaultTask";
 
     private NodeService nodeService;
     private NodeViewService nodeViewService;
@@ -60,6 +64,7 @@ public class NodeViewGet extends DeclarativeWebScript {
     private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
     private NamespaceService namespaceService;
+    private WorkflowServiceUtils workflowServiceUtils;
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
@@ -74,6 +79,11 @@ public class NodeViewGet extends DeclarativeWebScript {
         NodeRef nodeRef = null;
 
         NodeView.Builder builder = new NodeView.Builder(prefixResolver);
+
+        WorkflowDefinition workflowDefinition = workflowServiceUtils.getWorkflowDefinition(typeParam);
+        if (workflowDefinition != null) {
+            typeParam = workflowDefinition.getStartTaskDefinition().getId();
+        }
 
         if (typeParam != null && !typeParam.isEmpty()) {
             builder.className(typeParam);
@@ -110,8 +120,16 @@ public class NodeViewGet extends DeclarativeWebScript {
         NodeView query = builder.build();
 
         if (!nodeViewService.hasNodeView(query)) {
-            status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
-            return null;
+            if (workflowDefinition != null) {
+                query = builder.className(DEFAULT_TASK_VIEW).build();
+                if (!nodeViewService.hasNodeView(query)) {
+                    status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
+                    return null;
+                }
+            } else {
+                status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
+                return null;
+            }
         }
 
         NodeView view = nodeViewService.getNodeView(query);
@@ -135,8 +153,13 @@ public class NodeViewGet extends DeclarativeWebScript {
     }
 
     private boolean canBeDraft(QName type) {
-        Set<QName> defaultAspects = dictionaryService.getType(type).getDefaultAspectNames();
-        return defaultAspects.contains(InvariantsModel.ASPECT_DRAFT);
+        TypeDefinition typeDefinition = dictionaryService.getType(type);
+        if (typeDefinition != null) {
+            Set<QName> defaultAspects = typeDefinition.getDefaultAspectNames();
+            return defaultAspects.contains(InvariantsModel.ASPECT_DRAFT);
+        } else {
+            return false;
+        }
     }
 
     private boolean canBeDraft(NodeRef nodeRef) {
@@ -188,5 +211,9 @@ public class NodeViewGet extends DeclarativeWebScript {
 
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
+    }
+
+    public void setWorkflowServiceUtils(WorkflowServiceUtils workflowServiceUtils) {
+        this.workflowServiceUtils = workflowServiceUtils;
     }
 }

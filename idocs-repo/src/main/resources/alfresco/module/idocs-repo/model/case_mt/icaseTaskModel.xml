@@ -18,6 +18,7 @@
 
     <namespaces>
         <namespace uri="http://www.citeck.ru/model/icaseTask/1.0" prefix="icaseTask"/>
+        <namespace uri="http://www.citeck.ru/model/iuserTask/1.0" prefix="iuserTask"/>
     </namespaces>
 
     <types>

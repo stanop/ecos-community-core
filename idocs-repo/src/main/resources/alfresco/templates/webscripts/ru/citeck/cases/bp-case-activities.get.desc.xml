@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Get business processes activities</shortname>
+    <description>Get business processes activities</description>
+    <url>/citeck/bp-case-activities</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

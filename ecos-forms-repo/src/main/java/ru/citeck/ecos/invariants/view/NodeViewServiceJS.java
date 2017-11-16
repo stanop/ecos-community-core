@@ -19,24 +19,85 @@
 package ru.citeck.ecos.invariants.view;
 
 import org.alfresco.repo.jscript.ScriptNode;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
+import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.invariants.utils.WorkflowServiceUtils;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 public class NodeViewServiceJS extends AlfrescoScopableProcessorExtension {
 
+    private static final QName WORKFLOW_DEFINITION_NAME = QName.createQName(
+            "http://www.citeck.ru/model/icaseTask/1.0", "workflowDefinitionName"
+    );
+    private static final String DEFAULT_TASK_VIEW = "wfcf:defaultTask";
+
     private NodeViewService impl;
 
+    private WorkflowServiceUtils workflowServiceUtils;
+
+    private NodeService nodeService;
+
     public boolean hasNodeView(String type, String id) {
-        return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-            .className(type)
-            .id(id)
-            .build());
+        /** Check workflow definition existing */
+        WorkflowDefinition workflowDefinition = workflowServiceUtils.getWorkflowDefinition(type);
+        if (workflowDefinition != null) {
+            /** Workflow view */
+            type = workflowDefinition.getStartTaskDefinition().getId();
+            boolean result = impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                    .className(type)
+                    .id(id)
+                    .build());
+            if (result) {
+                return true;
+            } else {
+                return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                        .className(DEFAULT_TASK_VIEW)
+                        .id(id)
+                        .build());
+            }
+        } else {
+            /** Common view */
+            return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                    .className(type)
+                    .id(id)
+                    .build());
+        }
+
     }
     
     public boolean hasNodeView(ScriptNode node, String id) {
-        return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+        boolean result = impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
             .className(node.getTypeShort())
             .id(id)
             .build());
+        if (result) {
+            return true;
+        }
+        /** Load workflow */
+        if (node != null && node.getNodeRef() != null) {
+            String workflowDefinitionName = (String) nodeService.getProperty(node.getNodeRef(), WORKFLOW_DEFINITION_NAME);
+            WorkflowDefinition workflowDefinition = workflowServiceUtils.getWorkflowDefinition(workflowDefinitionName);
+            if (workflowDefinition != null) {
+                String type = workflowDefinition.getStartTaskDefinition().getId();
+                result = impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                        .className(type)
+                        .id(id)
+                        .build());
+                if (result) {
+                    return true;
+                } else {
+                    return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                            .className(DEFAULT_TASK_VIEW)
+                            .id(id)
+                            .build());
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     public NodeView getNodeView(String className, String id) {
@@ -57,4 +118,11 @@ public class NodeViewServiceJS extends AlfrescoScopableProcessorExtension {
         this.impl = impl;
     }
 
+    public void setWorkflowServiceUtils(WorkflowServiceUtils workflowServiceUtils) {
+        this.workflowServiceUtils = workflowServiceUtils;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 }

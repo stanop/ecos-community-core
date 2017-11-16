@@ -322,6 +322,13 @@
         <property name="historyGetService" ref="historyGetService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.cases.bp-case-activities.get" class="ru.citeck.ecos.webscripts.cases.BPActivitiesGet"
+          parent="webscript">
+        <property name="dictionaryService" ref="dictionaryService" />
+        <property name="nodeViewService" ref="nodeViewService" />
+        <property name="prefixResolver" ref="namespaceService" />
+    </bean>
+
     <bean id="webscript.ru.citeck.node.node-child-associations.get" class="ru.citeck.ecos.webscripts.node.NodeChildAssociationsGet"
             parent="webscript">
         <property name="nodeService" ref="NodeService"/>

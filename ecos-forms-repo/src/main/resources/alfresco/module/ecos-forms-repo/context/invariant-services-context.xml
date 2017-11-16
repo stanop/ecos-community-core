@@ -149,6 +149,13 @@
 		<property name="extensionName" value="nodeViews" />
 		<property name="impl" ref="nodeViewService" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="workflowServiceUtils" ref="workflowServiceUtils"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+	<bean id="workflowServiceUtils" class="ru.citeck.ecos.invariants.utils.WorkflowServiceUtils">
+		<property name="workflowService" ref="WorkflowService"/>
+		<property name="workflowAdminService" ref="workflowAdminService"/>
 	</bean>
 	
 	<bean id="nodeViewsDeployer" class="ru.citeck.ecos.invariants.view.NodeViewsDeployer" abstract="true">
@@ -182,6 +189,7 @@
 		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="namespaceService" ref="namespaceService" />
 		<property name="nodeAttributeService" ref="NodeAttributeService" />
+		<property name="workflowServiceUtils" ref="workflowServiceUtils"/>
 	</bean>
 	
 	<bean id="webscript.ru.citeck.invariants.view.post" parent="webscript" class="ru.citeck.ecos.webscripts.invariants.NodeViewPost">

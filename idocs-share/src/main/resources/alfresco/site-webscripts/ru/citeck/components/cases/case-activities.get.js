@@ -31,7 +31,7 @@ function getCreateMenu(createVariants, groupLevel, typeNames) {
 (function() {
     if(!args.nodeRef) return;
     var baseType = "activ:activity";
-    var response = remote.call('/citeck/invariants/create-views?type=' + baseType);
+    var response = remote.call('/citeck/bp-case-activities');
     var data = eval('(' + response + ')');
     var typeNames = data.typeNames;
     var createVariants = data.createVariants;
