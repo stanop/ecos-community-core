@@ -93,7 +93,7 @@
         <xs:attribute name="title" type="xs:string" use="optional" />
     </xs:complexType>
 
-    <xs:complexType name="filterRegion">
+    <xs:complexType name="attributeFilterRegion">
         <xs:sequence>
             <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
@@ -101,10 +101,10 @@
         <xs:attribute name="template" type="xs:string" use="optional" />
     </xs:complexType>
 
-    <xs:complexType name="filter">
+    <xs:complexType name="attributeFilter">
         <xs:sequence>
             <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="region" type="j:filterRegion" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="region" type="j:attributeFilterRegion" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="invariant" type="inv:invariant" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
         <xs:attribute name="template" type="xs:string" use="optional" />
@@ -114,7 +114,7 @@
         <xs:sequence>
             <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="batch-edit" type="j:batchEdit" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="filter" type="j:filter" minOccurs="0" maxOccurs="1" />
+            <xs:element name="filter" type="j:attributeFilter" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
         <xs:attribute name="key" type="xs:string" use="required" />
         <xs:attribute name="default" type="xs:boolean" default="false" />

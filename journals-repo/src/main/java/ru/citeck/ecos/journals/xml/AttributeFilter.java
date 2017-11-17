@@ -7,21 +7,23 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import ru.citeck.ecos.invariants.xml.Invariant;
 
 
 /**
- * <p>Java class for filterRegion complex type.
+ * <p>Java class for attributeFilter complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="filterRegion">
+ * &lt;complexType name="attributeFilter">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="param" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="region" type="{http://www.citeck.ru/ecos/journals/1.0}attributeFilterRegion" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="invariant" type="{http://www.citeck.ru/ecos/invariants/1.0}invariant" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="template" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -31,14 +33,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "filterRegion", propOrder = {
-    "param"
+@XmlType(name = "attributeFilter", propOrder = {
+    "param",
+    "region",
+    "invariant"
 })
-public class FilterRegion {
+public class AttributeFilter {
 
     protected List<Option> param;
-    @XmlAttribute(name = "name", required = true)
-    protected String name;
+    protected List<AttributeFilterRegion> region;
+    protected List<Invariant> invariant;
     @XmlAttribute(name = "template")
     protected String template;
 
@@ -72,27 +76,61 @@ public class FilterRegion {
     }
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the region property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the region property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRegion().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link AttributeFilterRegion }
+     * 
+     * 
      */
-    public String getName() {
-        return name;
+    public List<AttributeFilterRegion> getRegion() {
+        if (region == null) {
+            region = new ArrayList<AttributeFilterRegion>();
+        }
+        return this.region;
     }
 
     /**
-     * Sets the value of the name property.
+     * Gets the value of the invariant property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the invariant property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getInvariant().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Invariant }
+     * 
+     * 
      */
-    public void setName(String value) {
-        this.name = value;
+    public List<Invariant> getInvariant() {
+        if (invariant == null) {
+            invariant = new ArrayList<Invariant>();
+        }
+        return this.invariant;
     }
 
     /**

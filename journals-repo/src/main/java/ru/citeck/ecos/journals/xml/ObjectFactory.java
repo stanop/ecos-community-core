@@ -54,19 +54,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Filter }
+     * Create an instance of {@link AttributeFilterRegion }
      * 
      */
-    public Filter createFilter() {
-        return new Filter();
-    }
-
-    /**
-     * Create an instance of {@link FilterRegion }
-     * 
-     */
-    public FilterRegion createFilterRegion() {
-        return new FilterRegion();
+    public AttributeFilterRegion createAttributeFilterRegion() {
+        return new AttributeFilterRegion();
     }
 
     /**
@@ -91,6 +83,14 @@ public class ObjectFactory {
      */
     public Header createHeader() {
         return new Header();
+    }
+
+    /**
+     * Create an instance of {@link AttributeFilter }
+     * 
+     */
+    public AttributeFilter createAttributeFilter() {
+        return new AttributeFilter();
     }
 
     /**

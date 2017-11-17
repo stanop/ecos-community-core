@@ -7,23 +7,21 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import ru.citeck.ecos.invariants.xml.Invariant;
 
 
 /**
- * <p>Java class for filter complex type.
+ * <p>Java class for attributeFilterRegion complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="filter">
+ * &lt;complexType name="attributeFilterRegion">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="param" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="region" type="{http://www.citeck.ru/ecos/journals/1.0}filterRegion" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="invariant" type="{http://www.citeck.ru/ecos/invariants/1.0}invariant" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="template" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -33,16 +31,14 @@ import ru.citeck.ecos.invariants.xml.Invariant;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "filter", propOrder = {
-    "param",
-    "region",
-    "invariant"
+@XmlType(name = "attributeFilterRegion", propOrder = {
+    "param"
 })
-public class Filter {
+public class AttributeFilterRegion {
 
     protected List<Option> param;
-    protected List<FilterRegion> region;
-    protected List<Invariant> invariant;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
     @XmlAttribute(name = "template")
     protected String template;
 
@@ -76,61 +72,27 @@ public class Filter {
     }
 
     /**
-     * Gets the value of the region property.
+     * Gets the value of the name property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the region property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRegion().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link FilterRegion }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public List<FilterRegion> getRegion() {
-        if (region == null) {
-            region = new ArrayList<FilterRegion>();
-        }
-        return this.region;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Gets the value of the invariant property.
+     * Sets the value of the name property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the invariant property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getInvariant().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Invariant }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
-    public List<Invariant> getInvariant() {
-        if (invariant == null) {
-            invariant = new ArrayList<Invariant>();
-        }
-        return this.invariant;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
