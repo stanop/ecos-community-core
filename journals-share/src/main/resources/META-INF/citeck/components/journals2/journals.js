@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants'], function(ko, koutils) {
 
 var logger = Alfresco.logger,
 		noneActionGroupId = "none",
@@ -54,8 +54,10 @@ var criteriaCounter = 0,
 	Settings = koclass('Settings'),
 	Criterion = koclass('Criterion'),
 	CreateVariant = koclass('CreateVariant'),
+	Invariant = koclass('invariants.Invariant'),
 	Attribute = koclass('Attribute'),
 	AttributeInfo = koclass('AttributeInfo'),
+	AttributeFilter = koclass('AttributeFilter'),
 	Predicate = koclass('Predicate'),
 	PredicateList = koclass('PredicateList'),
 	Datatype = koclass('Datatype'),
@@ -359,6 +361,142 @@ AttributeInfo
 		return this.displayName();
 	})
 	;
+
+    var notNull = function(value) { return value !== null; }
+    var isFalse = function(value) { return value === false; }
+
+    var featureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
+        return function(model) {
+
+        	var invariant,
+                invariantValue = null,
+                invariants = this['invariants']();
+
+            invariant = _.find(invariants, function(invariant) {
+            	if (invariant.feature() == featureName) {
+                    invariantValue = invariant.evaluate(model);
+                    return isTerminate(invariantValue, invariant);
+            	}
+            });
+
+            return {
+                invariant: invariant,
+                value: koutils.instantiate(invariant != null ? invariantValue : defaultValue, requiredClass)
+            }
+        };
+    };
+
+    var featuredProperty = function(featureName) {
+        return function() {
+            return this[featureName + 'Evaluator'](this.invariantsModel()).value;
+        }
+    };
+
+AttributeFilter
+
+    .key('key', s)
+
+    .property('invariants', [ Invariant ])
+    .property('attribute', [ Attribute ])
+
+    .shortcut('nodetype', 'attribute.nodetype')
+    .shortcut('datatype', 'attribute.datatype')
+    .shortcut('valueClass', 'attribute.nodetype')
+    .shortcut('journalType', 'attribute.journalType')
+    .shortcut('settings', 'attribute.settings')
+
+    /*====== Value ======*/
+
+    .property('newValue', o) // value, set by user
+    .computed('rawValue', function() {
+        return this.invariantValue() || this.newValue() || this.invariantDefault();
+    })
+    .computed('value', {
+        read: function() {
+            return this.convertValue(this.rawValue(), this.multiple());
+        },
+        write: function(value) {
+            this.newValue(this.convertValue(value, true));
+        }
+    })
+    .computed('singleValue', {
+        read: function() {
+            return this.convertValue(this.rawValue(), false);
+        },
+        write: function(value) {
+            this.value(value);
+        }
+    })
+    .computed('multipleValues', {
+        read: function() {
+            return this.convertValue(this.rawValue(), true);
+        },
+        write: function(value) {
+            this.value(value);
+        }
+    })
+    .method('convertValue', function(value, multiple) {
+
+        if(value == null) return multiple ? [] : null;
+
+        var instantiate = _.partial(koutils.instantiate, _, this.valueClass());
+        if(_.isArray(value)) {
+            return multiple ? _.map(value, instantiate) : instantiate(value[0]);
+        } else {
+            return multiple ? [ instantiate(value) ] : instantiate(value) ;
+        }
+    })
+
+    /* ====== Properties ====== */
+
+    .computed('options', {
+        read: function() {
+            var result = this.convertValue(this.invariantOptions(), true);
+            if (result == null || result.length === 0) {
+                //todo
+            }
+            return result;
+        },
+        pure: true
+    })
+
+    .computed('invariantsModel', function() {
+        return this.getInvariantsModel(this.value, this.cache = this.cache || {});
+    })
+    .method('getInvariantsModel', function(value, cache) {
+        var model = {};
+        Object.defineProperty(model, 'value', typeof value == "function" ? { get: value } : { value: value });
+        Object.defineProperty(model, 'cache', { value: cache });
+        return model;
+    })
+
+    /*====== Invariants ======*/
+
+    .computed('invariantValue', featuredProperty('value'))
+    .computed('invariantDefault', featuredProperty('default'))
+    .computed('title', featuredProperty('title'))
+    .computed('description', featuredProperty('description'))
+    .computed('multiple', featuredProperty('multiple'))
+    .computed('mandatory', featuredProperty('mandatory'))
+    .computed('relevant', featuredProperty('relevant'))
+    .computed('protected', featuredProperty('protected'))
+
+    .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
+    .method('nonblockingValueEvaluator', featureEvaluator('nonblocking-value', o, null, notNull))
+    .method('defaultEvaluator', featureEvaluator('default', o, null, notNull))
+    .method('optionsEvaluator', featureEvaluator('options', o, null, notNull))
+    .method('titleEvaluator', featureEvaluator('title', s, '', notNull))
+    .method('descriptionEvaluator', featureEvaluator('description', s, '', notNull))
+    .method('valueTitleEvaluator', featureEvaluator('value-title', s, '', notNull))
+    .method('valueDescriptionEvaluator', featureEvaluator('value-description', s, '', notNull))
+    .method('valueOrderEvaluator', featureEvaluator('value-order', n, 0, notNull))
+    .method('relevantEvaluator', featureEvaluator('relevant', b, true, notNull))
+    .method('multipleEvaluator', featureEvaluator('multiple', b, false, notNull))
+    .method('mandatoryEvaluator', featureEvaluator('mandatory', b, false, notNull))
+    .method('protectedEvaluator', featureEvaluator('protected', b, false, notNull))
+    .method('validEvaluator', featureEvaluator('valid', b, true, isFalse))
+
+    ;
 
 Datatype
 	.key('name', s)

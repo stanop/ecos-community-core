@@ -22,6 +22,14 @@
 </#escape>
 </#macro>
 
+<#macro renderAttributeFilter filter> {
+    <#escape x as jsonUtils.encodeJSONString(x)>
+    {
+
+    }
+    </#escape>
+</#macro>
+
 <#macro renderJournalGroupAction groupActions>
     <#escape x as jsonUtils.encodeJSONString(x)>
     [
