@@ -2461,7 +2461,8 @@ ko.bindingHandlers.fileUploadControl = {
             value = settings.value,
             multiple = settings.multiple,
             type = settings.type,
-            properties = settings.properties;
+            properties = settings.properties,
+            importUrl = settings.importUrl;
 
         // Invariants global object
         var Node = koutils.koclass('invariants.Node');
@@ -2495,6 +2496,9 @@ ko.bindingHandlers.fileUploadControl = {
                     // enable button
                     $(element).removeClass("loading");
                     $(openFileUploadDialogButton).removeAttr("disabled");
+
+                    //for reload file
+                    $(input).val("");
                 }
             });
 
@@ -2522,8 +2526,20 @@ ko.bindingHandlers.fileUploadControl = {
                                 // push new file to uploaded files library
                                 if (multiple()) {
                                     var currentValues = value();
-                                    currentValues.push(result.nodeRef);
-                                    value(currentValues);
+                                    if (result.strings && result.strings.length) {
+                                        result.strings.forEach(function(item) {
+                                            currentValues.push(item);
+                                        });
+                                        value(currentValues);
+                                    } else if (result.errorMessage) {
+                                        Alfresco.util.PopupManager.displayPrompt({
+                                            title: Alfresco.util.message("message.import-errors"),
+                                            text: result.errorMessage });
+                                    } else if (result.nodeRef) {
+                                        currentValues.push(result.nodeRef);
+                                        value(currentValues);
+                                    }
+
                                 } else {
                                     //TODO: remove previous node if parent == attachments-root?
                                     value(result.nodeRef);
@@ -2531,13 +2547,14 @@ ko.bindingHandlers.fileUploadControl = {
                             }
 
                             if (target.status == 500) {
-                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: result.message });
+                                var errorMessage = result.message ? result.message : Alfresco.util.message("message.load-failed");
+                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: errorMessage });
                             }
 
                             loadedFiles(loadedFiles() + 1);
                         }
                     }, false)
-                })(files[i])
+                })(files[i]);
 
                 var formData = new FormData;
                 formData.append("filedata", files[i]);
@@ -2556,7 +2573,7 @@ ko.bindingHandlers.fileUploadControl = {
                     }
                 }
 
-                var href = Alfresco.constants.PROXY_URI + "api/citeck/upload?assoctype=sys:children&details=true";
+                var href = Alfresco.constants.PROXY_URI + (importUrl ? importUrl : "api/citeck/upload?assoctype=sys:children&details=true");
                 if (type) href += "&contenttype=" + type;
 
                 request.open("POST", href, true);
@@ -2564,7 +2581,7 @@ ko.bindingHandlers.fileUploadControl = {
             }
         });
     }
-}
+};
 
 
 // ---------

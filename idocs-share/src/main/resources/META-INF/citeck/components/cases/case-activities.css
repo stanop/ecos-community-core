@@ -90,6 +90,7 @@
 
 .case-activities .activity > .activity-info > .left {
     float: left;
+    max-width: 40%;
 }
 
 .case-activities .activity > .activity-info:after {
@@ -103,23 +104,36 @@
     display: inline-block;
     float: right;
     padding: 0 5px;
-    width: 32em;
+    width: 36em;
     background-color: transparent;
 }
 
 .case-activities .right > span.type,
 .case-activities .right > span.start,
-.case-activities .right > span.end {
+.case-activities .right > span.end,
+.case-activities .right > span.sla {
     line-height: 24px;
     vertical-align: bottom;
     display: inline-block;
     width: 5em;
     color: gray;
-    margin-right: 5px;
+    margin-right: 7px;
+    max-width: 15%;
+}
+
+.case-activities .right > span.end {
+    width: 6em;
+    max-width: 18%;
+}
+
+.case-activities .right > span.sla {
+    width: 4em;
+    max-width: 13%;
 }
 
 .case-activities .right > span.type {
     width: 140px;
+    max-width: 140px;
 }
 
 .case-activities .activity-info > .right > span.type {

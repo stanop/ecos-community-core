@@ -35,7 +35,7 @@
         <alfresco.groupId>org.alfresco</alfresco.groupId>
 
         <!-- JRebel Hot reloading of classpath stuff and web resource stuff -->
-        <jrebel.version>1.1.6</jrebel.version>
+        <jrebel.version>1.1.7</jrebel.version>
 
         <!-- Environment to use, Alfresco Maven Plugin will
              copy alfresco-global-*.properties files from this directory, such as src/test/properties/local -->

@@ -5,7 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -26,6 +25,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Document history get web script
@@ -36,9 +36,6 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      * Exclude event types
      */
     private static final String EXCLUDE_EVENT_TYPES_PROPERTY = "ecos.citeck.history.exclude.types";
-    private static final String[] DEFAULT_EXCLUDE_EVENT_TYPES = {
-        "task.create", "task.assign" , "workflow.start" , "workflow.end", "workflow.end.cancelled", "unknown-user"
-    };
 
     /**
      * Date-time format
@@ -58,7 +55,8 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     /**
      * Request params
      */
-    private static final String DOCUMENT_NODE_REF = "nodeRef";
+    private static final String PARAM_DOCUMENT_NODE_REF = "nodeRef";
+    private static final String PARAM_EVENTS = "events";
 
     /**
      * Global properties
@@ -90,7 +88,15 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      */
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
-        String nodeRefUuid = req.getParameter(DOCUMENT_NODE_REF);
+
+        String nodeRefUuid = req.getParameter(PARAM_DOCUMENT_NODE_REF);
+        String eventsParam = req.getParameter(PARAM_EVENTS);
+
+        Set<String> includeEvents = null;
+        if (StringUtils.isNotBlank(eventsParam)) {
+            includeEvents = Arrays.stream(eventsParam.split(",")).collect(Collectors.toSet());
+        }
+
         /** Check history event status */
         NodeRef documentRef = new NodeRef(nodeRefUuid);
         Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
@@ -98,14 +104,14 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
         }
         /** Load data */
-        List historyRecordMaps = null;
+        List historyRecordMaps;
         if (isEnabledRemoteHistoryService()) {
             historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
         } else {
             historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
         }
         Map<String, Object> result = new HashMap<>();
-        result.put("jsonResult", createJsonResponse(historyRecordMaps));
+        result.put("jsonResult", createJsonResponse(historyRecordMaps, includeEvents));
         return result;
     }
 
@@ -122,22 +128,24 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         }
     }
 
-
     /**
      * Create json response
      * @param historyRecordMaps History records maps
      * @return Json string
      */
-    private String createJsonResponse(List<Map> historyRecordMaps) {
+    private String createJsonResponse(List<Map> historyRecordMaps, Set<String> includeEvents) {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode resultObjectNode = objectMapper.createObjectNode();
         ArrayNode arrayNode = objectMapper.createArrayNode();
         /** Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps ) {
+
             String eventType = (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue());
-            if (ArrayUtils.contains(getExcludeEventTypes(), eventType)) {
+
+            if (includeEvents != null && !includeEvents.contains(eventType)) {
                 continue;
             }
+
             ObjectNode recordObjectNode = objectMapper.createObjectNode();
             recordObjectNode.put(DocumentHistoryConstants.NODE_REF.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.NODE_REF.getValue()));
             ObjectNode attributesNode = objectMapper.createObjectNode();
@@ -152,15 +160,16 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             attributesNode.put(DocumentHistoryConstants.TASK_ROLE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.TASK_ROLE.getValue()));
             attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue())); // good
             String taskType = (String) historyRecordMap.get(DocumentHistoryConstants.TASK_TYPE.getValue());
-            if (StringUtils.isNotEmpty(taskType)) {
-                QName taskTypeValue = QName.createQName(taskType);
-                if (taskTypeValue != null) {
-                    ObjectNode taskTypeNode = objectMapper.createObjectNode();
-                    taskTypeNode.put("fullQName", taskType.toString());
-                    taskTypeNode.put("shortQName", taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService()));
-                    attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
-                }
 
+            if (StringUtils.isNotEmpty(taskType)) {
+
+                QName taskTypeValue = QName.createQName(taskType);
+
+                ObjectNode taskTypeNode = objectMapper.createObjectNode();
+                taskTypeNode.put("fullQName", taskType);
+                taskTypeNode.put("shortQName", taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService()));
+
+                attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
             }
             /** User */
             NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(DocumentHistoryConstants.EVENT_INITIATOR.getValue()));
@@ -195,19 +204,6 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         result.add(userNode);
         return result;
 
-    }
-
-    /**
-     * Get exclude event types
-     * @return
-     */
-    private String[] getExcludeEventTypes() {
-        String rawValue = properties.getProperty(EXCLUDE_EVENT_TYPES_PROPERTY);
-        if (rawValue == null) {
-            return DEFAULT_EXCLUDE_EVENT_TYPES;
-        } else {
-            return rawValue.trim().split(",");
-        }
     }
 
     public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {

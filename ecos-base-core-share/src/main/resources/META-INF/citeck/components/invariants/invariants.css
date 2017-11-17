@@ -550,6 +550,7 @@
 /* specified regions */
 .invariants-form .template-wide .template-block .block-region-label {
   width: 100%;
+  margin-bottom: 10px;
 }
 
 .invariants-form .template-wide .template-block .template-help,
@@ -615,9 +616,9 @@
 }
 
 /* regions */
-.invariants-form .template-wide .template-block .block-region .form-region {
-  display: inline-block;
-  margin-bottom: 10px;
+.invariants-form .template-wide .template-block .block-region .form-region.template-label,
+.invariants-form .template-wide .template-block .block-region .form-region.template-mandatory {
+  display: inline;
 }
 
 .invariants-form .template-wide .template-block .block-region-select .form-region  {
@@ -2311,6 +2312,12 @@ div[id*="multiple-text"] .multiple-text-control input {
   .invariants-form.view-form .template-table [class*="template-row"] .template-label {
     margin-bottom: 10px;
   }
+}
+
+/* TEMPLATE FILE IMPORT */
+.invariants-form .form-region.template-file-import .file-upload-control,
+.invariants-form .form-region.template-file-import .create-object-control {
+  display: inline-block;
 }
 
 

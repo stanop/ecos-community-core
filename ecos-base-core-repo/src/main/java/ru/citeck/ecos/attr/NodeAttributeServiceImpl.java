@@ -18,19 +18,14 @@
  */
 package ru.citeck.ecos.attr;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
 import org.alfresco.service.namespace.RegexQNamePattern;
-
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
+
+import java.util.*;
 
 public class NodeAttributeServiceImpl implements NodeAttributeService {
     
@@ -91,7 +86,10 @@ public class NodeAttributeServiceImpl implements NodeAttributeService {
     public Set<QName> getDefinedAttributeNames(QName className, boolean inherit) {
         Set<QName> attributeNames = new HashSet<>(attributeProviders.size() * ATTRIBUTE_PROVIDER_BUCKETS);
         for(AttributeProvider provider : attributeProviders) {
-            attributeNames.addAll(provider.getDefinedAttributeNames(className, inherit));
+            Set<QName> qNameSet = provider.getDefinedAttributeNames(className, inherit);
+            if (qNameSet != null) {
+                attributeNames.addAll(qNameSet);
+            }
         }
         return attributeNames;
     }

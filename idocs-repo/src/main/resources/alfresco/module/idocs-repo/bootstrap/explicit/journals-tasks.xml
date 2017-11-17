@@ -195,7 +195,7 @@
 					<view:properties>
 						<journal:fieldQName>{http://www.alfresco.org/model/bpm/1.0}dueDate</journal:fieldQName>
 						<journal:predicate>date-equals</journal:predicate>
-						<journal:criterionValue>#{.now?datetime?iso_local}</journal:criterionValue>
+						<journal:criterionValue>#{.now?date?iso_local}</journal:criterionValue>
 					</view:properties>
 				</journal:criterion>
 			</journal:searchCriteria>
@@ -219,7 +219,7 @@
 					<view:properties>
 						<journal:fieldQName>{http://www.alfresco.org/model/bpm/1.0}dueDate</journal:fieldQName>
 						<journal:predicate>date-equals</journal:predicate>
-						<journal:criterionValue>#{incrementDate(.now,24*3600000)?datetime?iso_local}</journal:criterionValue>
+						<journal:criterionValue>#{incrementDate(.now,24*3600000)?date?iso_local}</journal:criterionValue>
 					</view:properties>
 				</journal:criterion>
 			</journal:searchCriteria>
@@ -243,14 +243,14 @@
 					<view:properties>
 						<journal:fieldQName>{http://www.alfresco.org/model/bpm/1.0}dueDate</journal:fieldQName>
 						<journal:predicate>date-greater-or-equal</journal:predicate>
-						<journal:criterionValue>#{incrementDate(.now,24*3600000)?datetime?iso_local}</journal:criterionValue>
+						<journal:criterionValue>#{incrementDate(.now,24*3600000)?date?iso_local}</journal:criterionValue>
 					</view:properties>
 				</journal:criterion>
 				<journal:criterion view:childName="journal:criterion-2">
 					<view:properties>
 						<journal:fieldQName>{http://www.alfresco.org/model/bpm/1.0}dueDate</journal:fieldQName>
 						<journal:predicate>date-less-or-equal</journal:predicate>
-						<journal:criterionValue>#{incrementDate(.now,7*24*3600000)?datetime?iso_local}</journal:criterionValue>
+						<journal:criterionValue>#{incrementDate(.now,7*24*3600000)?date?iso_local}</journal:criterionValue>
 					</view:properties>
 				</journal:criterion>
 			</journal:searchCriteria>
@@ -274,7 +274,7 @@
 					<view:properties>
 						<journal:fieldQName>{http://www.alfresco.org/model/bpm/1.0}dueDate</journal:fieldQName>
 						<journal:predicate>date-less-or-equal</journal:predicate>
-						<journal:criterionValue>#{incrementDate(.now,-24*3600000)?datetime?iso_local}</journal:criterionValue>
+						<journal:criterionValue>#{incrementDate(.now,-24*3600000)?date?iso_local}</journal:criterionValue>
 					</view:properties>
 				</journal:criterion>
 			</journal:searchCriteria>

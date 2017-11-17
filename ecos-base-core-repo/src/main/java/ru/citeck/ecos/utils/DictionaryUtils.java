@@ -18,21 +18,13 @@
  */
 package ru.citeck.ecos.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.ParameterCheck;
+
+import java.util.*;
 
 public class DictionaryUtils {
 
@@ -131,7 +123,11 @@ public class DictionaryUtils {
     }
     
     public static Collection<QName> getParentClassNames(QName className, DictionaryService dictionaryService) {
-        return getClassNames(getParentClasses(dictionaryService.getClass(className), dictionaryService));
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getClassNames(getParentClasses(classDefinition, dictionaryService));
     }
 
     /**
@@ -191,7 +187,9 @@ public class DictionaryUtils {
         Set<QName> properties = new HashSet<>();
         for(QName className : expandClassNames(classNames, dictionaryService)) {
             ClassDefinition classDef = dictionaryService.getClass(className);
-            properties.addAll(classDef.getProperties().keySet());
+            if (classDef != null) {
+                properties.addAll(classDef.getProperties().keySet());
+            }
         }
         return properties;
     }
@@ -210,9 +208,11 @@ public class DictionaryUtils {
         Set<QName> associations = new HashSet<>();
         for(QName className : expandClassNames(classNames, dictionaryService)) {
             ClassDefinition classDef = dictionaryService.getClass(className);
-            for(AssociationDefinition assocDef : classDef.getAssociations().values()) {
-                if(assocDef.isChild() == needChild) {
-                    associations.add(assocDef.getName());
+            if (classDef != null) {
+                for (AssociationDefinition assocDef : classDef.getAssociations().values()) {
+                    if (assocDef.isChild() == needChild) {
+                        associations.add(assocDef.getName());
+                    }
                 }
             }
         }
@@ -262,34 +262,53 @@ public class DictionaryUtils {
     
     private static Map<QName, PropertyDefinition> getDefinedPropertiesMap(
             ClassDefinition classDef, DictionaryService dictionaryService) {
-        Map<QName, PropertyDefinition> definedProps = classDef.getProperties();
-        Map<QName, PropertyDefinition> inheritedProps = Collections.emptyMap();
-        if(classDef.getParentClassDefinition() != null) {
-            inheritedProps = classDef.getParentClassDefinition().getProperties();
-        }
-        Map<QName, PropertyDefinition> result = new HashMap<>();
-        for(Map.Entry<QName, PropertyDefinition> entry : definedProps.entrySet()) {
-            if(!inheritedProps.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
+        Map<QName, PropertyDefinition> result = null;
+        if (classDef != null) {
+            Map<QName, PropertyDefinition> definedProps = classDef.getProperties();
+            Map<QName, PropertyDefinition> inheritedProps = Collections.emptyMap();
+            if (classDef.getParentClassDefinition() != null) {
+                inheritedProps = classDef.getParentClassDefinition().getProperties();
+            }
+            result = new HashMap<>();
+            for (Map.Entry<QName, PropertyDefinition> entry : definedProps.entrySet()) {
+                if (!inheritedProps.containsKey(entry.getKey())) {
+                    result.put(entry.getKey(), entry.getValue());
+                }
             }
         }
         return result;
     }
     
     public static Set<PropertyDefinition> getDefinedProperties(ClassDefinition classDef, DictionaryService dictionaryService) {
-        return new HashSet<>(getDefinedPropertiesMap(classDef, dictionaryService).values());
+        Map<QName, PropertyDefinition>propertyDefinitionMap = getDefinedPropertiesMap(classDef, dictionaryService);
+        if (propertyDefinitionMap == null) {
+            return null;
+        }
+        return new HashSet<>(propertyDefinitionMap.values());
     }
     
     public static Set<PropertyDefinition> getDefinedProperties(QName className, DictionaryService dictionaryService) {
-        return getDefinedProperties(dictionaryService.getClass(className), dictionaryService);
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getDefinedProperties(classDefinition, dictionaryService);
     }
     
     public static Set<QName> getDefinedPropertyNames(ClassDefinition classDef, DictionaryService dictionaryService) {
-        return getDefinedPropertiesMap(classDef, dictionaryService).keySet();
+        Map<QName, PropertyDefinition>propertyDefinitionMap = getDefinedPropertiesMap(classDef, dictionaryService);
+        if (propertyDefinitionMap == null) {
+            return null;
+        }
+        return propertyDefinitionMap.keySet();
     }
     
     public static Set<QName> getDefinedPropertyNames(QName className, DictionaryService dictionaryService) {
-        return getDefinedPropertyNames(dictionaryService.getClass(className), dictionaryService);
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getDefinedPropertyNames(classDefinition, dictionaryService);
     }
     
     
@@ -315,7 +334,11 @@ public class DictionaryUtils {
     }
     
     public static Set<AssociationDefinition> getDefinedAssociations(QName className, DictionaryService dictionaryService) {
-        return getDefinedAssociations(dictionaryService.getClass(className), dictionaryService);
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getDefinedAssociations(classDefinition, dictionaryService);
     }
     
     public static Set<QName> getDefinedAssociationNames(ClassDefinition classDef, DictionaryService dictionaryService) {
@@ -323,7 +346,11 @@ public class DictionaryUtils {
     }
     
     public static Set<QName> getDefinedAssociationNames(QName className, DictionaryService dictionaryService) {
-        return getDefinedAssociationNames(dictionaryService.getClass(className), dictionaryService);
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getDefinedAssociationNames(classDefinition, dictionaryService);
     }
     
     public static Set<AssociationDefinition> getDefinedChildAssociations(ClassDefinition classDef, DictionaryService dictionaryService) {
@@ -331,7 +358,11 @@ public class DictionaryUtils {
     }
     
     public static Set<AssociationDefinition> getDefinedChildAssociations(QName className, DictionaryService dictionaryService) {
-        return getDefinedChildAssociations(dictionaryService.getClass(className), dictionaryService);
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getDefinedChildAssociations(classDefinition, dictionaryService);
     }
     
     public static Set<QName> getDefinedChildAssociationNames(ClassDefinition classDef, DictionaryService dictionaryService) {
@@ -339,7 +370,11 @@ public class DictionaryUtils {
     }
     
     public static Set<QName> getDefinedChildAssociationNames(QName className, DictionaryService dictionaryService) {
-        return getDefinedChildAssociationNames(dictionaryService.getClass(className), dictionaryService);
+        ClassDefinition classDefinition = dictionaryService.getClass(className);
+        if (classDefinition == null) {
+            return null;
+        }
+        return getDefinedChildAssociationNames(classDefinition, dictionaryService);
     }
     
     

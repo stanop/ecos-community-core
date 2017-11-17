@@ -1,9 +1,21 @@
 importPackage(Packages.org.alfresco.service.cmr.repository);
 
 function main() {
-    var node = getNode(args.node);
-    for (var key in args.attributes) {
-        attributes.set(node, key, args.attributes[key]);
+
+    if (args.nodes) {
+        for (var i = 0; i < args.nodes.size(); i++) {
+            var nodeData = args.nodes.get(i);
+            processNode(nodeData.node, nodeData.attributes);
+        }
+    } else {
+        processNode(args.node, args.attributes);
+    }
+}
+
+function processNode(node, attrs) {
+    var scriptNode = getNode(node);
+    for (var key in attrs) {
+        attributes.set(scriptNode, key, attrs[key]);
     }
 }
 

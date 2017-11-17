@@ -103,6 +103,8 @@
 					<property name="cases">
 						<map>
 							<entry key="pdf"  value-ref="dbp.transform.pdf" />
+                            <entry key="pdf2" value-ref="dbp.runtime.transform" />
+                            <entry key="pdf2-a" value-ref="dbp.runtime.transform-album" />
 							<entry key="doc"  value-ref="dbp.transform.doc" />
 							<entry key="docx" value-ref="dbp.transform.docx" />
 							<entry key="html" value-ref="dbp.transform.html" />

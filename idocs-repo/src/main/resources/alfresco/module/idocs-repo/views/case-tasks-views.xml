@@ -107,6 +107,15 @@
         <field prop="wfperf:enableControl" />
         <field assoc="icaseTask:controller">
             <region name="input" template="checkbox"/>
+            <invariant on="options" language="javascript" final="true">
+                (function () {
+                var parent = node.parent;
+                while (parent &amp;&amp; parent.isSubType("activ:activity")) {
+                parent = parent.parent;
+                }
+                return parent.childAssocs["icaseRole:roles"] || [];
+                })()
+            </invariant>
         </field>
         <field prop="wfperf:controllerPermission">
             <region name="input" template="select"/>
