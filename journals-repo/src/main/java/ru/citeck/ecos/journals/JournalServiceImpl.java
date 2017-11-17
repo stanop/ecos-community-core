@@ -42,7 +42,8 @@ import ru.citeck.ecos.utils.XMLUtils;
 
 class JournalServiceImpl implements JournalService {
 
-    protected static final String SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
+    protected static final String JOURNALS_SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
+    protected static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/invariants.xsd";
 
     private NodeService nodeService;
     private ServiceRegistry serviceRegistry;
@@ -70,8 +71,9 @@ class JournalServiceImpl implements JournalService {
 
     protected Journals parseXML(InputStream inputStream) {
         try {
-            Unmarshaller jaxbUnmarshaller = XMLUtils.createUnmarshaller(Journals.class, 
-                    SCHEMA_LOCATION);
+            Unmarshaller jaxbUnmarshaller = XMLUtils.createUnmarshaller(Journals.class,
+                                                                        INVARIANTS_SCHEMA_LOCATION,
+                                                                        JOURNALS_SCHEMA_LOCATION);
             return (Journals) jaxbUnmarshaller.unmarshal(inputStream);
         } catch (Exception e) {
             throw new IllegalArgumentException("Can not parse journals file", e);

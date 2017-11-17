@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="option" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="batch-edit" type="{http://www.citeck.ru/ecos/journals/1.0}batchEdit" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="filter" type="{http://www.citeck.ru/ecos/journals/1.0}filter" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -39,13 +40,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "header", propOrder = {
     "option",
-    "batchEdit"
+    "batchEdit",
+    "filter"
 })
 public class Header {
 
     protected List<Option> option;
     @XmlElement(name = "batch-edit")
     protected List<BatchEdit> batchEdit;
+    protected Filter filter;
     @XmlAttribute(name = "key", required = true)
     protected String key;
     @XmlAttribute(name = "default")
@@ -115,6 +118,30 @@ public class Header {
             batchEdit = new ArrayList<BatchEdit>();
         }
         return this.batchEdit;
+    }
+
+    /**
+     * Gets the value of the filter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Filter }
+     *     
+     */
+    public Filter getFilter() {
+        return filter;
+    }
+
+    /**
+     * Sets the value of the filter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Filter }
+     *     
+     */
+    public void setFilter(Filter value) {
+        this.filter = value;
     }
 
     /**
