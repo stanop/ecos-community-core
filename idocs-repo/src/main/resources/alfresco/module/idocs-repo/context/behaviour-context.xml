@@ -553,6 +553,7 @@
         <property name="nodeService" ref="NodeService"/>
         <property name="siteService" ref="SiteService"/>
         <property name="namespaceService" ref="NamespaceService"/>
+        <property name="searchService" ref="searchService"/>
     </bean>
 
 

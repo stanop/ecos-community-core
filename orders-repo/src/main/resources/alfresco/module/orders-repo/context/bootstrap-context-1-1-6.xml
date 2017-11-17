@@ -9,20 +9,46 @@
             <list>
                 <ref bean="orders.siteBootstrap"/>
                 <ref bean="orders.categoryBootstrap"/>
+                <ref bean="orders.documentFolders"/>
+                <ref bean="orders.module-component.journals-internal"/>
             </list>
         </property>
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
         <property name="args">
             <map>
-                <entry key="node" value="/app:company_home/st:sites/cm:orders"/>
-                <entry key="attributes">
-                    <map>
-                        <entry key="tk:siteDocumentTypes">
-                            <list>
-                                <value>workspace://SpacesStore/orders-cat-doctype-internal</value>
-                            </list>
-                        </entry>
-                    </map>
+                <entry key="nodes">
+                    <list>
+                        <!-- internal -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:orders/cm:documentLibrary/cm:documents/cm:internals" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/orders-cat-doctype-internal" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:orders-internal" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/orders-cat-doctype-internal" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- orders site -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:orders"/>
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:siteDocumentTypes">
+                                        <list>
+                                            <value>workspace://SpacesStore/orders-cat-doctype-internal</value>
+                                        </list>
+                                    </entry>
+                                </map>
+                            </entry>
+                        </map>
+                    </list>
                 </entry>
             </map>
         </property>

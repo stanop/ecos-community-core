@@ -13,6 +13,8 @@ import org.alfresco.repo.site.SiteModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -31,11 +33,14 @@ public class SiteDocumentTypesBehaviour implements
     NodeServicePolicies.OnDeleteAssociationPolicy
 {
     private static Log logger = LogFactory.getLog(SiteDocumentTypesBehaviour.class);
-    
+
+    private static final String JOURNALS_GLOBAL_ROOT = "/cm:IDocsRoot/journal:journalMetaRoot/cm:journals";
+
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private SiteService siteService;
     private NamespaceService namespaceService;
+    private SearchService searchService;
     
     public void init() {
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME, 
@@ -66,19 +71,26 @@ public class SiteDocumentTypesBehaviour implements
         
         List<NodeRef> containers = RepoUtils.getChildrenByProperty(doclib, 
                 ClassificationModel.PROP_RELATES_TO_TYPE, type, nodeService);
+
         NodeRef documentsFolder;
+
         if(containers.isEmpty()) {
-            NodeRef child = nodeService.getChildByName(doclib, ContentModel.ASSOC_CONTAINS, typeName);
-            if (child != null) {
-                typeName += "_documents";
-            }
+
             Map<QName, Serializable> containerProps = new HashMap<>();
             containerProps.put(ClassificationModel.PROP_RELATES_TO_TYPE, type);
             containerProps.put(ContentModel.PROP_NAME, typeName);
             containerProps.put(ContentModel.PROP_TITLE, typeTitle);
-            documentsFolder = nodeService.createNode(doclib, ContentModel.ASSOC_CONTAINS, 
-                    QName.createQName(ClassificationModel.CLASSIFICATION_TYPE_KIND_NAMESPACE, type.getId()), 
-                    ContentModel.TYPE_FOLDER, containerProps).getChildRef();
+
+            documentsFolder = nodeService.getChildByName(doclib, ContentModel.ASSOC_CONTAINS, typeName);
+            if (documentsFolder == null) {
+                documentsFolder = nodeService.createNode(doclib, ContentModel.ASSOC_CONTAINS,
+                                                         QName.createQName(ClassificationModel.CLASSIFICATION_TYPE_KIND_NAMESPACE, type.getId()),
+                                                         ContentModel.TYPE_FOLDER, containerProps).getChildRef();
+            } else {
+                for (QName prop : containerProps.keySet()) {
+                    nodeService.setProperty(documentsFolder, prop, containerProps.get(prop));
+                }
+            }
         } else {
             documentsFolder = containers.get(0);
         }
@@ -90,6 +102,7 @@ public class SiteDocumentTypesBehaviour implements
 
         // journals container
         NodeRef journalsContainer = RepoUtils.getOrCreateSiteContainer(siteName, JournalService.JOURNALS_CONTAINER, siteService);
+        NodeRef journalsGlobalContainer = getNodeRef(JOURNALS_GLOBAL_ROOT);
         
         // journals list
         String journalsListName = "site-" + siteName + "-main";
@@ -117,8 +130,16 @@ public class SiteDocumentTypesBehaviour implements
         
         // journal
         List<NodeRef> journals = RepoUtils.getChildrenByProperty(journalsContainer, 
-                ClassificationModel.PROP_RELATES_TO_TYPE, type, nodeService);
+                                                                 ClassificationModel.PROP_RELATES_TO_TYPE,
+                                                                 type, nodeService);
+        if (journals.isEmpty()) {
+            journals = RepoUtils.getChildrenByProperty(journalsGlobalContainer,
+                                                       ClassificationModel.PROP_RELATES_TO_TYPE,
+                                                       type, nodeService);
+        }
+
         NodeRef journal;
+
         if(journals.isEmpty()) {
             
             String journalType = RepoUtils.getProperty(type, ClassificationModel.PROP_JOURNAL_TYPE, nodeService);
@@ -201,6 +222,11 @@ public class SiteDocumentTypesBehaviour implements
         }
     }
 
+    private NodeRef getNodeRef(String path) {
+        NodeRef storeRoot = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        return searchService.selectNodes(storeRoot, path, null, namespaceService, false).get(0);
+    }
+
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
     }
@@ -216,5 +242,8 @@ public class SiteDocumentTypesBehaviour implements
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
     }
-    
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 }
