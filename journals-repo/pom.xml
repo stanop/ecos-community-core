@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.2.0.0-SNAPSHOT-flowable</version>
+        <version>3.2.0.0.flowable-SNAPSHOT</version>
     </parent>
 
     <properties>
