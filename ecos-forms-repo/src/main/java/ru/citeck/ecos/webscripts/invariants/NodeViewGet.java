@@ -86,7 +86,7 @@ public class NodeViewGet extends DeclarativeWebScript {
         }
 
         if (typeParam != null && !typeParam.isEmpty()) {
-            builder.className(typeParam);
+            setClassName(builder, typeParam);
             canBeDraft = canBeDraft(QName.resolveToQName(prefixResolver, typeParam));
         } else if (nodeRefParam != null && !nodeRefParam.isEmpty()) {
             if (!NodeRef.isNodeRef(nodeRefParam)) {
@@ -139,6 +139,13 @@ public class NodeViewGet extends DeclarativeWebScript {
         model.put(MODEL_CAN_BE_DRAFT, canBeDraft);
         model.put(MODEL_NODEREF, nodeRef != null ? nodeRef.toString() : null);
         return model;
+    }
+
+    private void setClassName(NodeView.Builder builder, String type) {
+        try {
+            builder.className(type);
+        } catch (Exception e) {
+        }
     }
 
     private Map<String, Object> getTemplateParams(WebScriptRequest req) {

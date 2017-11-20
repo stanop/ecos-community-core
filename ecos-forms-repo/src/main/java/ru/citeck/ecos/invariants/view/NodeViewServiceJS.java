@@ -44,26 +44,27 @@ public class NodeViewServiceJS extends AlfrescoScopableProcessorExtension {
         if (workflowDefinition != null) {
             /** Workflow view */
             type = workflowDefinition.getStartTaskDefinition().getId();
-            boolean result = impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-                    .className(type)
-                    .id(id)
-                    .build());
+            boolean result = checkHasNodeView(id, type);
             if (result) {
                 return true;
             } else {
-                return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-                        .className(DEFAULT_TASK_VIEW)
-                        .id(id)
-                        .build());
+                return checkHasNodeView(id, DEFAULT_TASK_VIEW);
             }
         } else {
             /** Common view */
+            return checkHasNodeView(id, type);
+        }
+    }
+
+    private boolean checkHasNodeView(String id, String type) {
+        try {
             return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
                     .className(type)
                     .id(id)
                     .build());
+        } catch (Exception e) {
+            return false;
         }
-
     }
     
     public boolean hasNodeView(ScriptNode node, String id) {
