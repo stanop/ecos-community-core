@@ -1,3 +1,5 @@
+<#import "/ru/citeck/invariants/invariants.lib.ftl" as invariants />
+
 <#macro renderJournalType journalType>
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
@@ -14,20 +16,13 @@
         "sortable":   ${journalType.isAttributeSortable(attribute)?string},
         "groupable":  ${journalType.isAttributeGroupable(attribute)?string},
         "settings": <@renderJournalOptions journalType.getAttributeOptions(attribute) />,
-        "batchEdit": <@renderJournalBatchEdit journalType.getBatchEdit(attribute) />
+        "batchEdit": <@renderJournalBatchEdit journalType.getBatchEdit(attribute) />,
+        "filterInvariants": <@invariants.renderInvariants journalType.getFilterInvariants(attribute) />
         }<#if attribute_has_next>,</#if>
         </#list>
     ]
 }
 </#escape>
-</#macro>
-
-<#macro renderAttributeFilter filter> {
-    <#escape x as jsonUtils.encodeJSONString(x)>
-    {
-
-    }
-    </#escape>
 </#macro>
 
 <#macro renderJournalGroupAction groupActions>
@@ -181,7 +176,7 @@
 {
     "field": "${shortQName(criterion.properties["journal:fieldQName"])}",
     "predicate": "${criterion.properties["journal:predicate"]}",
-    "value": "<@valueTemplate/>"
+    "persistedValue": "<@valueTemplate/>"
 }
 </#escape>
 </#macro>

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.xml.BatchEdit;
 
 public interface JournalType {
@@ -57,5 +58,7 @@ public interface JournalType {
     public List<JournalBatchEdit> getBatchEdit(QName attributeKey);
 
     public List<JournalGroupAction> getGroupActions();
+
+    public List<InvariantDefinition> getFilterInvariants(QName attributeKey);
     
 }

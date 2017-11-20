@@ -24,6 +24,8 @@ import java.util.Map;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespaceService;
 
+import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 public class JournalTypeJS {
@@ -98,6 +100,10 @@ public class JournalTypeJS {
 
     public List<JournalGroupAction> getGroupActions() {
         return impl.getGroupActions();
+    }
+
+    public List<InvariantDefinition> getFilterInvariants(String attributeKey) {
+        return impl.getFilterInvariants(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
     }
     
 }

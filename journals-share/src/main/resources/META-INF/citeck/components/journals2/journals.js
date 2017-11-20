@@ -86,45 +86,135 @@ JournalsList
 	.computed('listId', function() {
 		return this.id() ? this.id().replace(journalsListIdRegexp, '$4') : '';
 	})
-  .constructor([String, String], function(id, nodeRef) {
-    var jl = new JournalsList(id);
-    jl.documentNodeRef(nodeRef);
-    return jl;
+  	.constructor([String, String], function(id, nodeRef) {
+		var jl = new JournalsList(id);
+		jl.documentNodeRef(nodeRef);
+		return jl;
 	}, true)
 	;
 
+var featuredProperty = function(featureName) {
+    return function() {
+        var attribute = this.resolve('field.attribute');
+        return attribute ? attribute[featureName + 'Evaluator'](this.invariantsModel()).value : null;
+    }
+};
+
 Criterion
-	.property('field', AttributeInfo)
-	.property('predicate', Predicate)
-	.property('value', s)
-	.computed('shortModel', function() {
-		return {
-			field: this.field().name(),
-			predicate: this.predicate().id(),
-			value: this.value()
-		};
-	})
-	.computed('id', function() {
-		if(typeof this._id == "undefined") {
-			this._id = criteriaCounter++;
-		}
-		return this._id;
-	})
-	.computed('query', function() {
-		var id = this.id(),
-			result = {};
-		result['field_' + id] = this.field().name();
-		result['predicate_' + id] = this.resolve('predicate.id');
-		result['value_' + id] = this.value();
-		return result;
-	})
+    .property('field', AttributeInfo)
+    .property('predicate', Predicate)
+    .property('persistedValue', o)  // value, persisted in repository
+    .property('newValue', o) // value, set by user
+
+    .shortcut('nodetype', 'field.nodetype')
+    .shortcut('datatype', 'field.datatype')
+    .shortcut('valueClass', 'field.nodetype')
+    .shortcut('journalType', 'field.journalType')
+
+    .shortcut('title', 'field.customDisplayName')
+
+    /*====== Value ======*/
+
+    .method('convertValue', function(value, multiple) {
+
+        if (value == null) return multiple ? [] : null;
+
+        var instantiate = _.partial(koutils.instantiate, _, this.valueClass() || s);
+        if (_.isArray(value)) {
+            return multiple ? _.map(value, instantiate) : instantiate(value[0]);
+        } else {
+            return multiple ? [ instantiate(value) ] : instantiate(value) ;
+        }
+    })
+
+    .computed('value', {
+        read: function() {
+            return this.convertValue(this.rawValue(), this.multiple());
+        },
+        write: function(value) {
+            this.newValue(this.convertValue(value, true));
+        }
+    })
+
+    .computed('rawValue', function() {
+        return this.invariantValue() || this.newValue() || this.persistedValue() || this.invariantDefault();
+    })
+
+    .computed('singleValue', {
+        read: function() {
+            return this.convertValue(this.rawValue(), false);
+        },
+        write: function(value) {
+            this.value(value);
+        }
+    })
+
+    .computed('multipleValues', {
+        read: function() {
+            return this.convertValue(this.rawValue(), true);
+        },
+        write: function(value) {
+            this.value(value);
+        }
+    })
+
+    .computed('options', {
+        read: function() {
+            return this.convertValue(this.invariantOptions(), true) || [];
+        },
+        pure: true
+    })
+
+    /*====== Invariants ======*/
+
+    .computed('invariantsModel', function() {
+        return this.getInvariantsModel(this.value, this.cache = this.cache || {});
+    })
+    .method('getInvariantsModel', function(value, cache) {
+        var model = {};
+        Object.defineProperty(model, 'value', typeof value == "function" ? { get: value } : { value: value });
+        Object.defineProperty(model, 'cache', { value: cache });
+        return model;
+    })
+
+    .computed('invariantValue', featuredProperty('valueFilter'))
+    .computed('invariantOptions', featuredProperty('optionsFilter'))
+    .computed('invariantDefault', featuredProperty('defaultFilter'))
+    .computed('multiple', featuredProperty('multipleFilter'))
+    .computed('mandatory', featuredProperty('mandatoryFilter'))
+    .computed('relevant', featuredProperty('relevantFilter'))
+    .computed('protected', featuredProperty('protectedFilter'))
+
+    /*====== Other ======*/
+
+    .computed('shortModel', function() {
+        return {
+            field: this.field().name(),
+            predicate: this.predicate().id(),
+            value: this.value()
+        };
+    })
+    .computed('id', function() {
+        if(typeof this._id == "undefined") {
+            this._id = criteriaCounter++;
+        }
+        return this._id;
+    })
+    .computed('query', function() {
+        var id = this.id(),
+            result = {};
+        result['field_' + id] = this.field().name();
+        result['predicate_' + id] = this.resolve('predicate.id');
+        result['value_' + id] = this.value();
+        return result;
+    })
     .init(function() {
         var predicateId = this.resolve('predicate.id');
         if (predicateId && predicateId.indexOf("boolean") != -1){
             this.value("boolean");
         }
     })
-	;
+    ;
 
 CreateVariant
 	.property('url', s)
@@ -313,32 +403,68 @@ Settings
 	})
 	;
 
+var notNull = function(value) { return value !== null; };
+var isFalse = function(value) { return value === false; };
+
+var filterFeatureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
+    return function(model) {
+
+        var invariant,
+            invariantValue = null,
+            invariants = this['filterInvariants']();
+
+        invariant = _.find(invariants, function(invariant) {
+            if (invariant.feature() == featureName) {
+                invariantValue = invariant.evaluate(model);
+                return isTerminate(invariantValue, invariant);
+            }
+        });
+
+        return {
+            invariant: invariant,
+            value: koutils.instantiate(invariant != null ? invariantValue : defaultValue, requiredClass)
+        }
+    };
+};
+
 Attribute
-	.property('name', s)
-	.property('_info', AttributeInfo)
-	.property('visible', b)
-	.property('searchable', b)
-	.property('sortable', b)
-	.property('groupable', b)
-	.property('isDefault', b)
-	.property('settings', o)
-	.property('batchEdit', [ Action ])
+    .property('name', s)
+    .property('_info', AttributeInfo)
+    .property('visible', b)
+    .property('searchable', b)
+    .property('sortable', b)
+    .property('groupable', b)
+    .property('isDefault', b)
+    .property('settings', o)
+    .property('batchEdit', [ Action ])
+    .property('filterInvariants', [ Invariant ])
 
-	.shortcut('type', '_info.type')
-	.shortcut('displayName', '_info.displayName')
-	.shortcut('datatype', '_info.datatype')
-	.shortcut('nodetype', '_info.nodetype')
-	.shortcut('journalType', '_info.journalType')
-	.shortcut('labels', '_info.labels', {})
+    .shortcut('type', '_info.type')
+    .shortcut('displayName', '_info.displayName')
+    .shortcut('datatype', '_info.datatype')
+    .shortcut('nodetype', '_info.nodetype')
+    .shortcut('journalType', '_info.journalType')
+    .shortcut('labels', '_info.labels', {})
 
-	.init(function() {
-		this.model({ _info: {name: this.name(), attribute: this} });
+    .method('valueFilterEvaluator', filterFeatureEvaluator('value', o, null, notNull))
+    .method('defaultFilterEvaluator', filterFeatureEvaluator('default', o, null, notNull))
+    .method('optionsFilterEvaluator', filterFeatureEvaluator('options', o, null, notNull))
+    .method('valueTitleFilterEvaluator', filterFeatureEvaluator('value-title', s, '', notNull))
+    .method('valueDescriptionFilterEvaluator', filterFeatureEvaluator('value-description', s, '', notNull))
+    .method('valueOrderFilterEvaluator', filterFeatureEvaluator('value-order', n, 0, notNull))
+    .method('relevantFilterEvaluator', filterFeatureEvaluator('relevant', b, true, notNull))
+    .method('multipleFilterEvaluator', filterFeatureEvaluator('multiple', b, false, notNull))
+    .method('mandatoryFilterEvaluator', filterFeatureEvaluator('mandatory', b, false, notNull))
+    .method('protectedFilterEvaluator', filterFeatureEvaluator('protected', b, false, notNull))
+
+    .init(function() {
+        this.model({ _info: {name: this.name(), attribute: this} });
         var self = this;
-		_.each(this.batchEdit(), function (a) {
-			a.attribute(self);
-		});
-	})
-	;
+        _.each(this.batchEdit(), function (a) {
+            a.attribute(self);
+        });
+    })
+    ;
 
 AttributeInfo
 	.key('name', s)
@@ -361,142 +487,6 @@ AttributeInfo
 		return this.displayName();
 	})
 	;
-
-    var notNull = function(value) { return value !== null; }
-    var isFalse = function(value) { return value === false; }
-
-    var featureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
-        return function(model) {
-
-        	var invariant,
-                invariantValue = null,
-                invariants = this['invariants']();
-
-            invariant = _.find(invariants, function(invariant) {
-            	if (invariant.feature() == featureName) {
-                    invariantValue = invariant.evaluate(model);
-                    return isTerminate(invariantValue, invariant);
-            	}
-            });
-
-            return {
-                invariant: invariant,
-                value: koutils.instantiate(invariant != null ? invariantValue : defaultValue, requiredClass)
-            }
-        };
-    };
-
-    var featuredProperty = function(featureName) {
-        return function() {
-            return this[featureName + 'Evaluator'](this.invariantsModel()).value;
-        }
-    };
-
-AttributeFilter
-
-    .key('key', s)
-
-    .property('invariants', [ Invariant ])
-    .property('attribute', [ Attribute ])
-
-    .shortcut('nodetype', 'attribute.nodetype')
-    .shortcut('datatype', 'attribute.datatype')
-    .shortcut('valueClass', 'attribute.nodetype')
-    .shortcut('journalType', 'attribute.journalType')
-    .shortcut('settings', 'attribute.settings')
-
-    /*====== Value ======*/
-
-    .property('newValue', o) // value, set by user
-    .computed('rawValue', function() {
-        return this.invariantValue() || this.newValue() || this.invariantDefault();
-    })
-    .computed('value', {
-        read: function() {
-            return this.convertValue(this.rawValue(), this.multiple());
-        },
-        write: function(value) {
-            this.newValue(this.convertValue(value, true));
-        }
-    })
-    .computed('singleValue', {
-        read: function() {
-            return this.convertValue(this.rawValue(), false);
-        },
-        write: function(value) {
-            this.value(value);
-        }
-    })
-    .computed('multipleValues', {
-        read: function() {
-            return this.convertValue(this.rawValue(), true);
-        },
-        write: function(value) {
-            this.value(value);
-        }
-    })
-    .method('convertValue', function(value, multiple) {
-
-        if(value == null) return multiple ? [] : null;
-
-        var instantiate = _.partial(koutils.instantiate, _, this.valueClass());
-        if(_.isArray(value)) {
-            return multiple ? _.map(value, instantiate) : instantiate(value[0]);
-        } else {
-            return multiple ? [ instantiate(value) ] : instantiate(value) ;
-        }
-    })
-
-    /* ====== Properties ====== */
-
-    .computed('options', {
-        read: function() {
-            var result = this.convertValue(this.invariantOptions(), true);
-            if (result == null || result.length === 0) {
-                //todo
-            }
-            return result;
-        },
-        pure: true
-    })
-
-    .computed('invariantsModel', function() {
-        return this.getInvariantsModel(this.value, this.cache = this.cache || {});
-    })
-    .method('getInvariantsModel', function(value, cache) {
-        var model = {};
-        Object.defineProperty(model, 'value', typeof value == "function" ? { get: value } : { value: value });
-        Object.defineProperty(model, 'cache', { value: cache });
-        return model;
-    })
-
-    /*====== Invariants ======*/
-
-    .computed('invariantValue', featuredProperty('value'))
-    .computed('invariantDefault', featuredProperty('default'))
-    .computed('title', featuredProperty('title'))
-    .computed('description', featuredProperty('description'))
-    .computed('multiple', featuredProperty('multiple'))
-    .computed('mandatory', featuredProperty('mandatory'))
-    .computed('relevant', featuredProperty('relevant'))
-    .computed('protected', featuredProperty('protected'))
-
-    .method('valueEvaluator', featureEvaluator('value', o, null, notNull))
-    .method('nonblockingValueEvaluator', featureEvaluator('nonblocking-value', o, null, notNull))
-    .method('defaultEvaluator', featureEvaluator('default', o, null, notNull))
-    .method('optionsEvaluator', featureEvaluator('options', o, null, notNull))
-    .method('titleEvaluator', featureEvaluator('title', s, '', notNull))
-    .method('descriptionEvaluator', featureEvaluator('description', s, '', notNull))
-    .method('valueTitleEvaluator', featureEvaluator('value-title', s, '', notNull))
-    .method('valueDescriptionEvaluator', featureEvaluator('value-description', s, '', notNull))
-    .method('valueOrderEvaluator', featureEvaluator('value-order', n, 0, notNull))
-    .method('relevantEvaluator', featureEvaluator('relevant', b, true, notNull))
-    .method('multipleEvaluator', featureEvaluator('multiple', b, false, notNull))
-    .method('mandatoryEvaluator', featureEvaluator('mandatory', b, false, notNull))
-    .method('protectedEvaluator', featureEvaluator('protected', b, false, notNull))
-    .method('validEvaluator', featureEvaluator('valid', b, true, isFalse))
-
-    ;
 
 Datatype
 	.key('name', s)

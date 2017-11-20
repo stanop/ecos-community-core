@@ -31,6 +31,10 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.invariants.InvariantDefinition;
+import ru.citeck.ecos.invariants.InvariantPriority;
+import ru.citeck.ecos.invariants.InvariantScope;
+import ru.citeck.ecos.invariants.xml.Invariant;
 import ru.citeck.ecos.journals.xml.*;
 
 class JournalTypeImpl implements JournalType {
@@ -42,6 +46,7 @@ class JournalTypeImpl implements JournalType {
     private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
     private final Map<QName, Map<String, String>> attributeOptions;
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
+    private final Map<QName, List<InvariantDefinition>> filtersInvariants;
     
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry) {
 
@@ -50,7 +55,10 @@ class JournalTypeImpl implements JournalType {
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
         List<Header> headers = journal.getHeaders().getHeader();
         List<QName> allAttributes = new ArrayList<>(headers.size());
+
         batchEdit = new HashMap<>();
+        filtersInvariants = new HashMap<>();
+
         defaultAttributes = new BitSet(allAttributes.size());
         visibleAttributes = new BitSet(allAttributes.size());
         searchableAttributes = new BitSet(allAttributes.size());
@@ -60,7 +68,9 @@ class JournalTypeImpl implements JournalType {
 
         int index = 0;
         for(Header header : headers) {
+
             QName attributeKey = QName.createQName(header.getKey(), prefixResolver);
+
             allAttributes.add(attributeKey);
             if(header.isDefault()) defaultAttributes.set(index);
             if(header.isVisible()) visibleAttributes.set(index);
@@ -77,7 +87,25 @@ class JournalTypeImpl implements JournalType {
                                                             attributeKey, prefixResolver,
                                                             serviceRegistry));
             }
+
             batchEdit.put(attributeKey, attributeBatchEdit);
+
+            List<InvariantDefinition> attributeFilterInvariants;
+            if (header.getFilter() != null && header.getFilter().getInvariant() != null) {
+
+                List<Invariant> filterInvariants = header.getFilter().getInvariant();
+                attributeFilterInvariants = InvariantDefinition.Builder.buildInvariants(
+                        attributeKey,
+                        InvariantScope.AttributeScopeKind.PROPERTY, //doesn't matter
+                        InvariantPriority.COMMON,
+                        filterInvariants,
+                        prefixResolver
+                );
+            } else {
+                attributeFilterInvariants = Collections.emptyList();
+            }
+            filtersInvariants.put(attributeKey, attributeFilterInvariants);
+
             index++;
         }
         this.attributes = Collections.unmodifiableList(allAttributes);
@@ -177,6 +205,11 @@ class JournalTypeImpl implements JournalType {
         return result;
     }
 
+    @Override
+    public List<InvariantDefinition> getFilterInvariants(QName attributeKey) {
+        return filtersInvariants.get(attributeKey);
+    }
+
     private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
         List<QName> result = new LinkedList<>();
         for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i+1)) {
@@ -209,4 +242,5 @@ class JournalTypeImpl implements JournalType {
         }
         return result;
     }
+
 }
