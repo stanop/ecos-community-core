@@ -50,7 +50,7 @@
                             <entry key="node" value="/app:company_home/st:sites/cm:letters/cm:documentLibrary/cm:outcome" />
                             <entry key="attributes">
                                 <map>
-                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-income" />
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-outcome" />
                                 </map>
                             </entry>
                         </map>
@@ -58,7 +58,7 @@
                             <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:outcome" />
                             <entry key="attributes">
                                 <map>
-                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-income" />
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-outcome" />
                                 </map>
                             </entry>
                         </map>

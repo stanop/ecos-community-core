@@ -14,6 +14,9 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -33,8 +36,6 @@ public class SiteDocumentTypesBehaviour implements
     NodeServicePolicies.OnDeleteAssociationPolicy
 {
     private static Log logger = LogFactory.getLog(SiteDocumentTypesBehaviour.class);
-
-    private static final String JOURNALS_GLOBAL_ROOT = "/cm:IDocsRoot/journal:journalMetaRoot/cm:journals";
 
     private PolicyComponent policyComponent;
     private NodeService nodeService;
@@ -102,8 +103,7 @@ public class SiteDocumentTypesBehaviour implements
 
         // journals container
         NodeRef journalsContainer = RepoUtils.getOrCreateSiteContainer(siteName, JournalService.JOURNALS_CONTAINER, siteService);
-        NodeRef journalsGlobalContainer = getNodeRef(JOURNALS_GLOBAL_ROOT);
-        
+
         // journals list
         String journalsListName = "site-" + siteName + "-main";
         NodeRef journalsList = RepoUtils.getChildByName(journalsContainer, ContentModel.ASSOC_CONTAINS, journalsListName, nodeService);
@@ -129,18 +129,10 @@ public class SiteDocumentTypesBehaviour implements
         }
         
         // journal
-        List<NodeRef> journals = RepoUtils.getChildrenByProperty(journalsContainer, 
-                                                                 ClassificationModel.PROP_RELATES_TO_TYPE,
-                                                                 type, nodeService);
-        if (journals.isEmpty()) {
-            journals = RepoUtils.getChildrenByProperty(journalsGlobalContainer,
-                                                       ClassificationModel.PROP_RELATES_TO_TYPE,
-                                                       type, nodeService);
-        }
 
-        NodeRef journal;
+        NodeRef journal = getRelatesToType(JournalsModel.TYPE_JOURNAL, type);
 
-        if(journals.isEmpty()) {
+        if (journal == null) {
             
             String journalType = RepoUtils.getProperty(type, ClassificationModel.PROP_JOURNAL_TYPE, nodeService);
             if(journalType == null) journalType = "ecos-documents";
@@ -151,8 +143,8 @@ public class SiteDocumentTypesBehaviour implements
             journalProps.put(JournalsModel.PROP_JOURNAL_TYPE, journalType);
             
             journal = nodeService.createNode(journalsContainer, ContentModel.ASSOC_CONTAINS, 
-                    QName.createQName(JournalsModel.JOURNAL_NAMESPACE, type.getId()), 
-                    JournalsModel.TYPE_JOURNAL, journalProps).getChildRef();
+                                             QName.createQName(JournalsModel.JOURNAL_NAMESPACE, type.getId()),
+                                             JournalsModel.TYPE_JOURNAL, journalProps).getChildRef();
             
             // create criteria
             QName alfrescoType = RepoUtils.getProperty(type, ClassificationModel.PROP_APPLIED_TYPE, nodeService);
@@ -181,16 +173,11 @@ public class SiteDocumentTypesBehaviour implements
             // bind it all together
             nodeService.createAssociation(journalsList, journal, JournalsModel.ASSOC_JOURNALS);
             nodeService.createAssociation(createVariant, documentsFolder, JournalsModel.ASSOC_DESTINATION);
-            
+
+            logger.debug("Journal on site '" + siteName + "' for type '" + typeName + "' created: " + journal);
         } else {
-            journal = journals.get(0);
+            logger.debug("Journal on site '" + siteName + "' for type '" + typeName + "' found: " + journal);
         }
-        
-        if(logger.isDebugEnabled()) {
-            logger.debug("Journal on site '" + siteName + "' for type '" + typeName + 
-                    (journals.isEmpty() ? "' created: " : "' found: ") + journal);
-        }
-        
     }
 
     private Map<QName, Serializable> criterionProps(FieldType type, SearchPredicate predicate, Serializable value) {
@@ -219,6 +206,24 @@ public class SiteDocumentTypesBehaviour implements
                 ClassificationModel.PROP_RELATES_TO_TYPE, type, nodeService);
         for(NodeRef journal : journals) {
             RepoUtils.deleteNode(journal, nodeService);
+        }
+    }
+
+    private NodeRef getRelatesToType(QName nodeType, NodeRef toType) {
+        SearchParameters params = new SearchParameters();
+        params.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
+        params.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+        params.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        String query = "TYPE:\"%s\" AND =" + ClassificationModel.PROP_RELATES_TO_TYPE + ":\"%s\"";
+        params.setQuery(String.format(query, nodeType, toType));
+        ResultSet result = null;
+        try {
+            result = searchService.query(params);
+            return result.length() > 0 ? result.getNodeRef(0) : null;
+        } finally {
+            if (result != null) {
+                result.close();
+            }
         }
     }
 
