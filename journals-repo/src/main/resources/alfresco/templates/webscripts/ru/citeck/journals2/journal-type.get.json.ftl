@@ -1,2 +1,1 @@
-<#import "journals.lib.ftl" as journals />
-<@journals.renderJournalType journalType />
+${jsonUtils.toJSONString(journalType)}

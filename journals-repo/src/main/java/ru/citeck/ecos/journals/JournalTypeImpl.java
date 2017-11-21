@@ -31,10 +31,6 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
-import ru.citeck.ecos.invariants.InvariantDefinition;
-import ru.citeck.ecos.invariants.InvariantPriority;
-import ru.citeck.ecos.invariants.InvariantScope;
-import ru.citeck.ecos.invariants.xml.Invariant;
 import ru.citeck.ecos.journals.xml.*;
 
 class JournalTypeImpl implements JournalType {
@@ -46,7 +42,7 @@ class JournalTypeImpl implements JournalType {
     private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
     private final Map<QName, Map<String, String>> attributeOptions;
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
-    private final Map<QName, List<InvariantDefinition>> filtersInvariants;
+    private final Map<QName, JournalCriterion> criterion;
     
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry) {
 
@@ -57,7 +53,7 @@ class JournalTypeImpl implements JournalType {
         List<QName> allAttributes = new ArrayList<>(headers.size());
 
         batchEdit = new HashMap<>();
-        filtersInvariants = new HashMap<>();
+        criterion = new HashMap<>();
 
         defaultAttributes = new BitSet(allAttributes.size());
         visibleAttributes = new BitSet(allAttributes.size());
@@ -89,22 +85,7 @@ class JournalTypeImpl implements JournalType {
             }
 
             batchEdit.put(attributeKey, attributeBatchEdit);
-
-            List<InvariantDefinition> attributeFilterInvariants;
-            if (header.getFilter() != null && header.getFilter().getInvariant() != null) {
-
-                List<Invariant> filterInvariants = header.getFilter().getInvariant();
-                attributeFilterInvariants = InvariantDefinition.Builder.buildInvariants(
-                        attributeKey,
-                        InvariantScope.AttributeScopeKind.PROPERTY, //doesn't matter
-                        InvariantPriority.COMMON,
-                        filterInvariants,
-                        prefixResolver
-                );
-            } else {
-                attributeFilterInvariants = Collections.emptyList();
-            }
-            filtersInvariants.put(attributeKey, attributeFilterInvariants);
+            criterion.put(attributeKey, new JournalCriterion(attributeKey, header.getCriterion(), prefixResolver));
 
             index++;
         }
@@ -206,8 +187,8 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
-    public List<InvariantDefinition> getFilterInvariants(QName attributeKey) {
-        return filtersInvariants.get(attributeKey);
+    public JournalCriterion getCriterion(QName attributeKey) {
+        return criterion.get(attributeKey);
     }
 
     private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {

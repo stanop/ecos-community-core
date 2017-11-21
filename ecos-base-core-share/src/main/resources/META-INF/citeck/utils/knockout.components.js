@@ -364,221 +364,28 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
     });
 
-    ko.components.register("attribute-filter", {
+    ko.components.register("filter-criterion-field", {
         viewModel: function(params) {
 
             var self = this;
             initializeParameters.call(this, params);
 
             this.html = ko.observable("");
-            this._value = ko.observable(null);
 
-            this.nodetype = this.attribute().nodetype ? this.attribute().nodetype() : null;
-            this.journalType = this.attribute().journalType ? this.attribute().journalType() : null;
-            this.settings = this.attribute().settings ? this.attribute().settings() : null;
-
-            this.drawFilterCriterionValueComponent = function() {
-                Alfresco.util.Ajax.request({
-                    url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
-                    + self.fieldId + "&template=" + self.templateName,
-                    successCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
-                        }
+            var url = "/api/journals/filter/criterion?journalId=active-tasks&amp;attribute=";
+            Alfresco.util.Ajax.request({
+                url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
+                + self.fieldId + "&template=" + self.templateName,
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
                     }
-                });
-            };
-
-            this.drawFilterCriterionValueComponent = function() {
-                if (self.templateName == 'checkbox') {
-                    return;
                 }
-                Alfresco.util.Ajax.request({
-                    url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
-                    + self.fieldId + "&template=" + self.templateName,
-                    successCallback: {
-                        scope: this,
-                        fn: function (response) {
-                            self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
-                        }
-                    }
-                });
-            };
+            });
 
-            if (this.datatype) {
-                var datatypeMapping = {
-                    'boolean': 'd:boolean'
-                };
-                var datatype = datatypeMapping[self.datatype] || self.datatype;
-
-                // prepare fake viewModel
-                this.fakeViewModel = {
-                    "fieldId": this.fieldId,
-
-                    "mandatory": ko.observable(false),
-                    "protected": ko.observable(false),
-                    "multiple": ko.observable(false),
-                    "relevant": ko.observable(true),
-                    "value": self.value,
-                    "singleValue": self.value,
-                    "multipleValues": self.value,
-
-                    "title": ko.computed(function() {
-                        var displayName = function () {
-                            if (self.journalType) {
-                                if (self.journalType.id() == 'cm-person') {
-                                    return Citeck.utils.formatUserName(
-                                        {
-                                            userName: self._value().properties["cm:userName"],
-                                            firstName: self._value().properties["cm:firstName"],
-                                            lastName: self._value().properties["cm:lastName"]
-                                        }, true);
-                                }
-                            }
-                            return self._value().properties["cm:title"] ? self._value().properties["cm:title"]
-                                : self._value().properties["cm:name"];
-                        };
-                        return self._value() ? displayName() : Alfresco.util.message("label.none");
-
-                    }),
-
-                    "nodetype": ko.observable(self.nodetype),
-                    "datatype": ko.observable(datatype),
-
-                    "options": ko.observable([]),
-                    "optionsText": function(o) { return o.attributes["cm:name"]; },
-                    "optionsValue": function(o) { return o.nodeRef; },
-
-                    "cache": {
-                        result: ko.observable([])
-                    }
-                };
-
-                this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype);
-
-                if (this.datatype == "association" && this.nodetype) {
-                    if (this.value() && Citeck.utils.isNodeRef(this.value().toString())) {
-                        this._value(new Node(this.value()));
-                    }
-
-                    this.fakeViewModel.value = ko.computed({
-                        read: function() { return self._value() ? self._value() : null; },
-                        write: function(newValue) {
-                            if (newValue) {
-                                var object = newValue instanceof Array ? newValue[0] : newValue,
-                                    node = isInvariantsObject(object) ? object : new Node(object);
-
-                                self._value(node);
-                            } else { self._value(newValue); }
-
-                        }
-                    });
-
-                    if (this.templateName == "journal" && this.journalType) {
-                        this.fakeViewModel.cache.result.extend({ notify: 'always' });
-
-                        this.fakeViewModel.journalType = this.journalType;
-                        this.fakeViewModel.searchCriteria = eval("(" + this.settings.searchCriteria + ")");
-                        this.fakeViewModel.filterOptions = function(criteria, pagination) {
-                            var query = {
-                                skipCount: 0,
-                                maxItems: 10,
-                                field_1: "type",
-                                predicate_1: "type-equals",
-                                value_1: self.nodetype
-                            };
-
-                            if (pagination) {
-                                if (pagination.maxItems) query.maxItems = pagination.maxItems;
-                                if (pagination.skipCount) query.skipCount = pagination.skipCount;
-                            }
-
-                            _.each(criteria, function(criterion, index) {
-                                query['field_' + (index + 2)] = criterion.attribute;
-                                query['predicate_' + (index + 2)] = criterion.predicate;
-                                query['value_' + (index + 2)] = criterion.value;
-                            });
-
-
-                            if(this.cache.query) {
-                                if(_.isEqual(query, this.cache.query)) return this.cache.result();
-                            }
-
-                            this.cache.query = query;
-                            if (_.some(_.keys(query), function(p) {
-                                    return _.some(["field", "predicate", "value"], function(ci) {
-                                        return p.indexOf(ci) != -1;
-                                    });
-                                })) {
-                                Alfresco.util.Ajax.jsonPost({
-                                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                                    dataObj: query,
-                                    successCallback: {
-                                        scope: this.cache,
-                                        fn: function(response) {
-                                            var result = _.map(response.json.results, function(node) {
-                                                return new Node(node);
-                                            });
-                                            result.pagination = response.json.paging;
-                                            result.query = response.json.query;
-                                            this.result(result);
-                                        }
-                                    }
-                                });
-                            }
-
-                            return this.cache.result();
-                        };
-                    } else if (this.templateName == "orgstruct") {
-                        this.fakeViewModel.title = ko.computed(function() {
-                            var authNode = self._value();
-                            if (authNode) {
-                                switch (authNode.typeShort) {
-                                    case "cm:person":
-                                        return authNode.properties["cm:firstName"] + " " +
-                                            authNode.properties["cm:lastName"];
-                                        break;
-
-                                    case "cm:authorityContainer":
-                                        return authNode.properties["cm:authorityDisplayName"] ||
-                                            authNode.properties["cm:authorityName"];
-                                        break;
-
-                                    default:
-                                        return authNode.properties["cm:name"];
-                                        break;
-                                }
-                            } else { return Alfresco.util.message("label.none"); }
-                        });
-
-                        switch (this.nodetype) {
-                            case "{http://www.alfresco.org/model/content/1.0}authorityContainer":
-                                this.fakeViewModel.allowedAuthorityType = ko.observable("USER");
-                                break;
-
-                            case "{http://www.alfresco.org/model/content/1.0}authority":
-                                this.fakeViewModel.allowedAuthorityType = ko.observable("USER, GROUP");
-                                break;
-                        }
-                    }
-                } else if (this.labels) {
-                    this.templateName = "select";
-                    this.fakeViewModel.options(getSortPairs(this.labels));
-                    this.fakeViewModel.optionsText = function(o) { return o[1]; };
-                    this.fakeViewModel.optionsValue = function(o) { return o[0]; };
-                    this.fakeViewModel.single = function() { return true; }
-                } else if (this.datatype == "category" && this.journalType && this.attribute().name() == "tk:kind") {
-                    var docType = this.journalOptionsType();
-                    if (!docType) return;
-
-                    self.templateName = "select";
-                    self.fakeViewModel.options([["1", Alfresco.util.message('form.select.loading')]]);
-                    self.fakeViewModel.optionsText = function(o) { return o[1]; };
-                    self.fakeViewModel.optionsValue = function(o) { return o[0]; };
-                    this.fakeViewModel.single = function() { return true; }
-
-                    Alfresco.util.Ajax.jsonGet({
+            /*
+            * Alfresco.util.Ajax.jsonGet({
                         url: Alfresco.constants.PROXY_URI
                         + "/citeck/search/get-property-default-value?nodeType="
                         + docType + "&property=tk:type",
@@ -590,22 +397,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             }
                         }
                     });
-                } else if (this.datatype == "datetime") {
-                    this.fakeViewModel.mode = ko.observable("alfresco");
-                    this.fakeViewModel.value = ko.computed({
-                        read: function() {
-                            return self.value() ? new Date(self.value()) : null;
-                        },
-                        write: function(newValue) {
-                            self.value(newValue instanceof Date ? newValue.toString("yyyy-MM-ddTHH:mm") : null);
-                        }
-                    })
-                }
+            *
+            * */
 
-                this.drawFilterCriterionValueComponent();
-            }
 
-            this.valueContainerId = this.fieldId + "-value";
             this.html.subscribe(function(newValue) {
                 var container = $("<div>", { "class": "criterion-value-control-container" });
                 container.append($("<div>", { "html": newValue, "class": "criterion-value-field-input" }));
@@ -618,7 +413,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         );
                 }
 
-                var criterionValueElement = $("#" + self.valueContainerId);
+                var criterionValueElement = $("#" + self.containerId);
                 if (!criterionValueElement.find(".criterion-value-control-container").empty()) {
                     criterionValueElement.html("");
                 }
@@ -628,15 +423,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 ko.applyBindings(self.fakeViewModel, container[0]);
             });
 
-            this._value.subscribe(function(newValue) {
-                if (newValue && newValue.nodeRef != self.value()) {
-                    self.value(newValue.nodeRef);
-                } else { self.value(newValue); }
-            });
-
+            /*
             this.keyDownManagment = function(data, event) {
                 if (event.keyCode == 13 && "text,date,datetime,number".indexOf(data.templateName) != -1 && data.applyCriteria) {
-                    $.each($('#'+ this.valueContainerId +' input'), function(){
+                    $.each($('#'+ this.containerId +' input'), function(){
                         this.blur();
                         this.focus();
                     });
@@ -644,10 +434,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     return false;
                 }
                 return true;
-            };
+            };*/
         },
-        template:
-            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
+        template:   //event: {keydown: keyDownManagment }
+            '<div class="criterion" data-bind="attr: { id: containerId }, mousedownBubble: false"></div>'
     });
 
 
@@ -731,8 +521,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             </table>'
     });
 
-
-
     ko.components.register("filter-criteria", {
         viewModel: function(params) {
             var self = this;
@@ -762,43 +550,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="filter-criteria" data-bind="\
                 attr: { id: id + \'-filter-criteria\' },\
                 foreach: filter().criteria()\
-            ">\
-                <div class="criterion">\
-                    <div class="criterion-actions">\
-                        <a class="criterion-remove"\
-                           data-bind="click: $component.remove,\
-                                      attr: { title: Alfresco.util.message(\'button.remove-criterion\') }\
-                        "></a>\
-                    </div>\
-                    <div class="criterion-field" data-bind="with: field">\
-                        <input type="hidden" data-bind="attr: { name: \'field_\' + $parent.id() }, value: name" />\
-                        <label data-bind="text: customDisplayName()"></label>\
-                    </div>\
-                    <div class="criterion-predicate">\
-                        <!-- ko if: resolve(\'field.datatype.predicates.length\', 0) == 0 -->\
-                            <input type="hidden" data-bind="attr: { name: \'predicate_\' + id() }, value: predicate().id()" />\
-                        <!-- /ko -->\
-                        <!-- ko if: resolve(\'field.datatype.predicates.length\', 0) > 0 -->\
-                            <select data-bind="attr: { name: \'predicate_\' + id() },\
-                                               value: predicate,\
-                                               options: resolve(\'field.datatype.predicates\'),\
-                                               optionsText: \'label\'\
-                            "></select>\
-                        <!-- /ko -->\
-                    </div>\
-                    <!-- ko if: $component.valueVisibility($data.predicate()) -->\
-                        <!-- ko component: { name: "filter-criterion-value", params: {\
-                            fieldId: $component.id + "-criterion-" + id(),\
-                            datatype: resolve(\'field.datatype.name\', null),\
-                            labels: resolve(\'field.labels\', null),\
-                            value: value,\
-                            attribute: $component.getAttribute($data),\
-                            applyCriteria: $component.applyCriteria,\
-                            journalOptionsType: $component.getJournalOptionsType($data)\
-                        }} --><!-- /ko -->\
-                    <!-- /ko -->\
-                </div>\
-            </div>'
+           ">\
+               <div class="criterion">\
+                   <!-- ko component: { name: "filter-criterion-field", params: {\
+                       fieldId: $component.id + "-criterion-" + id(),\
+                       datatype: resolve("field.datatype.name", null),\
+                       labels: resolve("field.labels", null),\
+                       value: value,\
+                       attribute: $component.getAttribute($data),\
+                       applyCriteria: $component.applyCriteria,\
+                       journalOptionsType: $component.getJournalOptionsType($data)\
+                   }} --><!-- /ko -->\
+               </div>\
+           </div>'
     });
 
     // TODO:

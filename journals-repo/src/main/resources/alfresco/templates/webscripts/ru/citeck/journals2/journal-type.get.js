@@ -1,3 +1,5 @@
+<import resource="classpath:/alfresco/templates/webscripts/ru/citeck/journals2/journals.lib.js">
+
 (function() {
     var journalTypeId = url.templateArgs.journalTypeId;
     if(!journalTypeId) {
@@ -11,6 +13,6 @@
         return;
     }
 
-    model.journalType = journalType;
+    model.journalType = journalsLib.renderJournalType(journalType);
 
 })();

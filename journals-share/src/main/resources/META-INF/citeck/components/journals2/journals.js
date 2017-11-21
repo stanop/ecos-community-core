@@ -68,6 +68,8 @@ var criteriaCounter = 0,
 	ActionsColumn = koclass('ActionsColumn'),
 	JournalsWidget = koclass('JournalsWidget'),
 	SortBy = koclass('SortBy'),
+    Node = koclass('invariants.Node'),
+    QName = koclass('invariants.QName'),
 	last;
 
 // class definitions:
@@ -158,6 +160,57 @@ Criterion
         }
     })
 
+    .computed('textValue', {
+        read: function() { return this.getValueText(this.value()); },
+        write: function(value) {
+            if(value == null || value == "") {
+                return this.value(null);
+            } else {
+                return this.value(value);
+            }
+        }
+    })
+
+    .method('getValueText', function(value) {
+
+        if(value == null) return null;
+        if(_.isArray(value)) return _.map(value, this.getValueText, this);
+
+        var valueClass = this.valueClass();
+        if (valueClass == null) return "" + value;
+        if (valueClass == o) return value.toString();
+        if (valueClass == s) return "" + value;
+        if (valueClass == b) return value ? "true" : "false";
+        if (valueClass == Node) return value.nodeRef;
+        if (valueClass == QName) return value.shortQName();
+
+        var datatype = this.datatype();
+        if(valueClass == n) {
+            if(datatype == 'd:int' || datatype == 'd:long') {
+                return "" + Math.floor(value);
+            }
+            return "" + value;
+        }
+        if(valueClass == d) {
+            if(datatype == 'd:date') {
+                var year = value.getFullYear(),
+                    month = value.getMonth() + 1,
+                    date = value.getDate();
+                return (year > 1000 ? "" : year > 100 ? "0" : year > 10 ? "00" : "000") + year
+                    + (month < 10 ? "-0" : "-") + month
+                    + (date  < 10 ? "-0" : "-") + date;
+            }
+
+            return Alfresco.util.toISO8601(value);
+        }
+
+        throw {
+            message: "Value class is not supported",
+            valueClass: valueClass,
+            datatype: datatype
+        };
+    })
+
     .computed('options', {
         read: function() {
             return this.convertValue(this.invariantOptions(), true) || [];
@@ -177,13 +230,13 @@ Criterion
         return model;
     })
 
-    .computed('invariantValue', featuredProperty('valueFilter'))
-    .computed('invariantOptions', featuredProperty('optionsFilter'))
-    .computed('invariantDefault', featuredProperty('defaultFilter'))
-    .computed('multiple', featuredProperty('multipleFilter'))
-    .computed('mandatory', featuredProperty('mandatoryFilter'))
-    .computed('relevant', featuredProperty('relevantFilter'))
-    .computed('protected', featuredProperty('protectedFilter'))
+    .computed('invariantValue', featuredProperty('valueCriterion'))
+    .computed('invariantOptions', featuredProperty('optionsCriterion'))
+    .computed('invariantDefault', featuredProperty('defaultCriterion'))
+    .computed('multiple', featuredProperty('multipleCriterion'))
+    .computed('mandatory', featuredProperty('mandatoryCriterion'))
+    .computed('relevant', featuredProperty('relevantCriterion'))
+    .computed('protected', featuredProperty('protectedCriterion'))
 
     /*====== Other ======*/
 
@@ -411,7 +464,7 @@ var filterFeatureEvaluator = function(featureName, requiredClass, defaultValue, 
 
         var invariant,
             invariantValue = null,
-            invariants = this['filterInvariants']();
+            invariants = this['criterionInvariants']();
 
         invariant = _.find(invariants, function(invariant) {
             if (invariant.feature() == featureName) {
@@ -437,7 +490,7 @@ Attribute
     .property('isDefault', b)
     .property('settings', o)
     .property('batchEdit', [ Action ])
-    .property('filterInvariants', [ Invariant ])
+    .property('criterionInvariants', [ Invariant ])
 
     .shortcut('type', '_info.type')
     .shortcut('displayName', '_info.displayName')
@@ -446,16 +499,16 @@ Attribute
     .shortcut('journalType', '_info.journalType')
     .shortcut('labels', '_info.labels', {})
 
-    .method('valueFilterEvaluator', filterFeatureEvaluator('value', o, null, notNull))
-    .method('defaultFilterEvaluator', filterFeatureEvaluator('default', o, null, notNull))
-    .method('optionsFilterEvaluator', filterFeatureEvaluator('options', o, null, notNull))
-    .method('valueTitleFilterEvaluator', filterFeatureEvaluator('value-title', s, '', notNull))
-    .method('valueDescriptionFilterEvaluator', filterFeatureEvaluator('value-description', s, '', notNull))
-    .method('valueOrderFilterEvaluator', filterFeatureEvaluator('value-order', n, 0, notNull))
-    .method('relevantFilterEvaluator', filterFeatureEvaluator('relevant', b, true, notNull))
-    .method('multipleFilterEvaluator', filterFeatureEvaluator('multiple', b, false, notNull))
-    .method('mandatoryFilterEvaluator', filterFeatureEvaluator('mandatory', b, false, notNull))
-    .method('protectedFilterEvaluator', filterFeatureEvaluator('protected', b, false, notNull))
+    .method('valueCriterionEvaluator', filterFeatureEvaluator('value', o, null, notNull))
+    .method('defaultCriterionEvaluator', filterFeatureEvaluator('default', o, null, notNull))
+    .method('optionsCriterionEvaluator', filterFeatureEvaluator('options', o, null, notNull))
+    .method('valueTitleCriterionEvaluator', filterFeatureEvaluator('value-title', s, '', notNull))
+    .method('valueDescriptionCriterionEvaluator', filterFeatureEvaluator('value-description', s, '', notNull))
+    .method('valueOrderCriterionEvaluator', filterFeatureEvaluator('value-order', n, 0, notNull))
+    .method('relevantCriterionEvaluator', filterFeatureEvaluator('relevant', b, true, notNull))
+    .method('multipleCriterionEvaluator', filterFeatureEvaluator('multiple', b, false, notNull))
+    .method('mandatoryCriterionEvaluator', filterFeatureEvaluator('mandatory', b, false, notNull))
+    .method('protectedCriterionEvaluator', filterFeatureEvaluator('protected', b, false, notNull))
 
     .init(function() {
         this.model({ _info: {name: this.name(), attribute: this} });

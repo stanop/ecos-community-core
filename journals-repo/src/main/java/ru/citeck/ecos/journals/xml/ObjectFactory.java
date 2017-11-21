@@ -54,11 +54,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AttributeFilterRegion }
+     * Create an instance of {@link CriterionRegion }
      * 
      */
-    public AttributeFilterRegion createAttributeFilterRegion() {
-        return new AttributeFilterRegion();
+    public CriterionRegion createCriterionRegion() {
+        return new CriterionRegion();
+    }
+
+    /**
+     * Create an instance of {@link Criterion }
+     * 
+     */
+    public Criterion createCriterion() {
+        return new Criterion();
     }
 
     /**
@@ -67,6 +75,14 @@ public class ObjectFactory {
      */
     public BatchEdit createBatchEdit() {
         return new BatchEdit();
+    }
+
+    /**
+     * Create an instance of {@link ViewElement }
+     * 
+     */
+    public ViewElement createViewElement() {
+        return new ViewElement();
     }
 
     /**
@@ -83,14 +99,6 @@ public class ObjectFactory {
      */
     public Header createHeader() {
         return new Header();
-    }
-
-    /**
-     * Create an instance of {@link AttributeFilter }
-     * 
-     */
-    public AttributeFilter createAttributeFilter() {
-        return new AttributeFilter();
     }
 
     /**
