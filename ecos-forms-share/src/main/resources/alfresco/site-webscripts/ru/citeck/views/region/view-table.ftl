@@ -78,7 +78,7 @@
             <td data-bind="text: ko.computed(function() {
                                                 var value = $data.value(), title;
                                                 if (value && value.toString().indexOf('invariants.Node') != -1) {
-                                                    title = value.properties['cm:title'];
+                                                    title = value.properties ? value.properties['cm:title'] : null;
                                                 }
                                                 return title || ($data.valueTitle() || $data.textValue())
                                             })"></td>
@@ -96,7 +96,7 @@
                     <td data-bind="text: ko.computed(function() {
                                                 var value = $data.value(), title;
                                                 if (value && value.toString().indexOf('invariants.Node') != -1) {
-                                                    title = value.properties['cm:title'];
+                                                     title = value.properties ? value.properties['cm:title'] : null;
                                                 }
                                                 return title || ($data.valueTitle() || $data.textValue())
                                             })"></td>

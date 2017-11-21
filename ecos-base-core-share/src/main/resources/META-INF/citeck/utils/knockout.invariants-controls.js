@@ -710,7 +710,7 @@ ko.bindingHandlers.journalControl = {
         searchCriteria              = params.searchCriteria || data.searchCriteria,
         defaultCriteria             = params.defaultCriteria,
         hiddenCriteria              = params.hiddenCriteria || [],
-
+        optionsFilter               = params.optionsFilter ? params.optionsFilter() : null,
         createVariantsVisibility    = params.createVariantsVisibility;
 
     if (defaultVisibleAttributes) {
@@ -839,11 +839,23 @@ ko.bindingHandlers.journalControl = {
                     dc = validAttributes;
                 }
 
+                // add default option's filter criteria from view
+                if (optionsFilter && optionsFilter() && optionsFilter().length) criteria(optionsFilter());
+
                 if (dc) {
                     for (var i in dc) {
                         var newCriterion = _.clone(dc[i]);
                         newCriterion.value = ko.observable();
                         newCriterion.predicateValue = ko.observable();
+                        if (optionsFilter && optionsFilter() && optionsFilter().length) {
+                            for (var nValue in optionsFilter()) {
+                                if (newCriterion.name() == optionsFilter()[nValue].attribute) {
+                                    newCriterion.predicateValue(optionsFilter()[nValue].predicate);
+                                    newCriterion.value(optionsFilter()[nValue].value);
+                                    break;
+                                }
+                            }
+                        }
                         selectedFilterCriteria.push(newCriterion);
                     }
                 }

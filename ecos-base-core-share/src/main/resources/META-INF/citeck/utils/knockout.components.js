@@ -57,6 +57,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.journalType = this.attribute().journalType ? this.attribute().journalType() : null;
             this.settings = this.attribute().settings ? this.attribute().settings() : null;
 
+            if (this.journalType && this.journalType.id && !this.journalType.id() && this.settings && this.settings.journalTypeId) {
+                this.journalType.id(this.settings.journalTypeId);
+            }
+
             this.drawFilterCriterionValueComponent = function() {
                 Alfresco.util.Ajax.request({
                     url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
@@ -171,7 +175,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
                 this.templateName = defineTemplateByDatatype(this.datatype, this.nodetype);
 
-                if (this.datatype == "association" && this.nodetype) {
+                if ((this.datatype == "association" && this.nodetype) || this.datatype == "noderef") {
                     if (this.value() && Citeck.utils.isNodeRef(this.value().toString())) {
                         this._value(new Node(this.value()));
                     }
@@ -200,7 +204,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                 maxItems: 10,
                                 field_1: "type",
                                 predicate_1: "type-equals",
-                                value_1: self.nodetype
+                                value_1: self.settings && self.settings.type ? self.settings.type : self.nodetype
                             };
 
                             if (pagination) {
@@ -324,7 +328,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 var container = $("<div>", { "class": "criterion-value-control-container" });
                 container.append($("<div>", { "html": newValue, "class": "criterion-value-field-input" }));
 
-                if (self.datatype == "association") {
+                if (self.datatype == "association" || self.datatype == "noderef") {
                     container
                         .append(
                             $("<div>", { "class": "criterion-value-field-view" })
@@ -643,7 +647,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                             }
                         } else if (_.isObject(value)) {
                             // if we have a invariant node
-                            if (isInvariantsObject(value)) assemblyValues.push(attribute.valueTitle());
+                            if (isInvariantsObject(value)) assemblyValues.push(value.title || value.name || attribute.valueTitle());
 
                             // if we have a date
                             if (_.isDate(value)) assemblyValues.push(value.toLocaleString());
@@ -1019,7 +1023,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 case "boolean":
                     templateName = "checkbox";
                     break;
-                case "mltext":
+                case "noderef":
+                    templateName = "journal";
+                    break;
                 default:
                     templateName = "text";
                     break;                 
