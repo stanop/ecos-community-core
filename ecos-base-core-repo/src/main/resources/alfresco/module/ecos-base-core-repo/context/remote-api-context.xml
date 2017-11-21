@@ -208,10 +208,27 @@
     <bean id="webscript.ru.citeck.search.search-query.get"
           class="ru.citeck.ecos.webscripts.search.SearchQueryGet"
           parent="webscript">
-        <property name="searchService" ref="searchService" />
-        <property name="nodeService" ref="nodeService" />
-        <property name="attributeService" ref="nodeAttributeService" />
-        <property name="namespaceService" ref="namespaceService" />
+        <property name="searchObject">
+            <bean class="ru.citeck.ecos.search.SearchQuery">
+                <property name="searchService" ref="searchService" />
+                <property name="nodeService" ref="nodeService" />
+                <property name="attributeService" ref="nodeAttributeService" />
+                <property name="namespaceService" ref="namespaceService" />
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.search.batch-search-query.post"
+          class="ru.citeck.ecos.webscripts.search.BatchSearchQueryPost"
+          parent="webscript">
+        <property name="searchObject">
+            <bean class="ru.citeck.ecos.search.SearchQuery">
+                <property name="searchService" ref="searchService" />
+                <property name="nodeService" ref="nodeService" />
+                <property name="attributeService" ref="nodeAttributeService" />
+                <property name="namespaceService" ref="namespaceService" />
+            </bean>
+        </property>
     </bean>
 
 </beans>
