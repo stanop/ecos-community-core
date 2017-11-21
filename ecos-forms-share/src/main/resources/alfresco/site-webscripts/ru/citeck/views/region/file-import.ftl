@@ -2,8 +2,8 @@
 <#assign source = params.source!"create-variants" />
 <#assign createButtonTitle   = params.createButtonTitle!"button.create" />
 <#assign importButtonTitle   = params.importButtonTitle!"button.import" />
-<#assign importControlId = fieldId + "-fileUploadControl">
-<#assign createButtonControlId = fieldId + "-createButtonControl">
+<#assign importControlId = fieldId + "-fileUploadControl" />
+<#assign createButtonControlId = fieldId + "-createButtonControl" />
 
 <div id="${fieldId}">
     <div id="${importControlId}" class="file-upload-control" data-bind="fileUploadControl: {
