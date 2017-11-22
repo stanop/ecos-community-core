@@ -18,6 +18,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Helper class for search-query and batch-search-query webscripts.
+ * @see <a href="alfresco/templates/webscripts/ru/citeck/search/search-query.get.desc.xml">/citeck/search/query</a> and
+ * <a href="alfresco/templates/webscripts/ru/citeck/search/batch-search-query.post.desc.xml">/citeck/search/batch-query</a>
+ * webscripts
+ */
 public class SearchQuery {
 
     public static final int DEFAULT_MAX_ITEMS = 1000;
