@@ -7,7 +7,7 @@
 			<div style="font-size: 14px; margin: 0px 0px 0px 0px; padding-top: 0px; border-top: 0px solid #aaaaaa;"> 
 			<#if args.workflow.documents?? && args.workflow.documents?size != 0>
 			    <#list args.workflow.documents as doc>
-                    Вам необходимо ознакомиться с документом ${doc.properties["orders:header"]}
+                    Вам необходимо ознакомиться с документом ${doc.properties["cm:name"]}
 			    </#list>
 			</#if>                   
 			<#if (args.task.properties.bpm_description)??>
