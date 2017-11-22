@@ -1257,6 +1257,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.persisted.reload();
                 this.persistedValue.reload();
             }
+
+            if (this.multipleValues() && this.multipleValues().length) {
+                this.multipleValues().forEach(function(item) {
+                    if (item instanceof Node) {
+                        item.impl().reset(true);
+                    }
+                });
+            }
         })
         .method('getValueText', function(value) {
             if(value == null) return null;
