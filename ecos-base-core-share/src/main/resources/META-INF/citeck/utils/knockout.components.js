@@ -370,17 +370,41 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             var self = this;
             initializeParameters.call(this, params);
 
-            this.html = ko.observable("");
+            this.containerId = this.fieldId + "-container";
 
-            var url = "/api/journals/filter/criterion?journalId=active-tasks&amp;attribute=";
+            if (!this.attribute() || !this.journalType) {
+                console.error("attribute or journalType is not defined");
+                return;
+            }
+
+            this.criterion.removeCriterion = this.removeCriterion;
+            this.criterion.containerId = this.containerId;
+            this.criterion.attributeProperty(this.attribute());
+
+            var urlArgs = [
+                'htmlid=' + this.fieldId,
+                'attribute=' + this.attribute().name(),
+                'journalId=' + this.journalType.id()
+            ];
+
+            this.containerContent = ko.observable("");
+
             Alfresco.util.Ajax.request({
-                url: Alfresco.constants.URL_PAGECONTEXT + "citeck/components/region/get-region?fieldId="
-                + self.fieldId + "&template=" + self.templateName,
+                url: Alfresco.constants.URL_PAGECONTEXT + "/api/journals/filter/criterion?" + urlArgs.join('&'),
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        self.html(prepareHTMLByTemplate(response.serverResponse.responseText));
+                        self.containerContent(response.serverResponse.responseText);
                     }
+                }
+            });
+
+            this.containerContent.subscribe(function(newValue) {
+                var contentContainer = $("#" + self.containerId);
+                if (contentContainer.length > 0) {
+                    contentContainer.html(newValue);
+                    ko.cleanNode(contentContainer[0]);
+                    ko.applyBindings(self.criterion, contentContainer[0]);
                 }
             });
 
@@ -399,29 +423,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     });
             *
             * */
-
-
-            this.html.subscribe(function(newValue) {
-                var container = $("<div>", { "class": "criterion-value-control-container" });
-                container.append($("<div>", { "html": newValue, "class": "criterion-value-field-input" }));
-
-                if (self.datatype == "association") {
-                    container
-                        .append(
-                            $("<div>", { "class": "criterion-value-field-view" })
-                                .append($("<span>", { "data-bind": "text: title" }))
-                        );
-                }
-
-                var criterionValueElement = $("#" + self.containerId);
-                if (!criterionValueElement.find(".criterion-value-control-container").empty()) {
-                    criterionValueElement.html("");
-                }
-                criterionValueElement.append(container);
-
-                ko.cleanNode(container);
-                ko.applyBindings(self.fakeViewModel, container[0]);
-            });
 
             /*
             this.keyDownManagment = function(data, event) {
@@ -535,12 +536,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     return self.journalType.attribute(data.resolve("field.name", null));
                 });
             };
-            this.getJournalOptionsType = function (data) {
-                return ko.computed(function () {
-                    var options = self.journalType.options();
-                    return options ? options.type : null;
-                })
-            }
 
             this.valueVisibility = function(predicate) {
                 return predicate && predicate.id().indexOf("empty") == -1;
@@ -551,17 +546,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 attr: { id: id + \'-filter-criteria\' },\
                 foreach: filter().criteria()\
            ">\
-               <div class="criterion">\
-                   <!-- ko component: { name: "filter-criterion-field", params: {\
-                       fieldId: $component.id + "-criterion-" + id(),\
-                       datatype: resolve("field.datatype.name", null),\
-                       labels: resolve("field.labels", null),\
-                       value: value,\
-                       attribute: $component.getAttribute($data),\
-                       applyCriteria: $component.applyCriteria,\
-                       journalOptionsType: $component.getJournalOptionsType($data)\
-                   }} --><!-- /ko -->\
-               </div>\
+               <!-- ko component: { name: "filter-criterion-field", params: {\
+                   fieldId: $component.id + "-criterion-" + id(),\
+                   criterion: $data,\
+                   attribute: $component.getAttribute($data),\
+                   applyCriteria: $component.applyCriteria,\
+                   journalType: $component.journalType,\
+                   removeCriterion: $component.remove.bind($data)\
+               }} --><!-- /ko -->\
            </div>'
     });
 

@@ -19,23 +19,23 @@ const namespaceService = services.get("NamespaceService");
         return;
     }
 
-    var criterion = journalType.getCriteria(attribute);
+    var criterion = journalType.getCriterion(attribute);
 
     model.result = {
-        template: journalType.getTemplate() || "default",
+        template: criterion.getTemplate() || "default",
         regions: getRegions(criterion)
     };
 
 })();
 
-function getRegions(attribute, criterion) {
+function getRegions(criterion) {
 
     var regions = {
         'actions': { template: 'actions', params: {} },
         'label': { template: 'label', params: {} },
         'predicate': { template: 'predicate', params: {} },
         'input': { template: 'text', params: {} },
-        'select': { template: 'select', params: {}}
+        'select': { template: 'none', params: {}}
     };
 
     var criterionRegions = criterion.getRegions();

@@ -1,1 +1,1 @@
-<input id="${fieldId}" type="text" data-bind="textInput: ${textValue?trim}, disable: protected" />
+<input id="${fieldId}" type="text" data-bind="textInput: textValue, disable: protected" />

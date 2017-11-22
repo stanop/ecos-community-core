@@ -1,33 +1,22 @@
 
 <#macro renderRegion region>
-    <@renderElementTemplate "region" region.template />
+    <#if (viewScope.field.regions[region])??>
+        <#global viewScope = viewScope + { "region" : viewScope.field.regions[region] } />
+        <@renderElementTemplate "region" viewScope.field.regions[region].template />
+    </#if>
 </#macro>
 
 <#macro renderCriterion htmlid criterion>
 
     <#assign template = criterion.template!"default" />
 
-    <#assign oldScope = viewScope!{} />
-    <#global viewScope = oldScope + { "field" : criterion } />
-
+    <#global viewScope = { "field" : criterion } />
     <#global fieldId = htmlid />
 
-    <div class="criterion"
-        <#--<#if element.attribute??>
-         data-bind="css: {
-            hidden: irrelevant,
-            'with-help': description
-         }"
-        </#if>-->
-    >
-        <@renderElementTemplate "criterion" criterion.template />
-    </div>
-
-    <#global viewScope = oldScope />
-
+    <@renderElementTemplate "criterion" criterion.template />
 </#macro>
 
 <#macro renderElementTemplate elementType template>
-    <#assign file>/ru/citeck/components/journal2/filter/${elementType}/${template}.ftl</#assign>
+    <#assign file>/ru/citeck/components/journals2/filter/${elementType}/${template}.ftl</#assign>
     <#if citeckUtils.templateExists(file)><#include file /><#return /></#if>
 </#macro>

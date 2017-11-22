@@ -9,12 +9,6 @@ function main() {
         return;
     }
 
-    var journalType = journals.getJournalType(journalId);
-    if (!journalType) {
-        status.setCode(status.STATUS_NOT_FOUND, "Journal type with id '" + journalId + "' was not found");
-        return;
-    }
-
     model.criterion = getFilterCriterion(journalId, attribute);
 }
 

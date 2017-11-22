@@ -3,7 +3,7 @@
     <shortname>Filter criterion</shortname>
     <description>Get filter criterion config</description>
     <url>/api/journals/filter/criterion?journalId={journalId}&amp;attribute={attribute}</url>
-    <format default="json"/>
+    <format default="html"/>
     <authentication>user</authentication>
     <transaction readonly="true">required</transaction>
     <lifecycle>public_api</lifecycle>

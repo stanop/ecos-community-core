@@ -47,6 +47,7 @@ var criteriaCounter = 0,
 	n = Number,
 	b = Boolean,
 	o = Object,
+	d = Date,
 	JournalsList = koclass('JournalsList'),
 	JournalType = koclass('JournalType'),
 	Journal = koclass('Journal'),
@@ -97,177 +98,10 @@ JournalsList
 
 var featuredProperty = function(featureName) {
     return function() {
-        var attribute = this.resolve('field.attribute');
+    	var attribute = this.attribute();
         return attribute ? attribute[featureName + 'Evaluator'](this.invariantsModel()).value : null;
     }
 };
-
-Criterion
-    .property('field', AttributeInfo)
-    .property('predicate', Predicate)
-    .property('persistedValue', o)  // value, persisted in repository
-    .property('newValue', o) // value, set by user
-
-    .shortcut('nodetype', 'field.nodetype')
-    .shortcut('datatype', 'field.datatype')
-    .shortcut('valueClass', 'field.nodetype')
-    .shortcut('journalType', 'field.journalType')
-
-    .shortcut('title', 'field.customDisplayName')
-
-    /*====== Value ======*/
-
-    .method('convertValue', function(value, multiple) {
-
-        if (value == null) return multiple ? [] : null;
-
-        var instantiate = _.partial(koutils.instantiate, _, this.valueClass() || s);
-        if (_.isArray(value)) {
-            return multiple ? _.map(value, instantiate) : instantiate(value[0]);
-        } else {
-            return multiple ? [ instantiate(value) ] : instantiate(value) ;
-        }
-    })
-
-    .computed('value', {
-        read: function() {
-            return this.convertValue(this.rawValue(), this.multiple());
-        },
-        write: function(value) {
-            this.newValue(this.convertValue(value, true));
-        }
-    })
-
-    .computed('rawValue', function() {
-        return this.invariantValue() || this.newValue() || this.persistedValue() || this.invariantDefault();
-    })
-
-    .computed('singleValue', {
-        read: function() {
-            return this.convertValue(this.rawValue(), false);
-        },
-        write: function(value) {
-            this.value(value);
-        }
-    })
-
-    .computed('multipleValues', {
-        read: function() {
-            return this.convertValue(this.rawValue(), true);
-        },
-        write: function(value) {
-            this.value(value);
-        }
-    })
-
-    .computed('textValue', {
-        read: function() { return this.getValueText(this.value()); },
-        write: function(value) {
-            if(value == null || value == "") {
-                return this.value(null);
-            } else {
-                return this.value(value);
-            }
-        }
-    })
-
-    .method('getValueText', function(value) {
-
-        if(value == null) return null;
-        if(_.isArray(value)) return _.map(value, this.getValueText, this);
-
-        var valueClass = this.valueClass();
-        if (valueClass == null) return "" + value;
-        if (valueClass == o) return value.toString();
-        if (valueClass == s) return "" + value;
-        if (valueClass == b) return value ? "true" : "false";
-        if (valueClass == Node) return value.nodeRef;
-        if (valueClass == QName) return value.shortQName();
-
-        var datatype = this.datatype();
-        if(valueClass == n) {
-            if(datatype == 'd:int' || datatype == 'd:long') {
-                return "" + Math.floor(value);
-            }
-            return "" + value;
-        }
-        if(valueClass == d) {
-            if(datatype == 'd:date') {
-                var year = value.getFullYear(),
-                    month = value.getMonth() + 1,
-                    date = value.getDate();
-                return (year > 1000 ? "" : year > 100 ? "0" : year > 10 ? "00" : "000") + year
-                    + (month < 10 ? "-0" : "-") + month
-                    + (date  < 10 ? "-0" : "-") + date;
-            }
-
-            return Alfresco.util.toISO8601(value);
-        }
-
-        throw {
-            message: "Value class is not supported",
-            valueClass: valueClass,
-            datatype: datatype
-        };
-    })
-
-    .computed('options', {
-        read: function() {
-            return this.convertValue(this.invariantOptions(), true) || [];
-        },
-        pure: true
-    })
-
-    /*====== Invariants ======*/
-
-    .computed('invariantsModel', function() {
-        return this.getInvariantsModel(this.value, this.cache = this.cache || {});
-    })
-    .method('getInvariantsModel', function(value, cache) {
-        var model = {};
-        Object.defineProperty(model, 'value', typeof value == "function" ? { get: value } : { value: value });
-        Object.defineProperty(model, 'cache', { value: cache });
-        return model;
-    })
-
-    .computed('invariantValue', featuredProperty('valueCriterion'))
-    .computed('invariantOptions', featuredProperty('optionsCriterion'))
-    .computed('invariantDefault', featuredProperty('defaultCriterion'))
-    .computed('multiple', featuredProperty('multipleCriterion'))
-    .computed('mandatory', featuredProperty('mandatoryCriterion'))
-    .computed('relevant', featuredProperty('relevantCriterion'))
-    .computed('protected', featuredProperty('protectedCriterion'))
-
-    /*====== Other ======*/
-
-    .computed('shortModel', function() {
-        return {
-            field: this.field().name(),
-            predicate: this.predicate().id(),
-            value: this.value()
-        };
-    })
-    .computed('id', function() {
-        if(typeof this._id == "undefined") {
-            this._id = criteriaCounter++;
-        }
-        return this._id;
-    })
-    .computed('query', function() {
-        var id = this.id(),
-            result = {};
-        result['field_' + id] = this.field().name();
-        result['predicate_' + id] = this.resolve('predicate.id');
-        result['value_' + id] = this.value();
-        return result;
-    })
-    .init(function() {
-        var predicateId = this.resolve('predicate.id');
-        if (predicateId && predicateId.indexOf("boolean") != -1){
-            this.value("boolean");
-        }
-    })
-    ;
 
 CreateVariant
 	.property('url', s)
@@ -307,6 +141,199 @@ CreateVariant
 		}));
 	})
 	;
+
+    Criterion
+        .property('field', AttributeInfo) //WARNING: attribute link in this object is changed when new journal is loaded
+        .property('attributeProperty', Attribute)
+        .property('predicate', Predicate)
+        .property('persistedValue', o)
+        .property('newValue', o) // value, set by user
+
+        .shortcut('nodetype', 'attribute._info.nodetype', 'field.nodetype')
+        .shortcut('datatype', 'attribute._info.datatype', 'field.datatype')
+        .shortcut('journalType', 'attribute._info.journalType', 'field.journalType')
+        .shortcut('title', 'attribute._info.customDisplayName', 'field.customDisplayName')
+
+		.computed('attribute', function() {
+			return this.attributeProperty() || this.resolve('field.attribute');
+		})
+
+        /*====== Value ======*/
+
+        .computed('valueClass', function () {
+            return {
+                "qname": QName,
+                "date": d,
+                "datetime": d,
+                "noderef": Node,
+                "category": Node,
+                "boolean": b,
+                "typeName": QName
+            }[this.resolve('nodetype.name')] || s;
+        })
+
+        .method('convertValue', function(value, multiple) {
+
+            if (value == null) return multiple ? [] : null;
+
+            var instantiate = _.partial(koutils.instantiate, _, this.valueClass() || s);
+            if (_.isArray(value)) {
+                return multiple ? _.map(value, instantiate) : instantiate(value[0]);
+            } else {
+                return multiple ? [ instantiate(value) ] : instantiate(value) ;
+            }
+        })
+
+        .computed('value', {
+            read: function() {
+                return this.convertValue(this.rawValue(), this.multiple());
+            },
+            write: function(value) {
+                this.newValue(this.convertValue(value, true));
+            }
+        })
+
+        .computed('rawValue', function() {
+            return this.invariantValue() || this.newValue() || this.persistedValue() || this.invariantDefault();
+        })
+
+        .computed('singleValue', {
+            read: function() {
+                return this.convertValue(this.rawValue(), false);
+            },
+            write: function(value) {
+                this.value(value);
+            }
+        })
+
+        .computed('multipleValues', {
+            read: function() {
+                return this.convertValue(this.rawValue(), true);
+            },
+            write: function(value) {
+                this.value(value);
+            }
+        })
+
+        .computed('textValue', {
+            read: function() { return this.getValueText(this.value()); },
+            write: function(value) {
+                if(value == null || value == "") {
+                    return this.value(null);
+                } else {
+                    return this.value(value);
+                }
+            }
+        })
+
+        .method('getValueTitle', function(value, postprocessing) {
+            var model = this.getInvariantsModel(value, this.cache = this.cache || {});
+            var attribute = this.attribute();
+            var result = attribute ? attribute.valueTitleCriterionEvaluator(model).value : null;
+            if (postprocessing) {
+                result = postprocessing(result);
+            }
+            return result;
+        })
+
+        .method('getValueText', function(value) {
+
+            if(value == null) return null;
+            if(_.isArray(value)) return _.map(value, this.getValueText, this);
+
+            var valueClass = this.valueClass();
+            if (valueClass == null) return "" + value;
+            if (valueClass == o) return value.toString();
+            if (valueClass == s) return "" + value;
+            if (valueClass == b) return value ? "true" : "false";
+            if (valueClass == Node) return value.nodeRef;
+            if (valueClass == QName) return value.shortQName();
+
+            var datatype = this.datatype();
+            if(valueClass == n) {
+                if(datatype == 'd:int' || datatype == 'd:long') {
+                    return "" + Math.floor(value);
+                }
+                return "" + value;
+            }
+            if(valueClass == d) {
+                if(datatype == 'd:date') {
+                    var year = value.getFullYear(),
+                        month = value.getMonth() + 1,
+                        date = value.getDate();
+                    return (year > 1000 ? "" : year > 100 ? "0" : year > 10 ? "00" : "000") + year
+                        + (month < 10 ? "-0" : "-") + month
+                        + (date  < 10 ? "-0" : "-") + date;
+                }
+
+                return Alfresco.util.toISO8601(value);
+            }
+
+            throw {
+                message: "Value class is not supported",
+                valueClass: valueClass,
+                datatype: datatype
+            };
+        })
+
+        .computed('options', {
+            read: function() {
+                return this.convertValue(this.invariantOptions(), true) || [];
+            },
+            pure: true
+        })
+        .computed('single', function() { return !this.multiple(); })
+
+        /*====== Invariants ======*/
+
+        .computed('invariantsModel', function() {
+            return this.getInvariantsModel(this.value, this.cache = this.cache || {});
+        })
+        .method('getInvariantsModel', function(value, cache) {
+            var model = {};
+            Object.defineProperty(model, 'value', typeof value == "function" ? { get: value } : { value: value });
+            Object.defineProperty(model, 'cache', { value: cache });
+            return model;
+        })
+
+        .computed('invariantValue', featuredProperty('valueCriterion'))
+        .computed('invariantOptions', featuredProperty('optionsCriterion'))
+        .computed('invariantDefault', featuredProperty('defaultCriterion'))
+        .computed('multiple', featuredProperty('multipleCriterion'))
+        .computed('mandatory', featuredProperty('mandatoryCriterion'))
+        .computed('relevant', featuredProperty('relevantCriterion'))
+        .computed('protected', featuredProperty('protectedCriterion'))
+
+        /*====== Other ======*/
+
+        .computed('shortModel', function() {
+            return {
+                field: this.resolve('attribute.name'),
+                predicate: this.resolve('predicate.id'),
+                persistedValue: this.value()
+            };
+        })
+        .computed('id', function() {
+            if(typeof this._id == "undefined") {
+                this._id = criteriaCounter++;
+            }
+            return this._id;
+        })
+        .computed('query', function() {
+            var id = this.id(),
+                result = {};
+            result['field_' + id] = this.resolve('attribute.name');
+            result['predicate_' + id] = this.resolve('predicate.id');
+            result['value_' + id] = this.value();
+            return result;
+        })
+        .init(function() {
+            var predicateId = this.resolve('predicate.id');
+            if (predicateId && predicateId.indexOf("boolean") != -1){
+                this.value("boolean");
+            }
+        })
+    ;
 
 JournalType
 	.key('id', s)
@@ -1239,7 +1266,7 @@ JournalsWidget
 
 		applyCriteria: function() {
 			this.skipCount(0);
-			this.filter(this._filter().clone());
+			this.filter(this._filter());
 		},
 
 		clearCriteria: function() {
