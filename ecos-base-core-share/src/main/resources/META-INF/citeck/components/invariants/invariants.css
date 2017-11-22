@@ -1086,8 +1086,9 @@
   margin-top: 7px;
 }
 
-.invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
-  display: block;
+.invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option,
+.invariants-form .template-wide .template-checkbox .alignment-vertical .checkbox-option {
+  display: table;
 }
 
 .invariants-form .template-table .template-checkbox input[type="checkbox"],
