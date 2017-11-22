@@ -26,10 +26,8 @@
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
               <activiti:field name="script">
                   <activiti:expression>
-                      logger.error("onCreate");
                       if (execution.getVariable("wfsp_extendDate") != null) {
                       task.setDueDate(execution.getVariable("wfsp_extendDate"));
-                      logger.error("getVariable " + execution.getVariable("wfsp_extendDate"));
                       }
                   </activiti:expression>
               </activiti:field>
