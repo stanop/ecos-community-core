@@ -45,7 +45,6 @@ public class SearchQuery {
     @Setter
     private NodeService nodeService;
 
-    private JSONObject defaultSchema;
 
     public JSONObject queryNodes(String searchQuery) throws JSONException {
         return queryNodes(searchQuery, DEFAULT_MAX_ITEMS, DEFAULT_SKIP_COUNT, DEFAULT_LANGUAGE, DEFAULT_SCHEMA);
@@ -131,7 +130,7 @@ public class SearchQuery {
                         @SuppressWarnings("unchecked")
                         List<NodeRef> nodeValues = (List<NodeRef>) nodeValue;
                         if (!nodeValues.isEmpty()) {
-                            JSONObject subNodesSchema = schemaObjValue.length() > 0 ? schemaObjValue : defaultSchema;
+                            JSONObject subNodesSchema = schemaObjValue.length() > 0 ? schemaObjValue : DEFAULT_SCHEMA;
                             value = formatNode(nodeValues.get(0), subNodesSchema);
                         }
                     }
@@ -141,7 +140,7 @@ public class SearchQuery {
                 } else if (schemaValue instanceof JSONArray) {
 
                     JSONArray schemaArray = (JSONArray) schemaValue;
-                    JSONObject subNodesSchema = defaultSchema;
+                    JSONObject subNodesSchema = DEFAULT_SCHEMA;
                     if (schemaArray.length() > 0 && schemaArray.optJSONObject(0).length() > 0) {
                         subNodesSchema = schemaArray.optJSONObject(0);
                     }
