@@ -224,9 +224,13 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 	}
 
 	private NodeRef createTaskMirror(String taskId, QName taskType) {
-		QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
-		ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
-		return mirrorRef.getChildRef();
+    	try {
+			QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
+			ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
+			return mirrorRef.getChildRef();
+		} catch (Exception exception) {
+    		return null;
+		}
 	}
 
 	private LinkedList<NodeRef> getActors(WorkflowTask task) {

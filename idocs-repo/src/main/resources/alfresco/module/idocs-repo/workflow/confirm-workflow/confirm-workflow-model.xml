@@ -37,6 +37,12 @@
 	</constraints>
 
 	<types>
+
+		<!-- Default tast type -->
+		<type name="wfcf:defaultTask">
+			<parent>bpm:startTask</parent>
+		</type>
+
 		<type name="wfcf:submitConfirmTask">
 			<parent>bpm:startTask</parent>
 			<mandatory-aspects>

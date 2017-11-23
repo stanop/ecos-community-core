@@ -15,6 +15,15 @@
 		</forms>
 	</config>
 
+	<!-- Default flowable task view -->
+	<config evaluator="string-compare" condition="flowable$defaultTaskView">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/default/default-task-view.ftl" />
+			</form>
+		</forms>
+	</config>
+
 	<config evaluator="string-compare" condition="flowable$confirm-stage" >
 		<forms>
 			<form>
