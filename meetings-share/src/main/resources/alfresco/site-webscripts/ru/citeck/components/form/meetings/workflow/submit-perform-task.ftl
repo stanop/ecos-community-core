@@ -106,7 +106,7 @@
 			}
 		});
 		Alfresco.util.Ajax.jsonGet({
-			url: Alfresco.constants.PROXY_URI + "api/citeck/meetings/parent-node-ref?child="+currentItems,
+			url: Alfresco.constants.PROXY_URI + "/citeck/node/parent-node-ref?child="+currentItems,
 			successCallback: {
 				fn: function(response) {
 					var itemNode = response.json.data;

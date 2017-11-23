@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Redirect to primary parent card details page</shortname>
+    <url>/citeck/components/redirect-to-primary-parent?nodeRef={nodeRef}</url>
+</webscript>
