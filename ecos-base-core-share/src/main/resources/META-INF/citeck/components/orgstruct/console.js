@@ -319,8 +319,8 @@
 				item = this.model.getItem(itemId),
 				htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
 			itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-			// this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
-			this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {});
+			this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
+			// this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {});
 			this.widgets.editItemDialog.setOptions(this.config.forms);
 			this.widgets.editItemDialog.show();
 			this.widgets.editItemDialog.subscribe("itemEdited", this.onItemEdited, this, true);
