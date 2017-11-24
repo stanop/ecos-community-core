@@ -545,7 +545,7 @@
             <ref bean="sysAdminParams"></ref>
         </property>
         <property name="sendTestMessage">
-            <value>${mail.testmessage.send}</value>
+            <value>false</value>
         </property>
         <property name="testMessageTo">
             <value>${mail.testmessage.to}</value>
