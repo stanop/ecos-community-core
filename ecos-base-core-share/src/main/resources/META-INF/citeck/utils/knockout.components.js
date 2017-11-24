@@ -390,7 +390,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.containerContent = ko.observable("");
 
             Alfresco.util.Ajax.request({
-                url: Alfresco.constants.URL_PAGECONTEXT + "/api/journals/filter/criterion?" + urlArgs.join('&'),
+                url: Alfresco.constants.URL_PAGECONTEXT + "api/journals/filter/criterion?" + urlArgs.join('&'),
                 successCallback: {
                     scope: this,
                     fn: function(response) {
@@ -407,23 +407,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     ko.applyBindings(self.criterion, contentContainer[0]);
                 }
             });
-
-            /*
-            * Alfresco.util.Ajax.jsonGet({
-                        url: Alfresco.constants.PROXY_URI
-                        + "/citeck/search/get-property-default-value?nodeType="
-                        + docType + "&property=tk:type",
-                        successCallback: {
-                            fn: function(response) {
-                                if (response.json.defaultValue != null) {
-                                    self.fillSelectControl(response.json.defaultValue);
-                                }
-                            }
-                        }
-                    });
-            *
-            * */
-
             /*
             this.keyDownManagment = function(data, event) {
                 if (event.keyCode == 13 && "text,date,datetime,number".indexOf(data.templateName) != -1 && data.applyCriteria) {

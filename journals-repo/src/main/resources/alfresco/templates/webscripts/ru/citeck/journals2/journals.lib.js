@@ -1,3 +1,5 @@
+importPackage(Packages.ru.citeck.ecos.search);
+importPackage(Packages.java.util);
 
 var journalsLib = {
 
@@ -24,19 +26,39 @@ var journalsLib = {
                 groupable: journalType.isAttributeGroupable(attribute),
                 settings: this.renderOptions(journalType.getAttributeOptions(attribute)),
                 batchEdit: this.renderBatchEdit(journalType.getBatchEdit(attribute)),
-                criterionInvariants: this.renderInvariants(journalType.getCriterion(attribute).getInvariants())
+                criterionInvariants: this.renderInvariants(journals.getCriterionInvariants(journalType.getId(), attribute))
             });
         }
         return result;
     },
 
     renderInvariants: function (invariants) {
+
         var result = [];
         var getExpression = function (value) {
-            return value; //todo: criteria search and explicit items
+
+            if (value instanceof SearchCriteria) {
+                var triplets = value.getTriplets();
+                var criteriaResult = [];
+                for (var i = 0; i < triplets.size(); i++) {
+                    criteriaResult.push({
+                        "attribute": triplets.get(i).field,
+                        "predicate": triplets.get(i).predicate,
+                        "value": triplets.get(i).value
+                    })
+                }
+                return criteriaResult;
+            } else if (value instanceof List) {
+                var items = [];
+                for (var i = 0; i < value.size(); i++) {
+                    items.push(value.get(i));
+                }
+                return items;
+            }
+            return value;
         };
-        for (var i = 0; i < invariants.size(); i++) {
-            var invariant = invariants.get(i);
+        for (var i = 0; i < invariants.length; i++) {
+            var invariant = invariants[i];
             result.push({
                 feature: invariant.getFeature(),
                 language: invariant.getLanguage(),

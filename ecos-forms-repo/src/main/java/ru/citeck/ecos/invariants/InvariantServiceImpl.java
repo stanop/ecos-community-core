@@ -46,7 +46,6 @@ class InvariantServiceImpl implements InvariantService {
     private Map<String, InvariantLanguage> languages;
     private Map<QName, InvariantAttributeType> attributeTypes;
 
-    
     @Override
     public void deployDefinition(InputStream source, String sourceId, InvariantPriority priority) {
         List<InvariantDefinition> invariants = parser.parse(source, priority);

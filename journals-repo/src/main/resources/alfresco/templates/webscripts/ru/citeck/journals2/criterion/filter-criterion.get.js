@@ -1,4 +1,5 @@
-<import resource="classpath:/alfresco/templates/webscripts/ru/citeck/journals2/journals.lib.js">
+importPackage(Packages.org.alfresco.service.cmr.dictionary);
+importPackage(Packages.org.alfresco.repo.dictionary.constraint);
 
 const dictionaryService = services.get("dictionaryService");
 const namespaceService = services.get("NamespaceService");
@@ -23,19 +24,19 @@ const namespaceService = services.get("NamespaceService");
 
     model.result = {
         template: criterion.getTemplate() || "default",
-        regions: getRegions(criterion)
+        regions: getRegions(criterion, attribute, journalType.getOptions()['type'])
     };
 
 })();
 
-function getRegions(criterion) {
+function getRegions(criterion, attribute, journalTypeParam) {
 
     var regions = {
         'actions': { template: 'actions', params: {} },
         'label': { template: 'label', params: {} },
         'predicate': { template: 'predicate', params: {} },
-        'input': { template: 'text', params: {} },
-        'select': { template: 'none', params: {}}
+        'input': { template: '', params: {} },
+        'select': { template: '', params: {}}
     };
 
     var criterionRegions = criterion.getRegions();
@@ -58,81 +59,94 @@ function getRegions(criterion) {
         regions[name] = regionData;
     }
 
+    evalDefaultRegions(regions, attribute, journalTypeParam);
+
     return regions;
 }
 
 function evalDefaultRegions(regions, attribute, journalTypeParam) {
 
-    if (regions['input'] && regions['input'].template) {
+    if (regions['input'].template) {
         return;
     }
 
-    if (regions['select'] && regions['select'].template) {
-        regions['input'] = { template: 'view', params: {} };
+    if (regions['select'].template) {
+        regions['input'].template = 'view';
         return;
     }
 
-    var defaultRegions = {
-        input: {template: 'text', params: {}},
-        select: {template: 'none', params: {}}
-    };
+    var attrQName = citeckUtils.createQName(attribute);
+    var typeQName = journalTypeParam ? citeckUtils.createQName(journalTypeParam) : null;
 
+    var assocDef = dictionaryService.getAssociation(attrQName);
+    if (assocDef) {
 
-    /*
-    var propDef = dictionaryService.getProperty(attribute);
+        var nodetype = assocDef.getTargetClass().getName();
+        var typeShortName = nodetype.toPrefixString(namespaceService);
 
-    if (propDef != null) {
-
-
+        var journalId = getJournalByType(typeShortName);
+        if (journalId) {
+            regions['input'].template = 'view';
+            regions['select'].template = 'select-journal';
+            regions['select'].params['journalType'] = journalId;
+        }
 
     } else {
-        var assocDef = dictionaryService.getAssociation(attribute);
-        if (assocDef != null) {
 
-            var authorityQName = citeckUtils.createQName("cm:authority");
-            var targetClass = assocDef.getTargetClass().getName();
+        var propDef = null;
+        if (typeQName) {
+            propDef = dictionaryService.getProperty(typeQName, attrQName);
+        }
+        if (!propDef) {
+            propDef = dictionaryService.getProperty(attrQName);
+        }
 
+        if (propDef) {
 
-            if (dictionaryService.isSubClass(targetClass, authorityQName)) {
+            regions['select'].template = 'none';
 
-                defaultRegions['input'].template = 'view';
-                defailtRegions['select'].template = 'orgstruct';
-
-            } else {
-
-                var targetClassName = targetClass.toPrefixString(namespaceService);
-                var journalId = getJournalForType(targetClassName);
-
-                if (journalId) {
-                    defaultRegions['input'].template = 'view';
-                    defaultRegions['select'] = {
-                        template: 'journal',
-                        prams: {
-
-                        }
-                    }
+            var constraints = propDef.getConstraints();
+            for (var i = 0; i < constraints.size(); i++) {
+                if (constraints.get(i).getConstraint() instanceof ListOfValuesConstraint) {
+                    regions['input'].template = "select";
+                    break;
                 }
             }
 
+            if (!regions['input'].template) {
 
+                var propType = propDef.getDataType().getName().getLocalName();
+
+                var mapping = {
+                    'int': 'number',
+                    'long': 'number',
+                    'float': 'number',
+                    'double': 'number',
+                    'date': 'date',
+                    'datetime': 'datetime',
+                    'boolean': 'boolean',
+                    'category': 'select'
+                };
+                if (mapping[propType]) {
+                    regions['input'].template = mapping[propType];
+                }
+            }
         }
-    }*/
+    }
 
+    if (!regions['input'].template) regions['input'].template = 'text';
+    if (!regions['select'].template) regions['select'].template = 'none';
 }
 
-function getJournalForType(targetClassName) {
+function getJournalByType(typeShortName) {
+
     var journalTypes = journals.getAllJournalTypes();
+
     for(var j in journalTypes) {
-        if (journalTypes[j].getOptions()['type'] == targetClassName) {
-            return journalTypes[j].id;
+        var journalType = journalTypes[j];
+        if (journalType.getOptions()["type"] == typeShortName) {
+            return journalTypeId = journalTypes[j].id;
         }
     }
     return null;
-}
-
-function processSelectRegion(region, classDefinition, attributeType) {
-
-    if (region.template) {
-        return;
-    }
 }

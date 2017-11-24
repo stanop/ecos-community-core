@@ -19,16 +19,21 @@
 package ru.citeck.ecos.journals;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.alfresco.service.ServiceRegistry;
 
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
     
     private JournalService impl;
     private ServiceRegistry serviceRegistry;
-    
+    private NamespaceService namespaceService;
+
     public JournalTypeJS getJournalType(String id) {
         JournalType type = impl.getJournalType(id);
         return type == null ? null : new JournalTypeJS(type, serviceRegistry);
@@ -44,12 +49,24 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
         return result;
     }
 
+    public InvariantDefinition[] getCriterionInvariants(String journalId, Object attribute) {
+        QName attributeQName;
+        if (attribute instanceof String) {
+            attributeQName = QName.resolveToQName(namespaceService, (String) attribute);
+        } else {
+            attributeQName = (QName) attribute;
+        }
+        List<InvariantDefinition> invariants = impl.getCriterionInvariants(journalId, attributeQName);
+        return invariants.toArray(new InvariantDefinition[invariants.size()]);
+    }
+
     public void setJournalService(JournalService impl) {
         this.impl = impl;
     }
     
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
+        this.namespaceService = serviceRegistry.getNamespaceService();
     }
     
 }

@@ -14,6 +14,7 @@
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals-page.css" group="journals-list" />
 
     <@link rel="stylesheet" href="${page.url.context}/res/yui/calendar/assets/calendar.css" group="journals-list" />
+    <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/invariants/invariants.css" group="region" />
 </@>
 
 <@markup id="js">

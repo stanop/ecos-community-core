@@ -30,7 +30,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 
+import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import ru.citeck.ecos.invariants.*;
+import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
@@ -51,7 +54,9 @@ class JournalServiceImpl implements JournalService {
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new TreeMap<>();
-    
+
+    private List<CriterionInvariantsProvider> criterionInvariantsProviders;
+
     @Override
     public void deployJournalTypes(InputStream inputStream) {
         Journals data = parseXML(inputStream);
@@ -67,6 +72,26 @@ class JournalServiceImpl implements JournalService {
                 searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
         }
+    }
+
+    @Override
+    public List<InvariantDefinition> getCriterionInvariants(String journalId, QName attribute) {
+
+        JournalType journalType = journalTypes.get(journalId);
+
+        Set<Feature> features = new HashSet<>();
+        List<InvariantDefinition> invariants = new ArrayList<>();
+
+        for (CriterionInvariantsProvider provider : criterionInvariantsProviders) {
+            List<InvariantDefinition> provInvariants = provider.getInvariants(journalType, attribute);
+            for (InvariantDefinition inv : provInvariants) {
+                if (features.add(inv.getFeature())) {
+                    invariants.add(inv);
+                }
+            }
+        }
+
+        return invariants;
     }
 
     protected Journals parseXML(InputStream inputStream) {
@@ -120,6 +145,10 @@ class JournalServiceImpl implements JournalService {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    public void setCriterionInvariantsProviders(List<CriterionInvariantsProvider> criterionInvariantsProviders) {
+        this.criterionInvariantsProviders = criterionInvariantsProviders;
     }
 
     public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
