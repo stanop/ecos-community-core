@@ -38,6 +38,7 @@ import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -151,12 +152,17 @@ public class HistoryService {
     }
 
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
-        if (isEnabledRemoteHistoryService()) {
-            sendHistoryEventToRemoteService(properties);
-            return null;
-        } else {
-            return persistEventToAlfresco(type, properties);
-        }
+        TransactionUtils.doAfterCommit(new Runnable() {
+            @Override
+            public void run() {
+                if (isEnabledRemoteHistoryService()) {
+                    sendHistoryEventToRemoteService(properties);
+                } else {
+                    persistEventToAlfresco(type, properties);
+                }
+            }
+        });
+        return null;
     }
 
     private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties) {
