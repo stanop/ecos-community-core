@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.HistoryModel;
@@ -23,6 +24,9 @@ import java.util.*;
  * Created by andrey.kozlov on 20.12.2016.
  */
 public class HistoryUtils {
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private static final QName TITLE = QName.createQName("http://www.alfresco.org/model/content/1.0", "title");
 
     public static final Serializable NODE_CREATED = "node.created";
     public static final Serializable NODE_UPDATED = "node.updated";
@@ -82,33 +86,77 @@ public class HistoryUtils {
         }
     }
 
-    private static String getChangeValue(NodeRef nodeRef, NodeService nodeService) {
-        if (!nodeService.exists(nodeRef)) { return ""; }
-        if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
-            return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
-                    + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
-        } else {
-            return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
-                    ? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
-                    : nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
-        }
-    }
-
     private static String getCustomChangeValue(NodeRef nodeRef, NodeService nodeService) {
         if (!nodeService.exists(nodeRef)) { return ""; }
         if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
             return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
                     + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
         } else {
+            /** Single title */
             QName titleQName = getHistoryEventTitleMapperService().getTitleQName(nodeService.getType(nodeRef));
             if (titleQName != null) {
                 if (nodeService.getProperty(nodeRef, titleQName) != null) {
-                    return nodeService.getProperty(nodeRef, titleQName).toString();
+                    Serializable value = nodeService.getProperty(nodeRef, titleQName);
+                    return transformValueToString(value, nodeService);
                 }
             }
+            /** List title */
+            List<QName> titlesQName = getHistoryEventTitleMapperService().getTitleQNames(nodeService.getType(nodeRef));
+            if (CollectionUtils.isNotEmpty(titlesQName)) {
+                List<String> paramValues = new ArrayList<>(titlesQName.size());
+                for (QName qName : titlesQName) {
+                    paramValues.add(getValueByQName(nodeRef, qName, nodeService));
+                }
+                return String.join("; ", paramValues);
+            }
+            /** Default title */
             return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
                     ? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
                     : nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
+        }
+    }
+
+    private static String getValueByQName(NodeRef nodeRef, QName title, NodeService nodeService) {
+        /** Property */
+        Serializable value = nodeService.getProperty(nodeRef, title);
+        if (value != null) {
+            return transformValueToString(value, nodeService);
+        }
+        /** Target association */
+        AssociationRef associationRef = getTargetAssociation(nodeRef, title, nodeService);
+        if (associationRef != null) {
+            NodeRef targetNodeRef = associationRef.getTargetRef();
+            if (targetNodeRef != null) {
+                return (String) nodeService.getProperty(targetNodeRef, TITLE);
+            } else {
+                return "null";
+            }
+        } else {
+            return "null";
+        }
+
+    }
+
+    private static AssociationRef getTargetAssociation(NodeRef nodeRef, QName title, NodeService nodeService) {
+        if (title == null) {
+            return null;
+        }
+        List<AssociationRef> associationRefs = nodeService.getTargetAssocs(nodeRef, title);
+        return CollectionUtils.isNotEmpty(associationRefs) ? associationRefs.get(0) : null;
+    }
+
+    private static String transformValueToString(Serializable value, NodeService nodeService) {
+        if (value instanceof Date) {
+            return DATE_FORMAT.format((Date) value);
+        }
+        if (value instanceof NodeRef) {
+            if (nodeService.exists((NodeRef) value)) {
+                return (String) nodeService.getProperty((NodeRef) value, TITLE);
+            } else {
+                return "null";
+            }
+        } else {
+            return value.toString();
         }
     }
 
@@ -326,15 +374,15 @@ public class HistoryUtils {
         if (added != null && removed != null) {
             return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
                     + ": "
-                    + HistoryUtils.getChangeValue(removed.getChildRef(), nodeService)
+                    + HistoryUtils.getCustomChangeValue(removed.getChildRef(), nodeService)
                     + " -> "
-                    + HistoryUtils.getChangeValue(added.getChildRef(), nodeService);
+                    + HistoryUtils.getCustomChangeValue(added.getChildRef(), nodeService);
         } else if (added != null) {
             return HistoryUtils.getAssocKeyValue(added.getTypeQName(), dictionaryService)
                     + ": — -> "
-                    + HistoryUtils.getChangeValue(added.getChildRef(), nodeService);
+                    + HistoryUtils.getCustomChangeValue(added.getChildRef(), nodeService);
         } else if (removed != null) {
-            String deletedName = nodeRefName.isEmpty() ? HistoryUtils.getChangeValue(removed.getChildRef(), nodeService) : nodeRefName;
+            String deletedName = nodeRefName.isEmpty() ? HistoryUtils.getCustomChangeValue(removed.getChildRef(), nodeService) : nodeRefName;
             return HistoryUtils.getAssocKeyValue(removed.getTypeQName(), dictionaryService)
                     + ": "
                     + deletedName
@@ -345,14 +393,14 @@ public class HistoryUtils {
     }
 
     private static boolean isEqualsAssocs(AssociationRef added, AssociationRef removed, NodeService nodeService) {
-        if (HistoryUtils.getChangeValue(removed.getTargetRef(), nodeService).equals(HistoryUtils.getChangeValue(added.getTargetRef(), nodeService))) {
+        if (HistoryUtils.getCustomChangeValue(removed.getTargetRef(), nodeService).equals(HistoryUtils.getCustomChangeValue(added.getTargetRef(), nodeService))) {
             return true;
         }
         return false;
     }
 
     private static boolean isEqualsChildAssocs(ChildAssociationRef added, ChildAssociationRef removed, NodeService nodeService) {
-        if (HistoryUtils.getChangeValue(removed.getChildRef(), nodeService).equals(HistoryUtils.getChangeValue(added.getChildRef(), nodeService))) {
+        if (HistoryUtils.getCustomChangeValue(removed.getChildRef(), nodeService).equals(HistoryUtils.getCustomChangeValue(added.getChildRef(), nodeService))) {
             return true;
         }
         return false;
