@@ -1,5 +1,5 @@
 <webscript>
     <shortname>templates</shortname>
     <description>get card templates for document type</description>
-    <url>/citeck/components/templates/card-templates</url>
+    <url>/citeck/components/templates/card-templates?nodeRef={nodeRef}&amp;formats={formats?}</url>
 </webscript>

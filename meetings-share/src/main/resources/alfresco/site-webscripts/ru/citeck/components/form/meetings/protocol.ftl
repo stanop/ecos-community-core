@@ -51,7 +51,7 @@ fieldNames = [
 
 	<#assign caseNodeRef=(args.destination!'') />
 <#else>
-	<#assign caseNodeRef="${url.context}/proxy/alfresco/api/citeck/meetings/parent-node-ref?child=${args.itemId!''}" />
+	<#assign caseNodeRef="${url.context}/proxy/alfresco/citeck/node/parent-node-ref?child=${args.itemId!''}" />
 </#if>
 
 <div class="yui-g">

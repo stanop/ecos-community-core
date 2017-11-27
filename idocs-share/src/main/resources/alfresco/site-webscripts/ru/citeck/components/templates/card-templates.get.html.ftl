@@ -19,9 +19,9 @@
                         <div class="row">
                             <span>${template.typeTitle}</span>
                             <div style="float: right">
-                                <span><a href="${urlTemplate}&format=html"><img src="${url.context}/res/citeck/components/templates/images/document-16.png"></a></span>
-                                <span><a href="${urlTemplate}&format=docx"><img src="${url.context}/res/citeck/components/templates/images/word-16.png"></a></span>
-                                <span><a href="${urlTemplate}&format=pdf"><img src="${url.context}/res/citeck/components/templates/images/pdf-16.png"></a></span>
+                                <#list formats as fmt>
+                                    <span><a href="${urlTemplate}&format=${fmt}"><img src="${url.context}/res/citeck/components/templates/images/${fmt}-16.png"></a></span>
+                                </#list>
                             </div>
                         </div>
                     </#list>

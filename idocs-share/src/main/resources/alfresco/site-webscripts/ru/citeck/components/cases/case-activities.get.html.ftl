@@ -124,7 +124,7 @@
 					<span class="type">${msg('header.type')}</span>
 					<span class="start">${msg('header.start')}</span>
 					<span class="end">${msg('header.end')}</span>
-					<span class="expTime">${msg('header.expTime')}</span>
+					<span class="sla">${msg('header.expTime')}</span>
 				</span>
 				
 				<#assign errorMessage = msg("move.failure")>

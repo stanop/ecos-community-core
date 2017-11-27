@@ -23,6 +23,20 @@
             <activiti:expression>${wfsp_paymentAgent}</activiti:expression>
           </activiti:field>
         </activiti:taskListener>
+          <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.SystemScriptTaskListener">
+              <activiti:field name="script">
+                  <activiti:expression>
+                      if (execution.getVariable("wfsp_extendDate") != null) {
+                      task.setDueDate(execution.getVariable("wfsp_extendDate"));
+                      }
+                  </activiti:expression>
+              </activiti:field>
+          </activiti:taskListener>
+          <activiti:taskListener event="complete" class="ru.citeck.ecos.workflow.listeners.VariablePush">
+              <activiti:field name="variableExpr">
+                  <activiti:expression>wfsp_extendDate</activiti:expression>
+              </activiti:field>
+          </activiti:taskListener>
       </extensionElements>
     </userTask>
     <endEvent id="endevent1" name="End"></endEvent>

@@ -47,23 +47,105 @@
             <list>
                 <ref bean="contracts.module-component.contracts-site"/>
                 <ref bean="contracts.module-component.doctype-categories1"/>
+                <ref bean="contracts.module-component.closing-document-type"/>
+                <ref bean="contracts.module-component.closing-document-journal"/>
+                <ref bean="contracts.module-component.payment-periods-journal"/>
+                <ref bean="contracts.module-component.payments-journal"/>
+                <ref bean="contracts.module-component.contracts-journal"/>
+                <ref bean="contracts.module-component.supplementary-agreement-journal"/>
+                <ref bean="contracts.module-component.contract-subjects-journal"/>
             </list>
         </property>
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
         <property name="args">
             <map>
-                <entry key="node" value="/app:company_home/st:sites/cm:contracts" />
-                <entry key="attributes">
-                    <map>
-                        <entry key="tk:siteDocumentTypes">
-                            <list>
-                                <value>workspace://SpacesStore/contracts-cat-doctype-contract</value>
-                                <value>workspace://SpacesStore/contracts-cat-doctype-closing-doc</value>
-                                <value>workspace://SpacesStore/contracts-cat-doctype-supp-agreement</value>
-                                <value>workspace://SpacesStore/contracts-cat-doctype-payment</value>
-                            </list>
-                        </entry>
-                    </map>
+                <entry key="nodes">
+                    <list>
+                        <!-- contracts -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-contract" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-contract" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- closing doc -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:closing-documents" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-closing-doc" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts-closing-document" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-closing-doc" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- sup agreement -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:supplementary-agreements" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-supp-agreement" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:contracts-supplementary-agreement" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-supp-agreement" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- payment -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:payments" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-payment" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:payments" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/contracts-cat-doctype-payment" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- contracts site -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:contracts" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:siteDocumentTypes">
+                                        <list>
+                                            <value>workspace://SpacesStore/contracts-cat-doctype-contract</value>
+                                            <value>workspace://SpacesStore/contracts-cat-doctype-closing-doc</value>
+                                            <value>workspace://SpacesStore/contracts-cat-doctype-supp-agreement</value>
+                                            <value>workspace://SpacesStore/contracts-cat-doctype-payment</value>
+                                        </list>
+                                    </entry>
+                                </map>
+                            </entry>
+                        </map>
+                    </list>
                 </entry>
             </map>
         </property>

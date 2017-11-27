@@ -171,6 +171,7 @@
         </view>
         <view>
             <field prop="contracts:digiSign" />
+            <field assoc="contracts:attachmentRkkCreatedFrom" template="none"/>
         </view>
         <view id="note" kind="1-column">
             <field prop="idocs:note">

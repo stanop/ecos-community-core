@@ -162,6 +162,7 @@
       <xs:enumeration value="description"/>
       <xs:enumeration value="value-title"/>
       <xs:enumeration value="value-description"/>
+      <xs:enumeration value="value-order"/>
       <xs:enumeration value="datatype"/>
       <xs:enumeration value="nodetype"/>
       <xs:enumeration value="nonblocking-value"/>

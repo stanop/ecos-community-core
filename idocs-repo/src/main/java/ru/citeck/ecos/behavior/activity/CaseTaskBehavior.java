@@ -6,6 +6,7 @@ import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -43,7 +44,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                                          CaseActivityPolicies.OnCaseActivityResetPolicy {
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
-    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "new-default-sla-duration";
+    private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "actual-default-sla-duration";
     private static final String DEFAULT_RAW_SLA = "0";
 
     private final ValueConverter valueConverter = new ValueConverter();
@@ -58,6 +59,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     private PolicyComponent policyComponent;
     private CaseRoleService caseRoleService;
     private NodeService nodeService;
+
+    private WorkflowQNameConverter qnameConverter;
 
     /**
      * Ecos configuration service (system journals - configuration)
@@ -83,6 +86,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         if (workflowTransmittedVariables == null) {
             workflowTransmittedVariables = new HashMap<>();
         }
+        qnameConverter = new WorkflowQNameConverter(namespaceService);
     }
 
     @Override
@@ -126,18 +130,40 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             workflowProperties.put(value, getAttribute(taskRef, key, value));
         }
 
+        workflowProperties.putAll(getTransmittedVariables(workflowDefinitionName));
+
+        return workflowProperties;
+    }
+
+    private Map<QName, Serializable> getTransmittedVariables(String workflowDefinitionName) {
+
+        Map<QName, Serializable> result = new HashMap<>();
+
         List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
+
         if (transmittedParameters != null && transmittedParameters.size() > 0) {
+
             Map<String, Object> processVariables = ActionConditionUtils.getProcessVariables();
+
             for (String parameter : transmittedParameters) {
-                Serializable value = convertForRepo(processVariables.get(parameter));
+
+                QName parameterQName;
+                if (parameter.indexOf(":") > 0 || parameter.startsWith("{")) {
+                    parameterQName = QName.resolveToQName(namespaceService, parameter);
+                } else {
+                    parameterQName = QName.createQName(parameter);
+                }
+
+                String procParamName = qnameConverter.mapQNameToName(parameterQName);
+                Serializable value = convertForRepo(processVariables.get(procParamName));
+
                 if (value != null) {
-                    workflowProperties.put(QName.createQName(parameter), value);
+                    result.put(parameterQName, value);
                 }
             }
         }
 
-        return workflowProperties;
+        return result;
     }
 
     private Serializable convertForRepo(Object value) {

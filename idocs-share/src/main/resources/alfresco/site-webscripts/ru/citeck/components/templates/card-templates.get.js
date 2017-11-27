@@ -31,5 +31,6 @@ function getCardTemplateTypes() {
             }
         }
         model.templates = templates;
+        model.formats = args.formats ? args.formats.split(",") : ['html', 'docx', 'pdf'];
     }
 })();

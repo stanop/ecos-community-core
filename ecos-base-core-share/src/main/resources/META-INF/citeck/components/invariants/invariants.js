@@ -347,11 +347,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         moment: moment
     };
 
-    function evalJavaScript(expression, model) {
+    function evalJavaScript(expression, model, thisArg) {
         with(rootObjects) {
             with(model) {
                 try {
-                    return eval(expression);
+                    var result = eval(expression);
+                    if (_.isFunction(result)) {
+                        result = result.call(thisArg);
+                    }
+                    return result;
                 } catch(e) {
                     return undefined;
                 }
@@ -852,19 +856,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     var featureParameter = function(name, defaultValue) {
         return function() {
-            var params = this.params();
-            if (params[name]) {
-                try {
-                    return Citeck.utils.eval(this, params[name]);
-                } catch (e) { 
-                    console.error("featureParameter " + name + " have an error calculating value of evaluatedExpression for AttributeSet.id:" + this.id());
-                    console.error(e);
+            var expression = this.params()[name];
+            if (expression) {
+                var model = this['invariantsModel'] ? this['invariantsModel']() : {};
+                if (/^\s*function/.test(expression)) {
+                    expression = '(' + expression + ')';
                 }
+                return evalJavaScript(expression, model, this);
             }
 
             return defaultValue || null;
         }
-    }
+    };
 
     AttributeSet
         .constructor([ Object, Node], function(data, node) {
@@ -906,6 +909,19 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('_attributes', o)
         .property('_sets', o)
         .property('_rendered', b)
+
+        .computed('invariantsModel', function() {
+
+            var model = {};
+
+            _.each(this.node().impl().defaultModel(), function(property, name) {
+                Object.defineProperty(model, name, _.isFunction(property) ? { get: property } : { value: property });
+            });
+            Object.defineProperty(model, 'node', { get: this.node });
+            Object.defineProperty(model, 'attributeSet', { value: this });
+
+            return model;
+        })
 
         .computed('paramRelevant', featureParameter("relevant"))
         .computed('paramProtected', featureParameter("protected"))
@@ -1241,6 +1257,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.persisted.reload();
                 this.persistedValue.reload();
             }
+
+            if (this.multipleValues() && this.multipleValues().length) {
+                this.multipleValues().forEach(function(item) {
+                    if (item instanceof Node) {
+                        item.impl().reset(true);
+                    }
+                });
+            }
         })
         .method('getValueText', function(value) {
             if(value == null) return null;
@@ -1379,6 +1403,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('descriptionEvaluator', featureEvaluator('description', s, '', notNull))
         .method('valueTitleEvaluator', featureEvaluator('value-title', s, '', notNull))
         .method('valueDescriptionEvaluator', featureEvaluator('value-description', s, '', notNull))
+        .method('valueOrderEvaluator', featureEvaluator('value-order', n, 0, notNull))
         .method('relevantEvaluator', featureEvaluator('relevant', b, true, notNull))
         .method('multipleEvaluator', featureEvaluator('multiple', b, false, notNull))
         .method('mandatoryEvaluator', featureEvaluator('mandatory', b, false, notNull))
@@ -1436,7 +1461,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             write: function(value) { this.value(value); }
         })
         .computed('multipleValues', {
-            read: function() { return this.convertValue(this.rawValue(), true); },
+            read: function() {
+                var values = this.convertValue(this.rawValue(), true);
+                return _.sortBy(values, this.getValueOrder, this);
+            },
             write: function(value) { this.value(value); }
         })
         .computed('lastValue', {
@@ -1508,6 +1536,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .computed('valueDescription', function() { return this.getValueDescription(this.singleValue()); })
         .shortcut('value-description', 'valueDescription')
+
+        // value order
+        .method('getValueOrder', function(value) {
+            var model = this.getInvariantsModel(value);
+            return this.valueOrderEvaluator(model).value;
+        })
 
         // persisted value loading
         .load(['persisted', 'persistedValue'], function(attr) {

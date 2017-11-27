@@ -1,18 +1,25 @@
 package ru.citeck.ecos.utils.converter.amount;
 
+import org.springframework.extensions.surf.util.I18NUtil;
+
+import java.util.Locale;
+
 /**
  * @author Roman.Makarskiy on 10.07.2016.
  */
- abstract class Currency {
+abstract class Currency {
+
+    private Locale locale;
 
     private String fractional1, fractional2, fractional3;
     private String intact1, intact2, intact3;
 
-    public Currency () {
+    Currency(Locale locale) {
+        this.locale = locale;
         initializationResources();
     }
 
-    abstract void initializationResources  ();
+    abstract void initializationResources();
 
     String getFractional1() {
         return fractional1;
@@ -60,5 +67,9 @@ package ru.citeck.ecos.utils.converter.amount;
 
     void setIntact3(String intact3) {
         this.intact3 = intact3;
+    }
+
+    String getMessage(String id) {
+        return I18NUtil.getMessage(id, this.locale);
     }
 }

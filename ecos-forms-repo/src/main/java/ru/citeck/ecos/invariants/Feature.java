@@ -40,6 +40,7 @@ public enum Feature {
     },
     TITLE(String.class, "", "attribute title"),
     DESCRIPTION(String.class, "", "attribute description"),
+
     VALUE_TITLE(String.class, "", "value title") {
         @Override
         public String toString() {
@@ -52,6 +53,13 @@ public enum Feature {
             return "value-description";
         }
     },
+    VALUE_ORDER(Double.class, 0d, "value-order") {
+        @Override
+        public String toString() {
+            return "value-order";
+        }
+    },
+
     DATATYPE(QName.class, null, ""),
     NODETYPE(QName.class, null, ""),
     NONBLOCKING_VALUE(Object.class, null, "nonblocking value") {

@@ -106,6 +106,21 @@
                     <value>REPEAL_BY_COUNTERPARTY_REQUESTED</value>
                     <value>REPEALED_BY_COUNTERPARTY</value>
                     <value>CLARIFICATION_REQUESTED</value>
+                    <value>SIGN_REQUIRED</value>
+                    <value>RECEIVED</value>
+                    <value>SIGNED</value>
+                    <value>COUNTERPARTY_SIGNED</value>
+                    <value>COUNTERPARTY_SIGN_REQUESTED</value>
+                    <value>DELIVERY_FAILED</value>
+                    <value>REQUESTS_MY_REVOCATION</value>
+                    <value>REVOCATION_IS_REQUESTED_BY_ME</value>
+                    <value>REVOCATION_ACCEPTED</value>
+                    <value>REVOCATION_REJECTED</value>
+                    <value>REJECTION_SENT</value>
+                    <value>REJECTED</value>
+                    <value>REVISIONED</value>
+                    <value>CORRECTED</value>
+                    <value>REVISION_CORRECTED</value>
                     <value/>
                 </list>
             </parameter>

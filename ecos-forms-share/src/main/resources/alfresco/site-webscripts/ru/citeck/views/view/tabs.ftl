@@ -17,7 +17,7 @@
 			<#assign tabId = tab.id!tab.params.setId />
 
 			<!-- ko with: $root.node().impl().getAttributeSet("${tabId}") -->
-				<li class="tab-title" data-tab-id="${tabId}"
+				<li class="tab-title" data-tab-id="${tabId}" id="${tabId}"
 					data-bind="
 						css: { selected: selected, hidden: irrelevant, disabled: disabled }, 
 						click: _.bind($root.selectAttributeSet, $root), clickBubble: false

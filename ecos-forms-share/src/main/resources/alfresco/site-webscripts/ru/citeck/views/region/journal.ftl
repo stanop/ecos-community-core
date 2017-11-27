@@ -55,32 +55,34 @@
 
 <div id="${controlId}" class="journal-control" 
     data-bind="journalControl: { value: value, multiple: multiple, options: options }, params: function() {
-      return {
-        <#if params.journalType??>journalType: '${params.journalType}',</#if>
-        <#if params.searchBar??>searchBar: '${params.searchBar}',</#if>
-        <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: '${params.defaultVisibleAttributes}',</#if>
-        <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: '${params.defaultSearchableAttributes}',</#if>
-        removeSelection: ${removeSelection?trim},
-        mode: '${mode?trim}',
-        dock: ${dock?trim},
-        hightlightSelection: ${hightlightSelection?trim},
+        return {
+            <#if params.journalType??>journalType: '${params.journalType}',</#if>
+            <#if params.searchBar??>searchBar: '${params.searchBar}',</#if>
+            <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: '${params.defaultVisibleAttributes}',</#if>
+            <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: '${params.defaultSearchableAttributes}',</#if>
+            removeSelection: ${removeSelection?trim},
+            mode: '${mode?trim}',
+            dock: ${dock?trim},
+            hightlightSelection: ${hightlightSelection?trim},
 
-        <#if params.sortBy??>sortBy: ${params.sortBy},</#if>
+            <#if params.sortBy??>sortBy: ${params.sortBy},</#if>
+            <#if params.defaultHiddenByType??>defaultHiddenByType: '${params.defaultHiddenByType}',</#if>
+            <#if params.searchMinQueryLength??>searchMinQueryLength: '${params.searchMinQueryLength}',</#if>
+            <#if params.searchScript??>searchScript: '${params.searchScript}',</#if>
+            <#if params.searchCriteria??>searchCriteria: ${params.searchCriteria},</#if>
+            <#if params.defaultCriteria??>defaultCriteria: ${params.defaultCriteria},</#if>
+            <#if params.hiddenCriteria??>hiddenCriteria: ${params.hiddenCriteria},</#if>
+            <#if params.optionsFilter??>
+                optionsFilter: function() {
+                    return ko.computed(function() { return ${params.optionsFilter}; });
+               },
+            </#if>
+            createVariantsVisibility: ${createVariantsVisibility},
 
-        <#if params.defaultHiddenByType??>defaultHiddenByType: '${params.defaultHiddenByType}',</#if>
-
-        <#if params.searchMinQueryLength??>searchMinQueryLength: '${params.searchMinQueryLength}',</#if>
-        <#if params.searchScript??>searchScript: '${params.searchScript}',</#if>
-        <#if params.searchCriteria??>searchCriteria: ${params.searchCriteria},</#if>
-        <#if params.defaultCriteria??>defaultCriteria: ${params.defaultCriteria},</#if>
-        <#if params.hiddenCriteria??>hiddenCriteria: ${params.hiddenCriteria},</#if>
-
-        createVariantsVisibility: ${createVariantsVisibility},
-
-        <#-- Create Object Transition -->
-        createVariantsSource: '${createVariantsSource}',
-        virtualParent: ${virtualParent}
-      }
+            <#-- Create Object Transition -->
+            createVariantsSource: '${createVariantsSource}',
+            virtualParent: ${virtualParent}
+        }
     }">
 
     <button id="${controlId}-button" 

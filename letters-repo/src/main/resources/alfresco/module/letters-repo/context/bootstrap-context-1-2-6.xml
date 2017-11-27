@@ -17,23 +17,66 @@
         <property name="description" value="add-case-types-to-site"/>
         <property name="dependsOn">
             <list>
-                <ref bean="letters.module-component.letters-site"/>
-                <ref bean="letters.module-component.doctype-categories-ext"/>
+                <ref bean="letters.module-component.letters-site" />
+                <ref bean="letters.module-component.doctype-categories-ext" />
+                <ref bean="letters.module-component.income-journal" />
+                <ref bean="letters.module-component.outcome-journal" />
             </list>
         </property>
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
         <property name="args">
             <map>
-                <entry key="node" value="/app:company_home/st:sites/cm:letters" />
-                <entry key="attributes">
-                    <map>
-                        <entry key="tk:siteDocumentTypes">
-                            <list>
-                                <value>workspace://SpacesStore/letter-doctype-income</value>
-                                <value>workspace://SpacesStore/letter-doctype-outcome</value>
-                            </list>
-                        </entry>
-                    </map>
+                <entry key="nodes">
+                    <list>
+                        <!-- income -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:letters/cm:documentLibrary/cm:income" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-income" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:income" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-income" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- outcome -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:letters/cm:documentLibrary/cm:outcome" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-outcome" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:outcome" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/letter-doctype-outcome" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- letters site -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:letters" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:siteDocumentTypes">
+                                        <list>
+                                            <value>workspace://SpacesStore/letter-doctype-income</value>
+                                            <value>workspace://SpacesStore/letter-doctype-outcome</value>
+                                        </list>
+                                    </entry>
+                                </map>
+                            </entry>
+                        </map>
+                    </list>
                 </entry>
             </map>
         </property>

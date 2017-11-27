@@ -7,7 +7,7 @@
 			Сотрудник <u>${args.task.editor}</u> ознакомился с:
 			<#if args.workflow.documents??>
                 <div style="font-size: 14px; margin: 0px 0px 0px 0px; padding-top: 0px; border-top: 0px solid #aaaaaa;">
-                    ${args.workflow.documents.properties["orders:header"]}
+                    ${args.workflow.documents.properties["cm:name"]}
                 </div>
 			</#if>
 			<#if args.task.properties.bpm_comment??>
