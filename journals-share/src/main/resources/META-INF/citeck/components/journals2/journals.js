@@ -911,6 +911,7 @@ JournalsWidget
 	// paging
 	.property('skipCount', n)
 	.property('maxItems', n)
+	.property('defaultMaxItems', n)
 	.property('totalItems', n)
 	.property('hasMore', b)
 	.computed('totalEstimate', function() {
@@ -1653,7 +1654,7 @@ JournalsWidget
 
 			query.sortBy = this.sortByQuery();
 			query.skipCount = this.skipCount() || 0;
-			query.maxItems = this.maxItems() || 10;
+			query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
 
 			logger.info("Loading records with query: " + JSON.stringify(query));
 
