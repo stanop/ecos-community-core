@@ -2165,6 +2165,10 @@ div[id*="multiple-text"] .multiple-text-control input {
   background-size: 100% 100%;
 }
 
+.invariants-form .template-view-table tr.value-item .value-item-actions a.duplicate-value-item {
+  background-image: url(../journals2/images/copy.png);
+}
+
 .invariants-form .template-view span.value-item .value-item-actions a.edit-value-item,
 .invariants-form .template-view-table tr.value-item .value-item-actions a.edit-value-item {
   background-image: url(images/edit.png);
@@ -2179,6 +2183,10 @@ div[id*="multiple-text"] .multiple-text-control input {
 .invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item {
   background-image: url(images/remove.png);
   background-size: 10px;
+}
+
+.invariants-form .template-view-table tr.value-item .value-item-actions a.duplicate-value-item:hover {
+  background-image: url(../journals2/images/copy-active.png);
 }
 
 .invariants-form .template-view span.value-item .value-item-actions a.delete-value-item:hover,
