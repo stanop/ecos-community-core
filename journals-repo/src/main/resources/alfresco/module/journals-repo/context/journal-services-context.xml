@@ -6,8 +6,6 @@
       - Journal Service
      -->
 
-    <bean id="journalCriterionInvariantsProviderRegistry" class="java.util.ArrayList" />
-
     <bean id="journalService" class="ru.citeck.ecos.journals.JournalServiceImpl">
         <property name="journalsRoot" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
