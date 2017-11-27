@@ -152,20 +152,21 @@ public class HistoryService {
     }
 
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
+        Date creationDate = new Date();
         TransactionUtils.doAfterCommit(new Runnable() {
             @Override
             public void run() {
                 if (isEnabledRemoteHistoryService()) {
-                    sendHistoryEventToRemoteService(properties);
+                    sendHistoryEventToRemoteService(properties, creationDate);
                 } else {
-                    persistEventToAlfresco(type, properties);
+                    persistEventToAlfresco(type, properties, creationDate);
                 }
             }
         });
         return null;
     }
 
-    private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties) {
+    private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties, Date creationDate) {
         return AuthenticationUtil.runAsSystem(() -> {
             NodeRef initiator = getInitiator(properties);
             properties.remove(HistoryModel.ASSOC_INITIATOR);
@@ -176,7 +177,7 @@ public class HistoryService {
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
 
             //sorting in history for assocs
-            Date now = new Date();
+            Date now = creationDate;
             if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
                 now.setTime(now.getTime() + 1000);
             }
@@ -233,7 +234,7 @@ public class HistoryService {
         });
     }
 
-    private void sendHistoryEventToRemoteService(final Map<QName, Serializable> properties) {
+    private void sendHistoryEventToRemoteService(final Map<QName, Serializable> properties, Date creationDate) {
         Map<String, Object> requestParams = new HashMap();
         /** Document */
         NodeRef document = getDocument(properties);
@@ -252,7 +253,7 @@ public class HistoryService {
         requestParams.put(USERNAME, username);
         requestParams.put(USER_ID, userRef.getId());
         /** Event time */
-        Date now = new Date();
+        Date now = creationDate;
         if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))
                     || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
             now.setTime(now.getTime() + 5000);
