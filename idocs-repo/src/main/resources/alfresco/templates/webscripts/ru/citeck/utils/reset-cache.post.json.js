@@ -9,6 +9,12 @@
         'perm-matrix': 'docACLDeployer'
     };
 
+    var additionalActions = {
+        'journals': function () {
+            services.get('journalService').clearCache();
+        }
+    };
+
     var resetStatus = {};
 
     for (var key in autoDeployerBeans) {
@@ -16,6 +22,9 @@
             var bean = services.get(autoDeployerBeans[key]);
             if (bean) {
                 bean.load();
+                if (additionalActions[key]) {
+                    additionalActions[key]();
+                }
                 resetStatus[key] = 'OK';
             } else {
                 resetStatus[key] = 'BEAN_NOT_FOUND';

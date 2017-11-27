@@ -53,7 +53,7 @@ public class XmlObjectTest {
         Marshaller marshaller = jaxbContext.createMarshaller();
 
         SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        Schema schema = schemaFactory.newSchema(new ClassPathResource(JournalServiceImpl.SCHEMA_LOCATION).getFile());
+        Schema schema = schemaFactory.newSchema(new ClassPathResource(JournalServiceImpl.JOURNALS_SCHEMA_LOCATION).getFile());
         marshaller.setSchema(schema);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

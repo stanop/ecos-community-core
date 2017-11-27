@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the ru.citeck.ecos.journals.xml package. 
+ * generated in the ru.citeck.ecos.journals.xml package.
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -54,11 +54,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CriterionRegion }
+     * 
+     */
+    public CriterionRegion createCriterionRegion() {
+        return new CriterionRegion();
+    }
+
+    /**
+     * Create an instance of {@link Criterion }
+     * 
+     */
+    public Criterion createCriterion() {
+        return new Criterion();
+    }
+
+    /**
      * Create an instance of {@link BatchEdit }
      * 
      */
     public BatchEdit createBatchEdit() {
         return new BatchEdit();
+    }
+
+    /**
+     * Create an instance of {@link ViewElement }
+     * 
+     */
+    public ViewElement createViewElement() {
+        return new ViewElement();
     }
 
     /**
@@ -91,6 +115,14 @@ public class ObjectFactory {
      */
     public Evaluator createEvaluator() {
         return new Evaluator();
+    }
+
+    /**
+     * Create an instance of {@link Journal.GroupActions }
+     * 
+     */
+    public Journal.GroupActions createJournalGroupActions() {
+        return new Journal.GroupActions();
     }
 
     /**

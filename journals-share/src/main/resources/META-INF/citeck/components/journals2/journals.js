@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
+define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants'], function(ko, koutils) {
 
 var logger = Alfresco.logger,
 		noneActionGroupId = "none",
@@ -47,6 +47,7 @@ var criteriaCounter = 0,
 	n = Number,
 	b = Boolean,
 	o = Object,
+	d = Date,
 	JournalsList = koclass('JournalsList'),
 	JournalType = koclass('JournalType'),
 	Journal = koclass('Journal'),
@@ -54,8 +55,10 @@ var criteriaCounter = 0,
 	Settings = koclass('Settings'),
 	Criterion = koclass('Criterion'),
 	CreateVariant = koclass('CreateVariant'),
+	Invariant = koclass('invariants.Invariant'),
 	Attribute = koclass('Attribute'),
 	AttributeInfo = koclass('AttributeInfo'),
+	AttributeFilter = koclass('AttributeFilter'),
 	Predicate = koclass('Predicate'),
 	PredicateList = koclass('PredicateList'),
 	Datatype = koclass('Datatype'),
@@ -66,6 +69,8 @@ var criteriaCounter = 0,
 	ActionsColumn = koclass('ActionsColumn'),
 	JournalsWidget = koclass('JournalsWidget'),
 	SortBy = koclass('SortBy'),
+    Node = koclass('invariants.Node'),
+    QName = koclass('invariants.QName'),
 	last;
 
 // class definitions:
@@ -84,45 +89,19 @@ JournalsList
 	.computed('listId', function() {
 		return this.id() ? this.id().replace(journalsListIdRegexp, '$4') : '';
 	})
-  .constructor([String, String], function(id, nodeRef) {
-    var jl = new JournalsList(id);
-    jl.documentNodeRef(nodeRef);
-    return jl;
+  	.constructor([String, String], function(id, nodeRef) {
+		var jl = new JournalsList(id);
+		jl.documentNodeRef(nodeRef);
+		return jl;
 	}, true)
 	;
 
-Criterion
-	.property('field', AttributeInfo)
-	.property('predicate', Predicate)
-	.property('value', s)
-	.computed('shortModel', function() {
-		return {
-			field: this.field().name(),
-			predicate: this.predicate().id(),
-			value: this.value()
-		};
-	})
-	.computed('id', function() {
-		if(typeof this._id == "undefined") {
-			this._id = criteriaCounter++;
-		}
-		return this._id;
-	})
-	.computed('query', function() {
-		var id = this.id(),
-			result = {};
-		result['field_' + id] = this.field().name();
-		result['predicate_' + id] = this.resolve('predicate.id');
-		result['value_' + id] = this.value();
-		return result;
-	})
-    .init(function() {
-        var predicateId = this.resolve('predicate.id');
-        if (predicateId && predicateId.indexOf("boolean") != -1){
-            this.value("boolean");
-        }
-    })
-	;
+var featuredProperty = function(featureName) {
+    return function() {
+    	var attribute = this.attribute();
+        return attribute ? attribute[featureName + 'Evaluator'](this.invariantsModel()).value : null;
+    }
+};
 
 CreateVariant
 	.property('url', s)
@@ -162,6 +141,311 @@ CreateVariant
 		}));
 	})
 	;
+
+    Criterion
+        .constructor([Criterion], function(criterion) {
+            var that = Criterion.call(this, criterion.shortModel());
+            that.attributeProperty(criterion.attributeProperty());
+            return that;
+        })
+        .property('field', AttributeInfo) //WARNING: attribute link in this object is changed when new journal is loaded
+        .property('attributeProperty', Attribute)
+        .property('predicate', Predicate)
+        .property('persistedValue', o)
+        .property('newValue', o) // value, set by user
+
+        .computed('attribute', function () {
+            return this.attributeProperty() || this.resolve('field.attribute');
+        })
+
+        .shortcut('nodetype', 'attribute._info.nodetype')
+        .shortcut('datatype', 'attribute._info.datatype')
+        .shortcut('journalType', 'attribute._info.journalType')
+        .shortcut('title', 'attribute._info.customDisplayName')
+        .shortcut('name', 'field.name')
+
+        /*====== Value ======*/
+
+        .computed('valueClass', function () {
+            var datatype = this.resolve('datatype.name');
+            switch (datatype) {
+                case 'noderef':
+                case 'category':
+                case 'association':
+                    return Node;
+                case 'typeName':
+                case 'qname':
+                    return QName;
+                case 'date':
+                case 'datetime':
+                    return d;
+                case 'boolean':
+                    return b;
+            }
+            return s;
+        })
+
+        .method('convertValue', function(value, multiple) {
+
+            if (value == null || value === "") return multiple ? [] : null;
+
+            var instantiate = _.partial(koutils.instantiate, _, this.valueClass() || s);
+            if (_.isArray(value)) {
+                return multiple ? _.map(value, instantiate) : instantiate(value[0]);
+            } else {
+                return multiple ? [ instantiate(value) ] : instantiate(value) ;
+            }
+        })
+
+        .computed('value', {
+            read: function() {
+                return this.convertValue(this.rawValue(), this.multiple());
+            },
+            write: function(value) {
+                this.newValue(this.convertValue(value, true));
+            }
+        })
+
+        .computed('rawValue', function() {
+            var result = this.invariantValue() || this.newValue();
+            if (result == null) {
+                result = this.persistedValue();
+            }
+            return result;
+        })
+
+        .computed('singleValue', {
+            read: function() {
+                return this.convertValue(this.rawValue(), false);
+            },
+            write: function(value) {
+                this.value(value);
+            }
+        })
+
+        .computed('multipleValues', {
+            read: function() {
+                return this.convertValue(this.rawValue(), true);
+            },
+            write: function(value) {
+                this.value(value);
+            }
+        })
+
+        .computed('empty', function() {
+            return this.value() == null
+                || this.multiple() && this.value().length == 0
+                || this.valueClass() == String && this.value().length == 0;
+        })
+
+        .computed('textValue', {
+            read: function() { return this.getValueText(this.value()); },
+            write: function(value) {
+                if(value == null || value == "") {
+                    return this.value(null);
+                } else {
+                    return this.value(value);
+                }
+            }
+        })
+
+        .method('filterOptions', function(criteria, pagination) {
+
+            if (!this.cache) this.cache = {};
+            if (!this.cache.result) {
+                this.cache.result = ko.observable([]);
+                this.cache.result.extend({ notify: 'always' });
+            }
+
+            if (!this.nodetype()) {
+                return [];
+            }
+
+            var query = {
+                skipCount: 0,
+                maxItems: 10,
+                field_1: "type",
+                predicate_1: "type-equals",
+                value_1: this.nodetype()
+            };
+
+
+            if (pagination) {
+                if (pagination.maxItems) query.maxItems = pagination.maxItems;
+                if (pagination.skipCount) query.skipCount = pagination.skipCount;
+            }
+
+            _.each(criteria, function(criterion, index) {
+                query['field_' + (index + 2)] = criterion.attribute;
+                query['predicate_' + (index + 2)] = criterion.predicate;
+                query['value_' + (index + 2)] = criterion.value;
+            });
+
+            if(this.cache.query) {
+                if(_.isEqual(query, this.cache.query)) return this.cache.result();
+            }
+
+            this.cache.query = query;
+            if (_.some(_.keys(query), function(p) {
+                    return _.some(["field", "predicate", "value"], function(ci) {
+                        return p.indexOf(ci) != -1;
+                    });
+                })) {
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                    dataObj: query,
+                    successCallback: {
+                        scope: this.cache,
+                        fn: function(response) {
+                            var result = _.map(response.json.results, function(node) {
+                                return new Node(node);
+                            });
+                            result.pagination = response.json.paging;
+                            result.query = response.json.query;
+                            this.result(result);
+                        }
+                    }
+                });
+            }
+
+            return this.cache.result();
+        })
+
+        .method('getValueDescription', function () {
+            return this.getValueTitle(arguments);
+        })
+
+        .method('getValueTitle', function (value, postprocessing) {
+            var model = this.getInvariantsModel(value, this.cache = this.cache || {});
+            var attribute = this.attribute();
+            var result = attribute ? attribute.valueTitleCriterionEvaluator(model).value : null;
+            if (postprocessing) {
+                result = postprocessing(result);
+            }
+            if (!result) {
+                if (value instanceof Node) {
+
+                    switch (value.typeShort) {
+                        case "cm:person":
+                            result = value.properties["cm:firstName"] + " " + value.properties["cm:lastName"];
+                            break;
+                        case "cm:authorityContainer":
+                            result = value.properties["cm:authorityDisplayName"] || value.properties["cm:authorityName"];
+                            break;
+                        default:
+                            result = value.properties['cm:title'] || value.properties['cm:name'];
+                    }
+                }
+                if (!result) {
+                    result = Alfresco.util.message("label.none");
+                }
+            }
+            return result;
+        })
+
+        .method('getValueText', function(value) {
+
+            if (value == null) return "";
+
+            if (_.isArray(value)) {
+                return _.map(value, this.getValueText, this).join(",");
+            }
+
+            var valueClass = this.valueClass();
+            if (valueClass == null) return "" + value;
+            if (valueClass == o) return value.toString();
+            if (valueClass == s) return "" + value;
+            if (valueClass == b) return value ? "true" : "false";
+            if (valueClass == Node) return value.nodeRef;
+            if (valueClass == QName) return value.shortQName();
+
+            var datatype = this.datatype();
+            if (valueClass == n) {
+                if(datatype == 'd:int' || datatype == 'd:long') {
+                    return "" + Math.floor(value);
+                }
+                return "" + value;
+            }
+            if (valueClass == d) {
+                var type = this.resolve('datatype.name');
+                if(type == 'date') {
+                    var year = value.getFullYear(),
+                        month = value.getMonth() + 1,
+                        date = value.getDate();
+                    return (year > 1000 ? "" : year > 100 ? "0" : year > 10 ? "00" : "000") + year
+                        + (month < 10 ? "-0" : "-") + month
+                        + (date  < 10 ? "-0" : "-") + date;
+                }
+
+                return Alfresco.util.toISO8601(value);
+            }
+
+            throw {
+                message: "Value class is not supported",
+                valueClass: valueClass,
+                datatype: datatype
+            };
+        })
+
+        .computed('options', {
+            read: function() {
+                return this.convertValue(this.invariantOptions(), true) || [];
+            },
+            pure: true
+        })
+        .computed('single', function() { return !this.multiple(); })
+
+        /*====== Invariants ======*/
+
+        .computed('invariantsModel', function() {
+            return this.getInvariantsModel(this.value, this.cache = this.cache || {});
+        })
+        .method('getInvariantsModel', function(value, cache) {
+            var model = {};
+            Object.defineProperty(model, 'value', typeof value == "function" ? { get: value } : { value: value });
+            Object.defineProperty(model, 'cache', { value: cache });
+            return model;
+        })
+
+        .computed('invariantValue', featuredProperty('valueCriterion'))
+        .computed('invariantOptions', featuredProperty('optionsCriterion'))
+        .computed('invariantDefault', featuredProperty('defaultCriterion'))
+        .computed('multiple', featuredProperty('multipleCriterion'))
+        .computed('mandatory', featuredProperty('mandatoryCriterion'))
+        .computed('relevant', featuredProperty('relevantCriterion'))
+        .computed('protected', featuredProperty('protectedCriterion'))
+
+        /*====== Other ======*/
+
+        .computed('shortModel', function() {
+            return {
+                field: this.name(),
+                predicate: this.resolve('predicate.id'),
+                persistedValue: this.textValue()
+            };
+        })
+        .computed('id', function() {
+            if(typeof this._id == "undefined") {
+                this._id = criteriaCounter++;
+            }
+            return this._id;
+        })
+        .computed('query', function() {
+            var id = this.id(),
+                result = {};
+
+            result['field_' + id] = this.name();
+            result['predicate_' + id] = this.resolve('predicate.id');
+            result['value_' + id] = this.textValue();
+            return result;
+        })
+        .init(function() {
+            var predicateId = this.resolve('predicate.id');
+            if (predicateId && predicateId.indexOf("boolean") != -1){
+                this.value("boolean");
+            }
+        })
+    ;
 
 JournalType
 	.key('id', s)
@@ -311,32 +595,68 @@ Settings
 	})
 	;
 
+var notNull = function(value) { return value !== null; };
+var isFalse = function(value) { return value === false; };
+
+var filterFeatureEvaluator = function(featureName, requiredClass, defaultValue, isTerminate) {
+    return function(model) {
+
+        var invariant,
+            invariantValue = null,
+            invariants = this['criterionInvariants']();
+
+        invariant = _.find(invariants, function(invariant) {
+            if (invariant.feature() == featureName) {
+                invariantValue = invariant.evaluate(model);
+                return isTerminate(invariantValue, invariant);
+            }
+        });
+
+        return {
+            invariant: invariant,
+            value: koutils.instantiate(invariant != null ? invariantValue : defaultValue, requiredClass)
+        }
+    };
+};
+
 Attribute
-	.property('name', s)
-	.property('_info', AttributeInfo)
-	.property('visible', b)
-	.property('searchable', b)
-	.property('sortable', b)
-	.property('groupable', b)
-	.property('isDefault', b)
-	.property('settings', o)
-	.property('batchEdit', [ Action ])
+    .property('name', s)
+    .property('_info', AttributeInfo)
+    .property('visible', b)
+    .property('searchable', b)
+    .property('sortable', b)
+    .property('groupable', b)
+    .property('isDefault', b)
+    .property('settings', o)
+    .property('batchEdit', [ Action ])
+    .property('criterionInvariants', [ Invariant ])
 
-	.shortcut('type', '_info.type')
-	.shortcut('displayName', '_info.displayName')
-	.shortcut('datatype', '_info.datatype')
-	.shortcut('nodetype', '_info.nodetype')
-	.shortcut('journalType', '_info.journalType')
-	.shortcut('labels', '_info.labels', {})
+    .shortcut('type', '_info.type')
+    .shortcut('displayName', '_info.displayName')
+    .shortcut('datatype', '_info.datatype')
+    .shortcut('nodetype', '_info.nodetype')
+    .shortcut('journalType', '_info.journalType')
+    .shortcut('labels', '_info.labels', {})
 
-	.init(function() {
-		this.model({ _info: {name: this.name(), attribute: this} });
+    .method('valueCriterionEvaluator', filterFeatureEvaluator('value', o, null, notNull))
+    .method('defaultCriterionEvaluator', filterFeatureEvaluator('default', o, null, notNull))
+    .method('optionsCriterionEvaluator', filterFeatureEvaluator('options', o, null, notNull))
+    .method('valueTitleCriterionEvaluator', filterFeatureEvaluator('value-title', s, '', notNull))
+    .method('valueDescriptionCriterionEvaluator', filterFeatureEvaluator('value-description', s, '', notNull))
+    .method('valueOrderCriterionEvaluator', filterFeatureEvaluator('value-order', n, 0, notNull))
+    .method('relevantCriterionEvaluator', filterFeatureEvaluator('relevant', b, true, notNull))
+    .method('multipleCriterionEvaluator', filterFeatureEvaluator('multiple', b, false, notNull))
+    .method('mandatoryCriterionEvaluator', filterFeatureEvaluator('mandatory', b, false, notNull))
+    .method('protectedCriterionEvaluator', filterFeatureEvaluator('protected', b, false, notNull))
+
+    .init(function() {
+        this.model({ _info: {name: this.name(), attribute: this} });
         var self = this;
-		_.each(this.batchEdit(), function (a) {
-			a.attribute(self);
-		});
-	})
-	;
+        _.each(this.batchEdit(), function (a) {
+            a.attribute(self);
+        });
+    })
+    ;
 
 AttributeInfo
 	.key('name', s)
@@ -1058,7 +1378,7 @@ JournalsWidget
 
 		applyCriteria: function() {
 			this.skipCount(0);
-			this.filter(this._filter().clone());
+			this.filter(this._filter());
 		},
 
 		clearCriteria: function() {

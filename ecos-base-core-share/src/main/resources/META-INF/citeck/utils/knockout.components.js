@@ -368,6 +368,66 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
     });
 
+    ko.components.register("filter-criterion-field", {
+        viewModel: function(params) {
+
+            var self = this;
+            initializeParameters.call(this, params);
+
+            this.containerId = this.fieldId + "-container";
+
+            if (!this.attribute() || !this.journalType) {
+                return;
+            }
+
+            this.criterion.removeCriterion = this.removeCriterion;
+            this.criterion.containerId = this.containerId;
+            this.criterion.attributeProperty(this.attribute());
+
+            var urlArgs = [
+                'htmlid=' + this.fieldId,
+                'attribute=' + this.attribute().name(),
+                'journalId=' + this.journalType.id()
+            ];
+
+            this.containerContent = ko.observable("");
+
+            Alfresco.util.Ajax.request({
+                url: Alfresco.constants.URL_PAGECONTEXT + "api/journals/filter/criterion?" + urlArgs.join('&'),
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        self.containerContent(response.serverResponse.responseText);
+                    }
+                }
+            });
+
+            this.containerContent.subscribe(function(newValue) {
+                var contentContainer = $("#" + self.containerId);
+                if (contentContainer.length > 0) {
+                    contentContainer.html(newValue);
+                    ko.cleanNode(contentContainer[0]);
+                    ko.applyBindings(self.criterion, contentContainer[0]);
+                }
+            });
+            /*
+            this.keyDownManagment = function(data, event) {
+                if (event.keyCode == 13 && "text,date,datetime,number".indexOf(data.templateName) != -1 && data.applyCriteria) {
+                    $.each($('#'+ this.containerId +' input'), function(){
+                        this.blur();
+                        this.focus();
+                    });
+                    data.applyCriteria();
+                    return false;
+                }
+                return true;
+            };*/
+        },
+        template:   //event: {keydown: keyDownManagment }
+            '<div class="criterion" data-bind="attr: { id: containerId }, mousedownBubble: false"></div>'
+    });
+
+
     ko.components.register('filter-criteria-table', {
         viewModel: function(params) {
             var self = this;
@@ -462,12 +522,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     return self.journalType.attribute(data.resolve("field.name", null));
                 });
             };
-            this.getJournalOptionsType = function (data) {
-                return ko.computed(function () {
-                    var options = self.journalType.options();
-                    return options ? options.type : null;
-                })
-            }
 
             this.valueVisibility = function(predicate) {
                 return predicate && predicate.id().indexOf("empty") == -1;
@@ -477,43 +531,16 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="filter-criteria" data-bind="\
                 attr: { id: id + \'-filter-criteria\' },\
                 foreach: filter().criteria()\
-            ">\
-                <div class="criterion">\
-                    <div class="criterion-actions">\
-                        <a class="criterion-remove"\
-                           data-bind="click: $component.remove,\
-                                      attr: { title: Alfresco.util.message(\'button.remove-criterion\') }\
-                        "></a>\
-                    </div>\
-                    <div class="criterion-field" data-bind="with: field">\
-                        <input type="hidden" data-bind="attr: { name: \'field_\' + $parent.id() }, value: name" />\
-                        <label data-bind="text: customDisplayName()"></label>\
-                    </div>\
-                    <div class="criterion-predicate">\
-                        <!-- ko if: resolve(\'field.datatype.predicates.length\', 0) == 0 -->\
-                            <input type="hidden" data-bind="attr: { name: \'predicate_\' + id() }, value: predicate().id()" />\
-                        <!-- /ko -->\
-                        <!-- ko if: resolve(\'field.datatype.predicates.length\', 0) > 0 -->\
-                            <select data-bind="attr: { name: \'predicate_\' + id() },\
-                                               value: predicate,\
-                                               options: resolve(\'field.datatype.predicates\'),\
-                                               optionsText: \'label\'\
-                            "></select>\
-                        <!-- /ko -->\
-                    </div>\
-                    <!-- ko if: $component.valueVisibility($data.predicate()) -->\
-                        <!-- ko component: { name: "filter-criterion-value", params: {\
-                            fieldId: $component.id + "-criterion-" + id(),\
-                            datatype: resolve(\'field.datatype.name\', null),\
-                            labels: resolve(\'field.labels\', null),\
-                            value: value,\
-                            attribute: $component.getAttribute($data),\
-                            applyCriteria: $component.applyCriteria,\
-                            journalOptionsType: $component.getJournalOptionsType($data)\
-                        }} --><!-- /ko -->\
-                    <!-- /ko -->\
-                </div>\
-            </div>'
+           ">\
+               <!-- ko component: { name: "filter-criterion-field", params: {\
+                   fieldId: $component.id + "-criterion-" + id(),\
+                   criterion: $data,\
+                   attribute: $component.getAttribute($data),\
+                   applyCriteria: $component.applyCriteria,\
+                   journalType: $component.journalType,\
+                   removeCriterion: $component.remove.bind($data)\
+               }} --><!-- /ko -->\
+           </div>'
     });
 
     // TODO:

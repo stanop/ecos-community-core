@@ -30,7 +30,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 
+import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import ru.citeck.ecos.invariants.*;
+import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
@@ -42,7 +45,8 @@ import ru.citeck.ecos.utils.XMLUtils;
 
 class JournalServiceImpl implements JournalService {
 
-    protected static final String SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
+    protected static final String JOURNALS_SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
+    protected static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/invariants.xsd";
 
     private NodeService nodeService;
     private ServiceRegistry serviceRegistry;
@@ -50,7 +54,9 @@ class JournalServiceImpl implements JournalService {
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new TreeMap<>();
-    
+
+    private List<CriterionInvariantsProvider> criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
+
     @Override
     public void deployJournalTypes(InputStream inputStream) {
         Journals data = parseXML(inputStream);
@@ -68,10 +74,31 @@ class JournalServiceImpl implements JournalService {
         }
     }
 
+    @Override
+    public List<InvariantDefinition> getCriterionInvariants(String journalId, QName attribute) {
+
+        JournalType journalType = journalTypes.get(journalId);
+
+        Set<Feature> features = new HashSet<>();
+        List<InvariantDefinition> invariants = new ArrayList<>();
+
+        for (CriterionInvariantsProvider provider : criterionInvariantsProviders) {
+            List<InvariantDefinition> provInvariants = provider.getInvariants(journalType, attribute);
+            for (InvariantDefinition inv : provInvariants) {
+                if (features.add(inv.getFeature())) {
+                    invariants.add(inv);
+                }
+            }
+        }
+
+        return invariants;
+    }
+
     protected Journals parseXML(InputStream inputStream) {
         try {
-            Unmarshaller jaxbUnmarshaller = XMLUtils.createUnmarshaller(Journals.class, 
-                    SCHEMA_LOCATION);
+            Unmarshaller jaxbUnmarshaller = XMLUtils.createUnmarshaller(Journals.class,
+                                                                        INVARIANTS_SCHEMA_LOCATION,
+                                                                        JOURNALS_SCHEMA_LOCATION);
             return (Journals) jaxbUnmarshaller.unmarshal(inputStream);
         } catch (Exception e) {
             throw new IllegalArgumentException("Can not parse journals file", e);
@@ -85,7 +112,14 @@ class JournalServiceImpl implements JournalService {
         }
         return prefixToUriMap;
     }
-    
+
+    @Override
+    public void clearCache() {
+        for (CriterionInvariantsProvider provider : criterionInvariantsProviders) {
+            provider.clearCache();
+        }
+    }
+
     @Override
     public JournalType getJournalType(String id) {
         return journalTypes.get(id);
@@ -109,6 +143,12 @@ class JournalServiceImpl implements JournalService {
             }
         }
         return null;
+    }
+
+    @Override
+    public void registerCriterionInvariantsProvider(CriterionInvariantsProvider provider) {
+        criterionInvariantsProviders.add(provider);
+        criterionInvariantsProviders.sort(null);
     }
 
     public void setJournalsRoot(LazyNodeRef journalsRoot) {
