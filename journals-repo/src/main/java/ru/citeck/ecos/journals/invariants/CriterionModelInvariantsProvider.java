@@ -4,6 +4,8 @@ import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.service.cmr.dictionary.Constraint;
 import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.namespace.QName;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantConstants;
 import ru.citeck.ecos.invariants.InvariantDefinition;
@@ -12,10 +14,23 @@ import ru.citeck.ecos.journals.JournalType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CriterionPropertyModelInvariantsProvider extends CriterionPropertyInvariantsProvider {
+@Component
+public class CriterionModelInvariantsProvider extends CriterionInvariantsProvider {
 
     @Override
-    protected List<InvariantDefinition> getPropertyInvariants(JournalType journalType, PropertyDefinition propDef) {
+    protected void beforeInitImpl() {
+        setOrder(-100);
+    }
+
+    @Override
+    protected boolean isAttributeSupported(JournalType journalType, QName typeName, QName attribute) {
+        return dictionaryService.getProperty(attribute) != null;
+    }
+
+    @Override
+    protected List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, QName attribute) {
+
+        PropertyDefinition propDef = dictUtils.getPropDef(typeName, attribute);
 
         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
         builder.pushScope(propDef);
@@ -42,5 +57,4 @@ public class CriterionPropertyModelInvariantsProvider extends CriterionPropertyI
 
         return invariants;
     }
-
 }

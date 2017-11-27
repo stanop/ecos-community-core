@@ -373,7 +373,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.containerId = this.fieldId + "-container";
 
             if (!this.attribute() || !this.journalType) {
-                console.error("attribute or journalType is not defined");
                 return;
             }
 

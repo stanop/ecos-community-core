@@ -1,5 +1,6 @@
 importPackage(Packages.org.alfresco.service.cmr.dictionary);
 importPackage(Packages.org.alfresco.repo.dictionary.constraint);
+importPackage(Packages.org.alfresco.model);
 
 const dictionaryService = services.get("dictionaryService");
 const namespaceService = services.get("NamespaceService");
@@ -79,27 +80,39 @@ function evalDefaultRegions(regions, attribute, journalTypeParam) {
     var typeQName = journalTypeParam ? citeckUtils.createQName(journalTypeParam) : null;
 
     var assocDef = dictionaryService.getAssociation(attrQName);
+
     if (assocDef) {
 
         var nodetype = assocDef.getTargetClass().getName();
         var typeShortName = nodetype.toPrefixString(namespaceService);
 
-        var journalId = getJournalByType(typeShortName);
-        if (journalId) {
+        if (dictionaryService.isSubClass(nodetype, ContentModel.TYPE_AUTHORITY)) {
+
+            var authorityTypes = [];
+            if (dictionaryService.isSubClass(ContentModel.TYPE_PERSON, nodetype)) {
+                authorityTypes.push('USER');
+            }
+            if (dictionaryService.isSubClass(ContentModel.TYPE_AUTHORITY_CONTAINER, nodetype)) {
+                authorityTypes.push('GROUP');
+            }
+
             regions['input'].template = 'view';
-            regions['select'].template = 'select-journal';
-            regions['select'].params['journalType'] = journalId;
+            regions['select'].template = 'orgstruct';
+            regions['select'].params['allowedAuthorityType'] = authorityTypes.join(',');
+
+        } else {
+
+            var journalId = getJournalByType(typeShortName);
+            if (journalId) {
+                regions['input'].template = 'view';
+                regions['select'].template = 'select-journal';
+                regions['select'].params['journalType'] = journalId;
+            }
         }
 
     } else {
 
-        var propDef = null;
-        if (typeQName) {
-            propDef = dictionaryService.getProperty(typeQName, attrQName);
-        }
-        if (!propDef) {
-            propDef = dictionaryService.getProperty(attrQName);
-        }
+        var propDef = services.get('dictUtils').getPropDef(typeQName, attrQName);
 
         if (propDef) {
 

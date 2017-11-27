@@ -12,26 +12,12 @@
         <property name="journalsRoot" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
-        <property name="criterionInvariantsProviders" ref="journalCriterionInvariantsProviderRegistry" />
     </bean>
 
     <bean id="journalServiceJS" class="ru.citeck.ecos.journals.JournalServiceJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="journals" />
         <property name="journalService" ref="journalService" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
-    <bean id="journal.criterion-invariants-provider.registrar" class="ru.citeck.ecos.spring.AddToList" abstract="true">
-        <property name="list" ref="journalCriterionInvariantsProviderRegistry" />
-    </bean>
-
-    <bean parent="journal.criterion-invariants-provider.registrar">
-        <property name="values">
-            <list>
-                <bean class="ru.citeck.ecos.journals.invariants.CriterionConfigInvariantsProvider" />
-                <bean class="ru.citeck.ecos.journals.invariants.CriterionPropertyModelInvariantsProvider" />
-            </list>
-        </property>
     </bean>
 
     <bean id="journalTypesDeployer" class="ru.citeck.ecos.journals.JournalTypesDeployer" abstract="true">

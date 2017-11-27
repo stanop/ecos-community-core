@@ -22,6 +22,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.invariants.InvariantPriority;
+import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -37,7 +38,11 @@ public interface JournalService {
     
     Collection<JournalType> getAllJournalTypes();
 
+    void clearCache();
+
     List<InvariantDefinition> getCriterionInvariants(String journalId, QName attribute);
+
+    void registerCriterionInvariantsProvider(CriterionInvariantsProvider provider);
 
     NodeRef getJournalRef(String id);
 }

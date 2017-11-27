@@ -55,7 +55,7 @@ class JournalServiceImpl implements JournalService {
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new TreeMap<>();
 
-    private List<CriterionInvariantsProvider> criterionInvariantsProviders;
+    private List<CriterionInvariantsProvider> criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public void deployJournalTypes(InputStream inputStream) {
@@ -112,7 +112,14 @@ class JournalServiceImpl implements JournalService {
         }
         return prefixToUriMap;
     }
-    
+
+    @Override
+    public void clearCache() {
+        for (CriterionInvariantsProvider provider : criterionInvariantsProviders) {
+            provider.clearCache();
+        }
+    }
+
     @Override
     public JournalType getJournalType(String id) {
         return journalTypes.get(id);
@@ -138,6 +145,12 @@ class JournalServiceImpl implements JournalService {
         return null;
     }
 
+    @Override
+    public void registerCriterionInvariantsProvider(CriterionInvariantsProvider provider) {
+        criterionInvariantsProviders.add(provider);
+        criterionInvariantsProviders.sort(null);
+    }
+
     public void setJournalsRoot(LazyNodeRef journalsRoot) {
         this.journalsRoot = journalsRoot;
     }
@@ -145,10 +158,6 @@ class JournalServiceImpl implements JournalService {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
-    }
-
-    public void setCriterionInvariantsProviders(List<CriterionInvariantsProvider> criterionInvariantsProviders) {
-        this.criterionInvariantsProviders = criterionInvariantsProviders;
     }
 
     public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
