@@ -75,5 +75,20 @@
             </invariant>
         </property>
     </type>
+    
+    <type name="idocs:currencyRateRecord">
+        <property name="idocs:crrValue">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="idocs:crrDate">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <association name="idocs:crrBaseCurrency">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+        <association name="idocs:crrTargetCurrency">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+    </type>
 
 </invariants>
