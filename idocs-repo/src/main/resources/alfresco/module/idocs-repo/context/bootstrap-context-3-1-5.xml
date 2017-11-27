@@ -99,4 +99,37 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.currencies" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="Currency data" />
+        <property name="description" value="Currency data, 123 items" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.main-journals.currency" />
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="true" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.script.fixing-belorusian-currency-code" parent="idocs.import-scripts.3-2-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="fixing-belorusian-currency-code.js" />
+        <property name="description" value="Fixing belorusian currency code" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/fixing-belorusian-currency-code.js" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.currency.data" />
+            </list>
+        </property>
+    </bean>
+
 </beans>

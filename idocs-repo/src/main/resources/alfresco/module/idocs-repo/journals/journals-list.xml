@@ -87,6 +87,17 @@
 			<header key="idocs:currencyRate" default="true" />
 		</headers>
 	</journal>
+	<journal id="currency-rates">
+		<option name="type">idocs:currencyRateRecord</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:crrBaseCurrency" default="true" />
+			<header key="idocs:crrTargetCurrency" default="true" />
+			<header key="idocs:crrValue" default="true" />
+			<header key="idocs:crrDate" default="true" />
+		</headers>
+	</journal>
 	<journal id="bank-accounts">
 		<option name="type">idocs:bankAccount</option>
 		<option name="doubleClickId">nodeRef</option>
