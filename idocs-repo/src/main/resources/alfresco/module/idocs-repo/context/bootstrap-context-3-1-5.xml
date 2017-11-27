@@ -5,17 +5,17 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="idocs.import-spaces.3-2-0" abstract="true" parent="idocs.import-spaces">
-        <property name="sinceVersion" value="3.2.0" />
-        <property name="appliesFromVersion" value="3.2.0" />
+    <bean id="idocs.import-spaces.3-1-5" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.1.5" />
+        <property name="appliesFromVersion" value="3.1.5" />
     </bean>
 
-    <bean id="idocs.import-scripts.3-2-0" abstract="true" parent="idocs.import-scripts">
-        <property name="sinceVersion" value="3.2.0" />
-        <property name="appliesFromVersion" value="3.2.0" />
+    <bean id="idocs.import-scripts.3-1-5" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.1.5" />
+        <property name="appliesFromVersion" value="3.1.5" />
     </bean>
 
-    <bean id="idocs.module-component.update-case-process-cardlets" parent="idocs.import-spaces.3-2-0">
+    <bean id="idocs.module-component.update-case-process-cardlets" parent="idocs.import-spaces.3-1-5">
         <property name="name" value="update-case-process-cardlets" />
         <property name="description" value="Update Case Process Cardlets" />
         <property name="dependsOn">
@@ -35,7 +35,7 @@
         </property>
     </bean>
 
-    <bean id="ecos-community.module-component.fix-due-date-filters" parent="idocs.import-scripts.3-2-0">
+    <bean id="ecos-community.module-component.fix-due-date-filters" parent="idocs.import-scripts.3-1-5">
         <property name="name" value="fix-due-date-filters"/>
         <property name="description" value="fix-due-date-filters"/>
         <property name="dependsOn">
@@ -84,7 +84,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.actualDefaultSLADuration" parent="idocs.import-spaces.3-2-0">
+    <bean id="idocs.module-component.actualDefaultSLADuration" parent="idocs.import-spaces.3-1-5">
         <property name="name" value="actual-default-sla-duration" />
         <property name="description" value="actual-default-sla-duration" />
         <property name="bootstrapViews">
