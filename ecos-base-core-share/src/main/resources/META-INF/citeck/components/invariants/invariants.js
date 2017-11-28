@@ -20,8 +20,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     var logger = Alfresco.logger,
         koclass = koutils.koclass,
         $isNodeRef = Citeck.utils.isNodeRef,
-        $isFilename = Citeck.utils.isFilename,
-        recursion = 0;
+        $isFilename = Citeck.utils.isFilename;
 
     var s = String,
         n = Number,
@@ -1244,7 +1243,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
             return null;
         })
-        .method('reset', function(full) {
+        .method('reset', function(full, depth) {
+
+            if (_.isFinite(depth)) {
+                depth--;
+                if (depth <= 0) return;
+            }
+
             this.newValue(null);
             this.newValue.reload();
 
@@ -1260,13 +1265,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
 
             // reload child nodes (2 levels)
-            if (this.multipleValues() && this.multipleValues().length) {
-                _.map(this.multipleValues(), function(item) {
-                    recursion++;
-                    if (item instanceof Node && recursion < 3) {
-                        item.impl().reset(true);
+            if (depth && this.multipleValues() && this.multipleValues().length) {
+                _.each(this.multipleValues(), function(item) {
+                    if (item instanceof Node) {
+                        item.impl().reset(full, depth);
                     }
-                    recursion--;
                 });
             }
         })
@@ -1828,8 +1831,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('attribute', function(name) {
             return this.getAttribute(name);
         })
-        .method('reset', function(full) {
-            _.invoke(this.attributes(), 'reset', full);
+        .method('reset', function(full, depth) {
+            _.invoke(this.attributes(), 'reset', full, depth);
             if(full) this._attributes.reload();
         })
         .method('updateModel', function(model) {
