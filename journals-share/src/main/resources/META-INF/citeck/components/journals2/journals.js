@@ -357,7 +357,7 @@ CreateVariant
             if (valueClass == s) return "" + value;
             if (valueClass == b) return value ? "true" : "false";
             if (valueClass == Node) return value.nodeRef;
-            if (valueClass == QName) return value.shortQName();
+            if (valueClass == QName) return value.fullQName();
 
             var datatype = this.datatype();
             if (valueClass == n) {
