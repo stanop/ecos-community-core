@@ -28,21 +28,21 @@ function getAttributesRecursively(element, attributes) {
 function get(view, type, template) {
     var objects = [];
     for(var i in view.elements) {
-        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) { 
-            objects.push(view.elements[i]); 
+        if(view.elements[i].type == type && objects.indexOf(view.elements[i]) == -1) {
+            objects.push(view.elements[i]);
         }
     }
     return objects;
 }
 
 function getAttributeSet(args, view) {
-    var attributeSet = { 
-            attributes: [], 
-            sets: [], 
-            id: "", 
-            template: view.template, 
-            params: view.params
-        };
+    var attributeSet = {
+        attributes: [],
+        sets: [],
+        id: "",
+        template: view.template,
+        params: view.params
+    };
 
     view.elements.forEach(function(element) {
         if (element.type == "field") {
@@ -67,10 +67,15 @@ function getViewInvariants(view) {
 }
 
 function getInvariantSet(args, attributes) {
-    var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') + 
-                                              (attributes && attributes.length ? '&attributes=' + attributes.join(',') : '') + 
-                                              (args.mode ? '&mode=' + args.mode : '') + 
-                                              (args.inlineEdit ? '&inlineEdit=' + args.inlineEdit : '');
+    logger.warn("______________TEST22_____________");
+    for (var i in args) {
+        logger.warn(i + ": " + args[i]);
+    }
+    var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
+        (attributes && attributes.length ? '&attributes=' + attributes.join(',') : '') +
+        (args.mode ? '&mode=' + args.mode : '') +
+        (args.inlineEdit ? '&inlineEdit=' + args.inlineEdit : '')  +
+        (args.param_baseRef ? '&baseRef=' + args.param_baseRef : '');
     var response = remote.call(urlTemplate);
     return eval('(' + response + ')');
 }
@@ -94,12 +99,12 @@ function getInvariantsRecursively(element, invariants) {
 }
 
 function getWritePermission(nodeRef) {
-  if (!nodeRef) return;
+    if (!nodeRef) return;
 
-  var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
-      response = eval('(' + remote.call(serviceURI) + ')'); 
+    var serviceURI = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Write",
+        response = eval('(' + remote.call(serviceURI) + ')');
 
-  return response;
+    return response;
 }
 
 function getViewData(args) {
@@ -140,6 +145,6 @@ function getViewData(args) {
     if(response.status != 200) {
         throw 'Can not get view from uri "' + serviceURI + '": ' + response.message;
     }
-    
+
     return viewData;
 }

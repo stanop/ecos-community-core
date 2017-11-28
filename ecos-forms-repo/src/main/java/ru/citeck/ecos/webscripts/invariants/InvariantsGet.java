@@ -26,6 +26,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
@@ -42,6 +43,7 @@ public class InvariantsGet extends DeclarativeWebScript {
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_NODEREF = "nodeRef";
+    private static final String PARAM_BASE_REF = "baseRef";
     private static final String PARAM_ASPECTS = "aspects";
     private static final String PARAM_ATTRIBUTES = "attributes";
     private static final String PARAM_MODE = "mode";
@@ -50,25 +52,25 @@ public class InvariantsGet extends DeclarativeWebScript {
     private static final String MODEL_CLASS_NAMES = "classNames";
     private static final String MODEL_MODEL = "model";
     private static final String MODE_EDIT = "edit";
-    
+
     private InvariantService invariantService;
     private NamespacePrefixResolver prefixResolver;
     private ServiceRegistry serviceRegistry;
     private NodeService nodeService;
     private DictionaryService dictionaryService;
-    
+
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
-    {
+    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String typeParam = req.getParameter(PARAM_TYPE);
         String nodeRefParam = req.getParameter(PARAM_NODEREF);
+        String baseRefParam = req.getParameter(PARAM_BASE_REF);
         String aspectsParam = req.getParameter(PARAM_ASPECTS);
         String attributesParam = req.getParameter(PARAM_ATTRIBUTES);
         String modeParam = req.getParameter(PARAM_MODE);
         String inlineEditParam = req.getParameter(PARAM_INLINE_EDIT);
 
         // Change current form's mode to "edit", when inlineEdit parameter is true.
-        if (inlineEditParam != null && !inlineEditParam.isEmpty()) {
+        if (StringUtils.isNotEmpty(inlineEditParam)) {
             try {
                 boolean isInlineEdit = Boolean.parseBoolean(inlineEditParam);
                 if (isInlineEdit) {
@@ -80,14 +82,15 @@ public class InvariantsGet extends DeclarativeWebScript {
         }
 
         Set<QName> classNames = new LinkedHashSet<>();
-        
-        NodeRef nodeRef = null;
 
-        if(typeParam != null && !typeParam.isEmpty()) {
+        NodeRef nodeRef = null;
+        NodeRef baseRef = null;
+
+        if (typeParam != null && !typeParam.isEmpty()) {
             QName type = QName.createQName(typeParam, prefixResolver);
             classNames.add(type);
-        } else if(nodeRefParam != null && !nodeRefParam.isEmpty()) {
-            if(!NodeRef.isNodeRef(nodeRefParam)) {
+        } else if (StringUtils.isNotEmpty(nodeRefParam)) {
+            if (!NodeRef.isNodeRef(nodeRefParam)) {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
                 return null;
             }
@@ -95,19 +98,24 @@ public class InvariantsGet extends DeclarativeWebScript {
             classNames.add(nodeService.getType(nodeRef));
             classNames.addAll(nodeService.getAspects(nodeRef));
         }
-        
-        if(aspectsParam != null && !aspectsParam.isEmpty()) {
+
+        if (StringUtils.isNotEmpty(aspectsParam)) {
             classNames.addAll(splitQNames(aspectsParam));
         }
 
-        List<QName> attributeNames = null;
-        if(attributesParam != null) {
-            attributeNames = attributesParam.isEmpty() ? Collections.<QName>emptyList() : splitQNames(attributesParam);
+        if (StringUtils.isNotEmpty(baseRefParam) && NodeRef.isNodeRef(baseRefParam)) {
+            baseRef = new NodeRef(baseRefParam);
         }
-        
-        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames, nodeRef, modeParam);
-        
-        Map<String, Object> model = new HashMap<String, Object>();
+
+        List<QName> attributeNames = null;
+        if (attributesParam != null) {
+            attributeNames = attributesParam.isEmpty() ? Collections.emptyList() : splitQNames(attributesParam);
+        }
+
+        List<InvariantDefinition> invariants = invariantService.getInvariants(classNames, attributeNames, nodeRef,
+                baseRef, modeParam);
+
+        Map<String, Object> model = new HashMap<>();
         model.put(MODEL_INVARIANTS, invariants);
         model.put(MODEL_CLASS_NAMES, DictionaryUtils.expandClassNames(classNames, dictionaryService));
         model.put(MODEL_MODEL, RepoUtils.buildDefaultModel(serviceRegistry));
@@ -116,10 +124,10 @@ public class InvariantsGet extends DeclarativeWebScript {
 
     private List<QName> splitQNames(String qnamesString) {
         List<QName> qnames = null;
-        if(qnamesString != null && !qnamesString.isEmpty()) {
+        if (qnamesString != null && !qnamesString.isEmpty()) {
             String[] qnamesArray = qnamesString.split(",");
             qnames = new ArrayList<>(qnamesArray.length);
-            for(String qname : qnamesArray) {
+            for (String qname : qnamesArray) {
                 qnames.add(QName.createQName(qname, prefixResolver));
             }
         }

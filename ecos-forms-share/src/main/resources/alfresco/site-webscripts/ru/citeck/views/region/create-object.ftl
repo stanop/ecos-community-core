@@ -6,8 +6,8 @@
 <#assign constraint = params.constraint!"" />
 <#assign constraintMessage = params.constraintMessage!"" />
 
-<div id="${controlId}" class="create-object-control" data-bind="component: { 
-	name: 'createObjectButton', 
+<div id="${controlId}" class="create-object-control" data-bind="component: {
+	name: 'createObjectButton',
 	params: {
 		<#if constraint?has_content>constraint: ${constraint},</#if>
 		<#if constraintMessage?has_content>constraintMessage: '${constraintMessage}',</#if>
@@ -17,6 +17,7 @@
 		id: '${controlId}',
 		buttonTitle: '${msg(buttonTitle)}',
 		parentRuntime: $root.key(),
-		virtualParent: ${((params.virtualParent!"false") == "true")?string}
+		virtualParent: ${((params.virtualParent!"false") == "true")?string},
+		baseRef: <#if page?? && page.url?? && page.url.args?? && page.url.args.nodeRef??>'${page.url.args.nodeRef}'<#else>null</#if>
 	}
 }" ></div>

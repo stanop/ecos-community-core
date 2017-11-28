@@ -107,7 +107,11 @@ public interface InvariantService {
      * @param mode
      * @return ordered list of invariants
      */
-    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames, NodeRef nodeRef, String mode);
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames,
+                                                   NodeRef nodeRef, String mode);
+
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames,
+                                                   NodeRef nodeRef, NodeRef baseRef, String mode);
 
     /**
      * Get invariants for specified classes (types or aspects).

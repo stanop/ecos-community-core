@@ -66,28 +66,18 @@ class InvariantsFilter {
     private Map<String, List<InvariantDefinition>> invariantsBySource;
     
     // index by class: class, attribute, attribute kind
-    private static Comparator<InvariantScope> classFirstComparator = new Comparator<InvariantScope>() {
-        @Override
-        public int compare(InvariantScope scope1, InvariantScope scope2) {
-            return new CompareToBuilder()
-                    .append(scope1.getClassScope(), scope2.getClassScope())
-                    .append(scope1.getAttributeScope(), scope2.getAttributeScope())
-                    .append(scope1.getAttributeScopeKind(), scope2.getAttributeScopeKind())
-                    .toComparison();
-        }
-    };
+    private static Comparator<InvariantScope> classFirstComparator = (scope1, scope2) -> new CompareToBuilder()
+            .append(scope1.getClassScope(), scope2.getClassScope())
+            .append(scope1.getAttributeScope(), scope2.getAttributeScope())
+            .append(scope1.getAttributeScopeKind(), scope2.getAttributeScopeKind())
+            .toComparison();
     
     // index by attribute: attribute kind, attribute, class
-    private static Comparator<InvariantScope> attributeFirstComparator = new Comparator<InvariantScope>() {
-        @Override
-        public int compare(InvariantScope scope1, InvariantScope scope2) {
-            return new CompareToBuilder()
-                    .append(scope1.getAttributeScopeKind(), scope2.getAttributeScopeKind())
-                    .append(scope1.getAttributeScope(), scope2.getAttributeScope())
-                    .append(scope1.getClassScope(), scope2.getClassScope())
-                    .toComparison();
-        }
-    };
+    private static Comparator<InvariantScope> attributeFirstComparator = (scope1, scope2) -> new CompareToBuilder()
+            .append(scope1.getAttributeScopeKind(), scope2.getAttributeScopeKind())
+            .append(scope1.getAttributeScope(), scope2.getAttributeScope())
+            .append(scope1.getClassScope(), scope2.getClassScope())
+            .toComparison();
     
     public InvariantsFilter() {
         this.invariantsByClass = new TreeMap<>(classFirstComparator);
@@ -149,7 +139,8 @@ class InvariantsFilter {
         return this.searchMatchingInvariants(classNames, null, true, null, null);
     }
 
-    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, Collection<QName> attributeNames, boolean addDefault) {
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames,
+                                                              Collection<QName> attributeNames, boolean addDefault) {
         return this.searchMatchingInvariants(classNames, attributeNames, addDefault, null, null);
     }
 
@@ -162,7 +153,9 @@ class InvariantsFilter {
      * @param addDefault set true to add default invariants to list, false - only custom invariants
      * @return ordered list of invariants
      */
-    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames, Collection<QName> attributeNames, boolean addDefault, NodeRef nodeRef, String mode) {
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames,
+                                                              Collection<QName> attributeNames, boolean addDefault,
+                                                              NodeRef nodeRef, String mode) {
 
         Set<QName> attributes;
         if (attributeNames != null) {
@@ -255,6 +248,115 @@ class InvariantsFilter {
             }
         }
         
+        // ordering
+        return orderInvariants(allInvolvedClasses, invariants);
+    }
+
+    public List<InvariantDefinition> searchMatchingInvariants(Collection<QName> classNames,
+                                                              Collection<QName> attributeNames, boolean addDefault,
+                                                              NodeRef nodeRef, NodeRef baseRef, String mode) {
+        if (baseRef == null) {
+            return searchMatchingInvariants(classNames, attributeNames, addDefault, nodeRef, mode);
+        }
+
+        Set<QName> attributes;
+        if (attributeNames != null) {
+            attributes = new HashSet<>();
+            for (QName attribute : attributeNames) {
+                if (nodeAttributeService.isAttributeProvided(attribute)) {
+                    attributes.add(attribute);
+                }
+            }
+            attributes.add(AttributeModel.ATTR_NODEREF);
+            attributes.add(AttributeModel.ATTR_ASPECTS);
+            attributes.add(AttributeModel.ATTR_PARENT);
+            attributes.add(AttributeModel.ATTR_PARENT_ASSOC);
+            attributes.add(AttributeModel.ATTR_TYPES);
+        } else {
+            attributes = getDefinedAttributeNames(classNames);
+        }
+
+        List<ClassDefinition> allInvolvedClasses = DictionaryUtils.getClasses(classNames, dictionaryService);
+        List<ClassDefinition> classes = new ArrayList<>(getDefiningClassNames(allInvolvedClasses, attributes));
+        for (ClassDefinition clazz : classes) {
+            if (!allInvolvedClasses.contains(clazz)) {
+                allInvolvedClasses.add(clazz);
+            }
+        }
+
+        Set<InvariantDefinition> invariants = new LinkedHashSet<>();
+
+        // search by class
+        for(ClassDefinition classDef : allInvolvedClasses) {
+            Collection<List<InvariantDefinition>> invariantsByClass = this.invariantsByClass.subMap(
+                    new InvariantScope(classDef.getName(), FIRST_NAME, null),
+                    new InvariantScope(classDef.getName(), LAST_NAME, null)).values();
+            invariants.addAll(filterByAttributes(invariantsByClass, attributes));
+        }
+
+        Set<Pair<QName,QName>> addedAttributeTypes = new HashSet<>(attributes.size());
+
+        for(QName attributeName : attributes) {
+            QName attributeTypeName = nodeAttributeService.getAttributeType(attributeName);
+
+            InvariantAttributeType attributeType = attributeTypes.get(attributeTypeName);
+            if(attributeType == null) continue; // unsupported
+
+            addInvariants(
+                    invariantsByAttribute.get(attributeType.getAttributeScope(attributeName)),
+                    invariants);
+            if(addDefault) {
+                addInvariants(
+                        attributeType.getDefaultInvariants(attributeName, allInvolvedClasses),
+                        invariants);
+
+                // Check current user permissions for attribute
+                if (attributesPermissionService != null) {
+
+
+
+                    if (!attributesPermissionService.isFieldEditable(attributeName, nodeRef, mode)) {
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        if (attributeTypeName.equals(AttributeModel.TYPE_PROPERTY)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_CHILD_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.CHILD_ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_TARGET_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        } else if (attributeTypeName.equals(AttributeModel.TYPE_SOURCE_ASSOCIATION)) {
+                            invariants.add(builder.pushScope(attributeName, AttributeScopeKind.ASSOCIATION).feature(Feature.PROTECTED).explicit(true).buildFinal());
+                        }
+                    }
+
+
+
+
+                    if (!attributesPermissionService.isFieldVisible(attributeName, nodeRef, mode)) {
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY).feature(Feature.RELEVANT).explicit(false).buildFinal());
+                    }
+                }
+            }
+
+            QName attributeSubtype = nodeAttributeService.getAttributeSubtype(attributeName);
+            if(!addedAttributeTypes.contains(new Pair<>(attributeTypeName, attributeSubtype))) {
+                InvariantScope attributeTypeScope = attributeType.getAttributeTypeScope(attributeSubtype);
+                if(attributeTypeScope != null) {
+                    addInvariants(
+                            invariantsByAttribute.get(attributeTypeScope),
+                            invariants);
+                }
+                addedAttributeTypes.add(new Pair<>(attributeTypeName, attributeSubtype));
+            }
+        }
+
+        // search by pure attributes
+        for(AttributeScopeKind scopeKind : AttributeScopeKind.values()) {
+            if(!scopeKind.isConcrete()) {
+                addInvariants(invariantsByAttribute.get(new InvariantScope(scopeKind)), invariants);
+            }
+        }
+
         // ordering
         return orderInvariants(allInvolvedClasses, invariants);
     }
