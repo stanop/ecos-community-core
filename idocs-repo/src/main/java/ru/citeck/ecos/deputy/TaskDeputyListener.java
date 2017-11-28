@@ -45,7 +45,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     private static final String UNAVAILABLE_PROCESS_NAME = "on-user-unavailable-process";
     
     private static final int BATCH_SIZE       = 10;
-    private static final int WORKER_THREADS   = 5;
+    private static final int WORKER_THREADS   = 10;
     private static final int LOGGING_INTERVAL = 10;
     
     private WorkflowService workflowService;
@@ -229,7 +229,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
             }
             else {
                 resetTaskOwner(task, userName);
-                workflowMirrorService.mirrorTask(task);
+                AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+                    workflowMirrorService.mirrorTask(task);
+                    return null;
+                });
                 grantWorkflowTaskPermissionExecutor.grantPermissions(task);
             }
         }
@@ -254,7 +257,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 actors.add(userName);
                 addPooledActors(Collections.singletonList(task), actors);
                 WorkflowTask updatedTask = workflowService.getTaskById(task.getId());
-                workflowMirrorService.mirrorTask(updatedTask);
+                AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+                    workflowMirrorService.mirrorTask(updatedTask);
+                    return null;
+                });
                 grantWorkflowTaskPermissionExecutor.grantPermissions(updatedTask);
             }
         }
