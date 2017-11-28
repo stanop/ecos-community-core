@@ -2193,15 +2193,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .constructor([String], function(key) {
             var shortQNamePattern = /^(.+)[:](.+)$/;
             var fullQNamePattern = /^[{](.+)[}](.+)$/;
-            if(key.match(shortQNamePattern)) {
-                this.model({
-                    prefix: key.replace(shortQNamePattern, '$1'),
-                    localName: key.replace(shortQNamePattern, '$2')
-                });
-            } else if(key.match(fullQNamePattern)) {
+            if(key.match(fullQNamePattern)) {
                 this.model({
                     uri: key.replace(fullQNamePattern, '$1'),
                     localName: key.replace(fullQNamePattern, '$2')
+                });
+            } else if(key.match(shortQNamePattern)) {
+                this.model({
+                    prefix: key.replace(shortQNamePattern, '$1'),
+                    localName: key.replace(shortQNamePattern, '$2')
                 });
             } else {
                 this.model({
