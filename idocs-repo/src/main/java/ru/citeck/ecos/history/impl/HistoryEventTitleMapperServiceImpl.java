@@ -66,6 +66,6 @@ public class HistoryEventTitleMapperServiceImpl implements HistoryEventTitleMapp
      */
     @Override
     public List<QName> getTitleQNames(QName objectQName) {
-        return objectTitleListMap.get(objectQName);
+        return objectTitleListMap.containsKey(objectQName) ? objectTitleListMap.get(objectQName) : Collections.emptyList();
     }
 }

@@ -26,7 +26,6 @@ import java.util.*;
 public class HistoryUtils {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
-    private static final QName TITLE = QName.createQName("http://www.alfresco.org/model/content/1.0", "title");
 
     public static final Serializable NODE_CREATED = "node.created";
     public static final Serializable NODE_UPDATED = "node.updated";
@@ -127,7 +126,7 @@ public class HistoryUtils {
         if (associationRef != null) {
             NodeRef targetNodeRef = associationRef.getTargetRef();
             if (targetNodeRef != null) {
-                return (String) nodeService.getProperty(targetNodeRef, TITLE);
+                return (String) nodeService.getProperty(targetNodeRef, ContentModel.PROP_TITLE);
             } else {
                 return "null";
             }
@@ -151,7 +150,7 @@ public class HistoryUtils {
         }
         if (value instanceof NodeRef) {
             if (nodeService.exists((NodeRef) value)) {
-                return (String) nodeService.getProperty((NodeRef) value, TITLE);
+                return (String) nodeService.getProperty((NodeRef) value, ContentModel.PROP_TITLE);
             } else {
                 return "null";
             }

@@ -1,7 +1,9 @@
 package ru.citeck.ecos.history;
 
+import org.apache.commons.collections.CollectionUtils;
 import ru.citeck.ecos.dto.HistoryEventTitlePairDto;
 import ru.citeck.ecos.dto.HistoryEventTitlePairListDto;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public class HistoryEventTitleMapper {
      */
 
     public List<HistoryEventTitlePairDto> getTitlePairs() {
-        return titlePairs;
+        return CollectionUtils.isNotEmpty(titlePairs) ? titlePairs : Collections.emptyList();
     }
 
     public void setTitlePairs(List<HistoryEventTitlePairDto> titlePairs) {
@@ -32,7 +34,7 @@ public class HistoryEventTitleMapper {
     }
 
     public List<HistoryEventTitlePairListDto> getTitleListPairs() {
-        return titleListPairs;
+        return CollectionUtils.isNotEmpty(titleListPairs) ? titleListPairs : Collections.emptyList();
     }
 
     public void setTitleListPairs(List<HistoryEventTitlePairListDto> titleListPairs) {
