@@ -20,7 +20,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
     var logger = Alfresco.logger,
         koclass = koutils.koclass,
         $isNodeRef = Citeck.utils.isNodeRef,
-        $isFilename = Citeck.utils.isFilename;
+        $isFilename = Citeck.utils.isFilename,
+        recursion = 0;
 
     var s = String,
         n = Number,
@@ -1258,11 +1259,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.persistedValue.reload();
             }
 
+            // reload child nodes (2 levels)
             if (this.multipleValues() && this.multipleValues().length) {
-                this.multipleValues().forEach(function(item) {
-                    if (item instanceof Node) {
+                _.map(this.multipleValues(), function(item) {
+                    recursion++;
+                    if (item instanceof Node && recursion < 3) {
                         item.impl().reset(true);
                     }
+                    recursion--;
                 });
             }
         })
