@@ -18,19 +18,21 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.action.executer.MailActionExecuter;
 import org.alfresco.service.cmr.action.Action;
+import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.Pair;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.InputStreamSource;
@@ -40,6 +42,8 @@ public class MailAttachActionExecutor extends MailActionExecuter
 {
 	private static Log logger = LogFactory.getLog(MailAttachActionExecutor.class);
 	public static final String ATTACHMENTS = "attachments";
+
+	private ContentService contentService;
 
 	@Override
 	public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender)
@@ -91,11 +95,21 @@ public class MailAttachActionExecutor extends MailActionExecuter
 								byte b = (byte)((List)attachmentContentObject).get(i);
 								attachmentContent[i] = b;
 							}
+						} else if (attachmentContentObject instanceof NodeRef) {
+							ContentReader contentReader = contentService.getReader((NodeRef)attachmentContentObject, ContentModel.PROP_CONTENT);
+							InputStream nodeIS = new BufferedInputStream(contentReader.getContentInputStream(), 4096);
+							try {
+								attachmentContent = IOUtils.toByteArray(nodeIS);
+							} catch (Exception e) {
+								logger.error("MailAttachActionExecutor: cannot get byte array from content of node " + attachmentContentObject);
+								e.printStackTrace();
+								continue;
+							}
 						} else {
 							attachmentContent = (byte[])attachmentContentObject;
 						}
 						//final byte[] attachmentContent = (byte[])attachment1.get("attachmentContent");
-						logger.debug("attachmentContent "+attachmentContent.length);
+						logger.debug("attachmentContent " + attachmentContent.length);
 
 						InputStreamSource inputStreamSource = new InputStreamSource() {
 							public InputStream getInputStream() throws IOException {
@@ -120,5 +134,9 @@ public class MailAttachActionExecutor extends MailActionExecuter
 	@Override
 	public void init() {
 		//do nothing: not to send test message
+	}
+
+	public void setContentService(ContentService contentService) {
+		this.contentService = contentService;
 	}
 }
