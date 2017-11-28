@@ -22,25 +22,18 @@
         days: "${days}"
     }'>
 
-    <#if config.scoped["DateFormatMask"]?? && config.scoped["DateFormatMask"]["mask"]??>
-        <#assign mask = config.scoped["DateFormatMask"]["mask"].value?trim!"DD.MM.YYYY">
-
-        <input id="${fieldId}" type="text" placeholder="${placeholder?trim}" data-bind="value: ko.computed({
-            read: function() {
-                return value() ? moment(value()).format('${mask}') : null;
-            },
-            write: function(newValue) {
-                var dateWrapper = $root.rootObjects().moment(newValue, '${mask}');
-                value(dateWrapper.isValid() ? dateWrapper.toDate() : null)
+    <input id="${fieldId}" type="date" placeholder="${placeholder?trim}" data-bind="value: ko.computed({
+        read: function() {
+            var result = value();
+            if (result instanceof Date) {
+                result = Alfresco.util.formatDate(result, 'yyyy-mm-dd');
             }
-        }), disable: protected"> 
-    <#else>
-        <#assign type><#if mode == "browser">date<#else>text</#if></#assign>
-        
-        <input id="${fieldId}" placeholder="${placeholder?trim}" type="${type}"
-               data-bind="value: textValue, disable: protected" 
-        />
-    </#if>
+            return result;
+        },
+        write: function(newValue) {
+            value(newValue);
+        }
+    }), disable: protected">
     
     <!-- ko ifnot: protected -->
         <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
