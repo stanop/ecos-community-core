@@ -5,9 +5,9 @@
         xmlns:cm="http://www.alfresco.org/model/content/1.0"
         xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0">
 
-    <idocs:currency view:childName="cm:currency-byn">
+    <idocs:currency view:childName="cm:currency-byr">
         <view:properties>
-            <sys:node-uuid>currency-byn</sys:node-uuid>
+            <sys:node-uuid>currency-byr</sys:node-uuid>
             <cm:name>Белорусский рубль</cm:name>
             <cm:title>
                 <view:mlvalue view:locale="en_US">Belarusian Ruble</view:mlvalue>
