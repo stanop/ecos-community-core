@@ -41,13 +41,11 @@ public class CaseStatusServiceImpl implements CaseStatusService {
         if (!Objects.equals(beforeCaseStatus, caseStatusRef)) {
             if (beforeCaseStatus != null) {
                 List<AssociationRef> beforeCaseStatusSavedAssocs =
-                        nodeService.getTargetAssocs(caseRef, ICaseModel.ASSOC_BEFORE_CASE_STATUS);
-                if (!beforeCaseStatusSavedAssocs.isEmpty()) {
-                    for (AssociationRef assoc : beforeCaseStatusSavedAssocs) {
-                        nodeService.removeAssociation(assoc.getSourceRef(), assoc.getTargetRef(), assoc.getTypeQName());
-                    }
+                        nodeService.getTargetAssocs(caseRef, ICaseModel.ASSOC_CASE_STATUS_BEFORE);
+                for (AssociationRef assoc : beforeCaseStatusSavedAssocs) {
+                    nodeService.removeAssociation(assoc.getSourceRef(), assoc.getTargetRef(), assoc.getTypeQName());
                 }
-                nodeService.createAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_BEFORE_CASE_STATUS);
+                nodeService.createAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_CASE_STATUS_BEFORE);
                 nodeService.removeAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_CASE_STATUS);
             }
             nodeService.createAssociation(caseRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);

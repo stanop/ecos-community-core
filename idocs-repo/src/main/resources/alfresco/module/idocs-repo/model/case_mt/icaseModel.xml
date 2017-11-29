@@ -400,7 +400,7 @@
 						<many>false</many>
 					</target>
 				</association>
-				<association name="icase:beforeCaseStatusAssoc">
+				<association name="icase:caseStatusBeforeAssoc">
 					<source>
 						<mandatory>false</mandatory>
 						<many>true</many>
