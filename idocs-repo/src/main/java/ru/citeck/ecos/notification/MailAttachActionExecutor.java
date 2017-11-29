@@ -30,7 +30,6 @@ import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.Pair;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -38,105 +37,96 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-public class MailAttachActionExecutor extends MailActionExecuter
-{
-	private static Log logger = LogFactory.getLog(MailAttachActionExecutor.class);
-	public static final String ATTACHMENTS = "attachments";
+public class MailAttachActionExecutor extends MailActionExecuter {
+    private static Log logger = LogFactory.getLog(MailAttachActionExecutor.class);
 
-	private ContentService contentService;
+    private ContentService contentService;
 
-	@Override
-	public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender)
-	{
-		MimeMessageHelper mimeMessageHelper = super.prepareEmail(ruleAction, actionedUponNodeRef, recipient, sender);
-		MimeMessageHelper helper = mimeMessageHelper;
-		logger.debug("actionedUponNodeRef "+actionedUponNodeRef);
-		logger.debug("ruleAction.getParameterValues "+ruleAction.getParameterValues());
-		Map<String, Object> template_modelParameterValue = (Map<String, Object>)ruleAction.getParameterValue("template_model");
-		if(template_modelParameterValue!=null)
-		{
-			Map<String, Object> argsParameterValues = (Map<String, Object>)template_modelParameterValue.get("args");
-			if(argsParameterValues!=null)
-			{
-				ArrayList attachments = (ArrayList)argsParameterValues.get("attachments");
-				logger.debug("helper.getEncoding() 1 "+helper.getEncoding());
-				String enc = helper.getEncoding();
-				if (attachments != null) {
-					try {
-						logger.debug("attachments != null");
-						MimeMessage i$ = mimeMessageHelper.getMimeMessage();
-						MimeMessage attachment = new MimeMessage(i$);
-						helper = new MimeMessageHelper(attachment, true, enc);
-						Object name = i$.getContent();
-						logger.debug("name "+name);
-						if (name == null) {
-							throw new AlfrescoRuntimeException("You need to set body of the message");
-						}
+    @Override
+    public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender)
+    {
+        MimeMessageHelper mimeMessageHelper = super.prepareEmail(ruleAction, actionedUponNodeRef, recipient, sender);
+        MimeMessageHelper helper = mimeMessageHelper;
+        logger.debug("actionedUponNodeRef "+actionedUponNodeRef);
+        logger.debug("ruleAction.getParameterValues "+ruleAction.getParameterValues());
+        Map<String, Object> template_modelParameterValue = (Map<String, Object>)ruleAction.getParameterValue("template_model");
+        if(template_modelParameterValue!=null)
+        {
+            Map<String, Object> argsParameterValues = (Map<String, Object>)template_modelParameterValue.get("args");
+            if(argsParameterValues!=null)
+            {
+                ArrayList attachments = (ArrayList)argsParameterValues.get("attachments");
+                logger.debug("helper.getEncoding() 1 "+helper.getEncoding());
+                String enc = helper.getEncoding();
+                if (attachments != null) {
+                    try {
+                        logger.debug("attachments != null");
+                        MimeMessage i$ = mimeMessageHelper.getMimeMessage();
+                        MimeMessage attachment = new MimeMessage(i$);
+                        helper = new MimeMessageHelper(attachment, true, enc);
+                        Object name = i$.getContent();
+                        logger.debug("name "+name);
+                        if (name == null) {
+                            throw new AlfrescoRuntimeException("You need to set body of the message");
+                        }
 
-						helper.setText(name.toString(), true);
-					} catch (MessagingException var15) {
-						throw new AlfrescoRuntimeException("System can't create MimeMessage. " + var15.getMessage());
-					} catch (IOException var16) {
-						throw new AlfrescoRuntimeException("You need to set body of the message");
-					}
+                        helper.setText(name.toString(), true);
+                    } catch (MessagingException var15) {
+                        throw new AlfrescoRuntimeException("System can't create MimeMessage. " + var15.getMessage());
+                    } catch (IOException var16) {
+                        throw new AlfrescoRuntimeException("You need to set body of the message");
+                    }
 
-					Iterator i$1 = attachments.iterator();
+                    Iterator i$1 = attachments.iterator();
 
-					while (i$1.hasNext()) {
-						Map<String, Serializable> attachment1 = (Map<String, Serializable>)i$1.next();
-						logger.debug("attachment1 "+attachment1);
-						String name1 = (String)attachment1.get("name");
-						logger.debug("name1 "+name1);
-						final Object attachmentContentObject = attachment1.get("attachmentContent");
-						byte[] attachmentContent;
-						if (attachmentContentObject instanceof List) {
-							attachmentContent = new byte[((List)attachmentContentObject).size()];
-							for (int i = 0; i < ((List)attachmentContentObject).size(); i++) {
-								byte b = (byte)((List)attachmentContentObject).get(i);
-								attachmentContent[i] = b;
-							}
-						} else if (attachmentContentObject instanceof NodeRef) {
-							ContentReader contentReader = contentService.getReader((NodeRef)attachmentContentObject, ContentModel.PROP_CONTENT);
-							InputStream nodeIS = new BufferedInputStream(contentReader.getContentInputStream(), 4096);
-							try {
-								attachmentContent = IOUtils.toByteArray(nodeIS);
-							} catch (Exception e) {
-								logger.error("MailAttachActionExecutor: cannot get byte array from content of node " + attachmentContentObject);
-								e.printStackTrace();
-								continue;
-							}
-						} else {
-							attachmentContent = (byte[])attachmentContentObject;
-						}
-						//final byte[] attachmentContent = (byte[])attachment1.get("attachmentContent");
-						logger.debug("attachmentContent " + attachmentContent.length);
+                    while (i$1.hasNext()) {
+                        Map<String, Serializable> attachment1 = (Map<String, Serializable>)i$1.next();
+                        logger.debug("attachment1 "+attachment1);
+                        String name1 = (String)attachment1.get("name");
+                        logger.debug("name1 "+name1);
+                        final Object attachmentContentObject = attachment1.get("attachmentContent");
+                        byte[] attachmentContent;
+                        if (attachmentContentObject instanceof List) {
+                            attachmentContent = new byte[((List)attachmentContentObject).size()];
+                            for (int i = 0; i < ((List)attachmentContentObject).size(); i++) {
+                                byte b = (byte)((List)attachmentContentObject).get(i);
+                                attachmentContent[i] = b;
+                            }
+                        } else if (attachmentContentObject instanceof NodeRef) {
+                            ContentReader contentReader = contentService.getReader((NodeRef)attachmentContentObject, ContentModel.PROP_CONTENT);
+                            InputStream nodeIS = new BufferedInputStream(contentReader.getContentInputStream(), 4096);
+                            try {
+                                attachmentContent = IOUtils.toByteArray(nodeIS);
+                            } catch (Exception e) {
+                                logger.error("MailAttachActionExecutor: cannot get byte array from content of node " + attachmentContentObject);
+                                e.printStackTrace();
+                                continue;
+                            }
+                        } else {
+                            attachmentContent = (byte[])attachmentContentObject;
+                        }
+                        logger.debug("attachmentContent " + attachmentContent.length);
 
-						InputStreamSource inputStreamSource = new InputStreamSource() {
-							public InputStream getInputStream() throws IOException {
-								return new ByteArrayInputStream(attachmentContent);
-							}
-						};
-						try
-						{
-							helper.addAttachment(name1, inputStreamSource);
-						} catch (MessagingException var14) {
-							logger.error("System can't add attachment. " + var14.getMessage());
-						}
-					}
-				}
-			}
-		}
-		
+                        InputStreamSource inputStreamSource = new InputStreamSource() {
+                            public InputStream getInputStream() throws IOException {
+                                return new ByteArrayInputStream(attachmentContent);
+                            }
+                        };
+                        try
+                        {
+                            helper.addAttachment(name1, inputStreamSource);
+                        } catch (MessagingException var14) {
+                            logger.error("System can't add attachment. " + var14.getMessage());
+                        }
+                    }
+                }
+            }
+        }
 
-		return helper;
-	}
+        return helper;
+    }
 
-	@Override
-	public void init() {
-		//do nothing: not to send test message
-	}
-
-	public void setContentService(ContentService contentService) {
-		this.contentService = contentService;
-	}
+    public void setContentService(ContentService contentService) {
+        this.contentService = contentService;
+    }
 }
