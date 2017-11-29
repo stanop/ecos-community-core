@@ -94,9 +94,9 @@ public class MailAttachActionExecutor extends MailActionExecuter {
                             }
                         } else if (attachmentContentObject instanceof NodeRef) {
                             ContentReader contentReader = contentService.getReader((NodeRef)attachmentContentObject, ContentModel.PROP_CONTENT);
-                            InputStream nodeIS = new BufferedInputStream(contentReader.getContentInputStream(), 4096);
-                            try {
-                                attachmentContent = IOUtils.toByteArray(nodeIS);
+                            try (InputStream in = contentReader.getContentInputStream();
+                                 InputStream nodeIS = new BufferedInputStream(in, 4096)) {
+                                     attachmentContent = IOUtils.toByteArray(nodeIS);
                             } catch (Exception e) {
                                 logger.error("MailAttachActionExecutor: cannot get byte array from content of node " + attachmentContentObject);
                                 e.printStackTrace();
