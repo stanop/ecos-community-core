@@ -99,7 +99,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.currencies" parent="idocs.import-spaces.3-2-0">
+    <bean id="idocs.module-component.currencies" parent="idocs.import-spaces.3-1-5">
         <property name="name" value="Currency data" />
         <property name="description" value="Currency data" />
         <property name="dependsOn">
@@ -120,7 +120,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.script.fixing-belorusian-currency-code" parent="idocs.import-scripts.3-2-0">
+    <bean id="idocs.module-component.script.fixing-belorusian-currency-code" parent="idocs.import-scripts.3-1-5">
         <property name="executeOnceOnly" value="true" />
         <property name="name" value="fixing-belorusian-currency-code.js" />
         <property name="description" value="Fixing belorusian currency code" />
