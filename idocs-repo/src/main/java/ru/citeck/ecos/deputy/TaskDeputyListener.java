@@ -226,8 +226,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
             if (pooledActors != null && userDeputies.size() == pooledActors.size()) {
                 removePooledActors(Collections.singletonList(task), userDeputies);
                 setTaskOwner(task, userName);
-            }
-            else {
+            } else {
                 resetTaskOwner(task, userName);
                 AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
                     workflowMirrorService.mirrorTask(task);
