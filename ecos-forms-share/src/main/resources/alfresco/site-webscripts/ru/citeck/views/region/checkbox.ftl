@@ -9,7 +9,10 @@
       value: value,
       multiple: multiple,
       protected: protected,
-      optionText: function(object) { return getValueTitle(object); }
+      optionText: function(object) { return getValueTitle(object); },
+      <#if params.optionsDisabled??>
+      optionsDisabled: function() { return ko.computed(function() {return  ${params.optionsDisabled};});}
+      </#if>
     }} --><!-- /ko -->
   <!-- /ko -->
 </div>
