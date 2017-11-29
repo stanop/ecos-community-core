@@ -132,6 +132,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 if (jmsTemplate != null) {
                     jmsTemplate.convertAndSend(SEND_NEW_RECORD_QUEUE, convertMapToJsonString(requestParams));
                 }
+                if (rabbitTemplate == null && jmsTemplate == null) {
+                    saveHistoryRecordAsCsv(requestParams);
+                }
             } else {
                 MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap();
                 paramsMap.setAll(requestParams);
