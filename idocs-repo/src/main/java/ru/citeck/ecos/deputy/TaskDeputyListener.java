@@ -228,7 +228,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 setTaskOwner(task, userName);
             } else {
                 resetTaskOwner(task, userName);
-                AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+                AuthenticationUtil.runAsSystem(() -> {
                     workflowMirrorService.mirrorTask(task);
                     return null;
                 });
@@ -256,7 +256,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                 actors.add(userName);
                 addPooledActors(Collections.singletonList(task), actors);
                 WorkflowTask updatedTask = workflowService.getTaskById(task.getId());
-                AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+                AuthenticationUtil.runAsSystem(() -> {
                     workflowMirrorService.mirrorTask(updatedTask);
                     return null;
                 });
