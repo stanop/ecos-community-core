@@ -556,10 +556,10 @@
         <property name="testMessageText">
             <value>${mail.testmessage.text}</value>
         </property>
-		<property name="contentService">
-			<ref bean="contentService"></ref>
-		</property>
-	</bean>
+        <property name="contentService">
+            <ref bean="contentService"></ref>
+        </property>
+    </bean>
 
 	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
 		<property name="searchService" ref="searchService" />
