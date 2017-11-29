@@ -5,20 +5,20 @@
         xmlns:cm="http://www.alfresco.org/model/content/1.0"
         xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0">
 
-    <!--<idocs:currency view:childName="cm:currency-chf">-->
-        <!--<view:properties>-->
-            <!--<sys:node-uuid>currency-chf</sys:node-uuid>-->
-            <!--<cm:name>Швейцарский франк</cm:name>-->
-            <!--<cm:title>-->
-                <!--<view:mlvalue view:locale="en_US">Swiss Franc</view:mlvalue>-->
-                <!--<view:mlvalue view:locale="ru_RU">Швейцарский франк</view:mlvalue>-->
-            <!--</cm:title>-->
-            <!--<idocs:currencyCode>CHF</idocs:currencyCode>-->
-            <!--<idocs:currencyName>Швейцарский франк</idocs:currencyName>-->
-            <!--<idocs:currencyShortName>₣</idocs:currencyShortName>-->
-            <!--<idocs:currencyNumberCode>756</idocs:currencyNumberCode>-->
-        <!--</view:properties>-->
-    <!--</idocs:currency>-->
+    <idocs:currency view:childName="cm:currency-swiss-franc">
+        <view:properties>
+            <sys:node-uuid>currency-swiss-franc</sys:node-uuid>
+            <cm:name>Швейцарский франк</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Swiss Franc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Швейцарский франк</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CHF</idocs:currencyCode>
+            <idocs:currencyName>Швейцарский франк</idocs:currencyName>
+            <idocs:currencyShortName>₣</idocs:currencyShortName>
+            <idocs:currencyNumberCode>756</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
 
     <idocs:currency view:childName="cm:currency-aud">
         <view:properties>

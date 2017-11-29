@@ -101,7 +101,7 @@
 
     <bean id="idocs.module-component.currencies" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="Currency data" />
-        <property name="description" value="Currency data, 123 items" />
+        <property name="description" value="Currency data" />
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.main-journals.currency" />
