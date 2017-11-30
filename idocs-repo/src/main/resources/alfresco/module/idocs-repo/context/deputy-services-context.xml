@@ -89,6 +89,7 @@
 		<property name="workflowService" ref="WorkflowService"/>
 		<property name="advancedWorkflowService" ref="advancedWorkflowService"/>
         <property name="personService" ref="personService"/>
+		<property name="transactionService" ref="TransactionService"/>
 		<property name="workflowMirrorService" ref="workflowMirrorService"/>
 		<property name="grantWorkflowTaskPermissionExecutor" ref="grantWorkflowTaskPermissionExecutor"/>
 	</bean>
