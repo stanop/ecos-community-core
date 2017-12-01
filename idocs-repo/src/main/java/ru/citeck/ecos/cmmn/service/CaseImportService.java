@@ -3,6 +3,7 @@ package ru.citeck.ecos.cmmn.service;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class CaseImportService {
         JAXBElement jaxbElement;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            org.apache.commons.io.IOUtils.copy(inputStream, baos);
+            IOUtils.copy(inputStream, baos);
             byte[] bytes = baos.toByteArray();
 
             Unmarshaller unmarshaller = CMMNUtils.createUnmarshaller(ObjectFactory.class.getPackage().getName());
@@ -107,11 +108,10 @@ public class CaseImportService {
             logger.info("Create new template with templateRef = " + templateRef);
 
         } else {
-            /* TODO: Save template directly to content without this nodes */
-            /*List<ChildAssociationRef> childAssociationRefs1 = nodeService.getChildAssocs(templateRef);
+            List<ChildAssociationRef> childAssociationRefs1 = nodeService.getChildAssocs(templateRef);
             for (ChildAssociationRef associationRef : childAssociationRefs1) {
                 nodeService.deleteNode(associationRef.getChildRef());
-            }*/
+            }
         }
 
         ContentWriter writer;
@@ -129,12 +129,6 @@ public class CaseImportService {
                 logger.error("Failed to close file stream on form submit", e);
             }
         }
-
-        NodeRef type = (NodeRef) contentProps.get(PROP_CASE_ECOS_TYPE);
-        NodeRef kind = (NodeRef) contentProps.get(PROP_CASE_ECOS_KIND);
-        QName typeQName = (QName) contentProps.get(PROP_CASE_TYPE);
-
-        caseTemplateRegistry.addDefinition(type, kind, typeQName, templateRef, definitions);
     }
 
     private NodeRef findTemplate(Map<QName, Serializable> properties) {

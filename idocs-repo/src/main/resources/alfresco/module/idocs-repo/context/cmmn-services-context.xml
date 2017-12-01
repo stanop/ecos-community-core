@@ -66,4 +66,24 @@
         </property>
     </bean>
 
+    <bean id="caseTemplateConfigParser" class="ru.citeck.ecos.content.config.parser.XmlConfigParser">
+        <property name="rootClassName" value="ru.citeck.ecos.cmmn.model.Definitions" />
+        <property name="schemaFiles">
+            <list>
+                <value>alfresco/module/idocs-repo/cmmn/DC.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/DI.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/CMMN11CaseModel.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/CMMN11.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/CMMNDI11.xsd</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="caseTemplateRegistry" class="ru.citeck.ecos.cmmn.service.CaseTemplateRegistry">
+        <property name="configNodeType" value="{http://www.citeck.ru/model/icase/1.0}template" />
+        <property name="classField" value="{http://www.citeck.ru/model/icase/1.0}caseType" />
+        <property name="rootNode" value="/app:company_home/app:dictionary/cm:case-templates" />
+        <property name="parser" ref="caseTemplateConfigParser" />
+    </bean>
+
 </beans>
