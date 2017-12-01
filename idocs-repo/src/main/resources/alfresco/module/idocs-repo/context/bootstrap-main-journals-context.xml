@@ -553,8 +553,8 @@
     <bean id="idocs.module-component.main-journals.currency-rates" parent="idocs.import-spaces">
         <property name="name" value="currency-rates-journal" />
         <property name="description" value="Currency rates Journal" />
-        <property name="sinceVersion" value="3.2.0.0" />
-        <property name="appliesFromVersion" value="3.2.0.0" />
+        <property name="sinceVersion" value="3.1.5.0" />
+        <property name="appliesFromVersion" value="3.1.5.0" />
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.journals-meta-root" />
