@@ -38,9 +38,8 @@ import ru.citeck.ecos.utils.RepoUtils;
 
 /**
  * Source association attribute provider.
- * 
- * Only persisted associations are considered as defined for nodes.
- * No associations are considered as defined for types.
+ *
+ * No associations are considered as defined for types and nodes.
  * 
  * @author Sergey Tiunov
  */
@@ -58,12 +57,8 @@ public class SourceAssocAttributes extends AbstractAttributeProvider {
 
     @Override
     public Set<QName> getPersistedAttributeNames(NodeRef nodeRef, boolean justCreated) {
-        List<AssociationRef> sourceAssocs = nodeService.getSourceAssocs(nodeRef, RegexQNamePattern.MATCH_ALL);
-        Set<QName> attributeNames = new HashSet<QName>();
-        for(AssociationRef assoc : sourceAssocs) {
-            attributeNames.add(getAttributeName(assoc.getTypeQName()));
-        }
-        return attributeNames;
+        // source assocs are not persisted in specified node
+        return Collections.emptySet();
     }
 
     @Override
