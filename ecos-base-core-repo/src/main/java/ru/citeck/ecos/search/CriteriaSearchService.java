@@ -21,6 +21,7 @@ package ru.citeck.ecos.search;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
@@ -145,6 +146,7 @@ public class CriteriaSearchService {
         parameters.setLanguage(language);
         parameters.setQuery(query);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        parameters.setQueryConsistency(QueryConsistency.EVENTUAL);
         return parameters;
     }
 
