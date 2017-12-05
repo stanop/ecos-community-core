@@ -1243,7 +1243,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             }
             return null;
         })
-        .method('reset', function(full) {
+        .method('reset', function(full, depth) {
+
+            if (_.isFinite(depth)) {
+                depth--;
+                if (depth <= 0) return;
+            }
+
             this.newValue(null);
             this.newValue.reload();
 
@@ -1258,10 +1264,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 this.persistedValue.reload();
             }
 
-            if (this.multipleValues() && this.multipleValues().length) {
-                this.multipleValues().forEach(function(item) {
+            // reload child nodes (2 levels)
+            if (depth && this.multipleValues() && this.multipleValues().length) {
+                _.each(this.multipleValues(), function(item) {
                     if (item instanceof Node) {
-                        item.impl().reset(true);
+                        item.impl().reset(full, depth);
                     }
                 });
             }
@@ -1824,8 +1831,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .method('attribute', function(name) {
             return this.getAttribute(name);
         })
-        .method('reset', function(full) {
-            _.invoke(this.attributes(), 'reset', full);
+        .method('reset', function(full, depth) {
+            _.invoke(this.attributes(), 'reset', full, depth);
             if(full) this._attributes.reload();
         })
         .method('updateModel', function(model) {
@@ -2193,15 +2200,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .constructor([String], function(key) {
             var shortQNamePattern = /^(.+)[:](.+)$/;
             var fullQNamePattern = /^[{](.+)[}](.+)$/;
-            if(key.match(shortQNamePattern)) {
-                this.model({
-                    prefix: key.replace(shortQNamePattern, '$1'),
-                    localName: key.replace(shortQNamePattern, '$2')
-                });
-            } else if(key.match(fullQNamePattern)) {
+            if(key.match(fullQNamePattern)) {
                 this.model({
                     uri: key.replace(fullQNamePattern, '$1'),
                     localName: key.replace(fullQNamePattern, '$2')
+                });
+            } else if(key.match(shortQNamePattern)) {
+                this.model({
+                    prefix: key.replace(shortQNamePattern, '$1'),
+                    localName: key.replace(shortQNamePattern, '$2')
                 });
             } else {
                 this.model({

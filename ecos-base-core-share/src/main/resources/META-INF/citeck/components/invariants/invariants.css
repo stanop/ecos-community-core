@@ -464,21 +464,20 @@
   display: none;
 }
 
-.invariants-form .template-wide .template-blockset {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  padding-top: 15px;
-  margin-bottom: 15px;
-  clear: both;
+.invariants-form .template-wide .template-blockset:after {
+  margin-bottom: 10px;
+  height: 1px;
+  background-color: #ccc;
+  width: 100%;
 }
 
-.invariants-form .template-wide .template-blockset + .template-blockset {
-  border-top: none;
-  padding-top: 0;
+.invariants-form .template-wide .template-blockset .template-block:last-child:after,
+.invariants-form .template-wide .template-blockset .template-blockset:last-child:after {
+  margin: 0;
+  height: 0;
 }
 
-.invariants-form .template-wide .template-blockset:after,
-.invariants-form .template-wide .template-blockset:before {
+.invariants-form .template-wide .template-blockset:after {
   content: "";
   clear: both;
   display: block;
