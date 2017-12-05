@@ -1337,6 +1337,7 @@ CreateObjectButton
     .property('virtualParent', Boolean)
     .property('callback', Function)
     .property('baseRef', String)
+    .property('rootAttributeName', String)
 
     .shortcut('protected', 'scope.protected')
     .shortcut('nodetype', 'scope.nodetype')
@@ -1397,7 +1398,8 @@ CreateObjectButton
                     destination: createVariant.destination(),
                     parentRuntime: this.parentRuntime(),
                     virtualParent: this.virtualParent(),
-                    baseRef: this.baseRef()
+                    baseRef: this.baseRef(),
+                    rootAttributeName: this.rootAttributeName()
                 }
             ); 
         }

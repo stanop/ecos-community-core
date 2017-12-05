@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -28,60 +28,63 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
 public interface InvariantService {
-    
+
     /**
      * Register delegate for attribute type support.
-     * 
+     *
      * @param attributeType
      */
     public void registerAttributeType(InvariantAttributeType attributeType);
-    
+
     /**
      * Get supported attribute types.
-     * 
+     *
      * @return
      */
     public Set<QName> getSupportedAttributeTypes();
-    
+
     /**
      * Register new invariant language implementation.
-     * 
+     *
      * @param language
      */
     public void registerLanguage(InvariantLanguage language);
-    
+
     /**
      * Get set of supported invariant languages.
+     *
      * @return
      */
     public Set<String> getSupportedLanguages();
-    
+
     /**
      * Deploy invariants definition file.
+     *
      * @param source
      */
     public void deployDefinition(InputStream source, String sourceId, InvariantPriority priority);
-    
+
     /**
      * Undeploy invariants definition file.
-     * @param source
+     *
+     * @param sourceId
      */
     public void undeployDefinition(String sourceId);
-    
+
     /**
      * Get invariants for specified class (type or aspect).
      * Invariants should be ordered by priority (highest priority first).
-     * 
+     *
      * @param className
      * @return ordered list of invariants
      */
     public List<InvariantDefinition> getInvariants(QName className);
-    
+
     /**
      * Get invariants for specified class (type or aspect) and attributes (properties and/or associations).
      * Invariants should be ordered by priority (highest priority first).
-     * 
-     * @param className name of class (type or aspect)
+     *
+     * @param className      name of class (type or aspect)
      * @param attributeNames names of attributes (properties and/or associations)
      * @return ordered list of invariants
      */
@@ -91,7 +94,7 @@ public interface InvariantService {
      * Get invariants for specified class (type or aspect) and attributes (properties and/or associations).
      * Invariants should be ordered by priority (highest priority first).
      *
-     * @param className name of class (type or aspect)
+     * @param classNames     name of class (type or aspect)
      * @param attributeNames names of attributes (properties and/or associations)
      * @return ordered list of invariants
      */
@@ -101,60 +104,73 @@ public interface InvariantService {
      * Get invariants for specified class (type or aspect) and attributes (properties and/or associations).
      * Invariants should be ordered by priority (highest priority first).
      *
-     * @param className name of class (type or aspect)
+     * @param classNames     name of class (type or aspect)
      * @param attributeNames names of attributes (properties and/or associations)
-     * @param nodeRef
-     * @param mode
+     * @param nodeRef        nodeRef of document
+     * @param mode           form mode
      * @return ordered list of invariants
      */
     public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames,
                                                    NodeRef nodeRef, String mode);
 
+    /**
+     * Get invariants for specified class (type or aspect) and attributes (properties and/or associations).
+     * Invariants should be ordered by priority (highest priority first).
+     * Includes process assoc permissions.
+     *
+     * @param classNames     name of class (type or aspect)
+     * @param attributeNames names of attributes (properties and/or associations)
+     * @param nodeRef        nodeRef of document
+     * @param baseRef        nodeRef parent or source of {@code nodeRef}
+     * @param rootAttribute  QName of assoc between nodeRef and baseRef
+     * @param mode           form mode
+     * @return ordered list of invariants
+     */
     public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames,
-                                                   NodeRef nodeRef, NodeRef baseRef, String mode);
+                                                   NodeRef nodeRef, NodeRef baseRef, QName rootAttribute, String mode);
 
     /**
      * Get invariants for specified classes (types or aspects).
      * Invariants should be ordered by priority (highest priority first).
-     * 
+     *
      * @param classNames class names (types or aspects)
      * @return ordered list of invariants
      */
     public List<InvariantDefinition> getInvariants(Collection<QName> classNames);
-    
+
     /**
      * Get invariants for specified node.
      * Invariants should be ordered by priority (highest priority first).
-     * 
+     *
      * @param nodeRef
      * @return ordered list of invariants
      */
     public List<InvariantDefinition> getInvariants(NodeRef nodeRef);
-    
+
     /**
      * Get invariants for specified nod and attributes (properties and/or associations)e.
      * Invariants should be ordered by priority (highest priority first).
-     * 
+     *
      * @param nodeRef
      * @param attributeNames names of attributes (properties and/or associations)
      * @return ordered list of invariants
      */
     public List<InvariantDefinition> getInvariants(NodeRef nodeRef, Collection<QName> attributeNames);
-    
+
     /**
      * Evaluate specified invariant on specified model.
-     * 
+     *
      * @param invariant
      * @param model
      * @return
      */
     public Object evaluateInvariant(InvariantDefinition invariant, Map<String, Object> model);
-    
+
     /**
      * Execute all matching invariants for the specified node.
-     * It considers 'value' and 'default' invariants to set attribute values 
-     *   and 'valid' invariant to validate node state.
-     * 
+     * It considers 'value' and 'default' invariants to set attribute values
+     * and 'valid' invariant to validate node state.
+     *
      * @param nodeRef
      */
     public void executeInvariants(NodeRef nodeRef);
@@ -162,7 +178,7 @@ public interface InvariantService {
     /**
      * Execute all matching invariants for the specified node as for new node.
      * It considers 'value' and 'default' invariants to set attribute values
-     *   and 'valid' invariant to validate node state.
+     * and 'valid' invariant to validate node state.
      *
      * @param nodeRef
      */
@@ -170,9 +186,9 @@ public interface InvariantService {
 
     /**
      * Execute specified invariants for the specified node.
-     * It considers 'value' and 'default' invariants to set attribute values 
-     *   and 'valid' invariant to validate node state.
-     * 
+     * It considers 'value' and 'default' invariants to set attribute values
+     * and 'valid' invariant to validate node state.
+     *
      * @param nodeRef
      * @param invariants
      * @param model
@@ -181,9 +197,9 @@ public interface InvariantService {
 
     /**
      * Execute specified invariants for the specified node, that was just created.
-     * It considers 'value' and 'default' invariants to set attribute values 
-     *   and 'valid' invariant to validate node state.
-     * 
+     * It considers 'value' and 'default' invariants to set attribute values
+     * and 'valid' invariant to validate node state.
+     *
      * @param nodeRef
      * @param invariants
      * @param model

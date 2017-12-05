@@ -118,7 +118,11 @@
             <!-- ko ifnot: $parents[1].protected() || $parents[1].resolve("node.impl.inViewMode") -->
             <td class="value-item-actions">
                 <a class="edit-value-item" title="${msg('button.edit')}"
-                   data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) }, null), clickBubble: false"></a>
+                   data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) },
+                   {
+                        baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
+                        rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
+                   }), clickBubble: false"></a>
                 <a class="delete-value-item" title="${msg('button.delete')}"
                    data-bind="click: function() {
                                             Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })

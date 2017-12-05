@@ -29,6 +29,7 @@
 	<#if element.attribute??>
 		<!-- ko with: getAttribute("${element.attribute}") -->
 		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
+		<#global globalAttributeName = element.attribute?string/>
 	</#if>
 
 	<#-- virtual elements for view -->
@@ -292,6 +293,7 @@
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#assign virtualParent = (args.param_virtualParent!"false") == "true" />
 		<#assign baseRef = args.param_baseRef!""/>
+		<#assign rootAttributeName = args.param_rootAttributeName!""/>
 		<#assign invariantsRuntimeCache = view.params.invariantsRuntimeCache!"true" />
 		<#assign independent = (view.params.independent!"false") == "true" />
 
@@ -311,6 +313,7 @@
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					virtualParent: <#if virtualParent>"${args.param_parentRuntime}"<#else>null</#if>,
         			baseRef: <#if baseRef??>"${baseRef}"<#else>null</#if>,
+        			rootAttributeName: <#if rootAttributeName??>"${rootAttributeName}"<#else>null</#if>,
 					formTemplate: "${view.template}",
 					independent: "${independent?string}",
 

@@ -18,6 +18,7 @@
 		buttonTitle: '${msg(buttonTitle)}',
 		parentRuntime: $root.key(),
 		virtualParent: ${((params.virtualParent!"false") == "true")?string},
-		baseRef: <#if page?? && page.url?? && page.url.args?? && page.url.args.nodeRef??>'${page.url.args.nodeRef}'<#else>null</#if>
+		baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
+		rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
 	}
 }" ></div>

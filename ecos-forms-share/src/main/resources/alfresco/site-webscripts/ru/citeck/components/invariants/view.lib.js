@@ -67,15 +67,12 @@ function getViewInvariants(view) {
 }
 
 function getInvariantSet(args, attributes) {
-    logger.warn("______________TEST22_____________");
-    for (var i in args) {
-        logger.warn(i + ": " + args[i]);
-    }
     var urlTemplate = '/citeck/invariants?' + (args.nodeRef ? 'nodeRef=' + args.nodeRef : args.type ? 'type=' + args.type : '') +
         (attributes && attributes.length ? '&attributes=' + attributes.join(',') : '') +
         (args.mode ? '&mode=' + args.mode : '') +
         (args.inlineEdit ? '&inlineEdit=' + args.inlineEdit : '')  +
-        (args.param_baseRef ? '&baseRef=' + args.param_baseRef : '');
+        (args.param_baseRef ? '&baseRef=' + args.param_baseRef : '') +
+        (args.param_rootAttributeName ? '&rootAttributeName=' + args.param_rootAttributeName : '');
     var response = remote.call(urlTemplate);
     return eval('(' + response + ')');
 }
