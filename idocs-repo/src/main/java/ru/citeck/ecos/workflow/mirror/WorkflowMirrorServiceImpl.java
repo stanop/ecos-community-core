@@ -42,11 +42,13 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -193,6 +195,12 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (document != null) {
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
+
+                NodeRef documentKind = getDocumentKind(document);
+                if (documentKind != null) {
+                    nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
+                }
+
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
             }
 
@@ -318,14 +326,25 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
             NodeRef packageNode = getPackage(targetAssocs);
             if (packageNode != null && nodeService.exists(packageNode)) {
-				String initiatorName = (String) nodeService.getProperty(packageNode, ContentModel.PROP_CREATOR);
-				if(initiatorName != null) {
-					return personService.getPerson(initiatorName);
-				}
-			}
-			
+                String initiatorName = (String) nodeService.getProperty(packageNode, ContentModel.PROP_CREATOR);
+                if(initiatorName != null) {
+                    return personService.getPerson(initiatorName);
+                }
+            }
+
         return null;
     }
+
+    private NodeRef getDocumentKind(NodeRef documentRef) {
+		if (documentRef != null && nodeService.exists(documentRef)) {
+			Serializable documentKind = nodeService.getProperty(documentRef, ClassificationModel.PROP_DOCUMENT_KIND);
+			if (documentKind != null) {
+				return (NodeRef) documentKind;
+			}
+		}
+
+    	return null;
+	}
 
 	public void setSearchService(SearchService searchService) {
 		this.searchService = searchService;
