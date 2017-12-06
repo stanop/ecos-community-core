@@ -31,10 +31,13 @@
             return result;
         },
         write: function(newValue) {
-            value(newValue);
+            var newDate = new Date(newValue);
+            if ( newDate !== 'Invalid Date' && !isNaN(newDate) && (newDate > new Date('1000-01-01'))) {
+                value(newValue);
+            }
         }
     }), disable: protected">
-    
+
     <!-- ko ifnot: protected -->
         <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
             <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">
