@@ -115,24 +115,24 @@
                             <!-- /ko -->
                         </#if>
 
-                        <!-- ko ifnot: $parents[1].protected() || $parents[1].resolve("node.impl.inViewMode") -->
-                            <td class="value-item-actions">
-                                <a class="edit-value-item" title="${msg('button.edit')}"
-                   data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) },
+                <!-- ko ifnot: $parents[1].protected() || $parents[1].resolve("node.impl.inViewMode") -->
+                <td class="value-item-actions">
+                    <a class="edit-value-item" title="${msg('button.edit')}"
+                       data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) },
                    {
                         baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
                         rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
                    }), clickBubble: false"></a>
-                   <#if params.duplicateButton??>
-                                    <a class="duplicate-value-item" title="${msg('button.duplicate')}"
-                                       data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
-                                </#if>
-                                <a class="delete-value-item" title="${msg('button.delete')}"
-                                   data-bind="click: function() {
-                                                            Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
-                                                        }, clickBubble: false"></a>
-                            </td>
-                        <!-- /ko -->
+                <#if params.duplicateButton??>
+                    <a class="duplicate-value-item" title="${msg('button.duplicate')}"
+                       data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
+                </#if>
+                    <a class="delete-value-item" title="${msg('button.delete')}"
+                       data-bind="click: function() {
+                       Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
+                       }, clickBubble: false"></a>
+                </td>
+                <!-- /ko -->
                     </tr>
                 <!-- /ko -->
             <!-- /ko -->
