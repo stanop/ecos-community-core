@@ -22,7 +22,7 @@ public class CaseTemplateRegistry extends TypeKindConfigRegistry<Definitions> {
     private ScriptService scriptService;
 
     public Optional<Definitions> getDefinitionForCase(NodeRef caseRef) {
-        Optional<ConfigData<Definitions>> config = getConfigByNode(caseRef);
+        Optional<ConfigData<Definitions>> config = getConfigByNodeTKC(caseRef);
         return config.filter(c -> c.getData().isPresent()
                                   && evalCondition(c.getNodeRef(), caseRef))
                      .flatMap(ConfigData::getData);

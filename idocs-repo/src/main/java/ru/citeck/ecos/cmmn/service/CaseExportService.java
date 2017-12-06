@@ -23,7 +23,6 @@ import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import javax.xml.bind.JAXBElement;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -42,6 +41,7 @@ import static ru.citeck.ecos.model.ICaseTemplateModel.ASSOC_ELEMENT_CONFIG;
  * @author Pavel Simonov (pavel.simonov@citeck.ru)
  */
 public class CaseExportService {
+
     private final Logger log = LoggerFactory.getLogger(CaseExportService.class);
 
     private NodeService nodeService;
@@ -54,7 +54,6 @@ public class CaseExportService {
     @Autowired
     @Qualifier("caseTemplateConfigDAO")
     private XmlConfigDAO<Definitions> configDAO;
-
 
     public void init() {
         objectFactory = new ObjectFactory();
@@ -90,7 +89,6 @@ public class CaseExportService {
             definitions.getCase().add(caseItem);
             definitions.setTargetNamespace(CMMNUtils.NAMESPACE);
 
-            //JAXBElement<Definitions> exportedElement = objectFactory.createDefinitions(definitions);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             configDAO.write(definitions, out);
 

@@ -17,7 +17,15 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
     private QName kindField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND;
     private QName classField = null;
 
-    public Optional<ConfigData<T>> getConfigByNode(NodeRef nodeRef) {
+    /**
+     *  Get config by EcoS type kind or class of node
+     *  Keys to search in order of priority:
+     *  1) EcoS type and EcoS kind
+     *  2) EcoS type and EcoS kind is empty
+     *  3) Alfresco type
+     *  4) Alfresco aspect
+    * */
+    public Optional<ConfigData<T>> getConfigByNodeTKC(NodeRef nodeRef) {
 
         Optional<ConfigData<T>> config = Optional.empty();
 
