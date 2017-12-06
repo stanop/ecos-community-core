@@ -64,6 +64,7 @@
         <default.locale>en</default.locale>
         <module.contracts.version>2.0.5.0-SNAPSHOT</module.contracts.version>
         <module.letters.version>1.2.6-SNAPSHOT</module.letters.version>
+        <module.ecos-order-pass.version>1.0.0.0-SNAPSHOT</module.ecos-order-pass.version>
         <module.meetings.version>1.1.6-SNAPSHOT</module.meetings.version>
         <module.orders.version>1.1.6-SNAPSHOT</module.orders.version>
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
@@ -379,6 +380,22 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>idocs-share</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-order-pass-repo</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${module.ecos-order-pass.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -647,6 +664,15 @@
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-order-pass-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${module.ecos-order-pass.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <version>${module.meetings.version}</version>
@@ -843,6 +869,7 @@
         <module>meetings-share</module>
         <module>orders-repo</module>
         <module>orders-share</module>
+        <module>ecos-order-pass-repo</module>
     </modules>
 
     <repositories>
