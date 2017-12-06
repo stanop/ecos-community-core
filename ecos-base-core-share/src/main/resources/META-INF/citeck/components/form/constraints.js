@@ -180,12 +180,12 @@
     // duplicate item on table template
     Citeck.forms.duplicateValue = function (record, parent) {
         var attributes =  record.resolve('allData.attributes');
-        if (attributes && record.typeShort()) {
+        if (attributes && record && record.typeShort()) {
 
             record.inSubmitProcess(true);
 
             var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort(),
-                data = { attributes: {}, view: record.resolve('defaultModel.view')};
+                data = { attributes: {}, view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}};
 
             for (var key in attributes) {
                 if (attributes[key] && ["attr:noderef", "attr:parent", "attr:parentassoc", "attr:aspects"].indexOf(key) == -1) {
@@ -196,16 +196,6 @@
                     }
                 }
             }
-
-            data.view = record.resolve('defaultModel.view') ? record.resolve('defaultModel.view') :
-                {
-                    class: record.typeShort(),
-                    id: "",
-                    kind: "",
-                    mode: "create",
-                    template: "table",
-                    params: {}
-                };
 
             Alfresco.util.Ajax.jsonPost({
                 url: url,
