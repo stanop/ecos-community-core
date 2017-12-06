@@ -177,6 +177,63 @@
         });
     };
 
+    // duplicate item on table template
+    Citeck.forms.duplicateValue = function (record, parent) {
+        var attributes =  record.resolve('allData.attributes');
+        if (attributes && record.typeShort()) {
+
+            record.inSubmitProcess(true);
+
+            var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort(),
+                data = { attributes: {}, view: record.resolve('defaultModel.view')};
+
+            for (var key in attributes) {
+                if (attributes[key] && ["attr:noderef", "attr:parent", "attr:parentassoc", "attr:aspects"].indexOf(key) == -1) {
+                    if (key == 'attr:types') {
+                        data.attributes[key] = [record.typeShort()]
+                    } else {
+                        data.attributes[key] = attributes[key];
+                    }
+                }
+            }
+
+            data.view = record.resolve('defaultModel.view') ? record.resolve('defaultModel.view') :
+                {
+                    class: record.typeShort(),
+                    id: "",
+                    kind: "",
+                    mode: "create",
+                    template: "table",
+                    params: {}
+                };
+
+            Alfresco.util.Ajax.jsonPost({
+                url: url,
+                dataObj: data,
+                requestContentType: Alfresco.util.Ajax.JSON,
+                successCallback: {
+                    fn: function (response) {
+                        if (response && response.json && response.json.result) {
+                            var arr = parent.value();
+                            arr.push(response.json.result);
+                            parent.value(arr);
+
+                        }
+                        record.inSubmitProcess(false);
+                    }
+                },
+                failureCallback: {
+                    fn: function (response) {
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: Alfresco.util.message("message.request-error")
+                        });
+                        record.inSubmitProcess(false);
+                    }
+                }
+            });
+        }
+    };
+
     Citeck.forms.formContent = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
