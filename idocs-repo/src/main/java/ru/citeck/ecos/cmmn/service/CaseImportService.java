@@ -3,24 +3,24 @@ package ru.citeck.ecos.cmmn.service;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.CmmnExportImportException;
 import ru.citeck.ecos.cmmn.model.Case;
 import ru.citeck.ecos.cmmn.model.Definitions;
-import ru.citeck.ecos.cmmn.model.ObjectFactory;
+import ru.citeck.ecos.content.config.dao.xml.XmlConfigDAO;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.LazyNodeRef;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.*;
 
-import static ru.citeck.ecos.model.ICaseModel.PROP_CASE_ECOS_KIND;
 import static ru.citeck.ecos.model.ICaseModel.PROP_CASE_ECOS_TYPE;
 import static ru.citeck.ecos.model.ICaseModel.PROP_CASE_TYPE;
 
@@ -41,7 +41,12 @@ public class CaseImportService {
     private NodeService nodeService;
     private LazyNodeRef caseTemplatesRoot;
     private ContentService contentService;
-    private CaseTemplateRegistry caseTemplateRegistry;
+
+    @Autowired
+    private CMMNUtils utils;
+    @Autowired
+    @Qualifier("caseTemplateConfigDAO")
+    protected XmlConfigDAO<Definitions> configDAO;
 
     private Set<QName> templatesCompareProperties = new HashSet<>();
 
@@ -52,43 +57,49 @@ public class CaseImportService {
     }
 
     void importCase(byte[] xmlData) {
-        try {
-
-            InputStream inputStream = new ByteArrayInputStream(xmlData);
-            Unmarshaller unmarshaller = CMMNUtils.createUnmarshaller(ObjectFactory.class.getPackage().getName());
-            JAXBElement jaxbElement = (JAXBElement) unmarshaller.unmarshal(inputStream);
-            importCase((Definitions) jaxbElement.getValue(), inputStream);
-
-        } catch (Exception e) {
-            logger.error("Cannot import case", e);
-            throw new CmmnExportImportException("Cannot import case", e);
-        }
+        InputStream inputStream = new ByteArrayInputStream(xmlData);
+        importCase(inputStream);
     }
 
     public void importCase(InputStream inputStream) {
-        JAXBElement jaxbElement;
         try {
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            org.apache.commons.io.IOUtils.copy(inputStream, baos);
+            IOUtils.copy(inputStream, baos);
             byte[] bytes = baos.toByteArray();
 
-            Unmarshaller unmarshaller = CMMNUtils.createUnmarshaller(ObjectFactory.class.getPackage().getName());
-            jaxbElement = (JAXBElement) unmarshaller.unmarshal(new ByteArrayInputStream(bytes));
-            importCase((Definitions) jaxbElement.getValue(), new ByteArrayInputStream(bytes));
+            NodeRef templateRef = importCase(configDAO.read(bytes));
+
+            ContentWriter writer;
+            try {
+                writer = contentService.getWriter(templateRef, ContentModel.PROP_CONTENT, true);
+                writer.setEncoding("UTF-8");
+                writer.setMimetype("text/xml");
+                writer.putContent(new ByteArrayInputStream(bytes));
+            } catch (Exception e) {
+                logger.error("Failed to get writer", e);
+            } finally {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    logger.error("Failed to close file stream on form submit", e);
+                }
+            }
+
         } catch (Exception e) {
             logger.error("Cannot import case", e);
             throw new CmmnExportImportException("Cannot import case", e);
         }
     }
 
-    private void importCase(Definitions definitions, InputStream inputStream) throws CmmnExportImportException {
+    private NodeRef importCase(Definitions definitions) throws CmmnExportImportException {
 
         Case caseItem = definitions.getCase().get(0);
         Map<QName, Serializable> contentProps = new HashMap<>();
 
         for (Map.Entry<javax.xml.namespace.QName, QName> mapping : CMMNUtils.CASE_ATTRIBUTES_MAPPING.entrySet()) {
             String value = caseItem.getOtherAttributes().get(mapping.getKey());
-            Serializable convertedValue = CMMNUtils.convertValueForRepo(mapping.getValue(), value);
+            Serializable convertedValue = utils.convertValueForRepo(mapping.getValue(), value);
             if (convertedValue != null) {
                 contentProps.put(mapping.getValue(), convertedValue);
             }
@@ -107,34 +118,13 @@ public class CaseImportService {
             logger.info("Create new template with templateRef = " + templateRef);
 
         } else {
-            /* TODO: Save template directly to content without this nodes */
-            /*List<ChildAssociationRef> childAssociationRefs1 = nodeService.getChildAssocs(templateRef);
+            List<ChildAssociationRef> childAssociationRefs1 = nodeService.getChildAssocs(templateRef);
             for (ChildAssociationRef associationRef : childAssociationRefs1) {
                 nodeService.deleteNode(associationRef.getChildRef());
-            }*/
-        }
-
-        ContentWriter writer;
-        try {
-            writer = contentService.getWriter(templateRef, ContentModel.PROP_CONTENT, true);
-            writer.setEncoding("UTF-8");
-            writer.setMimetype("text/xml");
-            writer.putContent(inputStream);
-        } catch (Exception e) {
-            logger.error("Failed to get writer", e);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                logger.error("Failed to close file stream on form submit", e);
             }
         }
 
-        NodeRef type = (NodeRef) contentProps.get(PROP_CASE_ECOS_TYPE);
-        NodeRef kind = (NodeRef) contentProps.get(PROP_CASE_ECOS_KIND);
-        QName typeQName = (QName) contentProps.get(PROP_CASE_TYPE);
-
-        caseTemplateRegistry.addDefinition(type, kind, typeQName, templateRef, definitions);
+        return templateRef;
     }
 
     private NodeRef findTemplate(Map<QName, Serializable> properties) {
@@ -204,10 +194,6 @@ public class CaseImportService {
 
     public void setCaseTemplatesRoot(LazyNodeRef caseTemplatesRoot) {
         this.caseTemplatesRoot = caseTemplatesRoot;
-    }
-
-    public void setCaseTemplateRegistry(CaseTemplateRegistry caseTemplateRegistry) {
-        this.caseTemplateRegistry = caseTemplateRegistry;
     }
 
     public void setContentService(ContentService contentService) {

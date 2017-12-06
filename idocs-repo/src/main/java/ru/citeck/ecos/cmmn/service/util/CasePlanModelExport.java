@@ -26,14 +26,19 @@ import java.util.*;
  * @author Pavel Simonov (pavel.simonov@citeck.ru)
  */
 public class CasePlanModelExport {
+
     private static final Logger logger = Logger.getLogger(CasePlanModelExport.class);
+
+    private final static Map<String, PlanItemTransition> ACTIVITY_EVENT_TYPES_MAPPING = new HashMap<>();
+    private final static String USER_ACTION_TYPE = "user-action";
 
     private final NodeService nodeService;
     private final DictionaryService dictionaryService;
     private final CaseExportService caseExportService;
     private final CaseActivityService caseActivityService;
-    private final static Map<String, PlanItemTransition> ACTIVITY_EVENT_TYPES_MAPPING = new HashMap<>();
-    private final static String USER_ACTION_TYPE = "user-action";
+
+    private final CMMNUtils utils;
+
     private CaseRoles caseRoles;
     /*
      * Mapping of real nodeRef id's and generated id's for planItems
@@ -54,11 +59,17 @@ public class CasePlanModelExport {
         ACTIVITY_EVENT_TYPES_MAPPING.put(ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED, PlanItemTransition.RESUME);//TODO: IT'S MUST BE CASE FILE TRANSITION 'update'
     }
 
-    public CasePlanModelExport(NodeService nodeService, CaseActivityService caseActivityService, CaseExportService caseExportService, DictionaryService dictionaryService) {
+    public CasePlanModelExport(NodeService nodeService,
+                               CaseActivityService caseActivityService,
+                               CaseExportService caseExportService,
+                               DictionaryService dictionaryService,
+                               CMMNUtils utils) {
+
         this.nodeService = nodeService;
         this.dictionaryService = dictionaryService;
         this.caseExportService = caseExportService;
         this.caseActivityService = caseActivityService;
+        this.utils = utils;
     }
 
     public Stage getCasePlanModel(NodeRef caseNodeRef, CaseRoles caseRoles) {
@@ -72,7 +83,7 @@ public class CasePlanModelExport {
 
     private void fillCasePlanModel(Stage casePlanModel, NodeRef caseNodeRef) {
         NodeRef caseRootRef = caseExportService.getElementTypeByConfig(caseNodeRef, ActivityModel.TYPE_ACTIVITY);
-        nodeRefsToPlanItemsMap.put(CMMNUtils.convertNodeRefToId(caseNodeRef), casePlanModel.getId());
+        nodeRefsToPlanItemsMap.put(utils.convertNodeRefToId(caseNodeRef), casePlanModel.getId());
         exportCompletnessLevels(casePlanModel, caseNodeRef);
         if (caseRootRef != null) {
             exportActivityNode(casePlanModel,
@@ -122,10 +133,10 @@ public class CasePlanModelExport {
 
     private void moveCriterionToAttributes(TPlanItem planItem) {
         Map<QName, String> attr = planItem.getOtherAttributes();
-        List<Sentry> entrySentry = CMMNUtils.criterionToSentries(planItem.getEntryCriterion());
+        List<Sentry> entrySentry = utils.criterionToSentries(planItem.getEntryCriterion());
         attr.put(CMMNUtils.QNAME_ENTRY_SENTRY, CMMNUtils.elementsToString(entrySentry));
         planItem.getEntryCriterion().clear();
-        List<Sentry> exitSentry = CMMNUtils.criterionToSentries(planItem.getExitCriterion());
+        List<Sentry> exitSentry = utils.criterionToSentries(planItem.getExitCriterion());
         attr.put(CMMNUtils.QNAME_EXIT_SENTRY, CMMNUtils.elementsToString(exitSentry));
         planItem.getExitCriterion().clear();
     }
@@ -140,7 +151,7 @@ public class CasePlanModelExport {
                     if (refs.length() != 0) {
                         refs.append(",");
                     }
-                    refs.append(CMMNUtils.extractIdFromNodeRef(nodeRef));
+                    refs.append(utils.extractIdFromNodeRef(nodeRef));
                 }
                 casePlanModel.getOtherAttributes().put(CMMNUtils.QNAME_COMPLETNESS_LEVELS, refs.toString());
             }
@@ -149,7 +160,7 @@ public class CasePlanModelExport {
 
     private Stage toStage(NodeRef nodeRef) {
         Stage stage = new Stage();
-        stage.setId(CMMNUtils.convertNodeRefToId(nodeRef));
+        stage.setId(utils.convertNodeRefToId(nodeRef));
         stage.setAutoComplete(isStageAutoCompleted(nodeRef));
         saveAttributes(stage, nodeRef);
         return stage;
@@ -158,7 +169,7 @@ public class CasePlanModelExport {
     private TTask getTask(NodeRef activityRef) {
         TTask task = new TTask();
         task.setIsBlocking(false);
-        task.setId(CMMNUtils.convertNodeRefToId(activityRef));
+        task.setId(utils.convertNodeRefToId(activityRef));
         saveType(task, activityRef);
         saveAttributes(task, activityRef);
         return task;
@@ -166,7 +177,7 @@ public class CasePlanModelExport {
 
     private TTimerEventListener getTimerListener(NodeRef activityRef) {
         TTimerEventListener timer = new TTimerEventListener();
-        timer.setId(CMMNUtils.convertNodeRefToId(activityRef));
+        timer.setId(utils.convertNodeRefToId(activityRef));
         saveType(timer, activityRef);
         saveAttributes(timer, activityRef);
         return timer;
@@ -174,7 +185,7 @@ public class CasePlanModelExport {
 
     private TProcessTask getProcessTask(NodeRef activityRef) {
         TProcessTask task = new TProcessTask();
-        task.setId(CMMNUtils.convertNodeRefToId(activityRef));
+        task.setId(utils.convertNodeRefToId(activityRef));
         task.setIsBlocking(true);
         saveType(task, activityRef);
         saveAttributes(task, activityRef);
@@ -183,7 +194,7 @@ public class CasePlanModelExport {
 
     private TPlanItem getPlanItem(TPlanItemDefinition definition) {
         TPlanItem planItem = new TPlanItem();
-        planItem.setId(CMMNUtils.getNextDocumentId());
+        planItem.setId(utils.getNextDocumentId());
         planItem.setDefinitionRef(definition);
         nodeRefsToPlanItemsMap.put(definition.getId(), planItem.getId());
         createdPlanItems.put(planItem.getId(), planItem);
@@ -198,7 +209,7 @@ public class CasePlanModelExport {
             Sentry sentry = createSentry(parentStage, eventRef);
             TEntryCriterion entryCriterion = new TEntryCriterion();
             entryCriterion.setSentryRef(sentry);
-            entryCriterion.setId(CMMNUtils.getNextDocumentId());
+            entryCriterion.setId(utils.getNextDocumentId());
             planItem.getEntryCriterion().add(entryCriterion);
             sentries.add(sentry);
         }
@@ -207,7 +218,7 @@ public class CasePlanModelExport {
             Sentry sentry = createSentry(parentStage, eventRef);
             TExitCriterion exitCriterion = new TExitCriterion();
             exitCriterion.setSentryRef(sentry);
-            exitCriterion.setId(CMMNUtils.getNextDocumentId());
+            exitCriterion.setId(utils.getNextDocumentId());
             planItem.getExitCriterion().add(exitCriterion);
             sentries.add(sentry);
         }
@@ -237,11 +248,11 @@ public class CasePlanModelExport {
 
         if (eventType.equals(USER_ACTION_TYPE)) {
             TUserEventListener userEventListener = new TUserEventListener();
-            userEventListener.setId(CMMNUtils.getNextDocumentId());
+            userEventListener.setId(utils.getNextDocumentId());
             List<NodeRef> authorizedRolesRef = RepoUtils.getTargetNodeRefs(eventRef, EventModel.ASSOC_AUTHORIZED_ROLES, nodeService);
             for (NodeRef authorizedRoleRef : authorizedRolesRef) {
                 for (Role role : caseRoles.getRole()) {
-                    if (role.getId().equals(CMMNUtils.convertNodeRefToId(authorizedRoleRef))) {
+                    if (role.getId().equals(utils.convertNodeRefToId(authorizedRoleRef))) {
                         userEventListener.getAuthorizedRoleRefs().add(role);
                     }
                 }
@@ -253,18 +264,18 @@ public class CasePlanModelExport {
             return userEventPlanItem.getId();
         } else {
             NodeRef sourceRef = RepoUtils.getFirstTargetAssoc(eventRef, EventModel.ASSOC_EVENT_SOURCE, nodeService);
-            return CMMNUtils.convertNodeRefToId(sourceRef);
+            return utils.convertNodeRefToId(sourceRef);
         }
     }
 
     private TPlanItemOnPart createPlanItemOnPart(Stage parentStage, NodeRef eventRef) {
 
         TPlanItemOnPart planItemOnPart = new TPlanItemOnPart();
-        planItemOnPart.setId(CMMNUtils.getNextDocumentId());
+        planItemOnPart.setId(utils.getNextDocumentId());
         NodeRef eventSourceRef = RepoUtils.getFirstTargetAssoc(eventRef, EventModel.ASSOC_EVENT_SOURCE, nodeService);
         saveNodeAttribute(planItemOnPart, CMMNUtils.QNAME_TITLE, eventSourceRef, ContentModel.PROP_TITLE);
         planItemOnPart.setStandardEvent(getPlanItemTransition(eventRef));
-        planItemOnPart.getOtherAttributes().put(CMMNUtils.QNAME_SOURCE_ID, CMMNUtils.convertNodeRefToId(eventSourceRef));
+        planItemOnPart.getOtherAttributes().put(CMMNUtils.QNAME_SOURCE_ID, utils.convertNodeRefToId(eventSourceRef));
         planItemOnPart.getOtherAttributes().put(CMMNUtils.QNAME_NODE_TYPE, nodeService.getType(eventRef).toString());
         planItemOnPart.setSourceRef(getEventSourceId(parentStage, eventRef));
 
@@ -284,7 +295,7 @@ public class CasePlanModelExport {
         List<NodeRef> conditionsRef = RepoUtils.getChildrenByAssoc(nodeRef, EventModel.ASSOC_CONDITIONS, nodeService);
         if (!conditionsRef.isEmpty()) {
             TIfPart ifPart = new TIfPart();
-            CaseConditionExporter caseConditionExporter = new CaseConditionExporter(conditionsRef, nodeService);
+            CaseConditionExporter caseConditionExporter = new CaseConditionExporter(conditionsRef, nodeService, utils);
             try {
                 String conditions = caseConditionExporter.generateXML();
                 TExpression expression = new TExpression();
@@ -318,14 +329,14 @@ public class CasePlanModelExport {
         TPlanItemOnPart planItemOnPart = createPlanItemOnPart(parentStage, eventRef);
         TIfPart ifPart = getIfPart(eventRef);
         Sentry sentry = new Sentry();
-        sentry.setId(CMMNUtils.getNextDocumentId());
+        sentry.setId(utils.getNextDocumentId());
         sentry.getOtherAttributes().put(CMMNUtils.QNAME_ORIGINAL_EVENT, eventType);
         sentry.getOnPart().add(caseExportService.getObjectFactory().createPlanItemOnPart(planItemOnPart));
         if (ifPart != null) {
             sentry.setIfPart(ifPart);
         }
         for (Map.Entry<QName, org.alfresco.service.namespace.QName> entry : CMMNUtils.EVENT_PROPS_MAPPING.entrySet()) {
-            String value = CMMNUtils.convertValueForCmmn(entry.getValue(), nodeService.getProperty(eventRef, entry.getValue()));
+            String value = utils.convertValueForCmmn(entry.getValue(), nodeService.getProperty(eventRef, entry.getValue()));
             if (value != null) {
                 sentry.getOtherAttributes().put(entry.getKey(), value);
             }
@@ -341,7 +352,7 @@ public class CasePlanModelExport {
             if (sb.length() != 0) {
                 sb.append(",");
             }
-            sb.append(CMMNUtils.extractIdFromNodeRef(ref));
+            sb.append(utils.extractIdFromNodeRef(ref));
         }
         planItem.getOtherAttributes().put(CMMNUtils.QNAME_START_COMPLETNESS_LEVELS, sb.toString());
         sb = new StringBuilder();
@@ -349,7 +360,7 @@ public class CasePlanModelExport {
             if (sb.length() != 0) {
                 sb.append(",");
             }
-            sb.append(CMMNUtils.extractIdFromNodeRef(ref));
+            sb.append(utils.extractIdFromNodeRef(ref));
         }
         planItem.getOtherAttributes().put(CMMNUtils.QNAME_STOP_COMPLETNESS_LEVELS, sb.toString());
     }
@@ -400,7 +411,7 @@ public class CasePlanModelExport {
 
     private Stage createCasePlanModel() {
         Stage stage = new Stage();
-        stage.setId(CMMNUtils.getNextDocumentId());
+        stage.setId(utils.getNextDocumentId());
         stage.setAutoComplete(true);
         stage.setName("Case plan model");
         return stage;
@@ -438,7 +449,7 @@ public class CasePlanModelExport {
         for (org.alfresco.service.namespace.QName key : properties.keySet()) {
             if (!key.getNamespaceURI().equals("http://www.alfresco.org/model/system/1.0") &&
                     !key.getNamespaceURI().equals("http://www.alfresco.org/model/content/1.0")) {
-                QName qName = CMMNUtils.convertToXMLQName(key);
+                QName qName = utils.convertToXMLQName(key);
                 if (!qName.getLocalPart().contains("_added")) {
                     if (properties.get(key) != null) {
                         if (properties.get(key).getClass().equals(Date.class)) {
@@ -467,7 +478,7 @@ public class CasePlanModelExport {
                 if (sbRoles.length() > 0) {
                     sbRoles.append(",");
                 }
-                sbRoles.append(CMMNUtils.convertNodeRefToId(roleRef));
+                sbRoles.append(utils.convertNodeRefToId(roleRef));
             }
         }
         return sbRoles.toString();

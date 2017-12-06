@@ -1,4 +1,4 @@
-package ru.citeck.ecos.cmmn;
+package ru.citeck.ecos.content.config.dao.xml;
 
 import org.w3c.dom.ls.LSInput;
 
@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
  * 2016-06-21
  * @author deathNC
  */
-public abstract class CmmnLSInput implements LSInput {
+public abstract class XmlLSInput implements LSInput {
 
     private final byte[] xsdData;
     private final InputStream xsdDataStream;
@@ -26,7 +26,7 @@ public abstract class CmmnLSInput implements LSInput {
     private String encoding;
     private boolean certifiedText;
 
-    public CmmnLSInput(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+    public XmlLSInput(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         super();
         this.encoding = "UTF-8";
         this.type = type;

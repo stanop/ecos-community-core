@@ -37,22 +37,15 @@ public class CaseTemplateDeployer extends AbstractDeployerBean {
 
     @Override
     protected void load(final String location, final InputStream inputStream) {
-        AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<String>() {
-            public String doWork() throws Exception{
-                return retryingTransactionHelper.doInTransaction(
-                        new RetryingTransactionHelper.RetryingTransactionCallback<String>() {
-                            public String execute() throws Exception {
-                                if (enabled) {
-                                    logger.info("Deploying case template from file: " + location);
-                                    caseImportService.importCase(inputStream);
-                                }
-                                logger.info("Finish deploying case templates");
-                                return null;
-                            }
-                        },
-                        false
-                );
-            }
-        }, AuthenticationUtil.getSystemUserName());
+        AuthenticationUtil.runAs(() -> retryingTransactionHelper.doInTransaction(() -> {
+                if (enabled) {
+                    logger.info("Deploying case template from file: " + location);
+                    caseImportService.importCase(inputStream);
+                }
+                logger.info("Finish deploying case templates");
+                return null;
+            },
+            false
+        ), AuthenticationUtil.getSystemUserName());
     }
 }

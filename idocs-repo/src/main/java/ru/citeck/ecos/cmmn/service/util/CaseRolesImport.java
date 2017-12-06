@@ -31,10 +31,12 @@ public class CaseRolesImport {
 
     public static final QName ASSOC_ROLES = QName.createQName("http://www.citeck.ru/model/icaseRole/1.0", "roles");
 
+    private CMMNUtils utils;
 
-    public CaseRolesImport(NodeService nodeService, AuthorityService authorityService) {
+    public CaseRolesImport(NodeService nodeService, AuthorityService authorityService, CMMNUtils utils) {
         this.nodeService = nodeService;
         this.authorityService = authorityService;
+        this.utils = utils;
     }
 
     public Map<String, NodeRef> importRoles(NodeRef templateRef, CaseRoles caseRoles) throws CmmnExportImportException {
@@ -68,7 +70,7 @@ public class CaseRolesImport {
                 for (Map.Entry<javax.xml.namespace.QName, QName> entry : CMMNUtils.ROLES_ATTRIBUTES_MAPPING.entrySet()) {
                     String value = role.getOtherAttributes().get(entry.getKey());
                     if (value != null) {
-                        nodeProps.put(entry.getValue(), CMMNUtils.convertValueForRepo(entry.getValue(), value));
+                        nodeProps.put(entry.getValue(), utils.convertValueForRepo(entry.getValue(), value));
                     }
                 }
 
@@ -91,7 +93,7 @@ public class CaseRolesImport {
 
                 String roleAssocString = role.getOtherAttributes().get(CMMNUtils.QNAME_REFERENSE_ROLE);
                 if (roleAssocString != null && !roleAssocString.trim().isEmpty()) {
-                    NodeRef originalRoleRef = CMMNUtils.getCaseRoleById(roleAssocString);
+                    NodeRef originalRoleRef = utils.getCaseRoleById(roleAssocString);
                     if (originalRoleRef != null) {
                         nodeService.createAssociation(roleRef, originalRoleRef, ICaseRoleModel.ASSOC_REFERENCE_ROLE);
                     } else {
