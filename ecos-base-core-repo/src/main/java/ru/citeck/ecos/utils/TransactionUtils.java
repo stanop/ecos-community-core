@@ -78,16 +78,21 @@ public class TransactionUtils {
             I18NUtil.setLocale(locale);
 
             AuthenticationUtil.runAsSystem(() -> {
-                jobs.forEach(job -> {
+
+                for (int i = 0; i < jobs.size(); i++) {
+                    Job job = jobs.get(i);
                     try {
-                        doInTransaction(job.runnable);
+                        doInTransaction(() -> {
+                            AlfrescoTransactionSupport.bindResource(AFTER_COMMIT_JOBS_KEY, jobs);
+                            job.runnable.run();
+                        });
                     } catch (Exception e) {
                         LOG.error("Exception while job running", e);
                         if (job.errorHandler != null) {
                             doInTransaction(() -> job.errorHandler.accept(e));
                         }
                     }
-                });
+                }
                 return null;
             });
         });
