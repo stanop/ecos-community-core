@@ -21,6 +21,7 @@ package ru.citeck.ecos.search;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
@@ -45,6 +46,8 @@ public class CriteriaSearchService {
     private NamespaceService namespaceService;
     private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
     private SortFieldChanger sortFieldChanger;
+
+    private boolean evalExactTotalCount;
     
     /**
      * Search using given SearchCriteria with specified query language.
@@ -91,15 +94,21 @@ public class CriteriaSearchService {
             }
             throw new IllegalArgumentException("Field " + field + " is neither property, nor association");
         }
+
         ResultSet resultSet = null;
         ResultSet countResultSet = null;
-        List<NodeRef> results = null;
+        List<NodeRef> results;
         long totalCount;
+
         try {
+
             resultSet = searchService.query(parameters);
             results = resultSet.getNodeRefs();
             totalCount = resultSet.getNumberFound();
-            if (resultSet.hasMore() && (totalCount == (parameters.getMaxItems() + parameters.getSkipCount()))) {
+
+            if (evalExactTotalCount && resultSet.hasMore()
+                    && (totalCount == (parameters.getMaxItems() + parameters.getSkipCount()))) {
+
                 SearchParameters countParameters = createSearchParameters(language, query);
                 countParameters.setMaxItems(1);
                 countParameters.setSkipCount(Integer.MAX_VALUE - 1);
@@ -137,6 +146,7 @@ public class CriteriaSearchService {
         parameters.setLanguage(language);
         parameters.setQuery(query);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        parameters.setQueryConsistency(QueryConsistency.EVENTUAL);
         return parameters;
     }
 
@@ -148,7 +158,11 @@ public class CriteriaSearchService {
         }
         return null;
     }
-    
+
+    public void setEvalExactTotalCount(boolean evalExactTotalCount) {
+        this.evalExactTotalCount = evalExactTotalCount;
+    }
+
     public void setSearchService(SearchService searchService) {
         this.searchService = searchService;
     }

@@ -19,7 +19,7 @@
 define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/utils/knockout.components', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals', 'lib/moment'], function(ko, koutils, kocomponents, invariants, journals, moment) {
 
 // ----------------
-// GLOBAL FUNCTIONS 
+// GLOBAL FUNCTIONS
 // ----------------
 
 var $html = Alfresco.util.encodeHTML,
@@ -52,7 +52,7 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
     for (var p = 0; p < procIds.length; procIds++) {
         if (obj[procIds[p]]) {
             clearTimeout(obj[procIds[p]]);
-            obj[procIds[p]] = null; 
+            obj[procIds[p]] = null;
         }
     }
 
@@ -138,7 +138,7 @@ ko.components.register("select", {
             else { this.optionsText = function(option) { return this.getValueTitle(option); }.bind(this.data) };
         }
 
-        if (!this.optionsValue && this.data.optionsValue) { 
+        if (!this.optionsValue && this.data.optionsValue) {
             this.optionsValue = this.data.optionsValue;
         }
 
@@ -146,7 +146,7 @@ ko.components.register("select", {
             this.optionsAfterRender = this.data.optionsAfterRender;
         }
     },
-    template: 
+    template:
        '<!--ko ifnot: data.multiple -->\
             <select data-bind="attr: { id: id },\
                 disable: data.protected,\
@@ -182,9 +182,9 @@ ko.components.register("number-generate", {
         this.mode = params.mode;
         this.disable = params.disable;
 
-        this.generate = function() { 
-            var generator = ko.computed(function() { 
-                return params.enumeration.getNumber(params.template, params.node()); 
+        this.generate = function() {
+            var generator = ko.computed(function() {
+                return params.enumeration.getNumber(params.template, params.node());
             }, this, { deferEvaluation: true });
 
             var number = generator();
@@ -192,11 +192,11 @@ ko.components.register("number-generate", {
                 params.value(number);
                 generator.dispose();
             } else {
-                koutils.subscribeOnce(generator, function(number) { 
+                koutils.subscribeOnce(generator, function(number) {
                     params.value(number);
                     generator.dispose();
                 });
-            } 
+            }
         };
 
         // flag for 'checkbox' mode
@@ -215,7 +215,7 @@ ko.components.register("number-generate", {
         this.isButtonMode = this.mode == "button";
         this.isCheckboxMode = this.mode == "checkbox";
     },
-    template: 
+    template:
        '<!-- ko if: isButtonMode -->\
             <button data-bind="text: label, disable: disable, click: generate"></button>\
         <!-- /ko -->\
@@ -262,12 +262,12 @@ ko.components.register("number", {
         };
 
         this.value.subscribe(function(newValue) {
-            self.hasPeriodSymbol = newValue ? 
+            self.hasPeriodSymbol = newValue ?
                 _.any([",", "."], function(period) { return newValue.indexOf(period) >= 0 }) : false;
             self.noValue = self.lastSymbolIsPeriod = _.isEmpty(newValue);
         });
     },
-    template: 
+    template:
        '<input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
@@ -293,10 +293,10 @@ ko.components.register("free-content", {
             return null;
         });
     },
-    template: 
+    template:
        '<div data-bind="html: content">'
 })
-    
+
 
 // ---------------
 // MULTIPLE-TEXT
@@ -377,36 +377,95 @@ ko.components.register("checkbox-radio", {
 
         this.groupName = params["groupName"];
         this.optionText = params["optionText"];
+
         this.options = params["options"];
+        this.optionsDisabled = params["optionsDisabled"] ? params["optionsDisabled"]() : null;
+        this.optionsAndOptionsDisabled = ko.observable([]);
+
+        this.options.subscribe(function(){
+            var optionsAndOptionsDisabledTMP = [];
+            var disabledFlag;
+            if (self.options() && self.options().length > 0) {
+                for (var oIndex in self.options()) {
+                    disabledFlag = false;
+                    if (self.optionsDisabled != null) {
+                        for (var odIndex in self.optionsDisabled()) {
+                            if (self.optionsDisabled()[odIndex] === self.options()[oIndex].nodeRef) {
+                                disabledFlag = true;
+                            }
+                        }
+                    }
+                    optionsAndOptionsDisabledTMP.push({element: self.options()[oIndex], disabled: disabledFlag});
+                }
+                self.optionsAndOptionsDisabled(optionsAndOptionsDisabledTMP);
+            }
+        });
+
         this.value = params["value"];
         this.multiple = params["multiple"] || false;
         this.disabled = params["protected"];
     },
-    template: 
+    template:
         '<!-- ko foreach: options -->\
             <span class="checkbox-option">\
                 <label>\
                     <!-- ko if: $parent.multiple -->\
                         <!-- ko if: $parent.disabled -->\
-                        <input type="checkbox" disabled data-bind="checked: ko.computed({\
-                            read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
-                            write: function(newValue) {\
-                                var selectedOptions = $parent.value() || [];\
-                                newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
-                                $parent.value(selectedOptions);\
-                            }\
-                        })" />\
+                            <input type="checkbox" disabled data-bind="checked: ko.computed({\
+                                read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                                write: function(newValue) {\
+                                    var selectedOptions = $parent.value() || [];\
+                                    newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                    $parent.value(selectedOptions);\
+                                }\
+                            })" />\
                         <!-- /ko -->\
                         <!-- ko ifnot: $parent.disabled -->\
-                        <input type="checkbox" data-bind="checked: ko.computed({\
-                            read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
-                            write: function(newValue) {\
-                                var selectedOptions = $parent.value() || [];\
-                                newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
-                                $parent.value(selectedOptions);\
-                            }\
-                        })" />\
-                      <!-- /ko -->\
+                            <!-- ko if: $parent.optionsAndOptionsDisabled() -->\
+                                <!-- ko if: $parent.optionsAndOptionsDisabled()[$index()] -->\
+                                    <!-- ko if: $parent.optionsAndOptionsDisabled()[$index()].disabled == true -->\
+                                        <input type="checkbox" disabled data-bind="checked: ko.computed({\
+                                            read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                                            write: function(newValue) {\
+                                                var selectedOptions = $parent.value() || [];\
+                                                newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                                $parent.value(selectedOptions);\
+                                            }\
+                                        })" />\
+                                    <!-- /ko -->\
+                                    <!-- ko ifnot: $parent.optionsAndOptionsDisabled()[$index()].disabled == true -->\
+                                        <input type="checkbox" data-bind="checked: ko.computed({\
+                                            read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                                            write: function(newValue) {\
+                                                var selectedOptions = $parent.value() || [];\
+                                                newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                                $parent.value(selectedOptions);\
+                                            }\
+                                        })" />\
+                                    <!-- /ko -->\
+                                <!-- /ko -->\
+                                <!-- ko ifnot: $parent.optionsAndOptionsDisabled()[$index()] -->\
+                                    <input type="checkbox" data-bind="checked: ko.computed({\
+                                        read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                                        write: function(newValue) {\
+                                            var selectedOptions = $parent.value() || [];\
+                                            newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                            $parent.value(selectedOptions);\
+                                        }\
+                                    })" />\
+                                <!-- /ko -->\
+                            <!-- /ko -->\
+                            <!-- ko ifnot: $parent.optionsAndOptionsDisabled() -->\
+                                <input type="checkbox" data-bind="checked: ko.computed({\
+                                    read: function() { if ($parent.value()) return $parent.value().indexOf($data) != -1; },\
+                                    write: function(newValue) {\
+                                        var selectedOptions = $parent.value() || [];\
+                                        newValue ? selectedOptions.push($data) : selectedOptions.splice(selectedOptions.indexOf($data), 1);\
+                                        $parent.value(selectedOptions);\
+                                    }\
+                                })" />\
+                            <!-- /ko -->\
+                        <!-- /ko -->\
                     <!-- /ko -->\
                     <!-- ko ifnot: $parent.multiple -->\
                         <!-- ko if: $parent.disabled -->\
@@ -416,10 +475,34 @@ ko.components.register("checkbox-radio", {
                         }), attr: { value: $data.id, name: $parent.groupName }" />\
                         <!-- /ko -->\
                         <!-- ko ifnot: $parent.disabled -->\
-                        <input type="radio"  data-bind="checked: ko.computed({\
-                            read: function() { if ($parent.value()) return $parent.value().id; },\
-                            write: function(newValue) { $parent.value($data.nodeRef); }\
-                        }), attr: { value: $data.id, name: $parent.groupName }" />\
+                            <!-- ko if: $parent.optionsAndOptionsDisabled() -->\
+                                <!-- ko if: $parent.optionsAndOptionsDisabled()[$index()] -->\
+                                    <!-- ko if: $parent.optionsAndOptionsDisabled()[$index()].disabled == true -->\
+                                        <input type="radio" disabled data-bind="checked: ko.computed({\
+                                            read: function() { if ($parent.value()) return $parent.value().id; },\
+                                            write: function(newValue) { $parent.value($data.nodeRef); }\
+                                        }), attr: { value: $data.id, name: $parent.groupName }" />\
+                                    <!-- /ko -->\
+                                    <!-- ko ifnot: $parent.optionsAndOptionsDisabled()[$index()].disabled == true -->\
+                                        <input type="radio"  data-bind="checked: ko.computed({\
+                                            read: function() { if ($parent.value()) return $parent.value().id; },\
+                                            write: function(newValue) { $parent.value($data.nodeRef); }\
+                                        }), attr: { value: $data.id, name: $parent.groupName }" />\
+                                    <!-- /ko -->\
+                                <!-- /ko -->\
+                                <!-- ko ifnot: $parent.optionsAndOptionsDisabled()[$index()] -->\
+                                    <input type="radio"  data-bind="checked: ko.computed({\
+                                        read: function() { if ($parent.value()) return $parent.value().id; },\
+                                        write: function(newValue) { $parent.value($data.nodeRef); }\
+                                    }), attr: { value: $data.id, name: $parent.groupName }" />\
+                                <!-- /ko -->\
+                            <!-- /ko -->\
+                            <!-- ko ifnot: $parent.optionsAndOptionsDisabled() -->\
+                                 <input type="radio"  data-bind="checked: ko.computed({\
+                                    read: function() { if ($parent.value()) return $parent.value().id; },\
+                                    write: function(newValue) { $parent.value($data.nodeRef); }\
+                                 }), attr: { value: $data.id, name: $parent.groupName }" />\
+                            <!-- /ko -->\
                         <!-- /ko -->\
                     <!-- /ko -->\
                     <!-- ko text: $parent.optionText($data) --><!-- /ko -->\
@@ -436,7 +519,7 @@ ko.components.register("datetime", {
     viewModel: function(params) {
         var self = this,
             calendarAccessorId = params.fieldId + "-calendarAccessor",
-            calendarDialogId = params.fieldId + "-calendarDialog", calendarContainerId = params.fieldId + "-calendarContainer", 
+            calendarDialogId = params.fieldId + "-calendarDialog", calendarContainerId = params.fieldId + "-calendarContainer",
             calendarDialog, calendar;
             localization = params.localization;
 
@@ -510,7 +593,7 @@ ko.components.register("datetime", {
                 return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
             },
             write: function(newValue) {
-                if (newValue) {                   
+                if (newValue) {
                     if (/\d{2,4}-\d{2}-\d{2}(, | )\d{2}:\d{2}(:\d{2}|)/.test(newValue)) {
                         var timeArray = newValue.split(/, | /);
                         timeArray[0] = timeArray[0].split(".").reverse().join("/");
@@ -521,17 +604,17 @@ ko.components.register("datetime", {
                             return;
                         }
                     }
-                } 
-                
+                }
+
                 if (self.value() != null) self.value(null)
             }
         });
 
         this.dateValue = ko.computed({
-            read: function() { 
+            read: function() {
                 return  Alfresco.util.toISO8601(self.value(), { milliseconds: false, hideTimezone: true });
             },
-            write: function(newValue) { 
+            write: function(newValue) {
                 if (newValue) {
                     var newDate = new Date(newValue);
 
@@ -539,13 +622,13 @@ ko.components.register("datetime", {
                         self.value(newDate);
                         return;
                     }
-                } 
+                }
 
                 if (self.value() != null) self.value(null)
             }
         });
     },
-    template: 
+    template:
        '<!-- ko if: Citeck.HTML5.supportInput("datetime-local") && mode -->\
             <input type="datetime-local" data-bind="value: dateValue, disable: disabled" />\
         <!-- /ko -->\
@@ -574,7 +657,7 @@ ko.bindingHandlers.dateControl = {
 
         var localization = params.localization,
             mode = params.mode;
-        
+
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
@@ -592,25 +675,25 @@ ko.bindingHandlers.dateControl = {
                     var formContainer = $(element).closest(".yui-panel-container"),
                         zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
 
-                    calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, { 
-                        visible:    false, 
-                        context:    [calendarAccessorId, "tl", "bl"], 
-                        draggable:  false, 
+                    calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                        visible:    false,
+                        context:    [calendarAccessorId, "tl", "bl"],
+                        draggable:  false,
                         close:      true,
                         zindex:     zindex
                     });
                     calendarDialog.setHeader(localization.labels.header);
                     calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                    calendarDialog.render(document.body); 
+                    calendarDialog.render(document.body);
                 }
 
                 if (!calendar) {
-                    calendar = new YAHOO.widget.Calendar(calendarContainerId, { 
+                    calendar = new YAHOO.widget.Calendar(calendarContainerId, {
                         LOCALE_WEEKDAYS: "short",
                         LOCALE_MONTHS: "long",
                         START_WEEKDAY: 1,
 
-                        iframe: false, 
+                        iframe: false,
                         navigator: {
                             strings: {
                                 month:  localization.labels.month,
@@ -619,29 +702,29 @@ ko.bindingHandlers.dateControl = {
                                 cancel: localization.buttons.cancel
                             }
                         }
-                    }); 
+                    });
 
                     // localization months and days
-                    calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(",")); 
+                    calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
                     calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
 
                     // selected date
                     calendar.selectEvent.subscribe(function() {
                         if (calendar.getSelectedDates().length > 0) {
                             var selectedDate = calendar.getSelectedDates()[0];
-                            value(selectedDate.toString("yyyy-MM-dd"));                           
+                            value(selectedDate.toString("yyyy-MM-dd"));
                         }
                         calendarDialog.hide();
                     });
 
-                    calendar.render();      
+                    calendar.render();
                 }
 
                 if (calendarDialog) calendarDialog.show();
             });
         } else {
             // set max and min attributes
-            var date = new Date(), 
+            var date = new Date(),
                 year = date.getFullYear()
 
             if (input) {
@@ -703,7 +786,7 @@ ko.bindingHandlers.journalControl = {
     var defaultVisibleAttributes    = params.defaultVisibleAttributes,
         defaultSearchableAttributes = params.defaultSearchableAttributes,
         defaultHiddenByType         = params.defaultHiddenByType,
-        
+
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
 
@@ -739,7 +822,7 @@ ko.bindingHandlers.journalControl = {
         filterTabId              = panelId + "-filterTab",
         filterPageId             = panelId + "-filterPage",
         createTabId              = panelId + "-createTab",
-        createPageId             = panelId + "-createPage", 
+        createPageId             = panelId + "-createPage",
         journalId                = panelId + "-elementsTable",
         selectedJournalId        = panelId + "-selectedElementsTable",
         searchId                 = panelId + "-search",
@@ -753,7 +836,7 @@ ko.bindingHandlers.journalControl = {
         event.preventDefault();
 
         if (!panel) {
-            var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(), 
+            var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(),
                 filterCriteriaVisibility = ko.observable(false),
                 loading = ko.observable(true), criteriaListShow = ko.observable(false),
                 searchBar = params.searchBar ? params.searchBar == "true" : true,
@@ -769,14 +852,14 @@ ko.bindingHandlers.journalControl = {
                     }
 
                     var nudeOptions = data.filterOptions(actualCriteria, {
-                            maxItems: maxItems(), 
-                            skipCount: skipCount(), 
+                            maxItems: maxItems(),
+                            skipCount: skipCount(),
                             searchScript: searchScript,
                             sortBy: sortBy
                         }),
                         config = nudeOptions.pagination,
                         result;
-              
+
                     var tempAdditionalOptions = additionalOptions();
                     _.each(additionalOptions(), function(o) {
                         if (_.contains(nudeOptions, o)) {
@@ -792,7 +875,7 @@ ko.bindingHandlers.journalControl = {
 
                             if (result.length > maxItems()) result = result.slice(0, maxItems());
                             if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
-                            
+
                             result.pagination = config;
                             loading(_.isUndefined(nudeOptions.pagination));
                             return result;
@@ -878,8 +961,8 @@ ko.bindingHandlers.journalControl = {
 
             panel = new YAHOO.widget.Panel(panelId, {
                 //width:          optimalWidth,
-                visible:        false, 
-                fixedcenter:    true,  
+                visible:        false,
+                fixedcenter:    true,
                 draggable:      true,
                 modal:          true,
                 zindex:         5,
@@ -1022,7 +1105,7 @@ ko.bindingHandlers.journalControl = {
                 var filterTab = Dom.get(filterTabId),
                     elementsTab = Dom.get(elementsTabId);
 
-                var filterPage = Dom.get(filterPageId), 
+                var filterPage = Dom.get(filterPageId),
                     elementsPage = Dom.get(elementsPageId),
                     createPage = Dom.get(createPageId);
 
@@ -1102,7 +1185,7 @@ ko.bindingHandlers.journalControl = {
                             criteria([]);
                         }
                     }
-                }); 
+                });
             }
 
 
@@ -1144,9 +1227,9 @@ ko.bindingHandlers.journalControl = {
                     criteriaListShow(!criteriaListShow());
                 },
                 applyCriteria: function(data, event) {
-                    var criteriaList = [], 
+                    var criteriaList = [],
                         selectedCriteria = selectedFilterCriteria();
-                    
+
                     if (selectedCriteria.length == 0) {
                         criteria([])
                     } else {
@@ -1218,8 +1301,8 @@ ko.bindingHandlers.journalControl = {
                             scCallback(node);
                         },
                         cancel: scCallback
-                    }, 
-                    { 
+                    },
+                    {
                         destination: variant.destination(),
                         fieldId: data.name()
                     });
@@ -1233,9 +1316,9 @@ ko.bindingHandlers.journalControl = {
 
 
             if (!Citeck.mobile.isMobileDevice()) {
-                YAHOO.Bubbling.on("change-mobile-mode", function(l, args) { 
+                YAHOO.Bubbling.on("change-mobile-mode", function(l, args) {
                     var itemsCount = args[1].mobileMode ? 5 : 10;
-                    if (itemsCount != maxItems()) { 
+                    if (itemsCount != maxItems()) {
                         pageNumber(1);
                         maxItems(itemsCount);
                     };
@@ -1250,12 +1333,12 @@ ko.bindingHandlers.journalControl = {
                         if (!data.multiple()) selectedElements.removeAll();
                         selectedElements.push(args[1].value);
                     }
-                    
+
                     criteria(_.clone(criteria()));
                 }
             });
         }
-        
+
         panel.show();
         panel.center();
 
@@ -1323,7 +1406,7 @@ CreateVariantsByView
         resultsMap: { createVariants: 'createVariants' }
     }))
     ;
- 
+
 CreateObjectButton
     .key('id', String)
 
@@ -1360,12 +1443,12 @@ CreateObjectButton
         } else {
             Citeck.forms.dialog(createVariant.type(), createVariant.formId(),
                 {
-                    scope: this, 
+                    scope: this,
                     fn: function(value) {
-                        if (this.constraint() && _.isFunction(this.constraint())) {                       
-                            var constraint = ko.computed(this.constraint(), { 
-                                oldValue: this.scope().multipleValues(), 
-                                newValue: value 
+                        if (this.constraint() && _.isFunction(this.constraint())) {
+                            var constraint = ko.computed(this.constraint(), {
+                                oldValue: this.scope().multipleValues(),
+                                newValue: value
                             });
 
                             koutils.subscribeOnce(ko.pureComputed(function() {
@@ -1374,7 +1457,7 @@ CreateObjectButton
                             }), function(result) {
                                 if (_.isBoolean(result)) {
                                     if (result) { this.scope().lastValue(value); }
-                                    else { 
+                                    else {
                                         Alfresco.util.PopupManager.displayMessage({
                                             text: this.constraintMessage() || Alfresco.util.message("create-object.message")
                                         });
@@ -1385,19 +1468,19 @@ CreateObjectButton
                             this.scope().lastValue(value);
                         }
 
-                        YAHOO.Bubbling.fire("object-was-created", { 
+                        YAHOO.Bubbling.fire("object-was-created", {
                             fieldId: this.scope().name(),
                             value: value
                         });
                     }
-                }, 
-                { 
-                    title: this.buttonTitle() + ": " + createVariant.title(), 
+                },
+                {
+                    title: this.buttonTitle() + ": " + createVariant.title(),
                     destination: createVariant.destination(),
                     parentRuntime: this.parentRuntime(),
                     virtualParent: this.virtualParent()
                 }
-            ); 
+            );
         }
     })
     ;
@@ -1405,7 +1488,7 @@ CreateObjectButton
 
 ko.components.register('createObjectButton', {
     viewModel: CreateObjectButton,
-    template: 
+    template:
        '<!-- ko if: protected() || createVariants().length == 0 --> \
             <button class="create-object-button" disabled="disabled" data-bind="text: buttonTitle"></button> \
         <!-- /ko --> \
@@ -1479,10 +1562,10 @@ ko.components.register("autocomplete", {
         this.hasMore = ko.observable(false);
         this.skipCount = ko.observable(0);
 
-        
+
         // computed
         this.label = ko.pureComputed(function() {
-            return self.value() ? self.data.getValueTitle(self.value()) : self.labels.label; 
+            return self.value() ? self.data.getValueTitle(self.value()) : self.labels.label;
         });
 
         this.searchInput = ko.computed({
@@ -1506,14 +1589,14 @@ ko.components.register("autocomplete", {
         }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
         this.options = ko.pureComputed(function() {
-            var result = self.data.filterOptions(self.criteria(), { 
-                maxItems: 10, 
-                skipCount: self.skipCount(), 
+            var result = self.data.filterOptions(self.criteria(), {
+                maxItems: 10,
+                skipCount: self.skipCount(),
                 searchScript: self.searchScript
             });
             if (result.pagination) return result;
         });
-        
+
         this.visibleOptions = ko.pureComputed(function() {
             if (self.options() && self.options().pagination) {
                 self.cache.options = self.cache.options.concat(self.options());
@@ -1530,16 +1613,16 @@ ko.components.register("autocomplete", {
         this.criteria.subscribe(function(newValue) {
             self.skipCount(0);
             self.cache.options = [];
-        });      
-         
+        });
+
         this.options.subscribe(function(newValue) {
             if (newValue && newValue.pagination) {
                 self.hasMore(newValue.pagination.hasMore);
                 self.searching(false);
 
-                if (newValue.length > 0 && self.skipCount() == 0) 
+                if (newValue.length > 0 && self.skipCount() == 0)
                     self.highlightedElement(newValue[0]);
-                      
+
             }
         });
 
@@ -1548,11 +1631,11 @@ ko.components.register("autocomplete", {
         this.toggleContainer = function(data, event) { if (event.which == 1) self.containerVisibility(!self.containerVisibility()); };
         this.renderHandler = function(element, data) { if(this.foreach()[this.foreach().length - 1] === data) self.searching(false); };
 
-        this.more = function(element, data) { 
+        this.more = function(element, data) {
             self.skipCount(self.skipCount() + 10);
             self.searchFocused(true);
         };
-        
+
         this.selectItem = function(data, event) {
             if (event.which == 1) {
                 self.value(data);
@@ -1580,9 +1663,9 @@ ko.components.register("autocomplete", {
                 if (event.keyCode == 38 || event.keyCode == 40) {
                     var selectedIndex = self.visibleOptions().indexOf(self.highlightedElement()),
                         nextSelectIndex = event.keyCode == 38 ? selectedIndex - 1 : selectedIndex + 1;
-                    
-                    if (selectedIndex != -1 && self.visibleOptions()[nextSelectIndex]) { 
-                        self.highlightedElement(self.visibleOptions()[nextSelectIndex]) 
+
+                    if (selectedIndex != -1 && self.visibleOptions()[nextSelectIndex]) {
+                        self.highlightedElement(self.visibleOptions()[nextSelectIndex])
                     };
 
                     // TODO:
@@ -1622,7 +1705,7 @@ ko.components.register("autocomplete", {
             self.containerVisibility(false);
         });
     },
-    template: 
+    template:
        '<!-- ko if: disabled -->\
             <div class="autocomplete-select disabled" tabindex="0">\
                 <span class="autocomplete-value" data-bind="text: label"></span>\
@@ -1690,7 +1773,7 @@ ko.components.register("autocomplete", {
 ko.components.register("select2", {
     viewModel: function(params) {
         var self = this;
-        kocomponents.initializeParameters.call(this, params);      
+        kocomponents.initializeParameters.call(this, params);
 
         this.id = this.element.id;
 
@@ -1816,12 +1899,12 @@ ko.components.register("select2", {
         this.label = ko.pureComputed(function() {
             return this.value() ? this.getValueTitle(this.value())() : this.localization.label;
         }, this);
-      
+
         this.visibleOptions = ko.pureComputed(function() {
             var preparedOptions = (this.forceOptions ? this.forceOptions() : this.options()) || [];
 
             if (this.additionalOptions().length) {
-                preparedOptions = _.union(preparedOptions, this.additionalOptions()); 
+                preparedOptions = _.union(preparedOptions, this.additionalOptions());
             }
 
             if (this.criteria().length) {
@@ -1829,7 +1912,7 @@ ko.components.register("select2", {
                     preparedOptions = _.filter(preparedOptions, function(option) {
                         var attributeComputed = self.optionFilter ? self.optionFilter(option, criterion.attribute) : option.impl().attribute(criterion.attribute),
                             attributeValue = self.optionFilter ? attributeComputed() : attributeComputed.value();
-                        
+
                         if (attributeValue != null) {
                             if (criterion.predicate.indexOf("string") != -1) {
                                 attributeValue = attributeValue.toLowerCase();
@@ -1887,7 +1970,7 @@ ko.components.register("select2", {
                     })
                 });
             }
-               
+
             if (this.searchQuery()) {
                 preparedOptions = _.filter(preparedOptions, function(option) {
                     var searchString = self.searchQuery().toLowerCase(),
@@ -1942,7 +2025,7 @@ ko.components.register("select2", {
         // -----------------------
 
         this.searchQuery.subscribe(function() { self.count(self.step); });
-        
+
         if (this._listMode) {
             this.containerVisibility.subscribe(function() { self.searchFocused(true); });
             this.visibleOptions.subscribe(function(newValue) { if (newValue.length > 0) self.highlightedElement(newValue[0]); });
@@ -2080,8 +2163,8 @@ ko.components.register("select2", {
                 // initialize panel
                 data.panel = new YAHOO.widget.Panel(data.id + "-panel", {
                     width:          optimalWidth,
-                    visible:        false, 
-                    fixedcenter:    true,  
+                    visible:        false,
+                    fixedcenter:    true,
                     draggable:      true,
                     modal:          true,
                     zindex:         5,
@@ -2271,8 +2354,8 @@ ko.components.register("select2", {
                                 scCallback(node);
                             },
                             cancel: scCallback
-                        }, 
-                        { 
+                        },
+                        {
                             destination: variant.destination(),
                             fieldId: data.name()
                         });
@@ -2295,24 +2378,24 @@ ko.components.register("select2", {
                         var newCriterion = _.clone(data);
                         newCriterion.value = ko.observable();
                         newCriterion.predicateValue = ko.observable();
-                        
+
                         if (self.selectedFilterCriteria.indexOf(newCriterion) != -1)
                             self.selectedFilterCriteria.push(newCriterion);
 
                         // hide drop-down menu
                         self._criteriaListShow(!self._criteriaListShow());
                     },
-                    applyCriteria: function(data, event) {                       
+                    applyCriteria: function(data, event) {
                         if (self.selectedFilterCriteria().length == 0) {
                             self.criteria([]);
                             return;
-                        } 
+                        }
 
                         self.criteria(_.map(_.filter(self.selectedFilterCriteria(), function(c) {
                             if (c.predicateValue() && c.predicateValue().indexOf("empty") != -1) return c.predicateValue() && c.name();
                             return c.value() && c.predicateValue() && c.name();
                         }), function(c) {
-                            return { attribute: c.name(), predicate: c.predicateValue(), value: c.value() }; 
+                            return { attribute: c.name(), predicate: c.predicateValue(), value: c.value() };
                         }));
                     },
                     addFilterCriterion: function(data, event) {
@@ -2321,7 +2404,7 @@ ko.components.register("select2", {
                     filter: function(data, event) {
                         var filterTab = Dom.get(filterTabId);
 
-                        var filterPage = Dom.get(filterPageId), 
+                        var filterPage = Dom.get(filterPageId),
                             elementsPage = Dom.get(elementsPageId),
                             createPage = Dom.get(createPageId);
 
@@ -2360,7 +2443,7 @@ ko.components.register("select2", {
                     columns: data.defaultVisibleAttributes,
                     afterSelectionCallback: function(data, event) {
                         if (!self.multiple() && event.type == "dblclick") {
-                            self._addValues([ data ]); 
+                            self._addValues([ data ]);
                             self.panel.hide();
                             self.selectedElements.removeAll();
                         }
@@ -2376,13 +2459,13 @@ ko.components.register("select2", {
                         self.panel.hide();
                         self.selectedElements.removeAll();
                     },
-                    cancel: function(el, data) { 
+                    cancel: function(el, data) {
                         self.panel.hide();
                         self.selectedElements.removeAll();
                     }
                 }, data.panel.footer);
             }
-            
+
             data.panel.show();
         }
 
@@ -2467,7 +2550,7 @@ ko.components.register("select2", {
 // FILE UPLOAD
 // -----------
 
-ko.bindingHandlers.fileUploadControl = {                                                                    
+ko.bindingHandlers.fileUploadControl = {
     init: function(element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
@@ -2527,13 +2610,13 @@ ko.bindingHandlers.fileUploadControl = {
                         console.log("loaded failure")
                         loadedFiles(loadedFiles() + 1);
                     }, false);
-                    
+
                     // request finished
                     request.addEventListener("readystatechange", function(event) {
                         var target = event.target;
                         if (target.readyState == 4) {
                             var result = JSON.parse(target.responseText || "{}");
-                            
+
                             if (target.status == 200) {
                                 // push new file to uploaded files library
                                 if (multiple()) {
@@ -2639,9 +2722,9 @@ ko.bindingHandlers.orgstructControl = {
 
             if (!orgstructPanel) {
                 orgstructPanel = new YAHOO.widget.Panel(orgstructPanelId, {
-                    width:          "800px", 
-                    visible:        false, 
-                    fixedcenter:    true,  
+                    width:          "800px",
+                    visible:        false,
+                    fixedcenter:    true,
                     draggable:      true,
                     modal:          true,
                     zindex:         5,
@@ -2649,10 +2732,10 @@ ko.bindingHandlers.orgstructControl = {
                 });
 
                 // hide dialog on click 'esc' button
-                orgstructPanel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, { 
+                orgstructPanel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
                     fn: orgstructPanel.hide,
                     scope: orgstructPanel,
-                    correctScope: true 
+                    correctScope: true
                 }));
 
                 var orgstructSearchBoxId = orgstructPanelId + "-searchBox",
@@ -2688,9 +2771,9 @@ ko.bindingHandlers.orgstructControl = {
                 orgstructPanel.render(document.body);
 
                 // initialize resize
-                resize = new YAHOO.util.Resize("first-panel", { 
+                resize = new YAHOO.util.Resize("first-panel", {
                     handles: ['r'],
-                    minWidth: 200, 
+                    minWidth: 200,
                     maxWidth: 600
                 });
 
@@ -2750,7 +2833,7 @@ ko.bindingHandlers.orgstructControl = {
                     loadRootNodes: function(tree, scope, query) {
                         YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query), {
                             success: function(oResponse) {
-                                var results = YAHOO.lang.JSON.parse(oResponse.responseText), 
+                                var results = YAHOO.lang.JSON.parse(oResponse.responseText),
                                     rootNode = tree.getRoot(), treeNode,
                                     expanded = true;
 
@@ -2766,7 +2849,7 @@ ko.bindingHandlers.orgstructControl = {
                                     }
                                 }
 
-                                tree.draw(); 
+                                tree.draw();
                             },
 
                             failure: function(oResponse) {
@@ -2831,7 +2914,7 @@ ko.bindingHandlers.orgstructControl = {
                         });
 
                         // return if element exists
-                        if (existsSelectedItems.indexOf(textNode.data.nodeRef) != -1) return false; 
+                        if (existsSelectedItems.indexOf(textNode.data.nodeRef) != -1) return false;
 
                         if (options.allowedAuthorityType.indexOf(object.authorityType) != -1) {
                             if (object.authorityType == "GROUP") {
@@ -2847,10 +2930,10 @@ ko.bindingHandlers.orgstructControl = {
 
                             if (existsSelectedItems.length == 0 || (existsSelectedItems.length > 0 && multiple())) {
                                 $(this.selectedItems).append(createSelectedObject({
-                                    id: object.nodeRef, 
+                                    id: object.nodeRef,
                                     label: object[tree.fn.getNodeLabelKey(object)] || object.displayName,
                                     aType: textNode.data.authorityType,
-                                    gType: textNode.data.groupType 
+                                    gType: textNode.data.groupType
                                 }));
 
                                 // remove selectable state
@@ -2869,7 +2952,7 @@ ko.bindingHandlers.orgstructControl = {
                     onSearch: function(event) {
                         if(event.which == 13) {
                             event.stopPropagation();
-                            
+
                             var input = event.target,
                                 query = input.value;
 
@@ -2903,12 +2986,12 @@ ko.bindingHandlers.orgstructControl = {
                 tree.fn.loadRootNodes(tree, tree);
 
                 // Register tree-level listeners
-                tree.subscribe("clickEvent", tree.fn.onNodeClicked, { 
-                    selectedItems: selectedItems, 
+                tree.subscribe("clickEvent", tree.fn.onNodeClicked, {
+                    selectedItems: selectedItems,
                     multiple: multiple
                 }, true);
 
-                // search listener 
+                // search listener
                 Event.addListener(orgstructSearchId, "keypress", tree.fn.onSearch, tree, true);
 
                 // value subscribe
@@ -2938,7 +3021,7 @@ ko.bindingHandlers.orgstructControl = {
 
                     var selectedItemsNodeRefs = [];
 
-                    $("li.selected-object", selectedItems).each(function(index) { 
+                    $("li.selected-object", selectedItems).each(function(index) {
                         selectedItemsNodeRefs.push(this.id);
                     });
 
@@ -3015,13 +3098,13 @@ function updatedControlValue(valueObject, ulSelected, tree) {
         }
 
         for (var i in valueArray) {
-            YAHOO.util.Connect.asyncRequest("GET", Alfresco.constants.PROXY_URI + "api/orgstruct/authority?nodeRef=" + valueArray[i], 
+            YAHOO.util.Connect.asyncRequest("GET", Alfresco.constants.PROXY_URI + "api/orgstruct/authority?nodeRef=" + valueArray[i],
                 {
                     success: function(response) {
                         var results = YAHOO.lang.JSON.parse(response.responseText);
                         if (results) {
-                            var newLi = createSelectedObject({ 
-                                    id: results.nodeRef, 
+                            var newLi = createSelectedObject({
+                                    id: results.nodeRef,
                                     label: results[tree.fn.getNodeLabelKey(results)] || results.displayName,
                                     aType: results.authorityType,
                                     gType: results.groupType
@@ -3061,14 +3144,14 @@ function updateList(list, eachCallback) {
         for (var i in list) {
             newList[i] = eachCallback(list[i]);
         }
-    } 
+    }
 
     return newList;
 }
 
 function deleteNode(nodeRef, callback) {
-    YAHOO.util.Connect.asyncRequest('DELETE', 
-                                    Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef, 
+    YAHOO.util.Connect.asyncRequest('DELETE',
+                                    Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef,
                                     callback);
 }
 
@@ -3134,7 +3217,7 @@ function attributeValue(node, attributeName, callback) {
     } else {
         getAttributeObservable(node, attributeName).subscribe(function(newAttributeValue) {
             callback(newAttributeValue);
-        }) 
+        })
     }
 }
 
