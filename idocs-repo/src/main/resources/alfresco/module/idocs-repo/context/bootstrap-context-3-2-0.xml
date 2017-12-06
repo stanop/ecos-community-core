@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-2-0" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.2.0" />
+        <property name="appliesFromVersion" value="3.2.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-2-0" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.2.0" />
+        <property name="appliesFromVersion" value="3.2.0" />
+    </bean>
+
+    <bean id="idocs.module-component.update-case-process-cardlets" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="update-case-process-cardlets" />
+        <property name="description" value="Update Case Process Cardlets" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.cardlets-tabs" />
+                <ref bean="idocs.module-component.case-process-cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-process-mode</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ecos-community.module-component.fix-due-date-filters" parent="idocs.import-scripts.3-2-0">
+        <property name="name" value="fix-due-date-filters"/>
+        <property name="description" value="fix-due-date-filters"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-tasks"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="nodes">
+                    <list>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:filters/journal:task-duedate-today/journal:criterion" />
+                            <entry key="attributes">
+                                <map><entry key="journal:criterionValue"><value><![CDATA[#{'#'}{.now?date?iso_local}]]></value></entry></map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:filters/journal:task-duedate-tommorrow/journal:criterion" />
+                            <entry key="attributes">
+                                <map><entry key="journal:criterionValue"><value><![CDATA[#{'#'}{incrementDate(.now,24*3600000)?date?iso_local}]]></value></entry></map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:filters/journal:task-duedate-next7days/journal:criterion-1" />
+                            <entry key="attributes">
+                                <map><entry key="journal:criterionValue"><value><![CDATA[#{'#'}{incrementDate(.now,24*3600000)?date?iso_local}]]></value></entry></map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:filters/journal:task-duedate-next7days/journal:criterion-2" />
+                            <entry key="attributes">
+                                <map><entry key="journal:criterionValue"><value><![CDATA[#{'#'}{incrementDate(.now,7*24*3600000)?date?iso_local}]]></value></entry></map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:filters/journal:task-duedate-past/journal:criterion" />
+                            <entry key="attributes">
+                                <map><entry key="journal:criterionValue"><value><![CDATA[#{'#'}{incrementDate(.now,-24*3600000)?date?iso_local}]]></value></entry></map>
+                            </entry>
+                        </map>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.actualDefaultSLADuration" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="actual-default-sla-duration" />
+        <property name="description" value="actual-default-sla-duration" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/actual-default-sla-duration</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.currencies" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="Currency data" />
+        <property name="description" value="Currency data" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.main-journals.currency" />
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="true" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists/cm:currency</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/currency/currency.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.script.fixing-belorusian-currency-code" parent="idocs.import-scripts.3-2-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="fixing-belorusian-currency-code.js" />
+        <property name="description" value="Fixing belorusian currency code" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/fixing-belorusian-currency-code.js" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.currency.data" />
+            </list>
+        </property>
+    </bean>
+
+</beans>
