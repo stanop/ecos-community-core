@@ -31,7 +31,8 @@
             return result;
         },
         write: function(newValue) {
-            if ( new Date(newValue) !== 'Invalid Date' && !isNaN(new Date(newValue)) && (new Date(newValue) > new Date('1000-01-01'))) {
+            var newDate = new Date(newValue);
+            if ( newDate !== 'Invalid Date' && !isNaN(newDate) && (newDate > new Date('1000-01-01'))) {
                 value(newValue);
             }
         }
