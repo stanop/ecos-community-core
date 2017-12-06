@@ -33,6 +33,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StopWatch;
+import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
 import ru.citeck.ecos.cmmn.service.CaseXmlService;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.CaseStatusService;
@@ -43,6 +44,7 @@ import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
 
@@ -86,6 +88,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     }
 
     private void copyFromTemplate(final NodeRef caseNode) {
+
         if (repositoryState.isBootstrapping()
                 || !isAllowedCaseNode(caseNode)
                 || !getFilledCaseNodes().add(caseNode)) {
@@ -96,32 +99,34 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
             logger.debug("Applying template to node. nodeRef=" + caseNode);
         }
 
-        Runnable job = () -> {
-            itemsUpdateState.startUpdate(CaseTemplateBehavior.class, caseNode);
-            itemsUpdateState.endUpdate(CaseTemplateBehavior.class, caseNode, true, false);
-            copyFromTemplateImpl(caseNode);
-        };
-        Runnable errorHandler = () -> {
+        Consumer<Exception> errorHandler = e -> {
             itemsUpdateState.endUpdate(CaseTemplateBehavior.class, caseNode, true, true);
             caseStatusService.setStatus(caseNode, STATUS_PROCESS_START_ERROR);
         };
 
-        TransactionUtils.doAfterCommit(job, errorHandler);
-    }
-
-    private void copyFromTemplateImpl(final NodeRef caseNode) {
-
         StopWatch stopWatch = new StopWatch(CaseTemplateBehavior.class.getName());
 
-        stopWatch.start("copyFromTemplate caseRef: " + caseNode);
-        caseXmlService.fillCaseFromTemplate(caseNode);
-        stopWatch.stop();
+        TransactionUtils.doAfterCommit(() -> {
 
-        stopWatch.start("fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
-        eventService.fireEvent(caseNode, ICaseEventModel.CONSTR_CASE_CREATED);
-        stopWatch.stop();
+            itemsUpdateState.startUpdate(CaseTemplateBehavior.class, caseNode);
 
-        logger.info(stopWatch.prettyPrint());
+            stopWatch.start("copyFromTemplate caseRef: " + caseNode);
+            caseXmlService.fillCaseFromTemplate(caseNode);
+            stopWatch.stop();
+
+            TransactionUtils.doAfterCommit(() -> {
+
+                itemsUpdateState.endUpdate(CaseTemplateBehavior.class, caseNode, true, false);
+
+                stopWatch.start("fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
+                eventService.fireEvent(caseNode, ICaseEventModel.CONSTR_CASE_CREATED);
+                stopWatch.stop();
+
+                logger.info(stopWatch.prettyPrint());
+
+            }, errorHandler);
+
+        }, errorHandler);
     }
 
     private boolean isAllowedCaseNode(NodeRef caseNode) {
