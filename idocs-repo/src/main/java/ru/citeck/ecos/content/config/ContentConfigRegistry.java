@@ -93,7 +93,7 @@ public class ContentConfigRegistry<T> {
                        .transactional()
                        .query(searchService)
                        .stream()
-                       .map(r -> configDataByNode.computeIfAbsent(r, this::getConfigImpl))
+                       .map(this::getConfigImpl)
                        .collect(Collectors.toList());
     }
 

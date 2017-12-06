@@ -73,6 +73,8 @@
     <bean id="caseTemplateRegistry" class="ru.citeck.ecos.cmmn.service.CaseTemplateRegistry">
         <property name="configNodeType" value="{http://www.citeck.ru/model/icase/1.0}template" />
         <property name="classField" value="{http://www.citeck.ru/model/icase/1.0}caseType" />
+        <property name="typeField" value="{http://www.citeck.ru/model/icase/1.0}caseEcosType" />
+        <property name="kindField" value="{http://www.citeck.ru/model/icase/1.0}caseEcosKind" />
         <property name="rootNode" value="/app:company_home/app:dictionary/cm:case-templates" />
         <property name="configDAO" ref="caseTemplateConfigDAO" />
     </bean>
