@@ -74,12 +74,11 @@ public class CMMNUtils implements ContentValueConverter {
 
     public static final QName QNAME_CASE_ECOS_TYPE = new QName(NAMESPACE, "caseEcosType");
     public static final QName QNAME_CASE_ECOS_KIND = new QName(NAMESPACE, "caseEcosKind");
+    public static final QName QNAME_CASE_TYPE = new QName(NAMESPACE, "caseType");
+    public static final QName QNAME_CASE_CONDITION = new QName(NAMESPACE, "condition");
 
     private static final QName QNAME_UE_CONFIRMATION_MESSAGE = new QName(NAMESPACE, "confirmationMessage");
     private static final QName QNAME_UE_ADDITIONAL_DATA_TYPE = new QName(NAMESPACE, "additionalDataType");
-
-    private static final QName QNAME_CASE_TYPE = new QName(NAMESPACE, "caseType");
-    private static final QName QNAME_CASE_CONDITION = new QName(NAMESPACE, "condition");
 
     private static final QName QNAME_CONFIRMERS = new QName(NAMESPACE, "confirmers");
     private static final QName QNAME_PERFORMER = new QName(NAMESPACE, "performer");
