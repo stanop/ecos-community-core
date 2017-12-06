@@ -63,7 +63,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     }
 
     public OperatorExpected empty(QName field) {
-        return start().isNull(field).or().isUnset(field).end();
+        return open().isNull(field).or().isUnset(field).close();
     }
 
     public OperatorExpected exact(QName field, Serializable value) {
@@ -131,12 +131,12 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
-    public OperandExpected start() {
+    public OperandExpected open() {
         group.startGroup();
         return this;
     }
 
-    public OperatorExpected end() {
+    public OperatorExpected close() {
         group.stopGroup();
         return this;
     }
@@ -149,6 +149,10 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     public NodeRef queryOne(SearchService searchService) {
         List<NodeRef> refs = query(searchService);
         return refs.isEmpty() ? null : refs.get(0);
+    }
+
+    public String getQuery() {
+        return group.getQuery();
     }
 
     public List<NodeRef> query(SearchService searchService) {
@@ -425,7 +429,9 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         @Override
         public void toString(StringBuilder builder) {
-            builder.append('(').append(term).append(')');
+            builder.append('(');
+            term.toString(builder);
+            builder.append(')');
         }
 
         @Override

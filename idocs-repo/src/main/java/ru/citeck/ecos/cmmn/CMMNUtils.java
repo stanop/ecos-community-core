@@ -16,21 +16,15 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.ParameterCheck;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
-import org.xml.sax.SAXException;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.cmmn.model.*;
+import ru.citeck.ecos.content.config.converter.ContentValueConverter;
 import ru.citeck.ecos.model.*;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -42,7 +36,8 @@ import java.util.regex.Pattern;
  * @author deathNC
  * @author Maxim Strizhov (maxim.strizhov@citeck.ru)
  */
-public class CMMNUtils {
+@Component
+public class CMMNUtils implements ContentValueConverter {
 
     private static final String TRANSACTION_ID_BY_NODEREF = CMMNUtils.class.getName() + ".id-storage";
     private static final String TRANSACTION_ID_COUNTER = CMMNUtils.class.getName() + ".id-counter";
@@ -51,15 +46,6 @@ public class CMMNUtils {
             Pattern.compile("(?ui)(workspace://SpacesStore/)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     public static final Logger log = LoggerFactory.getLogger(CMMNUtils.class);
-
-    private static final String SCHEMA_LOCATION = "alfresco/module/idocs-repo/cmmn/";
-    private static final String[] SCHEMA_FILES = {
-            "CMMN11.xsd",
-            "CMMN11CaseModel.xsd",
-            "CMMNDI11.xsd",
-            "DC.xsd",
-            "DI.xsd"
-    };
 
     private static final String CASE_ROLES_ROOT_PATH = "app:company_home/app:dictionary/cm:dataLists/cm:case-role";
 
@@ -86,12 +72,13 @@ public class CMMNUtils {
     public static final QName QNAME_ENTRY_SENTRY = new QName(NAMESPACE, "entrySentry");
     public static final QName QNAME_EXIT_SENTRY = new QName(NAMESPACE, "exitSentry");
 
+    public static final QName QNAME_CASE_ECOS_TYPE = new QName(NAMESPACE, "caseEcosType");
+    public static final QName QNAME_CASE_ECOS_KIND = new QName(NAMESPACE, "caseEcosKind");
+
     private static final QName QNAME_UE_CONFIRMATION_MESSAGE = new QName(NAMESPACE, "confirmationMessage");
     private static final QName QNAME_UE_ADDITIONAL_DATA_TYPE = new QName(NAMESPACE, "additionalDataType");
 
     private static final QName QNAME_CASE_TYPE = new QName(NAMESPACE, "caseType");
-    private static final QName QNAME_CASE_ECOS_TYPE = new QName(NAMESPACE, "caseEcosType");
-    private static final QName QNAME_CASE_ECOS_KIND = new QName(NAMESPACE, "caseEcosKind");
     private static final QName QNAME_CASE_CONDITION = new QName(NAMESPACE, "condition");
 
     private static final QName QNAME_CONFIRMERS = new QName(NAMESPACE, "confirmers");
@@ -110,11 +97,11 @@ public class CMMNUtils {
     public static final Map<QName, org.alfresco.service.namespace.QName> STATUS_ASSOCS_MAPPING;
     public static final Map<QName, org.alfresco.service.namespace.QName> EVENT_PROPS_MAPPING;
 
-    private static NodeRef caseRolesRoot;
+    private NodeRef caseRolesRoot;
 
-    private static ServiceRegistry serviceRegistry;
-    private static DictionaryService dictionaryService;
-    private static NodeService nodeService;
+    private ServiceRegistry serviceRegistry;
+    private DictionaryService dictionaryService;
+    private NodeService nodeService;
 
     static {
         Map<QName, org.alfresco.service.namespace.QName> mapping = new HashMap<>();
@@ -150,19 +137,19 @@ public class CMMNUtils {
         STATUS_ASSOCS_MAPPING = Collections.unmodifiableMap(mapping);
     }
 
-    public static String extractIdFromNodeRef(NodeRef nodeRef) {
+    public String extractIdFromNodeRef(NodeRef nodeRef) {
         return nodeRef.toString().replaceAll("workspace://SpacesStore/", "workspace-SpacesStore-");
     }
 
-    public static NodeRef extractNodeRefFromCmmnId(String id) {
+    public NodeRef extractNodeRefFromCmmnId(String id) {
         return new NodeRef(convertCmmnIdToNodeRefString(id));
     }
 
-    public static String convertCmmnIdToNodeRefString(String id) {
+    public String convertCmmnIdToNodeRefString(String id) {
         return id.replaceAll("workspace-SpacesStore-", "workspace://SpacesStore/");
     }
 
-    public static String convertNodeRefToId(NodeRef nodeRef) {
+    public String convertNodeRefToId(NodeRef nodeRef) {
         ParameterCheck.mandatory("nodeRef", nodeRef);
         Map<NodeRef, String> idByNodeRef = TransactionalResourceHelper.getMap(TRANSACTION_ID_BY_NODEREF);
         String id = idByNodeRef.get(nodeRef);
@@ -173,26 +160,11 @@ public class CMMNUtils {
         return id;
     }
 
-    public static String getNextDocumentId() {
+    public String getNextDocumentId() {
         return String.format("id-%d", TransactionalResourceHelper.incrementCount(TRANSACTION_ID_COUNTER));
     }
 
-    public static Unmarshaller createUnmarshaller(String packageName) throws JAXBException, SAXException, IOException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(packageName);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        unmarshaller.setSchema(getCmmnSchema());
-        return unmarshaller;
-    }
-
-    public static Marshaller createMarshaller(String packageName) throws JAXBException, SAXException, IOException {
-        JAXBContext context = JAXBContext.newInstance(packageName);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setSchema(getCmmnSchema());
-        return marshaller;
-    }
-
-    public static Serializable convertValueForRepo(org.alfresco.service.namespace.QName propertyName, String value) {
+    public Serializable convertValueForRepo(org.alfresco.service.namespace.QName propertyName, String value) {
 
         if (StringUtils.isEmpty(value)) {
             return null;
@@ -228,7 +200,7 @@ public class CMMNUtils {
         return null;
     }
 
-    public static String convertValueForCmmn(org.alfresco.service.namespace.QName propertyName, Serializable value) {
+    public String convertValueForCmmn(org.alfresco.service.namespace.QName propertyName, Serializable value) {
 
         if (value == null) {
             return null;
@@ -244,6 +216,16 @@ public class CMMNUtils {
         return value.toString();
     }
 
+    @Override
+    public String convertToConfigValue(org.alfresco.service.namespace.QName propName, Serializable value) {
+        return convertValueForCmmn(propName, value);
+    }
+
+    @Override
+    public Serializable convertToRepoValue(org.alfresco.service.namespace.QName propName, String value) {
+        return convertValueForRepo(propName, value);
+    }
+
     public static String elementsToString(Iterable<? extends TCmmnElement> elements) {
         StringBuilder sb = new StringBuilder();
         for (TCmmnElement element : elements) {
@@ -255,7 +237,7 @@ public class CMMNUtils {
         return sb.toString();
     }
 
-    public static <T> List<T> stringToElements(String str, Map<String, T> mapping) {
+    public <T> List<T> stringToElements(String str, Map<String, T> mapping) {
         if (StringUtils.isBlank(str)) {
             return Collections.emptyList();
         }
@@ -270,7 +252,7 @@ public class CMMNUtils {
         return result;
     }
 
-    public static List<Sentry> criterionToSentries(List<? extends TCriterion> criterion) {
+    public List<Sentry> criterionToSentries(List<? extends TCriterion> criterion) {
         List<Sentry> result = new ArrayList<>();
         for (TCriterion c : criterion) {
             Object sentry = c.getSentryRef();
@@ -281,62 +263,31 @@ public class CMMNUtils {
         return result;
     }
 
-    private static Schema getCmmnSchema() throws JAXBException, SAXException, IOException {
-        SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        schemaFactory.setResourceResolver(new LSResourceResolver() {
-            @Override
-            public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-                return new CmmnLSInput(type, namespaceURI, publicId, systemId, baseURI) {
-                    @Override
-                    protected byte[] getXsdData(String systemId) {
-                        ClassPathResource schemaResource = new ClassPathResource(SCHEMA_LOCATION + systemId);
-                        try {
-                            InputStream in = schemaResource.getInputStream();
-                            byte[] result = new byte[in.available()];
-                            if (in.read(result) > 0) return result;
-                        } catch (IOException e) {
-                            log.error("Cannot read schema: " + systemId, e);
-                        }
-                        return null;
-                    }
-                };
-            }
-        });
-        StreamSource[] schemaSources = new StreamSource[SCHEMA_FILES.length];
-        for (int i = 0; i < SCHEMA_FILES.length; ++i) {
-            ClassPathResource schemaResource = new ClassPathResource(SCHEMA_LOCATION + SCHEMA_FILES[i]);
-            schemaSources[i] = new StreamSource(schemaResource.getInputStream());
-            schemaSources[i].setSystemId(SCHEMA_FILES[i]);
-            schemaSources[i].setPublicId(SCHEMA_FILES[i]);
-        }
-        return schemaFactory.newSchema(schemaSources);
-    }
-
-    public static boolean isTask(JAXBElement<? extends TPlanItemDefinition> element) {
+    public boolean isTask(JAXBElement<? extends TPlanItemDefinition> element) {
         return element.getValue().getClass().equals(TTask.class);
     }
 
-    public static boolean isProcessTask(JAXBElement<? extends TPlanItemDefinition> element) {
+    public boolean isProcessTask(JAXBElement<? extends TPlanItemDefinition> element) {
         return element.getValue().getClass().equals(TProcessTask.class);
     }
 
-    public static boolean isStage(JAXBElement<? extends TPlanItemDefinition> element) {
+    public boolean isStage(JAXBElement<? extends TPlanItemDefinition> element) {
         return element.getValue().getClass().equals(Stage.class);
     }
 
-    public static boolean isTimer(JAXBElement<? extends TPlanItemDefinition> element) {
+    public boolean isTimer(JAXBElement<? extends TPlanItemDefinition> element) {
         return element.getValue().getClass().equals(TTimerEventListener.class);
     }
 
-    public static QName convertToXMLQName(org.alfresco.service.namespace.QName alfrescoQName) {
+    public QName convertToXMLQName(org.alfresco.service.namespace.QName alfrescoQName) {
         return new QName(alfrescoQName.getNamespaceURI(), alfrescoQName.getLocalName().replace(':', '.'));
     }
 
-    public static org.alfresco.service.namespace.QName convertFromXMLQName(QName qName) {
+    public org.alfresco.service.namespace.QName convertFromXMLQName(QName qName) {
         return org.alfresco.service.namespace.QName.createQName(qName.getNamespaceURI(), qName.getLocalPart().replace('.', ':'));
     }
 
-    private static NodeRef getByPath(String path) {
+    private NodeRef getByPath(String path) {
         NamespaceService namespaceService = serviceRegistry.getNamespaceService();
         SearchService searchService = serviceRegistry.getSearchService();
 
@@ -350,14 +301,14 @@ public class CMMNUtils {
         return result;
     }
 
-    public static NodeRef getCaseRolesRoot() {
+    public NodeRef getCaseRolesRoot() {
         if (caseRolesRoot == null) {
             caseRolesRoot = getByPath(CASE_ROLES_ROOT_PATH);
         }
         return caseRolesRoot;
     }
 
-    public static NodeRef getCaseRoleById(String id) {
+    public NodeRef getCaseRoleById(String id) {
         if (id == null) {
             return null;
         }
@@ -375,9 +326,10 @@ public class CMMNUtils {
         return null;
     }
 
-    public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        CMMNUtils.serviceRegistry = serviceRegistry;
-        dictionaryService = serviceRegistry.getDictionaryService();
-        nodeService = serviceRegistry.getNodeService();
+    @Autowired
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.nodeService = serviceRegistry.getNodeService();
     }
 }

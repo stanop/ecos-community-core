@@ -21,12 +21,11 @@ public class CaseTemplateRegistry extends TypeKindConfigRegistry<Definitions> {
     private static final String SCRIPT_ENGINE = "javascript";
     private ScriptService scriptService;
 
-    public Definitions getDefinitionForCase(NodeRef caseRef) {
-        ConfigData<Definitions> config = getConfigByNode(caseRef);
-        if (config != null && evalCondition(config.getNodeRef(), caseRef)) {
-            return config.getData();
-        }
-        return null;
+    public Optional<Definitions> getDefinitionForCase(NodeRef caseRef) {
+        Optional<ConfigData<Definitions>> config = getConfigByNode(caseRef);
+        return config.filter(c -> c.getData().isPresent()
+                                  && evalCondition(c.getNodeRef(), caseRef))
+                     .flatMap(ConfigData::getData);
     }
 
     private boolean evalCondition(NodeRef templateRef, NodeRef caseNode) {

@@ -1,35 +1,59 @@
 package ru.citeck.ecos.content.config;
 
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.model.ContentModel;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import ru.citeck.ecos.content.config.parser.ConfigParser;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.namespace.QName;
 
 import java.io.InputStream;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class ConfigData<T> {
 
     private NodeRef nodeRef;
-    private long lastModified;
     private T data;
+
+    private long lastModified;
+    private ContentConfigRegistry<T> registry;
 
     public NodeRef getNodeRef() {
         return nodeRef;
     }
 
-    public T getData() {
-        return data;
+    public Optional<T> getData() {
+        return Optional.ofNullable(data);
     }
 
     public long getLastModified() {
         return lastModified;
     }
 
-    ConfigData<T> updateData(ConfigParser<T> parser, ContentService contentService) {
+    public void changeData(Consumer<T> consumer) {
 
-        ContentReader reader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
+        if (data != null) {
+
+            synchronized (this) {
+
+                consumer.accept(data);
+
+                QName field = registry.getContentFieldName();
+                ContentWriter writer = registry.getContentService().getWriter(nodeRef, field, true);
+
+                registry.getConfigDAO().write(data, writer);
+
+                updateData();
+            }
+        }
+    }
+
+    boolean updateData() {
+
+        if (nodeRef == null || !registry.getNodeService().exists(nodeRef)) {
+            return false;
+        }
+
+        ContentReader reader = registry.getContentService().getReader(nodeRef, registry.getContentFieldName());
+
         long contentLastModified = reader.getLastModified();
 
         if (lastModified < contentLastModified) {
@@ -40,7 +64,7 @@ public class ConfigData<T> {
 
                     try (InputStream in = reader.getContentInputStream()) {
 
-                        data = parser.parse(in);
+                        data = registry.getConfigDAO().read(in);
                         lastModified = contentLastModified;
 
                     } catch (Exception e) {
@@ -54,12 +78,13 @@ public class ConfigData<T> {
             lastModified = 0;
         }
 
-        return this;
+        return true;
     }
 
-    ConfigData(NodeRef nodeRef) {
+    ConfigData(NodeRef nodeRef, ContentConfigRegistry<T> owner) {
         this.nodeRef = nodeRef;
         this.lastModified = 0;
         this.data = null;
+        this.registry = owner;
     }
 }

@@ -11,7 +11,9 @@ public interface OperatorExpected {
     OperandExpected and();
     NodeRef queryOne(SearchService searchService);
     List<NodeRef> query(SearchService searchService);
-    OperatorExpected end();
+    String getQuery();
+
+    OperatorExpected close();
 
     OperatorExpected transactional();
 

@@ -8,6 +8,7 @@ import ru.citeck.ecos.model.ClassificationModel;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
@@ -16,9 +17,9 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
     private QName kindField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND;
     private QName classField = null;
 
-    public ConfigData<T> getConfigByNode(NodeRef nodeRef) {
+    public Optional<ConfigData<T>> getConfigByNode(NodeRef nodeRef) {
 
-        ConfigData<T> config = null;
+        Optional<ConfigData<T>> config = Optional.empty();
 
         NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
         //case type/kind
@@ -27,24 +28,24 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
             config = getConfigByTypeKind(type, kind);
         }
         //alfresco type
-        if (config == null) {
+        if (!config.isPresent()) {
             QName nodeType = nodeService.getType(nodeRef);
             config = getConfigByClassName(nodeType, true);
         }
         //aspects
-        if (config == null) {
+        if (!config.isPresent()) {
             Set<QName> aspects = nodeService.getAspects(nodeRef);
             for (QName aspect : aspects) {
                 config = getConfigByClassName(aspect, false);
-                if (config != null) break;
+                if (config.isPresent()) break;
             }
         }
         return config;
     }
 
-    public ConfigData<T> getConfigByTypeKind(NodeRef type, NodeRef kind) {
+    public Optional<ConfigData<T>> getConfigByTypeKind(NodeRef type, NodeRef kind) {
 
-        ConfigData<T> config = null;
+        Optional<ConfigData<T>> config = Optional.empty();
 
         if (type != null) {
 
@@ -53,7 +54,7 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
             keys.put(kindField, kind);
 
             config = getConfig(keys);
-            if (config == null && kind != null) {
+            if (!config.isPresent() && kind != null) {
                 return getConfigByTypeKind(type, null);
             }
         }
@@ -61,19 +62,19 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
         return config;
     }
 
-    public ConfigData<T> getConfigByClassName(QName className, boolean includeParents) {
+    public Optional<ConfigData<T>> getConfigByClassName(QName className, boolean includeParents) {
 
         if (classField == null) {
-            return null;
+            return Optional.empty();
         }
 
         Map<QName, Serializable> keys = new HashMap<>(1);
         keys.put(classField, className);
-        ConfigData<T> config = getConfig(keys);
+        Optional<ConfigData<T>> config = getConfig(keys);
 
-        if (config == null && includeParents) {
+        if (!config.isPresent() && includeParents) {
             ClassDefinition classDef = dictionaryService.getClass(className);
-            while (classDef != null && config == null) {
+            while (classDef != null && !config.isPresent()) {
                 classDef = classDef.getParentClassDefinition();
                 if (classDef != null) {
                     keys.put(classField, classDef.getName());

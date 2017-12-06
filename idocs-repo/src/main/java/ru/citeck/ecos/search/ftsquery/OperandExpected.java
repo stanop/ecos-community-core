@@ -2,12 +2,14 @@ package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.jaxen.saxpath.Operator;
 
 import java.io.Serializable;
 import java.util.Map;
 
 public interface OperandExpected {
 
+    OperatorExpected any(QName field, Iterable<Serializable> values);
     OperatorExpected values(Map<QName, Serializable> values);
     OperatorExpected values(Map<QName, Serializable> values, BinOperator joinOperator);
     OperatorExpected values(Map<QName, Serializable> values, BinOperator joinOperator, boolean exact);
@@ -25,7 +27,7 @@ public interface OperandExpected {
     OperatorExpected type(QName typeName);
 
     OperandExpected not();
-    OperandExpected start();
+    OperandExpected open();
 
     OperandExpected transactional();
 
