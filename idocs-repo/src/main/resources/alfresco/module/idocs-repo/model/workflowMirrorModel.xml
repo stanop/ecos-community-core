@@ -66,6 +66,9 @@
                 <property name="wfm:documentType">
                     <type>d:qname</type>
                 </property>
+                <property name="wfm:documentKind">
+                    <type>d:noderef</type>
+                </property>
                 <property name="wfm:assigneeManager">
                     <type>d:noderef</type>
                     <index enabled="true">

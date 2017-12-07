@@ -42,11 +42,13 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,41 +56,41 @@ import java.util.Map;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService
 {
-	private static final String QUERY_TASK_BY_ID = "TYPE:\"bpm:task\" AND =cm\\:name:\"%s\"";
-	private static final String QUERY_TASKS_BY_WORKFLOW_ID = "TYPE:\"bpm:task\" AND =wfm\\:workflowId:\"%s\"";
+    private static final String QUERY_TASK_BY_ID = "TYPE:\"bpm:task\" AND =cm\\:name:\"%s\"";
+    private static final String QUERY_TASKS_BY_WORKFLOW_ID = "TYPE:\"bpm:task\" AND =wfm\\:workflowId:\"%s\"";
 
-	private static Log logger = LogFactory.getLog(WorkflowMirrorServiceImpl.class);
-	
-	private NodeService nodeService;
-	private ActionService actionService;
-	private PersonService personService;
-	private AuthorityService authorityService;
-	private WorkflowService workflowService;
-	private NodeInfoFactory nodeInfoFactory;
-	private OrgStructService orgStructService;
-	private SearchService searchService;
+    private static Log logger = LogFactory.getLog(WorkflowMirrorServiceImpl.class);
 
-	private NodeRef taskMirrorRoot;
-	private QName taskMirrorAssoc;
+    private NodeService nodeService;
+    private ActionService actionService;
+    private PersonService personService;
+    private AuthorityService authorityService;
+    private WorkflowService workflowService;
+    private NodeInfoFactory nodeInfoFactory;
+    private OrgStructService orgStructService;
+    private SearchService searchService;
+
+    private NodeRef taskMirrorRoot;
+    private QName taskMirrorAssoc;
 
     @Override
-	public void mirrorTask(String taskId) {
-		mirrorTask(getTask(taskId), getTaskMirror(taskId));
-	}
+    public void mirrorTask(String taskId) {
+        mirrorTask(getTask(taskId), getTaskMirror(taskId));
+    }
 
-	@Override
-	public void mirrorTask(WorkflowTask task) {
-		mirrorTask(task, getTaskMirror(task.getId()));
-	}
+    @Override
+    public void mirrorTask(WorkflowTask task) {
+        mirrorTask(task, getTaskMirror(task.getId()));
+    }
 
-	@Override
-	public void mirrorTask(NodeRef taskMirror) {
-		if(!nodeService.exists(taskMirror)) {
-			return;
-		}
-		String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
-		mirrorTask(getTask(taskId), taskMirror);
-	}
+    @Override
+    public void mirrorTask(NodeRef taskMirror) {
+        if(!nodeService.exists(taskMirror)) {
+            return;
+        }
+        String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
+        mirrorTask(getTask(taskId), taskMirror);
+    }
 
     @Override
     public void mirrorAllTasks() {
@@ -99,11 +101,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     @Override
-	public void mirrorTaskAsync(String taskId) {
-		Action action = actionService.createAction(MirrorActionExecuter.NAME);
-		action.setParameterValue(MirrorActionExecuter.PARAM_TASK_ID, taskId);
-		actionService.executeAction(action, null, false, true);
-	}
+    public void mirrorTaskAsync(String taskId) {
+        Action action = actionService.createAction(MirrorActionExecuter.NAME);
+        action.setParameterValue(MirrorActionExecuter.PARAM_TASK_ID, taskId);
+        actionService.executeAction(action, null, false, true);
+    }
 
     @Override
     public void mirrorAllTasksAsync() {
@@ -115,15 +117,15 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     @Override
     public NodeRef getTaskMirror(String taskId) {
-    	String query = String.format(QUERY_TASK_BY_ID, taskId);
+        String query = String.format(QUERY_TASK_BY_ID, taskId);
         List<NodeRef> tasksList = searchQuery(query);
-		return !tasksList.isEmpty() ? tasksList.get(0) : null;
+        return !tasksList.isEmpty() ? tasksList.get(0) : null;
     }
 
     @Override
-	public List<NodeRef> getTaskMirrorsByWorkflowId(String workflowId) {
-		String query = String.format(QUERY_TASKS_BY_WORKFLOW_ID, workflowId);
-		return searchQuery(query);
+    public List<NodeRef> getTaskMirrorsByWorkflowId(String workflowId) {
+        String query = String.format(QUERY_TASKS_BY_WORKFLOW_ID, workflowId);
+        return searchQuery(query);
     }
 
     private List<NodeRef> searchQuery(String query) {
@@ -150,49 +152,55 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             resultSet.close();
         }
     }
-	
-	private WorkflowTask getTask(String taskId) {
+
+    private WorkflowTask getTask(String taskId) {
         return workflowService.getTaskById(taskId);
-	}
+    }
 
-	private void mirrorTask(WorkflowTask task, NodeRef taskMirror) {
-		
-		NodeInfo nodeInfo = null;
-		if(task != null) {
-			nodeInfo = nodeInfoFactory.createNodeInfo(task);
-		}
-		
-		// create
-		if(task != null && taskMirror == null) {
-			if(logger.isDebugEnabled()) {
-				logger.debug("Creating mirror for task " + task.getId());
-			}
-			
-			taskMirror = createTaskMirror(task.getId(), nodeInfo.getType());
-		}
+    private void mirrorTask(WorkflowTask task, NodeRef taskMirror) {
 
-		// update
-		if(task != null && taskMirror != null) {
-			if(logger.isDebugEnabled()) {
-				logger.debug("Updating mirror for task " + task.getId() + " (" + taskMirror + ")");
-			}
-			
-			// override cm:name to allow search of task-mirror by name
-			nodeInfo.setProperty(ContentModel.PROP_NAME, task.getId());
-			
-			// add convenient attributes, specific to task-mirrors only
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_TASK_TYPE, nodeInfo.getType());
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_ID, task.getPath().getInstance().getId());
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_ACTORS, getActors(task));
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE, getAssignee(task));
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE_MANAGER, getAssigneeManager(task));
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_NAME, getWorkflowName(task, nodeInfo));
-			nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_INITIATOR, getWorkflowInitiator(task, nodeInfo));
+        NodeInfo nodeInfo = null;
+        if(task != null) {
+            nodeInfo = nodeInfoFactory.createNodeInfo(task);
+        }
+
+        // create
+        if(task != null && taskMirror == null) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Creating mirror for task " + task.getId());
+            }
+
+            taskMirror = createTaskMirror(task.getId(), nodeInfo.getType());
+        }
+
+        // update
+        if(task != null && taskMirror != null) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Updating mirror for task " + task.getId() + " (" + taskMirror + ")");
+            }
+
+            // override cm:name to allow search of task-mirror by name
+            nodeInfo.setProperty(ContentModel.PROP_NAME, task.getId());
+
+            // add convenient attributes, specific to task-mirrors only
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_TASK_TYPE, nodeInfo.getType());
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_ID, task.getPath().getInstance().getId());
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_ACTORS, getActors(task));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE, getAssignee(task));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE_MANAGER, getAssigneeManager(task));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_NAME, getWorkflowName(task, nodeInfo));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_INITIATOR, getWorkflowInitiator(task, nodeInfo));
 
             NodeRef document = getDocument(task, nodeInfo);
             if (document != null) {
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
+
+                NodeRef documentKind = getDocumentKind(document);
+                if (documentKind != null) {
+                    nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
+                }
+
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
             }
 
@@ -200,47 +208,47 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
         // delete
         } else if(task == null && taskMirror != null) {
-			if(logger.isDebugEnabled()) {
-				String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
-				logger.debug("Deleting mirror for task " + taskId + " (" + taskMirror + ")");
-			}
-			nodeService.deleteNode(taskMirror);
+            if(logger.isDebugEnabled()) {
+                String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
+                logger.debug("Deleting mirror for task " + taskId + " (" + taskMirror + ")");
+            }
+            nodeService.deleteNode(taskMirror);
         }
-	}
+    }
 
-	private NodeRef createTaskMirror(String taskId, QName taskType) {
-		QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
-		ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
-		return mirrorRef.getChildRef();
-	}
+    private NodeRef createTaskMirror(String taskId, QName taskType) {
+        QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
+        ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
+        return mirrorRef.getChildRef();
+    }
 
-	private LinkedList<NodeRef> getActors(WorkflowTask task) {
-		String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-		LinkedList<NodeRef> results = new LinkedList<NodeRef>();
-		if (assigneeName == null) {
-			@SuppressWarnings({"unchecked", "rawtypes"})
-			List<NodeRef> pooledActors = (List) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
-			String originalOwner = (String) task.getProperties().get(QName.createQName("", "taskOriginalOwner"));
-			NodeRef originalOwnerNodeRef = null;
-			if (originalOwner != null) {
-				originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
-			}
-			if (pooledActors != null) {
-				if (originalOwnerNodeRef != null) {
-					if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
-						pooledActors.remove(pooledActors.indexOf(originalOwnerNodeRef));
-						pooledActors.add(0, originalOwnerNodeRef);
-					}
-				}
+    private LinkedList<NodeRef> getActors(WorkflowTask task) {
+        String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
+        LinkedList<NodeRef> results = new LinkedList<NodeRef>();
+        if (assigneeName == null) {
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            List<NodeRef> pooledActors = (List) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
+            String originalOwner = (String) task.getProperties().get(QName.createQName("", "taskOriginalOwner"));
+            NodeRef originalOwnerNodeRef = null;
+            if (originalOwner != null) {
+                originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
+            }
+            if (pooledActors != null) {
+                if (originalOwnerNodeRef != null) {
+                    if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
+                        pooledActors.remove(pooledActors.indexOf(originalOwnerNodeRef));
+                        pooledActors.add(0, originalOwnerNodeRef);
+                    }
+                }
 
-				results.addAll(pooledActors);
-			}
-		} else {
-			NodeRef assignee = personService.getPerson(assigneeName);
-			results.add(assignee);
-		}
-		return results;
-	}
+                results.addAll(pooledActors);
+            }
+        } else {
+            NodeRef assignee = personService.getPerson(assigneeName);
+            results.add(assignee);
+        }
+        return results;
+    }
 
     @SuppressWarnings({ "unchecked", "deprecation" })
     private List<WorkflowTask> getAllTasks() {
@@ -252,29 +260,29 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         List<WorkflowTask> uncompletedTasks = workflowService.queryTasks(taskQuery);
         return ListUtils.union(completedTasks, uncompletedTasks);
     }
-	
-	private NodeRef getAssignee(WorkflowTask task) {
-		String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-		if(assigneeName != null) {
-			return personService.getPerson(assigneeName);
-		} else {
-			return null;
-		}
-	}
-	
-	private NodeRef getAssigneeManager(WorkflowTask task) {
-		String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-		if(assigneeName != null) {
-			String assigneeManager = orgStructService.getUserManager(assigneeName);
-			if(assigneeManager != null) {
-				return authorityService.getAuthorityNodeRef(assigneeManager);
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
+
+    private NodeRef getAssignee(WorkflowTask task) {
+        String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
+        if(assigneeName != null) {
+            return personService.getPerson(assigneeName);
+        } else {
+            return null;
+        }
+    }
+
+    private NodeRef getAssigneeManager(WorkflowTask task) {
+        String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
+        if(assigneeName != null) {
+            String assigneeManager = orgStructService.getUserManager(assigneeName);
+            if(assigneeManager != null) {
+                return authorityService.getAuthorityNodeRef(assigneeManager);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
     private NodeRef getDocument(WorkflowTask task, NodeInfo nodeInfo) {
         Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
@@ -305,11 +313,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     private String getWorkflowName(WorkflowTask task, NodeInfo nodeInfo) {
         List<NodeRef> packageContents = workflowService.getPackageContents(task.getId());
-		Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
-		NodeRef packageNode = getPackage(targetAssocs);
-		if (packageNode != null && nodeService.exists(packageNode)) {
-			return (String)nodeService.getProperty(packageNode, WorkflowModel.PROP_WORKFLOW_DEFINITION_NAME);
-		}
+        Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
+        NodeRef packageNode = getPackage(targetAssocs);
+        if (packageNode != null && nodeService.exists(packageNode)) {
+            return (String)nodeService.getProperty(packageNode, WorkflowModel.PROP_WORKFLOW_DEFINITION_NAME);
+        }
         return null;
     }
 
@@ -318,53 +326,64 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
             NodeRef packageNode = getPackage(targetAssocs);
             if (packageNode != null && nodeService.exists(packageNode)) {
-				String initiatorName = (String) nodeService.getProperty(packageNode, ContentModel.PROP_CREATOR);
-				if(initiatorName != null) {
-					return personService.getPerson(initiatorName);
-				}
-			}
-			
+                String initiatorName = (String) nodeService.getProperty(packageNode, ContentModel.PROP_CREATOR);
+                if(initiatorName != null) {
+                    return personService.getPerson(initiatorName);
+                }
+            }
+
         return null;
     }
 
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-	}
+    private NodeRef getDocumentKind(NodeRef documentRef) {
+        if (documentRef != null && nodeService.exists(documentRef)) {
+            Serializable documentKind = nodeService.getProperty(documentRef, ClassificationModel.PROP_DOCUMENT_KIND);
+            if (documentKind != null) {
+                return (NodeRef) documentKind;
+            }
+        }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+        return null;
+    }
 
-	public void setActionService(ActionService actionService) {
-		this.actionService = actionService;
-	}
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
-	public void setPersonService(PersonService personService) {
-		this.personService = personService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setWorkflowService(WorkflowService workflowService) {
-		this.workflowService = workflowService;
-	}
+    public void setActionService(ActionService actionService) {
+        this.actionService = actionService;
+    }
 
-	public void setNodeInfoFactory(NodeInfoFactory nodeInfoFactory) {
-		this.nodeInfoFactory = nodeInfoFactory;
-	}
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
+    }
 
-	public void setTaskMirrorRoot(NodeRef taskMirrorRoot) {
-		this.taskMirrorRoot = taskMirrorRoot;
-	}
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
 
-	public void setTaskMirrorAssoc(QName taskMirrorAssoc) {
-		this.taskMirrorAssoc = taskMirrorAssoc;
-	}
+    public void setNodeInfoFactory(NodeInfoFactory nodeInfoFactory) {
+        this.nodeInfoFactory = nodeInfoFactory;
+    }
 
-	public void setOrgStructService(OrgStructService orgStructService) {
-		this.orgStructService = orgStructService;
-	}
+    public void setTaskMirrorRoot(NodeRef taskMirrorRoot) {
+        this.taskMirrorRoot = taskMirrorRoot;
+    }
 
-	public void setAuthorityService(AuthorityService authorityService) {
-		this.authorityService = authorityService;
-	}
+    public void setTaskMirrorAssoc(QName taskMirrorAssoc) {
+        this.taskMirrorAssoc = taskMirrorAssoc;
+    }
+
+    public void setOrgStructService(OrgStructService orgStructService) {
+        this.orgStructService = orgStructService;
+    }
+
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
 
 }
