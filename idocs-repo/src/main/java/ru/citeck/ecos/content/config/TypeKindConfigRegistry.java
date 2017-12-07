@@ -11,6 +11,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * TypeKind config registry helps to search configs by EcoS type and kind
+ * @param <T> type of parsed content data
+ *
+ * @author Pavel Simonov
+ */
 public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
 
     private QName typeField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE;
@@ -51,6 +57,12 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
         return config;
     }
 
+    /**
+     * Get config by EcoS type kind
+     * Keys to search in order of priority:
+     * 1) EcoS type and EcoS kind
+     * 2) EcoS type and EcoS kind is empty
+     */
     public Optional<ConfigData<T>> getConfigByTypeKind(NodeRef type, NodeRef kind) {
 
         Optional<ConfigData<T>> config = Optional.empty();
@@ -70,6 +82,10 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
         return config;
     }
 
+    /**
+     * Get config by alfresco class
+     * @param className alfresco type or aspect name
+     */
     public Optional<ConfigData<T>> getConfigByClassName(QName className, boolean includeParents) {
 
         if (classField == null) {

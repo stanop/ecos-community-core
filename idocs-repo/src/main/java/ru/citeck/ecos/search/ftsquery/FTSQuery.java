@@ -10,6 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Full text search query builder
+ * To create new query use FTSQuery.create()
+ * To search by constructed query use method query(SearchService searchService)
+ *
+ * @author Pavel Simonov
+ */
 public class FTSQuery implements OperatorExpected, OperandExpected {
 
     private static final String ISUNSET = "ISUNSET";
@@ -27,6 +34,9 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     private FTSQuery() {
     }
 
+    /**
+     * Create new query
+     */
     public static OperandExpected create() {
         return new FTSQuery();
     }
@@ -41,12 +51,17 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
     public OperatorExpected values(Map<QName, Serializable> values, BinOperator joinOperator, boolean exact) {
         int count = values.size();
+        if (count == 0) {
+            throw new IllegalArgumentException("Values is empty");
+        }
+        open();
         for (Map.Entry<QName, Serializable> entry : values.entrySet()) {
             value(entry.getKey(), entry.getValue(), exact);
             if (--count > 0) {
                 group.setBiOperator(new BinOperatorTerm(joinOperator));
             }
         }
+        close();
         return this;
     }
 
@@ -55,10 +70,12 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         if (!it.hasNext()) {
             throw new IllegalArgumentException("Values is empty");
         }
+        open();
         while (it.hasNext()) {
             value(field, it.next());
             if (it.hasNext()) or();
         }
+        close();
         return this;
     }
 
@@ -146,6 +163,12 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+
+    public FTSQuery eventual() {
+        consistency = QueryConsistency.EVENTUAL;
+        return this;
+    }
+
     public NodeRef queryOne(SearchService searchService) {
         List<NodeRef> refs = query(searchService);
         return refs.isEmpty() ? null : refs.get(0);
@@ -159,7 +182,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-        searchParameters.setQuery(group.getQuery());
+        searchParameters.setQuery(getQuery());
 
         ResultSet resultSet = null;
 
@@ -420,9 +443,13 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
                 return query;
             }
 
-            StringBuilder sb = new StringBuilder();
-            term.toString(sb);
-            query = sb.toString();
+            if (term instanceof Group) {
+                query = ((Group) term).getQuery();
+            } else {
+                StringBuilder sb = new StringBuilder();
+                term.toString(sb);
+                query = sb.toString();
+            }
 
             return query;
         }

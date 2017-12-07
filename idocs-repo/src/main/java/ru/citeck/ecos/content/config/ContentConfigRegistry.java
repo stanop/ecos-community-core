@@ -21,6 +21,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Config registry. Allow to cache content parsing result and update it when content was changed
+ * @param <T> type of parsed content data
+ *
+ * @author Pavel Simonov
+ */
 public class ContentConfigRegistry<T> {
 
     private static final Log logger = LogFactory.getLog(ContentConfigRegistry.class);
@@ -43,6 +49,12 @@ public class ContentConfigRegistry<T> {
 
     private ConfigDAO<T> configDAO;
 
+    /**
+     * Get config data by node with content.
+     * Field with content specified by contentFieldName
+     * @param nodeRef node with content which can be parsed by ConfigDAO
+     * @return ConfigData with nodeRef passed by argument and parsing result
+     */
     public Optional<ConfigData<T>> getConfig(NodeRef nodeRef) {
         ConfigData<T> config = getConfigImpl(nodeRef);
         if (config.updateData()) {
@@ -53,11 +65,17 @@ public class ContentConfigRegistry<T> {
         }
     }
 
+    /**
+     * Get config data by properties values
+     */
     public Optional<ConfigData<T>> getConfig(Map<QName, Serializable> keys) {
         List<ConfigData<T>> configs = getConfigs(keys);
         return Optional.ofNullable(configs.size() > 0 ? configs.get(0) : null);
     }
 
+    /**
+     * Get configs data by properties values
+     */
     public List<ConfigData<T>> getConfigs(Map<QName, Serializable> keys) {
 
         checkChangeDate();
@@ -80,6 +98,9 @@ public class ContentConfigRegistry<T> {
         return result;
     }
 
+    /**
+     * Clear cache
+     */
     public void clearCache() {
         configDataByNode.clear();
         configDataByKeys.clear();

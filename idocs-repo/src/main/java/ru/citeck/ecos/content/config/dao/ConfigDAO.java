@@ -8,14 +8,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * DAO to marshal and unmarshal config
+ *
+ * @param <T> type of parsed content data
+ *
+ * @author Pavel Simonov
+ */
 public interface ConfigDAO<T> {
 
+    /**
+     * Unmarshal config data
+     */
     default T read(byte[] bytes) {
         return read(new ByteArrayInputStream(bytes));
     }
 
+    /**
+     * Unmarshal config data
+     */
     T read(InputStream stream);
 
+    /**
+     * Marshal config data
+     */
     default void write(T value, ContentWriter writer) {
         try (OutputStream stream = writer.getContentOutputStream()) {
             write(value, stream);
@@ -24,5 +40,8 @@ public interface ConfigDAO<T> {
         }
     }
 
+    /**
+     * Marshal config data
+     */
     void write(T value, OutputStream stream);
 }

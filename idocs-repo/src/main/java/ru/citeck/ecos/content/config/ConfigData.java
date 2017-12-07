@@ -8,6 +8,12 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Class that represents config data
+ * @param <T> type of parsed content data
+ *
+ * @author Pavel Simonov
+ */
 public class ConfigData<T> {
 
     private NodeRef nodeRef;
@@ -20,14 +26,24 @@ public class ConfigData<T> {
         return nodeRef;
     }
 
+    /**
+     * Get parsed content data
+     */
     public Optional<T> getData() {
         return Optional.ofNullable(data);
     }
 
+    /**
+     * Get content last modified time in millis
+     * @see System#currentTimeMillis()
+     */
     public long getLastModified() {
         return lastModified;
     }
 
+    /**
+     * Change data. Content will be updated after change will be performed
+     */
     public void changeData(Consumer<T> consumer) {
 
         if (data != null) {
