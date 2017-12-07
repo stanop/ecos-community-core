@@ -89,12 +89,13 @@ public class TransactionUtils {
                 for (int i = 0; i < jobs.size(); i++) {
                     Job job = jobs.get(i);
                     try {
+                        List<Job> newJobs = new ArrayList<>();
                         doInTransaction(() -> {
-                            List<Job> newJobs = new ArrayList<>();
+                            newJobs.clear();
                             AlfrescoTransactionSupport.bindResource(AFTER_COMMIT_JOBS_KEY, newJobs);
                             job.runnable.run();
-                            jobs.addAll(newJobs);
                         });
+                        jobs.addAll(newJobs);
                     } catch (Exception e) {
                         LOG.error("Exception while job running", e);
                         if (job.errorHandler != null) {
