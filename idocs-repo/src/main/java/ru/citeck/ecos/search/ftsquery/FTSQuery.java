@@ -4,11 +4,14 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Full text search query builder
@@ -18,6 +21,8 @@ import java.util.Map;
  * @author Pavel Simonov
  */
 public class FTSQuery implements OperatorExpected, OperandExpected {
+
+    private static final Log logger = LogFactory.getLog(FTSQuery.class);
 
     private static final String ISUNSET = "ISUNSET";
     private static final String ISNULL = "ISNULL";
@@ -169,9 +174,8 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
-    public NodeRef queryOne(SearchService searchService) {
-        List<NodeRef> refs = query(searchService);
-        return refs.isEmpty() ? null : refs.get(0);
+    public Optional<NodeRef> queryOne(SearchService searchService) {
+        return query(searchService).stream().findFirst();
     }
 
     public String getQuery() {
@@ -180,9 +184,15 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
     public List<NodeRef> query(SearchService searchService) {
 
+        String query = group.getQuery();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("FTSQuery: " + query);
+        }
+
         searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-        searchParameters.setQuery(getQuery());
+        searchParameters.setQuery(query);
 
         ResultSet resultSet = null;
 
@@ -216,6 +226,9 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
     private interface Term {
         void toString(StringBuilder builder);
+    }
+
+    private interface Operand extends Term {
     }
 
     private class UnOperatorTerm implements Term {
@@ -290,7 +303,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class SysValueOperator implements Term {
+    private class SysValueOperator implements Operand {
 
         String field;
         Serializable value;
@@ -325,7 +338,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class ValueOperator implements Term {
+    private class ValueOperator implements Operand {
 
         QName field;
         Serializable value;
@@ -359,7 +372,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class Group implements Term {
+    private class Group implements Operand {
 
         UnOperatorTerm unOperator = null;
         BinOperatorTerm biOperator = null;
@@ -443,22 +456,22 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
                 return query;
             }
 
-            if (term instanceof Group) {
-                query = ((Group) term).getQuery();
-            } else {
-                StringBuilder sb = new StringBuilder();
-                term.toString(sb);
-                query = sb.toString();
-            }
+            StringBuilder sb = new StringBuilder();
+            term.toString(sb);
+            query = sb.toString();
 
             return query;
         }
 
         @Override
         public void toString(StringBuilder builder) {
-            builder.append('(');
-            term.toString(builder);
-            builder.append(')');
+            if (term instanceof Operand) {
+                term.toString(builder);
+            } else {
+                builder.append('(');
+                term.toString(builder);
+                builder.append(')');
+            }
         }
 
         @Override

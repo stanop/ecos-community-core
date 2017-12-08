@@ -4,6 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OperatorExpected {
 
@@ -35,7 +36,7 @@ public interface OperatorExpected {
     /**
      * Query one node
      */
-    NodeRef queryOne(SearchService searchService);
+    Optional<NodeRef> queryOne(SearchService searchService);
 
     /**
      * Query nodes
