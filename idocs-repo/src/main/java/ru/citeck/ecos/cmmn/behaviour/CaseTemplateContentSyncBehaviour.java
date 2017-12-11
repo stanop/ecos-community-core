@@ -9,7 +9,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.cmmn.CMMNUtils;
@@ -22,10 +21,9 @@ import ru.citeck.ecos.model.ICaseModel;
 import java.io.Serializable;
 import java.util.*;
 
-@Component
 public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
-                                                 implements NodeServicePolicies.OnUpdatePropertiesPolicy,
-                                                            ContentServicePolicies.OnContentUpdatePolicy {
+                                              implements NodeServicePolicies.OnUpdatePropertiesPolicy,
+                                                         ContentServicePolicies.OnContentUpdatePolicy {
 
     private static final String TXN_TEMPLATE_DATA_KEY = CaseTemplateContentSyncBehaviour.class.toString();
 
