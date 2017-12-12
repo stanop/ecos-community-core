@@ -21,7 +21,16 @@
         <namespace uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
     </namespaces>
 
-    <!--constraints></constraints-->
+    <constraints>
+        <constraint name="ecos:sexConstraint" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>male</value>
+                    <value>female</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
 
     <types>
         <type name="ecos:document">
@@ -83,6 +92,39 @@
                     <title>VAT</title>
                     <type>d:double</type>
                     <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="ecos:hasAdditionalPersonProperties">
+            <title>Additional Person Properties</title>
+            <properties>
+                <property name="ecos:photo">
+                    <title>Фото</title>
+                    <type>d:content</type>
+                </property>
+                <property name="ecos:birthDate">
+                    <title>Дата рождения</title>
+                    <type>d:date</type>
+                </property>
+                <property name="ecos:city">
+                    <title>Город</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:sex">
+                    <title>Пол</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="ecos:sexConstraint"/>
+                    </constraints>
+                </property>
+                <property name="ecos:phoneWorking">
+                    <title>Телефон рабочий</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:phoneInternal">
+                    <title>Телефон внутренний</title>
+                    <type>d:text</type>
                 </property>
             </properties>
         </aspect>

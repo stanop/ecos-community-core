@@ -809,7 +809,8 @@
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number,
 .invariants-form .template-table .template-row .template-multiple-text,
-.invariants-form .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row .template-free-content,
+.invariants-form .template-table .template-row .template-user-groups {
   width: 54.5%;
   float: right;
 }
@@ -824,7 +825,8 @@
 .invariants-form .template-table .template-row.with-help .template-autocomplete,
 .invariants-form .template-table .template-row.with-help .template-checkbox,
 .invariants-form .template-table .template-row.with-help .template-number,
-.invariants-form .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row .template-free-content,
+.invariants-form .template-table .template-row .template-user-groups {
   width: 54.5%;
 }
 

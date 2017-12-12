@@ -2651,6 +2651,8 @@ ko.bindingHandlers.fileUploadControl = {
                             }
 
                             loadedFiles(loadedFiles() + 1);
+
+                            YAHOO.Bubbling.fire('file-uploaded', file);
                         }
                     }, false)
                 })(files[i]);
