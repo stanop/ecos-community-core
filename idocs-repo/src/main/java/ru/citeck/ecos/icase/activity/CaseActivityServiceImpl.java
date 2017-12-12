@@ -14,6 +14,8 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
+import ru.citeck.ecos.icase.activity.create.CreateVariantsProvider;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.LifeCycleModel;
 import ru.citeck.ecos.utils.DictionaryUtils;
@@ -45,6 +47,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     private ClassPolicyDelegate<OnChildrenIndexChangedPolicy> onIndexChangedDelegate;
 
     private Map<String, List<String>> allowedTransitions = new HashMap<>();
+
+    private List<CreateVariantsProvider> createVariantsProviders = new ArrayList<>();
 
     public void init() {
 
@@ -270,6 +274,38 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     public boolean isActive(NodeRef activityRef) {
         mandatoryNodeRef("activityRef", activityRef);
         return STATE_STARTED.equals(getActivityState(activityRef));
+    }
+
+    @Override
+    public void registerCreateVariantsProvider(CreateVariantsProvider provider) {
+        createVariantsProviders.add(provider);
+    }
+
+    @Override
+    public List<ActivityCreateVariant> getCreateVariants() {
+
+        List<ActivityCreateVariant> variants = new ArrayList<>();
+
+        for (CreateVariantsProvider provider : createVariantsProviders) {
+            for (ActivityCreateVariant variant : provider.getCreateVariants()) {
+                addCreateVariant(variants, variant);
+            }
+        }
+
+        return variants;
+    }
+
+    private void addCreateVariant(List<ActivityCreateVariant> variants, ActivityCreateVariant variant) {
+        for (ActivityCreateVariant existing : variants) {
+            if (Objects.equals(variant.getType(), existing.getType())) {
+                break;
+            }
+            if (dictionaryService.isSubClass(variant.getType(), existing.getType())) {
+                addCreateVariant(existing.getChildren(), variant);
+                return;
+            }
+        }
+        variants.add(variant);
     }
 
     private void resetActivity(NodeRef activityRef) {

@@ -38,7 +38,7 @@
 
 	<types>
 
-		<!-- Default tast type -->
+		<!-- Deprecated -->
 		<type name="wfcf:defaultTask">
 			<parent>bpm:startTask</parent>
 		</type>

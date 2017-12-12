@@ -35,7 +35,7 @@
 				<div data-bind="attr: { id: nodeRef() + '-activity-create-menu' }" class="yui-overlay yuimenu button-menu" style="visibility: hidden">
 					<div class="bd">
 						<ul class="first-of-type">
-						<#list createMenu as submenu>
+						<#list createMenu?values as submenu>
 
 							<li class="yuimenuitem">
 								<span class="yuimenuitemlabel">${submenu.title}</span>

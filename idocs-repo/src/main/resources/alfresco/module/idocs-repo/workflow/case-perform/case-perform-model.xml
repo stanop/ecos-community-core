@@ -116,7 +116,7 @@
         </type>
 
         <type name="wfcp:performCaseTask">
-            <parent>icaseTask:task</parent>
+            <parent>icaseTask:humanTask</parent>
             <associations>
                 <association name="wfcp:performersRoles">
                     <source>

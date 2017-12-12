@@ -131,4 +131,14 @@
             </map>
         </property>
     </bean>
+
+    <bean id="ru.citeck.ecos.icase.activity.create.ViewCreateVariantsProvider"
+          class="ru.citeck.ecos.icase.activity.create.ViewCreateVariantsProvider">
+        <property name="ignoredTypes">
+            <set>
+                <value>{http://www.citeck.ru/model/icaseTask/1.0}defaultTask</value>
+            </set>
+        </property>
+    </bean>
+
 </beans>
