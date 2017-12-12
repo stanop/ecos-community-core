@@ -103,6 +103,7 @@ function fillModel() {
 
 	var actionGroupId = model.actionGroupId = getActionGroupId();
 	model.actionGroupId = actionGroupId;
+  filterMultiActions();
 }
 
 function getScopedConfig(scope, section, itemType, mapFunc) {
@@ -124,4 +125,32 @@ function getScopedConfig(scope, section, itemType, mapFunc) {
 		result.push(mapFunc? mapFunc(item) : item);
 	}
 	return result;
+}
+
+function loadUserGroups() {
+  var json = loadObject("/api/people/" + encodeURIComponent(user.name), { groups: true });
+  var model = eval('(' + json + ')');
+  return jsonUtils.toJSONString(model ? (model.groups ? model.groups : []) : []);
+}
+
+function filterMultiActions() {
+  var userGroups = loadUserGroups();
+  var multiActions = getScopedConfig("DocumentLibrary", "multi-select", "action");
+  var hiddenActions = getScopedConfig("Journals", "hidden-actions", "action", function(a) {return a.attributes.id;});
+
+  var availableActions = [];
+
+  for (var i = 0; i < multiActions.length; i++) {
+    var action = multiActions[i];
+    var actionGroup = action.attributes["hasGroup"];
+    if (actionGroup) {
+      if (userGroups.indexOf(actionGroup) == -1) {
+        continue;
+      }
+    }
+    if (hiddenActions.indexOf(action.attributes["id"]) == -1) {
+      availableActions.push(action);
+    }
+  }
+  model.multiActions = availableActions;
 }

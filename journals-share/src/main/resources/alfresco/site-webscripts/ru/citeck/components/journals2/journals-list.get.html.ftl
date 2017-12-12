@@ -53,7 +53,7 @@
                     </#if>
 
                     <@journals.renderCurrentIds />
-                    multiActions: <@journals.renderMultiActionsJSON />,
+                    multiActions: <@journals.renderMultiActionsJSON multiActions />,
                     defaultMaxItems: ${defaultMaxItems}
                 },
                 cache: <@journals.renderCacheJSON />,
