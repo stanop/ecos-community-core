@@ -462,7 +462,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                         dataObj: {
                             "nodes": nodes,
                             "attributes": attributes,
-                            "skipInStatuses": options.skipInStatuses
+                            "skipInStatuses": options.skipInStatuses,
+                            "childMode" : options.childMode
                         },
                         successCallback: {
                             scope: this,
@@ -491,6 +492,9 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                             if (options.skipInStatuses) {
                                 repoOptions.skipInStatuses = options.skipInStatuses;
                             }
+
+                            repoOptions.childMode = options.childMode || false;
+
                             callback(result, repoOptions);
                             return;
                         }
@@ -545,7 +549,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                             confirmChange: false,
                             skipEmptyValues: false,
                             changeExistsValue: true,
-                            skipInStatuses: []
+                            skipInStatuses: [],
+                            childMode: false
                         };
                         var useFilter = false;
                         var confirmChange = action.settings().confirmChange;
@@ -581,6 +586,10 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                 var statusesArray = skipInStatusesValue.split(",");
                                 options.skipInStatuses = statusesArray;
                             }
+                        }
+                        var childModeValue = action.settings().childMode;
+                        if (childModeValue) {
+                            options.childMode = childModeValue === 'true';
                         }
 
                         if (useFilter) {

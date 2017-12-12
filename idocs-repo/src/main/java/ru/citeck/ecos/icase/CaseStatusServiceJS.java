@@ -44,6 +44,12 @@ public class CaseStatusServiceJS extends AlfrescoScopableProcessorExtension {
         return JavaScriptImplUtils.wrapNode(statusRef, this);
     }
 
+    public ScriptNode getStatusNodeFromPrimaryParent(Object document) {
+        NodeRef childRef = JavaScriptImplUtils.getNodeRef(document);
+        NodeRef statusRef = caseStatusService.getStatusRefFromPrimaryParent(childRef);
+        return JavaScriptImplUtils.wrapNode(statusRef, this);
+    }
+
     public void setCaseStatusService(CaseStatusService caseStatusService) {
         this.caseStatusService = caseStatusService;
     }
