@@ -7,8 +7,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchCriteriaSettingsRegistry {
     private Map<String, String> journalStaticQuery = new HashMap<>();
+    private Map<String, String> journalNodeType = new HashMap<>();
     private Map<String, List<String>> journalSubQueryOr = new HashMap<>();
     private static AtomicInteger fieldIndex = new AtomicInteger(1);
+
+    public void registerJournalNodeType(String journalId, String nodeType) {
+        journalNodeType.put(journalId, nodeType);
+    }
+
+    public String getNodeType(String journalId) {
+        return journalNodeType.get(journalId);
+    }
 
     public void registerJournalStaticQuery(String journalId, String subQuery) {
         journalStaticQuery.put(journalId, subQuery);

@@ -33,7 +33,8 @@ public enum SearchPredicate {
 	//without match method
 	STRING_CONTAINS("string-contains"),  STRING_NOT_EQUALS("string-not-equals"),
     STRING_STARTS_WITH("string-starts-with"), STRING_ENDS_WITH("string-ends-with"),
-    STRING_EMPTY("string-empty"), 
+    STRING_EMPTY("string-empty"), QUERY_OR("query-or"),
+	JOURNAL_ID("journal-id"),
 
     NUMBER_EQUALS("number-equals"), NUMBER_NOT_EQUALS("number-not-equals"),
     NUMBER_LESS_THAN("number-less-than"), NUMBER_LESS_OR_EQUAL("number-less-or-equal"),

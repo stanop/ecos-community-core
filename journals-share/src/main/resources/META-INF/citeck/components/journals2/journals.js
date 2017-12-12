@@ -249,28 +249,29 @@ CreateVariant
             }
         })
 
-        .method('filterOptions', function(criteria, pagination) {
+        .method('filterOptions', function(criteria, pagination, paramJournalType) {
 
-            if (!this.cache) this.cache = {};
-            if (!this.cache.result) {
-                this.cache.result = ko.observable([]);
-                this.cache.result.extend({ notify: 'always' });
-            }
+          if (!this.cache) this.cache = {};
+          if (!this.cache.result) {
+            this.cache.result = ko.observable([]);
+            this.cache.result.extend({notify: 'always'});
+          }
 
+          var query = {
+            skipCount: 0
+            , maxItems: 10
+          };
+          if (!_.find(criteria, function(criterion) { return criterion.predicate == 'journal-id'; })) {
             if (!this.nodetype()) {
-                return [];
+              return [];
             }
 
-            var query = {
-                skipCount: 0,
-                maxItems: 10,
-                field_1: "type",
-                predicate_1: "type-equals",
-                value_1: this.nodetype()
-            };
+            query['field_1'] = "type";
+            query['predicate_1'] = "type-equals";
+            query['value_1'] = this.nodetype();
+          }
 
-
-            if (pagination) {
+          if (pagination) {
                 if (pagination.maxItems) query.maxItems = pagination.maxItems;
                 if (pagination.skipCount) query.skipCount = pagination.skipCount;
             }
