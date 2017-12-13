@@ -23,10 +23,13 @@ public class JournalViewElement {
 
     private String template;
     private Map<String, String> params = new HashMap<>();
-    private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
+    private String journalId;
+    private SearchCriteriaSettingsRegistry registry;
 
-    public JournalViewElement(ViewElement element, SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
-        this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
+    public JournalViewElement(ViewElement element, String journalId,
+                              SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
+        this.journalId = journalId;
+        this.registry = searchCriteriaSettingsRegistry;
         set(element);
     }
 
@@ -37,7 +40,7 @@ public class JournalViewElement {
             }
             List<Option> xmlParams = element.getParam();
             if (xmlParams != null) {
-                xmlParams = transformSearchCriteria(searchCriteriaSettingsRegistry, xmlParams);
+                xmlParams = transformSearchCriteria(xmlParams);
                 for (Option o : xmlParams) {
                     params.put(o.getName(), o.getValue());
                 }
@@ -53,8 +56,7 @@ public class JournalViewElement {
         return params;
     }
 
-    private List<Option> transformSearchCriteria(SearchCriteriaSettingsRegistry registry,
-                                                        List<Option> xmlParams) {
+    private List<Option> transformSearchCriteria(List<Option> xmlParams) {
         for (Option o : xmlParams) {
             if (o.getName().equals(SEARCH_CRITERIA)) {
                 try {
@@ -72,7 +74,7 @@ public class JournalViewElement {
                     if (!criteriaOr.isEmpty()) {
                         JSONArray jsonResult = new JSONArray();
                         Map<String, String> jsonMap = new HashMap<>();
-                        String fieldNameUniq = registry.registerJournalSubQueryOr(PREDICATE_OR, criteriaOr);
+                        String fieldNameUniq = registry.registerJournalSubQueryOr(journalId, criteriaOr);
                         jsonMap.put(PREDICATE, PREDICATE_OR);
                         jsonMap.put(ATTRIBUTE, fieldNameUniq);
                         jsonResult.put(jsonMap);

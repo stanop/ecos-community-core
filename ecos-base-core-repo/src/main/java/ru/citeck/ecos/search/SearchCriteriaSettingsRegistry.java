@@ -1,14 +1,19 @@
 package ru.citeck.ecos.search;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchCriteriaSettingsRegistry {
-    private Map<String, String> journalStaticQuery = new HashMap<>();
-    private Map<String, String> journalNodeType = new HashMap<>();
-    private Map<String, List<String>> journalSubQueryOr = new HashMap<>();
+    private static final String PREDICATE_OR = SearchPredicate.QUERY_OR.getValue();
+
+    private Map<String, String> journalStaticQuery = new ConcurrentHashMap<>();
+    private Map<String, String> journalNodeType = new ConcurrentHashMap<>();
+    private Map<String, List<String>> journalIdFieldNameCache = new ConcurrentHashMap<>();
+    private Map<String, List<String>> journalSubQueryOr = new ConcurrentHashMap<>();
     private static AtomicInteger fieldIndex = new AtomicInteger(1);
 
     public void registerJournalNodeType(String journalId, String nodeType) {
@@ -27,14 +32,26 @@ public class SearchCriteriaSettingsRegistry {
         return journalStaticQuery.get(journalId);
     }
 
-    public String registerJournalSubQueryOr(String fieldName, List<String> json) {
-        String fieldUniqueName = fieldName + fieldIndex.getAndIncrement();
-        journalSubQueryOr.put(fieldUniqueName, json);
-
-        return fieldUniqueName;
+    public void cleanFieldNameCache(String journalId) {
+        List<String> generatedFieldList = journalIdFieldNameCache.get(journalId);
+        if (generatedFieldList != null) {
+            for (String fieldName : generatedFieldList) {
+                journalSubQueryOr.remove(fieldName);
+            }
+            generatedFieldList.clear();
+        }
     }
 
-    public List<String> getSubQueryOr(String fieldName) {
-        return journalSubQueryOr.get(fieldName);
+    public String registerJournalSubQueryOr(String journalId, List<String> json) {
+        String generatedFieldName = PREDICATE_OR + fieldIndex.getAndIncrement();
+        List<String> generatedFieldList = journalIdFieldNameCache.computeIfAbsent(journalId,
+                k -> Collections.synchronizedList(new ArrayList<>()));
+        generatedFieldList.add(generatedFieldName);
+        journalSubQueryOr.put(generatedFieldName, Collections.unmodifiableList(json));
+        return generatedFieldName;
+    }
+
+    public List<String> getSubQueryOr(String generatedFieldName) {
+        return journalSubQueryOr.get(generatedFieldName);
     }
 }

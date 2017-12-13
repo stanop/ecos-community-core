@@ -86,8 +86,8 @@ class JournalTypeImpl implements JournalType {
             }
 
             batchEdit.put(attributeKey, attributeBatchEdit);
-            criterion.put(attributeKey, new JournalCriterion(attributeKey, header.getCriterion(), prefixResolver,
-                    searchCriteriaSettingsRegistry));
+            criterion.put(attributeKey, new JournalCriterion(attributeKey, header.getCriterion(), journal.getId(),
+                    prefixResolver, searchCriteriaSettingsRegistry));
 
             index++;
         }

@@ -20,9 +20,10 @@ public class JournalCriterion extends JournalViewElement {
     private List<InvariantDefinition> invariants = new ArrayList<>();
     private Map<String, JournalViewElement> regions = new HashMap<>();
 
-    public JournalCriterion(QName attributeKey, Criterion criterion, NamespacePrefixResolver prefixResolver,
+    public JournalCriterion(QName attributeKey, Criterion criterion, String journalId,
+                            NamespacePrefixResolver prefixResolver,
                             SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
-        super(criterion, searchCriteriaSettingsRegistry);
+        super(criterion, journalId, searchCriteriaSettingsRegistry);
 
         if (criterion != null) {
 
@@ -42,7 +43,7 @@ public class JournalCriterion extends JournalViewElement {
 
             if (xmlRegions != null) {
                 for (CriterionRegion region : xmlRegions) {
-                    regions.put(region.getName(), new JournalViewElement(region, searchCriteriaSettingsRegistry));
+                    regions.put(region.getName(), new JournalViewElement(region, journalId, searchCriteriaSettingsRegistry));
                 }
             }
         }
