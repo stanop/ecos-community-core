@@ -2,10 +2,11 @@
 
 <#-- property: field property name, for example "ecos:photo". Comes from view's field prop value: <field prop="ecos:photo"> ... </field> -->
 <#assign property = viewScope.field.attribute!"" />
-<#assign imgId = "${property}-image-id"?replace(":","_") />
+<#assign propertyU = property?replace(":","_") />
+<#assign imgId = propertyU + "-image-id" />
 
 
-<#assign img_id="user-groups-list-span"+property?replace(":", "_") />
+<#assign img_id="user-groups-list-span" + propertyU />
 
 <#if params.width?has_content>
     <#assign width = "width=" + params.width?string />
@@ -21,16 +22,18 @@
 
 <span id="${imgId}--cover">
 <!-- ko foreach: multipleValues -->
-    <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
-<img id="${imgId}" data-bind="attr: {src: window.location.origin + '/alfresco/service/api/node/content;${property}/workspace/SpacesStore/'+ $parent.getValueTitle($data) +'/image.jpg'}" ${width} ${height} alt="">
-    <!-- /ko -->
-    <!-- /ko -->
+<!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
+<!-- ko if: $parent.getValueTitle($data) -->
+<img id="${imgId}" data-bind="attr: {src: window.location.origin + '/share/proxy/alfresco/api/node/content;${property}/workspace/SpacesStore/'+ $parent.getValueTitle($data) +'/image.jpg'}" ${width} ${height} alt="">
+<!-- /ko -->
+<!-- /ko -->
+<!-- /ko -->
 </span>
 
 <#-- show uploaded image -->
 <script type="text/javascript">//<![CDATA[
 (function() {
-    YAHOO.Bubbling.on('file-uploaded', function(layer, args) {
+    YAHOO.Bubbling.on('file-uploaded-${propertyU}', function(layer, args) {
         var reader = new FileReader();
         reader.addEventListener("load", function(event) {
             var img = $('#${imgId}');
@@ -41,5 +44,5 @@
         });
         reader.readAsDataURL(args[1]);
     });
-})()
+})();
 //]]></script>

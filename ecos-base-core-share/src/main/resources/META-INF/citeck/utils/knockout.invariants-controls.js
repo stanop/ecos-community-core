@@ -2652,7 +2652,7 @@ ko.bindingHandlers.fileUploadControl = {
 
                             loadedFiles(loadedFiles() + 1);
 
-                            YAHOO.Bubbling.fire('file-uploaded', file);
+                            YAHOO.Bubbling.fire('file-uploaded-'+data.info().name().replace(':','_'), file);
                         }
                     }, false)
                 })(files[i]);

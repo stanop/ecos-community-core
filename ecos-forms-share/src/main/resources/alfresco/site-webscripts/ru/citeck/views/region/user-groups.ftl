@@ -23,16 +23,17 @@
                         scope: this,
                         fn: function(response) {
                             if (response.json) {
-                                // console.log(response.json["groups"]);
                                 var groups = response.json["groups"].map(item => item.displayName).join(', ');
                                 $('#${span_id}').text(groups);
                             }
                         }
-                    }, failureCallback: { scope: this, fn: function(response) {} }, execScripts: true
+                    },
+                    failureCallback: { scope: this, fn: function(response) {} },
+                    execScripts: true
                 });
-            }
-        }, 200)
-    })()
+            };
+        }, 200);
+    })();
     //]]></script>
 </span>
 <!-- /ko -->

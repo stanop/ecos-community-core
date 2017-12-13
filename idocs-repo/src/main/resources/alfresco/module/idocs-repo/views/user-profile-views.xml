@@ -10,6 +10,7 @@
     </imports>
 
     <view class="cm:person" kind="2-column">
+        <param name="inlineEdit">false</param>
         <view id="cm_person_genetal_info">
             <param name="title">Основное</param>
             <field prop="cm:userName" id="user-name">
