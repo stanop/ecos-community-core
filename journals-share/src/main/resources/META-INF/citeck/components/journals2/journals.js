@@ -258,8 +258,8 @@ CreateVariant
           }
 
           var query = {
-            skipCount: 0
-            , maxItems: 10
+            skipCount: 0,
+            maxItems: 10
           };
           if (!_.find(criteria, function(criterion) { return criterion.predicate == 'journal-id'; })) {
             if (!this.nodetype()) {
