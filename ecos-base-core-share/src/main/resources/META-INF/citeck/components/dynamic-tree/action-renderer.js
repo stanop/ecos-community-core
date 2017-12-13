@@ -206,7 +206,7 @@
 							}
 						}
 					};
-					this.timeout = YAHOO.lang.later(200, this, onRegisterTimeout, null, true);
+					this.timeout = YAHOO.lang.later(500, this, onRegisterTimeout, null, true);
 				}
 			}
 		},
