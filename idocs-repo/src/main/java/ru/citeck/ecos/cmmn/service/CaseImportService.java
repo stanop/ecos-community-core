@@ -36,7 +36,7 @@ public class CaseImportService {
 
     private final Logger logger = LoggerFactory.getLogger(CaseImportService.class);
 
-    private static final String DUPLICATE_COMMENT = "/*IGNORED DUPLICATE*/";
+    private static final String DUPLICATE_COMMENT = "/*DUPLICATE*/";
 
     private NodeService nodeService;
     private LazyNodeRef caseTemplatesRoot;

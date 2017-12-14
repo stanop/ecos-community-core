@@ -224,3 +224,7 @@
 .orgstruct-console .ygtvtp {
     width: 20px;
 }
+
+.ygtvcell.USER.available-true {
+	cursor: pointer;
+}

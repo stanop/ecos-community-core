@@ -10,7 +10,10 @@ import ru.citeck.ecos.content.config.ConfigData;
 import ru.citeck.ecos.content.config.TypeKindConfigRegistry;
 import ru.citeck.ecos.model.ICaseModel;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Pavel Simonov
@@ -22,10 +25,13 @@ public class CaseTemplateRegistry extends TypeKindConfigRegistry<Definitions> {
     private ScriptService scriptService;
 
     public Optional<Definitions> getDefinitionForCase(NodeRef caseRef) {
-        Optional<ConfigData<Definitions>> config = getConfigByNodeTKC(caseRef);
-        return config.filter(c -> c.getData().isPresent()
-                                  && evalCondition(c.getNodeRef(), caseRef))
-                     .flatMap(ConfigData::getData);
+
+        List<ConfigData<Definitions>> configs = getConfigsByNodeTKC(caseRef);
+
+        return configs.stream()
+                      .filter(d -> d.getData().isPresent() && evalCondition(d.getNodeRef(), caseRef))
+                      .findFirst()
+                      .flatMap(ConfigData::getData);
     }
 
     private boolean evalCondition(NodeRef templateRef, NodeRef caseNode) {

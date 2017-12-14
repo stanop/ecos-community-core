@@ -4,11 +4,11 @@ import org.alfresco.repo.content.ContentServicePolicies;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.cmmn.CMMNUtils;
@@ -21,10 +21,9 @@ import ru.citeck.ecos.model.ICaseModel;
 import java.io.Serializable;
 import java.util.*;
 
-@Component
 public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
-                                                 implements NodeServicePolicies.OnUpdatePropertiesPolicy,
-                                                            ContentServicePolicies.OnContentUpdatePolicy {
+                                              implements NodeServicePolicies.OnUpdatePropertiesPolicy,
+                                                         ContentServicePolicies.OnContentUpdatePolicy {
 
     private static final String TXN_TEMPLATE_DATA_KEY = CaseTemplateContentSyncBehaviour.class.toString();
 
@@ -32,6 +31,7 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
                             = new HashMap<QName, javax.xml.namespace.QName>() {{
         put(ICaseModel.PROP_CASE_ECOS_TYPE, CMMNUtils.QNAME_CASE_ECOS_TYPE);
         put(ICaseModel.PROP_CASE_ECOS_KIND, CMMNUtils.QNAME_CASE_ECOS_KIND);
+        put(ICaseModel.PROP_CASE_TYPE, CMMNUtils.QNAME_CASE_TYPE);
     }};
 
     private CaseTemplateRegistry registry;
@@ -104,6 +104,10 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
                 Serializable repoValue = converter.convertToRepoValue(propQName, templateValue);
                 nodeService.setProperty(nodeRef, propQName, repoValue);
             }
+
+            //update template parent to drop config registry cache
+            ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
+            nodeService.setProperty(parentAssoc.getParentRef(), ICaseModel.PROP_LAST_CHANGED_DATE, new Date());
         });
     }
 

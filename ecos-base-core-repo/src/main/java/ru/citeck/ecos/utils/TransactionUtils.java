@@ -3,13 +3,14 @@ package ru.citeck.ecos.utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.transaction.TransactionService;
+import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.surf.util.I18NUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -44,12 +45,18 @@ public class TransactionUtils {
         final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         final Locale locale = I18NUtil.getLocale();
 
-        final List<Job> jobs = TransactionalResourceHelper.getList(AFTER_COMMIT_JOBS_KEY);
-        if (jobs.size() == 0) {
+        List<Job> jobs = AlfrescoTransactionSupport.getResource(AFTER_COMMIT_JOBS_KEY);
+
+        if (jobs == null) {
+
+            jobs = new ArrayList<>();
+            AlfrescoTransactionSupport.bindResource(AFTER_COMMIT_JOBS_KEY, jobs);
+
+            final List<Job> finalJobs = jobs;
             AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
                 @Override
                 public void afterCommit() {
-                    prepareJobsThread(jobs, currentUser, locale).start();
+                    prepareAfterCommitJobsThread(finalJobs, currentUser, locale).start();
                 }
             });
         }
@@ -70,7 +77,7 @@ public class TransactionUtils {
         elements.add(element);
     }
 
-    private static Thread prepareJobsThread(List<Job> jobs, final String currentUser, final Locale locale) {
+    private static Thread prepareAfterCommitJobsThread(List<Job> jobs, final String currentUser, final Locale locale) {
 
         return new Thread(() -> {
 
@@ -82,10 +89,13 @@ public class TransactionUtils {
                 for (int i = 0; i < jobs.size(); i++) {
                     Job job = jobs.get(i);
                     try {
+                        List<Job> newJobs = new ArrayList<>();
                         doInTransaction(() -> {
-                            AlfrescoTransactionSupport.bindResource(AFTER_COMMIT_JOBS_KEY, jobs);
+                            newJobs.clear();
+                            AlfrescoTransactionSupport.bindResource(AFTER_COMMIT_JOBS_KEY, newJobs);
                             job.runnable.run();
                         });
+                        jobs.addAll(newJobs);
                     } catch (Exception e) {
                         LOG.error("Exception while job running", e);
                         if (job.errorHandler != null) {

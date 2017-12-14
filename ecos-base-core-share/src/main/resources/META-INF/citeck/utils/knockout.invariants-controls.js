@@ -1419,6 +1419,8 @@ CreateObjectButton
     .property('parentRuntime', String)
     .property('virtualParent', Boolean)
     .property('callback', Function)
+    .property('baseRef', String)
+    .property('rootAttributeName', String)
 
     .shortcut('protected', 'scope.protected')
     .shortcut('nodetype', 'scope.nodetype')
@@ -1478,7 +1480,9 @@ CreateObjectButton
                     title: this.buttonTitle() + ": " + createVariant.title(),
                     destination: createVariant.destination(),
                     parentRuntime: this.parentRuntime(),
-                    virtualParent: this.virtualParent()
+                    virtualParent: this.virtualParent(),
+                    baseRef: this.baseRef(),
+                    rootAttributeName: this.rootAttributeName()
                 }
             );
         }
@@ -2647,6 +2651,8 @@ ko.bindingHandlers.fileUploadControl = {
                             }
 
                             loadedFiles(loadedFiles() + 1);
+
+                            YAHOO.Bubbling.fire('file-uploaded-'+data.info().name().replace(':','_'), file);
                         }
                     }, false)
                 })(files[i]);

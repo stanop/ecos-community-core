@@ -20,6 +20,7 @@
       {
          nodeRef: "${nodeRef?js_string}",
          siteId: <#if site??>"${site?js_string}"<#else>null</#if>,
+         actualSiteId: <#if site??>"${site?js_string}"<#else>null</#if>,
          rootPage: "${rootPage?js_string}",
          rootLabelId: "${rootLabelId?js_string}",
          showFavourite: ${(showFavourite == "true")?string},

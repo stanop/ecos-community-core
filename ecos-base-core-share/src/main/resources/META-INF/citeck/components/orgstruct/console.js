@@ -141,7 +141,8 @@
 			// listen to tree events:
 			this.widgets.tree.subscribe("clickEvent", this.onTreeItemSelected, this, true);
 			this.widgets.list.subscribe("clickEvent", this.onListItemSelected, this, true);
-			
+            this.widgets.tree.subscribe("viewItem", this.onViewItem, this, true);
+
 			// initialize dialogs:
 			this.widgets.selectUserDialog = new Citeck.widget.SelectUserDialog(this.id + "-peoplepicker");
 			this.widgets.selectGroupDialog = new Citeck.widget.SelectGroupDialog(this.id + "-grouppicker");
@@ -228,6 +229,20 @@
 
 		},
 
+        // clear junc created by onViewItem
+		_clearViewJunk: function () {
+            // get the right section - block were we will show the views
+            var showArea = $('#' + this.widgets.list.id);
+
+            // remove previously created junk
+            showArea.children('.user-profile-view-inner-container').each(function () {
+                $("[id^='"+ $(this).attr('id')+ "']").remove();
+            });
+
+            // remove previous node views
+            showArea.children('.user-profile-view-inner-container').remove();
+		},
+
 		/**
 		 * Event handler - item was selected in tree (left-pane).
 		 * Updates list and list toolbar.
@@ -236,6 +251,10 @@
 			var node = args.node;
 			var item = node.data;
 			var parent = node.parent.data;
+
+			// clear junc created by onViewItem
+			this._clearViewJunk(item);
+
 			// bind widgets to model
 			this.widgets.list.setContext(item, parent);
 			this.widgets.listToolbar.setContext(item, parent);
@@ -249,6 +268,19 @@
 		 * Do nothing.
 		 */
 		onListItemSelected: function(args) {
+		var node = args.node;
+		var item = node.data;
+
+			if (item.item.authorityType === 'USER') {
+                // clear junc created by onViewItem
+                this._clearViewJunk(item);
+
+                // bind widgets to model
+                this.widgets.list.setContext(item, parent);
+                this.widgets.listToolbar.setContext(item, parent);
+
+				this.onViewItem(args);
+			}
 			return false; // do not toggle
 		},
 
@@ -320,11 +352,25 @@
 				htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
 			itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
 			// this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
-			this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {});
+			// this.widgets.editItemDialog.options.width = '50em';
+			this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {width: "800px"});
 			this.widgets.editItemDialog.setOptions(this.config.forms);
 			this.widgets.editItemDialog.show();
 			this.widgets.editItemDialog.subscribe("itemEdited", this.onItemEdited, this, true);
 		},
+
+        /**
+         * Event handler - tree item was clicked.
+         * Show view form
+         */
+        onViewItem: function(args) {
+            var formId = 'orgstruct';
+            var itemId = args.node.data._item_name_;
+            var item = this.model.getItem(itemId);
+            var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
+            itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id});
+        },
 
 		/**
 		 * Event handler - convert-to-group button was clicked.

@@ -132,4 +132,51 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.script.clean-document-status-cardlets" parent="idocs.import-scripts.3-2-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="Clean document status cardlets" />
+        <property name="description" value="Clean document status cardlets" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/patch/clean-document-status-cardlet.js" />
+    </bean>
+
+    <bean id="ecos-community.module-component.disable-document-status-for-case2" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="disable-document-status-for-case" />
+        <property name="description" value="disable-document-status-for-case" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.script.clean-document-status-cardlets" />
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/document-status</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ecos-community.module-component.cardlet.disable-document-status2" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="Disable document status"/>
+        <property name="description" value="Disable document status"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets"/>
+                <ref bean="idocs.module-component.script.clean-document-status-cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/disable-document-status</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>

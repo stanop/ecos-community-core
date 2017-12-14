@@ -5,9 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Roman Makarskiy
  */
@@ -41,6 +38,12 @@ public class CaseStatusServiceJS extends AlfrescoScopableProcessorExtension {
     public ScriptNode getStatusNode(Object document) {
         NodeRef docRef = JavaScriptImplUtils.getNodeRef(document);
         NodeRef statusRef = caseStatusService.getStatusRef(docRef);
+        return JavaScriptImplUtils.wrapNode(statusRef, this);
+    }
+
+    public ScriptNode getStatusNodeFromPrimaryParent(Object document) {
+        NodeRef childRef = JavaScriptImplUtils.getNodeRef(document);
+        NodeRef statusRef = caseStatusService.getStatusRefFromPrimaryParent(childRef);
         return JavaScriptImplUtils.wrapNode(statusRef, this);
     }
 

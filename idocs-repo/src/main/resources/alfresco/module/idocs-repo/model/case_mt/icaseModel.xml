@@ -413,6 +413,15 @@
 				</association>
 			</associations>
 		</aspect>
+		
+		<aspect name="icase:hasLastChangedDate">
+			<properties>
+				<property name="icase:lastChangedDate">
+					<type>d:datetime</type>
+				</property>
+			</properties>
+		</aspect>
+		
 	</aspects>
 
 </model>

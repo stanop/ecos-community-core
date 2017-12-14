@@ -68,11 +68,6 @@
 				<props>
 					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
 					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/document-status</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
 					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/current-tasks</prop>
 				</props>
 			</list>

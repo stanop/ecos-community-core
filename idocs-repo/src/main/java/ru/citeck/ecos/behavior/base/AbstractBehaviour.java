@@ -39,6 +39,7 @@ public abstract class AbstractBehaviour {
     protected NodeService nodeService;
 
     protected boolean enabled = true;
+    private boolean initialized = false;
 
     public AbstractBehaviour() {
         logger = LogFactory.getLog(getClass());
@@ -46,9 +47,12 @@ public abstract class AbstractBehaviour {
 
     @PostConstruct
     public void initialize() {
-        if (enabled) {
-            beforeInit();
-            registerPolicies();
+        synchronized (this) {
+            if (enabled && !initialized) {
+                beforeInit();
+                registerPolicies();
+                initialized = true;
+            }
         }
     }
 
@@ -191,9 +195,12 @@ public abstract class AbstractBehaviour {
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        for (JavaPolicyBehaviour behaviour : behaviours) {
-            behaviour.setFullEnabled(enabled);
+        if (this.enabled != enabled) {
+            this.enabled = enabled;
+            for (JavaPolicyBehaviour behaviour : behaviours) {
+                behaviour.setFullEnabled(enabled);
+            }
+            if (enabled) initialize();
         }
     }
 

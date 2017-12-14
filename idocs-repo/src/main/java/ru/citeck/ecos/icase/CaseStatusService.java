@@ -12,12 +12,13 @@ public interface CaseStatusService {
      * Set case status to document.
      *
      * @param document - document nodeRef
-     * @param status - case status nodeRef
+     * @param status   - case status nodeRef
      */
     void setStatus(NodeRef document, NodeRef status);
 
     /**
      * Set case status to document
+     *
      * @throws IllegalArgumentException if status not found in system
      */
     void setStatus(NodeRef document, String status);
@@ -32,13 +33,23 @@ public interface CaseStatusService {
 
     /**
      * Get case status
+     *
      * @return case status name or null if status doesn't exists in this case
      */
     String getStatus(NodeRef caseRef);
 
     /**
      * Get case status reference
+     *
      * @return case status nodeRef or null if status doesn't exists in this case
      */
     NodeRef getStatusRef(NodeRef caseRef);
+
+    /**
+     * Get case status reference from primary parent
+     *
+     * @param childRef - nodeRef of child
+     * @return case status nodeRef or null if status doesn't exists in the primary parent
+     */
+    NodeRef getStatusRefFromPrimaryParent(NodeRef childRef);
 }

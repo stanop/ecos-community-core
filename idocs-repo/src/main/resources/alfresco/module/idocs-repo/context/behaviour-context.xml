@@ -791,5 +791,9 @@
         <property name="order" value="400" />
     </bean>
 
+    <bean id="ru.citeck.ecos.caseTemplateContentSyncBehaviour"
+          class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
+    </bean>
+
 </beans>
 

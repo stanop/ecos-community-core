@@ -59,6 +59,7 @@ public class ICaseModel {
 	public static final QName PROP_TYPE_KIND = QName.createQName(NAMESPACE, "typeKind");
 	public static final QName PROP_CASE_ECOS_KIND = QName.createQName(NAMESPACE, "caseEcosKind");
 	public static final QName PROP_CASE_ECOS_TYPE = QName.createQName(NAMESPACE, "caseEcosType");
+	public static final QName PROP_LAST_CHANGED_DATE = QName.createQName(NAMESPACE, "lastChangedDate");
 
 	// icase:subcase
 	public static final QName ASPECT_SUBCASE = QName.createQName(NAMESPACE, "subcase");

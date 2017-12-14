@@ -9,7 +9,7 @@
 
 <div id="${id}" class="case-status document-details-panel">
 	<h2 id="${id}-heading" class="alfresco-twister">
-		${msg("header.status")}<span class="panel-body"><@renderStatus/></span>
+		${msg("header.${statusType}")}:<span class="panel-body"><@renderStatus/></span>
 	</h2>
 </div>
 

@@ -33,7 +33,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StopWatch;
-import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
 import ru.citeck.ecos.cmmn.service.CaseXmlService;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.CaseStatusService;
@@ -110,7 +109,9 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
             itemsUpdateState.startUpdate(CaseTemplateBehavior.class, caseNode);
 
-            stopWatch.start("copyFromTemplate caseRef: " + caseNode);
+            if (!stopWatch.isRunning()) {
+                stopWatch.start("copyFromTemplate caseRef: " + caseNode);
+            }
             caseXmlService.fillCaseFromTemplate(caseNode);
             stopWatch.stop();
 
@@ -118,7 +119,9 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
                 itemsUpdateState.endUpdate(CaseTemplateBehavior.class, caseNode, true, false);
 
-                stopWatch.start("fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
+                if (!stopWatch.isRunning()) {
+                    stopWatch.start("fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
+                }
                 eventService.fireEvent(caseNode, ICaseEventModel.CONSTR_CASE_CREATED);
                 stopWatch.stop();
 
