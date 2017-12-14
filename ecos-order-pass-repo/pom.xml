@@ -25,33 +25,45 @@
         <!-- ECOS MODULES -->
 
         <dependency>
-            <groupId>${community.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
-            <classifier>${community.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
-            <groupId>${community.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${community.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
-            <groupId>${community.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>journals-repo</artifactId>
-            <classifier>${community.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
-            <groupId>${community.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <classifier>${community.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
-            <groupId>${community.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>idocs-repo</artifactId>
-            <classifier>${community.classifier}</classifier>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>3.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.2.4.Final</version>
         </dependency>
 
     </dependencies>

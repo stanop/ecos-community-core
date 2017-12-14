@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <!-- models -->
+    <bean id="order-pass.modelBootstrap" parent="dictionaryModelBootstrap" depends-on="idocs.dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/ecos-order-pass-repo/model/orderPassModel.xml</value>
+            </list>
+        </property>
+        <property name="labels">
+            <list>
+                <value>alfresco/module/ecos-order-pass-repo/messages/order_pass_model</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="order-pass.import-scripts" abstract="true" class="ru.citeck.ecos.repo.module.ScriptImporterModuleComponent" parent="module.baseComponent">
+        <property name="moduleId" value="ecos-order-pass-repo" />
+        <property name="scriptService" ref="ScriptService"/>
+        <property name="scriptEngine" value="javascript"/>
+    </bean>
+
+    <bean id="order-pass.import-scripts.1-0-0" parent="order-pass.import-scripts" abstract="true">
+        <property name="sinceVersion" value="1.0.0" />
+        <property name="appliesFromVersion" value="1.0.0" />
+    </bean>
+
+    <bean id="order-pass.import-spaces" abstract="true" class="org.alfresco.repo.module.ImporterModuleComponent" parent="module.baseComponent">
+        <property name="moduleId" value="ecos-order-pass-repo"/>
+        <property name="importer" ref="spacesBootstrap"/>
+    </bean>
+
+    <bean id="order-pass.import-spaces.1-0-0" abstract="true" parent="order-pass.import-spaces">
+        <property name="sinceVersion" value="1.0.0" />
+        <property name="appliesFromVersion" value="1.0.0" />
+    </bean>
+
+    <!-- order-pass site -->
+    <bean id="order-pass.site" parent="order-pass.import-spaces.1-0-0">
+        <property name="name" value="Order Pass site"/>
+        <property name="description" value="Order Pass site"/>
+        <property name="bootstrapView">
+            <props>
+                <prop key="path">/app:company_home/st:sites</prop>
+                <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+                <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/order-pass-site</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="order-pass.spacesBootstrap" parent="spacesStoreImporter">
+        <property name="useExistingStore">
+            <value>true</value>
+            <!-- set this to false after data will get imported on production -->
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/module/ecos-order-pass-repo/bootstrap/enumeration-template.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="order-pass.module-component.journals-lists" parent="order-pass.import-spaces.1-0-0">
+        <property name="name" value="Order Pass List Journals"/>
+        <property name="description" value="Order Pass List Journals"/>
+        <!--<property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+            </list>
+        </property>-->
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                  <!--  <prop key="uuidBinding">UPDATE_EXISTING</prop>-->
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/journals/journal-list</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="order-pass.module-component.order-pass-journal" parent="order-pass.import-spaces.1-0-0">
+        <property name="name" value="order-pass-journal" />
+        <property name="description" value="Order Pass Journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="order-pass.site" />
+                <ref bean="order-pass.module-component.journals-lists" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:order-pass/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/journals/order-pass</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/journals/order-pass</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:order-passes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/journals/order-pass</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:order-passes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/journals/order-pass</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/ecos-order-pass-repo/bootstrap/journals/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/journals/order-pass</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="order-pass.script.case-statuses" parent="order-pass.import-scripts.1-0-0">
+        <property name="executeOnceOnly" value="false" />
+        <property name="name" value="add-case-statuses" />
+        <property name="description" value="Create or update case statuses" />
+        <property name="bootstrapScript" value="alfresco/module/ecos-order-pass-repo/bootstrap/scripts/case-statuses.js"/>
+    </bean>
+
+    <bean id="order-pass.script.fill-case-roles" parent="order-pass.import-scripts.1-0-0">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-case-roles"/>
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="fill-case-roles.js" />
+        <property name="description" value="Fill case roles" />
+        <property name="bootstrapScript" value="alfresco/module/ecos-order-pass-repo/bootstrap/scripts/fill-case-roles.js"/>
+    </bean>
+
+    
+</beans>
