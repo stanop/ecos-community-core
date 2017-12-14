@@ -27,7 +27,7 @@
 		var criterion = criteria.get(i),
 			field = criterion.get('field'),
 			predicate = criterion.get('predicate'),
-			value = criterion.get('value');
+			value = criterion.get('persistedValue');
 		if(!field || !predicate) {
 			throw "Illegal criterion (index " + i + "): field and predicate are required";
 		}

@@ -1,13 +1,20 @@
 package ru.citeck.ecos.utils.converter.amount;
 
+import java.util.Locale;
+
 /**
  * English realization of converter
  *
  * @author Roman.Makarskiy on 10.07.2016.
  */
- class AmountInWordEnConverter extends AmountInWordConverter {
+class AmountInWordEnConverter extends AmountInWordConverter {
+
     private static final String EN_DECADE_HYPHEN = "-";
-    private static final String INDENT =" ";
+    private static final String INDENT = " ";
+
+    AmountInWordEnConverter() {
+        locale = new Locale("en", "");
+    }
 
     @Override
     String getDecade(int position) {

@@ -67,6 +67,15 @@
             <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
         </property>
+        <association name="contracts:attachmentRkkCreatedFrom">
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var attachment = view.params.contracts_attachmentRkkCreatedFrom;
+                    if (attachment) return attachment;
+                    return null;
+                })()
+            ]]></invariant>
+        </association>
         <!--association name="contracts:agreementSubject">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association-->

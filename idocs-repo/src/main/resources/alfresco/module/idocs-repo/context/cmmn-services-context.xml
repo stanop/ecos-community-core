@@ -27,7 +27,6 @@
         <property name="caseTemplatesRoot" value="/app:company_home/app:dictionary/cm:case-templates" />
         <property name="nodeService" ref="nodeService" />
         <property name="contentService" ref="contentService" />
-        <property name="caseTemplateRegistry" ref="caseTemplateRegistry" />
     </bean>
 
     <bean id="caseXmlService" class="ru.citeck.ecos.cmmn.service.CaseXmlService" depends-on="idocs.dictionaryBootstrap">
@@ -40,16 +39,7 @@
         <property name="caseImportService" ref="cmmnImportService"/>
     </bean>
 
-    <bean id="cmmnUtils.initialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod" value="ru.citeck.ecos.cmmn.CMMNUtils.setServiceRegistry"/>
-        <property name="arguments">
-            <list>
-                <ref bean="ServiceRegistry"/>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="caseAutoDeployer" class="ru.citeck.ecos.icase.CaseTemplateDeployer" depends-on="cmmnUtils.initialization">
+    <bean id="caseAutoDeployer" class="ru.citeck.ecos.icase.CaseTemplateDeployer">
         <property name="caseImportService" ref="cmmnImportService"/>
         <property name="retryingTransactionHelper" ref="retryingTransactionHelper"/>
         <property name="enabled" value="true"/>
@@ -64,6 +54,29 @@
                 </constructor-arg>
             </bean>
         </property>
+    </bean>
+
+    <bean id="caseTemplateConfigDAO" class="ru.citeck.ecos.content.config.dao.xml.XmlConfigDAO">
+        <property name="rootNodeQName" value="{http://www.omg.org/spec/CMMN/20151109/MODEL}definitions" />
+        <property name="rootPackage" value="ru.citeck.ecos.cmmn.model" />
+        <property name="schemaFiles">
+            <list>
+                <value>alfresco/module/idocs-repo/cmmn/CMMN11.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/CMMN11CaseModel.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/CMMNDI11.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/DC.xsd</value>
+                <value>alfresco/module/idocs-repo/cmmn/DI.xsd</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="caseTemplateRegistry" class="ru.citeck.ecos.cmmn.service.CaseTemplateRegistry">
+        <property name="configNodeType" value="{http://www.citeck.ru/model/icase/1.0}template" />
+        <property name="classField" value="{http://www.citeck.ru/model/icase/1.0}caseType" />
+        <property name="typeField" value="{http://www.citeck.ru/model/icase/1.0}caseEcosType" />
+        <property name="kindField" value="{http://www.citeck.ru/model/icase/1.0}caseEcosKind" />
+        <property name="rootNode" value="/app:company_home/app:dictionary/cm:case-templates" />
+        <property name="configDAO" ref="caseTemplateConfigDAO" />
     </bean>
 
 </beans>

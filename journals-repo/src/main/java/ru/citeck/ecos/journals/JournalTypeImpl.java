@@ -42,6 +42,7 @@ class JournalTypeImpl implements JournalType {
     private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
     private final Map<QName, Map<String, String>> attributeOptions;
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
+    private final Map<QName, JournalCriterion> criterion;
     
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry) {
 
@@ -50,7 +51,10 @@ class JournalTypeImpl implements JournalType {
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
         List<Header> headers = journal.getHeaders().getHeader();
         List<QName> allAttributes = new ArrayList<>(headers.size());
+
         batchEdit = new HashMap<>();
+        criterion = new HashMap<>();
+
         defaultAttributes = new BitSet(allAttributes.size());
         visibleAttributes = new BitSet(allAttributes.size());
         searchableAttributes = new BitSet(allAttributes.size());
@@ -60,7 +64,9 @@ class JournalTypeImpl implements JournalType {
 
         int index = 0;
         for(Header header : headers) {
+
             QName attributeKey = QName.createQName(header.getKey(), prefixResolver);
+
             allAttributes.add(attributeKey);
             if(header.isDefault()) defaultAttributes.set(index);
             if(header.isVisible()) visibleAttributes.set(index);
@@ -77,7 +83,10 @@ class JournalTypeImpl implements JournalType {
                                                             attributeKey, prefixResolver,
                                                             serviceRegistry));
             }
+
             batchEdit.put(attributeKey, attributeBatchEdit);
+            criterion.put(attributeKey, new JournalCriterion(attributeKey, header.getCriterion(), prefixResolver));
+
             index++;
         }
         this.attributes = Collections.unmodifiableList(allAttributes);
@@ -177,6 +186,11 @@ class JournalTypeImpl implements JournalType {
         return result;
     }
 
+    @Override
+    public JournalCriterion getCriterion(QName attributeKey) {
+        return criterion.get(attributeKey);
+    }
+
     private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
         List<QName> result = new LinkedList<>();
         for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i+1)) {
@@ -209,4 +223,5 @@ class JournalTypeImpl implements JournalType {
         }
         return result;
     }
+
 }

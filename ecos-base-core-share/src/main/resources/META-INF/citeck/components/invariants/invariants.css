@@ -464,21 +464,20 @@
   display: none;
 }
 
-.invariants-form .template-wide .template-blockset {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  padding-top: 15px;
-  margin-bottom: 15px;
-  clear: both;
+.invariants-form .template-wide .template-blockset:after {
+  margin-bottom: 10px;
+  height: 1px;
+  background-color: #ccc;
+  width: 100%;
 }
 
-.invariants-form .template-wide .template-blockset + .template-blockset {
-  border-top: none;
-  padding-top: 0;
+.invariants-form .template-wide .template-blockset .template-block:last-child:after,
+.invariants-form .template-wide .template-blockset .template-blockset:last-child:after {
+  margin: 0;
+  height: 0;
 }
 
-.invariants-form .template-wide .template-blockset:after,
-.invariants-form .template-wide .template-blockset:before {
+.invariants-form .template-wide .template-blockset:after {
   content: "";
   clear: both;
   display: block;
@@ -810,7 +809,8 @@
 .invariants-form .template-table .template-row .template-checkbox,
 .invariants-form .template-table .template-row .template-number,
 .invariants-form .template-table .template-row .template-multiple-text,
-.invariants-form .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row .template-free-content,
+.invariants-form .template-table .template-row .template-user-groups {
   width: 54.5%;
   float: right;
 }
@@ -825,7 +825,8 @@
 .invariants-form .template-table .template-row.with-help .template-autocomplete,
 .invariants-form .template-table .template-row.with-help .template-checkbox,
 .invariants-form .template-table .template-row.with-help .template-number,
-.invariants-form .template-table .template-row .template-free-content {
+.invariants-form .template-table .template-row .template-free-content,
+.invariants-form .template-table .template-row .template-user-groups {
   width: 54.5%;
 }
 
@@ -1086,8 +1087,9 @@
   margin-top: 7px;
 }
 
-.invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option {
-  display: block;
+.invariants-form .template-table .template-checkbox .alignment-vertical .checkbox-option,
+.invariants-form .template-wide .template-checkbox .alignment-vertical .checkbox-option {
+  display: table;
 }
 
 .invariants-form .template-table .template-checkbox input[type="checkbox"],
@@ -2165,6 +2167,10 @@ div[id*="multiple-text"] .multiple-text-control input {
   background-size: 100% 100%;
 }
 
+.invariants-form .template-view-table tr.value-item .value-item-actions a.duplicate-value-item {
+  background-image: url(../journals2/images/copy.png);
+}
+
 .invariants-form .template-view span.value-item .value-item-actions a.edit-value-item,
 .invariants-form .template-view-table tr.value-item .value-item-actions a.edit-value-item {
   background-image: url(images/edit.png);
@@ -2179,6 +2185,10 @@ div[id*="multiple-text"] .multiple-text-control input {
 .invariants-form .template-view-table tr.value-item .value-item-actions a.delete-value-item {
   background-image: url(images/remove.png);
   background-size: 10px;
+}
+
+.invariants-form .template-view-table tr.value-item .value-item-actions a.duplicate-value-item:hover {
+  background-image: url(../journals2/images/copy-active.png);
 }
 
 .invariants-form .template-view span.value-item .value-item-actions a.delete-value-item:hover,

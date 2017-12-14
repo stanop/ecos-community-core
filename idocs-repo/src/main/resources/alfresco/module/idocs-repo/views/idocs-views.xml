@@ -298,4 +298,11 @@
         <field prop="idocs:countryISO3166Number"/>
     </view>
 
+    <view class="idocs:currencyRateRecord">
+        <field assoc="idocs:crrBaseCurrency"/>
+        <field assoc="idocs:crrTargetCurrency"/>
+        <field prop="idocs:crrValue"/>
+        <field prop="idocs:crrDate"/>
+    </view>
+
 </views>

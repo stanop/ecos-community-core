@@ -7,6 +7,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.condition.Condition;
 import ru.citeck.ecos.cmmn.condition.ConditionProperty;
@@ -42,15 +43,18 @@ public class CasePlanModelImport {
     private CaseStatusService caseStatusService;
     private CaseElementService caseElementService;
 
+    private CMMNUtils utils;
+
     private Map<String, NodeRef> rolesRef;
     private Map<String, NodeRef> planItemsMapping = new HashMap<>();
     private Map<String, NodeRef> completnessLevelRefs = new HashMap<>();
     private boolean isCompletnessLevelsExists = false;
 
-    public CasePlanModelImport(ServiceRegistry serviceRegistry) {
+    public CasePlanModelImport(ServiceRegistry serviceRegistry, CMMNUtils utils) {
         this.nodeService = serviceRegistry.getNodeService();
         this.caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
         this.caseElementService = EcosCoreServices.getCaseElementService(serviceRegistry);
+        this.utils = utils;
     }
 
     public void importCasePlan(NodeRef caseRef, Case caseItem, Map<String, NodeRef> rolesRef) {
@@ -68,7 +72,7 @@ public class CasePlanModelImport {
             String completnessLevelsString = casePlanModel.getOtherAttributes().get(CMMNUtils.QNAME_COMPLETNESS_LEVELS);
             String[] completnessLevelsArray = completnessLevelsString.split(",");
             for (String comletnessLevel : completnessLevelsArray) {
-                NodeRef nodeRef = CMMNUtils.extractNodeRefFromCmmnId(comletnessLevel);
+                NodeRef nodeRef = utils.extractNodeRefFromCmmnId(comletnessLevel);
                 completnessLevelRefs.put(comletnessLevel, nodeRef);
                 if (!nodeService.exists(nodeRef)) {
                     logger.error("Completness level with nodeRef = " + nodeRef + " doesn't exists!");
@@ -84,11 +88,11 @@ public class CasePlanModelImport {
 
         List<JAXBElement<? extends TPlanItemDefinition>> definitions = casePlanModel.getPlanItemDefinition();
         for (JAXBElement<? extends TPlanItemDefinition> jaxbElement : definitions) {
-            if (CMMNUtils.isTask(jaxbElement) || CMMNUtils.isProcessTask(jaxbElement)) {
+            if (utils.isTask(jaxbElement) || utils.isProcessTask(jaxbElement)) {
                 importTask(caseRef, (TTask) jaxbElement.getValue(), ASSOC_ACTIVITIES);
-            } else if (CMMNUtils.isStage(jaxbElement)) {
+            } else if (utils.isStage(jaxbElement)) {
                 importStage(caseRef, (Stage) jaxbElement.getValue(), ASSOC_ACTIVITIES);
-            } else if (CMMNUtils.isTimer(jaxbElement)) {
+            } else if (utils.isTimer(jaxbElement)) {
                 importTimer(caseRef, (TTimerEventListener) jaxbElement.getValue(), ASSOC_ACTIVITIES);
             }
         }
@@ -127,11 +131,11 @@ public class CasePlanModelImport {
         planItemsMapping.put(stage.getId(), stageNodeRef);
         if (!stage.getPlanItemDefinition().isEmpty()) {
             for (JAXBElement<? extends TPlanItemDefinition> jaxbElement : stage.getPlanItemDefinition()) {
-                if (CMMNUtils.isTask(jaxbElement) || CMMNUtils.isProcessTask(jaxbElement)) {
+                if (utils.isTask(jaxbElement) || utils.isProcessTask(jaxbElement)) {
                     importTask(stageNodeRef, (TTask) jaxbElement.getValue(), ActivityModel.ASSOC_ACTIVITIES);
-                } else if (CMMNUtils.isStage(jaxbElement)) {
+                } else if (utils.isStage(jaxbElement)) {
                     importStage(stageNodeRef, (Stage) jaxbElement.getValue(), ActivityModel.ASSOC_ACTIVITIES);
-                } else if (CMMNUtils.isTimer(jaxbElement)) {
+                } else if (utils.isTimer(jaxbElement)) {
                     importTimer(stageNodeRef, (TTimerEventListener) jaxbElement.getValue(), ASSOC_ACTIVITIES);
                 }
             }
@@ -208,11 +212,11 @@ public class CasePlanModelImport {
         for (javax.xml.namespace.QName key : attributes.keySet()) {
             if (!key.getNamespaceURI().equals(CMMNUtils.NAMESPACE)) {
                 String value = attributes.get(key);
-                properties.put(CMMNUtils.convertFromXMLQName(key), value.trim().isEmpty() ? null : value);
+                properties.put(utils.convertFromXMLQName(key), value.trim().isEmpty() ? null : value);
             }
         }
 
-        String typeVersionStr = attributes.get(CMMNUtils.convertToXMLQName(ActivityModel.PROP_TYPE_VERSION));
+        String typeVersionStr = attributes.get(utils.convertToXMLQName(ActivityModel.PROP_TYPE_VERSION));
         Integer typeVersion = StringUtils.isNotBlank(typeVersionStr) ? Integer.parseInt(typeVersionStr) : null;
         properties.put(ActivityModel.PROP_TYPE_VERSION, typeVersion);
 
@@ -295,23 +299,23 @@ public class CasePlanModelImport {
 
     private List<Sentry> getEntrySentries(TPlanItem planItem, Map<String, Sentry> stageSentries) {
         List<Sentry> result = new ArrayList<>();
-        result.addAll(CMMNUtils.criterionToSentries(planItem.getEntryCriterion()));
+        result.addAll(utils.criterionToSentries(planItem.getEntryCriterion()));
         String sentriesStr = planItem.getOtherAttributes().get(CMMNUtils.QNAME_ENTRY_SENTRY);
-        result.addAll(CMMNUtils.stringToElements(sentriesStr, stageSentries));
+        result.addAll(utils.stringToElements(sentriesStr, stageSentries));
         return result;
     }
 
     private List<Sentry> getExitSentries(TPlanItem planItem, Map<String, Sentry> stageSentries) {
         List<Sentry> result = new ArrayList<>();
-        result.addAll(CMMNUtils.criterionToSentries(planItem.getExitCriterion()));
+        result.addAll(utils.criterionToSentries(planItem.getExitCriterion()));
         String sentriesStr = planItem.getOtherAttributes().get(CMMNUtils.QNAME_EXIT_SENTRY);
-        result.addAll(CMMNUtils.stringToElements(sentriesStr, stageSentries));
+        result.addAll(utils.stringToElements(sentriesStr, stageSentries));
         return result;
     }
 
     private void importUserEventProperties(Sentry sentry, NodeRef event) {
         for (Map.Entry<javax.xml.namespace.QName, QName> entry : CMMNUtils.EVENT_PROPS_MAPPING.entrySet()) {
-            Serializable value = CMMNUtils.convertValueForRepo(entry.getValue(), sentry.getOtherAttributes().get(entry.getKey()));
+            Serializable value = utils.convertValueForRepo(entry.getValue(), sentry.getOtherAttributes().get(entry.getKey()));
             if (value != null) {
                 nodeService.setProperty(event, entry.getValue(), value);
             }
@@ -326,10 +330,10 @@ public class CasePlanModelImport {
             content = content.replace("<!CDATA[", "").replace("]]>", "");
             try {
                 for (Condition condition : importConditions(content).getConditions()) {
-                    QName conditionTypeQName = CMMNUtils.convertFromXMLQName(condition.getType());
+                    QName conditionTypeQName = utils.convertFromXMLQName(condition.getType());
                     Map<QName, Serializable> conditionProperties = new HashMap<>();
                     for (ConditionProperty conditionProperty : condition.getProperties()) {
-                        QName propertyType = CMMNUtils.convertFromXMLQName(conditionProperty.getType());
+                        QName propertyType = utils.convertFromXMLQName(conditionProperty.getType());
                         conditionProperties.put(propertyType, conditionProperty.getValue());
                     }
                     nodeService.createNode(eventRef, EventModel.ASSOC_CONDITIONS,

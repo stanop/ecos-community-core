@@ -8,6 +8,8 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.CmmnExportImportException;
 import ru.citeck.ecos.cmmn.model.Case;
@@ -15,13 +17,12 @@ import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.model.ObjectFactory;
 import ru.citeck.ecos.cmmn.service.util.CasePlanModelExport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesExport;
+import ru.citeck.ecos.content.config.dao.xml.XmlConfigDAO;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -40,12 +41,19 @@ import static ru.citeck.ecos.model.ICaseTemplateModel.ASSOC_ELEMENT_CONFIG;
  * @author Pavel Simonov (pavel.simonov@citeck.ru)
  */
 public class CaseExportService {
+
     private final Logger log = LoggerFactory.getLogger(CaseExportService.class);
 
     private NodeService nodeService;
     private DictionaryService dictionaryService;
     private ObjectFactory objectFactory;
     private CaseActivityService caseActivityService;
+
+    @Autowired
+    private CMMNUtils utils;
+    @Autowired
+    @Qualifier("caseTemplateConfigDAO")
+    private XmlConfigDAO<Definitions> configDAO;
 
     public void init() {
         objectFactory = new ObjectFactory();
@@ -63,28 +71,29 @@ public class CaseExportService {
             for (Map.Entry<javax.xml.namespace.QName, QName> mapping : CMMNUtils.CASE_ATTRIBUTES_MAPPING.entrySet()) {
                 Serializable value = sourcePropertyMap.get(mapping.getValue());
                 if (value != null) {
-                    String valueStr = CMMNUtils.convertValueForCmmn(mapping.getValue(), value);
+                    String valueStr = utils.convertValueForCmmn(mapping.getValue(), value);
                     caseItem.getOtherAttributes().put(mapping.getKey(), valueStr);
                 }
             }
             caseItem.getOtherAttributes().put(CMMNUtils.QNAME_ELEMENT_TYPES, getElementTypesForCase(caseNodeRef));
 
-            caseItem.setId(CMMNUtils.convertNodeRefToId(caseNodeRef));
+            caseItem.setId(utils.convertNodeRefToId(caseNodeRef));
             caseItem.setName(sourcePropertyMap.get(ContentModel.PROP_NAME).toString());
 
-            caseItem.setCaseRoles(new CaseRolesExport(nodeService, dictionaryService).getRoles(caseNodeRef));
+            caseItem.setCaseRoles(new CaseRolesExport(nodeService, dictionaryService, utils).getRoles(caseNodeRef));
             caseItem.setCasePlanModel(
-                    new CasePlanModelExport(nodeService, caseActivityService, this, dictionaryService)
+                    new CasePlanModelExport(nodeService, caseActivityService, this, dictionaryService, utils)
                             .getCasePlanModel(caseNodeRef, caseItem.getCaseRoles()));
 
             Definitions definitions = new Definitions();
             definitions.getCase().add(caseItem);
             definitions.setTargetNamespace(CMMNUtils.NAMESPACE);
-            final Marshaller marshaller = CMMNUtils.createMarshaller(ObjectFactory.class.getPackage().getName());
-            JAXBElement<Definitions> exportedElement = objectFactory.createDefinitions(definitions);
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            marshaller.marshal(exportedElement, out);
+            configDAO.write(definitions, out);
+
             return out.toByteArray();
+
         } catch (Throwable t) {
             log.error("Cannot export node: " + caseNodeRef, t);
             throw new CmmnExportImportException("Cannot export node: " + caseNodeRef, t);

@@ -94,7 +94,7 @@ fieldNames = [
                 dataSourceType.responseSchema = { resultsList: 'attributes', fields: [ {key:'datatype'}] };
                 dataSourceType.sendRequest(fieldSelectControl.options.requestParam, {
                     success: function(request, response, payload) {
-                        predicateSelectControl.options.requestParam = response.results[0]["datatype"];
+                        predicateSelectControl.options.requestParam = (response.results[0] || {datatype: ''})["datatype"];
                         var select = Dom.get(predicateSelectControl.id);
                         Dom.removeClass(select, "hidden");
                         Dom.get(predicateSelectControl.id+"-error").innerHTML = '';

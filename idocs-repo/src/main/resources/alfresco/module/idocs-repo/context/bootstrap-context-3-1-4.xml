@@ -218,20 +218,6 @@
         </property>
     </bean>
 
-    <bean id="ecos-community.module-component.disable-document-status-for-case" parent="idocs.import-spaces.3-1-4">
-        <property name="name" value="disable-document-status-for-case" />
-        <property name="description" value="disable-document-status-for-case" />
-        <property name="bootstrapViews">
-            <list>
-                <props>
-                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/document-status</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
-
     <bean id="ecos-community.module-component.icase-documents-cardlet" parent="idocs.import-spaces.3-1-4">
         <property name="name" value="icase-documents-cardlet"/>
         <property name="description" value="iCase Documents Cardlet"/>
@@ -246,25 +232,6 @@
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
                     <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/disable-documents</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="ecos-community.module-component.cardlet.disable-document-status" parent="idocs.import-spaces.3-1-4">
-        <property name="name" value="Disable document status"/>
-        <property name="description" value="Disable document status"/>
-        <property name="dependsOn">
-            <list>
-                <ref bean="idocs.module-component.system-journals.cardlets"/>
-            </list>
-        </property>
-        <property name="bootstrapViews">
-            <list>
-                <props>
-                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/disable-document-status</prop>
                 </props>
             </list>
         </property>

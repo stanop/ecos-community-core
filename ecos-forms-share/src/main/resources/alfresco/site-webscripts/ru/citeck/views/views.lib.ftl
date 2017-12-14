@@ -29,6 +29,7 @@
 	<#if element.attribute??>
 		<!-- ko with: getAttribute("${element.attribute}") -->
 		<#global fieldId = args.htmlid + "-" + element.attribute?replace(':', '_') />
+		<#global globalAttributeName = element.attribute?string/>
 	</#if>
 
 	<#-- virtual elements for view -->
@@ -38,10 +39,10 @@
 			return set ? set.hidden() : false
 		}) -->
 	</#if>
-	
+
 	<div class="form-${element.type} template-${template}"
 		<#if element.attribute??>
-			data-bind="css: { 
+			data-bind="css: {
 				invalid: invalid, 
 				hidden: irrelevant, 
 				'with-help': description, 
@@ -57,7 +58,7 @@
 	>
 		<@renderContent element />
 	</div>
-	
+
 	<#if element.type == "view" && element.template?contains("set") && element.params.setId??>
 		<!-- /ko -->
 	</#if>
@@ -65,7 +66,7 @@
 	<#if element.attribute??>
 		<!-- /ko -->
 	</#if>
-	
+
 	<#global viewScope = oldScope />
 </#macro>
 
@@ -145,7 +146,7 @@
 				<!-- /ko -->
 			</div>
 		<!-- /ko -->
-		
+
 		<#if view.mode != 'view'>
 			<div class="form-buttons" data-bind="with: node().impl">
 
@@ -170,7 +171,7 @@
 			<input id="${id}-form-cancel" type="button" value="${msg(cancelButtonTitle)}" data-bind="enable: true, click: $root.cancel.bind($root)" />
 		</div>
 		</#if>
-	
+
 	</div>
 </#macro>
 
@@ -205,7 +206,7 @@
 	"description": "${invariant.description!}",
 	"final": ${invariant.final?string},
 	"language": "${invariant.language}",
-	"expression": 
+	"expression":
 		<#assign value = invariant.expression />
 		<#if value?is_sequence>
 			[
@@ -291,9 +292,11 @@
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#assign virtualParent = (args.param_virtualParent!"false") == "true" />
+		<#assign baseRef = args.param_baseRef!""/>
+		<#assign rootAttributeName = args.param_rootAttributeName!""/>
 		<#assign invariantsRuntimeCache = view.params.invariantsRuntimeCache!"true" />
 		<#assign independent = (view.params.independent!"false") == "true" />
-		
+
 		<#assign nodeKey>
 			<#if independent>"${runtimeKey}"<#else>
 				<#if nodeRef?has_content>"${nodeRef}"<#else>"${runtimeKey}"</#if>
@@ -309,6 +312,8 @@
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
 					virtualParent: <#if virtualParent>"${args.param_parentRuntime}"<#else>null</#if>,
+        			baseRef: <#if baseRef??>"${baseRef}"<#else>null</#if>,
+        			rootAttributeName: <#if rootAttributeName??>"${rootAttributeName}"<#else>null</#if>,
 					formTemplate: "${view.template}",
 					independent: "${independent?string}",
 
@@ -318,7 +323,7 @@
 						key: "${nodeKey?trim}",
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
-						
+
 						<#if classNames?has_content>classNames: <@views.renderQNames classNames />,</#if>
 						<#if attributeNames?has_content>viewAttributeNames: <@views.renderValue attributeNames />,</#if>
 

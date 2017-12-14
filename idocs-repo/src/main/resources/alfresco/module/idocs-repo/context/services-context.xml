@@ -545,7 +545,7 @@
             <ref bean="sysAdminParams"></ref>
         </property>
         <property name="sendTestMessage">
-            <value>${mail.testmessage.send}</value>
+            <value>false</value>
         </property>
         <property name="testMessageTo">
             <value>${mail.testmessage.to}</value>
@@ -556,7 +556,10 @@
         <property name="testMessageText">
             <value>${mail.testmessage.text}</value>
         </property>
-	</bean>
+        <property name="contentService">
+            <ref bean="contentService"></ref>
+        </property>
+    </bean>
 
 	<!--bean id="BusinessCalendar" class="ru.citeck.ecos.calendar.BusinessCalendar">
 		<property name="searchService" ref="searchService" />

@@ -177,6 +177,53 @@
         });
     };
 
+    // duplicate item on table template
+    Citeck.forms.duplicateValue = function (record, parent) {
+        var attributes =  record.resolve('allData.attributes');
+        if (attributes && record && record.typeShort()) {
+
+            record.inSubmitProcess(true);
+
+            var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort(),
+                data = { attributes: {}, view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}};
+
+            for (var key in attributes) {
+                if (attributes[key] && ["attr:noderef", "attr:parent", "attr:parentassoc", "attr:aspects"].indexOf(key) == -1) {
+                    if (key == 'attr:types') {
+                        data.attributes[key] = [record.typeShort()]
+                    } else {
+                        data.attributes[key] = attributes[key];
+                    }
+                }
+            }
+
+            Alfresco.util.Ajax.jsonPost({
+                url: url,
+                dataObj: data,
+                requestContentType: Alfresco.util.Ajax.JSON,
+                successCallback: {
+                    fn: function (response) {
+                        if (response && response.json && response.json.result) {
+                            var arr = parent.value();
+                            arr.push(response.json.result);
+                            parent.value(arr);
+
+                        }
+                        record.inSubmitProcess(false);
+                    }
+                },
+                failureCallback: {
+                    fn: function (response) {
+                        Alfresco.util.PopupManager.displayMessage({
+                            text: Alfresco.util.message("message.request-error")
+                        });
+                        record.inSubmitProcess(false);
+                    }
+                }
+            });
+        }
+    };
+
     Citeck.forms.formContent = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
@@ -472,7 +519,94 @@
             }}
         });
     };
-    
+
+    Citeck.forms.showViewInplaced = function(itemId, formId, callback, params) {
+        var listId = params.listId;
+        var itemKind, mode, paramName;
+        formId = formId || "";
+
+        if(Citeck.utils.isNodeRef(itemId)) {
+            paramName = 'nodeRef';
+            itemKind = 'node';
+            mode = 'view';
+        } else {
+            paramName = 'type';
+            itemKind = 'type';
+            mode = 'create';
+        }
+
+        params = params || {};
+        var msg = Alfresco.util.message,
+            id = Alfresco.util.generateDomId(),
+            viewId = id + "-body",
+            header = params.title || msg("actions.document.dialog-form"),
+            destination = params.destination || "",
+            destinationAssoc = params.destinationAssoc || "",
+            width = params.width || "500px",
+            height = params.height || "auto"
+        ;
+
+        var newDialog = function() {
+            var dataObj = { htmlid: viewId, mode: mode, viewId: formId };
+            dataObj[paramName] = itemId;
+
+            for(var name in params) {
+                if(params[name] != null) dataObj['param_' + name] = params[name];
+            }
+
+            Alfresco.util.Ajax.request({
+                method: "GET",
+                url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view",
+                dataObj: dataObj,
+                execScripts: true,
+                successCallback: {
+                    fn: function(response) {
+                        // get right section - block were we will show the views
+                        var showArea = $('#' + listId);
+
+                        // remove height limitation
+                        showArea.parent().css('height','initial');
+
+                        // create container
+                        var container = document.createElement('div');
+                        container.id = '' + id;
+
+                        // add unique class name that will be used later to clear right section
+                        $(container).addClass('user-profile-view-inner-container');
+
+                        // add server response (user form) into the container
+                        container.innerHTML = response.serverResponse.responseText;
+
+                        // append the container into the right section
+                        $(container).appendTo(showArea);
+                    }
+                }
+            });
+        };
+
+        var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
+            paramName: paramName,
+            itemId: itemId,
+            mode: mode,
+            formId: formId
+        });
+
+        Alfresco.util.Ajax.jsonGet({
+            url: checkUrl,
+            successCallback: { fn: function(response) {
+                if (response.json.exists) {
+                    newDialog();
+                } else if(response.json.defaultExists) {
+                    formId = "";
+                    newDialog();
+                }
+            }},
+            failureCallback: { fn: function(response) {
+                console.log('Error when call Citeck.forms.showViewInplaced [2]:', response);
+            }}
+        });
+    };
+
 
     /**
      * Authority name validation handler, tests that the given field is a valid

@@ -28,7 +28,7 @@
 
                 var component = Alfresco.util.ComponentManager.get("${el}-form");
                 var full = true;
-                component.runtime.node().impl().reset(full);
+                component.runtime.node().impl().reset(full, 3);
 
                 Alfresco.util.Ajax.request({
                     url: "citeck/components/node-details/node-view?" + refreshArgs,

@@ -18,5 +18,8 @@ public interface ContractsModel {
 
     public static final QName PROP_CLOSING_DOCUMENT_AMOUNT = QName.createQName(NAMESPACE, "closingDocumentAmount");
     public static final QName PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS = QName.createQName(NAMESPACE, "closingDocumentAmountInWords");
+
+    public static final QName ASPECT_IS_CONTRACT_ATTACHMENT = QName.createQName(NAMESPACE, "isContractAttachment");
+    public static final QName ASPECT_HAS_CONTRACTOR = QName.createQName(NAMESPACE, "hasContractor");
     
 }

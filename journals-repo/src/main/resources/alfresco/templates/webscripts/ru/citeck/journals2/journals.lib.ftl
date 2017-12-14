@@ -1,74 +1,4 @@
-<#macro renderJournalType journalType>
-<#escape x as jsonUtils.encodeJSONString(x)>
-{
-    "journalType": "${journalType.id}",
-    "settings": <@renderJournalOptions journalType.options />,
-    "groupActions": <@renderJournalGroupAction journalType.getGroupActions() />,
-    "attributes": [
-        <#list journalType.attributes as attribute>
-        {
-        "name": "${attribute}",
-        "isDefault":  ${journalType.isAttributeDefault(attribute)?string},
-        "visible":    ${journalType.isAttributeVisible(attribute)?string},
-        "searchable": ${journalType.isAttributeSearchable(attribute)?string},
-        "sortable":   ${journalType.isAttributeSortable(attribute)?string},
-        "groupable":  ${journalType.isAttributeGroupable(attribute)?string},
-        "settings": <@renderJournalOptions journalType.getAttributeOptions(attribute) />,
-        "batchEdit": <@renderJournalBatchEdit journalType.getBatchEdit(attribute) />
-        }<#if attribute_has_next>,</#if>
-        </#list>
-    ]
-}
-</#escape>
-</#macro>
-
-<#macro renderJournalGroupAction groupActions>
-    <#escape x as jsonUtils.encodeJSONString(x)>
-    [
-        <#list groupActions as action>
-        {
-        "id": "group-action-${action_index}",
-        "label": "${action.getTitle()}",
-        "func": "onGroupAction",
-        "isDoclib": false,
-        "settings": {
-            <#local gActionOptions = action.getOptions() />
-            <#list gActionOptions?keys as name>
-            "${name}": <#if gActionOptions[name]??>"${gActionOptions[name]}"<#else>null</#if>,
-            </#list>
-            "actionId": "${action.getId()}"
-        }
-        }<#if action_has_next>,</#if>
-        </#list>
-    ]
-    </#escape>
-</#macro>
-
-<#macro renderJournalBatchEdit batchEdit>
-    <#escape x as jsonUtils.encodeJSONString(x)>
-    [
-        <#list batchEdit as edit>
-            {
-                "id": "${edit.getId()}",
-                "label": "${edit.getTitle()}",
-                "func": "onBatchEdit",
-                "isDoclib": false,
-                "settings": <@renderJournalOptions edit.getOptions() />
-            }<#if edit_has_next>,</#if>
-        </#list>
-    ]
-    </#escape>
-</#macro>
-
-<#macro renderJournalOptions options>
-<#escape x as jsonUtils.encodeJSONString(x)>
-{
-    <#list options?keys as name>
-    "${name}": <#if options[name]??>"${options[name]}"<#else>null</#if><#if name_has_next>,</#if>
-    </#list>
-}
-</#escape>
-</#macro>
+<#import "/ru/citeck/invariants/invariants.lib.ftl" as invariants />
 
 <#macro renderJournal journal full=true>
 <#escape x as jsonUtils.encodeJSONString(x)>
@@ -173,7 +103,7 @@
 {
     "field": "${shortQName(criterion.properties["journal:fieldQName"])}",
     "predicate": "${criterion.properties["journal:predicate"]}",
-    "value": "<@valueTemplate/>"
+    "persistedValue": "<@valueTemplate/>"
 }
 </#escape>
 </#macro>

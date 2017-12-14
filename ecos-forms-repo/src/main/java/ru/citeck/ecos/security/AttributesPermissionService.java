@@ -9,7 +9,11 @@ import org.alfresco.service.namespace.QName;
 public interface AttributesPermissionService {
     boolean isFieldVisible(QName fieldQName, NodeRef caseRef, String mode);
 
+    boolean isFieldOfAssocVisible(QName fieldQName, NodeRef childRef, QName assocQName, NodeRef caseRef, String mode);
+
     boolean isFieldEditable(QName fieldQName, NodeRef caseRef, String mode);
+
+    boolean isFieldOfAssocEditable(QName fieldQName, NodeRef childRef, QName assocQName, NodeRef caseRef, String mode);
 
     void reloadDefinition(NodeRef matrixDefinitionRef);
 

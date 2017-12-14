@@ -378,7 +378,7 @@
                 <action index="10" id="document-view-details" />
                 <action index="20" id="document-edit-properties" />
                 <action index="30" id="document-delete" />
-                <action index="40" id="export-case-template" />
+                <action index="40" id="document-download" />
                 <action index="50" id="import-case-template" />
             </actionGroup>
 
@@ -386,7 +386,7 @@
                 <action index="10" id="document-view-details" />
                 <action index="20" id="document-edit-properties" />
                 <action index="30" id="document-delete" />
-                <action index="40" id="export-case-template" />
+                <action index="40" id="document-download" />
                 <action index="50" id="import-case-template" />
             </actionGroup>
 

@@ -115,7 +115,9 @@
 }
 
 .filter-criteria .criterion .criterion-value .criterion-value-field-input, 
-.filter-criteria .criterion .criterion-value .criterion-value-field-view {
+.filter-criteria .criterion .criterion-value .criterion-value-field-view,
+.filter-criteria .criterion .criterion-value-field-view,
+.filter-criteria .criterion .journal-control {
     display: inline-block;
 }
 

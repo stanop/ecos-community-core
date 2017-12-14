@@ -38,6 +38,8 @@ public final class IdocsModel {
     public static final QName TYPE_ATTORNEY = QName.createQName(IDOCS_NAMESPACE, "powerOfAttorney");
     public static final QName TYPE_LEGAL_ENTITY = QName.createQName(IDOCS_NAMESPACE, "legalEntity");
     public static final QName TYPE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "currency");
+    public static final QName TYPE_CURRENCY_RATE_RECORD = QName.createQName(IDOCS_NAMESPACE, "currencyRateRecord");
+    public static final QName TYPE_CURRENCY_RATES_XML = QName.createQName(IDOCS_NAMESPACE, "currencyRatesXML");
     public static final QName TYPE_ABSTRACT_ATTORNEY = QName.createQName(IDOCS_NAMESPACE, "abstractAttorney");
 
     // aspects
@@ -70,6 +72,9 @@ public final class IdocsModel {
     public static final QName PROP_CURRENCY_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCode");
     public static final QName PROP_CURRENCY_NUMBER_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyNumberCode");
     public static final QName PROP_CURRENCY_RATE = QName.createQName(IDOCS_NAMESPACE, "currencyRate");
+    public static final QName PROP_CRR_VALUE = QName.createQName(IDOCS_NAMESPACE, "crrValue");
+    public static final QName PROP_CRR_DATE = QName.createQName(IDOCS_NAMESPACE, "crrDate");
+    public static final QName PROP_CRR_SYNC_DATE = QName.createQName(IDOCS_NAMESPACE, "crrSyncDate");
     public static final QName PROP_CURRENCY_NAME_RU = QName.createQName(IDOCS_NAMESPACE, "currencyNameRu");
     public static final QName PROP_CURRENCY_CATALOG_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCatalogCode");
     public static final QName PROP_DIADOC_BOX_ID = QName.createQName(IDOCS_NAMESPACE, "diadocBoxId");
@@ -92,10 +97,29 @@ public final class IdocsModel {
     public static final QName ASSOC_CURRENCY_DOCUMENT = QName.createQName(IDOCS_NAMESPACE, "currencyDocument");
     public static final QName ASSOC_INITIATOR = QName.createQName(IDOCS_NAMESPACE, "initiator");
 
+    public static final QName ASSOC_CRR_BASE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrBaseCurrency");
+    public static final QName ASSOC_CRR_TARGET_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrTargetCurrency");
+
     // constraints
     public static final String CONSTR_REPEAL_BY_COUNTERPARTY_REQUESTED = "REPEAL_BY_COUNTERPARTY_REQUESTED";
     public static final String CONSTR_REPEALED_BY_COUNTERPARTY = "REPEALED_BY_COUNTERPARTY";
     public static final String CONSTR_CLARIFICATION_REQUESTED = "CLARIFICATION_REQUESTED";
+    public static final String CONSTR_SIGN_REQUIRED = "SIGN_REQUIRED";
+    public static final String CONSTR_RECEIVED = "RECEIVED";
+    public static final String CONSTR_SIGNED = "SIGNED";
+    public static final String CONSTR_COUNTERPARTY_SIGNED = "COUNTERPARTY_SIGNED";
+    public static final String CONSTR_COUNTERPARTY_SIGN_REQUESTED = "COUNTERPARTY_SIGN_REQUESTED";
+    public static final String DELIVERY_FAILED = "DELIVERY_FAILED";
+    public static final String REQUESTS_MY_REVOCATION = "REQUESTS_MY_REVOCATION";
+    public static final String REVOCATION_IS_REQUESTED_BY_ME = "REVOCATION_IS_REQUESTED_BY_ME";
+    public static final String REVOCATION_ACCEPTED = "REVOCATION_ACCEPTED";
+    public static final String REVOCATION_REJECTED = "REVOCATION_REJECTED";
+    public static final String REJECTION_SENT = "REJECTION_SENT";
+    public static final String REJECTED = "REJECTED";
+    public static final String REVISIONED = "REVISIONED";
+    public static final String CORRECTED = "CORRECTED";
+    public static final String REVISION_CORRECTED = "REVISION_CORRECTED";
+
 
     public static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
 

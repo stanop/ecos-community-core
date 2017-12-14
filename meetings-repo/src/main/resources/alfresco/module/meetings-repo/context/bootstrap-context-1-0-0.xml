@@ -67,63 +67,63 @@
 	</bean>
 
 
-	<!--<bean id="meetings.module-component.meetings-journal" parent="meetings.import-spaces">-->
-		<!--<property name="name" value="meeting-journal" />-->
-		<!--<property name="description" value="Meeting Journal" />-->
-		<!--<property name="sinceVersion" value="0.0.1" />-->
-		<!--<property name="appliesFromVersion" value="0.0.1" />-->
-		<!--<property name="dependsOn">-->
-			<!--<list>-->
-				<!--<ref bean="meetings.module-component.meetings-site" />-->
-			<!--</list>-->
-		<!--</property>-->
-		<!--<property name="bootstrapViews">-->
-			<!--<list>-->
-				<!--<props>-->
-					<!--<prop key="path">/app:company_home/st:sites/cm:meetings/cm:documentLibrary</prop>-->
-					<!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-				<!--<props>-->
-					<!--<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>-->
-					<!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-				<!--<props>-->
-					<!--<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>-->
-					<!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-				<!--<props>-->
-					<!--<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>-->
-					<!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion2.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-				<!--<props>-->
-					<!--<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>-->
-					<!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-				<!--<props>-->
-					<!--<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>-->
-					<!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-				<!--<props>-->
-					<!--<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>-->
-					<!--<prop key="location">alfresco/module/meetings-repo/bootstrap/journals/journal-in-list.xml</prop>-->
-					<!--<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>-->
-					<!--<prop key="encoding">UTF-8</prop>-->
-				<!--</props>-->
-			<!--</list>-->
-		<!--</property>-->
-	<!--</bean>-->
+	<bean id="meetings.module-component.meetings-journal" parent="meetings.import-spaces">
+		<property name="name" value="meeting-journal" />
+		<property name="description" value="Meeting Journal" />
+		<property name="sinceVersion" value="0.0.1" />
+		<property name="appliesFromVersion" value="0.0.1" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="meetings.module-component.meetings-site" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/st:sites/cm:meetings/cm:documentLibrary</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion2.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/meetings-repo/bootstrap/journals/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
 
 	<bean id="meetings.module-component.case-agenda-config" parent="meetings.import-spaces">
 		<property name="name" value="case-agenda-config" />

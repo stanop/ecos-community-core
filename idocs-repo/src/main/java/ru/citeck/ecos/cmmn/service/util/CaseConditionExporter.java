@@ -20,18 +20,19 @@ import java.util.Map;
  * @author Maxim Strizhov
  */
 class CaseConditionExporter {
+
     private ConditionsList conditions = new ConditionsList();
 
-    CaseConditionExporter(List<NodeRef> conditionsRef, NodeService nodeService) {
+    CaseConditionExporter(List<NodeRef> conditionsRef, NodeService nodeService, CMMNUtils utils) {
         for (NodeRef conditionRef : conditionsRef) {
             Condition condition = new Condition();
-            condition.setType(CMMNUtils.convertToXMLQName(nodeService.getType(conditionRef)));
+            condition.setType(utils.convertToXMLQName(nodeService.getType(conditionRef)));
             Map<QName, Serializable> properties = nodeService.getProperties(conditionRef);
             for (QName key : properties.keySet()) {
                 if (!key.getNamespaceURI().equals("http://www.alfresco.org/model/system/1.0") &&
                         !key.getNamespaceURI().equals("http://www.alfresco.org/model/content/1.0")) {
                     ConditionProperty conditionProperty = new ConditionProperty();
-                    conditionProperty.setType(CMMNUtils.convertToXMLQName(key));
+                    conditionProperty.setType(utils.convertToXMLQName(key));
                     if (properties.get(key) != null) {
                         conditionProperty.setValue(properties.get(key).toString());
                     } else {

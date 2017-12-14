@@ -1,0 +1,63 @@
+<webscript>
+    <shortname>Batch search query</shortname>
+    <description>Execute search parametrized query with parameters provided as array of arrays.</description>
+    <url>/citeck/search/batch-query</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <cache>
+        <never>false</never>
+        <public>false</public>
+        <mustrevalidate/>
+    </cache>
+    <args>
+        <arg>
+            <shortname>query</shortname>
+            <description>A query to execute. Can contain wildcards %?% which will be replaced by values from the params array.</description>
+        </arg>
+        <arg>
+            <shortname>params</shortname>
+            <description>An array of array of values which is intended to be substituted instead of wildcards in the query.
+                Example: given query='TYPE:"cm:person" AND @cm\:firstName:"%?%" AND @cm\:lastName:"%?%"' and
+                params='[["John", "Smith"],["Jane", "Doe"]]' we execute 2 real queries
+                TYPE:"cm:person" AND @cm\:firstName:"John" AND @cm\:lastName:"Smith"
+                TYPE:"cm:person" AND @cm\:firstName:"Jane" AND @cm\:lastName:"Doe"
+            </description>
+        </arg>
+        <responses>
+            <response>
+                <format>json</format>
+                <type>
+                    [
+                        {
+                            "result": {
+                                "query": {
+                                    "language": "fts-alfresco",
+                                    "value": "TYPE:"cm:person" AND @cm\\:firstName:"John" AND @cm\\:lastName:"Smith""
+                                },
+                                "paging": {
+                                    "maxItems": 1000,
+                                    "totalCount": 1,
+                                    "skipCount": 0
+                                },
+                                "results": [
+                                    {
+                                        "nodeRef": "workspace://SpacesStore/...",
+                                        "attributes": {
+                                            ...
+                                        }
+                                    }
+                                ]
+                            },
+                            "params": [
+                                "John",
+                                "Smith"
+                            ]
+                        },
+                        ...
+                    ]
+                </type>
+            </response>
+        </responses>
+    </args>
+</webscript>

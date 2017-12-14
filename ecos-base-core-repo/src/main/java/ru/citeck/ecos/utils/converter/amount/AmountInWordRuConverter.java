@@ -1,43 +1,25 @@
 package ru.citeck.ecos.utils.converter.amount;
 
+import java.util.Locale;
+
 /**
  * Russian realization of converter
  *
  * @author Roman.Makarskiy on 10.07.2016.
  */
-class AmountInWordRuConverter extends AmountInWordConverter {
+class AmountInWordRuConverter extends AmountInWordConverterFixedFemininely {
 
-    private static final String ONE_HRYVNIA = "один гривна";
-    private static final String FEMININE_ONE_HRYVNIA = "одна гривна";
-    private static final String TWO_HRYVNIA = "два гривны";
-    private static final String FEMININE_TWO_HRYVNIA = "две гривны";
+    AmountInWordRuConverter() {
+        locale = new Locale("ru", "");
 
-    private static final String ONE_YEN = "один японская иена";
-    private static final String FEMININE_ONE_YEN = "одна японская иена";
-    private static final String TWO_YEN = "два японских иены";
-    private static final String FEMININE_TWO_YEN = "две японских иены";
+        one_hryvnia = "один гривна";
+        feminine_one_hryvnia = "одна гривна";
+        two_hryvnia = "два гривны";
+        feminine_two_hryvnia = "две гривны";
 
-    @Override
-    public String convert(double amount, String currencyCode) {
-        String result = getFixedFeminineOfCurrency(super.convert(amount, currencyCode));
-        result = result.substring(0, 1).toUpperCase() + result.substring(1);
-        return result;
-    }
-
-    private String getFixedFeminineOfCurrency (String result) {
-        result = result.substring(0, 1).toLowerCase() + result.substring(1);
-        if (result.contains(ONE_HRYVNIA)) {
-            result = result.replace(ONE_HRYVNIA, FEMININE_ONE_HRYVNIA);
-        }
-        if (result.contains(TWO_HRYVNIA)) {
-            result = result.replace(TWO_HRYVNIA, FEMININE_TWO_HRYVNIA);
-        }
-        if (result.contains(ONE_YEN)) {
-            result = result.replace(ONE_YEN, FEMININE_ONE_YEN);
-        }
-        if (result.contains(TWO_YEN)) {
-            result = result.replace(TWO_YEN, FEMININE_TWO_YEN);
-        }
-        return  result;
+        one_yen = "один японская иена";
+        feminine_one_yen = "одна японская иена";
+        two_yen = "два японских иены";
+        feminine_two_yen = "две японских иены";
     }
 }

@@ -9,20 +9,45 @@
             <list>
                 <ref bean="meetings.module-component.doctype-categories"/>
                 <ref bean="meetings.module-component.meetings-site" />
+                <ref bean="meetings.module-component.meetings-journal" />
             </list>
         </property>
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
         <property name="args">
             <map>
-                <entry key="node" value="/app:company_home/st:sites/cm:meetings"/>
-                <entry key="attributes">
-                    <map>
-                        <entry key="tk:siteDocumentTypes">
-                            <list>
-                                <value>workspace://SpacesStore/meetings-cat-doctype</value>
-                            </list>
-                        </entry>
-                    </map>
+                <entry key="nodes">
+                    <list>
+                        <!-- meetings -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:meetings/cm:documentLibrary/cm:meetings" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/meetings-cat-doctype" />
+                                </map>
+                            </entry>
+                        </map>
+                        <map>
+                            <entry key="node" value="/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings" />
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:relatesToType" value="workspace://SpacesStore/meetings-cat-doctype" />
+                                </map>
+                            </entry>
+                        </map>
+                        <!-- meetings site -->
+                        <map>
+                            <entry key="node" value="/app:company_home/st:sites/cm:meetings"/>
+                            <entry key="attributes">
+                                <map>
+                                    <entry key="tk:siteDocumentTypes">
+                                        <list>
+                                            <value>workspace://SpacesStore/meetings-cat-doctype</value>
+                                        </list>
+                                    </entry>
+                                </map>
+                            </entry>
+                        </map>
+                    </list>
                 </entry>
             </map>
         </property>

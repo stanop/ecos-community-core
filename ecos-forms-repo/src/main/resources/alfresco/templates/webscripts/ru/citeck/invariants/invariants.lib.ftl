@@ -45,3 +45,5 @@
 			null
 		</#if>
 }</#escape></#macro>
+
+<#macro renderInvariants invariants=[]><#escape x as jsonUtils.encodeJSONString(x)>[<#list invariants as invariant><@renderInvariant invariant /><#if invariant_has_next>,</#if></#list>]</#escape></#macro>

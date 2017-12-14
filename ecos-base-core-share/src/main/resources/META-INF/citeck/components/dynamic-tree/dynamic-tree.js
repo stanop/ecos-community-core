@@ -120,6 +120,10 @@
 		onItemSelected: function(args) {
 			var node = args.node;
 			node.highlight();
+
+			this.createEvent("viewItem");
+			this.fireEvent("viewItem", args);
+
 			return this.fireEvent("clickEvent", args); // prevent default action
 		},
 

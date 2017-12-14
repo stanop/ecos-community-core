@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -19,13 +19,7 @@
 package ru.citeck.ecos.invariants;
 
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -38,15 +32,13 @@ class InvariantServiceImpl implements InvariantService {
 
     private NodeService nodeService;
     private DictionaryService dictionaryService;
-    
-    // components
+
     private InvariantsParser parser;
     private InvariantsFilter filter;
     private InvariantsRuntime runtime;
     private Map<String, InvariantLanguage> languages;
     private Map<QName, InvariantAttributeType> attributeTypes;
 
-    
     @Override
     public void deployDefinition(InputStream source, String sourceId, InvariantPriority priority) {
         List<InvariantDefinition> invariants = parser.parse(source, priority);
@@ -77,8 +69,16 @@ class InvariantServiceImpl implements InvariantService {
     }
 
     @Override
-    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames, NodeRef nodeRef, String mode) {
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames,
+                                                   NodeRef nodeRef, String mode) {
         return filter.searchMatchingInvariants(classNames, attributeNames, true, nodeRef, mode);
+    }
+
+    @Override
+    public List<InvariantDefinition> getInvariants(Collection<QName> classNames, Collection<QName> attributeNames,
+                                                   NodeRef nodeRef, NodeRef baseRef, QName rootAttribute, String mode) {
+        return filter.searchMatchingInvariants(classNames, attributeNames, true, nodeRef, baseRef,
+                rootAttribute, mode);
     }
 
     @Override
@@ -88,7 +88,7 @@ class InvariantServiceImpl implements InvariantService {
 
     @Override
     public List<InvariantDefinition> getInvariants(NodeRef nodeRef,
-            Collection<QName> attributeNames) {
+                                                   Collection<QName> attributeNames) {
         Collection<QName> classNames = new LinkedHashSet<>();
         classNames.add(nodeService.getType(nodeRef));
         classNames.addAll(nodeService.getAspects(nodeRef));
@@ -110,12 +110,12 @@ class InvariantServiceImpl implements InvariantService {
     public Set<String> getSupportedLanguages() {
         return languages.keySet();
     }
-    
+
     @Override
     public void registerAttributeType(InvariantAttributeType attributeType) {
         attributeTypes.put(attributeType.getSupportedAttributeType(), attributeType);
     }
-    
+
     @Override
     public Set<QName> getSupportedAttributeTypes() {
         return attributeTypes.keySet();
@@ -123,7 +123,7 @@ class InvariantServiceImpl implements InvariantService {
 
     @Override
     public Object evaluateInvariant(InvariantDefinition invariant,
-            Map<String, Object> model) {
+                                    Map<String, Object> model) {
         return runtime.evaluateInvariant(invariant, model);
     }
 

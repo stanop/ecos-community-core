@@ -1,7 +1,9 @@
 <#import "journals.lib.ftl" as journals />
 <#assign id = args.htmlid?html />
 <#assign toolbarId = id + "-toolbar" />
-<#assign pagingOptions = args.pagingOptions!"10,30,50,100" />
+<#assign maxItemsConfig = (config.scoped["Journals"]["page-max-items"])! />
+<#assign pagingOptions = args.pagingOptions!(maxItemsConfig.getChildValue('options'))!"10,30,50,100" />
+<#assign defaultMaxItems = args.maxItems!(maxItemsConfig.getChildValue('default'))!"10" />
 
 <@markup id="css" >
     <#include "/org/alfresco/components/form/form.css.ftl"/>
@@ -14,6 +16,7 @@
     <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/journals2/journals-page.css" group="journals-list" />
 
     <@link rel="stylesheet" href="${page.url.context}/res/yui/calendar/assets/calendar.css" group="journals-list" />
+    <@link rel="stylesheet" href="${page.url.context}/res/citeck/components/invariants/invariants.css" group="region" />
 </@>
 
 <@markup id="js">
@@ -51,6 +54,7 @@
 
                     <@journals.renderCurrentIds />
                     multiActions: <@journals.renderMultiActionsJSON />,
+                    defaultMaxItems: ${defaultMaxItems}
                 },
                 cache: <@journals.renderCacheJSON />,
                 pagingOptions: [${pagingOptions}]

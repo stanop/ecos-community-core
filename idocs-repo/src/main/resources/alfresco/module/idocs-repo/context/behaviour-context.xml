@@ -553,6 +553,7 @@
         <property name="nodeService" ref="NodeService"/>
         <property name="siteService" ref="SiteService"/>
         <property name="namespaceService" ref="NamespaceService"/>
+        <property name="searchService" ref="searchService"/>
     </bean>
 
 
@@ -788,6 +789,10 @@
         <property name="containerType" value="{http://www.alfresco.org/model/system/1.0}container" />
         <property name="childAssocType" value="{http://www.alfresco.org/model/system/1.0}children" />
         <property name="order" value="400" />
+    </bean>
+
+    <bean id="ru.citeck.ecos.caseTemplateContentSyncBehaviour"
+          class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
     </bean>
 
 </beans>

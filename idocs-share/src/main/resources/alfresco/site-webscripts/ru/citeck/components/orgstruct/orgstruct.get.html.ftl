@@ -17,6 +17,9 @@
     <@script type="text/javascript" src="${url.context}/res/components/people-finder/group-finder.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/modules/simple-dialog.js" group="orgstruct" />
 
+	<@script type="text/javascript" src="${url.context}/res/components/form/form.js" group="orgstruct" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/form/select.js" group="orgstruct" />
+
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="orgstruct" />

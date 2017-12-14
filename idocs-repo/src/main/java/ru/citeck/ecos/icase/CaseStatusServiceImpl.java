@@ -3,6 +3,7 @@ package ru.citeck.ecos.icase;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -11,10 +12,7 @@ import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Roman Makarskiy
@@ -42,6 +40,12 @@ public class CaseStatusServiceImpl implements CaseStatusService {
 
         if (!Objects.equals(beforeCaseStatus, caseStatusRef)) {
             if (beforeCaseStatus != null) {
+                List<AssociationRef> beforeCaseStatusSavedAssocs =
+                        nodeService.getTargetAssocs(caseRef, ICaseModel.ASSOC_CASE_STATUS_BEFORE);
+                for (AssociationRef assoc : beforeCaseStatusSavedAssocs) {
+                    nodeService.removeAssociation(assoc.getSourceRef(), assoc.getTargetRef(), assoc.getTypeQName());
+                }
+                nodeService.createAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_CASE_STATUS_BEFORE);
                 nodeService.removeAssociation(caseRef, beforeCaseStatus, ICaseModel.ASSOC_CASE_STATUS);
             }
             nodeService.createAssociation(caseRef, caseStatusRef, ICaseModel.ASSOC_CASE_STATUS);
@@ -83,6 +87,12 @@ public class CaseStatusServiceImpl implements CaseStatusService {
     @Override
     public NodeRef getStatusRef(NodeRef caseRef) {
         return RepoUtils.getFirstTargetAssoc(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
+    }
+
+    @Override
+    public NodeRef getStatusRefFromPrimaryParent(NodeRef childRef) {
+        NodeRef parent = RepoUtils.getPrimaryParentRef(childRef, nodeService);
+        return RepoUtils.getFirstTargetAssoc(parent, ICaseModel.ASSOC_CASE_STATUS, nodeService);
     }
 
     private void mandatoryNodeRef(String strParamName, NodeRef nodeRef) {

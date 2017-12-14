@@ -1,5 +1,6 @@
 package ru.citeck.ecos.cmmn.service.util;
 
+import lombok.Setter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
@@ -28,13 +29,16 @@ import static ru.citeck.ecos.model.ICaseTemplateModel.ASSOC_ELEMENT_CONFIG;
  * @author deathNC
  */
 public class CaseRolesExport {
+
     private static final Logger logger = Logger.getLogger(CaseRolesExport.class);
     private final NodeService nodeService;
     private final DictionaryService dictionaryService;
+    private final CMMNUtils utils;
 
-    public CaseRolesExport(NodeService nodeService, DictionaryService dictionaryService) {
+    public CaseRolesExport(NodeService nodeService, DictionaryService dictionaryService, CMMNUtils utils) {
         this.nodeService = nodeService;
         this.dictionaryService = dictionaryService;
+        this.utils = utils;
     }
 
     public CaseRoles getRoles(NodeRef caseNodeRef) {
@@ -60,14 +64,14 @@ public class CaseRolesExport {
 
     private Role getRole(NodeRef roleRef) {
         Role role = new Role();
-        role.setId(CMMNUtils.convertNodeRefToId(roleRef));
+        role.setId(utils.convertNodeRefToId(roleRef));
         role.setName((String) nodeService.getProperty(roleRef, ContentModel.PROP_TITLE));
         role.getOtherAttributes().put(CMMNUtils.QNAME_NODE_TYPE, nodeService.getType(roleRef).toString());
 
         for (Map.Entry<javax.xml.namespace.QName, QName> entry : CMMNUtils.ROLES_ATTRIBUTES_MAPPING.entrySet()) {
             Serializable value = nodeService.getProperty(roleRef, entry.getValue());
             if (value != null) {
-                role.getOtherAttributes().put(entry.getKey(), CMMNUtils.convertValueForCmmn(entry.getValue(), value));
+                role.getOtherAttributes().put(entry.getKey(), utils.convertValueForCmmn(entry.getValue(), value));
             }
         }
 

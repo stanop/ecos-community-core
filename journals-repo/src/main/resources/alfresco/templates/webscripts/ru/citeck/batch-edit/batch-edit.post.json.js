@@ -8,6 +8,7 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
     var nodes = json.get('nodes'),
         attrs = json.get('attributes'),
         skipInStatuses = json.get('skipInStatuses'),
+        isChildMode = json.get('childMode'),
         permService = services.get("attributesPermissionService");
 
     if (!exists("nodes", nodes) ||
@@ -36,9 +37,15 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
         while (it.hasNext()) {
             var key = it.next();
             var skipInThisStatus = false;
-            if (node.assocs["icase:caseStatusAssoc"] && node.assocs["icase:caseStatusAssoc"].length > 0) {
-                skipInThisStatus = (statuses.indexOf(node.assocs["icase:caseStatusAssoc"][0].nodeRef) >= 0);
+
+            var caseStatusNode = isChildMode == true ? caseStatusService.getStatusNodeFromPrimaryParent(node)
+                : caseStatusService.getStatusNode(node),
+                caseStatusRef = caseStatusNode ? caseStatusNode.nodeRef : null;
+
+            if (caseStatusRef) {
+                skipInThisStatus = (statuses.indexOf(caseStatusRef) >= 0);
             }
+
             try {
                 if (!skipInThisStatus) {
                     if (checkPermission(node, key, permService)) {

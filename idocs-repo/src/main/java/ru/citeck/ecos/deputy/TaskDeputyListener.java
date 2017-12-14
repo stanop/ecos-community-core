@@ -19,13 +19,17 @@
 package ru.citeck.ecos.deputy;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.batch.BatchProcessWorkProvider;
+import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.person.PersonServiceImpl;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import ru.citeck.ecos.workflow.AdvancedWorkflowService;
 import ru.citeck.ecos.workflow.listeners.GrantWorkflowTaskPermissionExecutor;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
@@ -33,18 +37,29 @@ import ru.citeck.ecos.workflow.tasks.AdvancedTaskQuery;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TaskDeputyListener extends AbstractDeputyListener {
+    
+    private static final String AVAILABLE_PROCESS_NAME   = "on-user-available-process";
+    private static final String UNAVAILABLE_PROCESS_NAME = "on-user-unavailable-process";
+    
+    private static final int BATCH_SIZE       = 10;
+    private static final int WORKER_THREADS   = 10;
+    private static final int LOGGING_INTERVAL = 10;
+    
     private WorkflowService workflowService;
 
     private AdvancedWorkflowService advancedWorkflowService;
 
     private PersonServiceImpl personService;
 
+    private TransactionService transactionService;
+
     private WorkflowMirrorService workflowMirrorService;
 
     private GrantWorkflowTaskPermissionExecutor grantWorkflowTaskPermissionExecutor;
-
+    
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
     }
@@ -55,6 +70,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     public void setPersonService(PersonServiceImpl personService) {
         this.personService = personService;
+    }
+
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -120,35 +139,114 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     public void onUserAvailable(String userName) {
 //        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
         AdvancedTaskQuery query = new AdvancedTaskQuery().setOriginalOwner(userName).withoutGroupCandidates();
-        List<WorkflowTask> workflowTasks = advancedWorkflowService.queryTasks(query);
-
-        if (workflowTasks.size() > 0) {
-            List<String> userDeputies = deputyService.getUserDeputies(userName);
+        List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
+        
+        if (tasks.size() > 0) {
+            List<String> userDeputies = new CopyOnWriteArrayList<>(deputyService.getUserDeputies(userName));
             userDeputies.add(userName);
 
-            workflowTasks.forEach(workflowTask -> {
-                @SuppressWarnings("unchecked")
-                List<NodeRef> pooledActors = (List<NodeRef>) workflowTask.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
-                if (pooledActors != null && userDeputies.size() == pooledActors.size()) {
-                    removePooledActors(Collections.singletonList(workflowTask), userDeputies);
-                    setTaskOwner(workflowTask, userName);
-                }
-                else {
-                    resetTaskOwner(workflowTask, userName);
-                    workflowMirrorService.mirrorTask(workflowTask);
-                    grantWorkflowTaskPermissionExecutor.grantPermissions(workflowTask);
-                }
-            });
+            RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
+
+            BatchProcessor<WorkflowTask> batchProcessor = new BatchProcessor<>(
+                    AVAILABLE_PROCESS_NAME,
+                    retryingTransactionHelper,
+                    new TaskDeputyProvider(tasks),
+                    WORKER_THREADS, BATCH_SIZE,
+                    null, null, LOGGING_INTERVAL
+            );
+
+            batchProcessor.process(new TaskDeputyWorker(new OnUserAvailableTaskDeputyStrategy(userName, userDeputies)), true);
         }
     }
 
     @Override
     public void onUserUnavailable(String userName) {
-        //        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
+//        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
         AdvancedTaskQuery query = new AdvancedTaskQuery().setAssignee(userName).withoutGroupCandidates();
         List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
 
-        tasks.forEach(task -> {
+        if (tasks.size() > 0) {
+            RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
+
+            BatchProcessor<WorkflowTask> batchProcessor = new BatchProcessor<>(
+                    UNAVAILABLE_PROCESS_NAME,
+                    retryingTransactionHelper,
+                    new TaskDeputyProvider(tasks),
+                    WORKER_THREADS, BATCH_SIZE,
+                    null, null, LOGGING_INTERVAL
+            );
+
+            batchProcessor.process(new TaskDeputyWorker(new OnUserUnavailableTaskDeputyStrategy(userName)), true);
+        }
+    }
+
+    private static class TaskDeputyProvider implements BatchProcessWorkProvider<WorkflowTask> {
+
+        private Collection<WorkflowTask> workflowTasks;
+        private boolean hasMore = true;
+        
+        TaskDeputyProvider(Collection<WorkflowTask> workflowTasks) {
+            this.workflowTasks = workflowTasks;
+        }
+        
+        @Override
+        public int getTotalEstimatedWorkSize() {
+            return workflowTasks.size();
+        }
+
+        @Override
+        public Collection<WorkflowTask> getNextWork() {
+            if (hasMore) {
+                hasMore = false;
+                return workflowTasks;
+            } else {
+                return Collections.emptyList();
+            }
+        }
+    }
+
+    interface Strategy {
+        void perform(WorkflowTask task);
+    }
+
+    private class OnUserAvailableTaskDeputyStrategy implements Strategy {
+
+        private String       userName;
+        private List<String> userDeputies;
+
+        OnUserAvailableTaskDeputyStrategy(String userName, List<String> userDeputies) {
+            this.userName     = userName;
+            this.userDeputies = userDeputies;
+        }
+        
+        @Override
+        public void perform(WorkflowTask task) {
+            @SuppressWarnings("unchecked")
+            List<NodeRef> pooledActors = (List<NodeRef>) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
+            if (pooledActors != null && userDeputies.size() == pooledActors.size()) {
+                removePooledActors(Collections.singletonList(task), userDeputies);
+                setTaskOwner(task, userName);
+            } else {
+                resetTaskOwner(task, userName);
+                AuthenticationUtil.runAsSystem(() -> {
+                    workflowMirrorService.mirrorTask(task);
+                    return null;
+                });
+                grantWorkflowTaskPermissionExecutor.grantPermissions(task);
+            }
+        }
+    }
+
+    private class OnUserUnavailableTaskDeputyStrategy implements Strategy {
+    
+        private String userName;
+
+        OnUserUnavailableTaskDeputyStrategy(String userName) {
+            this.userName = userName;
+        }
+
+        @Override
+        public void perform(WorkflowTask task) {
             resetTaskOwner(task, userName);
 
             @SuppressWarnings("unchecked")
@@ -156,16 +254,31 @@ public class TaskDeputyListener extends AbstractDeputyListener {
             if (candidates.size() == 0) {
                 List<String> actors = deputyService.getUserDeputies(userName);
                 actors.add(userName);
-
                 addPooledActors(Collections.singletonList(task), actors);
-
                 WorkflowTask updatedTask = workflowService.getTaskById(task.getId());
-                workflowMirrorService.mirrorTask(updatedTask);
+                AuthenticationUtil.runAsSystem(() -> {
+                    workflowMirrorService.mirrorTask(updatedTask);
+                    return null;
+                });
                 grantWorkflowTaskPermissionExecutor.grantPermissions(updatedTask);
             }
-        });
+        }
     }
 
+    private static class TaskDeputyWorker extends BatchProcessor.BatchProcessWorkerAdaptor<WorkflowTask> {
+
+        private Strategy strategy;
+        
+        TaskDeputyWorker(Strategy strategy) {
+            this.strategy = strategy;
+        }
+        
+        @Override
+        public void process(WorkflowTask task) throws Throwable {
+            strategy.perform(task);
+        }
+    }
+    
     @Override
     public void onAssistantAdded(String userName) {
         //addDeputiesToTasks(userName);

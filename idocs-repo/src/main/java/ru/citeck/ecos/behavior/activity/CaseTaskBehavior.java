@@ -45,7 +45,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private static final Log log = LogFactory.getLog(CaseTaskBehavior.class);
     private static final String DEFAULT_SLA_JOURNAL_ITEM_ID = "actual-default-sla-duration";
-    private static final String DEFAULT_RAW_SLA = "8";
+    private static final String DEFAULT_RAW_SLA = "0";
 
     private final ValueConverter valueConverter = new ValueConverter();
 
@@ -187,9 +187,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private Date getWorkflowDueDate(NodeRef taskRef) {
 
-        Date workflowDueDate = new Date();
+        Date workflowDueDate = null;
 
         Date startDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_ACTUAL_START_DATE);
+
         if (startDate != null) {
 
             Integer expectedPerformTime = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
@@ -198,8 +199,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                 expectedPerformTime = getDefaultSLA();
             }
 
-            workflowDueDate = addDays(startDate, hoursToDays(expectedPerformTime));
-            nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
+            if (expectedPerformTime > 0) {
+                workflowDueDate = addDays(startDate, hoursToDays(expectedPerformTime));
+                nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
+            }
         }
 
         return workflowDueDate;

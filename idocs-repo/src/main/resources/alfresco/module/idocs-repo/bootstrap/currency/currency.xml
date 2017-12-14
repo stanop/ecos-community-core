@@ -1,0 +1,1747 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0">
+
+    <idocs:currency view:childName="cm:currency-swiss-franc">
+        <view:properties>
+            <sys:node-uuid>currency-swiss-franc</sys:node-uuid>
+            <cm:name>Швейцарский франк</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Swiss Franc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Швейцарский франк</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CHF</idocs:currencyCode>
+            <idocs:currencyName>Швейцарский франк</idocs:currencyName>
+            <idocs:currencyShortName>₣</idocs:currencyShortName>
+            <idocs:currencyNumberCode>756</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-aud">
+        <view:properties>
+            <sys:node-uuid>currency-aud</sys:node-uuid>
+            <cm:name>Австралийский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Australian Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Австралийский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>AUD</idocs:currencyCode>
+            <idocs:currencyName>Австралийский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>036</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-azn">
+        <view:properties>
+            <sys:node-uuid>currency-azn</sys:node-uuid>
+            <cm:name>Азербайджанский манат</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Azerbaijan Manat</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Азербайджанский манат</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>AZN</idocs:currencyCode>
+            <idocs:currencyName>Азербайджанский манат</idocs:currencyName>
+            <idocs:currencyShortName>₼</idocs:currencyShortName>
+            <idocs:currencyNumberCode>944</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-all">
+        <view:properties>
+            <sys:node-uuid>currency-all</sys:node-uuid>
+            <cm:name>Лек</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Lek</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Лек</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ALL</idocs:currencyCode>
+            <idocs:currencyName>Лек</idocs:currencyName>
+            <idocs:currencyShortName>Lek</idocs:currencyShortName>
+            <idocs:currencyNumberCode>008</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-dzd">
+        <view:properties>
+            <sys:node-uuid>currency-dzd</sys:node-uuid>
+            <cm:name>Алжирский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Algerian Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Алжирский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>DZD</idocs:currencyCode>
+            <idocs:currencyName>Алжирский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>012</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-aoa">
+        <view:properties>
+            <sys:node-uuid>currency-aoa</sys:node-uuid>
+            <cm:name>Кванза</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Kwanza</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Кванза</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>AOA</idocs:currencyCode>
+            <idocs:currencyName>Кванза</idocs:currencyName>
+
+            <idocs:currencyNumberCode>973</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ars">
+        <view:properties>
+            <sys:node-uuid>currency-ars</sys:node-uuid>
+            <cm:name>Аргентинское песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Argentine Peso</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Аргентинское песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ARS</idocs:currencyCode>
+            <idocs:currencyName>Аргентинское песо</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>032</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-amd">
+        <view:properties>
+            <sys:node-uuid>currency-amd</sys:node-uuid>
+            <cm:name>Армянский драм</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Armenian Dram</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Армянский драм</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>AMD</idocs:currencyCode>
+            <idocs:currencyName>Армянский драм</idocs:currencyName>
+
+            <idocs:currencyNumberCode>051</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-afn">
+        <view:properties>
+            <sys:node-uuid>currency-afn</sys:node-uuid>
+            <cm:name>Афгани</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Afghani</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Афгани</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>AFN</idocs:currencyCode>
+            <idocs:currencyName>Афгани</idocs:currencyName>
+            <idocs:currencyShortName>؋</idocs:currencyShortName>
+            <idocs:currencyNumberCode>971</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bhd">
+        <view:properties>
+            <sys:node-uuid>currency-bhd</sys:node-uuid>
+            <cm:name>Бахрейнский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Bahraini Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Бахрейнский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BHD</idocs:currencyCode>
+            <idocs:currencyName>Бахрейнский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>048</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bgn">
+        <view:properties>
+            <sys:node-uuid>currency-bgn</sys:node-uuid>
+            <cm:name>Болгарский лев</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Bulgarian Lev</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Болгарский лев</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BGN</idocs:currencyCode>
+            <idocs:currencyName>Болгарский лев</idocs:currencyName>
+            <idocs:currencyShortName>лв</idocs:currencyShortName>
+            <idocs:currencyNumberCode>975</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bob">
+        <view:properties>
+            <sys:node-uuid>currency-bob</sys:node-uuid>
+            <cm:name>Боливиано</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Boliviano</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Боливиано</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BOB</idocs:currencyCode>
+            <idocs:currencyName>Боливиано</idocs:currencyName>
+            <idocs:currencyShortName>$b</idocs:currencyShortName>
+            <idocs:currencyNumberCode>068</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bwp">
+        <view:properties>
+            <sys:node-uuid>currency-bwp</sys:node-uuid>
+            <cm:name>Пула</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Pula</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Пула</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BWP</idocs:currencyCode>
+            <idocs:currencyName>Пула</idocs:currencyName>
+            <idocs:currencyShortName>P</idocs:currencyShortName>
+            <idocs:currencyNumberCode>072</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-brl">
+        <view:properties>
+            <sys:node-uuid>currency-brl</sys:node-uuid>
+            <cm:name>Бразильский реал</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Brazilian Real</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Бразильский реал</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BRL</idocs:currencyCode>
+            <idocs:currencyName>Бразильский реал</idocs:currencyName>
+            <idocs:currencyShortName>R$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>986</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bnd">
+        <view:properties>
+            <sys:node-uuid>currency-bnd</sys:node-uuid>
+            <cm:name>Брунейский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Brunei Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Брунейский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BND</idocs:currencyCode>
+            <idocs:currencyName>Брунейский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>096</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bif">
+        <view:properties>
+            <sys:node-uuid>currency-bif</sys:node-uuid>
+            <cm:name>Бурундийский франк</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Burundi Franc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Бурундийский франк</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BIF</idocs:currencyCode>
+            <idocs:currencyName>Бурундийский франк</idocs:currencyName>
+
+            <idocs:currencyNumberCode>108</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-huf">
+        <view:properties>
+            <sys:node-uuid>currency-huf</sys:node-uuid>
+            <cm:name>Форинт</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Forint</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Форинт</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>HUF</idocs:currencyCode>
+            <idocs:currencyName>Форинт</idocs:currencyName>
+            <idocs:currencyShortName>Ft</idocs:currencyShortName>
+            <idocs:currencyNumberCode>348</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-vef">
+        <view:properties>
+            <sys:node-uuid>currency-vef</sys:node-uuid>
+            <cm:name>Боливар фуэрте</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Bolívar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Боливар фуэрте</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>VEF</idocs:currencyCode>
+            <idocs:currencyName>Боливар фуэрте</idocs:currencyName>
+            <idocs:currencyShortName>Bs</idocs:currencyShortName>
+            <idocs:currencyNumberCode>937</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-vnd">
+        <view:properties>
+            <sys:node-uuid>currency-vnd</sys:node-uuid>
+            <cm:name>Донг</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Dong</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Донг</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>VND</idocs:currencyCode>
+            <idocs:currencyName>Донг</idocs:currencyName>
+            <idocs:currencyShortName>₫</idocs:currencyShortName>
+            <idocs:currencyNumberCode>704</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-gmd">
+        <view:properties>
+            <sys:node-uuid>currency-gmd</sys:node-uuid>
+            <cm:name>Даласи</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Dalasi</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Даласи</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>GMD</idocs:currencyCode>
+            <idocs:currencyName>Даласи</idocs:currencyName>
+
+            <idocs:currencyNumberCode>270</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ghs">
+        <view:properties>
+            <sys:node-uuid>currency-ghs</sys:node-uuid>
+            <cm:name>Седи ганы</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Ghana Cedi</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Седи ганы</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>GHS</idocs:currencyCode>
+            <idocs:currencyName>Седи ганы</idocs:currencyName>
+            <idocs:currencyShortName>¢</idocs:currencyShortName>
+            <idocs:currencyNumberCode>936</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-gnf">
+        <view:properties>
+            <sys:node-uuid>currency-gnf</sys:node-uuid>
+            <cm:name>Гвинейский франк</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Guinean Franc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Гвинейский франк</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>GNF</idocs:currencyCode>
+            <idocs:currencyName>Гвинейский франк</idocs:currencyName>
+
+            <idocs:currencyNumberCode>324</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-hkd">
+        <view:properties>
+            <sys:node-uuid>currency-hkd</sys:node-uuid>
+            <cm:name>Гонконгский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Hong Kong Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Гонконгский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>HKD</idocs:currencyCode>
+            <idocs:currencyName>Гонконгский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>344</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-gel">
+        <view:properties>
+            <sys:node-uuid>currency-gel</sys:node-uuid>
+            <cm:name>Лари</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Lari</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Лари</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>GEL</idocs:currencyCode>
+            <idocs:currencyName>Лари</idocs:currencyName>
+
+            <idocs:currencyNumberCode>981</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-dkk">
+        <view:properties>
+            <sys:node-uuid>currency-dkk</sys:node-uuid>
+            <cm:name>Датская крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Danish Krone</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Датская крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>DKK</idocs:currencyCode>
+            <idocs:currencyName>Датская крона</idocs:currencyName>
+            <idocs:currencyShortName>kr</idocs:currencyShortName>
+            <idocs:currencyNumberCode>208</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-aed">
+        <view:properties>
+            <sys:node-uuid>currency-aed</sys:node-uuid>
+            <cm:name>Дирхам</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">UAE Dirham</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Дирхам</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>AED</idocs:currencyCode>
+            <idocs:currencyName>Дирхам</idocs:currencyName>
+
+            <idocs:currencyNumberCode>784</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-zwd">
+        <view:properties>
+            <sys:node-uuid>currency-zwd</sys:node-uuid>
+            <cm:name>Доллар зимбабве</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Zimbabwe Dollar (old)</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Доллар зимбабве</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ZWD</idocs:currencyCode>
+            <idocs:currencyName>Доллар зимбабве</idocs:currencyName>
+            <idocs:currencyShortName>Z$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>716</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-nad">
+        <view:properties>
+            <sys:node-uuid>currency-nad</sys:node-uuid>
+            <cm:name>Доллар намибии</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Namibia Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Доллар намибии</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>NAD</idocs:currencyCode>
+            <idocs:currencyName>Доллар намибии</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>516</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-egp">
+        <view:properties>
+            <sys:node-uuid>currency-egp</sys:node-uuid>
+            <cm:name>Египетский фунт</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Egyptian Pound</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Египетский фунт</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>EGP</idocs:currencyCode>
+            <idocs:currencyName>Египетский фунт</idocs:currencyName>
+            <idocs:currencyShortName>£</idocs:currencyShortName>
+            <idocs:currencyNumberCode>818</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-zmk">
+        <view:properties>
+            <sys:node-uuid>currency-zmk</sys:node-uuid>
+            <cm:name>Квача (замбийская)</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Zambian Kwacha</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Квача (замбийская)</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ZMK</idocs:currencyCode>
+            <idocs:currencyName>Квача (замбийская)</idocs:currencyName>
+
+            <idocs:currencyNumberCode>894</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ils">
+        <view:properties>
+            <sys:node-uuid>currency-ils</sys:node-uuid>
+            <cm:name>Шекель</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">New Israeli Sheqel</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Шекель</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ILS</idocs:currencyCode>
+            <idocs:currencyName>Шекель</idocs:currencyName>
+            <idocs:currencyShortName>₪</idocs:currencyShortName>
+            <idocs:currencyNumberCode>376</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-inr">
+        <view:properties>
+            <sys:node-uuid>currency-inr</sys:node-uuid>
+            <cm:name>Индийская рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Indian Rupee</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Индийская рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>INR</idocs:currencyCode>
+            <idocs:currencyName>Индийская рупия</idocs:currencyName>
+
+            <idocs:currencyNumberCode>356</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-idr">
+        <view:properties>
+            <sys:node-uuid>currency-idr</sys:node-uuid>
+            <cm:name>Рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Rupiah</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>IDR</idocs:currencyCode>
+            <idocs:currencyName>Рупия</idocs:currencyName>
+            <idocs:currencyShortName>Rp</idocs:currencyShortName>
+            <idocs:currencyNumberCode>360</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-jod">
+        <view:properties>
+            <sys:node-uuid>currency-jod</sys:node-uuid>
+            <cm:name>Иорданский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Jordanian Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Иорданский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>JOD</idocs:currencyCode>
+            <idocs:currencyName>Иорданский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>400</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-iqd">
+        <view:properties>
+            <sys:node-uuid>currency-iqd</sys:node-uuid>
+            <cm:name>Иракский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Iraqi Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Иракский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>IQD</idocs:currencyCode>
+            <idocs:currencyName>Иракский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>368</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-irr">
+        <view:properties>
+            <sys:node-uuid>currency-irr</sys:node-uuid>
+            <cm:name>Иранский риал</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Iranian Rial</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Иранский риал</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>IRR</idocs:currencyCode>
+            <idocs:currencyName>Иранский риал</idocs:currencyName>
+            <idocs:currencyShortName>﷼</idocs:currencyShortName>
+            <idocs:currencyNumberCode>364</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-isk">
+        <view:properties>
+            <sys:node-uuid>currency-isk</sys:node-uuid>
+            <cm:name>Исландская крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Iceland Krona</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Исландская крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ISK</idocs:currencyCode>
+            <idocs:currencyName>Исландская крона</idocs:currencyName>
+            <idocs:currencyShortName>kr</idocs:currencyShortName>
+            <idocs:currencyNumberCode>352</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-yer">
+        <view:properties>
+            <sys:node-uuid>currency-yer</sys:node-uuid>
+            <cm:name>Йеменский риал</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Yemeni Rial</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Йеменский риал</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>YER</idocs:currencyCode>
+            <idocs:currencyName>Йеменский риал</idocs:currencyName>
+            <idocs:currencyShortName>﷼</idocs:currencyShortName>
+            <idocs:currencyNumberCode>886</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-kzt">
+        <view:properties>
+            <sys:node-uuid>currency-kzt</sys:node-uuid>
+            <cm:name>Тенге (казахский)</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Tenge</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Тенге (казахский)</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KZT</idocs:currencyCode>
+            <idocs:currencyName>Тенге (казахский)</idocs:currencyName>
+            <idocs:currencyShortName>лв</idocs:currencyShortName>
+            <idocs:currencyNumberCode>398</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-cad">
+        <view:properties>
+            <sys:node-uuid>currency-cad</sys:node-uuid>
+            <cm:name>Канадский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Canadian Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Канадский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CAD</idocs:currencyCode>
+            <idocs:currencyName>Канадский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>124</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-qar">
+        <view:properties>
+            <sys:node-uuid>currency-qar</sys:node-uuid>
+            <cm:name>Катарский риал</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Qatari Rial</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Катарский риал</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>QAR</idocs:currencyCode>
+            <idocs:currencyName>Катарский риал</idocs:currencyName>
+            <idocs:currencyShortName>﷼</idocs:currencyShortName>
+            <idocs:currencyNumberCode>634</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-kes">
+        <view:properties>
+            <sys:node-uuid>currency-kes</sys:node-uuid>
+            <cm:name>Кенийский шиллинг</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Kenyan Shilling</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Кенийский шиллинг</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KES</idocs:currencyCode>
+            <idocs:currencyName>Кенийский шиллинг</idocs:currencyName>
+
+            <idocs:currencyNumberCode>404</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-cyp">
+        <view:properties>
+            <sys:node-uuid>currency-cyp</sys:node-uuid>
+            <cm:name>Кипрский фунт</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Cyprus Pound</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Кипрский фунт</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CYP</idocs:currencyCode>
+            <idocs:currencyName>Кипрский фунт</idocs:currencyName>
+
+            <idocs:currencyNumberCode>196</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-kgs">
+        <view:properties>
+            <sys:node-uuid>currency-kgs</sys:node-uuid>
+            <cm:name>Сом (киргизский)</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Som</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сом (киргизский)</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KGS</idocs:currencyCode>
+            <idocs:currencyName>Сом (киргизский)</idocs:currencyName>
+            <idocs:currencyShortName>лв</idocs:currencyShortName>
+            <idocs:currencyNumberCode>417</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-cny">
+        <view:properties>
+            <sys:node-uuid>currency-cny</sys:node-uuid>
+            <cm:name>Китайский юань</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Yuan Renminbi</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Китайский юань</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CNY</idocs:currencyCode>
+            <idocs:currencyName>Китайский юань</idocs:currencyName>
+            <idocs:currencyShortName>¥</idocs:currencyShortName>
+            <idocs:currencyNumberCode>156</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-kpw">
+        <view:properties>
+            <sys:node-uuid>currency-kpw</sys:node-uuid>
+            <cm:name>Северо-корейская вона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">North Korean Won</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Северо-корейская вона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KPW</idocs:currencyCode>
+            <idocs:currencyName>Северо-корейская вона</idocs:currencyName>
+            <idocs:currencyShortName>₩</idocs:currencyShortName>
+            <idocs:currencyNumberCode>408</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-cop">
+        <view:properties>
+            <sys:node-uuid>currency-cop</sys:node-uuid>
+            <cm:name>Колумбийское песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Colombian Peso</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Колумбийское песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>COP</idocs:currencyCode>
+            <idocs:currencyName>Колумбийское песо</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>170</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-cdf">
+        <view:properties>
+            <sys:node-uuid>currency-cdf</sys:node-uuid>
+            <cm:name>Конголезский франк</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Congolese Franc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Конголезский франк</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CDF</idocs:currencyCode>
+            <idocs:currencyName>Конголезский франк</idocs:currencyName>
+
+            <idocs:currencyNumberCode>976</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-crc">
+        <view:properties>
+            <sys:node-uuid>currency-crc</sys:node-uuid>
+            <cm:name>Костариканский колон</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Costa Rican Colon</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Костариканский колон</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CRC</idocs:currencyCode>
+            <idocs:currencyName>Костариканский колон</idocs:currencyName>
+            <idocs:currencyShortName>₡</idocs:currencyShortName>
+            <idocs:currencyNumberCode>188</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-cup">
+        <view:properties>
+            <sys:node-uuid>currency-cup</sys:node-uuid>
+            <cm:name>Кубинское песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Cuban Peso</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Кубинское песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CUP</idocs:currencyCode>
+            <idocs:currencyName>Кубинское песо</idocs:currencyName>
+            <idocs:currencyShortName>₱</idocs:currencyShortName>
+            <idocs:currencyNumberCode>192</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-kwd">
+        <view:properties>
+            <sys:node-uuid>currency-kwd</sys:node-uuid>
+            <cm:name>Кувейтский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Kuwaiti Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Кувейтский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KWD</idocs:currencyCode>
+            <idocs:currencyName>Кувейтский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>414</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-lak">
+        <view:properties>
+            <sys:node-uuid>currency-lak</sys:node-uuid>
+            <cm:name>Кип</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Lao Kip</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Кип</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>LAK</idocs:currencyCode>
+            <idocs:currencyName>Кип</idocs:currencyName>
+            <idocs:currencyShortName>₭</idocs:currencyShortName>
+            <idocs:currencyNumberCode>418</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-lvl">
+        <view:properties>
+            <sys:node-uuid>currency-lvl</sys:node-uuid>
+            <cm:name>Латвийский лат</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Latvian Lats</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Латвийский лат</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>LVL</idocs:currencyCode>
+            <idocs:currencyName>Латвийский лат</idocs:currencyName>
+
+            <idocs:currencyNumberCode>428</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sll">
+        <view:properties>
+            <sys:node-uuid>currency-sll</sys:node-uuid>
+            <cm:name>Леоне</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Leone</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Леоне</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SLL</idocs:currencyCode>
+            <idocs:currencyName>Леоне</idocs:currencyName>
+
+            <idocs:currencyNumberCode>694</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-lbp">
+        <view:properties>
+            <sys:node-uuid>currency-lbp</sys:node-uuid>
+            <cm:name>Ливанский фунт</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Lebanese Pound</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Ливанский фунт</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>LBP</idocs:currencyCode>
+            <idocs:currencyName>Ливанский фунт</idocs:currencyName>
+            <idocs:currencyShortName>£</idocs:currencyShortName>
+            <idocs:currencyNumberCode>422</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-lyd">
+        <view:properties>
+            <sys:node-uuid>currency-lyd</sys:node-uuid>
+            <cm:name>Ливийский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Libyan Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Ливийский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>LYD</idocs:currencyCode>
+            <idocs:currencyName>Ливийский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>434</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-szl">
+        <view:properties>
+            <sys:node-uuid>currency-szl</sys:node-uuid>
+            <cm:name>Лилангени</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Lilangeni</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Лилангени</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SZL</idocs:currencyCode>
+            <idocs:currencyName>Лилангени</idocs:currencyName>
+
+            <idocs:currencyNumberCode>748</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ltl">
+        <view:properties>
+            <sys:node-uuid>currency-ltl</sys:node-uuid>
+            <cm:name>Литовский лит</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Lithuanian Litas</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Литовский лит</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>LTL</idocs:currencyCode>
+            <idocs:currencyName>Литовский лит</idocs:currencyName>
+
+            <idocs:currencyNumberCode>440</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mur">
+        <view:properties>
+            <sys:node-uuid>currency-mur</sys:node-uuid>
+            <cm:name>Маврикийская рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Mauritius Rupee</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Маврикийская рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MUR</idocs:currencyCode>
+            <idocs:currencyName>Маврикийская рупия</idocs:currencyName>
+            <idocs:currencyShortName>₨</idocs:currencyShortName>
+            <idocs:currencyNumberCode>480</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mro">
+        <view:properties>
+            <sys:node-uuid>currency-mro</sys:node-uuid>
+            <cm:name>Угия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Ouguiya</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Угия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MRO</idocs:currencyCode>
+            <idocs:currencyName>Угия</idocs:currencyName>
+
+            <idocs:currencyNumberCode>478</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mkd">
+        <view:properties>
+            <sys:node-uuid>currency-mkd</sys:node-uuid>
+            <cm:name>Денар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Denar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Денар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MKD</idocs:currencyCode>
+            <idocs:currencyName>Денар</idocs:currencyName>
+            <idocs:currencyShortName>ден</idocs:currencyShortName>
+            <idocs:currencyNumberCode>807</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mwk">
+        <view:properties>
+            <sys:node-uuid>currency-mwk</sys:node-uuid>
+            <cm:name>Квача (малавийская)</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Malawi Kwacha</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Квача (малавийская)</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MWK</idocs:currencyCode>
+            <idocs:currencyName>Квача (малавийская)</idocs:currencyName>
+
+            <idocs:currencyNumberCode>454</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mga">
+        <view:properties>
+            <sys:node-uuid>currency-mga</sys:node-uuid>
+            <cm:name>Ариари</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Malagasy Ariary</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Ариари</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MGA</idocs:currencyCode>
+            <idocs:currencyName>Ариари</idocs:currencyName>
+
+            <idocs:currencyNumberCode>969</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-myr">
+        <view:properties>
+            <sys:node-uuid>currency-myr</sys:node-uuid>
+            <cm:name>Малайзийский ринггит</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Malaysian Ringgit</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Малайзийский ринггит</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MYR</idocs:currencyCode>
+            <idocs:currencyName>Малайзийский ринггит</idocs:currencyName>
+            <idocs:currencyShortName>RM</idocs:currencyShortName>
+            <idocs:currencyNumberCode>458</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mtl">
+        <view:properties>
+            <sys:node-uuid>currency-mtl</sys:node-uuid>
+            <cm:name>Мальтийская лира</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Malta Lire</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Мальтийская лира</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MTL</idocs:currencyCode>
+            <idocs:currencyName>Мальтийская лира</idocs:currencyName>
+
+            <idocs:currencyNumberCode>470</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mad">
+        <view:properties>
+            <sys:node-uuid>currency-mad</sys:node-uuid>
+            <cm:name>Марокканский дирхам</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Moroccan Dirham</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Марокканский дирхам</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MAD</idocs:currencyCode>
+            <idocs:currencyName>Марокканский дирхам</idocs:currencyName>
+
+            <idocs:currencyNumberCode>504</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mxn">
+        <view:properties>
+            <sys:node-uuid>currency-mxn</sys:node-uuid>
+            <cm:name>Мексиканское новое песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Mexican Peso</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Мексиканское новое песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MXN</idocs:currencyCode>
+            <idocs:currencyName>Мексиканское новое песо</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>484</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mzm">
+        <view:properties>
+            <sys:node-uuid>currency-mzm</sys:node-uuid>
+            <cm:name>Метикал</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Mozambique Metical</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Метикал</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MZM</idocs:currencyCode>
+            <idocs:currencyName>Метикал</idocs:currencyName>
+
+            <idocs:currencyNumberCode>508</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mdl">
+        <view:properties>
+            <sys:node-uuid>currency-mdl</sys:node-uuid>
+            <cm:name>Молдавский лей</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Moldovan Leu</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Молдавский лей</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MDL</idocs:currencyCode>
+            <idocs:currencyName>Молдавский лей</idocs:currencyName>
+
+            <idocs:currencyNumberCode>498</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-mnt">
+        <view:properties>
+            <sys:node-uuid>currency-mnt</sys:node-uuid>
+            <cm:name>Тугрик</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Tugrik</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Тугрик</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>MNT</idocs:currencyCode>
+            <idocs:currencyName>Тугрик</idocs:currencyName>
+            <idocs:currencyShortName>₮</idocs:currencyShortName>
+            <idocs:currencyNumberCode>496</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-npr">
+        <view:properties>
+            <sys:node-uuid>currency-npr</sys:node-uuid>
+            <cm:name>Непальская рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Nepalese Rupee</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Непальская рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>NPR</idocs:currencyCode>
+            <idocs:currencyName>Непальская рупия</idocs:currencyName>
+            <idocs:currencyShortName>₨</idocs:currencyShortName>
+            <idocs:currencyNumberCode>524</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ngn">
+        <view:properties>
+            <sys:node-uuid>currency-ngn</sys:node-uuid>
+            <cm:name>Найра</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Naira</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Найра</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>NGN</idocs:currencyCode>
+            <idocs:currencyName>Найра</idocs:currencyName>
+            <idocs:currencyShortName>₦</idocs:currencyShortName>
+            <idocs:currencyNumberCode>566</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-nio">
+        <view:properties>
+            <sys:node-uuid>currency-nio</sys:node-uuid>
+            <cm:name>Золотая кордоба</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Cordoba Oro</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Золотая кордоба</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>NIO</idocs:currencyCode>
+            <idocs:currencyName>Золотая кордоба</idocs:currencyName>
+            <idocs:currencyShortName>C$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>558</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-nzd">
+        <view:properties>
+            <sys:node-uuid>currency-nzd</sys:node-uuid>
+            <cm:name>Новозеландский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">New Zealand Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Новозеландский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>NZD</idocs:currencyCode>
+            <idocs:currencyName>Новозеландский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>554</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-nok">
+        <view:properties>
+            <sys:node-uuid>currency-nok</sys:node-uuid>
+            <cm:name>Норвежская крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Norwegian Krone</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Норвежская крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>NOK</idocs:currencyCode>
+            <idocs:currencyName>Норвежская крона</idocs:currencyName>
+            <idocs:currencyShortName>kr</idocs:currencyShortName>
+            <idocs:currencyNumberCode>578</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-omr">
+        <view:properties>
+            <sys:node-uuid>currency-omr</sys:node-uuid>
+            <cm:name>Оманский риал</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Rial Omani</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Оманский риал</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>OMR</idocs:currencyCode>
+            <idocs:currencyName>Оманский риал</idocs:currencyName>
+            <idocs:currencyShortName>﷼</idocs:currencyShortName>
+            <idocs:currencyNumberCode>512</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-pkr">
+        <view:properties>
+            <sys:node-uuid>currency-pkr</sys:node-uuid>
+            <cm:name>Пакистанская рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Pakistan Rupee</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Пакистанская рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>PKR</idocs:currencyCode>
+            <idocs:currencyName>Пакистанская рупия</idocs:currencyName>
+            <idocs:currencyShortName>₨</idocs:currencyShortName>
+            <idocs:currencyNumberCode>586</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-pyg">
+        <view:properties>
+            <sys:node-uuid>currency-pyg</sys:node-uuid>
+            <cm:name>Гуарани</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Guarani</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Гуарани</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>PYG</idocs:currencyCode>
+            <idocs:currencyName>Гуарани</idocs:currencyName>
+            <idocs:currencyShortName>Gs</idocs:currencyShortName>
+            <idocs:currencyNumberCode>600</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-pen">
+        <view:properties>
+            <sys:node-uuid>currency-pen</sys:node-uuid>
+            <cm:name>Новый соль</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Sol</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Новый соль</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>PEN</idocs:currencyCode>
+            <idocs:currencyName>Новый соль</idocs:currencyName>
+            <idocs:currencyShortName>S/.</idocs:currencyShortName>
+            <idocs:currencyNumberCode>604</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-pln">
+        <view:properties>
+            <sys:node-uuid>currency-pln</sys:node-uuid>
+            <cm:name>Злотый</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Zloty</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Злотый</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>PLN</idocs:currencyCode>
+            <idocs:currencyName>Злотый</idocs:currencyName>
+            <idocs:currencyShortName>zł</idocs:currencyShortName>
+            <idocs:currencyNumberCode>985</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-krw">
+        <view:properties>
+            <sys:node-uuid>currency-krw</sys:node-uuid>
+            <cm:name>Вона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Won</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Вона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KRW</idocs:currencyCode>
+            <idocs:currencyName>Вона</idocs:currencyName>
+            <idocs:currencyShortName>₩</idocs:currencyShortName>
+            <idocs:currencyNumberCode>410</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-khr">
+        <view:properties>
+            <sys:node-uuid>currency-khr</sys:node-uuid>
+            <cm:name>Риель</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Riel</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Риель</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>KHR</idocs:currencyCode>
+            <idocs:currencyName>Риель</idocs:currencyName>
+            <idocs:currencyShortName>៛</idocs:currencyShortName>
+            <idocs:currencyNumberCode>116</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ron">
+        <view:properties>
+            <sys:node-uuid>currency-ron</sys:node-uuid>
+            <cm:name>Новый румынский лей</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Romanian Leu</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Новый румынский лей</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>RON</idocs:currencyCode>
+            <idocs:currencyName>Новый румынский лей</idocs:currencyName>
+            <idocs:currencyShortName>lei</idocs:currencyShortName>
+            <idocs:currencyNumberCode>946</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sar">
+        <view:properties>
+            <sys:node-uuid>currency-sar</sys:node-uuid>
+            <cm:name>Саудовский риял</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Saudi Riyal</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Саудовский риял</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SAR</idocs:currencyCode>
+            <idocs:currencyName>Саудовский риял</idocs:currencyName>
+            <idocs:currencyShortName>﷼</idocs:currencyShortName>
+            <idocs:currencyNumberCode>682</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-xdr">
+        <view:properties>
+            <sys:node-uuid>currency-xdr</sys:node-uuid>
+            <cm:name>Сдр (специальные права заимствования)</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">SDR (Special Drawing Right)</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сдр (специальные права заимствования)</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>XDR</idocs:currencyCode>
+            <idocs:currencyName>Сдр (специальные права заимствования)</idocs:currencyName>
+
+            <idocs:currencyNumberCode>960</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-scr">
+        <view:properties>
+            <sys:node-uuid>currency-scr</sys:node-uuid>
+            <cm:name>Сейшельская рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Seychelles Rupee</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сейшельская рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SCR</idocs:currencyCode>
+            <idocs:currencyName>Сейшельская рупия</idocs:currencyName>
+            <idocs:currencyShortName>₨</idocs:currencyShortName>
+            <idocs:currencyNumberCode>690</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-rsd">
+        <view:properties>
+            <sys:node-uuid>currency-rsd</sys:node-uuid>
+            <cm:name>Сербский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Serbian Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сербский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>RSD</idocs:currencyCode>
+            <idocs:currencyName>Сербский динар</idocs:currencyName>
+            <idocs:currencyShortName>Дин.</idocs:currencyShortName>
+            <idocs:currencyNumberCode>941</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sgd">
+        <view:properties>
+            <sys:node-uuid>currency-sgd</sys:node-uuid>
+            <cm:name>Сингапурский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Singapore Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сингапурский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SGD</idocs:currencyCode>
+            <idocs:currencyName>Сингапурский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>702</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-syp">
+        <view:properties>
+            <sys:node-uuid>currency-syp</sys:node-uuid>
+            <cm:name>Сирийский фунт</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Syrian Pound</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сирийский фунт</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SYP</idocs:currencyCode>
+            <idocs:currencyName>Сирийский фунт</idocs:currencyName>
+            <idocs:currencyShortName>£</idocs:currencyShortName>
+            <idocs:currencyNumberCode>760</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-skk">
+        <view:properties>
+            <sys:node-uuid>currency-skk</sys:node-uuid>
+            <cm:name>Словацкая крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Slovak Koruna</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Словацкая крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SKK</idocs:currencyCode>
+            <idocs:currencyName>Словацкая крона</idocs:currencyName>
+
+            <idocs:currencyNumberCode>703</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sit">
+        <view:properties>
+            <sys:node-uuid>currency-sit</sys:node-uuid>
+            <cm:name>Толар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Tolar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Толар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SIT</idocs:currencyCode>
+            <idocs:currencyName>Толар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>705</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sos">
+        <view:properties>
+            <sys:node-uuid>currency-sos</sys:node-uuid>
+            <cm:name>Сомалийский шиллинг</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Somali Shilling</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сомалийский шиллинг</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SOS</idocs:currencyCode>
+            <idocs:currencyName>Сомалийский шиллинг</idocs:currencyName>
+            <idocs:currencyShortName>S</idocs:currencyShortName>
+            <idocs:currencyNumberCode>706</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sdg">
+        <view:properties>
+            <sys:node-uuid>currency-sdg</sys:node-uuid>
+            <cm:name>Суданский фунт</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Sudanese Pound</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Суданский фунт</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SDG</idocs:currencyCode>
+            <idocs:currencyName>Суданский фунт</idocs:currencyName>
+
+            <idocs:currencyNumberCode>938</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-srd">
+        <view:properties>
+            <sys:node-uuid>currency-srd</sys:node-uuid>
+            <cm:name>Суринамский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Surinam Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Суринамский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SRD</idocs:currencyCode>
+            <idocs:currencyName>Суринамский доллар</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>968</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-tjs">
+        <view:properties>
+            <sys:node-uuid>currency-tjs</sys:node-uuid>
+            <cm:name>Сомони</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Somoni</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Сомони</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>TJS</idocs:currencyCode>
+            <idocs:currencyName>Сомони</idocs:currencyName>
+
+            <idocs:currencyNumberCode>972</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-thb">
+        <view:properties>
+            <sys:node-uuid>currency-thb</sys:node-uuid>
+            <cm:name>Бат</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Baht</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Бат</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>THB</idocs:currencyCode>
+            <idocs:currencyName>Бат</idocs:currencyName>
+            <idocs:currencyShortName>฿</idocs:currencyShortName>
+            <idocs:currencyNumberCode>764</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-twd">
+        <view:properties>
+            <sys:node-uuid>currency-twd</sys:node-uuid>
+            <cm:name>Новый тайваньский доллар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">New Taiwan Dollar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Новый тайваньский доллар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>TWD</idocs:currencyCode>
+            <idocs:currencyName>Новый тайваньский доллар</idocs:currencyName>
+            <idocs:currencyShortName>NT$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>901</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-bdt">
+        <view:properties>
+            <sys:node-uuid>currency-bdt</sys:node-uuid>
+            <cm:name>Така</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Taka</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Така</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>BDT</idocs:currencyCode>
+            <idocs:currencyName>Така</idocs:currencyName>
+
+            <idocs:currencyNumberCode>050</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-tzs">
+        <view:properties>
+            <sys:node-uuid>currency-tzs</sys:node-uuid>
+            <cm:name>Танзанийский шиллинг</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Tanzanian Shilling</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Танзанийский шиллинг</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>TZS</idocs:currencyCode>
+            <idocs:currencyName>Танзанийский шиллинг</idocs:currencyName>
+
+            <idocs:currencyNumberCode>834</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-tnd">
+        <view:properties>
+            <sys:node-uuid>currency-tnd</sys:node-uuid>
+            <cm:name>Тунисский динар</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Tunisian Dinar</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Тунисский динар</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>TND</idocs:currencyCode>
+            <idocs:currencyName>Тунисский динар</idocs:currencyName>
+
+            <idocs:currencyNumberCode>788</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-try">
+        <view:properties>
+            <sys:node-uuid>currency-try</sys:node-uuid>
+            <cm:name>Новая турецкая лира</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Turkish Lira</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Новая турецкая лира</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>TRY</idocs:currencyCode>
+            <idocs:currencyName>Новая турецкая лира</idocs:currencyName>
+
+            <idocs:currencyNumberCode>949</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-tmt">
+        <view:properties>
+            <sys:node-uuid>currency-tmt</sys:node-uuid>
+            <cm:name>Новый туркменский манат</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Turkmenistan New Manat</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Новый туркменский манат</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>TMT</idocs:currencyCode>
+            <idocs:currencyName>Новый туркменский манат</idocs:currencyName>
+
+            <idocs:currencyNumberCode>934</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-ugx">
+        <view:properties>
+            <sys:node-uuid>currency-ugx</sys:node-uuid>
+            <cm:name>Угандийский шиллинг</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Uganda Shilling</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Угандийский шиллинг</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>UGX</idocs:currencyCode>
+            <idocs:currencyName>Угандийский шиллинг</idocs:currencyName>
+
+            <idocs:currencyNumberCode>800</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-uzs">
+        <view:properties>
+            <sys:node-uuid>currency-uzs</sys:node-uuid>
+            <cm:name>Узбекский сум</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Uzbekistan Sum</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Узбекский сум</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>UZS</idocs:currencyCode>
+            <idocs:currencyName>Узбекский сум</idocs:currencyName>
+            <idocs:currencyShortName>лв</idocs:currencyShortName>
+            <idocs:currencyNumberCode>860</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-uyu">
+        <view:properties>
+            <sys:node-uuid>currency-uyu</sys:node-uuid>
+            <cm:name>Уругвайское песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Peso Uruguayo</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Уругвайское песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>UYU</idocs:currencyCode>
+            <idocs:currencyName>Уругвайское песо</idocs:currencyName>
+            <idocs:currencyShortName>$U</idocs:currencyShortName>
+            <idocs:currencyNumberCode>858</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-php">
+        <view:properties>
+            <sys:node-uuid>currency-php</sys:node-uuid>
+            <cm:name>Филиппинское песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Philippine Piso</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Филиппинское песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>PHP</idocs:currencyCode>
+            <idocs:currencyName>Филиппинское песо</idocs:currencyName>
+            <idocs:currencyShortName>₱</idocs:currencyShortName>
+            <idocs:currencyNumberCode>608</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-djf">
+        <view:properties>
+            <sys:node-uuid>currency-djf</sys:node-uuid>
+            <cm:name>Франк джибути</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Djibouti Franc</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Франк джибути</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>DJF</idocs:currencyCode>
+            <idocs:currencyName>Франк джибути</idocs:currencyName>
+
+            <idocs:currencyNumberCode>262</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-xaf">
+        <view:properties>
+            <sys:node-uuid>currency-xaf</sys:node-uuid>
+            <cm:name>Франк кфа веас</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">CFA Franc BEAC</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Франк кфа веас</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>XAF</idocs:currencyCode>
+            <idocs:currencyName>Франк кфа веас</idocs:currencyName>
+
+            <idocs:currencyNumberCode>950</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-hrk">
+        <view:properties>
+            <sys:node-uuid>currency-hrk</sys:node-uuid>
+            <cm:name>Куна</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Kuna</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Куна</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>HRK</idocs:currencyCode>
+            <idocs:currencyName>Куна</idocs:currencyName>
+            <idocs:currencyShortName>kn</idocs:currencyShortName>
+            <idocs:currencyNumberCode>191</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-czk">
+        <view:properties>
+            <sys:node-uuid>currency-czk</sys:node-uuid>
+            <cm:name>Чешская крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Czech Koruna</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Чешская крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CZK</idocs:currencyCode>
+            <idocs:currencyName>Чешская крона</idocs:currencyName>
+            <idocs:currencyShortName>Kč</idocs:currencyShortName>
+            <idocs:currencyNumberCode>203</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-clp">
+        <view:properties>
+            <sys:node-uuid>currency-clp</sys:node-uuid>
+            <cm:name>Чилийское песо</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Chilean Peso</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Чилийское песо</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>CLP</idocs:currencyCode>
+            <idocs:currencyName>Чилийское песо</idocs:currencyName>
+            <idocs:currencyShortName>$</idocs:currencyShortName>
+            <idocs:currencyNumberCode>152</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-sek">
+        <view:properties>
+            <sys:node-uuid>currency-sek</sys:node-uuid>
+            <cm:name>Шведская крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Swedish Krona</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Шведская крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>SEK</idocs:currencyCode>
+            <idocs:currencyName>Шведская крона</idocs:currencyName>
+            <idocs:currencyShortName>kr</idocs:currencyShortName>
+            <idocs:currencyNumberCode>752</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-lkr">
+        <view:properties>
+            <sys:node-uuid>currency-lkr</sys:node-uuid>
+            <cm:name>Шри-ланкийская рупия</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Sri Lanka Rupee</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Шри-ланкийская рупия</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>LKR</idocs:currencyCode>
+            <idocs:currencyName>Шри-ланкийская рупия</idocs:currencyName>
+            <idocs:currencyShortName>₨</idocs:currencyShortName>
+            <idocs:currencyNumberCode>144</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-eek">
+        <view:properties>
+            <sys:node-uuid>currency-eek</sys:node-uuid>
+            <cm:name>Крона</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Kroon</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Крона</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>EEK</idocs:currencyCode>
+            <idocs:currencyName>Крона</idocs:currencyName>
+
+            <idocs:currencyNumberCode>233</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-etb">
+        <view:properties>
+            <sys:node-uuid>currency-etb</sys:node-uuid>
+            <cm:name>Эфиопский быр</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Ethiopian Birr</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Эфиопский быр</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ETB</idocs:currencyCode>
+            <idocs:currencyName>Эфиопский быр</idocs:currencyName>
+
+            <idocs:currencyNumberCode>230</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-zar">
+        <view:properties>
+            <sys:node-uuid>currency-zar</sys:node-uuid>
+            <cm:name>Рэнд</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Rand</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Рэнд</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>ZAR</idocs:currencyCode>
+            <idocs:currencyName>Рэнд</idocs:currencyName>
+            <idocs:currencyShortName>R</idocs:currencyShortName>
+            <idocs:currencyNumberCode>710</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+</view:view>

@@ -26,11 +26,11 @@
             </cm:category>
             <cm:category>
                 <view:properties>
-                    <sys:node-uuid>orders-cat-internal-adm-order</sys:node-uuid>
-                    <cm:name>${doctype.internal.adm.order.name}</cm:name>
+                    <sys:node-uuid>orders-cat-internal-memo</sys:node-uuid>
+                    <cm:name>${doctype.internal.memo.name}</cm:name>
                      <cm:title>
-                        <view:mlvalue view:locale="en_US">${doctype.internal.adm.order.title_en}</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">${doctype.internal.adm.order.title_ru}</view:mlvalue>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.memo.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.memo.title_ru}</view:mlvalue>
                     </cm:title>
                 </view:properties>
             </cm:category>
@@ -46,11 +46,11 @@
             </cm:category>
             <cm:category>
                 <view:properties>
-                    <sys:node-uuid>orders-cat-internal-adm-disp</sys:node-uuid>
-                    <cm:name>${doctype.internal.adm.disp.name}</cm:name>
+                    <sys:node-uuid>orders-cat-internal-act</sys:node-uuid>
+                    <cm:name>${doctype.internal.act.name}</cm:name>
                      <cm:title>
-                        <view:mlvalue view:locale="en_US">${doctype.internal.adm.disp.title_en}</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">${doctype.internal.adm.disp.title_ru}</view:mlvalue>
+                        <view:mlvalue view:locale="en_US">${doctype.internal.act.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${doctype.internal.act.title_ru}</view:mlvalue>
                     </cm:title>
                 </view:properties>
             </cm:category>
