@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static ru.citeck.ecos.bot.ProcessStates.*;
 import static ru.citeck.ecos.model.TelegramModel.TELEGRAM_USER_ID_PROP;
@@ -49,7 +50,7 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
     private String findUserByPhoneNumberQuery = "TYPE:\"cm:person\" AND @cm\\:telephone:%s";
     private String botToken;
     private static final String LOGTAG = "ECOS_BOT_LOGGER";
-    private Map<UserChatKey, ProcessDTO> dataCacheMap = new HashMap<>();
+    private Map<UserChatKey, ProcessDTO> dataCacheMap = new ConcurrentHashMap<>();
 
     public EcosTelegramBot(String botToken) {
         this.botToken = botToken;
