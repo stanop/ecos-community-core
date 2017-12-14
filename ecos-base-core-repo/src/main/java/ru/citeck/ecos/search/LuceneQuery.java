@@ -173,8 +173,22 @@ public class LuceneQuery implements SearchQueryBuilder {
         private void buildSearchTerm(CriteriaTriplet triplet) {
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
 
-            String field = buildField(triplet.getField());
             String value = triplet.getValue();
+            String field;
+            if (SearchPredicate.JOURNAL_ID.equals(criterion)) {
+                String nodeType = getNodeType(value);
+                if (!isSafeEmpty(nodeType)) {
+                    buildEqualsTerm(FieldType.TYPE.toString(), nodeType);
+                    String staticQuery = getStaticQuery(value);
+                    if (!isSafeEmpty(staticQuery)) {
+                        query.append(AND);
+                        query.append(staticQuery);
+                    }
+                }
+                return;
+            } else {
+                field = buildField(triplet.getField());
+            }
 
             switch (criterion) {
                 case ASSOC_CONTAINS:
@@ -197,6 +211,9 @@ public class LuceneQuery implements SearchQueryBuilder {
             switch (criterion) {
                 case STRING_CONTAINS:
                     buildEqualsTerm(field, WILD + value + WILD);
+                    break;
+                case QUERY_OR:
+                    buildQueryOr(triplet.getField(), value);
                     break;
                 case STRING_NOT_EQUALS:
                 case NUMBER_NOT_EQUALS:
@@ -388,6 +405,9 @@ public class LuceneQuery implements SearchQueryBuilder {
                     case NUMBER_LESS_OR_EQUAL:
                         ignore = true;
                 }
+            } else if (SearchPredicate.JOURNAL_ID.equals(criterion)) {
+                String nodeType = getNodeType(value);
+                ignore = isSafeEmpty(nodeType);
             }
             return ignore;
         }
@@ -453,6 +473,22 @@ public class LuceneQuery implements SearchQueryBuilder {
                 if (shouldAppendQuery) {
                     query.append(term);
                 }
+            }
+        }
+
+        private void buildQueryOr(String field, String value) {
+            StringBuilder _value = new StringBuilder(SEPARATOR)
+                    .append(QUOTE).append(WILD).append(value).append(WILD).append(QUOTE);
+            List<String> subQueryOr = getSubQueryOr(field);
+            if (subQueryOr != null && !subQueryOr.isEmpty()) {
+                StringBuilder _term = new StringBuilder(OPENING_ROUND_BRACKET);
+                for (String subField : subQueryOr) {
+                    _term.append(buildField(subField)).append(_value).append(OR);
+                }
+                int termLength = _term.length();
+                _term.delete(termLength - OR.length(), termLength);
+                _term.append(CLOSING_ROUND_BRACKET);
+                query.append(_term);
             }
         }
 
@@ -660,7 +696,19 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
     }
 
+    private boolean isSafeEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    private String getNodeType(String journalId) {
+        return searchCriteriaSettingsRegistry.getNodeType(journalId);
+    }
+
     private String getStaticQuery(String journalId) {
         return searchCriteriaSettingsRegistry.getStaticQuery(journalId);
+    }
+
+    private List<String> getSubQueryOr(String fieldName) {
+        return searchCriteriaSettingsRegistry.getSubQueryOr(fieldName);
     }
 }

@@ -32,6 +32,7 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
 import ru.citeck.ecos.journals.xml.*;
+import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 
 class JournalTypeImpl implements JournalType {
 
@@ -44,8 +45,8 @@ class JournalTypeImpl implements JournalType {
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
     private final Map<QName, JournalCriterion> criterion;
     
-    public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry) {
-
+    public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry,
+                           SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
@@ -85,7 +86,8 @@ class JournalTypeImpl implements JournalType {
             }
 
             batchEdit.put(attributeKey, attributeBatchEdit);
-            criterion.put(attributeKey, new JournalCriterion(attributeKey, header.getCriterion(), prefixResolver));
+            criterion.put(attributeKey, new JournalCriterion(attributeKey, header.getCriterion(), journal.getId(),
+                    prefixResolver, searchCriteriaSettingsRegistry));
 
             index++;
         }
