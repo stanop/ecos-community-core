@@ -379,6 +379,15 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- flowable -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-flowable-repo</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -661,6 +670,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-flowable-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -843,6 +860,7 @@
         <module>meetings-share</module>
         <module>orders-repo</module>
         <module>orders-share</module>
+        <module>ecos-flowable-repo</module>
     </modules>
 
     <repositories>

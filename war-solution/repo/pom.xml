@@ -113,6 +113,14 @@
             <type>amp</type>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-flowable-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${module.contracts.version}</version>
+            <type>amp</type>
+        </dependency>
+
         <!-- Uncomment if you are using SPP (SharePoint Protocol Support) for Online Edit etc -->
         <!--
         <dependency>
@@ -219,6 +227,12 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-flowable-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>

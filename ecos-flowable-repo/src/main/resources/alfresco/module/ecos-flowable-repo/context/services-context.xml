@@ -1,0 +1,274 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="flowableSetContextStartListener" class="ru.citeck.ecos.flowable.listeners.utils.FlowableSetContextStartListener"/>
+
+	<!-- Flowable engine -->
+	<bean id="flowableWorkflowComponent" class="ru.citeck.ecos.flowable.FlowableWorkflowComponent">
+		<property name="bpmEngineRegistry" ref="bpm_engineRegistry"/>
+		<property name="workflowAdminService" ref="workflowAdminService"/>
+		<property name="authenticationService" ref="authenticationService"/>
+		<property name="personService" ref="PersonService"/>
+		<property name="namespaceService" ref="namespaceService"/>
+		<property name="dictionaryService" ref="dictionaryService"/>
+	</bean>
+
+	<bean id="flowableTaskComponent" class="ru.citeck.ecos.flowable.FlowableTaskComponent">
+		<property name="bpmEngineRegistry" ref="bpm_engineRegistry"/>
+		<property name="workflowAdminService" ref="workflowAdminService"/>
+	</bean>
+
+	<bean id="flowableTransformService" class="ru.citeck.ecos.flowable.services.impl.FlowableTransformServiceImpl">
+		<property name="namespaceService" ref="namespaceService"/>
+		<property name="dictionaryService" ref="dictionaryService"/>
+		<property name="personService" ref="PersonService"/>
+		<property name="authenticationService" ref="authenticationService"/>
+		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
+		<property name="formService" ref="flowableFormService"/>
+		<property name="flowableProcessInstanceService" ref="flowableCustomProcessInstanceService"/>
+		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
+		<property name="flowablePropertyConverter" ref="flowablePropertyConverter"/>
+	</bean>
+
+	<bean id="flowableCustomProcessDefinitionService" class="ru.citeck.ecos.flowable.services.impl.FlowableProcessDefinitionServiceImpl">
+		<property name="repositoryService" ref="flowableRepositoryService"/>
+		<property name="flowableProcessInstanceService" ref="flowableCustomProcessInstanceService"/>
+	</bean>
+
+	<bean id="flowableCustomTaskService" class="ru.citeck.ecos.flowable.services.impl.FlowableTaskServiceImpl">
+		<property name="taskService" ref="flowableTaskService"/>
+	</bean>
+
+	<bean id="flowableCustomProcessInstanceService" class="ru.citeck.ecos.flowable.services.impl.FlowableProcessInstanceServiceImpl">
+		<property name="runtimeService" ref="flowableRuntimeService"/>
+	</bean>
+
+	<bean id="flowableCustomHistoryService" class="ru.citeck.ecos.flowable.services.impl.FlowableHistoryServiceImpl">
+		<property name="historyService" ref="flowableHistoryService"/>
+		<property name="personService" ref="PersonService"/>
+	</bean>
+
+	<!-- Utils -->
+	<bean id="flowableCasePerformUtils" class="ru.citeck.ecos.flowable.utils.FlowableCasePerformUtils">
+		<property name="nodeService" ref="nodeService" />
+		<property name="authorityService" ref="authorityService" />
+		<property name="dictionaryService" ref="dictionaryService" />
+		<property name="namespaceService" ref="namespaceService" />
+		<property name="repositoryHelper" ref="repositoryHelper" />
+		<property name="caseRoleService" ref="caseRoleService" />
+	</bean>
+
+	<bean id="flowablePropertyConverter" init-method="init"
+		  class="ru.citeck.ecos.flowable.converters.FlowablePropertyConverter">
+		<property name="taskService" ref="flowableTaskService"/>
+		<property name="authorityManager" ref="workflowAuthorityManager"/>
+		<property name="dictionaryService" ref="dictionaryService" />
+		<property name="messageService" ref="messageService"/>
+		<property name="namespaceService" ref="namespaceService"/>
+		<property name="tenantService" ref="tenantService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="personService" ref="PersonService"/>
+		<property name="flowableTaskService" ref="flowableCustomTaskService"/>
+		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
+		<property name="handlerRegistry" ref="flowableWorkflowPropertyHandlerRegistry"/>
+		<property name="typeManager" ref="flowableTaskTypeManager"/>
+	</bean>
+
+	<bean id="flowableGrantWorkflowPackageHelper" class="ru.citeck.ecos.flowable.utils.FlowableGrantWorkflowPackageHelper">
+		<property name="grantPermissionService" ref="GrantPermissionService" />
+		<property name="authorityHelper" ref="authorityHelper"/>
+	</bean>
+
+	<!-- Senders -->
+
+	<bean id="flowableStartWorkflowNotificationSender"
+		  class="ru.citeck.ecos.flowable.utils.FlowableExecutionEntityNotificationSender" parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
+		<property name="notificationType" value="start_workflow"/>
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+	</bean>
+
+	<bean id="flowableCancelWorkflowNotificationSender"
+		  class="ru.citeck.ecos.flowable.utils.FlowableExecutionEntityNotificationSender" parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
+		<property name="notificationType" value="cancel_workflow"/>
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+	</bean>
+
+	<bean id="flowableCompleteWorkflowNotificationSender"
+		  class="ru.citeck.ecos.flowable.utils.FlowableExecutionEntityNotificationSender" parent="AbstractNotificationSender">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="templateRoot" value="/app:company_home/app:dictionary/app:email_templates/cm:workflownotification" />
+		<property name="notificationType" value="complete_workflow"/>
+		<property name="nodeOwnerDAO" ref="NodeOwnerDAO"/>
+	</bean>
+
+	<!-- Global listeners -->
+
+	<!-- Start process -->
+	<bean id="flowableSetInitiatorStartProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.SetInitiatorStartProcessListener">
+		<property name="personService" ref="PersonService"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+	<bean id="flowablePackageFieldsFillingListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.PackageFieldsFillingListener">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="namespaceService" ref="NamespaceService" />
+	</bean>
+
+	<bean id="flowableCycleStartProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.LifeCycleStartProcessListener">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="lifeCycleService" ref="lifeCycleService"/>
+	</bean>
+
+	<bean id="flowableWorkflowHistoryListener" init-method="init"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.WorkflowHistoryListener">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="historyService" ref="historyService"/>
+		<property name="namespaceService" ref="NamespaceService"/>
+		<property name="workflowService" ref="WorkflowService"/>
+	</bean>
+
+	<bean id="flowableSetPriorityWorkflowListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.SetPriorityWorkflowListener">
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+	<bean id="flowableStartWorkflowListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.StartWorkflowListener">
+		<property name="sender" ref="flowableStartWorkflowNotificationSender"/>
+	</bean>
+
+	<!-- End process -->
+	<bean id="flowableRevokeFinalWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.RevokeFinalWorkflowPackageListener">
+		<property name="helper" ref="flowableGrantWorkflowPackageHelper" />
+		<property name="revokeTaskPermissions" value="${workflow-security.revoke-task-permissions}" />
+		<property name="revokeProcessPermissions" value="${workflow-security.revoke-process-permissions}" />
+	</bean>
+
+	<bean id="flowableCancelWorkflowListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.CancelWorkflowListener">
+		<property name="enabled" value="${notification.cancel.workflow.enabled}"/>
+		<property name="sender" ref="flowableCancelWorkflowNotificationSender" />
+	</bean>
+
+	<bean id="flowableCompleteWorkflowListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.CompleteWorkflowListener">
+		<property name="enabled" value="${notification.complete.workflow.enabled}"/>
+		<property name="sender" ref="flowableCompleteWorkflowNotificationSender" />
+	</bean>
+
+	<bean id="flowableLifeCycleEndProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.LifeCycleEndProcessListener">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="lifeCycleService" ref="lifeCycleService"/>
+	</bean>
+
+	<bean id="flowableCaseTaskEndProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.CaseTaskEndProcessListener">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="caseActivityService" ref="caseActivityService"/>
+	</bean>
+
+	<!-- Create task -->
+
+	<bean id="flowableTaskCreateListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskCreateListener">
+		<property name="personService" ref="PersonService"/>
+	</bean>
+
+	<bean id="flowableTaskSenderPullListener" init-method="init"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskSenderPullListener">
+		<property name="personService" ref="PersonService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="namespaceService" ref="NamespaceService"/>
+	</bean>
+
+	<bean id="flowableLastCommentPullListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.VariablePullListener">
+		<property name="executionVariable" value="cwf_lastcomment" />
+		<property name="taskVariable" value="cwf_lastcomment" />
+	</bean>
+
+	<bean id="flowableTaskOriginalOwnerListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskOriginalOwnerListener">
+		<property name="delegateListenerName" value="deputyListener.taskManagement"/>
+	</bean>
+
+	<bean id="flowableTaskPriorityPullListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskPriorityPullListener">
+	</bean>
+
+	<bean id="flowableTaskAssignDateListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskAssignDateListener">
+		<property name="enabled" value="${task.assign.date.listener.enabled}"/>
+	</bean>
+
+	<bean id="flowableGrantWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.GrantWorkflowPackageListener">
+		<property name="grantedPermission" value="${workflow-security.grant-permission}"/>
+		<property name="helper" ref="flowableGrantWorkflowPackageHelper"/>
+	</bean>
+
+	<bean id="flowableTaskHistoryListener" init-method="init"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskHistoryListener">
+		<property name="namespaceService" ref="NamespaceService"/>
+		<property name="historyService" ref="historyService"/>
+		<property name="workflowService" ref="WorkflowService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="authorityService" ref="authorityService"/>
+		<property name="caseRoleService" ref="caseRoleService"/>
+		<property name="deputyService" ref="DeputyService"/>
+	</bean>
+
+	<bean id="flowableAssignTaskToSingleCandidateListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.AssignTaskToSingleCandidateListener">
+		<property name="authorityService" ref="authorityService"/>
+	</bean>
+
+	<!-- End task -->
+	<bean id="flowableTaskSenderPushListener" init-method="init"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.TaskSenderPushListener">
+		<property name="personService" ref="PersonService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="namespaceService" ref="NamespaceService"/>
+	</bean>
+
+	<bean id="flowableVariablePushListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.VariablePushListener">
+		<property name="taskVariable" value="bpm_comment" />
+		<property name="executionVariable" value="cwf_lastcomment" />
+	</bean>
+
+	<bean id="flowableTaskOutcomePushListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.TaskOutcomePushListener">
+		<property name="outcomePropertyName" value="outcome" />
+		<property name="namespaceService" ref="NamespaceService"/>
+	</bean>
+
+	<bean id="flowableRevokeWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.RevokeWorkflowPackageListener">
+		<property name="helper" ref="flowableGrantWorkflowPackageHelper"/>
+		<property name="postRevokePermission" value="${workflow-security.post-revoke-permission}" />
+	</bean>
+
+	<!-- Mirror listeners -->
+	<bean id="flowableMirrorListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.MirrorListener">
+		<property name="workflowMirrorService" ref="workflowMirrorService"/>
+	</bean>
+
+	<bean id="flowableMirrorEndProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.MirrorEndProcessListener">
+		<property name="workflowMirrorService" ref="workflowMirrorService"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+	<!-- Temp -->
+	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.temp.FlowableCasePerformWorkflowHandler"
+		  init-method="init">
+		<property name="utils" ref="flowableCasePerformUtils" />
+		<property name="authorityService" ref="authorityService" />
+	</bean>
+
+	<bean name="FlowableConfirmHelper" class="ru.citeck.ecos.flowable.temp.FlowableConfirmHelper">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean name="FlowableConfirmableVersionJS" class="ru.citeck.ecos.flowable.temp.FlowableConfirmableVersionJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="flowableVersions" />
+		<property name="impl" ref="FlowableConfirmHelper" />
+	</bean>
+
+	<bean name="FlowableConfirmDecisionsJS" class="ru.citeck.ecos.flowable.temp.FlowableConfirmDecisionsJS" parent="baseJavaScriptExtension">
+		<property name="extensionName" value="flowableConfirmDecisions" />
+		<property name="impl" ref="FlowableConfirmHelper" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+</beans>
