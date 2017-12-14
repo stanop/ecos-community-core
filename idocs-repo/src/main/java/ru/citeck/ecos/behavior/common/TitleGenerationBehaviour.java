@@ -117,9 +117,6 @@ public class TitleGenerationBehaviour implements
 
     private void setProperty(final NodeRef nodeRef, final QName property,
                              final Map<Locale, String> mlTemplate) {
-        if (StringUtils.isNoneEmpty((String) nodeService.getProperty(nodeRef, property))) {
-            return;
-        }
         MLText mlValue = getProcessedMLText(nodeRef, mlTemplate);
         if(mlValue != null && mlValue.size() > 0) {
             setProperty(nodeRef, property, mlValue);

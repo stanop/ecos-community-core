@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.invariants.view;
 
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
@@ -40,6 +41,24 @@ public interface NodeViewService {
      * @param sourceId id of definition
      */
     void undeployDefinition(String sourceId);
+
+    /**
+     * Checks, if the specified view is registered or not.
+     *
+     * @param id Node id
+     * @param type Node type
+     * @return true, if the view is registered, false otherwise
+     */
+    boolean hasNodeView(String id, String type);
+
+    /**
+     * Checks, if the specified view is registered or not.
+     *
+     * @param node Node
+     * @param id Node id
+     * @return true, if the view is registered, false otherwise
+     */
+    boolean hasNodeView(ScriptNode node, String id);
     
     /**
      * Checks, if the specified view is registered or not.

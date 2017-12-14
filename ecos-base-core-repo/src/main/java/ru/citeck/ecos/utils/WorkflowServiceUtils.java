@@ -1,4 +1,4 @@
-package ru.citeck.ecos.invariants.utils;
+package ru.citeck.ecos.utils;
 
 import org.alfresco.service.cmr.workflow.WorkflowAdminService;
 import org.alfresco.service.cmr.workflow.WorkflowDefinition;

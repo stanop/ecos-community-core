@@ -48,6 +48,7 @@ import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.util.*;
 
@@ -196,7 +197,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
             }
 
-			if(!nodeService.exists(taskMirror) || isNodeForDelete(taskMirror)) {
+			if(NodeUtils.isNodeForDeleteOrNotExist(taskMirror, nodeService)) {
 				return;
 			}
             nodeInfoFactory.persist(taskMirror, nodeInfo, true);
@@ -207,28 +208,21 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 				String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
 				logger.debug("Deleting mirror for task " + taskId + " (" + taskMirror + ")");
 			}
-			if(!nodeService.exists(taskMirror) || isNodeForDelete(taskMirror)) {
+			if(NodeUtils.isNodeForDeleteOrNotExist(taskMirror, nodeService)) {
 				return;
 			}
 			nodeService.deleteNode(taskMirror);
         }
 	}
 
-	private boolean isNodeForDelete(NodeRef documentRef) {
-		if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
-			return false;
-		} else {
-			Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
-			return nodesPendingDelete.contains(documentRef);
-		}
-	}
 
 	private NodeRef createTaskMirror(String taskId, QName taskType) {
     	try {
 			QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
 			ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
 			return mirrorRef.getChildRef();
-		} catch (Exception exception) {
+		} catch (IllegalArgumentException exception) {
+    		logger.error(exception.getMessage());
     		return null;
 		}
 	}

@@ -27,12 +27,14 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.attr.NodeAttributeService;
-import ru.citeck.ecos.invariants.utils.WorkflowServiceUtils;
+import ru.citeck.ecos.utils.WorkflowServiceUtils;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
 import ru.citeck.ecos.model.InvariantsModel;
@@ -44,6 +46,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class NodeViewGet extends DeclarativeWebScript {
+
+    private static Log logger = LogFactory.getLog(NodeViewGet.class);
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_VIEW_ID = "viewId";
@@ -144,7 +148,8 @@ public class NodeViewGet extends DeclarativeWebScript {
     private void setClassName(NodeView.Builder builder, String type) {
         try {
             builder.className(type);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
         }
     }
 

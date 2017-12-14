@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
@@ -39,9 +42,17 @@ import ru.citeck.ecos.invariants.InvariantConstants;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.invariants.InvariantService;
 import ru.citeck.ecos.model.AttributeModel;
+import ru.citeck.ecos.utils.WorkflowServiceUtils;
 
 class NodeViewServiceImpl implements NodeViewService {
 
+    private static final String DEFAULT_TASK_VIEW = "wfcf:defaultTask";
+    private static final QName WORKFLOW_DEFINITION_NAME = QName.createQName(
+            "http://www.citeck.ru/model/icaseTask/1.0", "workflowDefinitionName"
+    );
+
+    private WorkflowServiceUtils workflowServiceUtils;
+    private ServiceRegistry serviceRegistry;
     private NodeService nodeService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
@@ -101,10 +112,82 @@ class NodeViewServiceImpl implements NodeViewService {
     public NodeView getNodeView(NodeView view) {
         return filter.resolveView(view);
     }
-    
+
+    @Override
+    public boolean hasNodeView(String id, String type) {
+        WorkflowDefinition workflowDefinition = workflowServiceUtils.getWorkflowDefinition(type);
+        if (workflowDefinition != null) {
+            /** Workflow view */
+            type = workflowDefinition.getStartTaskDefinition().getId();
+            boolean result = checkHasNodeView(id, type);
+            if (result) {
+                return true;
+            } else {
+                return checkHasNodeView(id, DEFAULT_TASK_VIEW);
+            }
+        } else {
+            /** Common view */
+            return checkHasNodeView(id, type);
+        }
+    }
+
+    @Override
+    public boolean hasNodeView(ScriptNode node, String id) {
+        boolean result = hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                .className(node.getTypeShort())
+                .id(id)
+                .build());
+        if (result) {
+            return true;
+        }
+        /** Load workflow */
+        if (node != null && node.getNodeRef() != null) {
+            String workflowDefinitionName = (String) nodeService.getProperty(node.getNodeRef(), WORKFLOW_DEFINITION_NAME);
+            WorkflowDefinition workflowDefinition = workflowServiceUtils.getWorkflowDefinition(workflowDefinitionName);
+            if (workflowDefinition != null) {
+                String type = workflowDefinition.getStartTaskDefinition().getId();
+                result = hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                        .className(type)
+                        .id(id)
+                        .build());
+                if (result) {
+                    return true;
+                } else {
+                    return hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                            .className(DEFAULT_TASK_VIEW)
+                            .id(id)
+                            .build());
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkHasNodeView(String id, String type) {
+        try {
+            return hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
+                    .className(type)
+                    .id(id)
+                    .build());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     @Override
     public boolean hasNodeView(NodeView view) {
         return filter.isViewRegistered(view);
+    }
+
+    public void setWorkflowServiceUtils(WorkflowServiceUtils workflowServiceUtils) {
+        this.workflowServiceUtils = workflowServiceUtils;
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
     }
 
     public void setNodeService(NodeService nodeService) {

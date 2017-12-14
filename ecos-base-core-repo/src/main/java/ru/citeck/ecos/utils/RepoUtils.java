@@ -50,7 +50,6 @@ public class RepoUtils {
     private static final String DOWNLOAD_API_PREFIX = "/api/node/content/workspace/SpacesStore/";
     private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
     private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,"filename");
-    public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     /**
      * It returns a property value or throws an exception.
@@ -717,11 +716,11 @@ public class RepoUtils {
                                          QName name, boolean isTarget, NodeService nodeService) {
         try {
             if (isTarget) {
-                if (!isNodeForDelete(nodeRef, nodeService) && !isNodeForDelete(linkedNode, nodeService)) {
+                if (!NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
                     nodeService.removeAssociation(nodeRef, linkedNode, name);
                 }
             } else {
-                if (!isNodeForDelete(linkedNode, nodeService) && !isNodeForDelete(linkedNode, nodeService)) {
+                if (!NodeUtils.isNodeForDeleteOrNotExist(linkedNode, nodeService)) {
                     nodeService.removeAssociation(linkedNode, nodeRef, name);
                 }
             }
@@ -768,6 +767,9 @@ public class RepoUtils {
     }
 
     public static void setChildAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> childAssocs, boolean primary, boolean full, NodeService nodeService) {
+        if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+            return;
+        }
         for (QName assocName : childAssocs.keySet()) {
             Set<NodeRef> newChildren = new HashSet<>(childAssocs.get(assocName));
 
@@ -798,7 +800,7 @@ public class RepoUtils {
         }
 
         if (full) {
-            if (!nodeService.exists(nodeRef) || isNodeForDelete(nodeRef, nodeService)) {
+            if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
                 return;
             }
             List<ChildAssociationRef> allChildAssocs = nodeService.getChildAssocs(nodeRef);
@@ -808,19 +810,6 @@ public class RepoUtils {
             }
         }
     }
-
-    private static boolean isNodeForDelete(NodeRef documentRef, NodeService nodeService) {
-        if (!nodeService.exists(documentRef)) {
-            return true;
-        }
-        if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
-            return false;
-        } else {
-            Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
-            return nodesPendingDelete.contains(documentRef);
-        }
-    }
-
 
     private static void createChildAssociation(NodeRef nodeRef, NodeRef child,
                                                QName assocName, boolean primary, NodeService nodeService) {
