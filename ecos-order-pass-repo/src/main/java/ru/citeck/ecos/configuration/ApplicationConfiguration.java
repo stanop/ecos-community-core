@@ -8,7 +8,9 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import ru.citeck.ecos.bot.EcosTelegramBot;
 
-
+/**
+ * Java spring configuration
+ * */
 @Configuration
 public class ApplicationConfiguration {
 

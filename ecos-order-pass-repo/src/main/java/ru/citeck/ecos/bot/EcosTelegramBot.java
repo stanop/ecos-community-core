@@ -55,10 +55,19 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
         this.botToken = botToken;
     }
 
+    /**
+     * Send message to user
+     * @param messageText text of message
+     * @param userId telegramUserId or chatId
+     * */
     public void sendMessage(String messageText, String userId) throws TelegramApiException {
         execute(sendMessage(Long.valueOf(userId), null, messageText));
     }
 
+    /**
+     * Receives messages from bot
+     *
+     * */
     @Override
     public void onUpdateReceived(Update update) {
         try {
@@ -79,6 +88,7 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
             BotLogger.error(LOGTAG, e);
         }
     }
+
 
     private SearchParameters getSearchParameters(String searchQuery) {
         SearchParameters searchParameters = new SearchParameters();
@@ -300,7 +310,9 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
         return botToken;
     }
 
-
+/**
+ * Class - key for different users processes
+ * */
     public class UserChatKey {
         private Integer userId;
         private Long chatId;
@@ -354,6 +366,10 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     *Contains process data in cache
+     *
+     * */
     public class ProcessDTO {
         private int state;
         private Map<String, Object> data;
