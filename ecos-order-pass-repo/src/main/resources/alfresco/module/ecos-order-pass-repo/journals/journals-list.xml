@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0"    prefix="idocs"/>
+        <import uri="http://www.citeck.ru/model/content/order-pass/1.0" prefix="op"/>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+    </imports>
+
+    <journal id="order-passes">
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="type">op:orderPass</option>
+        <option name="createVariantRedirectionMethod">card</option>
+        <headers>
+            <header key="idocs:registrationNumber" default="true"/>
+            <header key="idocs:registrationDate" default="true"/>
+            <header key="op:visitorFullName" default="true"/>
+            <header key="op:visitorOrganization" default="true"/>
+            <header key="op:visitingDate" default="true"/>
+            <header key="icase:caseStatusAssoc" default="true" sortable="false">
+                <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
+            </header>
+        </headers>
+    </journal>
+</journals>

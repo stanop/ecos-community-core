@@ -23,7 +23,7 @@ import ru.citeck.ecos.cmmn.model.*;
 import ru.citeck.ecos.content.config.converter.ContentValueConverter;
 import ru.citeck.ecos.model.*;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.*;

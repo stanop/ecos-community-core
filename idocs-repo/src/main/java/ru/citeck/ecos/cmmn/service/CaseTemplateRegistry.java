@@ -10,7 +10,10 @@ import ru.citeck.ecos.content.config.ConfigData;
 import ru.citeck.ecos.content.config.TypeKindConfigRegistry;
 import ru.citeck.ecos.model.ICaseModel;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Pavel Simonov

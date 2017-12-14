@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="tel:telegramModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <description>Telegram Model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/telegram/common/1.0" prefix="tel"/>
+    </namespaces>
+
+    <aspects>
+        <aspect name="tel:isTelegramRequest">
+            <title>Is Telegram Request</title>
+            <properties>
+                <property name="tel:isTelegramRequest">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="tel:hasTelegramUserId">
+            <properties>
+                <property name="tel:telegramUserId">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

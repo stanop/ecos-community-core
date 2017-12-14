@@ -1,11 +1,13 @@
 package ru.citeck.ecos.content.config;
 
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentWriter;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**

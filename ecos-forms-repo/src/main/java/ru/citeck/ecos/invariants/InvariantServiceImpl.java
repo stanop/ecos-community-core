@@ -18,15 +18,14 @@
  */
 package ru.citeck.ecos.invariants;
 
-import java.io.InputStream;
-import java.util.*;
-
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-
 import ru.citeck.ecos.utils.DictionaryUtils;
+
+import java.io.InputStream;
+import java.util.*;
 
 class InvariantServiceImpl implements InvariantService {
 
