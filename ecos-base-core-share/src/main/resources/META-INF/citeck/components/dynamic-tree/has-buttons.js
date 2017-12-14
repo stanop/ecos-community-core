@@ -129,7 +129,7 @@
 			var html = "";
 			// generate html:
 			for(var i in buttonIds) {
-				if(!buttonIds.hasOwnProperty(i)) continue;
+				if(!buttonIds.hasOwnProperty(i) || (item.authorityType === 'USER')) continue;
 				var button = this.buttons && this.buttons[buttonIds[i]];
 				if(!button) {
 					button = {
