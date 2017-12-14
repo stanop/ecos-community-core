@@ -23,7 +23,7 @@
                         scope: this,
                         fn: function(response) {
                             if (response.json) {
-                                var groups = response.json["groups"].map(item => item.displayName).join(', ');
+                                var groups = response.json["groups"].map(function (item) {return item.displayName}).join(', ');
                                 $('#${span_id}').text(groups);
                             }
                         }
