@@ -11,7 +11,7 @@ import ru.citeck.ecos.workflow.listeners.DueDateHelper;
 import java.util.Date;
 
 /**
- * Created by impi on 24.10.17.
+ * Set process due date execution listener
  */
 public class FlowableSetProcessDueDate implements ExecutionListener {
 
@@ -25,7 +25,6 @@ public class FlowableSetProcessDueDate implements ExecutionListener {
         String calendarName = this.calendar != null ? this.calendar.getValue(execution).toString() : DurationBusinessCalendar.NAME;
         String dueDateExpr = (String) dueDate.getValue(execution);
         BusinessCalendar calendar = Context.getProcessEngineConfiguration().getBusinessCalendarManager().getBusinessCalendar(calendarName);
-//        Date dueDateValue = helper.getDueDate(calendarName, dueDateExpr);
         Date dueDateValue = calendar.resolveDuedate(dueDateExpr);
         execution.setVariable(variable.getValue(execution).toString(), dueDateValue);
     }

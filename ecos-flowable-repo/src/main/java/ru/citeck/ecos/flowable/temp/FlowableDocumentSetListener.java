@@ -6,11 +6,11 @@ import org.flowable.engine.delegate.DelegateExecution;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 
 /**
- * Created by impi on 13.10.17.
+ * Document set listener
  */
 public class FlowableDocumentSetListener extends AbstractExecutionListener {
-    private static final String VAR_DOCUMENT = "document";
 
+    private static final String VAR_DOCUMENT = "document";
     private NodeService nodeService;
 
     @Override
@@ -27,9 +27,4 @@ public class FlowableDocumentSetListener extends AbstractExecutionListener {
             execution.setVariable(VAR_DOCUMENT, null);
         }
     }
-//
-//    @Override
-//    public void notify(DelegateExecution delegateExecution) {
-//
-//    }
 }

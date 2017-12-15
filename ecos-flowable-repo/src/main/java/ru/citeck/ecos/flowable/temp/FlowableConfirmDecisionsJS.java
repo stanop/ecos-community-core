@@ -15,7 +15,7 @@ import ru.citeck.ecos.workflow.confirm.ConfirmDecision;
 import java.util.List;
 
 /**
- * Created by impi on 13.10.17.
+ * Confirm decisions js service
  */
 public class FlowableConfirmDecisionsJS extends AlfrescoScopableProcessorExtension {
 

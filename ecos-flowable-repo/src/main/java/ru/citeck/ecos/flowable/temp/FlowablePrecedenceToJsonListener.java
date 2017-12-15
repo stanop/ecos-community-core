@@ -6,9 +6,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- * Created by impi on 13.10.17.
+ * Precedence to json execution listener
  */
 public class FlowablePrecedenceToJsonListener extends AbstractExecutionListener {
+
     private Expression var;
     private Expression precedence;
 
@@ -19,7 +20,6 @@ public class FlowablePrecedenceToJsonListener extends AbstractExecutionListener 
         execution.setVariable(variableName, convertPrecedence(precedenceLine));
     }
 
-    @SuppressWarnings("unchecked")
     public static JSONObject convertPrecedence(String precedence) {
         JSONObject result = new JSONObject();
         JSONArray stages = new JSONArray();

@@ -5,9 +5,10 @@ import org.flowable.engine.delegate.Expression;
 import org.flowable.engine.delegate.TaskListener;
 
 /**
- * Created by impi on 13.10.17.
+ * Variable pull task listener
  */
 public class FlowableVariablePull implements TaskListener {
+
     private String executionVariable;
     private String taskVariable;
     private String variable;
@@ -15,7 +16,6 @@ public class FlowableVariablePull implements TaskListener {
 
     @Override
     public void notify(DelegateTask task) {
-
         Object value = task.getExecution().getVariable(executionVariable != null ? executionVariable : variable);
         if(!ifNotNull || value != null) {
             task.setVariableLocal(taskVariable != null ? taskVariable : variable, value);

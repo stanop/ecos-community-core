@@ -4,9 +4,10 @@ import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.flowable.engine.delegate.DelegateExecution;
 
 /**
- * Created by impi on 13.10.17.
+ * Confirm version js service
  */
 public class FlowableConfirmableVersionJS extends BaseScopableProcessorExtension {
+
     private FlowableConfirmHelper impl;
 
     public void saveConfirmable(DelegateExecution execution) {

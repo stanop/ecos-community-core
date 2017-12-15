@@ -4,7 +4,7 @@ import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
 
 /**
- * Created by impi on 13.10.17.
+ * Abstract execution listener
  */
 public abstract class AbstractExecutionListener extends AbstractListener implements ExecutionListener {
 
@@ -13,8 +13,6 @@ public abstract class AbstractExecutionListener extends AbstractListener impleme
         init();
         notifyImpl(execution);
     }
-
-
 
     protected abstract void notifyImpl(DelegateExecution execution);
 }

@@ -15,7 +15,7 @@ import org.flowable.engine.delegate.TaskListener;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
 
 /**
- * Created by impi on 13.10.17.
+ * Assign task to authority task listener
  */
 public class FlowableAssignTaskToAuthority implements TaskListener {
 

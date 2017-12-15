@@ -23,9 +23,10 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Created by impi on 13.10.17.
+ * Confirm helper
  */
 public class FlowableConfirmHelper {
+
     private NodeService nodeService;
     private VersionService versionService;
     private WorkflowService workflowService;
@@ -33,8 +34,7 @@ public class FlowableConfirmHelper {
     private PersonService personService;
     private AuthorityService authorityService;
 
-    public NodeRef getCurrentVersionRef(NodeRef nodeRef, boolean createIfUnversioned)
-    {
+    public NodeRef getCurrentVersionRef(NodeRef nodeRef, boolean createIfUnversioned) {
         Version currentVersion = versionService.getCurrentVersion(nodeRef);
         if(currentVersion == null) {
             if(!createIfUnversioned) {

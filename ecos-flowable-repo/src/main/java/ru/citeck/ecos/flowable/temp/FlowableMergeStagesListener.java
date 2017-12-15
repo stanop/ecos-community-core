@@ -8,7 +8,7 @@ import ru.citeck.ecos.utils.JSONUtils;
 import java.util.*;
 
 /**
- * Created by impi on 13.10.17.
+ * Merge stages execution listener
  */
 public class FlowableMergeStagesListener implements ExecutionListener {
 
@@ -16,7 +16,8 @@ public class FlowableMergeStagesListener implements ExecutionListener {
     private static final String CONFIRMERS = "confirmers";
     private static final String STAGES = "stages";
 
-    private Expression stages1, stages2;
+    private Expression stages1;
+    private Expression stages2;
     private Expression resultVar;
 
     @Override
@@ -32,7 +33,6 @@ public class FlowableMergeStagesListener implements ExecutionListener {
         mergeStages(precedence, (Map) precedence1);
         mergeStages(precedence, (Map) precedence2);
 
-        // finally save precedence:
         execution.setVariable(resultVar.getExpressionText(), precedence);
 
     }

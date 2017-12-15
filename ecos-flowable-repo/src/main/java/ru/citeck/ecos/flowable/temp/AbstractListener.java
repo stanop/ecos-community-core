@@ -6,9 +6,10 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
 
 /**
- * Created by impi on 13.10.17.
+ * Abstract listener
  */
 public abstract class AbstractListener {
+
     protected ServiceRegistry serviceRegistry;
 
     protected Object getBean(String name) {

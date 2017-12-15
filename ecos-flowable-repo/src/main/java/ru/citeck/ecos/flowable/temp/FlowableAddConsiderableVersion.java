@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by impi on 13.10.17.
+ * Add version task listener
  */
 public class FlowableAddConsiderableVersion implements TaskListener {
 
