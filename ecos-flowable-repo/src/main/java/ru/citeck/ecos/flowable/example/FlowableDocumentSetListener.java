@@ -1,4 +1,4 @@
-package ru.citeck.ecos.flowable.temp;
+package ru.citeck.ecos.flowable.example;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;

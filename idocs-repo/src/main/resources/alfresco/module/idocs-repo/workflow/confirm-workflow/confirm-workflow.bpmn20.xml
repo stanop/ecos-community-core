@@ -8,7 +8,7 @@
     <process id="confirm" name="Confirm workflow" isExecutable="true">
         <extensionElements>
             <activiti:executionListener event="start"
-                                        class="ru.citeck.ecos.flowable.temp.FlowableDocumentSetListener"></activiti:executionListener>
+                                        class="ru.citeck.ecos.flowable.example.FlowableDocumentSetListener"></activiti:executionListener>
             <activiti:executionListener event="start"
                                         class="ru.citeck.ecos.flowable.listeners.FlowableScriptExecutionListener">
                 <activiti:field name="script">
@@ -76,7 +76,7 @@
         </sequenceFlow>
         <sequenceFlow id="flow12" sourceRef="exclusivegateway2" targetRef="resubmit-task">
             <extensionElements>
-                <activiti:executionListener event="take" class="ru.citeck.ecos.flowable.temp.FlowableSetProcessDueDate">
+                <activiti:executionListener event="take" class="ru.citeck.ecos.flowable.example.FlowableSetProcessDueDate">
                     <activiti:field name="variable">
                         <activiti:string><![CDATA[bpm_workflowDueDate]]></activiti:string>
                     </activiti:field>
@@ -119,13 +119,13 @@
                       activiti:formKey="wfcf:confirmTask">
                 <extensionElements>
                     <activiti:taskListener event="create"
-                                           class="ru.citeck.ecos.flowable.temp.FlowableAssignTaskToAuthority">
+                                           class="ru.citeck.ecos.flowable.example.FlowableAssignTaskToAuthority">
                         <activiti:field name="authority">
                             <activiti:expression>${wfcf_confirmer.nodeRef}</activiti:expression>
                         </activiti:field>
                     </activiti:taskListener>
                     <activiti:taskListener event="assignment"
-                                           class="ru.citeck.ecos.flowable.temp.FlowableAddConsiderableVersion"></activiti:taskListener>
+                                           class="ru.citeck.ecos.flowable.example.FlowableAddConsiderableVersion"></activiti:taskListener>
                     <activiti:taskListener event="complete"
                                            class="ru.citeck.ecos.flowable.listeners.FlowableScriptTaskListener">
                         <activiti:field name="script">
@@ -147,7 +147,7 @@
                             </activiti:expression>
                         </activiti:field>
                     </activiti:taskListener>
-                    <activiti:taskListener event="create" class="ru.citeck.ecos.flowable.temp.FlowableVariablePull">
+                    <activiti:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableVariablePull">
                         <activiti:field name="variableExpr">
                             <activiti:expression>wfcf_confirmersPermission</activiti:expression>
                         </activiti:field>
@@ -158,12 +158,12 @@
                             <activiti:expression>true</activiti:expression>
                         </activiti:field>
                     </activiti:taskListener>
-                    <activiti:taskListener event="create" class="ru.citeck.ecos.flowable.temp.FlowableVariablePull">
+                    <activiti:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableVariablePull">
                         <activiti:field name="variableExpr">
                             <activiti:expression>wfcf_canConfirmWithComments</activiti:expression>
                         </activiti:field>
                     </activiti:taskListener>
-                    <activiti:taskListener event="create" class="ru.citeck.ecos.flowable.temp.FlowableVariablePull">
+                    <activiti:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableVariablePull">
                         <activiti:field name="variableExpr">
                             <activiti:expression>wfcf_confirmOutcomeI18nPrefix</activiti:expression>
                         </activiti:field>
@@ -336,7 +336,7 @@
         <sequenceFlow id="flow27" sourceRef="exclusivegateway6" targetRef="exclusivegateway4">
             <extensionElements>
                 <activiti:executionListener event="take"
-                                            class="ru.citeck.ecos.flowable.temp.FlowablePrecedenceToJsonListener">
+                                            class="ru.citeck.ecos.flowable.example.FlowablePrecedenceToJsonListener">
                     <activiti:field name="var">
                         <activiti:string><![CDATA[precedence]]></activiti:string>
                     </activiti:field>
@@ -351,7 +351,7 @@
         <sequenceFlow id="flow28" sourceRef="exclusivegateway6" targetRef="exclusivegateway4">
             <extensionElements>
                 <activiti:executionListener event="take"
-                                            class="ru.citeck.ecos.flowable.temp.FlowablePrecedenceToJsonListener">
+                                            class="ru.citeck.ecos.flowable.example.FlowablePrecedenceToJsonListener">
                     <activiti:field name="var">
                         <activiti:string><![CDATA[additionalPrecedence]]></activiti:string>
                     </activiti:field>
@@ -360,7 +360,7 @@
                     </activiti:field>
                 </activiti:executionListener>
                 <activiti:executionListener event="take"
-                                            class="ru.citeck.ecos.flowable.temp.FlowablePrecedenceToJsonListener">
+                                            class="ru.citeck.ecos.flowable.example.FlowablePrecedenceToJsonListener">
                     <activiti:field name="var">
                         <activiti:string><![CDATA[mandatoryPrecedence]]></activiti:string>
                     </activiti:field>
@@ -368,7 +368,7 @@
                         <activiti:expression>${wfcf_mandatoryPrecedence}</activiti:expression>
                     </activiti:field>
                 </activiti:executionListener>
-                <activiti:executionListener event="take" class="ru.citeck.ecos.flowable.temp.FlowableMergeStagesListener">
+                <activiti:executionListener event="take" class="ru.citeck.ecos.flowable.example.FlowableMergeStagesListener">
                     <activiti:field name="resultVar">
                         <activiti:string><![CDATA[precedence]]></activiti:string>
                     </activiti:field>

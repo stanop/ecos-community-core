@@ -1,4 +1,4 @@
-package ru.citeck.ecos.flowable.temp;
+package ru.citeck.ecos.flowable.example;
 
 import org.alfresco.repo.service.ServiceDescriptorRegistry;
 import org.alfresco.service.ServiceRegistry;

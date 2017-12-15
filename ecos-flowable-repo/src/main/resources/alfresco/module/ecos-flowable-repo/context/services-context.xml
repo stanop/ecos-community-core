@@ -249,23 +249,23 @@
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
-	<!-- Temp -->
-	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.temp.FlowableCasePerformWorkflowHandler"
+	<!-- Example -->
+	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler"
 		  init-method="init">
 		<property name="utils" ref="flowableCasePerformUtils" />
 		<property name="authorityService" ref="authorityService" />
 	</bean>
 
-	<bean name="FlowableConfirmHelper" class="ru.citeck.ecos.flowable.temp.FlowableConfirmHelper">
+	<bean name="FlowableConfirmHelper" class="ru.citeck.ecos.flowable.example.FlowableConfirmHelper">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 
-	<bean name="FlowableConfirmableVersionJS" class="ru.citeck.ecos.flowable.temp.FlowableConfirmableVersionJS" parent="baseJavaScriptExtension">
+	<bean name="FlowableConfirmableVersionJS" class="ru.citeck.ecos.flowable.example.FlowableConfirmableVersionJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="flowableVersions" />
 		<property name="impl" ref="FlowableConfirmHelper" />
 	</bean>
 
-	<bean name="FlowableConfirmDecisionsJS" class="ru.citeck.ecos.flowable.temp.FlowableConfirmDecisionsJS" parent="baseJavaScriptExtension">
+	<bean name="FlowableConfirmDecisionsJS" class="ru.citeck.ecos.flowable.example.FlowableConfirmDecisionsJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="flowableConfirmDecisions" />
 		<property name="impl" ref="FlowableConfirmHelper" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />
