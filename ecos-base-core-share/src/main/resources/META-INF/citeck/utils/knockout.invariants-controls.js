@@ -835,150 +835,190 @@ ko.bindingHandlers.journalControl = {
         event.stopPropagation();
         event.preventDefault();
 
-        if (!panel) {
-            var selectedElements = ko.observableArray(), selectedFilterCriteria = ko.observableArray(),
-                filterCriteriaVisibility = ko.observable(false),
-                loading = ko.observable(true), criteriaListShow = ko.observable(false),
-                searchBar = params.searchBar ? params.searchBar == "true" : true,
-                mode = params.mode, dockMode = params.dock ? "dock" : "",
-                pageNumber = ko.observable(1), skipCount = ko.computed(function() { return (pageNumber() - 1) * maxItems() }),
-                additionalOptions = ko.observable([]), options = ko.computed(function(page) {
-                    var actualCriteria = criteria();
-                    if (hiddenCriteria) {
-                        for (var hc in hiddenCriteria) {
-                            if (!_.some(actualCriteria, function(criterion) { return _.isEqual(criterion, hiddenCriteria[hc]) }))
-                                actualCriteria.push(hiddenCriteria[hc]);
-                        }
-                    }
+        var showPanelOnClick = function () {
+            var scope = this;
+            if (!scope.panel) {
+                var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+                if (!journalType) { /* so, it is fail */
+                }
 
-                    var nudeOptions = data.filterOptions(actualCriteria, {
+                var journalTypeOptions = journalType.options();
+                if (!journalTypeOptions) {
+                    koutils.subscribeOnce(journalType.options, showPanelOnClick, this);
+                    return;
+                }
+                var journal = journalType.journal();
+                if (!journal) {
+                    koutils.subscribeOnce(journalType.journal, showPanelOnClick, this);
+                    return;
+                }
+                var attributes = journalType.attributes();
+                if (!attributes) {
+                    koutils.subscribeOnce(journalType.attributes, showPanelOnClick, this);
+                    return;
+                }
+
+                var selectedElements = ko.observableArray(),
+                    selectedFilterCriteria = ko.observableArray(),
+                    filterCriteriaVisibility = ko.observable(false),
+                    loading = ko.observable(true),
+                    criteriaListShow = ko.observable(false),
+                    searchBar = params.searchBar ? params.searchBar == "true" : true,
+                    mode = params.mode,
+                    dockMode = params.dock ? "dock" : "",
+                    pageNumber = ko.observable(1),
+                    skipCount = ko.computed(function () {
+                        return (pageNumber() - 1) * maxItems()
+                    }),
+                    additionalOptions = ko.observable([]),
+                    options = ko.computed(function (page) {
+                        var actualCriteria = criteria();
+                        if (hiddenCriteria) {
+                            for (var hc in hiddenCriteria) {
+                                if (!_.some(actualCriteria, function (criterion) {
+                                        return _.isEqual(criterion, hiddenCriteria[hc])
+                                    }))
+                                    actualCriteria.push(hiddenCriteria[hc]);
+                            }
+                        }
+
+                        if (params.journalType) {
+                            if (!_.find(actualCriteria, function (criterion) {return criterion.predicate == 'journal-id';})) {
+                                actualCriteria.push({
+                                    attribute: 'path',
+                                    predicate: 'journal-id',
+                                    value: params.journalType
+                                });
+                            }
+                        }
+                        var nudeOptions = data.filterOptions(actualCriteria, {
                             maxItems: maxItems(),
                             skipCount: skipCount(),
                             searchScript: searchScript,
                             sortBy: sortBy
-                        }),
-                        config = nudeOptions.pagination,
-                        result;
+                        });
+                        var config = nudeOptions.pagination, result;
 
-                    var tempAdditionalOptions = additionalOptions();
-                    _.each(additionalOptions(), function(o) {
-                        if (_.contains(nudeOptions, o)) {
-                            var index = tempAdditionalOptions.indexOf(o);
-                            tempAdditionalOptions.splice(index, 1);
-                        }
-                    });
-                    additionalOptions(tempAdditionalOptions);
+                        var tempAdditionalOptions = additionalOptions();
+                        _.each(additionalOptions(), function (o) {
+                            if (_.contains(nudeOptions, o)) {
+                                var index = tempAdditionalOptions.indexOf(o);
+                                tempAdditionalOptions.splice(index, 1);
+                            }
+                        });
+                        additionalOptions(tempAdditionalOptions);
 
-                    if (additionalOptions().length > 0) {
-                        if (nudeOptions.length < maxItems()) {
-                            result = _.union(nudeOptions, additionalOptions());
+                        if (additionalOptions().length > 0) {
+                            if (nudeOptions.length < maxItems()) {
+                                result = _.union(nudeOptions, additionalOptions());
 
-                            if (result.length > maxItems()) result = result.slice(0, maxItems());
-                            if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
+                                if (result.length > maxItems()) result = result.slice(0, maxItems());
+                                if (maxItems() - nudeOptions.length < additionalOptions().length) config.hasMore = true;
 
-                            result.pagination = config;
-                            loading(_.isUndefined(nudeOptions.pagination));
-                            return result;
-                        } else {
-                            if (!nudeOptions.pagination.hasMore)
-                                nudeOptions.pagination.hasMore = true;
-                        }
-                    }
-
-                    loading(_.isUndefined(nudeOptions.pagination));
-                    return nudeOptions;
-                });
-
-            // reset page after new search
-            criteria.subscribe(function(newValue) { pageNumber(1); });
-
-            // show loading indicator if page was changed
-            pageNumber.subscribe(function(newValue) { loading(true); });
-
-            // extend notify
-            criteria.extend({ notify: 'notifyWhenChangesStop' });
-            pageNumber.extend({ notify: 'always' });
-            options.extend({ rateLimit: { method: 'notifyWhenChangesStop', timeout: 0 } });
-
-            var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
-            if (!journalType) { /* so, it is fail */ }
-
-            // get default criteria
-            var defaultCriteria = ko.computed(function() {
-                if (defaultSearchableAttributes) return journalType.attributes();
-                return journalType.defaultAttributes();
-            });
-
-            // add default criteria to selectedFilterCriteria
-            koutils.subscribeOnce(ko.computed(function() {
-                selectedFilterCriteria.removeAll();
-                var dc = defaultCriteria();
-
-                if (defaultSearchableAttributes) {
-                    var validAttributes = [];
-                    for (var i = 0; i < dc.length; i++) {
-                        if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
-                    }
-                    dc = validAttributes;
-                }
-
-                // add default option's filter criteria from view
-                if (optionsFilter && optionsFilter() && optionsFilter().length) criteria(optionsFilter());
-
-                if (dc) {
-                    for (var i in dc) {
-                        var newCriterion = _.clone(dc[i]);
-                        newCriterion.value = ko.observable();
-                        newCriterion.predicateValue = ko.observable();
-                        if (optionsFilter && optionsFilter() && optionsFilter().length) {
-                            for (var nValue in optionsFilter()) {
-                                if (newCriterion.name() == optionsFilter()[nValue].attribute) {
-                                    newCriterion.predicateValue(optionsFilter()[nValue].predicate);
-                                    newCriterion.value(optionsFilter()[nValue].value);
-                                    break;
-                                }
+                                result.pagination = config;
+                                loading(_.isUndefined(nudeOptions.pagination));
+                                return result;
+                            } else {
+                                if (!nudeOptions.pagination.hasMore)
+                                    nudeOptions.pagination.hasMore = true;
                             }
                         }
-                        selectedFilterCriteria.push(newCriterion);
+
+                        loading(_.isUndefined(nudeOptions.pagination));
+                        return nudeOptions;
+                    });
+
+                // reset page after new search
+                criteria.subscribe(function (newValue) {
+                    pageNumber(1);
+                });
+
+                // show loading indicator if page was changed
+                pageNumber.subscribe(function (newValue) {
+                    loading(true);
+                });
+
+                // extend notify
+                criteria.extend({notify: 'notifyWhenChangesStop'});
+                pageNumber.extend({notify: 'always'});
+                options.extend({rateLimit: {method: 'notifyWhenChangesStop', timeout: 0}});
+
+                // get default criteria
+                var defaultCriteria = ko.computed(function () {
+                    if (defaultSearchableAttributes) return journalType.attributes();
+                    return journalType.defaultAttributes();
+                });
+
+                // add default criteria to selectedFilterCriteria
+                koutils.subscribeOnce(ko.computed(function () {
+                    selectedFilterCriteria.removeAll();
+                    var dc = defaultCriteria();
+
+                    if (defaultSearchableAttributes) {
+                        var validAttributes = [];
+                        for (var i = 0; i < dc.length; i++) {
+                            if (defaultSearchableAttributes.indexOf(dc[i].name()) != -1) validAttributes.push(dc[i]);
+                        }
+                        dc = validAttributes;
                     }
-                }
-            }), defaultCriteria.dispose);
 
-            var optimalWidth = (function() {
-                var maxContainerWidth = screen.width - 60,
-                    countOfAttributes = (function() {
-                        if (defaultVisibleAttributes) return defaultVisibleAttributes.length;
-                        if (journalType.defaultAttributes()) return journalType.defaultAttributes().length;
-                    })();
+                    // add default option's filter criteria from view
+                    if (optionsFilter && optionsFilter() && optionsFilter().length) criteria(optionsFilter());
 
-                if (countOfAttributes > 5) {
-                    var potentialWidth = 150 * countOfAttributes;
-                    return (potentialWidth >= maxContainerWidth ? maxContainerWidth : potentialWidth) + "px";
-                }
+                    if (dc) {
+                        for (var i in dc) {
+                            var newCriterion = _.clone(dc[i]);
+                            newCriterion.value = ko.observable();
+                            newCriterion.predicateValue = ko.observable();
+                            if (optionsFilter && optionsFilter() && optionsFilter().length) {
+                                for (var nValue in optionsFilter()) {
+                                    if (newCriterion.name() == optionsFilter()[nValue].attribute) {
+                                        newCriterion.predicateValue(optionsFilter()[nValue].predicate);
+                                        newCriterion.value(optionsFilter()[nValue].value);
+                                        break;
+                                    }
+                                }
+                            }
+                            selectedFilterCriteria.push(newCriterion);
+                        }
+                    }
+                }), defaultCriteria.dispose);
 
-                return "800px";
-            })();
+                var optimalWidth = (function () {
+                    var maxContainerWidth = screen.width - 60,
+                        countOfAttributes = (function () {
+                            if (defaultVisibleAttributes) return defaultVisibleAttributes.length;
+                            if (journalType.defaultAttributes()) return journalType.defaultAttributes().length;
+                        })();
 
-            panel = new YAHOO.widget.Panel(panelId, {
-                //width:          optimalWidth,
-                visible:        false,
-                fixedcenter:    true,
-                draggable:      true,
-                modal:          true,
-                zindex:         5,
-                close:          true
-            });
+                    if (countOfAttributes > 5) {
+                        var potentialWidth = 150 * countOfAttributes;
+                        return (potentialWidth >= maxContainerWidth ? maxContainerWidth : potentialWidth) + "px";
+                    }
 
-            // hide dialog on click 'esc' button
-            panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
-                fn: panel.hide,
-                scope: panel,
-                correctScope: true
-            }));
+                    return "800px";
+                })();
 
-            panel.setHeader(localization.title || 'Journal Picker');
-            panel.setBody('\
-                <iframe id="'+iframeId+'" name="zFrame" style="position:absolute;z-index:-1;width:50%;height:50%;border:none;outline:none;"></iframe>\
+                scope.panel = new YAHOO.widget.Panel(panelId, {
+                    //width:          optimalWidth,
+                    visible: false,
+                    fixedcenter: true,
+                    draggable: true,
+                    modal: true,
+                    zindex: 5,
+                    close: true
+                });
+
+                // hide dialog on click 'esc' button
+                scope.panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, {keys: 27}, {
+                    fn: scope.panel.hide,
+                    scope: scope.panel,
+                    correctScope: true
+                }));
+
+                scope.panel.setHeader(localization.title || 'Journal Picker');
+                scope.panel.setBody('\
+                <iframe id="' + iframeId + '" name="zFrame" style="position:absolute;z-index:-1;width:50%;height:50%;border:none;outline:none;"></iframe>\
                 <div class="journal-picker-header ' + mode + ' ' + dockMode + '" id="' + journalPickerHeaderId + '">\
                     <a id="' + elementsTabId + '" class="journal-tab-button ' + (mode == "collapse" ? 'hidden' : '') + ' selected">' + localization.elementsTab + '</a>\
                     <a id="' + filterTabId + '" class="journal-tab-button">' + localization.filterTab + '</a>\
@@ -1068,304 +1108,312 @@ ko.bindingHandlers.journalControl = {
                     <div class="create-page hidden" id="' + createPageId + '"></div>\
                 </div>\
             ');
-            panel.setFooter('\
+                scope.panel.setFooter('\
                 <div class="buttons">\
                     <input type="submit" value="' + localization.submitButton + '" id="' + submitButtonId + '">\
                     <input type="button" value="' + localization.cancelButton + '" id="' + cancelButtonId + '">\
                 </div>\
             ');
 
-            panel.render(document.body);
+                scope.panel.render(document.body);
 
+                // panel submit and cancel buttons
+                Event.on(submitButtonId, "click", function (event) {
+                    if (selectedElements() && selectedElements().length) {
+                        value(removeSelection
+                            ? (multiple() ? value().concat(selectedElements()) : selectedElements())
+                            : ko.utils.unwrapObservable(selectedElements))
+                    }
+                    scope.panel.hide();
+                }, {selectedElements: removeSelection ? value() : selectedElements, panel: scope.panel}, true);
 
-            // panel submit and cancel buttons
-            Event.on(submitButtonId, "click", function(event) {
-                if (selectedElements() && selectedElements().length) {
-                    value(removeSelection
-                        ? (multiple() ? value().concat(selectedElements()) : selectedElements())
-                        : ko.utils.unwrapObservable(selectedElements))
-                }
-                this.panel.hide();
-            }, { selectedElements: removeSelection ? value() : selectedElements, panel: panel }, true);
+                Event.on(cancelButtonId, "click", function (event) {
+                    this.hide();
+                }, scope.panel, true);
 
-            Event.on(cancelButtonId, "click", function(event) {
-                this.hide();
-            }, panel, true);
+                scope.panel.hideEvent.subscribe(function () {
+                    if (removeSelection) {
+                        selectedElements([]);
+                    }
+                });
 
-            panel.hideEvent.subscribe(function() {
-                if (removeSelection) {
-                    selectedElements([]);
-                }
-            });
+                // tabs listener
+                Event.on(journalPickerHeaderId, "click", function (event) {
+                    event.stopPropagation();
 
-            // tabs listener
-            Event.on(journalPickerHeaderId, "click", function(event) {
-                event.stopPropagation();
+                    var filterTab = Dom.get(filterTabId),
+                        elementsTab = Dom.get(elementsTabId);
 
-                var filterTab = Dom.get(filterTabId),
-                    elementsTab = Dom.get(elementsTabId);
+                    var filterPage = Dom.get(filterPageId),
+                        elementsPage = Dom.get(elementsPageId),
+                        createPage = Dom.get(createPageId);
 
-                var filterPage = Dom.get(filterPageId),
-                    elementsPage = Dom.get(elementsPageId),
-                    createPage = Dom.get(createPageId);
+                    if (event.target.tagName == "A") {
+                        if ($(event.target).hasClass("journal-tab-button")) {
+                            if (event.target.id == filterTabId) filterCriteriaVisibility(true);
 
-                if (event.target.tagName == "A") {
-                    if ($(event.target).hasClass("journal-tab-button")) {
-                        if (event.target.id == filterTabId) filterCriteriaVisibility(true);
+                            switch (mode) {
+                                case "full":
+                                    $(event.target)
+                                        .addClass("selected")
+                                        .parent()
+                                        .children()
+                                        .filter(".selected:not(#" + event.target.id + ")")
+                                        .removeClass("selected");
 
-                        switch (mode) {
-                            case "full":
-                              $(event.target)
-                                  .addClass("selected")
-                                  .parent()
-                                  .children()
-                                  .filter(".selected:not(#" + event.target.id + ")")
-                                  .removeClass("selected");
+                                    var pageId = event.target.id.replace(/Tab$/, "Page"),
+                                        page = Dom.get(pageId);
 
-                                var pageId = event.target.id.replace(/Tab$/, "Page"),
-                                    page = Dom.get(pageId);
+                                    $(page)
+                                        .removeClass("hidden")
+                                        .parent()
+                                        .children()
+                                        .filter("div:not(#" + pageId + ")")
+                                        .addClass("hidden");
 
-                                $(page)
-                                    .removeClass("hidden")
-                                    .parent()
-                                    .children()
-                                    .filter("div:not(#" + pageId +")")
-                                    .addClass("hidden");
+                                    $("button.selected", $(event.target).parent())
+                                        .removeClass("selected");
 
-                                $("button.selected", $(event.target).parent())
-                                    .removeClass("selected");
+                                    break;
 
-                                break;
+                                case "collapse":
+                                    // switch page if elements hidden
+                                    if ($(elementsPage).hasClass("hidden")) {
+                                        $(createPage).addClass("hidden");
+                                        $(elementsPage).removeClass("hidden");
+                                    }
 
-                            case "collapse":
-                                // switch page if elements hidden
-                                if ($(elementsPage).hasClass("hidden")) {
-                                  $(createPage).addClass("hidden");
-                                  $(elementsPage).removeClass("hidden");
+                                    // clear tab selection
+                                    var buttons = Dom.getElementsBy(function (element) {
+                                        return element.className.indexOf("selected") != -1
+                                    }, "button", journalPickerHeaderId);
+
+                                    _.each(buttons, function (element) {
+                                        element.classList.remove("selected");
+                                    });
+
+                                    $(filterTab).toggleClass("selected");
+                                    $(filterPage).toggleClass("hidden");
+                                    break;
+                            }
+                        }
+                    }
+                })
+
+                // search listener
+                if (searchBar) {
+                    Event.on(searchId, "keypress", function (event) {
+                        if (event.keyCode == 13) {
+                            event.stopPropagation();
+
+                            var search = Dom.get(searchId);
+                            if (search.value) {
+                                var searchValue = search.value.trim();
+                                if (searchMinQueryLength && searchValue.length < searchMinQueryLength) {
+                                    return false;
                                 }
 
-                                // clear tab selection
-                                var buttons = Dom.getElementsBy(function(element) {
-                                    return element.className.indexOf("selected") != -1
-                                  }, "button", journalPickerHeaderId);
-
-                                _.each(buttons, function(element) {
-                                  element.classList.remove("selected");
-                                });
-
-                                $(filterTab).toggleClass("selected");
-                                $(filterPage).toggleClass("hidden");
-                                break;
-                        }
-                    }
-                }
-            })
-
-            // search listener
-            if (searchBar) {
-                Event.on(searchId, "keypress", function(event) {
-                    if (event.keyCode == 13) {
-                        event.stopPropagation();
-
-                        var search = Dom.get(searchId);
-                        if (search.value) {
-                            var searchValue = search.value.trim();
-                            if (searchMinQueryLength && searchValue.length < searchMinQueryLength) {
-                                return false;
-                            }
-
-                            if (searchCriteria && searchCriteria.length > 0) {
-                                criteria(_.map(searchCriteria, function(item) {
-                                    return _.defaults({ value: searchValue }, item);
-                                }));
+                                if (searchCriteria && searchCriteria.length > 0) {
+                                    criteria(_.map(searchCriteria, function (item) {
+                                        return _.defaults({value: searchValue}, item);
+                                    }));
+                                } else {
+                                    criteria([{attribute: "cm:name", predicate: "string-contains", value: searchValue}]);
+                                }
                             } else {
-                               criteria([{ attribute: "cm:name", predicate: "string-contains", value: searchValue }]);
-                            }
-                        } else {
-                            criteria([]);
-                        }
-                    }
-                });
-            }
-
-
-            // say knockout that we have something on elements page
-            ko.applyBindings({
-                elements: options,
-                selectedElements: selectedElements,
-                multiple: multiple,
-                journalType: journalType,
-                page: pageNumber,
-                loading: loading,
-                columns: defaultVisibleAttributes,
-                hidden: defaultHiddenByType,
-                dock: params.dock,
-                hightlightSelection: params.hightlightSelection,
-                afterSelectionCallback: function(data, event) {
-                    if (!multiple() && event.type == "dblclick") { value(data); panel.hide(); }
-                }
-            }, Dom.get(elementsPageId));
-
-            // say knockout that we have something on search page
-            ko.applyBindings({
-                htmlId: element.id,
-                itemId: data.nodetype(),
-                journalType: journalType,
-                defaultFilterCriteria: defaultSearchableAttributes,
-                selectedFilterCriteria: selectedFilterCriteria,
-                filterCriteriaVisibility: filterCriteriaVisibility,
-                criteria: criteria,
-                criteriaListShow: criteriaListShow,
-                selectFilterCriterion: function(data, event) {
-                    // clone criterion and add value observables
-                    var newCriterion = _.clone(data);
-                    newCriterion.value = ko.observable();
-                    newCriterion.predicateValue = ko.observable();
-                    selectedFilterCriteria.push(newCriterion);
-
-                    // hide drop-down menu
-                    criteriaListShow(!criteriaListShow());
-                },
-                applyCriteria: function(data, event) {
-                    var criteriaList = [],
-                        selectedCriteria = selectedFilterCriteria();
-
-                    if (selectedCriteria.length == 0) {
-                        criteria([])
-                    } else {
-                        for (var i in selectedCriteria) {
-                            if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
-                                criteriaList.push({
-                                    attribute: selectedCriteria[i].name(),
-                                    predicate: selectedCriteria[i].predicateValue(),
-                                    value: selectedCriteria[i].value()
-                                })
+                                criteria([]);
                             }
                         }
-                        criteria(criteriaList);
-                    }
-                },
-                addFilterCriterion: function(data, event) {
-                    criteriaListShow(!criteriaListShow());
-                }
-            }, Dom.get(filterPageId));
-
-            // say knockout that we have something on create tab for create page
-            ko.applyBindings({
-                scope: data,
-                buttonTitle: localization.createTab,
-                journalType: journalType,
-                createVariantsVisibility: createVariantsVisibility,
-                callback: function(variant) {
-                    var scCallback = function(node) {
-                        if (mode == "collapse") {
-                            // clear create page
-                            var createPage = Dom.get(createPageId);
-                            Dom.addClass(createPage, "hidden");
-                            createPage.innerHTML = "";
-
-                            // show elements page
-                            var elementsPage = Dom.get(elementsPageId);
-                            Dom.removeClass(elementsPage, "hidden");
-
-                            // change tab selection
-                            var buttons = Dom.getElementsBy(function(element) {
-                                return element.className.indexOf("selected") != -1
-                              }, "button", journalPickerHeaderId);
-
-                            _.each(buttons, function(element) {
-                            element.classList.remove("selected");
-                            });
-                        }
-                    };
-
-                    Citeck.forms.formContent(variant.type(), variant.formId(), {
-                        response: function(response) {
-                            Dom.get(createPageId).innerHTML = response;
-
-                            // hide other pages and remove selection from other tabs
-                            Dom.removeClass(elementsTabId, "selected");
-                            Dom.removeClass(filterTabId, "selected");
-                            Dom.addClass(elementsPageId, "hidden");
-                            Dom.addClass(filterPageId, "hidden");
-
-                            // show create page and hightlight tab
-                            Dom.removeClass(createPageId, "hidden");
-                            var createButton = Dom.getElementsBy(function(el) {
-                                return el.tagName == "BUTTON";
-                            }, "button", journalPickerHeaderId);
-                            Dom.addClass(createButton, "selected");
-                        },
-
-                        submit: function(node) {
-                            scCallback(node);
-                        },
-                        cancel: scCallback
-                    },
-                    {
-                        destination: variant.destination(),
-                        fieldId: data.name()
                     });
-
-                },
-                virtualParent: params.virtualParent,
-                createVariantsSource: params.createVariantsSource
-            }, Dom.get(journalPickerHeaderId));
-
-            if (value()) selectedElements(multiple() ? value() : [ value() ]);
+                }
 
 
-            if (!Citeck.mobile.isMobileDevice()) {
-                YAHOO.Bubbling.on("change-mobile-mode", function(l, args) {
-                    var itemsCount = args[1].mobileMode ? 5 : 10;
-                    if (itemsCount != maxItems()) {
-                        pageNumber(1);
-                        maxItems(itemsCount);
-                    };
+                // say knockout that we have something on elements page
+                ko.applyBindings({
+                    elements: options,
+                    selectedElements: selectedElements,
+                    multiple: multiple,
+                    journalType: journalType,
+                    page: pageNumber,
+                    loading: loading,
+                    columns: defaultVisibleAttributes,
+                    hidden: defaultHiddenByType,
+                    dock: params.dock,
+                    hightlightSelection: params.hightlightSelection,
+                    afterSelectionCallback: function (data, event) {
+                        if (!multiple() && event.type == "dblclick") {
+                            value(data);
+                            scope.panel.hide();
+                        }
+                    }
+                }, Dom.get(elementsPageId));
+
+                // say knockout that we have something on search page
+                ko.applyBindings({
+                    htmlId: element.id,
+                    itemId: data.nodetype(),
+                    journalType: journalType,
+                    defaultFilterCriteria: defaultSearchableAttributes,
+                    selectedFilterCriteria: selectedFilterCriteria,
+                    filterCriteriaVisibility: filterCriteriaVisibility,
+                    criteria: criteria,
+                    criteriaListShow: criteriaListShow,
+                    selectFilterCriterion: function (data, event) {
+                        // clone criterion and add value observables
+                        var newCriterion = _.clone(data);
+                        newCriterion.value = ko.observable();
+                        newCriterion.predicateValue = ko.observable();
+                        selectedFilterCriteria.push(newCriterion);
+
+                        // hide drop-down menu
+                        criteriaListShow(!criteriaListShow());
+                    },
+                    applyCriteria: function (data, event) {
+                        var criteriaList = [],
+                            selectedCriteria = selectedFilterCriteria();
+
+                        if (selectedCriteria.length == 0) {
+                            criteria([])
+                        } else {
+                            for (var i in selectedCriteria) {
+                                if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
+                                    criteriaList.push({
+                                        attribute: selectedCriteria[i].name(),
+                                        predicate: selectedCriteria[i].predicateValue(),
+                                        value: selectedCriteria[i].value()
+                                    })
+                                }
+                            }
+                            criteria(criteriaList);
+                        }
+                    },
+                    addFilterCriterion: function (data, event) {
+                        criteriaListShow(!criteriaListShow());
+                    }
+                }, Dom.get(filterPageId));
+
+                // say knockout that we have something on create tab for create page
+                ko.applyBindings({
+                    scope: data,
+                    buttonTitle: localization.createTab,
+                    journalType: journalType,
+                    createVariantsVisibility: createVariantsVisibility,
+                    callback: function (variant) {
+                        var scCallback = function (node) {
+                            if (mode == "collapse") {
+                                // clear create page
+                                var createPage = Dom.get(createPageId);
+                                Dom.addClass(createPage, "hidden");
+                                createPage.innerHTML = "";
+
+                                // show elements page
+                                var elementsPage = Dom.get(elementsPageId);
+                                Dom.removeClass(elementsPage, "hidden");
+
+                                // change tab selection
+                                var buttons = Dom.getElementsBy(function (element) {
+                                    return element.className.indexOf("selected") != -1
+                                }, "button", journalPickerHeaderId);
+
+                                _.each(buttons, function (element) {
+                                    element.classList.remove("selected");
+                                });
+                            }
+                        };
+
+                        Citeck.forms.formContent(variant.type(), variant.formId(), {
+                                response: function (response) {
+                                    Dom.get(createPageId).innerHTML = response;
+
+                                    // hide other pages and remove selection from other tabs
+                                    Dom.removeClass(elementsTabId, "selected");
+                                    Dom.removeClass(filterTabId, "selected");
+                                    Dom.addClass(elementsPageId, "hidden");
+                                    Dom.addClass(filterPageId, "hidden");
+
+                                    // show create page and hightlight tab
+                                    Dom.removeClass(createPageId, "hidden");
+                                    var createButton = Dom.getElementsBy(function (el) {
+                                        return el.tagName == "BUTTON";
+                                    }, "button", journalPickerHeaderId);
+                                    Dom.addClass(createButton, "selected");
+                                },
+
+                                submit: function (node) {
+                                    scCallback(node);
+                                },
+                                cancel: scCallback
+                            },
+                            {
+                                destination: variant.destination(),
+                                fieldId: data.name()
+                            });
+
+                    },
+                    virtualParent: params.virtualParent,
+                    createVariantsSource: params.createVariantsSource
+                }, Dom.get(journalPickerHeaderId));
+
+                if (value()) selectedElements(multiple() ? value() : [value()]);
+
+
+                if (!Citeck.mobile.isMobileDevice()) {
+                    YAHOO.Bubbling.on("change-mobile-mode", function (l, args) {
+                        var itemsCount = args[1].mobileMode ? 5 : 10;
+                        if (itemsCount != maxItems()) {
+                            pageNumber(1);
+                            maxItems(itemsCount);
+                        }
+                        ;
+                    });
+                }
+
+                // reload filterOptions request if was created new object
+                YAHOO.Bubbling.on("object-was-created", function (layer, args) {
+                    if (args[1].fieldId == data.name()) {
+                        if (args[1].value) {
+                            additionalOptions(_.union(additionalOptions(), [args[1].value]));
+                            if (!data.multiple()) selectedElements.removeAll();
+                            selectedElements.push(args[1].value);
+                        }
+
+                        criteria(_.clone(criteria()));
+                    }
                 });
             }
 
-            // reload filterOptions request if was created new object
-            YAHOO.Bubbling.on("object-was-created", function(layer, args) {
-                if (args[1].fieldId == data.name()) {
-                    if (args[1].value) {
-                        additionalOptions(_.union(additionalOptions(), [ args[1].value ]));
-                        if (!data.multiple()) selectedElements.removeAll();
-                        selectedElements.push(args[1].value);
-                    }
+            scope.panel.show();
+            scope.panel.center();
 
-                    criteria(_.clone(criteria()));
-                }
-            });
+            // calc max height
+            var clientHeightZ = scope.panel.element.clientHeight - scope.panel.body.clientHeight;
+            if (clientHeightZ > 100) {
+                clientHeightZ = 82;
+            }
+
+            var maxHeight = YAHOO.util.Dom.getViewportHeight()
+                - clientHeightZ
+                - 60 // gap to screen edge
+            ;
+
+            // set min & max height for panel container
+            scope.panel.body.style.minHeight = '423px';
+            scope.panel.body.style.maxHeight = maxHeight + 'px';
+            scope.panel.body.style.overflowY = 'auto';
+            scope.panel.element.style.minWidth = '320px';
+            scope.panel.element.style.maxWidth = 'calc(100% - 20px)';
+
+            // set min height for create page
+            $(scope.panel.body).find('.create-page').css({'min-height': '385px', 'height': 'initial'});
+
+            vIFrame = $('#' + iframeId)[0].contentWindow;
+            // center the panel on resize
+            vIFrame.addEventListener('resize', _.throttle(function () {
+                scope.panel.center();
+            }, 200));
         }
-
-        panel.show();
-        panel.center();
-
-        // calc max height
-        var clientHeightZ = panel.element.clientHeight - panel.body.clientHeight;
-        if (clientHeightZ > 100) { clientHeightZ = 82; };
-        var maxHeight = YAHOO.util.Dom.getViewportHeight()
-            - clientHeightZ
-            - 60 // gap to screen edge
-        ;
-
-        // set min & max height for panel container
-        panel.body.style.minHeight = '423px';
-        panel.body.style.maxHeight = maxHeight + 'px';
-        panel.body.style.overflowY = 'auto';
-        panel.element.style.minWidth = '320px';
-        panel.element.style.maxWidth = 'calc(100% - 20px)';
-
-        // set min height for create page
-        $(panel.body).find('.create-page').css({'min-height':'385px', 'height':'initial'});
-
-        vIFrame = $('#'+iframeId)[0].contentWindow;
-        // center the panel on resize
-        vIFrame.addEventListener('resize', _.throttle(function() {
-            panel.center();
-        }, 200));
-     })
+        showPanelOnClick.call(this);
+    });
   }
 }
 

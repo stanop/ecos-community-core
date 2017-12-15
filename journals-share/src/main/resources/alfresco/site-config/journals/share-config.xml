@@ -77,7 +77,7 @@
 
     <config evaluator="string-compare" condition="Journals">
         <page-max-items>
-            <default>30</default>
+            <default>10</default>
             <options>10,30,50,100</options>
         </page-max-items>
     </config>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+    <imports>
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <import uri="http://www.citeck.ru/model/invariants/1.0" prefix="invariants" />
+        <import uri="http://www.citeck.ru/model/content/order-pass/1.0" prefix="op"/>
+    </imports>
+
+    <fields nodetype="cm:person">
+        <regions name="input" template="view" />
+        <regions name="select" template="select-orgstruct">
+            <param name="excludeFields">all_users</param>
+        </regions>
+    </fields>
+
+    <fields nodetype="cm:authorityContainer">
+        <regions name="input" template="view" />
+        <regions name="select" template="select-orgstruct">
+            <param name="allowedAuthorityType">GROUP</param>
+            <param name="excludeFields">all_users</param>
+        </regions>
+    </fields>
+
+    <fields nodetype="cm:authority">
+        <regions name="input" template="view" />
+        <regions name="select" template="select-orgstruct">
+            <param name="allowedAuthorityType">USER, GROUP</param>
+            <param name="excludeFields">all_users</param>
+        </regions>
+    </fields>
+
+    <view class="op:orderPass">
+        <views mode="view" kind="table"/>
+
+        <field assoc="icaseRole:roles" template="none" />
+        <field assoc="activ:activities" template="none" />
+
+        <field property="op:visitorFullName"/>
+        <field property="op:visitorOrganization"/>
+        <field property="idocs:registrationNumber">
+            <region name="select" template="number-generate">
+                <param name="template">idocs-order-pass-number-template</param>
+                <param name="mode">checkbox</param>
+            </region>
+        </field>
+        <field property="op:visitingDate"/>
+        <field property="op:carBrandAndNumber"/>
+        <field property="op:visitorDocument"/>
+        <field assoc="op:initiator"/>
+        <field property="idocs:registrationDate"/>
+
+    </view>
+
+</views>

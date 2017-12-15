@@ -79,11 +79,10 @@
 }
 </#macro>
 
-<#macro renderMultiActionsJSON>
+<#macro renderMultiActionsJSON multiActions>
 <#escape x as x?js_string>
 [
-	<#assign multiActions = config.scoped["DocumentLibrary"]["multi-select"] />
-	<#list multiActions.children as action>
+	<#list multiActions as action>
 	{
 		"id": "${action.attributes.id}",
 		"func": "${action.attributes.function!action.attributes.id}",

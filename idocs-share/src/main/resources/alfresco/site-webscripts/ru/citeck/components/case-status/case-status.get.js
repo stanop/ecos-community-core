@@ -41,6 +41,12 @@ function isPendingUpdate(nodeRef) {
     return isPendingUpdate != null ? isPendingUpdate : false;
 }
 
+function getStatusLabel(type) {
+    var key = "header." + type;
+    var result = msg.get(key);
+    return result == key ? msg.get("header.status") : result;
+}
+
 (function() {
 
     AlfrescoUtil.param('nodeRef');
@@ -71,6 +77,6 @@ function isPendingUpdate(nodeRef) {
 
     model.status = status;
     model.isPendingUpdate = pendingUpdate;
-    model.statusType = statusType;
+    model.statusLabel = getStatusLabel(statusType);
 
 })();

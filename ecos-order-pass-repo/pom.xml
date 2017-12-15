@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <artifactId>ecos-order-pass-repo</artifactId>
+    <version>1.0.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>ecos-order-pass-repo</name>
+    <description>ecos-order-pass-repo</description>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.citeck.ecos.community</groupId>
+        <artifactId>ecos-community</artifactId>
+        <version>3.2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+    </properties>
+
+    <dependencies>
+
+        <!-- ECOS MODULES -->
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>1st-override-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-base-core-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>journals-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-forms-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>idocs-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>3.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.2.4.Final</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

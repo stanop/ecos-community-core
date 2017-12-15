@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING/DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <bean id="order-pass.orderPassNumberBehaviour" parent="EnumerationBehaviour">
+        <property name="className" value="op:orderPass" />
+        <property name="numberField" value="idocs:registrationNumber" />
+        <property name="templateName" value="idocs-order-pass-number-template" />
+    </bean>
+
+    <bean id="order-pass.OrderPassNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="op:orderPass" />
+        <property name="nameTemplate">
+            <value><![CDATA[<#if .locale == "ru_RU">Пропуск<#else>OrderPass</#if> №#{'$'}{node.properties['idocs:registrationNumber']!'n/a'}]]></value>
+        </property>
+        <property name="appendExtension" value="false" />
+        <property name="order" value="40"/>
+    </bean>
+
+    <bean id="order-pass.orderPassTitleBehaviour" parent="TitleGenerationBehaviour">
+        <property name="className" value="op:orderPass" />
+        <property name="titleMLTemplate">
+            <map>
+                <entry key="ru_RU">
+                    <value><![CDATA[Пропуск №#{'$'}{node.properties['idocs:registrationNumber']!'б-н'}]]></value>
+                </entry>
+                <entry key="en_US">
+                    <value><![CDATA[OrderPass №#{'$'}{node.properties['idocs:registrationNumber']!'n/a'}]]></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

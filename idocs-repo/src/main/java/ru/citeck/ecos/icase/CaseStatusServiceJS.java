@@ -5,9 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Roman Makarskiy
  */

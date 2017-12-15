@@ -56,6 +56,7 @@
 				<value>alfresco/module/idocs-repo/model/case_mt/requirementModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/case_mt/stagesModel.xml</value>
 				<value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
+				<value>alfresco/module/idocs-repo/model/telegramModel.xml</value>
 			</list>
 		</property>
 		<property name="labels">
