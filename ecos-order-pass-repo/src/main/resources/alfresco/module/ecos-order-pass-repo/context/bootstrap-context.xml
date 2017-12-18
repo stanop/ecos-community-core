@@ -152,5 +152,24 @@
         <property name="bootstrapScript" value="alfresco/module/ecos-order-pass-repo/bootstrap/scripts/fill-case-roles.js"/>
     </bean>
 
+    <bean id="order-pass.module-component.cardlets" parent="order-pass.import-spaces.1-0-0">
+        <property name="name" value="order-pass-cardlets"/>
+        <property name="description" value="Cardlets for order pass form"/>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/cardlets/node-view</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-order-pass-repo/bootstrap/cardlets/web-preview</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
     
 </beans>

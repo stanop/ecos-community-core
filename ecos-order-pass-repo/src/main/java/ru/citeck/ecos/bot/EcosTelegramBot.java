@@ -46,8 +46,8 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
     @Autowired
     private RetryingTransactionHelper retryingTransactionHelper;
 
-    private String findUserByUserIdQuery = "TYPE:\"cm:person\" AND @tel\\:telegramUserId:%s";
-    private String findUserByPhoneNumberQuery = "TYPE:\"cm:person\" AND @cm\\:telephone:%s";
+        private String findUserByUserIdQuery = "TYPE:\"cm:person\" AND @tel\\:telegramUserId:%s";
+    private String findUserByPhoneNumberQuery = "TYPE:\"cm:person\" AND @cm\\:mobile:%s";
     private String botToken;
     private static final String LOGTAG = "ECOS_BOT_LOGGER";
     private Map<UserChatKey, ProcessDTO> dataCacheMap = new ConcurrentHashMap<>();
