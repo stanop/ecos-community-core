@@ -2,12 +2,8 @@
     <#list nodes as node>
     {
         "nodeRef": "${node.nodeRef}",
-        "name": "${node.name}"
-        <#if node.getProperties()['title']??>,
-            "title": "${node.getProperties()['title']}"
-        <#else>
-            "title": "${node.name}"
-        </#if>
+        "name": "${node.name}",
+        "title": "${node.properties['cm:title']!node.name}"
     }<#if node_has_next>,</#if>
     </#list>
 ]}
