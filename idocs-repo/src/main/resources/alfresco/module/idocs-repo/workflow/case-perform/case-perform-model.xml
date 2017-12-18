@@ -132,7 +132,7 @@
             </associations>
             <overrides>
                 <property name="icaseTask:workflowDefinitionName">
-                    <default>flowable$case-perform</default>
+                    <default>activiti$case-perform</default>
                 </property>
             </overrides>
             <mandatory-aspects>

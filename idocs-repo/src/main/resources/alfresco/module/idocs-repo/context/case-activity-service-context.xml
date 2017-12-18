@@ -102,7 +102,7 @@
                         <entry key="wfcf:partialConfirmsCount" value="wfcf:partialConfirmsCount"/>
                     </map>
                 </entry>
-                <entry key="flowable$case-perform">
+                <entry key="activiti$case-perform">
                     <map>
                         <entry key="wfcp:performOutcomes" value="wfcp:performOutcomes" />
                         <entry key="wfcp:formKey" value="wfcp:formKey" />
@@ -117,7 +117,7 @@
         </property>
         <property name="workflowTransmittedVariables">
             <map>
-                <entry key="flowable$case-perform">
+                <entry key="activiti$case-perform">
                     <list>
                         <value>optionalPerformers</value>
                         <value>excludedPerformers</value>
