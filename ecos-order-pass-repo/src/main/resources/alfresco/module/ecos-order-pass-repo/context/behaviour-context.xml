@@ -29,4 +29,30 @@
             </map>
         </property>
     </bean>
+
+    <bean id="order-pass.orderPassPropertiesHistoryBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="op:orderPass" />
+        <property name="allowedProperties">
+            <list>
+                <!-- props -->
+                <value>op:visitorFullName</value>
+                <value>op:visitorOrganization</value>
+                <value>op:visitingDate</value>
+                <value>op:carBrandAndNumber</value>
+                <value>op:visitorDocument</value>
+                <value>op:initiatorDepartment</value>
+                <value>idocs:registrationNumber</value>
+                <value>idocs:registrationDate</value>
+                <!-- assocs -->
+                <value>op:initiator</value>
+                <value>icase:documents</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true" />
+        <property name="enableHistoryOnAddAssocs" value="true" />
+        <property name="enableHistoryOnDeleteAssocs" value="true" />
+        <property name="enableHistoryOnAddChildAssocs" value="true" />
+        <property name="enableHistoryOnDeleteChildAssocs" value="true" />
+    </bean>
+
 </beans>
