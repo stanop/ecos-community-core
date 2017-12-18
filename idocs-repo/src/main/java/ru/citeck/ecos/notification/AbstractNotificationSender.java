@@ -311,8 +311,8 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
         Map<QName, Serializable> tempFields;
 
-        Serializable wfkey = props.get(DmsModel.PROP_TASK_NAME);
-        Serializable tkey = props.get(DmsModel.PROP_WORKFLOW_NAME);
+        Serializable wfkey = props.get(DmsModel.PROP_WORKFLOW_NAME);
+        Serializable tkey = props.get(DmsModel.PROP_TASK_NAME);
 
         Optional<NodeRef> templateRef = searchTemplate(props, findNotSearchable);
 
