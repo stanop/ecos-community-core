@@ -1,5 +1,6 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.process.start;
 
+import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
@@ -18,7 +19,6 @@ public class PackageFieldsFillingListener implements GlobalStartExecutionListene
     /**
      * Constants
      */
-    private static final String PACKAGE_PREFIX = "bpm";
     private static final String FLOWABLE_ENGINE_PREFIX = "flowable$";
 
     /**
@@ -40,14 +40,12 @@ public class PackageFieldsFillingListener implements GlobalStartExecutionListene
         NodeRef packageRef = FlowableListenerUtils.getWorkflowPackage(delegateExecution);
         Map<QName, Serializable> props = nodeService.getProperties(packageRef);
         boolean propsChanged = false;
-        QName workflowInstanceIdProp = QName.createQName(PACKAGE_PREFIX, "workflowInstanceId", namespaceService);
-        if(!props.containsKey(workflowInstanceIdProp)) {
-            props.put(workflowInstanceIdProp, FLOWABLE_ENGINE_PREFIX + delegateExecution.getProcessInstanceId());
+        if(!props.containsKey(WorkflowModel.PROP_WORKFLOW_INSTANCE_ID)) {
+            props.put(WorkflowModel.PROP_WORKFLOW_INSTANCE_ID, FLOWABLE_ENGINE_PREFIX + delegateExecution.getProcessInstanceId());
             propsChanged = true;
         }
-        QName workflowDefinitionNameProp = QName.createQName(PACKAGE_PREFIX, "workflowDefinitionName", namespaceService);
-        if(!props.containsKey(workflowDefinitionNameProp)) {
-            props.put(workflowDefinitionNameProp, FLOWABLE_ENGINE_PREFIX + delegateExecution.getProcessDefinitionId().split(":")[0]);
+        if(!props.containsKey(WorkflowModel.PROP_WORKFLOW_DEFINITION_NAME)) {
+            props.put(WorkflowModel.PROP_WORKFLOW_DEFINITION_NAME, FLOWABLE_ENGINE_PREFIX + delegateExecution.getProcessDefinitionId().split(":")[0]);
             propsChanged = true;
         }
         if(propsChanged) {

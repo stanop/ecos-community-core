@@ -23,11 +23,12 @@ public class AdvancedFormUIGet extends FormUIGet {
 
     /**
      * Generate model
+     *
      * @param itemKind Item kind
-     * @param itemId Item id
-     * @param request Web script request
-     * @param status Status
-     * @param cache Cache
+     * @param itemId   Item id
+     * @param request  Web script request
+     * @param status   Status
+     * @param cache    Cache
      * @return Map of generated model attributes
      */
     @Override
@@ -40,9 +41,9 @@ public class AdvancedFormUIGet extends FormUIGet {
         FormConfigElement formConfig = this.getFormConfig(itemId, formId, itemKind);
         List<String> visibleFields = this.getVisibleFields(mode, formConfig);
         Response formSvcResponse = this.retrieveFormDefinition(itemKind, itemId, visibleFields, formConfig);
-        if(formSvcResponse.getStatus().getCode() == 200) {
+        if (formSvcResponse.getStatus().getCode() == 200) {
             model = this.generateFormModel(request, mode, formSvcResponse, formConfig);
-        } else if(formSvcResponse.getStatus().getCode() == 401) {
+        } else if (formSvcResponse.getStatus().getCode() == 401) {
             status.setCode(401);
             status.setRedirect(true);
         } else {
@@ -55,13 +56,14 @@ public class AdvancedFormUIGet extends FormUIGet {
 
     /**
      * Get config element
-     * @param itemId Item id
-     * @param formId Form id
+     *
+     * @param itemId   Item id
+     * @param formId   Form id
      * @param itemKind Item kind
      * @return Form config element
      */
     protected FormConfigElement getFormConfig(String itemId, String formId, String itemKind) {
-        FormConfigElement config =  super.getFormConfig(itemId, formId);
+        FormConfigElement config = super.getFormConfig(itemId, formId);
         if (config == null) {
             /** Load default for workflow item kind */
             if (itemKind.equals(WORKFLOW_ITEM_KIND)) {
