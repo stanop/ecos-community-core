@@ -150,6 +150,14 @@
 					"' onclick=\"javascript:YAHOO.Bubbling.fire('" + button.event + "', {" + eventArgs.join(",") + "}); " + 
 					"var event = arguments[0] || window.event; event.cancelBubble = true; event.stopPropagation && event.stopPropagation();\">" +
 					"<label>" + this._getButtonMessage(button, "label") + "</label></button>";
+                /* open in view mode (for debug purposes) */
+                /* if (button.id == 'editItem') {
+                    eventArgs.push("mode:'view'");
+                    html += "<button class='" + button.id + "' title='" + "Просмотр" +
+                        "' onclick=\"javascript:YAHOO.Bubbling.fire('" + button.event + "', {" + eventArgs.join(",") + "}); " +
+                        "var event = arguments[0] || window.event; event.cancelBubble = true; event.stopPropagation && event.stopPropagation();\">" +
+                        "<label>" + this._getButtonMessage(button, "label") + "</label></button>";
+                } */
 			}
 			return html;
 		},
