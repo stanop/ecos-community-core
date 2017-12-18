@@ -1,6 +1,7 @@
 package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.namespace.QName;
 
 import java.io.Serializable;
@@ -118,12 +119,22 @@ public interface OperandExpected {
     OperandExpected transactional();
 
     /**
+     * Search in database or in SOLR if query not supported by database
+     */
+    OperandExpected transactionalIfPossible();
+
+    /**
      * Search in SOLR without database
      */
     OperandExpected eventual();
 
     /**
+     * Set query consistency
+     */
+    OperandExpected consistency(QueryConsistency consistency);
+
+    /**
      * Get copy of query
      */
-    OperatorExpected copy();
+    OperandExpected copy();
 }

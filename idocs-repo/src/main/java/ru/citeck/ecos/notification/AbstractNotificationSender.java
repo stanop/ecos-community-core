@@ -352,7 +352,8 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         OperatorExpected query = FTSQuery.create()
                                          .type(DmsModel.TYPE_NOTIFICATION_TEMPLATE).and()
                                          .exact(DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType).and()
-                                         .values(props, BinOperator.AND, true);
+                                         .values(props, BinOperator.AND, true)
+                                         .transactionalIfPossible();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Template searching. Query: " + query);

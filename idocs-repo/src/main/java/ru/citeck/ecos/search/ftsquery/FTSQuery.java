@@ -187,13 +187,20 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    public FTSQuery transactionalIfPossible() {
+        return consistency(QueryConsistency.TRANSACTIONAL_IF_POSSIBLE);
+    }
+
     public FTSQuery transactional() {
-        searchParameters.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
-        return this;
+        return consistency(QueryConsistency.TRANSACTIONAL);
     }
 
     public FTSQuery eventual() {
-        searchParameters.setQueryConsistency(QueryConsistency.EVENTUAL);
+        return consistency(QueryConsistency.EVENTUAL);
+    }
+
+    public FTSQuery consistency(QueryConsistency consistency) {
+        searchParameters.setQueryConsistency(consistency);
         return this;
     }
 
