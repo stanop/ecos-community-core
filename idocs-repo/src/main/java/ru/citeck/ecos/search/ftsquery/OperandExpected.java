@@ -122,4 +122,8 @@ public interface OperandExpected {
      */
     OperandExpected eventual();
 
+    /**
+     * Get copy of query
+     */
+    OperatorExpected copy();
 }

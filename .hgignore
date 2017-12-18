@@ -18,5 +18,6 @@ target/*
 *.todo
 alf_data_dev
 */overlays/**
+src/test/properties/local/alfresco-global-dev.properties
 syntax: regexp
 desktop\.ini

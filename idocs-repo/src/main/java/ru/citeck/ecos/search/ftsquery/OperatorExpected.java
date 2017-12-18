@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.search.SearchService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public interface OperatorExpected {
 
@@ -39,12 +40,27 @@ public interface OperatorExpected {
     Optional<NodeRef> queryOne(SearchService searchService);
 
     /**
+     * Query nodes, filter it and get first element
+     */
+    Optional<NodeRef> queryOne(SearchService searchService, Predicate<NodeRef> filter);
+
+    /**
      * Query nodes
      */
     List<NodeRef> query(SearchService searchService);
 
     /**
+     * Query nodes and filter results
+     */
+    List<NodeRef> query(SearchService searchService, Predicate<NodeRef> filter);
+
+    /**
      * Get query string
      */
     String getQuery();
+
+    /**
+     * Get copy of query
+     */
+    OperatorExpected copy();
 }
