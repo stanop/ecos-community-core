@@ -406,8 +406,12 @@ public class LuceneQuery implements SearchQueryBuilder {
                         ignore = true;
                 }
             } else if (SearchPredicate.JOURNAL_ID.equals(criterion)) {
-                String nodeType = getNodeType(value);
-                ignore = isSafeEmpty(nodeType);
+                if (typeName != null) {
+                    ignore = true;
+                } else {
+                    String nodeType = getNodeType(value);
+                    ignore = isSafeEmpty(nodeType);
+                }
             }
             return ignore;
         }
