@@ -2,7 +2,7 @@
 
 <#-- property: field property name, for example "ecos:photo". Comes from view's field prop value: <field prop="ecos:photo"> ... </field> -->
 <#assign property = viewScope.field.attribute!"" />
-<#assign propertyU = property?replace(":","_") />
+<#assign propertyU = property?replace(":", "_") />
 <#assign imgId = propertyU + "-image-id" />
 
 

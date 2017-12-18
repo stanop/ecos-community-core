@@ -137,6 +137,7 @@
 			
 			// set widgets configs:
 			YAHOO.Bubbling.fire("registerButtons", this.options.buttons);
+			YAHOO.Bubbling.on("clearViewJunk", this._clearViewJunk.bind(this));
 
 			// listen to tree events:
 			this.widgets.tree.subscribe("clickEvent", this.onTreeItemSelected, this, true);
@@ -229,10 +230,29 @@
 
 		},
 
-        // clear junc created by onViewItem
+        // clear junk created by onViewItem
 		_clearViewJunk: function () {
+			console.log('-->> _clearViewJunk');
+            // unsubscribe
+            try {YAHOO.Bubbling.unsubscribe("node-view-submit", onSubmit);} catch(e) {
+            	if (e.message !== 'onSubmit is not defined') {
+                    console.log('err on unsubscribe("node-view-submit")', e.message)
+                }
+            }
+            try {YAHOO.Bubbling.unsubscribe("node-view-cancel", onCancel);} catch(e) {
+            	if (e.message !== 'onCancel is not defined') {
+					console.log('err on unsubscribe("node-view-cancel")', e.message)
+				}
+            }
+
             // get the right section - block were we will show the views
             var showArea = $('#' + this.widgets.list.id);
+
+            // terminate runtime
+            if (showArea[0].querySelector('.ecos-form')) {
+				var ecosFormId = showArea[0].querySelector('.ecos-form').id;
+				try { Alfresco.util.ComponentManager.get(ecosFormId).runtime.terminate(); } catch (e) { }
+            }
 
             // remove previously created junk
             showArea.children('.user-profile-view-inner-container').each(function () {
@@ -248,11 +268,12 @@
 		 * Updates list and list toolbar.
 		 */
 		onTreeItemSelected: function(args) {
+			console.log('-->> onTreeItemSelected!');
 			var node = args.node;
 			var item = node.data;
 			var parent = node.parent.data;
 
-			// clear junc created by onViewItem
+			// clear junk created by onViewItem
 			this._clearViewJunk(item);
 
 			// bind widgets to model
@@ -268,8 +289,10 @@
 		 * Do nothing.
 		 */
 		onListItemSelected: function(args) {
-		var node = args.node;
-		var item = node.data;
+			console.log('-->> onListItemSelected');
+			var node = args.node;
+			var item = node.data;
+            var parent = node.parent.data;
 
 			if (item.item.authorityType === 'USER') {
                 // clear junc created by onViewItem
@@ -346,14 +369,16 @@
 		 * Show edit form
 		 */
 		onEditItem: function(args) {
-			var formId = args.type,
-				itemId = args.item,
-				item = this.model.getItem(itemId),
-				htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
+			console.log('-->> onEditItem');
+			var mode = args.mode;
+			var formId = args.type;
+			var itemId = args.item;
+			var item = this.model.getItem(itemId);
+			var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
 			itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
 			// this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
 			// this.widgets.editItemDialog.options.width = '50em';
-			this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {width: "800px"});
+			this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {width: "800px", mode: mode});
 			this.widgets.editItemDialog.setOptions(this.config.forms);
 			this.widgets.editItemDialog.show();
 			this.widgets.editItemDialog.subscribe("itemEdited", this.onItemEdited, this, true);
@@ -364,12 +389,22 @@
          * Show view form
          */
         onViewItem: function(args) {
+        	console.log('-->> onViewItem');
+
+        	/* RUN "Citeck.forms.dialog"
+				args.mode = 'view';
+				args.item = args.node.data._item_name_;
+				this.onEditItem(args);
+				return;
+        	*/
+
             var formId = 'orgstruct';
             var itemId = args.node.data._item_name_;
             var item = this.model.getItem(itemId);
             var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id});
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id/*, mode: 'edit'*/});
+			this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
         },
 
 		/**
@@ -503,6 +538,7 @@
 		 * Initiates model update.
 		 */
 		onItemEdited: function(item) {
+			console.log('-->> onItemEdited');
 			this.model.updateItem(item);
 		},
 

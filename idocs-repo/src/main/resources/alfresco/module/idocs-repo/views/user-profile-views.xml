@@ -11,19 +11,30 @@
 
     <view class="cm:person" kind="2-column">
         <param name="inlineEdit">false</param>
-        <view id="cm_person_genetal_info">
+        <param name="invariantsRuntimeCache">false</param>
+        <param name="preloadInvariants">true</param>
+
+        <view id="person-go-to-edit-mode" template="person-edit-btn">
+            <param name="preloadInvariants">true</param>
+        </view>
+
+        <view id="cm_person_general_info">
+            <param name="preloadInvariants">true</param>
             <param name="title">Основное</param>
+            <param name="invariantsRuntimeCache">false</param>
             <field prop="cm:userName" id="user-name">
                 <invariant on="protected" language="explicit">true</invariant>
             </field>
 
-            <field prop="ecos:photo">
-                <region name="input" template="img">
-                    <param name="width">250</param>
-                    <!--<param name="height">250</param>-->
-                    <param name="alt">This is user's photo</param>
-                </region>
-            </field>
+            <view id="cm_person_general_info_ecos_photo">
+                <field prop="ecos:photo">
+                    <region name="input" template="img">
+                        <param name="width">250</param>
+                        <!--<param name="height">250</param>-->
+                        <param name="alt">This is user's photo</param>
+                    </region>
+                </field>
+            </view>
 
             <field prop="cm:firstName"/>
             <field prop="cm:lastName"/>
@@ -39,6 +50,7 @@
         </view>
 
         <view id="cm_person_phones">
+            <param name="preloadInvariants">true</param>
             <param name="title">Телефоны</param>
             <field prop="ecos:phoneWorking" />
             <field prop="ecos:phoneInternal" />
@@ -50,6 +62,7 @@
         </view>
 
         <view id="cm_person_other_info">
+            <param name="preloadInvariants">true</param>
             <param name="title">Прочее</param>
             <field prop="cm:location"/>
             <field prop="cm:skype"/>
@@ -59,6 +72,7 @@
                 </invariant>
             </field>
             <view class="deputy:availability">
+                <param name="preloadInvariants">true</param>
                 <field prop="deputy:available">
                     <invariant on="mandatory" language="explicit">true</invariant>
                     <invariant on="default" language="explicit">true</invariant>
@@ -79,7 +93,9 @@
     </view>
 
     <views class="cm:person" mode="view">
+        <param name="preloadInvariants">true</param>
         <views class="deputy:availability">
+            <param name="preloadInvariants">true</param>
             <fields prop="deputy:available">
                 <regions name="input" template="view">
                     <param name="emptyLabel">label.yes</param>

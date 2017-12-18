@@ -638,7 +638,8 @@ function buildMyGroup(isMobile) {
         { id: "my-sites", url: "user/user-sites", iconImage: "/share/res/components/images/header/my-sites.png" },
         { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
         { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
-        { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
+        { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" },
+        { id: "orgstruct", url: "orgstruct", iconImage: "/share/res/components/images/header/orgstruct.png" }
       ], group)
     }
   };
@@ -663,7 +664,6 @@ function buildAdminGroup(isMobile) {
         { id: "system", url: "journals2/list/system", iconImage: "/share/res/components/images/header/journals.png" },
         { id: "meta_journals", url: "journals2/list/meta", iconImage: "/share/res/components/images/header/journals.png" },
         { id: "templates", url: "journals2/list/templates", iconImage: "/share/res/components/images/header/templates.png" },
-        { id: "orgstruct", url: "orgstruct", iconImage: "/share/res/components/images/header/orgstruct.png" },
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
       ], group)
     }

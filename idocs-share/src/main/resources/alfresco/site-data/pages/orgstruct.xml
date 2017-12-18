@@ -7,5 +7,5 @@
    <description>Organization structure: organizations, branches, roles</description>
    <description-id>page.orgstruct.description</description-id>
    <template-instance>orgstruct</template-instance>
-   <authentication>admin</authentication>
+   <authentication>user</authentication>
 </page>
