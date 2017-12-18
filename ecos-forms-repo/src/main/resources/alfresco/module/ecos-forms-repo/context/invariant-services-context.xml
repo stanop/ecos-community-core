@@ -143,8 +143,6 @@
 		<property name="invariantService" ref="invariantService" />
 		<property name="parser" ref="nodeViewsParser" />
 		<property name="filter" ref="nodeViewsFilter" />
-		<property name="workflowServiceUtils" ref="workflowServiceUtils"/>
-		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 	
 	<bean id="nodeViewServiceJS" class="ru.citeck.ecos.invariants.view.NodeViewServiceJS" parent="baseJavaScriptExtension">
@@ -189,7 +187,6 @@
 		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="namespaceService" ref="namespaceService" />
 		<property name="nodeAttributeService" ref="NodeAttributeService" />
-		<property name="workflowServiceUtils" ref="workflowServiceUtils"/>
 	</bean>
 	
 	<bean id="webscript.ru.citeck.invariants.view.post" parent="webscript" class="ru.citeck.ecos.webscripts.invariants.NodeViewPost">

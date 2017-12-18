@@ -19,22 +19,17 @@
 package ru.citeck.ecos.webscripts.invariants;
 
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.attr.NodeAttributeService;
-import ru.citeck.ecos.utils.WorkflowServiceUtils;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
 import ru.citeck.ecos.model.InvariantsModel;
@@ -47,8 +42,6 @@ import java.util.Set;
 
 public class NodeViewGet extends DeclarativeWebScript {
 
-    private static Log logger = LogFactory.getLog(NodeViewGet.class);
-
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_VIEW_ID = "viewId";
     private static final String PARAM_MODE = "mode";
@@ -60,7 +53,6 @@ public class NodeViewGet extends DeclarativeWebScript {
     private static final String MODEL_NODEREF = "nodeRef";
 
     private static final String TEMPLATE_PARAM_PREFIX = "param_";
-    private static final String DEFAULT_TASK_VIEW = "wfcf:defaultTask";
 
     private NodeService nodeService;
     private NodeViewService nodeViewService;
@@ -68,7 +60,6 @@ public class NodeViewGet extends DeclarativeWebScript {
     private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
     private NamespaceService namespaceService;
-    private WorkflowServiceUtils workflowServiceUtils;
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
@@ -84,13 +75,8 @@ public class NodeViewGet extends DeclarativeWebScript {
 
         NodeView.Builder builder = new NodeView.Builder(prefixResolver);
 
-        WorkflowDefinition workflowDefinition = workflowServiceUtils.getWorkflowDefinition(typeParam);
-        if (workflowDefinition != null) {
-            typeParam = workflowDefinition.getStartTaskDefinition().getId();
-        }
-
         if (typeParam != null && !typeParam.isEmpty()) {
-            setClassName(builder, typeParam);
+            builder.className(typeParam);
             canBeDraft = canBeDraft(QName.resolveToQName(prefixResolver, typeParam));
         } else if (nodeRefParam != null && !nodeRefParam.isEmpty()) {
             if (!NodeRef.isNodeRef(nodeRefParam)) {
@@ -124,16 +110,8 @@ public class NodeViewGet extends DeclarativeWebScript {
         NodeView query = builder.build();
 
         if (!nodeViewService.hasNodeView(query)) {
-            if (workflowDefinition != null) {
-                query = builder.className(DEFAULT_TASK_VIEW).build();
-                if (!nodeViewService.hasNodeView(query)) {
-                    status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
-                    return null;
-                }
-            } else {
-                status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
-                return null;
-            }
+            status.setCode(Status.STATUS_NOT_FOUND, "This view is not registered");
+            return null;
         }
 
         NodeView view = nodeViewService.getNodeView(query);
@@ -143,14 +121,6 @@ public class NodeViewGet extends DeclarativeWebScript {
         model.put(MODEL_CAN_BE_DRAFT, canBeDraft);
         model.put(MODEL_NODEREF, nodeRef != null ? nodeRef.toString() : null);
         return model;
-    }
-
-    private void setClassName(NodeView.Builder builder, String type) {
-        try {
-            builder.className(type);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
     }
 
     private Map<String, Object> getTemplateParams(WebScriptRequest req) {
@@ -165,13 +135,8 @@ public class NodeViewGet extends DeclarativeWebScript {
     }
 
     private boolean canBeDraft(QName type) {
-        TypeDefinition typeDefinition = dictionaryService.getType(type);
-        if (typeDefinition != null) {
-            Set<QName> defaultAspects = typeDefinition.getDefaultAspectNames();
-            return defaultAspects.contains(InvariantsModel.ASPECT_DRAFT);
-        } else {
-            return false;
-        }
+        Set<QName> defaultAspects = dictionaryService.getType(type).getDefaultAspectNames();
+        return defaultAspects.contains(InvariantsModel.ASPECT_DRAFT);
     }
 
     private boolean canBeDraft(NodeRef nodeRef) {
@@ -223,9 +188,5 @@ public class NodeViewGet extends DeclarativeWebScript {
 
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
-    }
-
-    public void setWorkflowServiceUtils(WorkflowServiceUtils workflowServiceUtils) {
-        this.workflowServiceUtils = workflowServiceUtils;
     }
 }

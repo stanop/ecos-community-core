@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.invariants.view;
 
-import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
@@ -29,7 +28,7 @@ public interface NodeViewService {
 
     /**
      * Deploy invariants definition file.
-     * 
+     *
      * @param definition views definition file
      * @param sourceId id of definition
      */
@@ -37,7 +36,7 @@ public interface NodeViewService {
 
     /**
      * Undeploy invariants definition file.
-     * 
+     *
      * @param sourceId id of definition
      */
     void undeployDefinition(String sourceId);
@@ -45,105 +44,87 @@ public interface NodeViewService {
     /**
      * Checks, if the specified view is registered or not.
      *
-     * @param id Node id
-     * @param type Node type
-     * @return true, if the view is registered, false otherwise
-     */
-    boolean hasNodeView(String id, String type);
-
-    /**
-     * Checks, if the specified view is registered or not.
-     *
-     * @param node Node
-     * @param id Node id
-     * @return true, if the view is registered, false otherwise
-     */
-    boolean hasNodeView(ScriptNode node, String id);
-    
-    /**
-     * Checks, if the specified view is registered or not.
-     * 
      * @param view node view to check
      * @return true, if the view is registered, false otherwise
      */
     boolean hasNodeView(NodeView view);
-    
+
     /**
      * Get node view for specified class name and default id.
-     * 
+     *
      * @param className
      * @return
      */
     NodeView getNodeView(QName className);
-    
+
     /**
      * Get node view for specified class name and id.
-     * 
+     *
      * @param className
      * @param id
      * @return
      */
     NodeView getNodeView(QName className, String id);
-    
+
     /**
      * Get node view for specified nodeRef and default id.
-     * 
+     *
      * @param nodeRef
      * @return
      */
     NodeView getNodeView(NodeRef nodeRef);
-    
+
     /**
      * Get node view for specified nodeRef and id.
-     * 
+     *
      * @param nodeRef
      * @param id
      * @return
      */
     NodeView getNodeView(NodeRef nodeRef, String id);
-    
+
     /**
      * Get expanded node view, filled with all necessary elements, according to configuration.
-     * 
+     *
      * @param view view to expand
      * @return expanded view
      */
     NodeView getNodeView(NodeView view);
-    
+
     /**
      * Save node view to specified node (view with default id).
-     * 
+     *
      * @param nodeRef node in which to save the node view changes.
      * @param attributes
      */
     void saveNodeView(NodeRef nodeRef, Map<QName, Object> attributes);
-    
+
     /**
      * Save node view to new node (view with default id).
-     * 
+     *
      * @param typeQName type for which this node view is defined.
      * @param attributes
      */
     NodeRef saveNodeView(QName typeQName, Map<QName, Object> attributes);
-    
+
     /**
      * Save node view to specified node (view with specified id).
-     * 
+     *
      * @param nodeRef node in which to save the node view changes.
      * @param id view id
      * @param attributes attributes to persist
      * @param params view parameters
      */
     void saveNodeView(NodeRef nodeRef, String id, Map<QName, Object> attributes, Map<String, Object> params);
-    
+
     /**
      * Save node view to new node (view with specified id).
-     * 
+     *
      * @param typeQName type for which this node view is defined.
      * @param id view id
      * @param attributes attributes to persist
      * @param params view parameters
      */
     NodeRef saveNodeView(QName typeQName, String id, Map<QName, Object> attributes, Map<String, Object> params);
-    
+
 }
