@@ -91,6 +91,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set flowable history service
+     *
      * @param flowableHistoryService Flowable history service
      */
     public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
@@ -99,6 +100,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set flowable process instance service
+     *
      * @param flowableProcessInstanceService Flowable process instance service
      */
     public void setFlowableProcessInstanceService(FlowableProcessInstanceService flowableProcessInstanceService) {
@@ -107,6 +109,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set flowable process definition service
+     *
      * @param flowableProcessDefinitionService Flowable process definition service
      */
     public void setFlowableProcessDefinitionService(FlowableProcessDefinitionService flowableProcessDefinitionService) {
@@ -115,6 +118,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set form service
+     *
      * @param formService Form service
      */
     public void setFormService(FormService formService) {
@@ -123,6 +127,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set namespace service
+     *
      * @param namespaceService Namespace service
      */
     public void setNamespaceService(NamespaceService namespaceService) {
@@ -131,6 +136,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Dictionary service
+     *
      * @param dictionaryService Dictionary service
      */
     public void setDictionaryService(DictionaryService dictionaryService) {
@@ -139,6 +145,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set authentication service
+     *
      * @param authenticationService Authentication service
      */
     public void setAuthenticationService(AuthenticationService authenticationService) {
@@ -147,6 +154,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set person service
+     *
      * @param personService Person service
      */
     public void setPersonService(PersonService personService) {
@@ -155,6 +163,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Set flowable property converter
+     *
      * @param flowablePropertyConverter Flowable property converter
      */
     public void setFlowablePropertyConverter(FlowablePropertyConverter flowablePropertyConverter) {
@@ -163,6 +172,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process definition to alfresco workflow definition
+     *
      * @param processDefinition Process definition
      * @return Workflow definition
      */
@@ -181,6 +191,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process definitions to alfresco workflow definitions
+     *
      * @param processDefinitions Process definitions
      * @return Workflow definitions
      */
@@ -195,6 +206,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform start task
+     *
      * @param processDefinition Process definition
      * @param processInstance   Process instance
      * @return Workflow task
@@ -218,6 +230,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform start task
+     *
      * @param processDefinition Process definition
      * @param processInstance   History process instance
      * @return Workflow task
@@ -240,6 +253,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform start task definition
+     *
      * @param processDefinition Process definition
      * @return Workflow task definition
      */
@@ -266,6 +280,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform task to workflow task definition
+     *
      * @param task Task
      * @return Workflow task definition
      */
@@ -294,6 +309,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform task to workflow task definition
+     *
      * @param task Task
      * @return Workflow task definition
      */
@@ -321,6 +337,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform tasks to workflow task definitions
+     *
      * @param tasks Tasks
      * @return Workflow task definitions
      */
@@ -335,6 +352,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process instance to alfresco workflow path
+     *
      * @param processInstance Process instance
      * @return Workflow path
      */
@@ -354,6 +372,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process instance to alfresco workflow path
+     *
      * @param processInstance Process instance
      * @return Workflow path
      */
@@ -374,6 +393,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process instance to alfresco workflow instance
+     *
      * @param processInstance Process instance
      * @return Workflow instance
      */
@@ -390,7 +410,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
                     null,
                     !processInstance.isEnded(),
                     processInstance.getStartTime(),
-                    historicProcessInstance!= null ? historicProcessInstance.getEndTime() : null
+                    historicProcessInstance != null ? historicProcessInstance.getEndTime() : null
             );
         } else {
             return null;
@@ -399,6 +419,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process instances to alfresco workflow instances
+     *
      * @param processInstances Process instances
      * @return Workflow instances
      */
@@ -413,6 +434,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform history process instance to alfresco workflow instance
+     *
      * @param processInstance Process instance
      * @return Workflow instance
      */
@@ -437,6 +459,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform process instances to alfresco workflow instances
+     *
      * @param processInstances Process instances
      * @return Workflow instances
      */
@@ -451,6 +474,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform task to alfresco workflow task
+     *
      * @param task Task
      * @return Workflow task
      */
@@ -473,6 +497,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform task to alfresco workflow task
+     *
      * @param task Task
      * @return Workflow task
      */
@@ -509,6 +534,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform tasks to alfresco workflow tasks
+     *
      * @param tasks Tasks
      * @return Workflow tasks
      */
@@ -523,6 +549,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Transform tasks to alfresco workflow tasks
+     *
      * @param tasks Tasks
      * @return Workflow tasks
      */
@@ -537,6 +564,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Get type definition
+     *
      * @param formKey Form key
      * @return Type definition
      */
