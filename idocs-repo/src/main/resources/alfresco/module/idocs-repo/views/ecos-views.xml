@@ -46,6 +46,7 @@
             </field>
         </view>
         <view>
+            <field assoc="ecos:responsible" />
             <field assoc="idocs:legalEntity">
                 <region name="input" template="view"/>
                 <region name="select" template="select-journal">

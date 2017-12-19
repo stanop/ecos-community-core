@@ -159,4 +159,17 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.general-case-categories" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="general-case-categories" />
+        <property name="description" value="general-case-categories" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/general-case-categories.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
 </beans>
