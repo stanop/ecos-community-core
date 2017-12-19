@@ -541,15 +541,10 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      * @return Type definition
      */
     private TypeDefinition getTypeDefinition(String formKey) {
-        try {
-            if (formKey != null) {
-                QName qName = WorkflowQNameConverter.convertNameToQName(formKey, namespaceService);
-                return dictionaryService.getType(qName);
-            } else {
-                return null;
-            }
-        } catch (WorkflowException exception) {
-            logger.warn(exception.getMessage());
+        if (formKey != null) {
+            QName qName = WorkflowQNameConverter.convertNameToQName(formKey, namespaceService);
+            return dictionaryService.getType(qName);
+        } else {
             return null;
         }
     }

@@ -21,11 +21,10 @@ package ru.citeck.ecos.workflow.mirror;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.processor.BaseProcessorExtension;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -68,6 +67,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 	private NodeInfoFactory nodeInfoFactory;
 	private OrgStructService orgStructService;
 	private SearchService searchService;
+	private DictionaryService dictionaryService;
 
 	private NodeRef taskMirrorRoot;
 	private QName taskMirrorAssoc;
@@ -216,16 +216,16 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 	}
 
 
-	private NodeRef createTaskMirror(String taskId, QName taskType) {
-    	try {
-			QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
-			ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
-			return mirrorRef.getChildRef();
-		} catch (IllegalArgumentException exception) {
-    		logger.error(exception.getMessage());
-    		return null;
-		}
-	}
+    private NodeRef createTaskMirror(String taskId, QName taskType) {
+        if (dictionaryService.getType(taskType) != null) {
+            QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
+            ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
+            return mirrorRef.getChildRef();
+        } else {
+            logger.warn(String.format("Task type '%s' doesn't registered in alfresco. Mirror will not be created", taskType));
+        }
+        return null;
+    }
 
 	private LinkedList<NodeRef> getActors(WorkflowTask task) {
 		String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
@@ -380,4 +380,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 		this.authorityService = authorityService;
 	}
 
+	public void setDictionaryService(DictionaryService dictionaryService) {
+		this.dictionaryService = dictionaryService;
+	}
 }
