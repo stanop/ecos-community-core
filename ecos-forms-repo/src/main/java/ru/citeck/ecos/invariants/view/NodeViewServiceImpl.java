@@ -56,7 +56,7 @@ class NodeViewServiceImpl implements NodeViewService {
         defaultParentAssocs.put(ContentModel.TYPE_FOLDER, ContentModel.ASSOC_CONTAINS);
         defaultParentAssocs.put(WorkflowModel.ASPECT_WORKFLOW_PACKAGE, WorkflowModel.ASSOC_PACKAGE_CONTAINS);
     }
-    
+
     @Override
     public void deployDefinition(InputStream definition, String sourceId) {
         List<NodeViewElement> elements = parser.parse(definition);
@@ -101,7 +101,7 @@ class NodeViewServiceImpl implements NodeViewService {
     public NodeView getNodeView(NodeView view) {
         return filter.resolveView(view);
     }
-    
+
     @Override
     public boolean hasNodeView(NodeView view) {
         return filter.isViewRegistered(view);
@@ -148,7 +148,7 @@ class NodeViewServiceImpl implements NodeViewService {
     @Override
     public void saveNodeView(NodeRef nodeRef, String id, Map<QName, Object> attributes, Map<String, Object> params) {
         nodeAttributeService.setAttributes(nodeRef, attributes);
-        
+
         NodeView view = filter.resolveView(new NodeView.Builder(namespaceService)
                 .className(nodeService.getType(nodeRef))
                 .id(id)
@@ -167,8 +167,8 @@ class NodeViewServiceImpl implements NodeViewService {
         if(effectiveAttributes.get(AttributeModel.ATTR_PARENT_ASSOC) == null) {
             Object parentObj = effectiveAttributes.get(AttributeModel.ATTR_PARENT);
             NodeRef parent = parentObj instanceof NodeRef ? (NodeRef) parentObj :
-                parentObj instanceof String ? new NodeRef((String) parentObj) :
-                null;
+                    parentObj instanceof String ? new NodeRef((String) parentObj) :
+                            null;
             QName parentType = nodeService.getType(parent);
             for(QName className : defaultParentAssocs.keySet()) {
                 if(dictionaryService.isSubClass(parentType, className) || nodeService.hasAspect(parent, className)) {
@@ -178,7 +178,7 @@ class NodeViewServiceImpl implements NodeViewService {
             }
         }
         NodeRef nodeRef = nodeAttributeService.persistAttributes(effectiveAttributes);
-        
+
         NodeView view = filter.resolveView(new NodeView.Builder(namespaceService)
                 .className(typeQName)
                 .id(id)

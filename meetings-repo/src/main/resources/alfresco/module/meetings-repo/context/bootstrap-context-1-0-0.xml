@@ -66,6 +66,7 @@
 		</property>
 	</bean>
 
+
 	<bean id="meetings.module-component.meetings-journal" parent="meetings.import-spaces">
 		<property name="name" value="meeting-journal" />
 		<property name="description" value="Meeting Journal" />

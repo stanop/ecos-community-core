@@ -21,6 +21,7 @@
     </namespaces>
 
     <types>
+
         <type name="icaseTask:task">
             <parent>activ:activity</parent>
             <properties>
@@ -62,8 +63,16 @@
             </overrides>
         </type>
 
-        <type name="icaseTask:simpleTask">
+        <type name="icaseTask:humanTask">
             <parent>icaseTask:task</parent>
+        </type>
+
+        <type name="icaseTask:processTask">
+            <parent>icaseTask:task</parent>
+        </type>
+
+        <type name="icaseTask:simpleTask">
+            <parent>icaseTask:processTask</parent>
             <associations>
                 <association name="icaseTask:performer">
                     <source>
@@ -80,7 +89,7 @@
         </type>
         
         <type name="icaseTask:confirmTask">
-            <parent>icaseTask:task</parent>
+            <parent>icaseTask:processTask</parent>
             <associations>
                 <association name="icaseTask:confirmers">
                     <source>
@@ -96,13 +105,13 @@
             </associations>
             <overrides>
                 <property name="icaseTask:workflowDefinitionName">
-                    <default>activiti$confirm-stage</default>
+                    <default>flowable$confirm-stage</default>
                 </property>
             </overrides>
         </type>
         
         <type name="icaseTask:performTask">
-            <parent>icaseTask:task</parent>
+            <parent>icaseTask:processTask</parent>
             <associations>
                 <association name="icaseTask:performers">
                     <source>
@@ -132,6 +141,10 @@
                     <default>activiti$perform</default>
                 </property>
             </overrides>
+        </type>
+
+        <type name="icaseTask:defaultTask">
+            <parent>icaseTask:processTask</parent>
         </type>
         
     </types>

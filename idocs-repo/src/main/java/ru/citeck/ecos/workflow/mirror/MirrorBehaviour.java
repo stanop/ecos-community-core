@@ -26,6 +26,7 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import ru.citeck.ecos.utils.NodeUtils;
 
 public class MirrorBehaviour implements NodeServicePolicies.OnDeleteAssociationPolicy {
 
@@ -40,11 +41,12 @@ public class MirrorBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 	@Override
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
 		NodeRef taskMirror = nodeAssocRef.getSourceRef();
-		if(!nodeService.exists(taskMirror)) {
+		if(NodeUtils.isNodeForDeleteOrNotExist(taskMirror, nodeService)) {
 			return;
 		}
 		nodeService.deleteNode(taskMirror);
 	}
+
 
 	public void setPolicyComponent(PolicyComponent policyComponent) {
 		this.policyComponent = policyComponent;

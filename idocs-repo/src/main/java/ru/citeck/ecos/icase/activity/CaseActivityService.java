@@ -3,6 +3,8 @@ package ru.citeck.ecos.icase.activity;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
+import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
+import ru.citeck.ecos.icase.activity.create.CreateVariantsProvider;
 
 import java.util.List;
 
@@ -123,4 +125,16 @@ public interface CaseActivityService {
      * @param activityRef activity node reference. Mandatory parameter.
      */
     boolean isActive(NodeRef activityRef);
+
+    /**
+     * Register create variants provider
+     * @see CreateVariantsProvider
+     */
+    void registerCreateVariantsProvider(CreateVariantsProvider provider);
+
+    /**
+     * Get create variants
+     * @see CreateVariantsProvider
+     */
+    List<ActivityCreateVariant> getCreateVariants();
 }

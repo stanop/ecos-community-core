@@ -27,32 +27,32 @@ public class NodeViewServiceJS extends AlfrescoScopableProcessorExtension {
 
     public boolean hasNodeView(String type, String id) {
         return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-            .className(type)
-            .id(id)
-            .build());
+                .className(type)
+                .id(id)
+                .build());
     }
-    
+
     public boolean hasNodeView(ScriptNode node, String id) {
         return impl.hasNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-            .className(node.getTypeShort())
-            .id(id)
-            .build());
+                .className(node.getTypeShort())
+                .id(id)
+                .build());
     }
 
     public NodeView getNodeView(String className, String id) {
         return impl.getNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-            .className(className)
-            .id(id)
-            .build());
+                .className(className)
+                .id(id)
+                .build());
     }
 
     public NodeView getNodeView(ScriptNode node, String id) {
         return impl.getNodeView(new NodeView.Builder(serviceRegistry.getNamespaceService())
-            .className(node.getTypeShort())
-            .id(id)
-            .build());
+                .className(node.getTypeShort())
+                .id(id)
+                .build());
     }
-    
+
     public void setImpl(NodeViewService impl) {
         this.impl = impl;
     }

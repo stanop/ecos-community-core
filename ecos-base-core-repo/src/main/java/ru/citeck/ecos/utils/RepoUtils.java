@@ -20,6 +20,8 @@ package ru.citeck.ecos.utils;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
@@ -714,9 +716,13 @@ public class RepoUtils {
                                          QName name, boolean isTarget, NodeService nodeService) {
         try {
             if (isTarget) {
-                nodeService.removeAssociation(nodeRef, linkedNode, name);
+                if (!NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+                    nodeService.removeAssociation(nodeRef, linkedNode, name);
+                }
             } else {
-                nodeService.removeAssociation(linkedNode, nodeRef, name);
+                if (!NodeUtils.isNodeForDeleteOrNotExist(linkedNode, nodeService)) {
+                    nodeService.removeAssociation(linkedNode, nodeRef, name);
+                }
             }
         } catch (InvalidNodeRefException e) {
             LOGGER.error(
@@ -761,6 +767,9 @@ public class RepoUtils {
     }
 
     public static void setChildAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> childAssocs, boolean primary, boolean full, NodeService nodeService) {
+        if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+            return;
+        }
         for (QName assocName : childAssocs.keySet()) {
             Set<NodeRef> newChildren = new HashSet<>(childAssocs.get(assocName));
 
@@ -791,6 +800,9 @@ public class RepoUtils {
         }
 
         if (full) {
+            if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+                return;
+            }
             List<ChildAssociationRef> allChildAssocs = nodeService.getChildAssocs(nodeRef);
             for (ChildAssociationRef childAssoc : allChildAssocs) {
                 if (!childAssocs.containsKey(childAssoc.getTypeQName()))

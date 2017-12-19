@@ -1,6 +1,6 @@
 <alfresco-config>
 
-	<config evaluator="string-compare" condition="activiti$confirm">
+	<config evaluator="string-compare" condition="flowable$confirm">
 		<forms>
 			<form id="meetings">
 				<field-visibility>
