@@ -957,7 +957,7 @@ JournalsWidget
 	// datatable interface: fields, columns, records
 	.shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
 	.computed('columns', function() {
-		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
+		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'), records = this.records(),
 				recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
 				recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
 				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
@@ -1044,7 +1044,7 @@ JournalsWidget
 				columns.unshift(new ActionsColumn({
 					id: 'actions',
 					label: this.msg("column.actions"),
-					formatter: formatters.actions(actionGroupId)
+					formatter: formatters.journalActions(records)
 				}));
 			}
 		}
@@ -1683,7 +1683,7 @@ JournalsWidget
 	})
 	;
 
-var recordLoader = new Citeck.utils.DoclibRecordLoader();
+var recordLoader = new Citeck.utils.DoclibRecordLoader(defaultActionGroupId);
 Record
 	// TODO define load method - to load selected records
 	.load('doclib', function(record) {
