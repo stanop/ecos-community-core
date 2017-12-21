@@ -19,6 +19,11 @@ import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 public class TaskCreateListener implements GlobalCreateTaskListener {
 
     /**
+     * Constants
+     */
+    private static final String NODE_WORKSPACE_PREFIX = "workspace://SpacesStore/";
+
+    /**
      * Flowable property converter
      */
     private FlowablePropertyConverter propertyConverter;
@@ -46,6 +51,17 @@ public class TaskCreateListener implements GlobalCreateTaskListener {
         TypeDefinition typeDefinition = propertyConverter.getFactory().getTaskTypeDefinition(taskFormKey, false);
         taskFormKey = typeDefinition.getName().toPrefixString();
         delegateTask.setVariableLocal(ActivitiConstants.PROP_TASK_FORM_KEY, taskFormKey);
+
+        /** Check assignee */
+        if (delegateTask.getAssignee() != null) {
+            if (delegateTask.getAssignee().startsWith(NODE_WORKSPACE_PREFIX)) {
+                NodeRef initiatorNode = new NodeRef(delegateTask.getAssignee());
+                PersonService.PersonInfo initiatorInfo = personService.getPerson(initiatorNode);
+                if (initiatorInfo != null && initiatorInfo.getUserName() != null) {
+                    delegateTask.setAssignee(initiatorInfo.getUserName());
+                }
+            }
+        }
 
         /** Set initiator variable */
         NodeRef initiatorNode = (NodeRef) delegateTask.getExecution().getVariable(WorkflowConstants.PROP_INITIATOR);
