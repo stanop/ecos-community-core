@@ -1,8 +1,10 @@
 package ru.citeck.ecos.webscripts.tasks;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.web.scripts.workflow.AbstractWorkflowWebscript;
 import org.alfresco.repo.web.scripts.workflow.WorkflowModelBuilder;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
 import org.json.JSONException;
@@ -65,7 +67,7 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             }
 
             Map<QName, Serializable> props = setOwners(action, owner, hasAssistants);
-            workflowTask = workflowService.updateTask(workflowTask.getId(), props, null, null);
+            workflowTask = updateTaskAsSystem(workflowTask.getId(), props, null, null);
 
             if (hasAssistants) {
                 workflowMirrorService.mirrorTask(workflowTask);
@@ -111,6 +113,15 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
         props.put(QName.createQName(null, "claimOwner"), setClaimOwner);
 
         return props;
+    }
+
+    private WorkflowTask updateTaskAsSystem(String taskId, Map<QName, Serializable> properties, Map<QName, List<NodeRef>> add, Map<QName, List<NodeRef>> remove) {
+        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<WorkflowTask>() {
+            public WorkflowTask doWork() throws Exception {
+                WorkflowTask workflowTask = workflowService.updateTask(taskId, properties, add, remove);
+                return workflowTask;
+            }
+        });
     }
 
     private static final String CM_OWNER_PARAM = "cm_owner";
