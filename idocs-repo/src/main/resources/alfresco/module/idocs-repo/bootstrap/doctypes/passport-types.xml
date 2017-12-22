@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view:view
-		xmlns:view="http://www.alfresco.org/view/repository/1.0"
-		xmlns:sys="http://www.alfresco.org/model/system/1.0"
-		xmlns:cm="http://www.alfresco.org/model/content/1.0">
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
 
-	<cm:category>
-		<view:properties>
-			<sys:node-uuid>idocs-cat-doctype-passport</sys:node-uuid>
-			<cm:name>${passport.type.name}</cm:name>
-			<cm:title>
-		        <view:mlvalue view:locale="en_US">${passport.type.title_en}</view:mlvalue>
-		        <view:mlvalue view:locale="ru_RU">${passport.type.title_ru}</view:mlvalue>
-		    </cm:title>
-		</view:properties>
-		<view:associations>
-			<cm:subcategories>
-				<cm:category>
-					<view:properties>
-						<sys:node-uuid>idocs-cat-dockind-passport-rus</sys:node-uuid>
-						<cm:name>${passport.rus.name}</cm:name>
-						<cm:title>
-					        <view:mlvalue view:locale="en_US">${passport.rus.title_en}</view:mlvalue>
-					        <view:mlvalue view:locale="ru_RU">${passport.rus.title_ru}</view:mlvalue>
-					    </cm:title>
-					</view:properties>
-				</cm:category>
-				<cm:category>
-					<view:properties>
-						<sys:node-uuid>idocs-cat-dockind-passport-other</sys:node-uuid>
-						<cm:name>${passport.other.name}</cm:name>
-						<cm:title>
-					        <view:mlvalue view:locale="en_US">${passport.other.title_en}</view:mlvalue>
-					        <view:mlvalue view:locale="ru_RU">${passport.other.title_ru}</view:mlvalue>
-					    </cm:title>
-					</view:properties>
-				</cm:category>
-			</cm:subcategories>
-		</view:associations>
-	</cm:category>
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>idocs-cat-doctype-passport</sys:node-uuid>
+            <cm:name>${passport.type.name}</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${passport.type.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${passport.type.title_ru}</view:mlvalue>
+            </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/passport/1.0}passport</tk:appliedType>
+            <tk:journalType>passports</tk:journalType>
+        </view:properties>
+        <view:associations>
+            <cm:subcategories>
+                <cm:category>
+                    <view:properties>
+                        <sys:node-uuid>idocs-cat-dockind-passport-rus</sys:node-uuid>
+                        <cm:name>${passport.rus.name}</cm:name>
+                        <cm:title>
+                            <view:mlvalue view:locale="en_US">${passport.rus.title_en}</view:mlvalue>
+                            <view:mlvalue view:locale="ru_RU">${passport.rus.title_ru}</view:mlvalue>
+                        </cm:title>
+                    </view:properties>
+                </cm:category>
+                <cm:category>
+                    <view:properties>
+                        <sys:node-uuid>idocs-cat-dockind-passport-other</sys:node-uuid>
+                        <cm:name>${passport.other.name}</cm:name>
+                        <cm:title>
+                            <view:mlvalue view:locale="en_US">${passport.other.title_en}</view:mlvalue>
+                            <view:mlvalue view:locale="ru_RU">${passport.other.title_ru}</view:mlvalue>
+                        </cm:title>
+                    </view:properties>
+                </cm:category>
+            </cm:subcategories>
+        </view:associations>
+    </cm:category>
 
 </view:view>

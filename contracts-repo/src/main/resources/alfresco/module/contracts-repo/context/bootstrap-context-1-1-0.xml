@@ -202,7 +202,7 @@
         </property>
     </bean>
 
-    <bean id="contracts.module-component.doctype-categories1" parent="contracts.import-spaces.1-1-0">
+    <bean id="contracts.module-component.doctype-categories2" parent="contracts.import-spaces.1-1-0">
         <property name="name" value="doctype-categories" />
         <property name="description" value="Doctype categories" />
         <property name="bootstrapViews">
@@ -214,6 +214,14 @@
                     <prop key="messages">alfresco/module/contracts-repo/bootstrap/doctype-categories</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.doctype-categories1" parent="contracts.import-spaces.1-1-0">
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.doctype-categories2" />
             </list>
         </property>
     </bean>

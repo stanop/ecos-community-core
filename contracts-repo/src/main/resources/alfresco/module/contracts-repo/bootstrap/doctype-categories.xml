@@ -2,7 +2,8 @@
 <view:view
         xmlns:view="http://www.alfresco.org/view/repository/1.0"
         xmlns:sys="http://www.alfresco.org/model/system/1.0"
-        xmlns:cm="http://www.alfresco.org/model/content/1.0">
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
 
     <!-- A contractual document -->
 <!--     <cm:category>
@@ -24,6 +25,8 @@
                 <view:mlvalue view:locale="en_US">${doctype.contract.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.contract.title_ru}</view:mlvalue>
             </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/contracts/1.0}agreement</tk:appliedType>
+            <tk:journalType>contract-agreements</tk:journalType>
         </view:properties>
         <cm:subcategories>
             <cm:category>
@@ -67,6 +70,8 @@
                 <view:mlvalue view:locale="en_US">${doctype.closing-doc.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.closing-doc.title_ru}</view:mlvalue>
             </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/contracts/1.0}closingDocument</tk:appliedType>
+            <tk:journalType>contracts-closing-document</tk:journalType>
         </view:properties>
         <cm:subcategories>
             <cm:category>
@@ -120,6 +125,8 @@
                 <view:mlvalue view:locale="en_US">${doctype.supp-agreement.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.supp-agreement.title_ru}</view:mlvalue>
             </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/contracts/1.0}supplementaryAgreement</tk:appliedType>
+            <tk:journalType>contracts-supplementary-agreement</tk:journalType>
         </view:properties>
     </cm:category>
 
@@ -131,9 +138,9 @@
                 <view:mlvalue view:locale="en_US">${doctype.payment.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.payment.title_ru}</view:mlvalue>
             </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/payments/1.0}payment</tk:appliedType>
+            <tk:journalType>payments</tk:journalType>
         </view:properties>
     </cm:category>
-    <!-- </cm:subcategories>
-    </cm:category> -->
 
 </view:view>
