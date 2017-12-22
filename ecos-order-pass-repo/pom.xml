@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <artifactId>ecos-order-pass-repo</artifactId>
-    <version>1.0.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ecos-order-pass-repo</name>
@@ -14,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.2.0.0-SNAPSHOT</version>
+        <version>3.2.1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
