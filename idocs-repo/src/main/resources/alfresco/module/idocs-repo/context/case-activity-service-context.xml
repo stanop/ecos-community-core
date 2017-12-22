@@ -90,7 +90,7 @@
                         <entry key="wfperf:controllerPermission" value="wfperf:controllerPermission"/>
                     </map>
                 </entry>
-                <entry key="flowable$confirm-stage">
+                <entry key="activiti$confirm-stage">
                     <map>
                         <entry key="icaseTask:confirmers" value="wfcf:confirmers"/>
                         <entry key="wfcf:skipCorrectTask" value="wfcf:skipCorrectTask"/>

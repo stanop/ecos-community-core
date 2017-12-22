@@ -43,7 +43,7 @@
         <action type="javascript">
             <param name="code">
                 <![CDATA[
-                    startWorkflow ("flowable$confirm", {"wfcf_precedence": person.nodeRef.toString()});
+                    startWorkflow ("activiti$confirm", {"wfcf_precedence": person.nodeRef.toString()});
                 ]]>
             </param>    
         </action>
@@ -51,7 +51,7 @@
     <transition>
         <fromState>confirm1</fromState>
         <event type="processEnd">
-            <param name="workflowId">flowable$confirm</param>
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>declined</toState>
         <condition type="javascript">
@@ -65,7 +65,7 @@
     <transition>
         <fromState>confirm1</fromState>
         <event type="processEnd">
-            <param name="workflowId">flowable$confirm</param>
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>confirmx2</toState>
     </transition> 
@@ -88,7 +88,7 @@
         <action type="javascript">
             <param name="code">
                 <![CDATA[
-                    startWorkflow ("flowable$confirm", {"wfcf_precedence": person.nodeRef.toString()});
+                    startWorkflow ("activiti$confirm", {"wfcf_precedence": person.nodeRef.toString()});
                 ]]>
             </param>    
         </action>
@@ -96,7 +96,7 @@
     <transition>
         <fromState>confirm2</fromState>
         <event type="processEnd">
-            <param name="workflowId">flowable$confirm</param>
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>declined</toState>
         <condition type="javascript">
@@ -110,7 +110,7 @@
     <transition>
         <fromState>confirm2</fromState>
         <event type="processEnd">
-            <param name="workflowId">flowable$confirm</param>
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>confirmed</toState>
     </transition>
