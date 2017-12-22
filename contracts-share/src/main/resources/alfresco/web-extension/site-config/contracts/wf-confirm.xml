@@ -1,7 +1,7 @@
 <alfresco-config>
 
 
-    <config evaluator="string-compare" condition="flowable$confirm">
+    <config evaluator="string-compare" condition="activiti$confirm">
         <forms>
             <form id="approve-contractor-form">
                 <create-form template="/ru/citeck/components/form/contracts/workflow/submit-confirm-task.ftl" />
