@@ -62,10 +62,6 @@
         <!-- ECOS build config -->
 
         <default.locale>en</default.locale>
-        <module.contracts.version>2.0.6.0-SNAPSHOT</module.contracts.version>
-        <module.letters.version>1.2.7-SNAPSHOT</module.letters.version>
-        <module.meetings.version>1.1.7-SNAPSHOT</module.meetings.version>
-        <module.orders.version>1.1.7-SNAPSHOT</module.orders.version>
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
@@ -650,7 +646,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.contracts.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -658,7 +654,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.letters.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -666,7 +662,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-order-pass-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${project.parent.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -675,7 +671,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.meetings.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -683,7 +679,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.orders.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -761,7 +757,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.contracts.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -769,7 +765,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.letters.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -777,7 +773,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.meetings.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -785,7 +781,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
-                            <version>${module.orders.version}</version>
+                            <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
 

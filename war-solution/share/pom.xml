@@ -68,28 +68,28 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>contracts-share</artifactId>
-            <version>${module.contracts.version}</version>
+            <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>letters-share</artifactId>
-            <version>${module.letters.version}</version>
+            <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>meetings-share</artifactId>
-            <version>${module.meetings.version}</version>
+            <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orders-share</artifactId>
-            <version>${module.orders.version}</version>
+            <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>

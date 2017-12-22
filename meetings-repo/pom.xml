@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <artifactId>meetings-repo</artifactId>
-    <version>1.1.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>meetings-repo</name>
