@@ -52,6 +52,19 @@
 		}
 	}
 
+	//formatter for injournal's actions
+    Citeck.format.journalActions = function(records, nodeRefField, obj) {
+        return function(elCell, oRecord) {
+            var renderer = new Citeck.widget.ActionRenderer(),
+                nodeRef = oRecord.getData(nodeRefField || "nodeRef");
+            if (nodeRef && records) {
+                Dom.addClass(elCell, "actions-cell loading");
+                var node = records.find(function(item){return item.nodeRef && item.nodeRef() == nodeRef});
+                if (node && node.doclib && node.doclib()) renderer.renderActions(node.doclib(), elCell, obj);
+            }
+        }
+    }
+
 	Citeck.widget.ActionRenderer = function() {
 		if (arguments.callee._instance)
 			return arguments.callee._instance;
