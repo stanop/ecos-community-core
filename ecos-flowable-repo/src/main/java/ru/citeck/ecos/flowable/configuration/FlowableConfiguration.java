@@ -1,6 +1,7 @@
 package ru.citeck.ecos.flowable.configuration;
 
 import org.alfresco.repo.i18n.MessageService;
+import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.repo.service.ServiceDescriptorRegistry;
 import org.alfresco.repo.tenant.TenantService;
 import org.alfresco.repo.workflow.DefaultWorkflowPropertyHandler;
@@ -99,6 +100,11 @@ public class FlowableConfiguration {
             Map<Object, Object> beans = new HashMap<>();
             beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
             setGlobalListenerBeans(beans);
+            /** Javascipt services */
+            Map<String, BaseScopableProcessorExtension> servicesMap = applicationContext.getBeansOfType(BaseScopableProcessorExtension.class);
+            for (BaseScopableProcessorExtension extension : servicesMap.values()) {
+                beans.put(extension.getExtensionName(), extension);
+            }
             engineConfiguration.setBeans(beans);
             /** Listeners and handlers */
             List<BpmnParseHandler> parseHandlers = new ArrayList<>(2);
