@@ -116,11 +116,8 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
     }
 
     private WorkflowTask updateTaskAsSystem(String taskId, Map<QName, Serializable> properties, Map<QName, List<NodeRef>> add, Map<QName, List<NodeRef>> remove) {
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<WorkflowTask>() {
-            public WorkflowTask doWork() throws Exception {
-                WorkflowTask workflowTask = workflowService.updateTask(taskId, properties, add, remove);
-                return workflowTask;
-            }
+        return AuthenticationUtil.runAsSystem(() -> {
+            return workflowService.updateTask(taskId, properties, add, remove);
         });
     }
 
