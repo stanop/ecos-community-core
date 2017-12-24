@@ -23,7 +23,14 @@
 	
 	<!-- ko ifnot: inlineEditVisibility -->
 		<div class="block-region block-region-input">
-			<@views.renderTemplate "view" />
+		    <#assign defaultTemplate="" />
+            <#list viewScope.field.regions as region>
+                <#if region.name == "input" && region.template?? && region.template?contains("view-table")>
+                    <@views.renderElement region />
+                    <#assign defaultTemplate = region.template />
+                </#if>
+            </#list>
+            <#if !defaultTemplate?has_content><@views.renderTemplate "view" /></#if>
 		</div>
 	<!-- /ko -->
 
