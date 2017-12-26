@@ -268,7 +268,7 @@ ko.components.register("number", {
         });
     },
     template:
-       '<input type="number" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
+       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
 // ---------------

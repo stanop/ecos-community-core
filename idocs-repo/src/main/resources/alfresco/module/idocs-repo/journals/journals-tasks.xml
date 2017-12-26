@@ -45,6 +45,7 @@
             <header key="wfm:documentType" default="true">
                 <option name="formatter">typeName('shortQName')</option>
             </header>
+            <header key="wfm:documentKind"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
@@ -88,6 +89,7 @@
             <header key="wfm:documentType" default="true">
                 <option name="formatter">typeName('shortQName')</option>
             </header>
+            <header key="wfm:documentKind"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
@@ -123,6 +125,7 @@
             <header key="wfm:documentType" default="true">
                 <option name="formatter">typeName('shortQName')</option>
             </header>
+            <header key="wfm:documentKind"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:completionDate" default="true" />
@@ -167,6 +170,7 @@
             <header key="wfm:documentType" default="true">
                 <option name="formatter">typeName('shortQName')</option>
             </header>
+            <header key="wfm:documentKind"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
@@ -213,6 +217,7 @@
             <header key="wfm:documentType" default="true">
                 <option name="formatter">typeName('shortQName')</option>
             </header>
+            <header key="wfm:documentKind"/>
             <header key="bpm:startDate"/>
             <header key="bpm:dueDate" default="true"/>
             <header key="bpm:comment"/>
