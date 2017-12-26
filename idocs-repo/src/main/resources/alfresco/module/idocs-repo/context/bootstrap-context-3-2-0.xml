@@ -159,7 +159,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.general-case-categories" parent="idocs.import-spaces.3-2-0">
+    <bean id="idocs.module-component.general-case-categories2" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="general-case-categories" />
         <property name="description" value="general-case-categories" />
         <property name="bootstrapView">
