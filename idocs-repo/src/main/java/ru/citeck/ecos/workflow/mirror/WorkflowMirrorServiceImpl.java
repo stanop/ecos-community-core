@@ -43,18 +43,21 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 import ru.citeck.ecos.utils.NodeUtils;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService {
+
     private static final String QUERY_TASK_BY_ID = "TYPE:\"bpm:task\" AND =cm\\:name:\"%s\"";
     private static final String QUERY_TASKS_BY_WORKFLOW_ID = "TYPE:\"bpm:task\" AND =wfm\\:workflowId:\"%s\"";
     public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
@@ -196,6 +199,12 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (document != null) {
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
+
+                NodeRef documentKind = getDocumentKind(document);
+                if (documentKind != null) {
+                    nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
+                }
+
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
             }
 
@@ -336,6 +345,17 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             String initiatorName = (String) nodeService.getProperty(packageNode, ContentModel.PROP_CREATOR);
             if (initiatorName != null) {
                 return personService.getPerson(initiatorName);
+            }
+        }
+
+        return null;
+    }
+
+    private NodeRef getDocumentKind(NodeRef documentRef) {
+        if (documentRef != null && nodeService.exists(documentRef)) {
+            Serializable documentKind = nodeService.getProperty(documentRef, ClassificationModel.PROP_DOCUMENT_KIND);
+            if (documentKind != null) {
+                return (NodeRef) documentKind;
             }
         }
 

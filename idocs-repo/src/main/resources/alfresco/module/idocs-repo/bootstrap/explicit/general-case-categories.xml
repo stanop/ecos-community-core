@@ -16,6 +16,7 @@
             </cm:title>
             <tk:appliedType>{http://www.citeck.ru/model/content/ecos/1.0}document</tk:appliedType>
             <tk:appliedAspects>{http://www.citeck.ru/model/icase/1.0}case</tk:appliedAspects>
+            <tk:journalType>ecos-documents</tk:journalType>
         </view:properties>
 
         <cm:subcategories>
