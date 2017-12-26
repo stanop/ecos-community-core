@@ -104,7 +104,7 @@
         <property name="messageService" ref="messageService" />
         <property name="workflowNames">
             <set>
-                <value>flowable$confirm</value>
+                <value>activiti$confirm</value>
             </set>
         </property>
         <property name="taskNames">

@@ -109,7 +109,7 @@
         </property>
     </bean>
 
-    <bean id="orders.categoryBootstrap" parent="orders.import-spaces">
+    <bean id="orders.categoryBootstrap2" parent="orders.import-spaces">
         <property name="name" value="orders-doctype-categories" />
         <property name="description" value="Doctype categories" />
         <property name="bootstrapViews">
@@ -121,6 +121,14 @@
                     <prop key="messages">alfresco/module/orders-repo/bootstrap/doctype-categories</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="orders.categoryBootstrap" parent="orders.import-spaces">
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.categoryBootstrap2" />
             </list>
         </property>
     </bean>

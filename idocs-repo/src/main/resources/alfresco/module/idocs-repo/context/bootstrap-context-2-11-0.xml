@@ -125,7 +125,7 @@
         </property>
     </bean>
 
-	<bean id="idocs.module-component.document-categories" parent="idocs.import-spaces.2-11-0">
+	<bean id="idocs.module-component.document-categories2" parent="idocs.import-spaces.2-11-0">
 		<property name="name" value="document-categories" />
 		<property name="description" value="Document categories" />
 		<property name="dependsOn">
@@ -142,6 +142,14 @@
 					<prop key="messages">alfresco/module/idocs-repo/messages/document-categories</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.document-categories" parent="idocs.import-spaces.2-11-0">
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.document-categories2" />
 			</list>
 		</property>
 	</bean>

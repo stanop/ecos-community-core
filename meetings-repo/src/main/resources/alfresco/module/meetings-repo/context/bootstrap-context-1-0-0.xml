@@ -2,245 +2,245 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
-	<bean id="meetings.module-component.meetings-site" parent="meetings.import-spaces">
-		<property name="name" value="meetings-site" />
-		<property name="description" value="Meetengs Site" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="path">/app:company_home/st:sites</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/site/meetings-site</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.meetings-site" parent="meetings.import-spaces">
+        <property name="name" value="meetings-site" />
+        <property name="description" value="Meetengs Site" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/site/meetings-site</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
-	<bean id="meetings.module-component.templates-folder" parent="meetings.import-spaces">
-		<property name="name" value="meeting-templates-folder" />
-		<property name="description" value="Meeteng Templates Folder" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="meetings.module-component.meetings-site" />
-			</list>
-		</property>
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="path">/app:company_home/st:sites/cm:meetings</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/folders/templates-folder</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.templates-folder" parent="meetings.import-spaces">
+        <property name="name" value="meeting-templates-folder" />
+        <property name="description" value="Meeteng Templates Folder" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="meetings.module-component.meetings-site" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:meetings</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/folders/templates-folder</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
-	<bean id="meetings.module-component.meeting-case-template" parent="meetings.import-spaces">
-		<property name="name" value="meeting-case-template" />
-		<property name="description" value="Meeteng Case Template" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="meetings.module-component.templates-folder" />
-				<ref bean="meetings.module-component.case-agenda-config" />
-				<ref bean="meetings.module-component.case-protocol-config" />
-				<ref bean="meetings.module-component.case-questions-config" />
-			</list>
-		</property>
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="path">/app:company_home/st:sites/cm:meetings/cm:templates</prop>
-					<prop key="location">alfresco/module/meetings-repo/bootstrap/case-templates.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/case-templates</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.meeting-case-template" parent="meetings.import-spaces">
+        <property name="name" value="meeting-case-template" />
+        <property name="description" value="Meeteng Case Template" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="meetings.module-component.templates-folder" />
+                <ref bean="meetings.module-component.case-agenda-config" />
+                <ref bean="meetings.module-component.case-protocol-config" />
+                <ref bean="meetings.module-component.case-questions-config" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:meetings/cm:templates</prop>
+                    <prop key="location">alfresco/module/meetings-repo/bootstrap/case-templates.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/case-templates</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
 
-	<bean id="meetings.module-component.meetings-journal" parent="meetings.import-spaces">
-		<property name="name" value="meeting-journal" />
-		<property name="description" value="Meeting Journal" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="meetings.module-component.meetings-site" />
-			</list>
-		</property>
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="path">/app:company_home/st:sites/cm:meetings/cm:documentLibrary</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion2.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
-					<prop key="location">alfresco/module/meetings-repo/bootstrap/journals/journal-in-list.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.meetings-journal" parent="meetings.import-spaces">
+        <property name="name" value="meeting-journal" />
+        <property name="description" value="Meeting Journal" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="meetings.module-component.meetings-site" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:meetings/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion2.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:meetings</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-list.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/meetings-repo/bootstrap/journals/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/journals/meetings</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
-	<bean id="meetings.module-component.case-agenda-config" parent="meetings.import-spaces">
-		<property name="name" value="case-agenda-config" />
-		<property name="description" value="case-agenda-config" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="idocs.module-component.journal-case-element-configs" />
-			</list>
-		</property>
-		<property name="bootstrapView">
-			<props>
-				<prop key="uuidBinding">UPDATE_EXISTING</prop>
-				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
-				<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config-meetings-agenda.xml</prop>
-				<prop key="messages">alfresco/module/meetings-repo/bootstrap/cases/agenda</prop>
-				<prop key="encoding">UTF-8</prop>
-			</props>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.case-agenda-config" parent="meetings.import-spaces">
+        <property name="name" value="case-agenda-config" />
+        <property name="description" value="case-agenda-config" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journal-case-element-configs" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+                <prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config-meetings-agenda.xml</prop>
+                <prop key="messages">alfresco/module/meetings-repo/bootstrap/cases/agenda</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
 
-	<bean id="meetings.module-component.case-protocol-config" parent="meetings.import-spaces">
-		<property name="name" value="case-protocol-config" />
-		<property name="description" value="case-protocol-config" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="idocs.module-component.journal-case-element-configs" />
-			</list>
-		</property>
-		<property name="bootstrapView">
-			<props>
-				<prop key="uuidBinding">UPDATE_EXISTING</prop>
-				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
-				<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config-meetings-protocol.xml</prop>
-				<prop key="messages">alfresco/module/meetings-repo/bootstrap/cases/protocol</prop>
-				<prop key="encoding">UTF-8</prop>
-			</props>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.case-protocol-config" parent="meetings.import-spaces">
+        <property name="name" value="case-protocol-config" />
+        <property name="description" value="case-protocol-config" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journal-case-element-configs" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+                <prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config-meetings-protocol.xml</prop>
+                <prop key="messages">alfresco/module/meetings-repo/bootstrap/cases/protocol</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
 
-	<bean id="meetings.module-component.case-questions-config" parent="meetings.import-spaces">
-		<property name="name" value="case-questions-config" />
-		<property name="description" value="case-questions-config" />
-		<property name="sinceVersion" value="0.0.1" />
-		<property name="appliesFromVersion" value="0.0.1" />
-		<property name="dependsOn">
-			<list>
-				<ref bean="idocs.module-component.journal-case-element-configs" />
-			</list>
-		</property>
-		<property name="bootstrapView">
-			<props>
-				<prop key="uuidBinding">UPDATE_EXISTING</prop>
-				<prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
-				<prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config-meetings-questions.xml</prop>
-				<prop key="messages">alfresco/module/meetings-repo/bootstrap/cases/questions</prop>
-				<prop key="encoding">UTF-8</prop>
-			</props>
-		</property>
-	</bean>
-	
-	<bean id="meetings.module-component.meeting-cardlets" parent="meetings.import-spaces">
-		<property name="name" value="meeting-cardlets" />
-		<property name="description" value="meeting-cardlets" />
-		
-		<!-- <property name="executeOnceOnly" value="false" /> -->
-		
-		<property name="bootstrapViews">
-			<list>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/tasks</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/metadata</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/agenda</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/protocol</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/documents</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/active-workflows</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/inactive-workflows</prop>
-				</props>
-				<props>
-					<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-					<prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/comments</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
+    <bean id="meetings.module-component.case-questions-config" parent="meetings.import-spaces">
+        <property name="name" value="case-questions-config" />
+        <property name="description" value="case-questions-config" />
+        <property name="sinceVersion" value="0.0.1" />
+        <property name="appliesFromVersion" value="0.0.1" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journal-case-element-configs" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:case-element-configs</prop>
+                <prop key="location">alfresco/templates/bootstrap/ru/citeck/cases/assoc-config-meetings-questions.xml</prop>
+                <prop key="messages">alfresco/module/meetings-repo/bootstrap/cases/questions</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
 
-    <bean id="meetings.module-component.doctype-categories" parent="meetings.import-spaces">
+    <bean id="meetings.module-component.meeting-cardlets" parent="meetings.import-spaces">
+        <property name="name" value="meeting-cardlets" />
+        <property name="description" value="meeting-cardlets" />
+
+        <!-- <property name="executeOnceOnly" value="false" /> -->
+
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/tasks</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/metadata</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/agenda</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/protocol</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/documents</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/active-workflows</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/inactive-workflows</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/meetings-repo/bootstrap/cardlets/meeting/comments</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="meetings.module-component.doctype-categories2" parent="meetings.import-spaces">
         <property name="name" value="doctype-categories" />
         <property name="description" value="Doctype categories" />
         <property name="bootstrapViews">
@@ -252,6 +252,14 @@
                     <prop key="messages">alfresco/module/meetings-repo/bootstrap/doctype-categories</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="meetings.module-component.doctype-categories" parent="meetings.import-spaces">
+        <property name="dependsOn">
+            <list>
+                <ref bean="meetings.module-component.doctype-categories2" />
             </list>
         </property>
     </bean>

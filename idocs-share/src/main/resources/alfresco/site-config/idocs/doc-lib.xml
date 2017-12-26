@@ -101,7 +101,7 @@
 
             <!-- Start confirm workflow -->
             <action id="document-start-confirm" type="link" icon="document-assign-workflow" label="actions.document.start-confirm">
-                <param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=flowable$confirm</param>
+                <param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$confirm</param>
                 <permissions>
                     <permission allow="true">Write</permission>
                 </permissions>
