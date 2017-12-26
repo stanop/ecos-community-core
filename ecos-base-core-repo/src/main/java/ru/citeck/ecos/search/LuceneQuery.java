@@ -575,32 +575,32 @@ public class LuceneQuery implements SearchQueryBuilder {
             buildRangeTerm(field, value, inclusive, false);
         }
 
+        private void appendQuery(String value) {
+            if (shouldAppendQuery) {
+                query.append(value);
+            }
+            queryElement.setQueryPart(queryElement.getQueryPart() + value);
+        }
+
         private void buildNullCheckTerm(String value, boolean isNull) {
-            buildEqualsTerm(isNull ? "ISNULL" : "ISNOTNULL", getPropertyName(value));
+            String propName = getPropertyName(value);
+            if (isNull) {
+                appendQuery(OPENING_ROUND_BRACKET);
+                buildEqualsTerm("ISNULL", propName);
+                appendQuery(OR);
+                buildEqualsTerm("ISUNSET", propName);
+                appendQuery(CLOSING_ROUND_BRACKET);
+            } else {
+                buildEqualsTerm("ISNOTNULL", propName);
+            }
         }
 
         private void buildEmptyCheckTerm(String field, boolean isEmpty) {
-            if (shouldAppendQuery) {
-                query.append(OPENING_ROUND_BRACKET);
-            }
-            queryElement.setQueryPart(queryElement.getQueryPart() + OPENING_ROUND_BRACKET);
+            appendQuery(OPENING_ROUND_BRACKET);
             buildNullCheckTerm(field, isEmpty);
-            if (isEmpty) {
-                if (shouldAppendQuery) {
-                    query.append(OR);
-                }
-                queryElement.setQueryPart(queryElement.getQueryPart() + OR);
-            } else {
-                if (shouldAppendQuery) {
-                    query.append(AND).append(NOT);
-                }
-                queryElement.setQueryPart(queryElement.getQueryPart() + AND + NOT);
-            }
+            appendQuery(isEmpty ? OR : AND + NOT);
             buildEqualsTerm(field, "");
-            if (shouldAppendQuery) {
-                query.append(CLOSING_ROUND_BRACKET);
-            }
-            queryElement.setQueryPart(queryElement.getQueryPart() + CLOSING_ROUND_BRACKET);
+            appendQuery(CLOSING_ROUND_BRACKET);
         }
 
         protected String getAssocIndexProp(String assocName) {
