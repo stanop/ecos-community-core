@@ -9,13 +9,45 @@
         <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
     </imports>
 
-    <view class="cm:person" kind="2-column">
+    <view class="cm:person">
+        <param name="customClass">user-profile-custom-container</param>
         <param name="inlineEdit">false</param>
         <param name="invariantsRuntimeCache">false</param>
         <param name="preloadInvariants">true</param>
 
-        <view id="person-go-to-edit-mode" template="person-edit-btn">
+        <!--<view id="person-go-to-edit-mode" template="person-edit-btn">
             <param name="preloadInvariants">true</param>
+        </view>-->
+
+        <view id="cm_person_header" template="wide">
+            <param name="customClass">user-profile-header</param>
+            <view id="cm_person_header--ecos_photo" template="wide">
+                <param name="customClass">user-profile-header__column user-profile-header__column--photo</param>
+                <view id="cm_person_header--ecos_photo--inner">
+                    <field prop="ecos:photo">
+                        <region name="label" template="none"/>
+                        <region name="input" template="img">
+                            <param name="width">90</param>
+                            <param name="alt">This is user's photo</param>
+                        </region>
+                    </field>
+                </view>
+            </view>
+
+            <view id="cm_person_header--fio--outer" template="wide">
+                <param name="customClass">user-profile-header__column user-profile-header__column--fio</param>
+                <view id="cm_person_header--fio" template="blockset">
+                    <field prop="cm:firstName" template="block">
+                        <region name="label" template="none"/>
+                    </field>
+                    <field prop="cm:middleName" template="block">
+                        <region name="label" template="none"/>
+                    </field>
+                    <field prop="cm:lastName" template="block">
+                        <region name="label" template="none"/>
+                    </field>
+                </view>
+            </view>
         </view>
 
         <view id="cm_person_general_info">
@@ -26,62 +58,71 @@
                 <invariant on="protected" language="explicit">true</invariant>
             </field>
 
-            <view id="cm_person_general_info_ecos_photo">
-                <field prop="ecos:photo">
-                    <region name="input" template="img">
-                        <param name="width">250</param>
-                        <!--<param name="height">250</param>-->
-                        <param name="alt">This is user's photo</param>
+            <view template="wide">
+                <view id="cm_person_general_info--fio" template="blockset">
+                    <field prop="cm:firstName" template="block"/>
+                    <field prop="cm:middleName" template="block"/>
+                    <field prop="cm:lastName" template="block"/>
+                </view>
+            </view>
+
+
+            <field prop="idocs:nameInGenitiveCase"/>
+
+            <view id="cm_person_general_info__last_sub_group" kind="2-column">
+                <field prop="ecos:birthDate"/>
+                <field prop="ecos:sex">
+                    <region name="input" template="select"/>
+                </field>
+                <field prop="ecos:city"/>
+                <field prop="cm:organization"/>
+                <field prop="cm:jobtitle"/>
+            </view>
+
+        </view>
+
+        <view id="cm_person_contacts">
+            <param name="preloadInvariants">true</param>
+            <param name="title">Контакты</param>
+            <view id="cm_person_contacts--phones" kind="2-column">
+                <field prop="ecos:phoneWorking"/>
+                <field prop="ecos:phoneInternal"/>
+                <field prop="cm:mobile" id="mob-123">
+                    <region name="label" template="label">
+                        <param name="key">Телефон мобильный</param>
                     </region>
                 </field>
             </view>
 
-            <field prop="cm:firstName"/>
-            <field prop="cm:lastName"/>
-            <field prop="cm:middleName"/>
-            <field prop="idocs:nameInGenitiveCase"/>
-            <field prop="ecos:birthDate"/>
-            <field prop="ecos:sex">
-                <region name="input" template="select"/>
-            </field>
-            <field prop="ecos:city"/>
-            <field prop="cm:organization"/>
-            <field prop="cm:jobtitle"/>
+            <field prop="cm:location" />
+
+            <view id="cm_person_contacts--el" kind="2-column">
+                <field prop="cm:skype"/>
+                <field prop="cm:email">
+                    <invariant on="valid" language="javascript">
+                        /.+@.+\..+/.test(value)
+                    </invariant>
+                </field>
+            </view>
+
         </view>
 
-        <view id="cm_person_phones">
-            <param name="preloadInvariants">true</param>
-            <param name="title">Телефоны</param>
-            <field prop="ecos:phoneWorking" />
-            <field prop="ecos:phoneInternal" />
-            <field prop="cm:mobile" id="mob-123">
-                <region name="label" template="label">
-                    <param name="title">Телефон мобильный</param>
-                </region>
-            </field>
-        </view>
-
-        <view id="cm_person_other_info">
+        <view id="cm_person_other_info" kind="2-column">
             <param name="preloadInvariants">true</param>
             <param name="title">Прочее</param>
-            <field prop="cm:location"/>
-            <field prop="cm:skype"/>
-            <field prop="cm:email">
-                <invariant on="valid" language="javascript">
-                    /.+@.+\..+/.test(value)
-                </invariant>
-            </field>
+            <field prop="cm:userStatus" />
+            <field prop="org:preset" />
             <view class="deputy:availability">
                 <param name="preloadInvariants">true</param>
-                <field prop="deputy:available">
+                <field prop="deputy:available" template="row">
                     <invariant on="mandatory" language="explicit">true</invariant>
                     <invariant on="default" language="explicit">true</invariant>
                 </field>
             </view>
+        </view>
 
-            <field prop="cm:userStatus"/>
-            <field prop="org:preset"/>
-
+        <view id="cm_person_user_groups" kind="2-column">
+            <param name="title">Группы</param>
             <field prop="cm:userName" id="user-groups">
                 <region name="label" template="label">
                     <param name="key">Группы пользователя</param>

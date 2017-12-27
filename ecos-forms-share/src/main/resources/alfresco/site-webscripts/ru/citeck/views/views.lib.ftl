@@ -4,6 +4,13 @@
 </#macro>
 
 <#macro renderElement element>
+	<#-- Этот код решает баг - при <view kind="3-column"> (mode="view") двоится вывод значений - выводятся с template-text и template-default
+		 поскольку этот модуль одна из основных FTL-шаблонов, пока закомментировал этот код
+	-->
+	<#--<#if !element.template?has_content && viewScope.view.mode == "view">
+		<#return/>
+	</#if>-->
+
 	<#assign template = element.template!"default" />
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
@@ -40,7 +47,14 @@
 		}) -->
 	</#if>
 
-	<div class="form-${element.type} template-${template}"
+	<#-- custom class name for div -->
+	<#if viewScope.view.params.customClass??>
+		<#assign customClass = viewScope.view.params.customClass!"" />
+	<#else>
+		<#assign customClass = "" />
+	</#if>
+
+	<div class="form-${element.type} template-${template} ${customClass}"
 		<#if element.attribute??>
 			data-bind="css: {
 				invalid: invalid, 
@@ -273,6 +287,7 @@
 <#macro nodeViewStyles>
 	<@link rel="stylesheet" href="${url.context}/res/citeck/components/invariants/invariants.css" group="node-view" />
 	<@link rel="stylesheet" href="${url.context}/res/yui/calendar/assets/calendar.css" group="node-view"/>
+	<@link rel="stylesheet" href="${url.context}/res/citeck/components/form/controls/user-profile.css" group="node-view"/>
 </#macro>
 
 <#macro nodeViewScripts>

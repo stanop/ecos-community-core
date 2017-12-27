@@ -8,6 +8,7 @@
 <!-- ko foreach: multipleValues -->
 <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
 <span id="${span_id}">
+    <ol></ol>
     <span id=${span_id + "_data"} data-bind="text: $parent.getValueTitle($data)" ></span>
     <script type="text/javascript">//<![CDATA[
     (function() {
@@ -16,6 +17,8 @@
             if (uName) {
                 clearInterval(vTimer);
                 var url = Alfresco.constants.PROXY_URI + "/api/people/"+ uName +"?groups=true";
+                $('#${span_id + "_data"}').remove();
+                $('#user-groups-list-spancm_userName').closest('.form-field').css('width','initial');
 
                 Alfresco.util.Ajax.request({
                     url: url,
@@ -23,8 +26,9 @@
                         scope: this,
                         fn: function(response) {
                             if (response.json) {
-                                var groups = response.json["groups"].map(function (item) {return item.displayName}).join(', ');
-                                $('#${span_id}').text(groups);
+                                response.json["groups"].map(function (item) {
+                                    $('#${span_id}>ol').append('<li>'+item.displayName+'</li>');
+                                })
                             }
                         }
                     },
