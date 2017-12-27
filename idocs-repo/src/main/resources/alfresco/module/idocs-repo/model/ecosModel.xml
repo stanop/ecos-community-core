@@ -37,7 +37,6 @@
             <parent>dms:doc</parent>
             <mandatory-aspects>
                 <aspect>ecos:hasResponsible</aspect>
-                <aspect>ecos:documentType</aspect>
                 <aspect>idocs:hasNote</aspect>
                 <aspect>ecos:hasNumberAndDate</aspect>
                 <aspect>idocs:hasLegalEntity</aspect>

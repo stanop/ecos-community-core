@@ -13,7 +13,9 @@
         <views mode="create" kind="3-column"/>
         <views mode="edit" kind="3-column"/>
         <view id="type-kind-view">
-            <field prop="tk:type" template="none"/>
+            <field prop="tk:type" template="none">
+                <invariant on="value" language="explicit">workspace://SpacesStore/cat-doc-type-general-case</invariant>
+            </field>
             <field prop="tk:kind">
                 <region name="input" template="autocomplete">
                     <param name="searchScript">criteria-search</param>
