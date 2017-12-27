@@ -570,7 +570,6 @@
                 successCallback: {
                     fn: function(response) {
                         YAHOO.Bubbling.fire("metadataRefresh");
-                        console.log('--------> metadataRefresh (at the beginning)');
                         // get right section - block were we will show the views
                         var showArea = $('#' + listId);
 
