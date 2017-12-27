@@ -1836,7 +1836,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             var map = this.attributeSetMap(),
                 object =  map ? map.attributeSets[id] || map.attributes[id] : null,
                 rootSet = this.attributeSet(),
-                set = object.set;
+                set = object ? object.set : null;
 
             if (set) {
                 if (set == rootSet) return set;
