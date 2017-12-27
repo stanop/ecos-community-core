@@ -41,28 +41,28 @@ import ru.citeck.ecos.utils.RepoUtils;
 
 public class DynamicClassificationBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy
 {
-    
+
     private NodeService nodeService;
     private DictionaryService dictionaryService;
     private PolicyComponent policyComponent;
     private int order = 50;
-    
+
     public void init() {
-        policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, ClassificationModel.ASPECT_DOCUMENT_TYPE_KIND, 
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, ClassificationModel.ASPECT_DOCUMENT_TYPE_KIND,
 //                new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order));
                 new JavaBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT));
     }
-    
+
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        
+
         if(!nodeService.exists(nodeRef)) return;
-        
+
         NodeRef typeAfter = (NodeRef) after.get(ClassificationModel.PROP_DOCUMENT_TYPE);
         NodeRef kindAfter = (NodeRef) after.get(ClassificationModel.PROP_DOCUMENT_KIND);
-        
+
         // update type
-        
+
         QName typeToApply = null;
         if(kindAfter != null) {
             typeToApply = RepoUtils.getProperty(kindAfter, ClassificationModel.PROP_APPLIED_TYPE, nodeService);
@@ -70,21 +70,16 @@ public class DynamicClassificationBehaviour implements NodeServicePolicies.OnUpd
         if(typeToApply == null && typeAfter != null) {
             typeToApply = RepoUtils.getProperty(typeAfter, ClassificationModel.PROP_APPLIED_TYPE, nodeService);
         }
-        
-        if(typeToApply != null) {
+
+        if (typeToApply != null) {
             QName appliedType = nodeService.getType(nodeRef);
-            if(!typeToApply.equals(appliedType)) {
-                
-                if(!dictionaryService.isSubClass(typeToApply, appliedType)) {
-                    throw new IllegalArgumentException("Can not change type of node " + nodeRef + " from " + appliedType + " to " + typeToApply + ", as it is not subtype");
-                }
-                
+            if (!typeToApply.equals(appliedType) && dictionaryService.isSubClass(typeToApply, appliedType)) {
                 nodeService.setType(nodeRef, typeToApply);
             }
         }
-        
+
         // update aspects
-        
+
         Set<QName> aspectsToApply = new HashSet<>();
         if(kindAfter != null) {
             List<QName> kindAspects = RepoUtils.getProperty(kindAfter, ClassificationModel.PROP_APPLIED_ASPECTS, nodeService);
@@ -98,18 +93,18 @@ public class DynamicClassificationBehaviour implements NodeServicePolicies.OnUpd
                 aspectsToApply.addAll(typeAspects);
             }
         }
-        
+
         if(!aspectsToApply.isEmpty()) {
             Set<QName> appliedAspects = nodeService.getAspects(nodeRef);
-            
+
             @SuppressWarnings("unchecked")
             Collection<QName> newAspects = CollectionUtils.subtract(aspectsToApply, appliedAspects);
-            
+
             for(QName aspect : newAspects) {
                 nodeService.addAspect(nodeRef, aspect, null);
             }
         }
-        
+
     }
 
     public void setNodeService(NodeService nodeService) {

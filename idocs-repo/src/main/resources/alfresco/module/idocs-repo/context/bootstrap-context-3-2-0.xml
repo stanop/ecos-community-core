@@ -172,4 +172,26 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.update-category-document-type" parent="idocs.import-scripts.3-2-0">
+        <property name="name" value="set-category-document-type-applied-type-and-journal-type"/>
+        <property name="description" value="set-category-document-type-applied-type-and-journal-type"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.document-categories"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="workspace://SpacesStore/category-document-type" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:appliedType"><null/></entry>
+                        <entry key="tk:journalType"><null/></entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
 </beans>
