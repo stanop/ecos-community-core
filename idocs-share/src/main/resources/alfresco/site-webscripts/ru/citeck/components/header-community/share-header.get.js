@@ -83,18 +83,44 @@ userMenuItems.push({
 });
 
 if (user.capabilities.isMutable) {
-  userMenuItems.push({
-    id: "HEADER_USER_MENU_PASSWORD",
-    name: "js/citeck/header/citeckMenuItem",
-    config:
-    {
-      id: "HEADER_USER_MENU_PASSWORD",
-      label: "header.change-password.label",
-      iconImage: "/share/res/components/images/header/change-password.png",
-      targetUrl: "user/" + encodeURIComponent(user.name) + "/change-password"
-    }
-  });
+    userMenuItems.push({
+        id: "HEADER_USER_MENU_PASSWORD",
+        name: "js/citeck/header/citeckMenuItem",
+        config:
+            {
+                id: "HEADER_USER_MENU_PASSWORD",
+                label: "header.change-password.label",
+                iconImage: "/share/res/components/images/header/change-password.png",
+                targetUrl: "user/" + encodeURIComponent(user.name) + "/change-password"
+            }
+    });
 }
+
+userMenuItems.push({
+    id: "HEADER_USER_MENU_FEEDBACK",
+    name: "js/citeck/menus/citeckMenuItem",
+    config: {
+        id: "HEADER_USER_MENU_FEEDBACK",
+        label: "header.feedback.label",
+        iconImage: "/share/res/components/images/header/default-error-report-16.png",
+        targetUrl: "https://www.citeck.ru/feedback",
+        targetUrlType: "FULL_PATH",
+        targetUrlLocation: "NEW"
+    }
+});
+
+userMenuItems.push({
+    id: "HEADER_USER_MENU_REPORTISSUE",
+    name: "js/citeck/menus/citeckMenuItem",
+    config: {
+        id: "HEADER_USER_MENU_REPORTISSUE",
+        label: "header.reportIssue.label",
+        iconImage: "/share/res/components/images/header/default-feedback-16.png",
+        targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck EcoS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
+        targetUrlType: "FULL_PATH",
+        targetUrlLocation: "NEW"
+    }
+});
 
 if (!context.externalAuthentication) {
   var logoutItemConfig = {
