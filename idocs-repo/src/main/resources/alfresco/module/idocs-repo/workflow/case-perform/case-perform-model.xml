@@ -73,6 +73,7 @@
             <mandatory-aspects>
                 <aspect>wfcp:basePerformData</aspect>
                 <aspect>cwf:optionalTaskAspect</aspect>
+                <aspect>cwf:hasTaskTitle</aspect>
             </mandatory-aspects>
         </type>
 
