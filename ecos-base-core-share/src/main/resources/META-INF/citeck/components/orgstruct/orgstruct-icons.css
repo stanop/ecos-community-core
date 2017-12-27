@@ -131,7 +131,9 @@ button.addDeputy
    background-image: url(icons/user-deputy-add-16.png);
 }
 
-button.editItem
+button.editItem,
+button.editItemInplaced,
+button.viewItem
 {
    background-image: url(icons/edit-16.png);
 }

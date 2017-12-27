@@ -160,6 +160,8 @@
             $buttonSubscribe("addDeputy", this.onAddDeputy, this, ids);
             $buttonSubscribe("addAssistant", this.onAddAssistant, this, ids);
             $buttonSubscribe("editItem", this.onEditItem, this, ids);
+            $buttonSubscribe("editItemInplaced", this.onEditItemInplaced, this, ids);
+            $buttonSubscribe("viewItem", this.onViewItem, this, ids);
             $buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
             $buttonSubscribe("search", this.onSearch, this, ids);
             $buttonSubscribe("resetSearch", this.onResetSearch, this, ids);
@@ -374,6 +376,10 @@
             var formId = args.type;
             var itemId = args.item;
             var item = this.model.getItem(itemId);
+
+            // clear junc created by onViewItem
+            this._clearViewJunk(item);
+
             var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
             // this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
@@ -391,19 +397,53 @@
         onViewItem: function(args) {
             console.log('-->> onViewItem');
 
-            /* RUN "Citeck.forms.dialog"
-                args.mode = 'view';
-                args.item = args.node.data._item_name_;
-                this.onEditItem(args);
-                return;
-            */
+            var htmlid, formId, itemId, item;
 
-            var formId = 'orgstruct';
-            var itemId = args.node.data._item_name_;
-            var item = this.model.getItem(itemId);
-            var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
+            if (args.node) {
+                formId = 'orgstruct';
+                itemId = args.node.data._item_name_;
+            } else {
+                formId = args.type;
+                itemId = args.item;
+            }
+            item = this.model.getItem(itemId);
+
+            // clear junc created by onViewItem
+            this._clearViewJunk(item);
+
+            htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
+
             this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id/*, mode: 'edit'*/});
+            this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
+        },
+
+        /**
+         * Event handler - tree item was clicked.
+         * Show EditItemInplaced form
+         */
+        onEditItemInplaced: function(args) {
+            console.log('-->> onEditItemInplaced');
+
+            var htmlid, mode, formId, itemId, item;
+
+            formId = 'orgstruct';
+            if (args.node) {
+                itemId = args.node.data._item_name_;
+            } else {
+                mode = args.mode;
+                formId = args.type;
+                itemId = args.item;
+            }
+            item = this.model.getItem(itemId);
+
+            // clear junc created by onViewItem
+            this._clearViewJunk(item);
+
+            htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
+
+            itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: 'edit'});
             this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
         },
 

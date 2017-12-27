@@ -123,7 +123,8 @@
 						"GROUP-group": [ "convertToBranch", "convertToRole", "editItem", "deleteItem" ],
 						"GROUP-branch": [ "convertToGroup", "editItem", "deleteItem" ],
 						"GROUP-role": [ "convertToGroup", "editItem", "deleteItem" ],
-						"USER": [ "editItem", "deleteItem" ]
+						// "USER": [ "editItem", "deleteItem" ]
+                        "USER": [ "editItemInplaced", "deleteItem"/*, "viewItem"*/ ]
 					},
 				},
 				list: {
