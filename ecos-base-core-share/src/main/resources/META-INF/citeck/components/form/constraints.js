@@ -69,7 +69,7 @@
         YAHOO.Bubbling.on("formContainerDestroyed", onFormContainerDestroyed);
 
     };
-    
+
     // element display conditions map
     // there can be only one condition for one element
     var displayConditions = {};
@@ -113,11 +113,11 @@
         valueExpressions[id] = expression;
         Citeck.forms.onChange(fields, Citeck.forms.updateValue, id);
     };
-    
+
     Citeck.forms.updateValue = function(id) {
         var expression = valueExpressions[id],
             input = Dom.get(id);
-        if(!input || !expression) 
+        if(!input || !expression)
             return;
         try {
             input.value = Citeck.forms.evaluate(id, expression);
@@ -125,14 +125,14 @@
             // do nothing
         }
     };
-    
+
     /**
      * It evaluates specified expression in the form context of the element
      * specified by id.
-     * 
+     *
      * This function can throws an exception, if expression can not be
      * evaluated.
-     * 
+     *
      * @param id - element id, it is used to find out form context
      * @param expression - input expression
      * @returns eval result or null, It returns null if form context is not found.
@@ -262,7 +262,7 @@
 
             dataObj[paramName] = itemId;
             for(var name in params) {
-                if(params[name] != null) 
+                if(params[name] != null)
                     dataObj['param_' + name] = params[name];
             }
 
@@ -282,7 +282,7 @@
                                 if (submitCallback instanceof Function)
                                     submitCallback(persistedNode);
 
-                                YAHOO.Bubbling.fire("object-was-created", { 
+                                YAHOO.Bubbling.fire("object-was-created", {
                                     fieldId: node.name || params.fieldId,
                                     value: persistedNode
                                 });
@@ -292,7 +292,7 @@
                         });
 
                         YAHOO.Bubbling.on("node-view-cancel", function(layer, args) {
-                           var runtime = args[1].runtime;
+                            var runtime = args[1].runtime;
                             if(runtime.key() != viewId) return;
 
                             if (cancelCallback instanceof Function)
@@ -327,7 +327,7 @@
             }}
         });
     };
-    
+
     Citeck.forms.dialog = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
@@ -335,7 +335,11 @@
         if(Citeck.utils.isNodeRef(itemId)) {
             paramName = 'nodeRef';
             itemKind = 'node';
-            mode = 'edit';
+            if (params.mode === 'view') {
+                mode = 'view';
+            } else {
+                mode = 'edit';
+            }
         } else {
             paramName = 'type';
             itemKind = 'type';
@@ -397,7 +401,7 @@
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
                             if(runtime.key() != viewId) return;
-                            
+
                             var node = args[1].node;
 
                             // save node
@@ -419,17 +423,17 @@
 
                         YAHOO.Bubbling.on("node-view-submit", onSubmit);
                         YAHOO.Bubbling.on("node-view-cancel", onCancel);
-                        
+
                         panel.subscribe("hide", function() {
                             // unsubscribe
                             YAHOO.Bubbling.unsubscribe("node-view-submit", onSubmit);
                             YAHOO.Bubbling.unsubscribe("node-view-cancel", onCancel);
-                            
+
                             // destory panel
                             _.defer(_.bind(panel.destroy, panel));
 
                             //scroll to parent element
-                           if (clientHeight > document.documentElement.clientHeight) {
+                            if (clientHeight > document.documentElement.clientHeight) {
                                 $("html, body").animate({ scrollTop: panel.element.offsetTop - document.documentElement.clientHeight * 0.2 }, 600);
                             }
 
@@ -457,13 +461,13 @@
 
         var oldDialog = function() {
             var templateUrl = YAHOO.lang.substitute(Alfresco.constants.URL_SERVICECONTEXT + "components/form?itemKind={itemKind}&itemId={itemId}&mode={mode}&submitType={submitType}&formId={formId}&showCancelButton=true&destination={destination}", {
-                    itemKind: itemKind,
-                    itemId: itemId,
-                    mode: mode,
-                    submitType: "json",
-                    formId: formId,
-                    destination: destination
-                });
+                itemKind: itemKind,
+                itemId: itemId,
+                mode: mode,
+                submitType: "json",
+                formId: formId,
+                destination: destination
+            });
 
             var editDetails = new Alfresco.module.SimpleDialog(id);
             editDetails.setOptions({
@@ -494,11 +498,11 @@
         };
 
         var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
-                paramName: paramName,
-                itemId: itemId,
-                mode: mode,
-                formId: formId
-            });
+            paramName: paramName,
+            itemId: itemId,
+            mode: mode,
+            formId: formId
+        });
 
         Alfresco.util.Ajax.jsonGet({
             url: checkUrl,
@@ -528,7 +532,11 @@
         if(Citeck.utils.isNodeRef(itemId)) {
             paramName = 'nodeRef';
             itemKind = 'node';
-            mode = 'view';
+            if (params.mode === 'edit') {
+                mode = 'edit';
+            } else {
+                mode = 'view';
+            }
         } else {
             paramName = 'type';
             itemKind = 'type';
@@ -561,21 +569,78 @@
                 execScripts: true,
                 successCallback: {
                     fn: function(response) {
+                        YAHOO.Bubbling.fire("metadataRefresh");
                         // get right section - block were we will show the views
                         var showArea = $('#' + listId);
 
                         // remove height limitation
-                        showArea.parent().css('height','initial');
+                        showArea.parent().css('height', 'initial');
 
                         // create container
                         var container = document.createElement('div');
                         container.id = '' + id;
+
+                        // save form params
+                        $(container).attr('data-itemId', itemId);
+                        $(container).attr('data-formId', formId);
+                        $(container).attr('data-listId', listId);
 
                         // add unique class name that will be used later to clear right section
                         $(container).addClass('user-profile-view-inner-container');
 
                         // add server response (user form) into the container
                         container.innerHTML = response.serverResponse.responseText;
+
+                        // define submit handler
+                        var onSubmit = function(layer, args) {
+                            var runtime = args[1].runtime;
+                            if (runtime.key() != viewId) return;
+
+                            var node = args[1].node;
+
+                            // save node
+                            node.thisclass.save(node, function(persistedNode) {
+                                _.isFunction(callback) ? callback(persistedNode) : callback.fn.call(callback.scope, persistedNode);
+                                persistedNode.impl().reset(true);
+                                runtime.terminate();
+                            });
+
+                            var container = $('.user-profile-view-inner-container');
+                            var itemId = $(container).attr('data-itemId');
+                            var formId = $(container).attr('data-formId');
+                            var listId = $(container).attr('data-listId');
+
+                            // clear junk created by onViewItem
+                            YAHOO.Bubbling.fire("clearViewJunk");
+
+                            // go to view mode
+                            var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
+
+                            YAHOO.Bubbling.fire("metadataRefresh");
+                        };
+
+                        // define cancel handler
+                        var onCancel = function(layer, args) {
+                            var runtime = args[1].runtime;
+                            if (runtime.key() != viewId) return;
+                            runtime.terminate();
+
+                            // get saved form params
+                            var container = $('.user-profile-view-inner-container');
+                            var itemId = $(container).attr('data-itemId');
+                            var formId = $(container).attr('data-formId');
+                            var listId = $(container).attr('data-listId');
+
+                            // clear junk created by onViewItem
+                            YAHOO.Bubbling.fire("clearViewJunk");
+
+                            // open form in view mode
+                            var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
+                        };
+
+                        YAHOO.Bubbling.on("node-view-submit", onSubmit);
+                        YAHOO.Bubbling.on("node-view-cancel", onCancel);
+                        // ------------------------------------------------------------------------------
 
                         // append the container into the right section
                         $(container).appendTo(showArea);
@@ -832,23 +897,23 @@
                             text: message,
                             noEscape: true,
                             buttons: [
-                            {
-                                text: Alfresco.util.message("button.ok"),
-                                handler: function dlA_onActionOk()
                                 {
-                                    submitInvoked.call(formsRuntime, event);
-                                    this.destroy();
-                                }
-                            },
-                            {
-                                text: Alfresco.util.message("button.cancel"),
-                                handler: function dlA_onActionCancel()
-                                {
-                                    YAHOO.Bubbling.fire("metadataRefresh");
-                                    this.destroy();
+                                    text: Alfresco.util.message("button.ok"),
+                                    handler: function dlA_onActionOk()
+                                    {
+                                        submitInvoked.call(formsRuntime, event);
+                                        this.destroy();
+                                    }
                                 },
-                                isDefault: true
-                            }]
+                                {
+                                    text: Alfresco.util.message("button.cancel"),
+                                    handler: function dlA_onActionCancel()
+                                    {
+                                        YAHOO.Bubbling.fire("metadataRefresh");
+                                        this.destroy();
+                                    },
+                                    isDefault: true
+                                }]
                         });
                     }
                 };

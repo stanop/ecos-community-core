@@ -2,7 +2,7 @@
 
 <#-- property: field property name, for example "ecos:photo". Comes from view's field prop value: <field prop="ecos:photo"> ... </field> -->
 <#assign property = viewScope.field.attribute!"" />
-<#assign propertyU = property?replace(":","_") />
+<#assign propertyU = property?replace(":", "_") />
 <#assign imgId = propertyU + "-image-id" />
 
 
@@ -20,15 +20,21 @@
     <#assign height = "" />
 </#if>
 
-<span id="${imgId}--cover">
-<!-- ko foreach: multipleValues -->
-<!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
-<!-- ko if: $parent.getValueTitle($data) -->
-<img id="${imgId}" data-bind="attr: {src: window.location.origin + '/share/proxy/alfresco/api/node/content;${property}/workspace/SpacesStore/'+ $parent.getValueTitle($data) +'/image.jpg'}" ${width} ${height} alt="">
-<!-- /ko -->
-<!-- /ko -->
-<!-- /ko -->
-</span>
+<#if params.style?has_content>
+    <#assign style = 'style="' + params.style?string + '"' />
+<#else>
+    <#assign style = "" />
+</#if>
+
+<div class="img-cover" id="${imgId}--cover">
+    <!-- ko foreach: multipleValues -->
+    <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
+    <!-- ko if: $parent.getValueTitle($data) -->
+    <img id="${imgId}" data-bind="attr: {src: window.location.origin + '/share/proxy/alfresco/api/node/content;${property}/workspace/SpacesStore/'+ $parent.getValueTitle($data) +'/image.jpg'}" ${style} ${width} ${height} alt="">
+    <!-- /ko -->
+    <!-- /ko -->
+    <!-- /ko -->
+</div>
 
 <#-- show uploaded image -->
 <script type="text/javascript">//<![CDATA[
