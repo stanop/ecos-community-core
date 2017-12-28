@@ -33,6 +33,7 @@ public interface WorkflowMirrorModel {
     public static final QName PROP_ASSIGNEE = QName.createQName(NAMESPACE, "assignee");
     public static final QName PROP_DOCUMENT = QName.createQName(NAMESPACE, "document");
     public static final QName PROP_DOCUMENT_TYPE = QName.createQName(NAMESPACE, "documentType");
+    public static final QName PROP_DOCUMENT_KIND = QName.createQName(NAMESPACE, "documentKind");
     public static final QName ASPECT_MIRROR_TASKS = QName.createQName(NAMESPACE, "mirrorTasks");
     public static final QName ASSOC_MIRROR_TASK = QName.createQName(NAMESPACE, "mirrorTask");
     public static final QName PROP_ASSIGNEE_MANAGER = QName.createQName(NAMESPACE, "assigneeManager");

@@ -7,6 +7,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -104,6 +105,10 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         NodeRef parentRef = JavaScriptImplUtils.getNodeRef(parentActivityRef);
         NodeRef childRef = JavaScriptImplUtils.getNodeRef(childActivityRef);
         caseActivityService.restartChildrenActivity(parentRef, childRef);
+    }
+
+    public List<ActivityCreateVariant> getCreateVariants() {
+        return caseActivityService.getCreateVariants();
     }
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {

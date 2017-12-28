@@ -1,0 +1,5 @@
+#This file can be used to define custom alfresco global properties for local system
+#Remove ".sample" and write your properties here as usual in alfresco-global.properties
+#During the project build, the content of this file will be appended to the alfresco-global.properties
+
+#some.custom.property=true

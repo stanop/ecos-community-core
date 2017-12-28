@@ -24,8 +24,8 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
+import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.notification.NotificationContext;
@@ -40,11 +40,14 @@ import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.DmsModel;
+import ru.citeck.ecos.search.ftsquery.BinOperator;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.search.ftsquery.OperatorExpected;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Generic implementation of NotificationSender interface.
@@ -275,77 +278,15 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     protected NodeRef getNotificationTemplate(String wfkey, String tkey, boolean findNotSearchable) {
-        StringBuilder notSearchable = getNotSearchableSB(findNotSearchable);
-        String str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND @{5}:\"{6}\"";
-        String query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                wfkey,
-                DmsModel.PROP_TASK_NAME,
-                tkey);
-        query = query + notSearchable.toString();
 
-        logger.debug("query " + query);
-        NodeRef templateNode = findNode(query);
-        if (templateNode != null)
-            return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:\"\" AND @{4}:\"{5}\"";
-        query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                DmsModel.PROP_TASK_NAME, tkey);
-        query = query + notSearchable.toString();
+        Map<QName, Serializable> fields = new HashMap<>();
 
-        logger.debug("query " + query);
-        templateNode = findNode(query);
-        if (templateNode != null)
-            return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ={5}:\"\"";
-        query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                wfkey,
-                DmsModel.PROP_TASK_NAME);
-        query = query + notSearchable.toString();
+        fields.put(DmsModel.PROP_WORKFLOW_NAME, wfkey);
+        fields.put(DmsModel.PROP_TASK_NAME, tkey);
 
-        logger.debug("query " + query);
-        templateNode = findNode(query);
-        if (templateNode != null)
-            return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:\"\" AND ={4}:\"\"";
-        query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                DmsModel.PROP_TASK_NAME);
-        query = query + notSearchable.toString();
-
-        logger.debug("query " + query);
-        templateNode = findNode(query);
-        if (templateNode != null) {
-            return templateNode;
-        }
-        String template = this.defaultTemplate;
-
-        NodeRef templateNodeRef = getTemplateNodeRef(template);
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("getNotificationTemplate(\"%s\", \"%s\"): template: %s", wfkey, tkey,
-                    templateNodeRef));
-        }
-        return templateNodeRef;
-    }
-
-    private StringBuilder getNotSearchableSB(boolean findNotSearchable) {
-        StringBuilder notSearchable = new StringBuilder();
-        if (findNotSearchable) {
-            notSearchable.append(" AND (@").append(DmsModel.PROP_NOT_SEARCHABLE).append(":true AND ISNOTNULL:\"").append(DmsModel.PROP_NOT_SEARCHABLE).append("\")");
-        } else {
-            notSearchable.append(" AND (@").append(DmsModel.PROP_NOT_SEARCHABLE).append(":false OR ISNULL:\"").append(DmsModel.PROP_NOT_SEARCHABLE).append("\")");
-        }
-        return notSearchable;
+        return getWFNotificationTemplate(fields, findNotSearchable).orElseGet(() ->
+            getTemplateNodeRef(this.defaultTemplate)
+        );
     }
 
     protected NodeRef getNotificationTemplate(String wfkey, String tkey, QName docType) {
@@ -353,72 +294,75 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     protected NodeRef getNotificationTemplate(String wfkey, String tkey, QName docType, boolean findNotSearchable) {
-        StringBuilder notSearchable = getNotSearchableSB(findNotSearchable);
-        String str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND @{5}:\"{6}\" AND @{7}:\"{8}\"";
-        String query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                wfkey,
-                DmsModel.PROP_TASK_NAME,
-                tkey,
-                DmsModel.PROP_DOC_TYPE, docType);
-        query = query + notSearchable.toString();
 
-        logger.debug("query " + query);
-        NodeRef templateNode = findNode(query);
-        if (templateNode != null)
-            return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:\"\" AND @{4}:\"{5}\" AND @{6}:\"{7}\"";
-        query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                DmsModel.PROP_TASK_NAME,
-                tkey,
-                DmsModel.PROP_DOC_TYPE,
-                docType);
-        query = query + notSearchable.toString();
+        Map<QName, Serializable> fields = new HashMap<>();
 
-        logger.debug("query " + query);
-        templateNode = findNode(query);
-        if (templateNode != null)
-            return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\" AND ={5}:\"\" AND @{6}:\"{7}\"";
-        query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                wfkey,
-                DmsModel.PROP_TASK_NAME,
-                DmsModel.PROP_DOC_TYPE, docType);
-        query = query + notSearchable.toString();
+        fields.put(DmsModel.PROP_WORKFLOW_NAME, wfkey);
+        fields.put(DmsModel.PROP_TASK_NAME, tkey);
+        fields.put(DmsModel.PROP_DOC_TYPE, docType);
 
-        logger.debug("query " + query);
-        templateNode = findNode(query);
-        if (templateNode != null)
-            return templateNode;
-        str = "TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND ={3}:\"\" AND ={4}:\"\" AND @{5}:\"{6}\"";
-        query = MessageFormat.format(str, DmsModel.TYPE_NOTIFICATION_TEMPLATE,
-                DmsModel.PROP_NOTIFICATION_TYPE,
-                this.notificationType,
-                DmsModel.PROP_WORKFLOW_NAME,
-                DmsModel.PROP_TASK_NAME,
-                DmsModel.PROP_DOC_TYPE, docType);
-        query = query + notSearchable.toString();
-
-        logger.debug("query " + query);
-        templateNode = findNode(query);
-        if (templateNode != null) {
-            return templateNode;
-        }
-
-        return getNotificationTemplate(wfkey, tkey);
-
+        return getWFNotificationTemplate(fields, findNotSearchable).orElseGet(() ->
+            getNotificationTemplate(wfkey, tkey, findNotSearchable)
+        );
     }
 
-    protected NodeRef getTemplateNodeRef(String template) {
-        String xpath = this.templateRoot + template;
+    protected Optional<NodeRef> getWFNotificationTemplate(Map<QName, Serializable> props,
+                                                          boolean findNotSearchable) {
+
+        Map<QName, Serializable> tempFields;
+
+        Serializable wfkey = props.get(DmsModel.PROP_WORKFLOW_NAME);
+        Serializable tkey = props.get(DmsModel.PROP_TASK_NAME);
+
+        Optional<NodeRef> templateRef = searchTemplate(props, findNotSearchable);
+
+        if (!templateRef.isPresent() && wfkey != null) {
+            tempFields = new HashMap<>(props);
+            tempFields.put(DmsModel.PROP_WORKFLOW_NAME, null);
+            templateRef = searchTemplate(tempFields, findNotSearchable);
+        }
+
+        if (!templateRef.isPresent() && tkey != null) {
+            tempFields = new HashMap<>(props);
+            tempFields.put(DmsModel.PROP_TASK_NAME, null);
+            templateRef = searchTemplate(tempFields, findNotSearchable);
+        }
+
+        if (!templateRef.isPresent() && wfkey != null && tkey != null) {
+            tempFields = new HashMap<>(props);
+            tempFields.put(DmsModel.PROP_TASK_NAME, null);
+            tempFields.put(DmsModel.PROP_WORKFLOW_NAME, null);
+            templateRef = searchTemplate(tempFields, findNotSearchable);
+        }
+
+        return templateRef;
+    }
+
+    private Optional<NodeRef> searchTemplate(Map<QName, Serializable> props, boolean findNotSearchable) {
+
+        Predicate<NodeRef> notSearchableFilter = ref -> {
+            Serializable notSearchable = nodeService.getProperty(ref, DmsModel.PROP_NOT_SEARCHABLE);
+            return findNotSearchable || !Boolean.TRUE.equals(notSearchable);
+        };
+
+        for (QName key : props.keySet()) {
+            props.putIfAbsent(key, "");
+        }
+
+        OperatorExpected query = FTSQuery.create()
+                                         .type(DmsModel.TYPE_NOTIFICATION_TEMPLATE).and()
+                                         .exact(DmsModel.PROP_NOTIFICATION_TYPE, this.notificationType).and()
+                                         .values(props, BinOperator.AND, true)
+                                         .transactionalIfPossible();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Template searching. Query: " + query);
+        }
+        return query.queryOne(searchService, notSearchableFilter);
+    }
+
+    protected NodeRef getTemplateNodeRef(String templatePath) {
+        String xpath = this.templateRoot + templatePath;
         List<NodeRef> results = this.searchService.query(
                 StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
                 SearchService.LANGUAGE_XPATH,
@@ -480,12 +424,9 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
                     @Override
                     public void afterCommit() {
                         RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
-                        helper.doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>() {
-                            @Override
-                            public Void execute() throws Throwable {
-                                sendNotificationContext(notificationProviderName, notificationContext);
-                                return null;
-                            }
+                        helper.doInTransaction(() -> {
+                            sendNotificationContext(notificationProviderName, notificationContext);
+                            return null;
                         }, false, true);
                     }
                 });

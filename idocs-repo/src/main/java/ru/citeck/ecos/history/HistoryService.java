@@ -59,6 +59,7 @@ public class HistoryService {
     /**
      * Constants
      */
+    public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     private static final String MODIFIER_PROPERTY = "modifier";
     private static final String VERSION_LABEL_PROPERTY = "versionLabel";
@@ -306,7 +307,7 @@ public class HistoryService {
         if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
             return false;
         } else {
-            Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet("DbNodeServiceImpl.pendingDeleteNodes");
+            Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
             return nodesPendingDelete.contains(documentRef);
         }
     }

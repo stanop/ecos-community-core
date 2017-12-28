@@ -89,6 +89,12 @@ public class CaseStatusServiceImpl implements CaseStatusService {
         return RepoUtils.getFirstTargetAssoc(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
     }
 
+    @Override
+    public NodeRef getStatusRefFromPrimaryParent(NodeRef childRef) {
+        NodeRef parent = RepoUtils.getPrimaryParentRef(childRef, nodeService);
+        return RepoUtils.getFirstTargetAssoc(parent, ICaseModel.ASSOC_CASE_STATUS, nodeService);
+    }
+
     private void mandatoryNodeRef(String strParamName, NodeRef nodeRef) {
         if (nodeRef == null) {
             throw new IllegalArgumentException(strParamName + " is a mandatory parameter");

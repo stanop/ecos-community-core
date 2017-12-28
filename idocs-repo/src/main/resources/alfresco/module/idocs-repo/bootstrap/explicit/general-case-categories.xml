@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
+
+    <cm:category>
+
+        <view:properties>
+            <sys:node-uuid>cat-doc-type-general-case</sys:node-uuid>
+            <cm:name>General Case</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">General Case</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Стандартный кейс</view:mlvalue>
+            </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/content/ecos/1.0}document</tk:appliedType>
+            <tk:appliedAspects>{http://www.citeck.ru/model/icase/1.0}case</tk:appliedAspects>
+            <tk:journalType>ecos-documents</tk:journalType>
+        </view:properties>
+
+        <cm:subcategories>
+            <!-- Application -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-doc-kind-application</sys:node-uuid>
+                    <cm:name>Application</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Application</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">Заявка</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <!-- Claim -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-doc-kind-claim</sys:node-uuid>
+                    <cm:name>Claim</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Claim</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">Требование</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <!-- Work Plan -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-doc-kind-work-plan</sys:node-uuid>
+                    <cm:name>Work Plan</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Work Plan</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">План работ</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <!-- Customer request -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-doc-kind-customer-request</sys:node-uuid>
+                    <cm:name>Customer request</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Customer request</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">Обращение клиента</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+            <!-- Complaint -->
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-doc-kind-complaint</sys:node-uuid>
+                    <cm:name>Complaint</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Complaint</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">Жалоба</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+        </cm:subcategories>
+
+    </cm:category>
+
+</view:view>

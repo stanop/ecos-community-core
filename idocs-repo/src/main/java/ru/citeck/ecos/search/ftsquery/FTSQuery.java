@@ -2,7 +2,10 @@ package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.*;
+import org.alfresco.service.cmr.search.QueryConsistency;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Full text search query builder
@@ -30,13 +35,20 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     private static final String NOT = "NOT";
     private static final String PARENT = "PARENT";
     private static final String TYPE = "TYPE";
+    private static final String PATH = "PATH";
 
-    private QueryConsistency consistency = QueryConsistency.DEFAULT;
-    private SearchParameters searchParameters = new SearchParameters();
-
+    private SearchParameters searchParameters;
     private Group group = new Group();
 
     private FTSQuery() {
+        searchParameters = new SearchParameters();
+        searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+    }
+
+    private FTSQuery(FTSQuery other) {
+        searchParameters = other.searchParameters.copy();
+        group = other.group.copy();
     }
 
     /**
@@ -46,15 +58,22 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return new FTSQuery();
     }
 
-    public OperatorExpected values(Map<QName, Serializable> values) {
+    /**
+     * Create unsafe FTSQuery which return self from build methods
+     */
+    public static FTSQuery createRaw() {
+        return new FTSQuery();
+    }
+
+    public FTSQuery values(Map<QName, Serializable> values) {
         return values(values, BinOperator.AND, false);
     }
 
-    public OperatorExpected values(Map<QName, Serializable> values, BinOperator joinOperator) {
+    public FTSQuery values(Map<QName, Serializable> values, BinOperator joinOperator) {
         return values(values, joinOperator, false);
     }
 
-    public OperatorExpected values(Map<QName, Serializable> values, BinOperator joinOperator, boolean exact) {
+    public FTSQuery values(Map<QName, Serializable> values, BinOperator joinOperator, boolean exact) {
         int count = values.size();
         if (count == 0) {
             throw new IllegalArgumentException("Values is empty");
@@ -70,7 +89,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
-    public OperatorExpected any(QName field, Iterable<Serializable> values) {
+    public FTSQuery any(QName field, Iterable<Serializable> values) {
         Iterator<Serializable> it = values.iterator();
         if (!it.hasNext()) {
             throw new IllegalArgumentException("Values is empty");
@@ -84,19 +103,19 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
-    public OperatorExpected empty(QName field) {
+    public FTSQuery empty(QName field) {
         return open().isNull(field).or().isUnset(field).close();
     }
 
-    public OperatorExpected exact(QName field, Serializable value) {
+    public FTSQuery exact(QName field, Serializable value) {
         return value(field, value, true);
     }
 
-    public OperatorExpected value(QName field, Serializable value) {
+    public FTSQuery value(QName field, Serializable value) {
         return value(field, value, false);
     }
 
-    public OperatorExpected value(QName field, Serializable value, boolean exact) {
+    public FTSQuery value(QName field, Serializable value, boolean exact) {
         if (value == null) {
             empty(field);
         } else {
@@ -109,77 +128,101 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
-    public OperatorExpected isSet(QName field) {
+    public FTSQuery path(String path) {
+        group.addTerm(new SysValueOperator(PATH, path));
+        return this;
+    }
+
+    public FTSQuery isSet(QName field) {
         return isNotNull(field);
     }
 
-    public OperatorExpected isUnset(QName field) {
+    public FTSQuery isUnset(QName field) {
         group.addTerm(new SysValueOperator(ISUNSET, field));
         return this;
     }
 
-    public OperatorExpected isNull(QName field) {
+    public FTSQuery isNull(QName field) {
         group.addTerm(new SysValueOperator(ISNULL, field));
         return this;
     }
 
-    public OperatorExpected isNotNull(QName field) {
+    public FTSQuery isNotNull(QName field) {
         group.addTerm(new SysValueOperator(ISNOTNULL, field));
         return this;
     }
 
-    public OperatorExpected parent(NodeRef parent) {
+    public FTSQuery parent(NodeRef parent) {
         group.addTerm(new SysValueOperator(PARENT, parent));
         return this;
     }
 
-    public OperatorExpected type(QName typeName) {
+    public FTSQuery type(QName typeName) {
         group.addTerm(new SysValueOperator(TYPE, typeName));
         return this;
     }
 
-    public OperandExpected or() {
+    public FTSQuery or() {
         group.setBiOperator(new BinOperatorTerm(BinOperator.OR));
         return this;
     }
 
-    public OperandExpected and() {
+    public FTSQuery and() {
         group.setBiOperator(new BinOperatorTerm(BinOperator.AND));
         return this;
     }
 
-    public OperandExpected not() {
+    public FTSQuery not() {
         group.setUnOperator(new UnOperatorTerm(NOT));
         return this;
     }
 
-    public OperandExpected open() {
+    public FTSQuery open() {
         group.startGroup();
         return this;
     }
 
-    public OperatorExpected close() {
+    public FTSQuery close() {
         group.stopGroup();
         return this;
     }
 
-    public FTSQuery transactional() {
-        consistency = QueryConsistency.TRANSACTIONAL;
-        return this;
+    public FTSQuery transactionalIfPossible() {
+        return consistency(QueryConsistency.TRANSACTIONAL_IF_POSSIBLE);
     }
 
+    public FTSQuery transactional() {
+        return consistency(QueryConsistency.TRANSACTIONAL);
+    }
 
     public FTSQuery eventual() {
-        consistency = QueryConsistency.EVENTUAL;
-        return this;
+        return consistency(QueryConsistency.EVENTUAL);
     }
 
-    public Optional<NodeRef> queryOne(SearchService searchService) {
-        return query(searchService).stream().findFirst();
+    public FTSQuery consistency(QueryConsistency consistency) {
+        searchParameters.setQueryConsistency(consistency);
+        return this;
     }
 
     public String getQuery() {
         return group.getQuery();
+    }
+
+    public Optional<NodeRef> queryOne(SearchService searchService) {
+        return query(searchService).stream()
+                                   .findFirst();
+    }
+
+    public Optional<NodeRef> queryOne(SearchService searchService, Predicate<NodeRef> filter) {
+        return query(searchService).stream()
+                                   .filter(filter)
+                                   .findFirst();
+    }
+
+    public List<NodeRef> query(SearchService searchService, Predicate<NodeRef> filter) {
+        return query(searchService).stream()
+                                   .filter(filter)
+                                   .collect(Collectors.toList());
     }
 
     public List<NodeRef> query(SearchService searchService) {
@@ -190,8 +233,6 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
             logger.debug("FTSQuery: " + query);
         }
 
-        searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
-        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         searchParameters.setQuery(query);
 
         ResultSet resultSet = null;
@@ -206,6 +247,10 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
+    public FTSQuery copy() {
+        return new FTSQuery(this);
+    }
+
     @Override
     public boolean equals(Object o) {
 
@@ -214,24 +259,30 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         FTSQuery query = (FTSQuery) o;
 
-        return consistency == query.consistency && group.equals(query.group);
+        return searchParameters.equals(query.searchParameters) && group.equals(query.group);
     }
 
     @Override
     public int hashCode() {
-        int result = consistency.hashCode();
+        int result = searchParameters.hashCode();
         result = 31 * result + group.hashCode();
         return result;
     }
 
-    private interface Term {
+    @Override
+    public String toString() {
+        return group.getQuery();
+    }
+
+    private interface Term<T> {
         void toString(StringBuilder builder);
+        T copy();
     }
 
-    private interface Operand extends Term {
+    private interface Operand<T> extends Term<T> {
     }
 
-    private class UnOperatorTerm implements Term {
+    private class UnOperatorTerm implements Term<UnOperatorTerm> {
 
         String operator;
         Term term;
@@ -243,6 +294,13 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         public void toString(StringBuilder builder) {
             builder.append(operator).append(' ');
             term.toString(builder);
+        }
+
+        @Override
+        public UnOperatorTerm copy() {
+            UnOperatorTerm result = new UnOperatorTerm(operator);
+            result.term = term;
+            return result;
         }
 
         @Override
@@ -264,7 +322,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class BinOperatorTerm implements Term {
+    private class BinOperatorTerm implements Term<BinOperatorTerm> {
 
         Term term0;
         Term term1;
@@ -272,6 +330,14 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         BinOperatorTerm(BinOperator operator) {
             this.operator = operator;
+        }
+
+        @Override
+        public BinOperatorTerm copy() {
+            BinOperatorTerm result = new BinOperatorTerm(operator);
+            result.term0 = term0;
+            result.term1 = term1;
+            return result;
         }
 
         @Override
@@ -303,7 +369,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class SysValueOperator implements Operand {
+    private class SysValueOperator implements Operand<SysValueOperator> {
 
         String field;
         Serializable value;
@@ -311,6 +377,11 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         SysValueOperator(String field, Serializable value) {
             this.field = field;
             this.value = value;
+        }
+
+        @Override
+        public SysValueOperator copy() {
+            return new SysValueOperator(field, value);
         }
 
         @Override
@@ -338,16 +409,30 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class ValueOperator implements Operand {
+    private class ValueOperator implements Operand<ValueOperator> {
 
         QName field;
         Serializable value;
         boolean exact = false;
 
         @Override
+        public ValueOperator copy() {
+            ValueOperator result = new ValueOperator();
+            result.field = field;
+            result.value = value;
+            result.exact = exact;
+            return result;
+        }
+
+        @Override
         public void toString(StringBuilder builder) {
+            QueryConsistency consistency = searchParameters.getQueryConsistency();
             char prefix = exact || consistency.equals(QueryConsistency.TRANSACTIONAL) ? '=' : '@';
-            builder.append(prefix).append(field).append(":\"").append(value).append('\"');
+            if (value instanceof Boolean) {
+                builder.append(prefix).append(field).append(":").append(value);
+            } else {
+                builder.append(prefix).append(field).append(":\"").append(value).append('\"');
+            }
         }
 
         @Override
@@ -372,7 +457,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
-    private class Group implements Operand {
+    private class Group implements Operand<Group> {
 
         UnOperatorTerm unOperator = null;
         BinOperatorTerm biOperator = null;
@@ -461,6 +546,16 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
             query = sb.toString();
 
             return query;
+        }
+
+        @Override
+        public Group copy() {
+            Group result = new Group();
+            result.unOperator = unOperator;
+            result.biOperator = biOperator;
+            result.group = group;
+            result.term = term;
+            return result;
         }
 
         @Override

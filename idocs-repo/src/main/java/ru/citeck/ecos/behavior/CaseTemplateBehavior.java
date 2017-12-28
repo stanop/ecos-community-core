@@ -33,7 +33,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StopWatch;
-import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
 import ru.citeck.ecos.cmmn.service.CaseXmlService;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.CaseStatusService;

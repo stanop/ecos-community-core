@@ -94,10 +94,10 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
 
-        if (!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
-            throw new AlfrescoRuntimeException(String.format("Task start failed. Attributes mapping is " +
-                                                             "not registered for workflow %s.", workflowDefinitionName));
-        }
+//        if (!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
+//            throw new AlfrescoRuntimeException(String.format("Task start failed. Attributes mapping is " +
+//                                                             "not registered for workflow %s.", workflowDefinitionName));
+//        }
 
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
@@ -124,10 +124,12 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         Map<String, String> attributesMapping = attributesMappingByWorkflow.get(workflowDefinitionName);
 
-        for (Map.Entry<String, String> entry : attributesMapping.entrySet()) {
-            QName key = QName.createQName(entry.getKey(), namespaceService);
-            QName value = QName.createQName(entry.getValue(), namespaceService);
-            workflowProperties.put(value, getAttribute(taskRef, key, value));
+        if (attributesMapping != null) {
+            for (Map.Entry<String, String> entry : attributesMapping.entrySet()) {
+                QName key = QName.createQName(entry.getKey(), namespaceService);
+                QName value = QName.createQName(entry.getValue(), namespaceService);
+                workflowProperties.put(value, getAttribute(taskRef, key, value));
+            }
         }
 
         workflowProperties.putAll(getTransmittedVariables(workflowDefinitionName));

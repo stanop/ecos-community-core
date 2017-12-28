@@ -35,7 +35,7 @@
 				<div data-bind="attr: { id: nodeRef() + '-activity-create-menu' }" class="yui-overlay yuimenu button-menu" style="visibility: hidden">
 					<div class="bd">
 						<ul class="first-of-type">
-						<#list createMenu as submenu>
+						<#list createMenu?values as submenu>
 
 							<li class="yuimenuitem">
 								<span class="yuimenuitemlabel">${submenu.title}</span>
@@ -44,7 +44,7 @@
 										<ul>
 										<#list submenu.variants as variant>
 											<li class="yuimenuitem">
-												<a class="yuimenuitemlabel" data-bind="click: $data.add.bind($data, '${variant.type}', '${variant.formId!}')">${variant.title}</a>
+												<a class="yuimenuitemlabel" data-bind="click: $data.add.bind($data, '${variant.type}', '${variant.formId!}', ${jsonUtils.toJSONString(variant.viewParams!{})})">${variant.title}</a>
 											</li>
 										</#list>
 										</ul>

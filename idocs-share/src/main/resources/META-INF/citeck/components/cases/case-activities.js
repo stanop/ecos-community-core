@@ -98,20 +98,21 @@ Activity
           });
         }
     })
-    .method('add', function(type, viewId) {
-        Citeck.forms.dialog(type, viewId, 
-        {
+
+    .method('add', function(type, viewId, viewParams) {
+        Citeck.forms.dialog(type, viewId, {
             scope: this,
             fn: function(activity) {
-              this.activities.push(new Activity(activity.nodeRef));
-              YAHOO.Bubbling.fire("activityWasUpdated", { nodeRef: this.nodeRef() });
+                this.activities.push(new Activity(activity.nodeRef));
+                YAHOO.Bubbling.fire("activityWasUpdated", {
+                    nodeRef: this.nodeRef()
+                });
             }
-        }, 
-        {
+        }, _.extend({
             title: msg("button.create"),
             destination: this.nodeRef(),
             destinationAssoc: 'activ:activities'
-        });
+        }, viewParams));
     })
     .method('edit', function() {
         Citeck.forms.dialog(this.nodeRef(), null, { scope: this, fn: this.reload });

@@ -28,6 +28,7 @@
 		<property name="orgStructService" ref="orgStructService"/>
 		<property name="authorityService" ref="authorityService" />
 		<property name="searchService" ref="searchService" />
+		<property name="dictionaryService" ref="dictionaryService" />
 	</bean>
 
 	<bean id="workflowMirrorBehaviour" class="ru.citeck.ecos.workflow.mirror.MirrorBehaviour" init-method="init">

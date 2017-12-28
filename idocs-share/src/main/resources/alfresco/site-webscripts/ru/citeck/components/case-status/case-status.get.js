@@ -1,5 +1,8 @@
 <import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
 
+const STATUS_TYPE_CASE = 'case-status';
+const STATUS_TYPE_DOCUMENT = 'document-status';
+
 function jsonGet(url) {
     var result = remote.connect("alfresco").get(url);
 
@@ -15,6 +18,19 @@ function jsonGet(url) {
     return null;
 }
 
+function getDocumentStatusLocalization(status) {
+
+    var result = status;
+
+    var url = '/citeck/message?key=listconstraint.idocs_constraint_documentStatus.' + status;
+    var response = remote.connect('alfresco').call(url);
+
+    if (response.status == 200) {
+        result = "" + response;
+    }
+    return result;
+}
+
 function getNodeInfo(nodeRef) {
     var details = jsonGet('/citeck/node?nodeRef=' + nodeRef);
     return details != null && details.props ? details : null;
@@ -25,6 +41,12 @@ function isPendingUpdate(nodeRef) {
     return isPendingUpdate != null ? isPendingUpdate : false;
 }
 
+function getStatusLabel(type) {
+    var key = "header." + type;
+    var result = msg.get(key);
+    return result == key ? msg.get("header.status") : result;
+}
+
 (function() {
 
     AlfrescoUtil.param('nodeRef');
@@ -32,16 +54,21 @@ function isPendingUpdate(nodeRef) {
 
     var pendingUpdate = isPendingUpdate(model.nodeRef);
 
-    var status = "";
+    var status = "",
+        statusType = STATUS_TYPE_CASE;
 
     if (!pendingUpdate) {
         try {
             var nodeDetails = getNodeInfo(model.nodeRef),
-                caseStatus = nodeDetails.assocs ? nodeDetails.assocs["icase:caseStatusAssoc"] : null;
+                caseStatus = nodeDetails.assocs ? nodeDetails.assocs["icase:caseStatusAssoc"] : null,
+                documentStatus = nodeDetails.props ? nodeDetails.props["idocs:documentStatus"] : null;
 
             if (caseStatus && caseStatus[0]) {
                 var statusDetails = getNodeInfo(caseStatus[0]);
                 status = statusDetails.props["cm:title"] || statusDetails.props["cm:name"];
+            } else if (documentStatus) {
+                status = getDocumentStatusLocalization(documentStatus);
+                statusType = STATUS_TYPE_DOCUMENT;
             }
         } catch(e) {
             status = "";
@@ -50,5 +77,6 @@ function isPendingUpdate(nodeRef) {
 
     model.status = status;
     model.isPendingUpdate = pendingUpdate;
+    model.statusLabel = getStatusLabel(statusType);
 
 })();

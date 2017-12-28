@@ -1294,15 +1294,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return "" + value;
             }
             if(valueClass == d) {
-                if(datatype == 'd:date') {
-                    var year = value.getFullYear(),
-                        month = value.getMonth() + 1,
-                        date = value.getDate();
-                    return (year > 1000 ? "" : year > 100 ? "0" : year > 10 ? "00" : "000") + year
-                            + (month < 10 ? "-0" : "-") + month
-                            + (date  < 10 ? "-0" : "-") + date;
-                }
-
                 return Alfresco.util.toISO8601(value);
             }
 
@@ -1365,14 +1356,6 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return value;
             }
             if(valueClass == d) {
-                if(datatype == 'd:date') {
-                    var year = value.getFullYear(),
-                        month = value.getMonth() + 1,
-                        date = value.getDate();
-                    return (year > 1000 ? "" : year > 100 ? "0" : year > 10 ? "00" : "000") + year
-                            + (month < 10 ? "-0" : "-") + month
-                            + (date  < 10 ? "-0" : "-") + date;
-                }
                 return Alfresco.util.toISO8601(value);
             }
 

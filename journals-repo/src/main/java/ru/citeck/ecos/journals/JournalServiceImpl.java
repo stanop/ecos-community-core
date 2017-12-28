@@ -66,8 +66,15 @@ class JournalServiceImpl implements JournalService {
                         getPrefixToUriMap(data.getImports().getImport()));
         
         for(Journal journal : data.getJournal()) {
-            this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver, serviceRegistry));
-            String staticQuery = journalTypes.get(journal.getId()).getOptions().get("staticQuery");
+            searchCriteriaSettingsRegistry.cleanFieldNameCache(journal.getId());
+            this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver, serviceRegistry,
+                    searchCriteriaSettingsRegistry));
+            Map<String, String> options = journalTypes.get(journal.getId()).getOptions();
+            String nodeType = options.get("type");
+            if (nodeType != null) {
+                searchCriteriaSettingsRegistry.registerJournalNodeType(journal.getId(), nodeType);
+            }
+            String staticQuery = options.get("staticQuery");
             if (staticQuery != null) {
                 searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
@@ -160,7 +167,15 @@ class JournalServiceImpl implements JournalService {
         this.nodeService = serviceRegistry.getNodeService();
     }
 
+    public ServiceRegistry getServiceRegistry() {
+        return serviceRegistry;
+    }
+
     public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
         this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
+    }
+
+    public SearchCriteriaSettingsRegistry getSearchCriteriaSettingsRegistry() {
+        return searchCriteriaSettingsRegistry;
     }
 }

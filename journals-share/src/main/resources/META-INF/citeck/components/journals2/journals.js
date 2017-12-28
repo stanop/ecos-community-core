@@ -249,26 +249,29 @@ CreateVariant
             }
         })
 
-        .method('filterOptions', function(criteria, pagination) {
+        .method('filterOptions', function(criteria, pagination, paramJournalType) {
 
             if (!this.cache) this.cache = {};
             if (!this.cache.result) {
                 this.cache.result = ko.observable([]);
-                this.cache.result.extend({ notify: 'always' });
-            }
-
-            if (!this.nodetype()) {
-                return [];
+                this.cache.result.extend({notify: 'always'});
             }
 
             var query = {
                 skipCount: 0,
-                maxItems: 10,
-                field_1: "type",
-                predicate_1: "type-equals",
-                value_1: this.nodetype()
+                maxItems: 10
             };
+            if (!_.find(criteria, function (criterion) {
+                    return criterion.predicate == 'journal-id';
+                })) {
+                if (!this.nodetype()) {
+                    return [];
+                }
 
+                query['field_1'] = "type";
+                query['predicate_1'] = "type-equals";
+                query['value_1'] = this.nodetype();
+            }
 
             if (pagination) {
                 if (pagination.maxItems) query.maxItems = pagination.maxItems;
@@ -954,7 +957,7 @@ JournalsWidget
 	// datatable interface: fields, columns, records
 	.shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
 	.computed('columns', function() {
-		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
+		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'), records = this.records(),
 				recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
 				recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
 				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
@@ -1041,7 +1044,7 @@ JournalsWidget
 				columns.unshift(new ActionsColumn({
 					id: 'actions',
 					label: this.msg("column.actions"),
-					formatter: formatters.actions(actionGroupId)
+					formatter: formatters.journalActions(records)
 				}));
 			}
 		}
@@ -1680,7 +1683,7 @@ JournalsWidget
 	})
 	;
 
-var recordLoader = new Citeck.utils.DoclibRecordLoader();
+var recordLoader = new Citeck.utils.DoclibRecordLoader(defaultActionGroupId);
 Record
 	// TODO define load method - to load selected records
 	.load('doclib', function(record) {

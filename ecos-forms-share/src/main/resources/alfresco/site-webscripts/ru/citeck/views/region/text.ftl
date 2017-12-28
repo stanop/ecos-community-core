@@ -4,4 +4,10 @@
     <#else>textValidationValue</#if>
 </#assign>
 
-<input id="${fieldId}" type="text" data-bind="textInput: ${textValueInput?trim}, disable: protected" />
+<#assign disabled>
+    <#if params.disabled??>
+        ko.computed(function() { return ${params.disabled}; });
+    <#else>protected</#if>
+</#assign>
+
+<input id="${fieldId}" type="text" data-bind="textInput: ${textValueInput?trim}, disable: ${disabled?trim}" />

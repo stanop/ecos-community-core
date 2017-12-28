@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2017 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -27,6 +27,7 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileInfo;
 import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.version.VersionType;
@@ -34,6 +35,7 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.behavior.AssociationIndexing;
@@ -47,7 +49,7 @@ public class RepoUtils {
 
     private static final String DOWNLOAD_API_PREFIX = "/api/node/content/workspace/SpacesStore/";
     private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
-    private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,"filename");
+    private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "filename");
 
     /**
      * It returns a property value or throws an exception.
@@ -65,8 +67,8 @@ public class RepoUtils {
     public static <T> T getMandatoryProperty(NodeRef nodeRef, QName name, NodeService nodeService) throws IllegalArgumentException {
 
         if (nodeRef == null || name == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; name=" + name
-                    + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; name=" + name + "; nodeService=" + nodeService);
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
         Serializable object = nodeService.getProperty(nodeRef, name);
@@ -89,8 +91,8 @@ public class RepoUtils {
     public static <T> T getProperty(NodeRef nodeRef, QName name, NodeService nodeService) throws IllegalArgumentException {
 
         if (nodeRef == null || name == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; name=" + name
-                    + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; name=" + name + "; nodeService=" + nodeService);
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
         Serializable object = nodeService.getProperty(nodeRef, name);
@@ -128,8 +130,9 @@ public class RepoUtils {
     public static NodeRef createSubFolder(NodeRef parentNode, QName assocType, String name, NodeService nodeService) {
 
         QName assocName = QName.createQNameWithValidLocalName(NamespaceService.CONTENT_MODEL_1_0_URI, name);
-        Map<QName, Serializable> properties = Collections.<QName, Serializable>singletonMap(ContentModel.PROP_NAME, name);
-        ChildAssociationRef folderRef = nodeService.createNode(parentNode, assocType, assocName, ContentModel.TYPE_FOLDER, properties);
+        Map<QName, Serializable> properties = Collections.singletonMap(ContentModel.PROP_NAME, name);
+        ChildAssociationRef folderRef = nodeService.createNode(parentNode, assocType, assocName, ContentModel.TYPE_FOLDER,
+                properties);
         return folderRef.getChildRef();
     }
 
@@ -143,16 +146,18 @@ public class RepoUtils {
         return nodeService.getChildByName(parentRef, assocQName, childName);
     }
 
-    public static NodeRef createChildWithName(NodeRef parentRef, QName assocQName, QName typeQName, String childName, NodeService nodeService) {
+    public static NodeRef createChildWithName(NodeRef parentRef, QName assocQName, QName typeQName, String childName,
+                                              NodeService nodeService) {
         ChildAssociationRef childAssoc = nodeService.createNode(parentRef,
                 assocQName,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, QName.createValidLocalName(childName)),
                 typeQName,
-                Collections.<QName, Serializable>singletonMap(ContentModel.PROP_NAME, childName));
+                Collections.singletonMap(ContentModel.PROP_NAME, childName));
         return childAssoc.getChildRef();
     }
 
-    public static NodeRef getOrCreateChildByName(NodeRef parentRef, QName assocQName, QName typeQName, String childName, NodeService nodeService) {
+    public static NodeRef getOrCreateChildByName(NodeRef parentRef, QName assocQName, QName typeQName, String childName,
+                                                 NodeService nodeService) {
         NodeRef child = getChildByName(parentRef, assocQName, childName, nodeService);
         if (child == null) {
             child = createChildWithName(parentRef, assocQName, typeQName, childName, nodeService);
@@ -165,7 +170,8 @@ public class RepoUtils {
         return childAssocs == null || childAssocs.isEmpty() ? null : childAssocs.get(0).getChildRef();
     }
 
-    public static NodeRef createChildWithQName(NodeRef parentRef, QName assocQName, QName typeQName, QName childQName, NodeService nodeService) {
+    public static NodeRef createChildWithQName(NodeRef parentRef, QName assocQName, QName typeQName, QName childQName,
+                                               NodeService nodeService) {
         ChildAssociationRef childAssoc = nodeService.createNode(parentRef,
                 assocQName,
                 childQName,
@@ -173,7 +179,8 @@ public class RepoUtils {
         return childAssoc.getChildRef();
     }
 
-    public static NodeRef getOrCreateChildByQName(NodeRef parentRef, QName assocQName, QName typeQName, QName childQName, NodeService nodeService) {
+    public static NodeRef getOrCreateChildByQName(NodeRef parentRef, QName assocQName, QName typeQName, QName childQName,
+                                                  NodeService nodeService) {
         NodeRef child = getChildByQName(parentRef, assocQName, childQName, nodeService);
         if (child == null) {
             child = createChildWithQName(parentRef, assocQName, typeQName, childQName, nodeService);
@@ -197,7 +204,7 @@ public class RepoUtils {
             assocs = nodeService.getParentAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
         for (ChildAssociationRef assoc : assocs) {
             if (primary != null) {
-                if (primary.booleanValue() && !assoc.isPrimary())
+                if (primary && !assoc.isPrimary())
                     continue;
             }
             NodeRef pr = assoc.getParentRef();
@@ -222,15 +229,17 @@ public class RepoUtils {
      * @param parentRef   - parent node reference
      * @param assocType   - association type, it can be null
      * @param parents     - output list
-     * @param nodeService
-     * @throws AlfrescoRuntimeException
+     * @param nodeService - node service
+     * @throws AlfrescoRuntimeException it throws this exception when <code>@nodeRef</code> and <code>@parentRef</code>
+     *                                  are not in the one primary hierarchy.
      */
-    public static void getPrimaryParents(NodeRef nodeRef, NodeRef parentRef, QName assocType, List<NodeRef> parents, NodeService nodeService)
+    public static void getPrimaryParents(NodeRef nodeRef, NodeRef parentRef, QName assocType, List<NodeRef> parents,
+                                         NodeService nodeService)
             throws AlfrescoRuntimeException {
 
         if (!hasParent(nodeRef, parentRef, assocType, true, nodeService))
-            throw new AlfrescoRuntimeException("Specified nodeRef and parentRef are not in the one primary hierarchy tree. nodeRef=" + nodeRef
-                    + ", parentRef=" + parentRef);
+            throw new AlfrescoRuntimeException("Specified nodeRef and parentRef are not in the one primary hierarchy " +
+                    "tree. nodeRef=" + nodeRef + ", parentRef=" + parentRef);
 
         ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
         if (parentAssoc == null)
@@ -247,8 +256,8 @@ public class RepoUtils {
         getPrimaryParents(parent, parentRef, assocType, parents, nodeService);
     }
 
-    public static NodeRef getNestedFolder(NodeRef parentFolder, List<NodeRef> children, String searchedFolderName, NodeService nodeService,
-                                          FileFolderService fileFolderService) {
+    public static NodeRef getNestedFolder(NodeRef parentFolder, List<NodeRef> children, String searchedFolderName,
+                                          NodeService nodeService, FileFolderService fileFolderService) {
 
         NodeRef result = null;
         NodeRef parent = parentFolder;
@@ -265,10 +274,10 @@ public class RepoUtils {
         return result;
     }
 
-    public static NodeRef createNestedFolder(NodeRef parentFolder, List<NodeRef> children, String searchedFolderName, NodeService nodeService,
-                                             FileFolderService fileFolderService) {
+    public static NodeRef createNestedFolder(NodeRef parentFolder, List<NodeRef> children, String searchedFolderName,
+                                             NodeService nodeService, FileFolderService fileFolderService) {
 
-        NodeRef result = null;
+        NodeRef result;
         NodeRef parent = parentFolder;
         for (NodeRef child : children) {
             String name = RepoUtils.getMandatoryProperty(child, ContentModel.PROP_NAME, nodeService);
@@ -288,13 +297,13 @@ public class RepoUtils {
                                      VersionService versionService) {
 
         if (!nodeService.hasAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE)) {
-            Map<QName, Serializable> versioningProperties = new HashMap<QName, Serializable>();
+            Map<QName, Serializable> versioningProperties = new HashMap<>();
             versioningProperties.put(ContentModel.PROP_AUTO_VERSION, true);
             versioningProperties.put(ContentModel.PROP_AUTO_VERSION_PROPS, false);
             versioningProperties.put(ContentModel.PROP_INITIAL_VERSION, false);
             nodeService.addAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE, versioningProperties);
 
-            Map<String, Serializable> properties = new HashMap<String, Serializable>(versionProperties.size() + 1);
+            Map<String, Serializable> properties = new HashMap<>(versionProperties.size() + 1);
             properties.putAll(versionProperties);
             properties.put(VersionModel.PROP_VERSION_TYPE, VersionType.MAJOR);
             versionProperties = properties;
@@ -319,13 +328,15 @@ public class RepoUtils {
 
     public static String getUniqueName(NodeRef nodeRef, String nameWithoutExt, String extension, NodeService nodeService) {
         ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
-        return getUniqueName(parentAssoc.getParentRef(), parentAssoc.getTypeQName(), nodeRef, nameWithoutExt, extension, nodeService);
+        return getUniqueName(parentAssoc.getParentRef(), parentAssoc.getTypeQName(), nodeRef, nameWithoutExt, extension,
+                nodeService);
     }
 
-    public static String getUniqueName(NodeRef parentRef, QName parentAssoc, NodeRef nodeRef, String nameWithoutExt, String extension, NodeService nodeService) {
+    public static String getUniqueName(NodeRef parentRef, QName parentAssoc, NodeRef nodeRef, String nameWithoutExt,
+                                       String extension, NodeService nodeService) {
         int index = 0;
         String newNameWithIndex = nameWithoutExt + extension;
-        NodeRef nr = null;
+        NodeRef nr;
         while ((nr = nodeService.getChildByName(parentRef, parentAssoc, newNameWithIndex)) != null
                 && !nodeRef.equals(nr)) {
             index++;
@@ -334,7 +345,8 @@ public class RepoUtils {
         return newNameWithIndex;
     }
 
-    public static String getExtension(NodeRef nodeRef, String defaultExtension, NodeService nodeService, MimetypeService mimetypeService) {
+    public static String getExtension(NodeRef nodeRef, String defaultExtension, NodeService nodeService,
+                                      MimetypeService mimetypeService) {
 
         // get content
         ContentData content = (ContentData) nodeService.getProperty(nodeRef, ContentModel.PROP_CONTENT);
@@ -354,7 +366,8 @@ public class RepoUtils {
         return "." + extension;
     }
 
-    public static void setUniqueOriginalName(NodeRef nodeRef, String defaultExtension, NodeService nodeService, MimetypeService mimetypeService) {
+    public static void setUniqueOriginalName(NodeRef nodeRef, String defaultExtension, NodeService nodeService,
+                                             MimetypeService mimetypeService) {
 
         String originalName = getOriginalName(nodeRef, nodeService, mimetypeService);
         String extension = getExtension(nodeRef, defaultExtension, nodeService, mimetypeService);
@@ -373,15 +386,15 @@ public class RepoUtils {
     public static List<NodeRef> getChildrenByType(NodeRef nodeRef, QName type, NodeService nodeService) {
 
         if (nodeRef == null || type == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; type=" + type
-                    + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; type=" + type + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
 
-        List<NodeRef> result = new ArrayList<NodeRef>();
+        List<NodeRef> result = new ArrayList<>();
 
-        Set<QName> childNodeTypeQNames = new HashSet<QName>(Arrays.asList(type));
+        Set<QName> childNodeTypeQNames = new HashSet<>(Collections.singletonList(type));
         List<ChildAssociationRef> childs = nodeService.getChildAssocs(nodeRef, childNodeTypeQNames);
 
         for (ChildAssociationRef childRef : childs) {
@@ -392,9 +405,9 @@ public class RepoUtils {
     }
 
     /**
-     * @param nodeRef
+     * @param nodeRef        - nodeRef
      * @param assocTypeQName - name of child association
-     * @param nodeService
+     * @param nodeService    - node service
      * @return list of children of nodeRef, by specified assocTypeQName
      * @throws IllegalArgumentException it throws this exception when required parameters are not
      *                                  specified or specified node reference is not exist.
@@ -402,13 +415,13 @@ public class RepoUtils {
     public static List<NodeRef> getChildrenByAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
         if (nodeRef == null || assocTypeQName == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; assocTypeQName="
-                    + assocTypeQName + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; assocTypeQName=" + assocTypeQName + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
 
-        List<NodeRef> result = new ArrayList<NodeRef>();
+        List<NodeRef> result = new ArrayList<>();
 
         List<ChildAssociationRef> childs = nodeService.getChildAssocs(nodeRef, assocTypeQName, RegexQNamePattern.MATCH_ALL);
 
@@ -420,9 +433,9 @@ public class RepoUtils {
     }
 
     /**
-     * @param nodeRef
+     * @param nodeRef        - nodeRef
      * @param assocTypeQName - name target association
-     * @param nodeService
+     * @param nodeService    - node service
      * @return list of target Node refs, for specified nodeRef and
      * assocTypeQName
      * @throws IllegalArgumentException it throws this exception when required parameters are not
@@ -431,13 +444,13 @@ public class RepoUtils {
     public static List<NodeRef> getTargetAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
         if (nodeRef == null || assocTypeQName == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; assocTypeQName="
-                    + assocTypeQName + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; assocTypeQName=" + assocTypeQName + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
 
-        List<NodeRef> result = new ArrayList<NodeRef>();
+        List<NodeRef> result = new ArrayList<>();
 
         List<AssociationRef> childs = nodeService.getTargetAssocs(nodeRef, assocTypeQName);
 
@@ -449,19 +462,19 @@ public class RepoUtils {
     }
 
     /**
-     * @param nodeRef
+     * @param nodeRef        - nodeRef
      * @param assocTypeQName - name of target association
-     * @param nodeService
+     * @param nodeService    - node service
      * @return first target association for specified nodeRef, return null if no
      * target association exists
-     * @throws IllegalArgumentExceptionit throws this exception when required parameters are not
-     *                                    specified or specified node reference is not exist.
+     * @throws IllegalArgumentException it throws this exception when required parameters are not
+     *                                  specified or specified node reference is not exist.
      */
     public static NodeRef getFirstTargetAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
         if (nodeRef == null || assocTypeQName == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; assocTypeQName="
-                    + assocTypeQName + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; assocTypeQName=" + assocTypeQName + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
@@ -477,16 +490,17 @@ public class RepoUtils {
     }
 
     /**
-     * @param nodeRef
-     * @param nodeService
+     * @param nodeRef     - nodeRef
+     * @param nodeService - node service
      * @return primary parent of nodeRef
-     * @throws IllegalArgumentExceptionit throws this exception when required parameters are not
-     *                                    specified or specified node reference is not exist.
+     * @throws IllegalArgumentException it throws this exception when required parameters are not
+     *                                  specified or specified node reference is not exist.
      */
     public static NodeRef getPrimaryParentRef(NodeRef nodeRef, NodeService nodeService) {
 
         if (nodeRef == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
@@ -499,15 +513,16 @@ public class RepoUtils {
     /**
      * Completely deletes node without moving to archive store
      *
-     * @param nodeRef
-     * @param nodeService
+     * @param nodeRef     - nodeRef
+     * @param nodeService - node service
      * @throws IllegalArgumentException it throws this exception when required parameters are not
      *                                  specified or specified node reference is not exist.
      */
     public static void deleteNode(NodeRef nodeRef, NodeService nodeService) {
 
         if (nodeRef == null || nodeService == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; nodeService=" + nodeService);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
@@ -522,9 +537,9 @@ public class RepoUtils {
     /**
      * return
      *
-     * @param nodeRef
+     * @param nodeRef        - nodeRef
      * @param assocTypeQName - name of source association
-     * @param nodeService
+     * @param nodeService    - node service
      * @return list of source association for node for passed assocType, returns
      * empty list of no source associations exists
      * @throws IllegalArgumentException it throws this exception when required parameters are not
@@ -533,13 +548,14 @@ public class RepoUtils {
     public static List<NodeRef> getSourceNodeRefs(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
         if (nodeRef == null || nodeService == null || assocTypeQName == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; assocTypeQName="
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; assocTypeQName="
                     + assocTypeQName + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
 
-        List<NodeRef> result = new ArrayList<NodeRef>();
+        List<NodeRef> result = new ArrayList<>();
 
         List<AssociationRef> childs = nodeService.getSourceAssocs(nodeRef, assocTypeQName);
 
@@ -551,9 +567,9 @@ public class RepoUtils {
     }
 
     /**
-     * @param nodeRef
+     * @param nodeRef        - nodeRef
      * @param assocTypeQName - name of source association
-     * @param nodeService
+     * @param nodeService    - node service
      * @return first nodeRef of source association by assocTypeQName, if passed
      * nodeRef does not have source association returns null;
      * @throws IllegalArgumentException it throws this exception when required parameters are not
@@ -562,7 +578,8 @@ public class RepoUtils {
     public static NodeRef getFirstSourceAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
         if (nodeRef == null || nodeService == null || assocTypeQName == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; assocTypeQName="
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; assocTypeQName="
                     + assocTypeQName + "; nodeService=" + nodeService);
 
         if (!nodeService.exists(nodeRef))
@@ -645,7 +662,8 @@ public class RepoUtils {
         return assocMap;
     }
 
-    public static void setAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> assocs, boolean isTarget, boolean full, NodeService nodeService, AssociationIndexing associationIndexing) {
+    public static void setAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> assocs, boolean isTarget, boolean full,
+                                 NodeService nodeService, AssociationIndexing associationIndexing) {
         Map<QName, List<NodeRef>> existingAssocs = isTarget
                 ? getTargetAssocs(nodeRef, nodeService)
                 : getSourceAssocs(nodeRef, nodeService);
@@ -656,7 +674,7 @@ public class RepoUtils {
             Set<NodeRef> nodesToLink = new HashSet<NodeRef>(entry.getValue());
             List<NodeRef> linkedNodes = existingAssocs.containsKey(name)
                     ? existingAssocs.get(name)
-                    : Collections.<NodeRef>emptyList();
+                    : Collections.emptyList();
 
             // delete existing assocs
             if (linkedNodes != null) {
@@ -714,9 +732,13 @@ public class RepoUtils {
                                          QName name, boolean isTarget, NodeService nodeService) {
         try {
             if (isTarget) {
-                nodeService.removeAssociation(nodeRef, linkedNode, name);
+                if (!NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+                    nodeService.removeAssociation(nodeRef, linkedNode, name);
+                }
             } else {
-                nodeService.removeAssociation(linkedNode, nodeRef, name);
+                if (!NodeUtils.isNodeForDeleteOrNotExist(linkedNode, nodeService)) {
+                    nodeService.removeAssociation(linkedNode, nodeRef, name);
+                }
             }
         } catch (InvalidNodeRefException e) {
             LOGGER.error(
@@ -760,11 +782,16 @@ public class RepoUtils {
         }
     }
 
-    public static void setChildAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> childAssocs, boolean primary, boolean full, NodeService nodeService) {
+    public static void setChildAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> childAssocs, boolean primary,
+                                      boolean full, NodeService nodeService) {
+        if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+            return;
+        }
         for (QName assocName : childAssocs.keySet()) {
             Set<NodeRef> newChildren = new HashSet<>(childAssocs.get(assocName));
 
-            List<ChildAssociationRef> oldChildAssocs = nodeService.getChildAssocs(nodeRef, assocName, RegexQNamePattern.MATCH_ALL);
+            List<ChildAssociationRef> oldChildAssocs = nodeService.getChildAssocs(nodeRef, assocName,
+                    RegexQNamePattern.MATCH_ALL);
             Set<NodeRef> oldChildren = new HashSet<>(oldChildAssocs.size());
             for (ChildAssociationRef childAssoc : oldChildAssocs) {
                 oldChildren.add(childAssoc.getChildRef());
@@ -791,6 +818,9 @@ public class RepoUtils {
         }
 
         if (full) {
+            if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+                return;
+            }
             List<ChildAssociationRef> allChildAssocs = nodeService.getChildAssocs(nodeRef);
             for (ChildAssociationRef childAssoc : allChildAssocs) {
                 if (!childAssocs.containsKey(childAssoc.getTypeQName()))
@@ -895,8 +925,8 @@ public class RepoUtils {
 
     public static <T extends Serializable> T getProperty(NodeRef nodeRef, QName qName, Class<T> clazz, NodeService nodeService) {
         if (nodeRef == null || qName == null || nodeService == null || clazz == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef + "; qName=" + qName
-                    + "; nodeService=" + nodeService + "; class=" + clazz);
+            throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
+                    + "; qName=" + qName + "; nodeService=" + nodeService + "; class=" + clazz);
         if (!nodeService.exists(nodeRef))
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
 
@@ -909,8 +939,8 @@ public class RepoUtils {
 
     public static <T extends Serializable> T getProperty(Map<QName, Serializable> properties, QName qName, Class<T> clazz) {
         if (properties == null || qName == null || clazz == null)
-            throw new IllegalArgumentException("One of required parameters are not specified. properties=" + properties + "; qName=" + qName
-                    + "; clazz=" + clazz);
+            throw new IllegalArgumentException("One of required parameters are not specified. properties=" + properties
+                    + "; qName=" + qName + "; clazz=" + clazz);
 
         Serializable serializable = properties.get(qName);
         if (serializable == null) {
@@ -926,5 +956,53 @@ public class RepoUtils {
             downloadURL = DOWNLOAD_API_PREFIX + nodeRef.getId() + "/" + fileName.toString();
         }
         return downloadURL;
+    }
+
+    /**
+     * @param userName      - userName of person
+     * @param personService - personService
+     * @param nodeService   - nodeService
+     * @return person full name depending on availability last name and middle name. Or null if person not found.
+     */
+    public static String getPersonFullName(String userName, PersonService personService, NodeService nodeService) {
+        if (!personService.personExists(userName)) {
+            return null;
+        }
+
+        NodeRef user = personService.getPerson(userName);
+        return getPersonFullName(user, nodeService);
+    }
+
+    /**
+     * @param userRef     - nodeRef of person
+     * @param nodeService - personService
+     * @return person full name depending on availability last name and middle name. Or null if person not found.
+     */
+    public static String getPersonFullName(NodeRef userRef, NodeService nodeService) {
+        if (userRef == null || !nodeService.exists(userRef)) {
+            return null;
+        }
+
+        QName PROP_CM_MIDDLE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "middleName");
+
+        String firstName = getProperty(userRef, ContentModel.PROP_FIRSTNAME, String.class, nodeService);
+        String lastName = getProperty(userRef, ContentModel.PROP_LASTNAME, String.class, nodeService);
+        String middleName = getProperty(userRef, PROP_CM_MIDDLE_NAME, String.class, nodeService);
+
+        if (StringUtils.isBlank(firstName)) {
+            return null;
+        }
+
+        StringBuilder fullName = new StringBuilder(firstName);
+
+        if (StringUtils.isNotBlank(lastName)) {
+            fullName.append(" ").append(lastName);
+        }
+
+        if (StringUtils.isNotBlank(middleName)) {
+            fullName.append(" ").append(middleName);
+        }
+
+        return fullName.toString();
     }
 }

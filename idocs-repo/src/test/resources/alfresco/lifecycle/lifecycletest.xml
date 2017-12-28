@@ -51,7 +51,7 @@
     <transition>
         <fromState>confirm1</fromState>
         <event type="processEnd">
-            <param name="workflowId">activiti$confirm</param>    
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>declined</toState>
         <condition type="javascript">
@@ -65,7 +65,7 @@
     <transition>
         <fromState>confirm1</fromState>
         <event type="processEnd">
-            <param name="workflowId">activiti$confirm</param>    
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>confirmx2</toState>
     </transition> 
@@ -96,7 +96,7 @@
     <transition>
         <fromState>confirm2</fromState>
         <event type="processEnd">
-            <param name="workflowId">activiti$confirm</param>    
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>declined</toState>
         <condition type="javascript">
@@ -110,7 +110,7 @@
     <transition>
         <fromState>confirm2</fromState>
         <event type="processEnd">
-            <param name="workflowId">activiti$confirm</param>    
+            <param name="workflowId">activiti$confirm</param>
         </event>    
         <toState>confirmed</toState>
     </transition>

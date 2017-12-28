@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<model name="dms:dms" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
-<model name="dms:dms" xmlns="http://www.alfresco.org/model/dictionary/1.0"
->
 	<!-- Definition of the model -->
 	<description>Document Management System</description>
 	<author>Citeck</author>

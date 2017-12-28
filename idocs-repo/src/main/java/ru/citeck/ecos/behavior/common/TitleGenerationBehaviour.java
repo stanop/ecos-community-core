@@ -30,6 +30,7 @@ import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 
 import java.io.Serializable;
@@ -116,7 +117,6 @@ public class TitleGenerationBehaviour implements
 
     private void setProperty(final NodeRef nodeRef, final QName property,
                              final Map<Locale, String> mlTemplate) {
-
         MLText mlValue = getProcessedMLText(nodeRef, mlTemplate);
         if(mlValue != null && mlValue.size() > 0) {
             setProperty(nodeRef, property, mlValue);

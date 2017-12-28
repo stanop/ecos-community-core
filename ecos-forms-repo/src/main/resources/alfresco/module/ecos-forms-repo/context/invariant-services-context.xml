@@ -150,6 +150,11 @@
 		<property name="impl" ref="nodeViewService" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
+
+	<bean id="workflowServiceUtils" class="ru.citeck.ecos.utils.WorkflowServiceUtils">
+		<property name="workflowService" ref="WorkflowService"/>
+		<property name="workflowAdminService" ref="workflowAdminService"/>
+	</bean>
 	
 	<bean id="nodeViewsDeployer" class="ru.citeck.ecos.invariants.view.NodeViewsDeployer" abstract="true">
 		<property name="nodeViewService" ref="nodeViewService" />

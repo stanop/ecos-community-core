@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,13 +108,35 @@ public class ContentConfigRegistry<T> {
     }
 
     private List<ConfigData<T>> searchConfigs(Map<QName, Serializable> keys) {
+
+        Map<QName, Serializable> notNullProps = new HashMap<>();
+        Set<QName> nullProps = new HashSet<>();
+
+        for (QName key : keys.keySet()) {
+            if (keys.get(key) != null) {
+                notNullProps.put(key, keys.get(key));
+            } else {
+                nullProps.add(key);
+            }
+        }
+
         return FTSQuery.create()
                        .parent(rootRef.getNodeRef()).and()
                        .type(configNodeType).and()
-                       .values(keys, BinOperator.AND, true)
+                       .values(notNullProps, BinOperator.AND, true)
                        .transactional()
                        .query(searchService)
                        .stream()
+                       .filter(ref -> {
+                           for (QName propName : nullProps) {
+                               Serializable value = nodeService.getProperty(ref, propName);
+                               if (value != null && (!(value instanceof String) ||
+                                                     StringUtils.isNotBlank((String) value))) {
+                                   return false;
+                               }
+                           }
+                           return true;
+                       })
                        .map(this::getConfigImpl)
                        .collect(Collectors.toList());
     }

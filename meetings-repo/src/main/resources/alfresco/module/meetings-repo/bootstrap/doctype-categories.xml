@@ -2,7 +2,8 @@
 <view:view
 		xmlns:view="http://www.alfresco.org/view/repository/1.0"
 		xmlns:sys="http://www.alfresco.org/model/system/1.0"
-		xmlns:cm="http://www.alfresco.org/model/content/1.0">
+		xmlns:cm="http://www.alfresco.org/model/content/1.0"
+		xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
 
 	<cm:category>
 		<view:properties>
@@ -12,6 +13,8 @@
 				<view:mlvalue view:locale="en_US">${doctype.meetings.title_en}</view:mlvalue>
 				<view:mlvalue view:locale="ru_RU">${doctype.meetings.title_ru}</view:mlvalue>
 			</cm:title>
+			<tk:appliedType>{http://www.citeck.ru/model/meetings/1.0}meeting</tk:appliedType>
+			<tk:journalType>meetings</tk:journalType>
         </view:properties>
 	</cm:category>
 

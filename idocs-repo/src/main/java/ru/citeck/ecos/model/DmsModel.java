@@ -101,10 +101,10 @@ public final class DmsModel {
 	public static final Object PROP_TEMPLATE_TYPE = QName.createQName(DMS_NAMESPACE, "templateType");
 	
 	// type dms:notificationTemplate
-	public static final Object TYPE_NOTIFICATION_TEMPLATE = QName.createQName(DMS_NAMESPACE, "notificationTemplate");
-	public static final Object PROP_NOTIFICATION_TYPE = QName.createQName(DMS_NAMESPACE, "notificationType");
-	public static final Object PROP_TASK_NAME = QName.createQName(DMS_NAMESPACE, "taskName");
-	public static final Object PROP_WORKFLOW_NAME = QName.createQName(DMS_NAMESPACE, "workflowName");
+	public static final QName TYPE_NOTIFICATION_TEMPLATE = QName.createQName(DMS_NAMESPACE, "notificationTemplate");
+	public static final QName PROP_NOTIFICATION_TYPE = QName.createQName(DMS_NAMESPACE, "notificationType");
+	public static final QName PROP_TASK_NAME = QName.createQName(DMS_NAMESPACE, "taskName");
+	public static final QName PROP_WORKFLOW_NAME = QName.createQName(DMS_NAMESPACE, "workflowName");
 	public static final QName PROP_TITLE_FOR_RESENDING = QName.createQName(DMS_NAMESPACE, "titleForResending");
 	public static final QName PROP_SUBJECT_TEMPLATE = QName.createQName(DMS_NAMESPACE, "subjectTemplate");
 	public static final QName PROP_DOC_TYPE = QName.createQName(DMS_NAMESPACE, "documentType");

@@ -132,4 +132,44 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.script.clean-status-cardlets" parent="idocs.import-scripts.3-2-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="Clean status cardlets" />
+        <property name="description" value="Clean status cardlets" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/patch/clean-status-cardlets.js" />
+    </bean>
+
+    <bean id="ecos-community.module-component.case-status2" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="case-status" />
+        <property name="description" value="case-status" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+                <ref bean="idocs.module-component.script.clean-status-cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/case-status</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.general-case-categories2" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="general-case-categories" />
+        <property name="description" value="general-case-categories" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/general-case-categories.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
 </beans>

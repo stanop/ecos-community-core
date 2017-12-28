@@ -8,16 +8,22 @@ import ru.citeck.ecos.invariants.InvariantScope;
 import ru.citeck.ecos.invariants.xml.Invariant;
 import ru.citeck.ecos.journals.xml.Criterion;
 import ru.citeck.ecos.journals.xml.CriterionRegion;
+import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JournalCriterion extends JournalViewElement {
 
     private List<InvariantDefinition> invariants = new ArrayList<>();
     private Map<String, JournalViewElement> regions = new HashMap<>();
 
-    public JournalCriterion(QName attributeKey, Criterion criterion, NamespacePrefixResolver prefixResolver) {
-        super(criterion);
+    public JournalCriterion(QName attributeKey, Criterion criterion, String journalId,
+                            NamespacePrefixResolver prefixResolver,
+                            SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
+        super(criterion, journalId, searchCriteriaSettingsRegistry);
 
         if (criterion != null) {
 
@@ -37,7 +43,7 @@ public class JournalCriterion extends JournalViewElement {
 
             if (xmlRegions != null) {
                 for (CriterionRegion region : xmlRegions) {
-                    regions.put(region.getName(), new JournalViewElement(region));
+                    regions.put(region.getName(), new JournalViewElement(region, journalId, searchCriteriaSettingsRegistry));
                 }
             }
         }
