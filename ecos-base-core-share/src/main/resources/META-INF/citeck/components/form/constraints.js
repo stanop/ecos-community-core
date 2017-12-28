@@ -593,7 +593,6 @@
 
                         // define submit handler
                         var onSubmit = function(layer, args) {
-                            console.log('onSubmit');
                             var runtime = args[1].runtime;
                             if (runtime.key() != viewId) return;
 
@@ -618,12 +617,10 @@
                             var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
 
                             YAHOO.Bubbling.fire("metadataRefresh");
-                            console.log('--------> metadataRefresh (at the end)');
                         };
 
                         // define cancel handler
                         var onCancel = function(layer, args) {
-                            console.log('onCancel');
                             var runtime = args[1].runtime;
                             if (runtime.key() != viewId) return;
                             runtime.terminate();
