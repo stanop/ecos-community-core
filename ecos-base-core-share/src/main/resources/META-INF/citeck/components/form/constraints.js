@@ -331,6 +331,7 @@
     Citeck.forms.dialog = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
+        params = params || {};
 
         if(Citeck.utils.isNodeRef(itemId)) {
             paramName = 'nodeRef';
@@ -346,7 +347,6 @@
             mode = 'create';
         }
 
-        params = params || {};
         var msg = Alfresco.util.message,
             id = Alfresco.util.generateDomId(),
             viewId = id + "-body",

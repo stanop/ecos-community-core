@@ -1782,6 +1782,20 @@
 					execScripts: true
 				});
             };
+        },
+
+        taskTitle: function () {
+
+            var typeName = this.typeName(null);
+
+            return function(elCell, oRecord, oColumn, sData) {
+                var title = oRecord.getData('attributes["cwf:taskTitle"]');
+                if (title) {
+                    elCell.innerHTML = title;
+                } else {
+                    typeName.call(this, elCell, oRecord, oColumn, sData);
+                }
+            };
         }
 
 	});
