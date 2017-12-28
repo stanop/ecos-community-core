@@ -30,6 +30,8 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.workflow.AdvancedWorkflowService;
 import ru.citeck.ecos.workflow.listeners.GrantWorkflowTaskPermissionExecutor;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
@@ -40,13 +42,15 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TaskDeputyListener extends AbstractDeputyListener {
-    
+
+    private static final Log logger = LogFactory.getLog(TaskDeputyListener.class);
+
     private static final String AVAILABLE_PROCESS_NAME   = "on-user-available-process";
     private static final String UNAVAILABLE_PROCESS_NAME = "on-user-unavailable-process";
     
-    private static final int BATCH_SIZE       = 10;
-    private static final int WORKER_THREADS   = 10;
-    private static final int LOGGING_INTERVAL = 10;
+    private static final int BATCH_SIZE       = 30;
+    private static final int WORKER_THREADS   = 5;
+    private static final int LOGGING_INTERVAL = 30;
     
     private WorkflowService workflowService;
 
@@ -152,10 +156,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                     retryingTransactionHelper,
                     new TaskDeputyProvider(tasks),
                     WORKER_THREADS, BATCH_SIZE,
-                    null, null, LOGGING_INTERVAL
+                    null, logger, LOGGING_INTERVAL
             );
 
-            batchProcessor.process(new TaskDeputyWorker(new OnUserAvailableTaskDeputyStrategy(userName, userDeputies)), false);
+            batchProcessor.process(new TaskDeputyWorker(new OnUserAvailableTaskDeputyStrategy(userName, userDeputies)), true);
         }
     }
 
@@ -173,10 +177,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                     retryingTransactionHelper,
                     new TaskDeputyProvider(tasks),
                     WORKER_THREADS, BATCH_SIZE,
-                    null, null, LOGGING_INTERVAL
+                    null, logger, LOGGING_INTERVAL
             );
 
-            batchProcessor.process(new TaskDeputyWorker(new OnUserUnavailableTaskDeputyStrategy(userName)), false);
+            batchProcessor.process(new TaskDeputyWorker(new OnUserUnavailableTaskDeputyStrategy(userName)), true);
         }
     }
 
