@@ -234,7 +234,6 @@
 
         // clear junk created by onViewItem
         _clearViewJunk: function () {
-            console.log('-->> _clearViewJunk');
             // unsubscribe
             try {YAHOO.Bubbling.unsubscribe("node-view-submit", onSubmit);} catch(e) {
                 if (e.message !== 'onSubmit is not defined') {
@@ -270,7 +269,6 @@
          * Updates list and list toolbar.
          */
         onTreeItemSelected: function(args) {
-            console.log('-->> onTreeItemSelected!');
             var node = args.node;
             var item = node.data;
             var parent = node.parent.data;
@@ -291,7 +289,6 @@
          * Do nothing.
          */
         onListItemSelected: function(args) {
-            console.log('-->> onListItemSelected');
             var node = args.node;
             var item = node.data;
             var parent = node.parent.data;
@@ -371,7 +368,6 @@
          * Show edit form
          */
         onEditItem: function(args) {
-            console.log('-->> onEditItem');
             var mode = args.mode;
             var formId = args.type;
             var itemId = args.item;
@@ -395,8 +391,6 @@
          * Show view form
          */
         onViewItem: function(args) {
-            console.log('-->> onViewItem');
-
             var htmlid, formId, itemId, item;
 
             if (args.node) {
@@ -423,8 +417,6 @@
          * Show EditItemInplaced form
          */
         onEditItemInplaced: function(args) {
-            console.log('-->> onEditItemInplaced');
-
             var htmlid, mode, formId, itemId, item;
 
             formId = 'orgstruct';
@@ -578,7 +570,6 @@
          * Initiates model update.
          */
         onItemEdited: function(item) {
-            console.log('-->> onItemEdited');
             this.model.updateItem(item);
         },
 
