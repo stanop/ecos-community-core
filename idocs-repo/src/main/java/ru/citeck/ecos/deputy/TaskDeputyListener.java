@@ -155,7 +155,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                     null, null, LOGGING_INTERVAL
             );
 
-            batchProcessor.process(new TaskDeputyWorker(new OnUserAvailableTaskDeputyStrategy(userName, userDeputies)), true);
+            batchProcessor.process(new TaskDeputyWorker(new OnUserAvailableTaskDeputyStrategy(userName, userDeputies)), false);
         }
     }
 
@@ -176,7 +176,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
                     null, null, LOGGING_INTERVAL
             );
 
-            batchProcessor.process(new TaskDeputyWorker(new OnUserUnavailableTaskDeputyStrategy(userName)), true);
+            batchProcessor.process(new TaskDeputyWorker(new OnUserUnavailableTaskDeputyStrategy(userName)), false);
         }
     }
 
