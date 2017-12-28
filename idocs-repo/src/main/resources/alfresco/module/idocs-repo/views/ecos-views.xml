@@ -71,13 +71,6 @@
                 <region name="input" template="number" />
             </field>
         </view>
-        <view>
-            <field prop="dms:updateContent" kind="mode-view"/>
-            <field prop="cm:content">
-                <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-                <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-            </field>
-        </view>
     </view>
 
     <view class="idocs:countryISO3166">
