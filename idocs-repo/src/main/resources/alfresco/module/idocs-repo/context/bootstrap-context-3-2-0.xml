@@ -162,6 +162,11 @@
     <bean id="idocs.module-component.general-case-categories2" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="general-case-categories" />
         <property name="description" value="general-case-categories" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.doctype-categories" />
+            </list>
+        </property>
         <property name="bootstrapView">
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
@@ -197,6 +202,11 @@
     <bean id="idocs.module-component.ecos-document.cardlets" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="Cardlets for ecos documents"/>
         <property name="description" value="Cardlets for ecos documents"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
         <property name="bootstrapViews">
             <list>
                 <props>
