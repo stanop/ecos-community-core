@@ -1,6 +1,7 @@
 .invariants-form .form-fields .user-profile-custom-container {
     margin-left: -15px;
     margin-right: -20px;
+    width: auto;
 }
 
 .invariants-form .form-fields .user-profile-custom-container>.form-view.template-person-edit-btn {
@@ -16,13 +17,14 @@
     box-shadow: 0 0 0px 1px #f5f5f5;
     border-radius: 3px;
     vertical-align: top;
+    background-color: #fff;
 }
 
-.invariants-form .user-profile-custom-container>.form-view .title,
-.user-profile-custom-container>.form-view .title {
+.invariants-form .user-profile-custom-container .form-view .title,
+.user-profile-custom-container .form-view .title {
     padding-top: 13px;
     padding-left: 11px;
-    margin-bottom: 13px;
+    margin: 0 0 13px 0;
     height: 27px;
     font-weight: normal;
     color: #fefefe;
@@ -31,11 +33,20 @@
     border-top-right-radius: 3px;
 }
 
+.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset .title {
+    margin: 0 0 13px 0;
+}
+
+.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset:after {
+    display: none;
+}
+
 .ecos-form .form-fields .user-profile-custom-container .form-field {
     /*margin: 0 15px 20px;*/
     margin-top: 0px;
     margin-bottom: 20px;
     margin-left: 15px;
+    padding-right: 15px;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field .form-region.template-user-groups ol {
@@ -96,15 +107,30 @@
     background-color: initial;
 }
 
+.invariants-form .user-profile-custom-container .field-width-full .form-field .form-region {
+    width: 100%;
+}
+
+.invariants-form .user-profile-custom-container .template-mandatory {
+    left: -10px;
+}
+
+.invariants-form .user-profile-custom-container .user-profile-header .template-mandatory {
+    left: -20px;
+}
 
 .invariants-form .user-profile-custom-container .user-profile-header {
-    margin-bottom: 20px;
+    margin: 0 15px 20px;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region {
     color: white;
     font-size: 150%;
     font-weight: bold;
+}
+
+.ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region input {
+    font-size: 59%;
 }
 
 .invariants-form .user-profile-custom-container .user-profile-header__column,
