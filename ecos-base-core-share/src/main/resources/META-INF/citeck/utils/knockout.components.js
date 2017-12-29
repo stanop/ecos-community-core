@@ -376,6 +376,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.containerId = this.fieldId + "-container";
 
+            this.keyDownManagment = function(data, event) {
+                if (event.keyCode == 13 && data.applyCriteria) {
+                    $.each($('#'+ this.containerId +' input'), function(){
+                        this.blur();
+                        this.focus();
+                    });
+                    data.applyCriteria();
+                    return false;
+                }
+                return true;
+            };
             if (!this.attribute() || !this.journalType) {
                 return;
             }
@@ -383,6 +394,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.criterion.removeCriterion = this.removeCriterion;
             this.criterion.containerId = this.containerId;
             this.criterion.attributeProperty(this.attribute());
+            this.criterion.applyCriteria = this.applyCriteria;
+            this.criterion.keyDownManagment = this.keyDownManagment;
 
             var urlArgs = [
                 'htmlid=' + this.fieldId,
@@ -410,21 +423,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                     ko.applyBindings(self.criterion, contentContainer[0]);
                 }
             });
-            /*
-            this.keyDownManagment = function(data, event) {
-                if (event.keyCode == 13 && "text,date,datetime,number".indexOf(data.templateName) != -1 && data.applyCriteria) {
-                    $.each($('#'+ this.containerId +' input'), function(){
-                        this.blur();
-                        this.focus();
-                    });
-                    data.applyCriteria();
-                    return false;
-                }
-                return true;
-            };*/
+
         },
-        template:   //event: {keydown: keyDownManagment }
-            '<div class="criterion" data-bind="attr: { id: containerId }, mousedownBubble: false"></div>'
+        template:
+            '<div class="criterion" data-bind="attr: { id: containerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
     });
 
 

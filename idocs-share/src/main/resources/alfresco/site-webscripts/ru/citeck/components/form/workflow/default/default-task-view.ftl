@@ -6,4 +6,6 @@
 
 	<#include "../common/workflow-info.ftl" />
 
+	<#include "../common/task-items.ftl" />
+
 </@>

@@ -2950,12 +2950,20 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
   position: relative;
 }
 
+.share-form div[id*="start"] .form-container .form-fields .form-field > input[class*="date-entry"] + a {
+    right: 0;
+}
+
 .share-form .form-container .form-fields .form-field > .format-info {
   float: right;
   clear: both;
   right: 43.5%;
   position: relative;
   line-height: 100%;
+}
+
+.share-form div[id*="start"] .form-container .form-fields .form-field > div[class*="datepicker"] + div[class*="format-info"] {
+    right: 41.5%;
 }
 
 .share-form .form-container .form-fields > .form-field:not(.alf-textarea) > label > span.mandatory-indicator {
@@ -2998,6 +3006,10 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    width: 15%;
 }
 
+.share-form div[id*="start"] .form-container .form-fields .form-field input[type="text"].date-entry {
+    right: 35%;
+}
+
 .share-form .form-container .form-fields .form-field input[type="text"].auto-manual-input {
   margin: 0;
 }
@@ -3008,13 +3020,13 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 }
 
 .share-form .form-container .form-fields .form-field input[type="text"].time-entry + div.format-info {
-  right: 15%;
+  right: 20%;
   width: 40%;
 }
 
 .share-form .form-container .form-fields .form-field input[type="text"].time-entry + div.format-info > span.date-format {
-  margin-right: 30%;
-  margin-left: 25px;
+  margin-right: 13%;
+  margin-left: 22%;
 }
 
 .share-form .form-container .form-fields .form-field input[type="checkbox"] {
