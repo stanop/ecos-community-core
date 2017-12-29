@@ -174,13 +174,16 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     }
 
     private void setWorkflowPropertiesFromITask(Map<QName, Serializable> workflowProperties, NodeRef taskRef) {
+
         // get task properties
-        String workflowDescription = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
+        String taskTitle = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
+
         Date workflowDueDate = getWorkflowDueDate(taskRef);
         Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
 
         // set properties from task
-        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, workflowDescription);
+        workflowProperties.put(CiteckWorkflowModel.PROP_TASK_TITLE, taskTitle);
+        workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, taskTitle);
         workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DUE_DATE, workflowDueDate);
         workflowProperties.put(WorkflowModel.PROP_WORKFLOW_PRIORITY, workflowPriority);
     }

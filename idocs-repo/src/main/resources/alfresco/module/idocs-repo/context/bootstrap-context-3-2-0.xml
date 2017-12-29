@@ -162,6 +162,11 @@
     <bean id="idocs.module-component.general-case-categories2" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="general-case-categories" />
         <property name="description" value="general-case-categories" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.doctype-categories" />
+            </list>
+        </property>
         <property name="bootstrapView">
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
@@ -169,6 +174,52 @@
                 <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/general-case-categories.xml</prop>
                 <prop key="encoding">UTF-8</prop>
             </props>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.update-category-document-type" parent="idocs.import-scripts.3-2-0">
+        <property name="name" value="set-category-document-type-applied-type-and-journal-type"/>
+        <property name="description" value="set-category-document-type-applied-type-and-journal-type"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.document-categories"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="workspace://SpacesStore/category-document-type" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:appliedType"><null/></entry>
+                        <entry key="tk:journalType"><null/></entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-document.cardlets" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="Cardlets for ecos documents"/>
+        <property name="description" value="Cardlets for ecos documents"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/ecos-document/node-view</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/ecos-document/web-preview</prop>
+                </props>
+            </list>
         </property>
     </bean>
 

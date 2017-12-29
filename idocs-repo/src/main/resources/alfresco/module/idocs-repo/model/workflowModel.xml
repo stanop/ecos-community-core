@@ -214,6 +214,14 @@
                 </property>
             </properties>
         </aspect>
+
+        <aspect name="cwf:hasTaskTitle">
+            <properties>
+                <property name="cwf:taskTitle">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
 	</aspects>
 
 </model>

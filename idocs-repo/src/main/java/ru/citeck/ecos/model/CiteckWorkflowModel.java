@@ -44,6 +44,6 @@ public interface CiteckWorkflowModel {
     public static final QName PROP_IS_TASK_CLAIMABLE = QName.createQName(NAMESPACE, "isTaskClaimable");
     public static final QName PROP_IS_TASK_RELEASABLE = QName.createQName(NAMESPACE, "isTaskReleasable");
     public static final QName PROP_IS_TASK_REASSIGNABLE = QName.createQName(NAMESPACE, "isTaskReassignable");
-
+    public static final QName PROP_TASK_TITLE = QName.createQName(NAMESPACE, "taskTitle");
 
 }

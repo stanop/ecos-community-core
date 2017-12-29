@@ -151,4 +151,26 @@
         </property>
     </bean>
 
+    <bean id="contracts.module-component-script.update-doctype-categories" parent="contracts.import-scripts.2-0-5">
+        <property name="name" value="update-doctype-categories"/>
+        <property name="description" value="update-doctype-categories"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.doctype-categories1" />
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="workspace://SpacesStore/contracts-cat-doctype-contract" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:appliedType"><null/></entry>
+                        <entry key="tk:journalType"><null/></entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
 </beans>

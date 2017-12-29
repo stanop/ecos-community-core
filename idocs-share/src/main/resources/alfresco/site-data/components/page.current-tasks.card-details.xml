@@ -8,15 +8,17 @@
         <header>cardlet.current-tasks.header</header>
         <childrenUrl>Alfresco.constants.PROXY_URI + "/citeck/tasks-active/document?nodeRef={nodeRef}"
         </childrenUrl>
-        <columns>[{key: 'attributes["bpm:description"]', label: '${msg("cardlet.current-tasks.task.title")}'},
+        <columns>[{key: 'attributes["wfm:taskType"].shortQName', label: '${msg("cardlet.current-tasks.task.title")}', formatter: Citeck.format.taskTitle()},
             {key: 'attributes["wfm:actors"][0].nodeRef', label: '${msg("cardlet.current-tasks.assignee.title")}', formatter: Citeck.format.userOrGroup()},
-            {key: 'attributes["bpm:dueDate"]', label: '${msg("cardlet.current-tasks.due-date.title")}', formatter: Citeck.format.date()}
-            ]</columns>
+            {key: 'attributes["bpm:dueDate"]', label: '${msg("cardlet.current-tasks.due-date.title")}', formatter: Citeck.format.date()}]
+        </columns>
         <responseSchema>{resultsList: 'documentTasks',
 		fields: [
+            {key: 'attributes["wfm:taskType"].shortQName'},
             {key: 'attributes["bpm:description"]'},
             {key: 'attributes["wfm:actors"][0].nodeRef'}, 
-            {key: 'attributes["bpm:dueDate"]'}
+            {key: 'attributes["bpm:dueDate"]'},
+            {key: 'attributes["cwf:taskTitle"]'}
 		]}
         </responseSchema>
         <twisterKey>current-tasks</twisterKey>

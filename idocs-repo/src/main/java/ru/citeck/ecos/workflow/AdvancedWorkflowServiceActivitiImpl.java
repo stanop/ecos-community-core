@@ -20,7 +20,6 @@ package ru.citeck.ecos.workflow;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
-import org.activiti.engine.task.TaskQuery;
 import org.alfresco.repo.workflow.activiti.ActivitiWorkflowEngine;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
@@ -30,6 +29,10 @@ import ru.citeck.ecos.workflow.tasks.AdvancedTaskQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
 
@@ -91,11 +94,18 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
     @SuppressWarnings("unchecked")
     private <T> List<T> convert(List<?> inputs) {
         List<T> outputs = new ArrayList<T>(inputs.size());
-        for (Object input : inputs) {
-            if (input instanceof Task) {
-                outputs.add((T) convert((Task) input));
-            }
-        }
+
+        inputs.stream()
+              .filter(Task.class::isInstance)
+              .map(Task.class::cast)
+              .filter(distinctById(Task::getId))
+              .forEachOrdered(t -> outputs.add((T) convert(t)));
+
         return outputs;
+    }
+
+    private static <T> Predicate<T> distinctById(Function<? super T, ?> idExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(idExtractor.apply(t));
     }
 }

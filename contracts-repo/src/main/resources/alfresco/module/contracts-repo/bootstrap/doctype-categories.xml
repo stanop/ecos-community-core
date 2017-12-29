@@ -25,8 +25,6 @@
                 <view:mlvalue view:locale="en_US">${doctype.contract.title_en}</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">${doctype.contract.title_ru}</view:mlvalue>
             </cm:title>
-            <tk:appliedType>{http://www.citeck.ru/model/contracts/1.0}agreement</tk:appliedType>
-            <tk:journalType>contract-agreements</tk:journalType>
         </view:properties>
         <cm:subcategories>
             <cm:category>
