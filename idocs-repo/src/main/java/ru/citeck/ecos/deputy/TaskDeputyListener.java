@@ -50,7 +50,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
     
     private static final int BATCH_SIZE       = 30;
     private static final int WORKER_THREADS   = 5;
-    private static final int LOGGING_INTERVAL = 30;
+    private static final int LOGGING_INTERVAL = 500;
     
     private WorkflowService workflowService;
 
