@@ -838,6 +838,8 @@ JournalsWidget
 	.property('journal', Journal)
 	.property('filter', Filter)
 	.property('settings', Settings)
+    .property('recordsQueryCache', o)
+    .property('recordsDataCache', o)
 	.property('_filter', Filter)
 	.property('_settings', Settings)
 
@@ -1661,23 +1663,31 @@ JournalsWidget
 
 			logger.info("Loading records with query: " + JSON.stringify(query));
 
-			Alfresco.util.Ajax.jsonPost({
-				url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-				dataObj: query,
-				successCallback: {
-					scope: this,
-					fn: function(response) {
-						var data = response.json;
-						this.model({
-							records: data.results,
-							skipCount: data.paging.skipCount,
-							maxItems: data.paging.maxItems,
-							totalItems: data.paging.totalItems,
-							hasMore: data.paging.hasMore
-						});
-					}
-				}
-			});
+            if (JSON.stringify(this.recordsQueryCache()) != JSON.stringify(query)) {
+                this.recordsQueryCache(query);
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                    dataObj: query,
+                    successCallback: {
+                        scope: this,
+                        fn: function(response) {
+                            var data = response.json;
+                            var newModel = {
+                                records: data.results,
+                                skipCount: data.paging.skipCount,
+                                maxItems: data.paging.maxItems,
+                                totalItems: data.paging.totalItems,
+                                hasMore: data.paging.hasMore
+                            };
+                            this.model(newModel);
+                            this.recordsDataCache(newModel);
+                        }
+                    }
+                });
+
+            } else {
+                this.model(this.recordsDataCache());
+            }
 		};
 		load.call(this);
 	})
