@@ -66,8 +66,10 @@
                 </view>
             </view>
 
-
-            <field prop="idocs:nameInGenitiveCase"/>
+            <view id="cm_person_general_info--nameInGenitiveCase">
+                <param name="customClass">field-width-full</param>
+                <field prop="idocs:nameInGenitiveCase"/>
+            </view>
 
             <view id="cm_person_general_info__last_sub_group" kind="2-column">
                 <field prop="ecos:birthDate"/>
@@ -78,7 +80,6 @@
                 <field prop="cm:organization"/>
                 <field prop="cm:jobtitle"/>
             </view>
-
         </view>
 
         <view id="cm_person_contacts">
@@ -94,7 +95,10 @@
                 </field>
             </view>
 
-            <field prop="cm:location" />
+            <view id="cm_person_contacts--location">
+                <param name="customClass">field-width-full</param>
+                <field prop="cm:location"/>
+            </view>
 
             <view id="cm_person_contacts--el" kind="2-column">
                 <field prop="cm:skype"/>
@@ -104,10 +108,10 @@
                     </invariant>
                 </field>
             </view>
-
         </view>
 
-        <view id="cm_person_other_info" kind="2-column">
+        <view id="cm_person_other_info">
+            <param name="customClass">field-width-full</param>
             <param name="preloadInvariants">true</param>
             <param name="title">Прочее</param>
             <field prop="cm:userStatus" />
