@@ -165,9 +165,26 @@
     margin-bottom: 5px;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img .img-cover {
+.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img .img-cover,
+.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img-background .img-cover {
     width: 90px;
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
+}
+
+.img-back-container {
+    width: 90px;
+    height: 90px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 0;
+}
+
+.user-profile .ecos-form:not(.edit-form) .form-fields {
+    padding: 15px 40px 0 0px;
+}
+
+.user-profile-view-inner-container .edit-form .user-profile-custom-container.form-view {
+    margin-left: -30px;
 }
