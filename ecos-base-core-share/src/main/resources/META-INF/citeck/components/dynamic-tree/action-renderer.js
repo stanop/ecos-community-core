@@ -59,7 +59,7 @@
                 nodeRef = oRecord.getData(nodeRefField || "nodeRef");
             if (nodeRef && records) {
                 Dom.addClass(elCell, "actions-cell loading");
-                var node = records.find(function(item){return item.nodeRef && item.nodeRef() == nodeRef});
+                var node = _.find(records, function(item){return item.nodeRef && item.nodeRef() == nodeRef});
                 if (node && node.doclib && node.doclib()) renderer.renderActions(node.doclib(), elCell, obj);
             }
         }
