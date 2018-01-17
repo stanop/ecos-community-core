@@ -187,7 +187,7 @@
 				<aspect>meet:participants</aspect>
 				<aspect>meet:absent</aspect>
 				<aspect>meet:answeredQuestions</aspect>
-				<aspect>idocs:hasDocumentStatus</aspect>
+				<aspect>meet:hasDocumentStatus</aspect>
 			</mandatory-aspects>
 		</type>
 

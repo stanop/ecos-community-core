@@ -391,7 +391,7 @@
 				</property>
 			</properties>
 		</aspect>
-		
+
 
 		<aspect name="payments:hasDocumentStatus">
 			<parent>idocs:hasDocumentStatus</parent>

@@ -148,7 +148,7 @@
 			<mandatory-aspects>
 				<aspect>letters:incomeType</aspect>
 				<aspect>letters:hasDelivery</aspect>
-				<aspect>idocs:hasDocumentStatus</aspect>
+				<aspect>idocs:hasRestrictedDocumentStatus</aspect>
 			</mandatory-aspects>
 		</type>
 		

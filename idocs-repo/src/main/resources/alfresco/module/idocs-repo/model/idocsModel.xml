@@ -822,11 +822,19 @@
                     <title>Document status</title>
                     <type>d:text</type>
                     <default>new</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasRestrictedDocumentStatus">
+            <parent>idocs:hasDocumentStatus</parent>
+            <overrides>
+                <property name="idocs:documentStatus">
                     <constraints>
                         <constraint ref="idocs:constraint:documentStatus"/>
                     </constraints>
                 </property>
-            </properties>
+            </overrides>
         </aspect>
         
         <aspect name="idocs:hasDuration">
