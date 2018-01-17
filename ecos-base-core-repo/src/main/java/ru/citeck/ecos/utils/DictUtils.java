@@ -29,19 +29,22 @@ public class DictUtils {
             return null;
         }
 
+        ClassDefinition containerClass = null;
         if (containerName != null) {
+            containerClass = dictionaryService.getClass(containerName);
+        }
+
+        if (containerClass != null) {
 
             ClassDefinition propContainerClass = propDef.getContainerClass();
 
-            if (!propContainerClass.getName().equals(containerName)) {
+            if (!propContainerClass.equals(containerClass)) {
 
-                if (dictionaryService.isSubClass(containerName, propContainerClass.getName())) {
+                if (dictionaryService.isSubClass(containerClass.getName(), propContainerClass.getName())) {
 
-                    propContainerClass = dictionaryService.getClass(containerName);
+                    propContainerClass = containerClass;
 
                 } else if (propContainerClass.isAspect()) {
-
-                    ClassDefinition containerClass = dictionaryService.getClass(containerName);
 
                     for (ClassDefinition aspectDef : containerClass.getDefaultAspects(true)) {
                         if (dictionaryService.isSubClass(aspectDef.getName(), propContainerClass.getName())) {
