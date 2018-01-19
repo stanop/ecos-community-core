@@ -1,13 +1,13 @@
 package ru.citeck.ecos.utils;
 
+import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.ClassAttributeDefinition;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DictUtils {
@@ -58,6 +58,31 @@ public class DictUtils {
         }
 
         return propDef;
+    }
+
+    /**
+     * Returns a list of constraints for the specified property
+     * @param propertyName property name. Must be not null
+     * @return list of values constraint or null
+     * @throws NullPointerException if propertyName is null
+     */
+    public ListOfValuesConstraint getListOfValuesConstraint(QName propertyName) {
+
+        PropertyDefinition propDef = dictionaryService.getProperty(propertyName);
+
+        if (propDef != null) {
+            List<ConstraintDefinition> constraintDefinitions = propDef.getConstraints();
+
+            for (ConstraintDefinition constraintDefinition : constraintDefinitions) {
+                Constraint constraint = constraintDefinition.getConstraint();
+
+                if (constraint instanceof ListOfValuesConstraint) {
+                    return (ListOfValuesConstraint) constraint;
+                }
+            }
+        }
+
+        return null;
     }
 
     @Autowired
