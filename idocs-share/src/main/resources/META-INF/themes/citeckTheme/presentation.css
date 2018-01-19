@@ -2167,6 +2167,64 @@ table td.thumbnail img
    border-bottom: 1px solid #ccc;
 }
 
+#alf-hd #SHARE_HEADER {
+    padding: 0 5px;
+}
+
+#HEADER_SLIDE_MENU {
+    margin-right: 5px;
+    float: left;
+}
+
+.fa.HEADER_MENU_JOURNAL_OF_CONTRACTS:before {
+    content: "\f2c2";
+    color: inherit;
+}
+
+.fa.HEADER_MENU_JOURNAL_OF_ATTORNEYS:before {
+    content: "\f2bc";
+    color: inherit;
+}
+
+.fa.contracts:before {
+    content: "\f2bb";
+    color: inherit;
+}
+
+.fa.letters:before {
+    content: "\f0e0";
+    color: inherit;
+}
+
+.fa.meetings:before {
+     content: "\f2bd";
+     color: inherit;
+ }
+
+.fa.order_pass:before {
+    content: "\f207";
+    color: inherit;
+}
+
+.fa.orders:before {
+    content: "\f0c9";
+    color: inherit;
+}
+
+.fa.common_documents:before {
+    content: "\f05b";
+    color: inherit;
+}
+
+.fa.HEADER_MENU_ORGSTRUCT_WIDGET:before {
+    content: "\f0e8";
+    color: inherit;
+}
+
+.yui-skin-citeckTheme .mm-menu_selected-hover .mm-listitem>a.mm-btn_fullwidth:hover+span,.mm-menu_selected-hover .mm-listitem>a:not(.mm-btn_fullwidth):hover {
+    color: blue;
+}
+
 .alfresco-header-Header .dijitMenuBar .dijitMenuItem:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU) {
    background-color: #2d3541;
    color: white;
@@ -2373,6 +2431,10 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     width: 90%;
 }
 
+.yui-skin-citeckTheme #alfresco-documentlibrary #yui-main {
+    background-color: white;
+}
+
 .alfresco-share .alf-menu-title,
 .alfresco-share .title-menu,
 .alfresco-share .navigation-menu {
@@ -2409,6 +2471,9 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 #bd {
     padding-bottom: 0;
+}
+.yui-skin-citeckTheme #bd, .yui-skin-citeckTheme .sticky-wrapper {
+    background-color: white;
 }
 
 #bd .grid {
@@ -4213,7 +4278,8 @@ div#HEADER_USER_STATUS {
 /* ORGSTRUCT CONSOLE */
 
 #bd .orgstruct-console {
-   padding: 0;
+    padding: 0;
+    background-color: white;
 }
 
 #bd .orgstruct-console .orgstruct-tree-resizer {
@@ -4276,6 +4342,7 @@ div#HEADER_USER_STATUS {
 
 #alf-content {
   padding: 15px 25px 0px 25px;
+    background-color: #fff;
 }
 
 /* others */

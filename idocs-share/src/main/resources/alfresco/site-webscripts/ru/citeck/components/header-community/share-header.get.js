@@ -22,7 +22,6 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     titleMenu = findObjectById(model.jsonModel.widgets, "HEADER_TITLE_MENU"),
     navigationMenu = findObjectById(model.jsonModel.widgets, "HEADER_NAVIGATION_MENU_BAR"),
     customizeUserDashboard = findObjectById(model.jsonModel.widgets, "HEADER_CUSTOMIZE_USER_DASHBOARD"),
-
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie();
 
 appMenu.config.id = "HEADER_APP_MENU_BAR";
@@ -34,22 +33,21 @@ header.config.widgets.splice(1, 0, search);
 
 // USER MENU ITEMS
 var userMenuItems = [
-  {
-    id: "HEADER_USER_MENU_STATUS",
-    name: "alfresco/header/CurrentUserStatus"
-  },
-
-  {
-    id: "HEADER_USER_MENU_MY_PROFILE",
-    name: "js/citeck/header/citeckMenuItem",
-    config:
     {
-      id: "HEADER_USER_MENU_MY_PROFILE",
-      label: "header.my-profile.label",
-      iconImage: "/share/res/components/images/header/my-profile.png",
-      targetUrl: "user/" + encodeURIComponent(user.name) + "/profile"
+        id: "HEADER_USER_MENU_STATUS",
+        name: "alfresco/header/CurrentUserStatus"
+    },
+    {
+        id: "HEADER_USER_MENU_MY_PROFILE",
+        name: "js/citeck/header/citeckMenuItem",
+        config:
+        {
+              id: "HEADER_USER_MENU_MY_PROFILE",
+              label: "header.my-profile.label",
+              iconImage: "/share/res/components/images/header/my-profile.png",
+              targetUrl: "user/" + encodeURIComponent(user.name) + "/profile"
+        }
     }
-  }
 ];
 
 var currentUser = user.getUser(user.id);
@@ -123,24 +121,23 @@ userMenuItems.push({
 });
 
 if (!context.externalAuthentication) {
-  var logoutItemConfig = {
-    id: "HEADER_USER_MENU_LOGOUT",
-    name: "js/citeck/header/citeckMenuItem",
-    config:
-    {
-      id: "HEADER_USER_MENU_LOGOUT",
-      label: "header.logout.label",
-      iconImage: "/share/res/components/images/header/logout.png"
-    }
-  };
+    var logoutItemConfig = {
+        id: "HEADER_USER_MENU_LOGOUT",
+        name: "js/citeck/header/citeckMenuItem",
+        config: {
+              id: "HEADER_USER_MENU_LOGOUT",
+              label: "header.logout.label",
+              iconImage: "/share/res/components/images/header/logout.png"
+        }
+    };
 
-  // Alfresco community version doesn't have LogoutService so we should check
-  if (model.jsonModel.services && model.jsonModel.services.indexOf("alfresco/services/LogoutService") > -1) {
-    logoutItemConfig.config.publishTopic = "ALF_DOLOGOUT";
-  } else {
-    logoutItemConfig.config.targetUrl = "dologout";
-  }
-  userMenuItems.push(logoutItemConfig);
+    // Alfresco community version doesn't have LogoutService so we should check
+    if (model.jsonModel.services && model.jsonModel.services.indexOf("alfresco/services/LogoutService") > -1) {
+        logoutItemConfig.config.publishTopic = "ALF_DOLOGOUT";
+    } else {
+        logoutItemConfig.config.targetUrl = "dologout";
+    }
+    userMenuItems.push(logoutItemConfig);
 }
 
 // USER MENU
@@ -240,87 +237,76 @@ var createSiteClickEvent = function(event, element) {
     Citeck.module.getCreateSiteInstance().show();
 };
  
-var HEADER_SITES_VARIANTS = {
-      id: "HEADER_SITES_VARIANTS",
-      name: "js/citeck/menus/citeckMenuGroup",
-      config: {
-        id: "HEADER_SITES_VARIANTS",
-        widgets: buildSitesForUser(user.name)
-      }
-    },
-    HEADER_SITES_SEARCH = {
-      id: "HEADER_SITES_SEARCH",
-      name: "js/citeck/menus/citeckMenuItem",
-      config: {
-        id: "HEADER_SITES_SEARCH",
-        label: "header.find-sites.label",
-        targetUrl: "site-finder"
-      }
-    },
-    HEADER_SITES_CREATE = {
-      id: "HEADER_SITES_CREATE",
-      name: "js/citeck/menus/citeckMenuItem",
-      config: {
-        id: "HEADER_SITES_CREATE",
-        label: "header.create-site.label",
-        clickEvent: createSiteClickEvent.toString(),
-        inheriteClickEvent: false
-      }
-    },
-    HEADER_CREATE_VARIANTS = {
-      id: "HEADER_CREATE_VARIANTS",
-      name: "js/citeck/menus/citeckMenuGroup",
-      config: {
-        id: "HEADER_CREATE_VARIANTS",
-        widgets: buildCreateVariantsForSite(currentSite)
-      }
-    },
-    HEADER_JOURNALS = {
-      id: "HEADER_JOURNALS",
-      name: "js/citeck/menus/citeckMenuBarItem",
-      config: {
-        id: "HEADER_JOURNALS",
-        label: "header.journals.label",
-        targetUrl: buildSiteUrl(currentSite) + "journals2/list/main",
-        movable: { minWidth: 1089 }
-      }
-    },
-    HEADER_DOCUMENTLIBRARY = {
-      id: "HEADER_DOCUMENTLIBRARY",
-      name: "js/citeck/menus/citeckMenuBarItem",
-      config: {
+// var HEADER_SITES_VARIANTS = {
+//       id: "HEADER_SITES_VARIANTS",
+//       name: "js/citeck/menus/citeckMenuGroup",
+//       config: {
+//         id: "HEADER_SITES_VARIANTS",
+//         widgets: buildSitesForUser(user.name)
+//       }
+//     },
+//    var HEADER_SITES_SEARCH = {
+//       id: "HEADER_SITES_SEARCH",
+//       name: "js/citeck/menus/citeckMenuItem",
+//       config: {
+//         id: "HEADER_SITES_SEARCH",
+//         label: "header.find-sites.label",
+//         targetUrl: "site-finder"
+//       }
+//     },
+//     HEADER_SITES_CREATE = {
+//       id: "HEADER_SITES_CREATE",
+//       name: "js/citeck/menus/citeckMenuItem",
+//       config: {
+//         id: "HEADER_SITES_CREATE",
+//         label: "header.create-site.label",
+//         clickEvent: createSiteClickEvent.toString(),
+//         inheriteClickEvent: false
+//       }
+//     },
+    // HEADER_CREATE_VARIANTS = {
+    //   id: "HEADER_CREATE_VARIANTS",
+    //   name: "js/citeck/menus/citeckMenuGroup",
+    //   config: {
+    //     id: "HEADER_CREATE_VARIANTS",
+    //     widgets: buildCreateVariantsForSite(currentSite)
+    //   }
+    // },
+
+var HEADER_DOCUMENTLIBRARY = {
         id: "HEADER_DOCUMENTLIBRARY",
-        label: "header.documentlibrary.label",
-        targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
-        movable: { minWidth: 1171 }
-      }
+        name: "js/citeck/menus/citeckMenuBarItem",
+        config: {
+            id: "HEADER_DOCUMENTLIBRARY",
+            label: "header.documentlibrary.label",
+            targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
+            movable: { minWidth: 1171 }
+          }
     },
     HEADER_CREATE_WORKFLOW_VARIANTS = {
-      id: "HEADER_CREATE_WORKFLOW_VARIANTS",
-      name: "js/citeck/menus/citeckMenuGroup",
-      config: {
         id: "HEADER_CREATE_WORKFLOW_VARIANTS",
-        widgets: [
-          {
-            id: "HEADER_CREATE_WORKFLOW_ADHOC",
-            name: "js/citeck/menus/citeckMenuItem",
-            config: {
-              id: "HEADER_CREATE_WORKFLOW_ADHOC",
-              label: "header.create-workflow-adhoc.label",
-              targetUrl: "start-specified-workflow?workflowId=activiti$perform"
-            }
-          },
-          {
-            id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-            name: "js/citeck/menus/citeckMenuItem",
-            config: {
-              id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-              label: "header.create-workflow-confirm.label",
-              targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
-            }
-          }
-        ]
-      }
+        name: "js/citeck/menus/citeckMenuGroup",
+        config: {
+            id: "HEADER_CREATE_WORKFLOW_VARIANTS",
+            widgets: [{
+                id: "HEADER_CREATE_WORKFLOW_ADHOC",
+                name: "js/citeck/menus/citeckMenuItem",
+                config: {
+                    id: "HEADER_CREATE_WORKFLOW_ADHOC",
+                    label: "header.create-workflow-adhoc.label",
+                    targetUrl: "start-specified-workflow?workflowId=activiti$perform"
+                }
+            },
+            {
+                id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+                name: "js/citeck/menus/citeckMenuItem",
+                config: {
+                    id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+                    label: "header.create-workflow-confirm.label",
+                    targetUrl: "start-specified-workflow?workflowId=activiti$confirm"
+                }
+            }]
+        }
     };
 
 
@@ -414,38 +400,38 @@ appMenu.config.widgets = [];
 
 // BUILD DESKTOP MENU
 if (!isMobile) {
-  appMenu.config.widgets.push({
-    id: "HEADER_SITES",
-    name: "alfresco/header/AlfMenuBarPopup",
-    config: {
-      id: "HEADER_SITES",
-      label: "header.sites.label",
-      widgets: [
-        HEADER_SITES_VARIANTS,
-        {
-          id: "HEADER_SITES_MANAGEMENT",
-          name: "js/citeck/menus/citeckMenuGroup",
-          config: {
-            id: "HEADER_SITES_MANAGEMENT",
-            widgets: [ 
-              HEADER_SITES_SEARCH, 
-              HEADER_SITES_CREATE 
-            ]
-          }
-        }
-      ]
-    }
-  }); 
-  appMenu.config.widgets.push({
-    id: "HEADER_CREATE",
-    name: "alfresco/header/AlfMenuBarPopup",
-    config: {
-      id: "HEADER_CREATE",
-      label: "header.create-variants.label",
-      widgets: [ HEADER_CREATE_VARIANTS ]
-    }
-  });
-  appMenu.config.widgets.push(HEADER_JOURNALS);
+  // appMenu.config.widgets.push({
+  //   id: "HEADER_SITES",
+  //   name: "alfresco/header/AlfMenuBarPopup",
+  //   config: {
+  //     id: "HEADER_SITES",
+  //     label: "header.sites.label",
+  //     widgets: [
+  //       HEADER_SITES_VARIANTS,
+  //       {
+  //         id: "HEADER_SITES_MANAGEMENT",
+  //         name: "js/citeck/menus/citeckMenuGroup",
+  //         config: {
+  //           id: "HEADER_SITES_MANAGEMENT",
+  //           widgets: [
+  //             HEADER_SITES_SEARCH,
+  //             HEADER_SITES_CREATE
+  //           ]
+  //         }
+  //       }
+  //     ]
+  //   }
+  // });
+  // appMenu.config.widgets.push({
+  //   id: "HEADER_CREATE",
+  //   name: "alfresco/header/AlfMenuBarPopup",
+  //   config: {
+  //     id: "HEADER_CREATE",
+  //     label: "header.create-variants.label",
+  //     widgets: [ HEADER_CREATE_VARIANTS ]
+  //   }
+  // });
+  //appMenu.config.widgets.push(HEADER_JOURNALS);
   appMenu.config.widgets.push(HEADER_DOCUMENTLIBRARY);
   appMenu.config.widgets.push({
     id: "HEADER_CREATE_WORKFLOW",
@@ -473,84 +459,95 @@ if (!isMobile) {
 }
 
 // BUILD MOBILE MENU
-var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
-HEADER_MOBILE_JOURNALS.name = "js/citeck/menus/citeckMenuItem";
-HEADER_MOBILE_JOURNALS.config.movable = null;
+// var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
+// HEADER_MOBILE_JOURNALS.name = "js/citeck/menus/citeckMenuItem";
+// HEADER_MOBILE_JOURNALS.config.movable = null;
+//
+// var HEADER_MOBILE_DOCUMENTLIBRARY = toMobileWidget(HEADER_DOCUMENTLIBRARY);
+// HEADER_MOBILE_DOCUMENTLIBRARY.name = "js/citeck/menus/citeckMenuItem";
+// HEADER_MOBILE_DOCUMENTLIBRARY.config.movable = null;
+//
+// var HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS = toMobileWidget(HEADER_CREATE_WORKFLOW_VARIANTS);
+// HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS.config.label = "header.create-workflow.label";
 
-var HEADER_MOBILE_DOCUMENTLIBRARY = toMobileWidget(HEADER_DOCUMENTLIBRARY);
-HEADER_MOBILE_DOCUMENTLIBRARY.name = "js/citeck/menus/citeckMenuItem";
-HEADER_MOBILE_DOCUMENTLIBRARY.config.movable = null;
+// var HEADER_MOBILE_CREATE_VARIANTS = toMobileWidget(HEADER_CREATE_VARIANTS);
+// HEADER_MOBILE_CREATE_VARIANTS.config.label = "header.create-variants.label";
+//
+// var HEADER_MOBILE_SITES_VARIANTS = toMobileWidget(HEADER_SITES_VARIANTS);
+// var HEADER_MOBILE_SITES_SEARCH = toMobileWidget(HEADER_SITES_SEARCH);
+// var HEADER_MOBILE_SITES_CREATE = toMobileWidget(HEADER_SITES_CREATE);
 
-var HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS = toMobileWidget(HEADER_CREATE_WORKFLOW_VARIANTS);
-HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS.config.label = "header.create-workflow.label";
+// var HEADER_MOBILE_MENU_VARIANTS = {
+//   id: "HEADER_MOBILE_MENU_VARIANTS",
+//   name: "js/citeck/menus/citeckMenuGroup",
+//   config: {
+//     id: "HEADER_MOBILE_MENU_VARIANTS",
+//     widgets: [
+//       HEADER_MOBILE_JOURNALS,
+//       HEADER_MOBILE_DOCUMENTLIBRARY,
+//       {
+//         id: "HEADER_MOBILE_SITES",
+//         name: "js/citeck/menus/citeckMenuGroup",
+//         config: {
+//           id: "HEADER_MOBILE_SITES",
+//           label: "header.sites.label",
+//           widgets: [
+//             HEADER_MOBILE_SITES_VARIANTS,
+//             {
+//               id: "HEADER_MOBILE_SITES_MANAGEMENT",
+//               name: "js/citeck/menus/citeckMenuGroup",
+//               config: {
+//                 id: "HEADER_MOBILE_SITES_MANAGEMENT",
+//                 widgets: [ HEADER_MOBILE_SITES_SEARCH, HEADER_MOBILE_SITES_CREATE ]
+//               }
+//             }
+//           ]
+//         }
+//       },
+//
+//       HEADER_MOBILE_CREATE_VARIANTS,
+//       HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS
+//     ]
+//   }
+// };
 
-var HEADER_MOBILE_CREATE_VARIANTS = toMobileWidget(HEADER_CREATE_VARIANTS);
-HEADER_MOBILE_CREATE_VARIANTS.config.label = "header.create-variants.label";
+// HEADER_MOBILE_MENU_VARIANTS.config.widgets.push(buildMorePopup(true));
+//
+// if (loggingWidgetItems) {
+//   HEADER_MOBILE_MENU_VARIANTS.config.widgets.push({
+//     id: "HEADER_LOGGING",
+//     name: "js/citeck/header/citeckMenuGroup",
+//     config: {
+//       id: "HEADER_MOBILE_LOGGING",
+//       label: "Debug Menu",
+//       widgets: loggingWidgetItems
+//     }
+//   });
+// }
 
-var HEADER_MOBILE_SITES_VARIANTS = toMobileWidget(HEADER_SITES_VARIANTS);
-var HEADER_MOBILE_SITES_SEARCH = toMobileWidget(HEADER_SITES_SEARCH);
-var HEADER_MOBILE_SITES_CREATE = toMobileWidget(HEADER_SITES_CREATE);
-
-var HEADER_MOBILE_MENU_VARIANTS = {
-  id: "HEADER_MOBILE_MENU_VARIANTS",
-  name: "js/citeck/menus/citeckMenuGroup",
-  config: {
-    id: "HEADER_MOBILE_MENU_VARIANTS",
-    widgets: [
-      HEADER_MOBILE_JOURNALS,
-      HEADER_MOBILE_DOCUMENTLIBRARY,
-      {
-        id: "HEADER_MOBILE_SITES",
-        name: "js/citeck/menus/citeckMenuGroup",
-        config: {
-          id: "HEADER_MOBILE_SITES",
-          label: "header.sites.label",
-          widgets: [
-            HEADER_MOBILE_SITES_VARIANTS, 
-            {
-              id: "HEADER_MOBILE_SITES_MANAGEMENT",
-              name: "js/citeck/menus/citeckMenuGroup",
-              config: {
-                id: "HEADER_MOBILE_SITES_MANAGEMENT",
-                widgets: [ HEADER_MOBILE_SITES_SEARCH, HEADER_MOBILE_SITES_CREATE ]
-              }
-            }
-          ]
-        }
-      },
-
-      HEADER_MOBILE_CREATE_VARIANTS,
-      HEADER_MOBILE_CREATE_WORKFLOW_VARIANTS
-    ]
-  }
-};
-
-HEADER_MOBILE_MENU_VARIANTS.config.widgets.push(buildMorePopup(true));
-
-if (loggingWidgetItems) {
-  HEADER_MOBILE_MENU_VARIANTS.config.widgets.push({
-    id: "HEADER_LOGGING",
-    name: "js/citeck/header/citeckMenuGroup",
+appMenu.config.widgets.unshift({
+    id: "HEADER_SLIDE_MENU",
+    name: "js/citeck/header/citeckMainSlideMenu",
     config: {
-      id: "HEADER_MOBILE_LOGGING",
-      label: "Debug Menu",
-      widgets: loggingWidgetItems
+        id: "HEADER_SLIDE_MENU",
+        userName: user.name,
+        logoSrc: getHeaderLogoUrl(),
+        logoSrcMobile: url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png",
+        widgets: getWidgets(isMobile ? true : false)
     }
-  });
-}
-
-appMenu.config.widgets.unshift(
-    {
-        id: "HEADER_MOBILE_MENU",
-        name: "alfresco/header/AlfMenuBarPopup",
-        config: {
-            id: "HEADER_MOBILE_MENU",
-            widgets: [HEADER_MOBILE_MENU_VARIANTS],
-            style: "padding-right: 5px;"
-        }
-    },
-   buildLogo(isMobile)
-);
+})
+// appMenu.config.widgets.unshift(
+//     {
+//         id: "HEADER_MOBILE_MENU",
+//         name: "alfresco/header/AlfMenuBarPopup",
+//         config: {
+//             id: "HEADER_MOBILE_MENU",
+//             widgets: [HEADER_MOBILE_MENU_VARIANTS],
+//             style: "padding-right: 5px;"
+//         }
+//     },
+//    buildLogo(isMobile)
+// );
 
 // ---------------------
 // TITLE MENU
@@ -560,17 +557,17 @@ var siteConfig = findObjectById(model.jsonModel.widgets, "HEADER_SITE_CONFIGURAT
     siteData = getSiteData();
 
 if (siteConfig && siteData.userIsSiteManager) {
-  if (!page.titleId && !hasWidget("HEADER_CUSTOMIZE_SITE_DASHBOARD")) {
-    siteConfig.config.widgets.splice(0, 0, {
-      id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
-      name: "js/citeck/menus/citeckMenuItem",
-      config: {
-        label: "customize_dashboard.label",
-        iconClass: "alf-cog-icon",
-        targetUrl: "site/" + page.url.templateArgs.site + "/customise-site-dashboard"
-      }
-    });
-  }
+    if (!page.titleId && !hasWidget("HEADER_CUSTOMIZE_SITE_DASHBOARD")) {
+        siteConfig.config.widgets.splice(0, 0, {
+            id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
+            name: "js/citeck/menus/citeckMenuItem",
+            config: {
+                label: "customize_dashboard.label",
+                iconClass: "alf-cog-icon",
+                targetUrl: "site/" + page.url.templateArgs.site + "/customise-site-dashboard"
+            }
+        });
+    }
 }
 
 
@@ -671,24 +668,33 @@ function buildAdminGroup(isMobile) {
 };
 
 function buildSitesForUser(username) {
-  var sitesPresets = [],
-      result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
+    var sitesPresets = [], result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
 
-  if (result.status == 200 && result != "{}") {
-    var sites = eval('(' + result + ')');
+    if (result.status == 200 && result != "{}") {
+        var sites = eval('(' + result + ')');
 
-    if (sites && sites.length > 0) {
-      for (var sd = 0; sd < sites.length; sd++) {
-        sitesPresets.push({
-          url: "?site=" + sites[sd].shortName,
-          id: sites[sd].shortName.replace(/-/, "_"),
-          label: sites[sd].title
-        });
-      }
+        if (sites && sites.length > 0) {
+            for (var sd = 0; sd < sites.length; sd++) {
+                sitesPresets.push({
+                    id: sites[sd].shortName.replace(/-/, "_"),
+                    url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
+                    label: sites[sd].title,
+                    widgets: buildCreateVariantsForSite(sites[sd].shortName)
+                });
+            }
+        }
     }
-  }
+    sitesPresets.push({
+            id: "HEADER_SITES_SEARCH",
+            label: "header.find-sites.label",
+            url: "/share/page/site-finder"
+        },
+        {
+            id: "HEADER_SITES_CREATE",
+            label: "header.create-site.label"
+        });
 
-  return buildItems(sitesPresets, "SITE");
+    return sitesPresets;
 };
 
 function buildCreateVariantsForSite(sitename) {
@@ -704,27 +710,160 @@ function buildCreateVariantsForSite(sitename) {
         createVariantsPresets.push({
           label: createVariants[cv].title,
           id: createVariants[cv].type.replace(":", "_"),
-          url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
+          url: "/share/page/node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
         });
       }
     }
   }
 
-  return buildItems(createVariantsPresets, "CREATE_VARIANT");
+  return createVariantsPresets;
 }
 
-function buildLogo(isMobile) {
-    return {
-        id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
-        name: "js/citeck/logo/citeckLogo",
-        config: {
-            id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
-            logoClasses: "alfresco-logo-only",
-            currentTheme: theme,
-            logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
-            targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
-        }
-    };
+// function buildLogo(isMobile) {
+//     return {
+//         id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
+//         name: "js/citeck/logo/citeckLogo",
+//         config: {
+//             id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
+//             logoClasses: "alfresco-logo-only",
+//             currentTheme: theme,
+//             logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
+//             targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
+//         }
+//     };
+// };
+
+function getWidgets(isMobile) {
+    // TODO: Add request
+    var mainMenu = [{
+            id: "HEADER_MENU_SECTION_1",
+            sectionTitle: "header.section-1.label",
+            widgets: [
+                {
+                    id: "HEADER_MENU_JOURNAL_OF_CONTRACTS",
+                    label: "header.journal-of-contracts.label",
+                    widgets: [
+                        {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
+                        {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
+                    ]
+                }
+            ]
+        },
+            {
+                id: "HEADER_MENU_SECTION_2",
+                sectionTitle: "header.section-2.label",
+                widgets: [
+                    {
+                        id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS",
+                        label: "header.journal-of-attorneys.label",
+                        widgets: [
+                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
+                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "HEADER_MENU_SITES",
+                sectionTitle: "header.sites.label",
+                widgets: buildSitesForUser(user.name)
+            },
+            {
+                id: "HEADER_MENU_ORGSTRUCT",
+                sectionTitle: "header.orgstruct.label",
+                widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
+            }
+        ],
+        mobileMenu = [{
+            id: "HEADER_MENU_SECTION_1",
+            sectionTitle: "header.section-1.label",
+            widgets: [
+                {
+                    id: "HEADER_MENU_JOURNAL_OF_CONTRACTS",
+                    label: "header.journal-of-contracts.label",
+                    widgets: [
+                        {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
+                        {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
+                    ]
+                }
+            ]
+        },
+            {
+                id: "HEADER_MENU_SECTION_2",
+                sectionTitle: "header.section-2.label",
+                widgets: [
+                    {
+                        id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS",
+                        label: "header.journal-of-attorneys.label",
+                        widgets: [
+                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
+                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "HEADER_MENU_SITES",
+                sectionTitle: "header.sites.label",
+                widgets: buildSitesForUser(user.name)
+            },
+            {
+                id: "HEADER_MENU_ORGSTRUCT",
+                sectionTitle: "header.orgstruct.label",
+                widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
+            },
+            {
+                id: "HEADER_DOCUMENTLIBRARY",
+                sectionTitle: "header.documentlibrary.label",
+                widgets: [{id: "HEADER_DOCUMENTLIBRARY_WIDGET", label: "header.documentlibrary.label", url: "/share/page/" + buildSiteUrl(currentSite) + "documentlibrary"}]
+            },
+            {
+                id: "HEADER_CREATE_WORKFLOW",
+                sectionTitle: "header.create-workflow.label",
+                widgets: [{
+                        id: "HEADER_CREATE_WORKFLOW_ADHOC",
+                        label: "header.create-workflow-adhoc.label",
+                        url: "/share/page/start-specified-workflow?workflowId=activiti$perform"
+                    },
+                    {
+                        id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+                        label: "header.create-workflow-confirm.label",
+                        url: "/share/page/start-specified-workflow?workflowId=activiti$confirm"
+                    }]
+            },
+            {
+                id: "HEADER_MORE_MY_GROUP",
+                sectionTitle: "header.my.label",
+                widgets: [
+                    { id: "task-journals", url: "/share/page/journals2/list/tasks", label: "header.task-journals.label" },
+                    { id: "my-workflows", url: "/share/page/my-workflows", label: "header.my-workflows.label" },
+                    { id: "completed-workflows", url: "/share/page/completed-workflows#paging=%7C&filter=workflows%7Call", label: "header.completed-workflows.label" },
+                    { id: "my-content", url: "/share/page/user/user-content", label: "header.my-content.label" },
+                    { id: "my-sites", url: "/share/page/user/user-sites", label: "header.my-sites.label" },
+                    { id: "my-profile", url: "/share/page/user/" + encodeURIComponent(user.name) + "/profile", label: "header.my-profile.label" },
+                    { id: "my-files", url: "/share/page/context/mine/myfiles", label: "header.my-files.label" },
+                    { id: "global_journals2", url: "/share/page/journals2/list/main", label: "header.global_journals2.label" }
+                ]
+            },
+            {
+                id: "HEADER_MORE_TOOLS_GROUP",
+                sectionTitle: "header.tools.label",
+                widgets: [
+                    { id: "repository", url: "/share/page/repository", label: "header.repository.label" },
+                    { id: "application", url: "/share/page/console/admin-console/application", label: "header.application.label" },
+                    { id: "groups", url: "/share/page/console/admin-console/groups", label: "header.groups.label" },
+                    { id: "users", url: "/share/page/console/admin-console/users", label: "header.users.label" },
+                    { id: "categories", url: "/share/page/console/admin-console/type-manager", label: "header.categories.label" },
+                    { id: "system", url: "/share/page/journals2/list/system", label: "header.system.label" },
+                    { id: "meta_journals", url: "/share/page/journals2/list/meta", label: "header.meta_journals.label" },
+                    { id: "templates", url: "/share/page/journals2/list/templates", label: "header.templates.label" },
+                    { id: "more", url: "/share/page/console/admin-console/", label: "header.more.label" }
+                ]
+            }
+
+        ];
+
+    return isMobile ? mobileMenu : mainMenu;
 };
 
 
