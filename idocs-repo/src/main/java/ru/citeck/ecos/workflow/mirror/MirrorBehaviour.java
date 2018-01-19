@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package ru.citeck.ecos.workflow.mirror;
 
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -26,34 +27,44 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.utils.NodeUtils;
 
 public class MirrorBehaviour implements NodeServicePolicies.OnDeleteAssociationPolicy {
 
-	private PolicyComponent policyComponent;
-	private NodeService nodeService;
-	
-	public void init() {
-		policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
-				WorkflowModel.TYPE_TASK, WorkflowModel.ASSOC_PACKAGE, new JavaBehaviour(this, "onDeleteAssociation", NotificationFrequency.TRANSACTION_COMMIT));
-	}
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
 
-	@Override
-	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
-		NodeRef taskMirror = nodeAssocRef.getSourceRef();
-		if(NodeUtils.isNodeForDeleteOrNotExist(taskMirror, nodeService)) {
-			return;
-		}
-		nodeService.deleteNode(taskMirror);
-	}
+    private NodeUtils nodeUtils;
+
+    public void init() {
+        policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
+                WorkflowModel.TYPE_TASK, WorkflowModel.ASSOC_PACKAGE,
+                new JavaBehaviour(this, "onDeleteAssociation",
+                                  NotificationFrequency.TRANSACTION_COMMIT)
+        );
+    }
+
+    @Override
+    public void onDeleteAssociation(AssociationRef nodeAssocRef) {
+        NodeRef taskMirror = nodeAssocRef.getSourceRef();
+        if (nodeUtils.isValidNode(taskMirror)) {
+            nodeService.deleteNode(taskMirror);
+        }
+    }
 
 
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
-	
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
+    @Autowired
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
+    }
 }

@@ -43,6 +43,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
@@ -73,6 +74,8 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private OrgStructService orgStructService;
     private SearchService searchService;
     private DictionaryService dictionaryService;
+
+    private NodeUtils nodeUtils;
 
     private NodeRef taskMirrorRoot;
     private QName taskMirrorAssoc;
@@ -208,21 +211,18 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
             }
 
-            if (NodeUtils.isNodeForDeleteOrNotExist(taskMirror, nodeService)) {
-                return;
+            if (nodeUtils.isValidNode(taskMirror)) {
+                nodeInfoFactory.persist(taskMirror, nodeInfo, true);
             }
-            nodeInfoFactory.persist(taskMirror, nodeInfo, true);
 
-            // delete
         } else if (task == null && taskMirror != null) {
             if (logger.isDebugEnabled()) {
                 String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
                 logger.debug("Deleting mirror for task " + taskId + " (" + taskMirror + ")");
             }
-            if (NodeUtils.isNodeForDeleteOrNotExist(taskMirror, nodeService)) {
-                return;
+            if (nodeUtils.isValidNode(taskMirror)) {
+                nodeService.deleteNode(taskMirror);
             }
-            nodeService.deleteNode(taskMirror);
         }
     }
 
@@ -404,5 +404,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    @Autowired
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
     }
 }
