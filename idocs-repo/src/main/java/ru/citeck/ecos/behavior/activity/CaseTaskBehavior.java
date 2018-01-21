@@ -301,6 +301,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             return false;
         }
         NodeRef bpmPackage = wf.getWorkflowPackage();
+        if (bpmPackage == null || !nodeService.exists(bpmPackage)) {
+            return true;
+        }
         Boolean isActive = (Boolean) nodeService.getProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE);
         if (isActive == null) {
             isActive = true;
