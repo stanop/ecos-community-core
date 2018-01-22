@@ -233,9 +233,7 @@ if (siteMenuItems.length) {
 }
 
 // APP MENU ITEMS
-var createSiteClickEvent = function(event, element) {
-    Citeck.module.getCreateSiteInstance().show();
-};
+var createSiteClickEvent = "Citeck.module.getCreateSiteInstance().show()";
  
 // var HEADER_SITES_VARIANTS = {
 //       id: "HEADER_SITES_VARIANTS",
@@ -691,7 +689,8 @@ function buildSitesForUser(username) {
         },
         {
             id: "HEADER_SITES_CREATE",
-            label: "header.create-site.label"
+            label: "header.create-site.label",
+            clickEvent: createSiteClickEvent
         });
 
     return sitesPresets;

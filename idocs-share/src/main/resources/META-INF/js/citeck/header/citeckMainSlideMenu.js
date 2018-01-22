@@ -22,9 +22,17 @@ define(['dojo/_base/declare',
                         if (item.sectionTitle) {
                             ul += '<li class="mm-listitem_divider" id="' + item.id + '">' + self.message(item.sectionTitle) + '</li>';
                         } else {
-                            ul += '<li id="' + item.id + '">' + (item.url ? '<a href="' + item.url + '">' : '<span>')
-                                    + '<i class="fa fa-menu-default-icon ' + item.id + '"></i>' + self.message(item.label)
-                                    + (item.url ? '</a>' : '</span>');
+                            ul += '<li id="' + item.id + '">';
+                            var label = '<i class="fa fa-menu-default-icon ' + item.id + '"></i>' + self.message(item.label);
+                            if (item.url) {
+                                ul += '<a href="' + item.url + '">' + label + '</a>';
+                                return;
+                            }
+                            if (item.clickEvent) {
+                                ul += '<a href="#" onclick="' + "$('#menu').data('mmenu').close();\n" + item.clickEvent + '">' + label + '</a>';
+                                return;
+                            }
+                            ul += '<span>' + label + '</span>';
                         }
                         if (item.widgets) {
                             ul += item.sectionTitle ? add_new_ul(item.widgets) : '<ul>' + add_new_ul(item.widgets) + '</ul>';
@@ -43,13 +51,13 @@ define(['dojo/_base/declare',
                         "pagedim-black"
                     ],
                     "dividers": {
-                        "fixed": !0
+                        "fixed": true
                     },
                     "iconPanels": {
-                        "add": !0,
+                        "add": true,
                         "size": 60,
-                        "hideDivider": !0,
-                        "hideNavbar": !0,
+                        "hideDivider": true,
+                        "hideNavbar": true,
                         "visible": "first"
                     },
                     "offCanvas": {
@@ -57,26 +65,26 @@ define(['dojo/_base/declare',
                         "zposition": "front"
                     },
                     "setSelected": {
-                        "hover": !0,
-                        "parent": !0
+                        "hover": true,
+                        "parent": true
                     },
                     "sidebar": {
                         "collapsed": {
                             "use": 550,
                             "size": 60,
-                            "hideNavbar": !0,
-                            "hideDivider": !0
+                            "hideNavbar": true,
+                            "hideDivider": true
                         },
                         "expanded": 1430
                     },
                     "searchfield": {
                         "panel": {
-                            "add": !0
+                            "add": true
                         }
                     }
                 }, {
                     "searchfield": {
-                        "clear": !0
+                        "clear": true
                     }
                 });
 
