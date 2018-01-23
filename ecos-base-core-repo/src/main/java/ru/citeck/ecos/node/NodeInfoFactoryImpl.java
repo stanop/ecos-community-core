@@ -288,7 +288,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 			parentAssocName = QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate());
 		}
 
-		if (nodeType.getPrefixedQName(namespaceService).equals(ContentModel.TYPE_PERSON)) {
+        if (nodeType.getPrefixedQName(namespaceService).equals(ContentModel.TYPE_PERSON)) {
             Map<QName,Serializable> properties = nodeInfo.getProperties();
             nodeRef = personService.createPerson(properties);
         } else {
