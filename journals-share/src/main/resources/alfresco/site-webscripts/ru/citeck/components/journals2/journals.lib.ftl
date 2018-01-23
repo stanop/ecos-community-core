@@ -265,7 +265,47 @@
     </div>
 </#macro>
 
-<#macro renderCreateReportMenu id icon=false hide=false>
+<#macro renderCreateReportMenu id hideMenuItems="" journalsListId4HideMenu="" icon=false hide=false>
+<#-- Parameters:
+    * hideMenuItems - comma separated list of keywords to hide menue items
+        avialable keywords:
+            - html.view
+            - html.download
+            - xlsx
+            - csv
+
+    * journalsListId4HideMenu - id of JournalList for which you want to apply previous condition
+-->
+    <#assign showItem_htmlView = true />
+    <#assign showItem_htmlDownload = true />
+    <#assign showItem_xlsx = true />
+    <#assign showItem_csv = true />
+
+    <#if hideMenuItems != "">
+        <#assign hideMenuItemsStr = (hideMenuItems!"")?replace("(\r\n)+", "", "r")?replace("(\n)+", "", "r")?replace("(\r)+", "", "r")?replace(" ", "")?lower_case />
+        <#assign hideMenuItemsList = hideMenuItemsStr?split(",") />
+
+        <#if (journalsListId4HideMenu != "" && journalsListId4HideMenu == journalsListId) || (journalsListId4HideMenu == "")>
+            <#list hideMenuItemsList as item>
+                <#switch item>
+                    <#case "html.view">
+                        <#assign showItem_htmlView = false />
+                        <#break>
+                    <#case "html.download">
+                        <#assign showItem_htmlDownload = false />
+                        <#break>
+                    <#case "xlsx">
+                        <#assign showItem_xlsx = false />
+                        <#break>
+                    <#case "csv">
+                        <#assign showItem_csv = false />
+                        <#break>
+                </#switch>
+            </#list>
+        <#else>
+        </#if>
+    </#if>
+
     <#assign toolbarId = id + "-toolbar" />
     <span class="report" title="${msg("button.report.tip")}" data-bind="yuiButton: { type: 'menu', <#if !hide>disabled: reportButtonDisabled(),</#if> menu: '${toolbarId}-report-menu' }, <#if hide>css: { hidden: resolve('journal.availableCreateVariants.length', 0) == 0 }</#if>">
         <span class="first-child">
@@ -275,21 +315,29 @@
     <div id="${toolbarId}-report-menu" class="yui-overlay yuimenu button-menu">
         <div class="bd">
             <ul class="first-of-type">
-                <li class="yuimenuitem">
-                    <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'html', false)">${msg("report.html.view")}</a>
-                </li>
-                <li class="yuimenuitem">
-                    <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'html', true)">${msg("report.html.download")}</a>
-                </li>
+                <#if showItem_htmlView>
+                    <li class="yuimenuitem">
+                        <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'html', false)">${msg("report.html.view")}</a>
+                    </li>
+                </#if>
+                <#if showItem_htmlDownload>
+                    <li class="yuimenuitem">
+                        <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'html', true)">${msg("report.html.download")}</a>
+                    </li>
+                </#if>
                 <#-- <li class="yuimenuitem">
                     <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'pdf', true)">PDF</a>
                 </li> -->
-                <li class="yuimenuitem">
-                    <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'xlsx', true)">Excel</a>
-                </li>
-                <li class="yuimenuitem">
-                    <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'csv', true)">CSV</a>
-                </li>
+                <#if showItem_xlsx>
+                    <li class="yuimenuitem">
+                        <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'xlsx', true)">Excel</a>
+                    </li>
+                </#if>
+                <#if showItem_csv>
+                    <li class="yuimenuitem">
+                        <a class="yuimenuitemlabel" data-bind="click: createReport.bind($data, 'csv', true)">CSV</a>
+                    </li>
+                </#if>
             </ul>
         </div>
     </div>
