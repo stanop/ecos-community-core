@@ -19,18 +19,19 @@
 package ru.citeck.ecos.invariants.view;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.ResultSetRow;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
@@ -163,8 +164,8 @@ class NodeViewServiceImpl implements NodeViewService {
         Map<QName, Object> effectiveAttributes = new HashMap<>(attributes.size() + 3);
         effectiveAttributes.putAll(attributes);
         if(effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));
-        if(effectiveAttributes.get(AttributeModel.ATTR_PARENT) == null) effectiveAttributes.put(AttributeModel.ATTR_PARENT, defaultParent);
-        if(effectiveAttributes.get(AttributeModel.ATTR_PARENT_ASSOC) == null) {
+        if(effectiveAttributes.get(AttributeModel.ATTR_PARENT) == null && !typeQName.equals(ContentModel.TYPE_PERSON)) effectiveAttributes.put(AttributeModel.ATTR_PARENT, defaultParent);
+        if(effectiveAttributes.get(AttributeModel.ATTR_PARENT_ASSOC) == null && !typeQName.equals(ContentModel.TYPE_PERSON)) {
             Object parentObj = effectiveAttributes.get(AttributeModel.ATTR_PARENT);
             NodeRef parent = parentObj instanceof NodeRef ? (NodeRef) parentObj :
                     parentObj instanceof String ? new NodeRef((String) parentObj) :
