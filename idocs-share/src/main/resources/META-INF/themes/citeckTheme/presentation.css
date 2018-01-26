@@ -2201,7 +2201,7 @@ table td.thumbnail img
      color: inherit;
  }
 
-.fa.order_pass:before {
+.fa.order-pass:before {
     content: "\f207";
     color: inherit;
 }
@@ -2211,7 +2211,7 @@ table td.thumbnail img
     color: inherit;
 }
 
-.fa.common_documents:before {
+.fa.common-documents:before {
     content: "\f05b";
     color: inherit;
 }

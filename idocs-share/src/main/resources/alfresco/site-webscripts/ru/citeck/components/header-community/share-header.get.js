@@ -675,7 +675,7 @@ function buildSitesForUser(username) {
         if (sites && sites.length > 0) {
             for (var sd = 0; sd < sites.length; sd++) {
                 sitesPresets.push({
-                    id: sites[sd].shortName.replace(/-/, "_"),
+                    id: sites[sd].shortName,
                     url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
                     label: sites[sd].title,
                     widgets: buildJournalsListForSite(sites[sd].shortName)
@@ -709,7 +709,7 @@ function buildCreateVariantsForSite(sitename) {
       for (var cv = 0; cv < createVariants.length; cv++) {
         createVariantsPresets.push({
           label: createVariants[cv].title,
-          id: createVariants[cv].type.replace(":", "_"),
+          id: createVariants[cv].type,
           url: "/share/page/node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
         });
       }
@@ -733,7 +733,7 @@ function buildJournalsListForSite(sitename) {
                 journalsResult.push({
                     label: journals[j].title,
                     id: journals[j].type + "-journal",
-                    url: url,
+                    url: url + "&filter=",
                     widgets: buildFiltersForJournal(journals[j].type, url)
                 });
             }

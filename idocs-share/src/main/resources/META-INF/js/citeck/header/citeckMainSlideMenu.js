@@ -37,7 +37,7 @@ define(['dojo/_base/declare',
                             ul += '<li id="' + item.id + '">';
                             var label = '<i class="fa fa-menu-default-icon ' + item.id + '"></i>' + self.message(item.label);
                             if (item.url) {
-                                ul += '<a href="' + item.url + '">' + label + '</a>';
+                                ul += '<a href="' + item.url + '" onclick="' + "$('#menu').data('mmenu').close()" + '">' + label + '</a>';
                             } else if (item.clickEvent) {
                                 ul += '<a href="#" onclick="' + "$('#menu').data('mmenu').close();\n" + item.clickEvent + '">' + label + '</a>';
                             } else {
