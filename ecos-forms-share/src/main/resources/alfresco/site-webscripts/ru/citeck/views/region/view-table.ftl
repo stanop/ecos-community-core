@@ -12,6 +12,8 @@
         
         * highlightedColumnMarker    - marked rows as 'highlighted' if specified attribute exists and 'true' ("cm:content") [optional]
         * highlightedAdditionalClass - additional classes for highlighted rows. use only with 'highlightedColumnMarker' ("selected my-item") [optional]
+
+        * downloadActionInViewMode - enable additional actions column in view mode with download button.
 -->
 
 <#-- TODO:
@@ -52,6 +54,13 @@
                     <!-- ko ifnot: protected() || resolve("node.impl.inViewMode") -->
                         <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
                     <!-- /ko -->
+
+                    <!-- ko if: resolve("node.impl.inViewMode") -->
+                    <#if params.downloadActionInViewMode??>
+                        <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
+                    </#if>
+                    <!-- /ko -->
+
                 <!-- /ko -->
             </tr>
         </thead>
@@ -133,6 +142,20 @@
                        }, clickBubble: false"></a>
                 </td>
                 <!-- /ko -->
+
+                <!-- ko if: $parents[1].resolve("node.impl.inViewMode") -->
+                <#if params.downloadActionInViewMode??>
+                <td class="value-item-actions">
+                    <!-- ko if: $data.node().properties['cm:content'] -->
+                    <a class="download-content-item" title="${msg('actions.document.download')}"
+                       data-bind="click: function() {
+                       document.location.href = Alfresco.constants.PROXY_URI + '/citeck/print/content?nodeRef=' + $data.nodeRef();
+                       }, clickBubble: false"></a>
+                    <!-- /ko -->
+                </td>
+                </#if>
+                <!-- /ko -->
+
                     </tr>
                 <!-- /ko -->
             <!-- /ko -->
