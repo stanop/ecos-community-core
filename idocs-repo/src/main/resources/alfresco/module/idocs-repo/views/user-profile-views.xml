@@ -9,6 +9,14 @@
         <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
     </imports>
 
+    <views mode="create">
+        <fields kind="mode-just-view" template="none" />
+    </views>
+
+    <views mode="edit">
+        <fields kind="mode-just-view" template="none" />
+    </views>
+
     <view class="cm:person">
         <param name="customClass">user-profile-custom-container</param>
         <param name="inlineEdit">false</param>
@@ -26,7 +34,7 @@
                 <view id="cm_person_header--ecos_photo--inner">
                     <field prop="ecos:photo">
                         <region name="label" template="none"/>
-                        <region name="input" template="img">
+                        <region name="input" template="img-background">
                             <param name="width">90</param>
                             <param name="alt">This is user's photo</param>
                         </region>
@@ -52,10 +60,12 @@
 
         <view id="cm_person_general_info">
             <param name="preloadInvariants">true</param>
-            <param name="title">Основное</param>
+            <param name="title">person_basic_title</param>
             <param name="invariantsRuntimeCache">false</param>
+
             <field prop="cm:userName" id="user-name">
-                <invariant on="protected" language="explicit">true</invariant>
+                <invariant on="protected" language="javascript">view &amp;&amp; view.mode != "create"</invariant>
+                <invariant on="relevant" language="javascript">true</invariant>
             </field>
 
             <view template="wide">
@@ -84,15 +94,11 @@
 
         <view id="cm_person_contacts">
             <param name="preloadInvariants">true</param>
-            <param name="title">Контакты</param>
+            <param name="title">person_contacts_title</param>
             <view id="cm_person_contacts--phones" kind="2-column">
                 <field prop="ecos:phoneWorking"/>
                 <field prop="ecos:phoneInternal"/>
-                <field prop="cm:mobile" id="mob-123">
-                    <region name="label" template="label">
-                        <param name="key">Телефон мобильный</param>
-                    </region>
-                </field>
+                <field prop="cm:mobile"/>
             </view>
 
             <view id="cm_person_contacts--location">
@@ -113,7 +119,7 @@
         <view id="cm_person_other_info">
             <param name="customClass">field-width-full</param>
             <param name="preloadInvariants">true</param>
-            <param name="title">Прочее</param>
+            <param name="title">person_other_title</param>
             <field prop="cm:userStatus" />
             <field prop="org:preset" />
             <view class="deputy:availability">
@@ -126,13 +132,11 @@
         </view>
 
         <view id="cm_person_user_groups" kind="2-column">
-            <param name="title">Группы</param>
-            <field prop="cm:userName" id="user-groups">
-                <region name="label" template="label">
-                    <param name="key">Группы пользователя</param>
-                </region>
-                <region name="input" template="user-groups">
-                </region>
+            <param name="title">person_groups_title</param>
+            <field prop="cm:userName" id="user-groups" kind="mode-just-view">
+                <region name="label" template="none" />
+                <region name="mandatory" template="none" />
+                <region name="input" template="user-groups" />
             </field>
         </view>
     </view>
