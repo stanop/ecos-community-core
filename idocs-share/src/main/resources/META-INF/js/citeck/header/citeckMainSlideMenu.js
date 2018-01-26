@@ -1,17 +1,29 @@
 define(['dojo/_base/declare',
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
-        'dojo/text!../templates/JQueryMenu.html',
         'alfresco/core/Core',
         'alfresco/core/CoreWidgetProcessing',
         'jquery',
         'jquerymmenu'],
 
-    function(declare, _WidgetBase, _TemplatedMixin, template, AlfCore, CoreWidgetProcessing, $) {
+    function(declare, _WidgetBase, _TemplatedMixin, AlfCore, CoreWidgetProcessing, $) {
         return declare([_WidgetBase, _TemplatedMixin, AlfCore], {
-            templateString:  template,
-            postCreate: function header_citeckMainSlideMenu__postCreate() {
+            templateString: "<div/>",
+            postMixInProperties: function  header_citeckMainSlideMenu__postMixInProperties() {
                 var menu = '', self = this;
+                if (this.isMobile) {
+                    $('#HEADER_APP_MENU_BAR').append(
+                        '<span class="hamburger-mobile-menu">'+
+                            '<a href="#menu" id="hamburger" class="mm-slideout">'+
+                                '<span class="hamburger hamburger--collapse">'+
+                                    '<span class="hamburger-box">'+
+                                         '<span class="hamburger-inner"/>'+
+                                    '</span>'+
+                                '</span>'+
+                            '</a>'+
+                        '</span>');
+                }
+
                 if (this.widgets && this.widgets.length) {
                     menu = '<ul>' + add_new_ul(this.widgets) + '</ul>';
                 }
@@ -20,21 +32,19 @@ define(['dojo/_base/declare',
                     var ul = "";
                     widgets.forEach(function (item) {
                         if (item.sectionTitle) {
-                            ul += '<li class="mm-listitem_divider" id="' + item.id + '">' + self.message(item.sectionTitle) + '</li>';
+                            ul += '<li class="mm-listitem_divider" id="' + item.id + '"><i class="fa fa-menu-section-icon"/><p class="menu-section-title">' + self.message(item.sectionTitle) + '</p></li>';
                         } else {
                             ul += '<li id="' + item.id + '">';
                             var label = '<i class="fa fa-menu-default-icon ' + item.id + '"></i>' + self.message(item.label);
                             if (item.url) {
                                 ul += '<a href="' + item.url + '">' + label + '</a>';
-                                return;
-                            }
-                            if (item.clickEvent) {
+                            } else if (item.clickEvent) {
                                 ul += '<a href="#" onclick="' + "$('#menu').data('mmenu').close();\n" + item.clickEvent + '">' + label + '</a>';
-                                return;
+                            } else {
+                                ul += '<span>' + label + '</span>';
                             }
-                            ul += '<span>' + label + '</span>';
                         }
-                        if (item.widgets) {
+                        if (item.widgets && item.widgets.length) {
                             ul += item.sectionTitle ? add_new_ul(item.widgets) : '<ul>' + add_new_ul(item.widgets) + '</ul>';
                         }
                         ul += !item.sectionTitle ? '</li>' : "";
@@ -45,13 +55,36 @@ define(['dojo/_base/declare',
 
                 $('body').append('<nav id = "menu">' + menu + '</nav>');
 
+                var menuOnclick = "$('#menu').data('mmenu').close()";
+                var header =
+                    '<a class="mm-btn_menu" style="display: inline;" href="#" onclick="' + menuOnclick + '" id="hamburger" class="mm-slideout">' +
+                    '    <span class="hamburger hamburger--collapse">' +
+                    '        <span class="hamburger-box">' +
+                    '            <span class="hamburger-inner"></span>' +
+                    '        </span>' +
+                    '    </span>' +
+                    '</a>' +
+                    '<span style="display: inline; float: left">';
+
+                if (this.logoSrcMobile) {
+                    header += '<img class="menu-mobile-icon" src='+ this.logoSrcMobile +'></img>'
+                }
+
+                if (this.logoSrc) {
+                    header +=
+                        '    <a href="/share/page">' +
+                        '        <img src='+ this.logoSrc + '></img>' +
+                        '    </a>';
+                }
+                header += '</span>';
+
                 $('#menu').mmenu({
                     "slidingSubmenus": false,
                     "extensions": [
                         "pagedim-black"
                     ],
                     "dividers": {
-                        "fixed": true
+                        "fixed": false
                     },
                     "iconPanels": {
                         "add": true,
@@ -74,24 +107,34 @@ define(['dojo/_base/declare',
                             "size": 60,
                             "hideNavbar": true,
                             "hideDivider": true
-                        },
-                        "expanded": 1430
+                        }
                     },
                     "searchfield": {
                         "panel": {
                             "add": true
                         }
-                    }
+                    },
+                    "navbar": {
+                        "add": false
+                    },
+                    "navbars": [
+                        {
+                            "position": "header",
+                            "content": [
+                                header
+                            ]
+                        }
+                    ]
                 }, {
                     "searchfield": {
                         "clear": true
-                    }
+                    },
+                    "selectedClass": "active"
                 });
+            },
+            postCreate: function header_citeckMainSlideMenu__postCreate() {
 
-                if (this.logoSrc) {
-                    $('.mm-navbar').append('<a href="/share/page"><img src='+ this.logoSrc +'></img></a>')
-                }
             }
         });
     }
-)
+);

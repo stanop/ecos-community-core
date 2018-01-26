@@ -528,12 +528,13 @@ appMenu.config.widgets.unshift({
     name: "js/citeck/header/citeckMainSlideMenu",
     config: {
         id: "HEADER_SLIDE_MENU",
+        isMobile: isMobile,
         userName: user.name,
         logoSrc: getHeaderLogoUrl(),
         logoSrcMobile: url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png",
         widgets: getWidgets(isMobile ? true : false)
     }
-})
+});
 // appMenu.config.widgets.unshift(
 //     {
 //         id: "HEADER_MOBILE_MENU",
@@ -677,7 +678,7 @@ function buildSitesForUser(username) {
                     id: sites[sd].shortName.replace(/-/, "_"),
                     url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
                     label: sites[sd].title,
-                    widgets: buildCreateVariantsForSite(sites[sd].shortName)
+                    widgets: buildJournalsListForSite(sites[sd].shortName)
                 });
             }
         }
@@ -716,6 +717,52 @@ function buildCreateVariantsForSite(sitename) {
   }
 
   return createVariantsPresets;
+}
+
+function buildJournalsListForSite(sitename) {
+    var journalsResult = [],
+        result = remote.call("/api/journals/list?journalsList=site-" + encodeURIComponent(sitename) + "-main");
+
+    if (result.status == 200 && result != "{}") {
+        var responseData = eval('(' + result + ')'),
+            journals = responseData.journals;
+
+        if (journals && journals.length) {
+            for (var j = 0; j < journals.length; j++) {
+                var url = "/share/page/site/" + sitename + "/journals2/list/main#journal=" + journals[j].nodeRef;
+                journalsResult.push({
+                    label: journals[j].title,
+                    id: journals[j].type + "-journal",
+                    url: url,
+                    widgets: buildFiltersForJournal(journals[j].type, url)
+                });
+            }
+        }
+    }
+
+    return journalsResult;
+}
+
+function buildFiltersForJournal(journalType, journalUrl) {
+    var filtersResult = [],
+        result = remote.call("/api/journals/filters?journalType=" + journalType);
+
+    if (result.status == 200 && result != "{}") {
+        var responseData = eval('(' + result + ')'),
+            filters = responseData.filters;
+
+        if (filters && filters.length) {
+            for (var f = 0; f < filters.length; f++) {
+                filtersResult.push({
+                    label: filters[f].title,
+                    id: filters[f].type + "-filter",
+                    url: journalUrl + "&filter=" + filters[f].nodeRef
+                });
+            }
+        }
+    }
+
+    return filtersResult;
 }
 
 // function buildLogo(isMobile) {
@@ -774,19 +821,19 @@ function getWidgets(isMobile) {
             }
         ],
         mobileMenu = [{
-            id: "HEADER_MENU_SECTION_1",
-            sectionTitle: "header.section-1.label",
-            widgets: [
-                {
-                    id: "HEADER_MENU_JOURNAL_OF_CONTRACTS",
-                    label: "header.journal-of-contracts.label",
-                    widgets: [
-                        {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
-                        {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
-                    ]
-                }
-            ]
-        },
+                id: "HEADER_MENU_SECTION_1",
+                sectionTitle: "header.section-1.label",
+                widgets: [
+                    {
+                        id: "HEADER_MENU_JOURNAL_OF_CONTRACTS",
+                        label: "header.journal-of-contracts.label",
+                        widgets: [
+                            {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
+                            {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
+                        ]
+                    }
+                ]
+            },
             {
                 id: "HEADER_MENU_SECTION_2",
                 sectionTitle: "header.section-2.label",
