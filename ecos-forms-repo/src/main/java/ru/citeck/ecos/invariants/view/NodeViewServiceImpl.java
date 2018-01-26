@@ -163,10 +163,12 @@ class NodeViewServiceImpl implements NodeViewService {
         Map<QName, Object> effectiveAttributes = new HashMap<>(attributes.size() + 3);
         effectiveAttributes.putAll(attributes);
         if(effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));
-        if (effectiveAttributes.get(AttributeModel.ATTR_PARENT) == null && !typeQName.equals(ContentModel.TYPE_PERSON)) {
+        if (effectiveAttributes.get(AttributeModel.ATTR_PARENT) == null &&
+            !typeQName.equals(ContentModel.TYPE_PERSON)) {
             effectiveAttributes.put(AttributeModel.ATTR_PARENT, defaultParent);
         }
-        if (effectiveAttributes.get(AttributeModel.ATTR_PARENT_ASSOC) == null && !typeQName.equals(ContentModel.TYPE_PERSON)) {
+        if (effectiveAttributes.get(AttributeModel.ATTR_PARENT_ASSOC) == null &&
+            !typeQName.equals(ContentModel.TYPE_PERSON)) {
             Object parentObj = effectiveAttributes.get(AttributeModel.ATTR_PARENT);
             NodeRef parent = parentObj instanceof NodeRef ? (NodeRef) parentObj :
                     parentObj instanceof String ? new NodeRef((String) parentObj) :
