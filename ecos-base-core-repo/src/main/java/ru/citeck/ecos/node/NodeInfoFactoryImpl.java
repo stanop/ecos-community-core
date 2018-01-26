@@ -275,19 +275,26 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 		}
 
 		// otherwise parent / parentAssoc should be specified
-		NodeRef parent = nodeInfo.getParent();
-		QName parentAssoc = nodeInfo.getParentAssoc();
-		QName nodeType = nodeInfo.getType();
-		if(parent == null || parentAssoc == null || nodeType == null) {
-			throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
-		}
+        QName nodeType = nodeInfo.getType();
+        NodeRef parent = null;
+        QName parentAssoc = null;
+        QName parentAssocName = null;
+
+        if (!nodeType.equals(ContentModel.TYPE_PERSON)) {
+            parent = nodeInfo.getParent();
+            parentAssoc = nodeInfo.getParentAssoc();
+
+            if(parent == null || parentAssoc == null || nodeType == null) {
+                throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
+            }
+
+            parentAssocName = nodeInfo.getParentAssocName();
+            if (parentAssocName == null) {
+                parentAssocName = QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate());
+            }
+        }
 
 		// create node
-		QName parentAssocName = nodeInfo.getParentAssocName();
-		if (parentAssocName == null) {
-			parentAssocName = QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate());
-		}
-
         if (nodeType.equals(ContentModel.TYPE_PERSON)) {
             Map<QName,Serializable> properties = nodeInfo.getProperties();
             nodeRef = personService.createPerson(properties);
