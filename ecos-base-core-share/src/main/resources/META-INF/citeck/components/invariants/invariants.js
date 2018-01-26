@@ -1118,7 +1118,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.invariantValid();
         })
         .computed('validDraft', function() {
-            if(this.irrelevant()) return true;
+            if(this.irrelevant() || this.empty()) return true;
             return this.invariantValid();
         })
         .computed('validationMessage', function() {
