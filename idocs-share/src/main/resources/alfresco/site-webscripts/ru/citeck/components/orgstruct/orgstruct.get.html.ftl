@@ -120,11 +120,18 @@
                                 },
                                 toolbar: {
                                     buttons: {
-                                        "root": [ "search", "createBranch" ],
+                                        "root": [ "search", Alfresco.constants.Citeck.userIsAdmin ? "createBranch" : "" ],
                                         "search": [ "search", "resetSearch" ],
-                                                        "GROUP-branch": [ "createBranch", "createRole", "addGroup", Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
-                                                        "GROUP-role": [ "addUser", Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
-                                                        "GROUP-group": [ Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
+                                        "GROUP-branch": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "createBranch" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "createRole" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "addGroup" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
+                                        "GROUP-role": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "addUser" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
+                                        "GROUP-group": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
                                     },
                                 },
                                 tree: {
@@ -137,11 +144,23 @@
                                         ],
                                     },
                                     buttons: {
-                                        "GROUP-group": [ "convertToBranch", "convertToRole", "editItem", "deleteItem" ],
-                                        "GROUP-branch": [ "convertToGroup", "editItem", "deleteItem" ],
-                                        "GROUP-role": [ "convertToGroup", "editItem", "deleteItem" ],
+                                        "GROUP-group": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "convertToBranch" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "convertToRole" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "deleteItem": "" ],
+                                        "GROUP-branch": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "convertToGroup" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "deleteItem": "" ],
+                                        "GROUP-role": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "convertToGroup" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "deleteItem": "" ],
                                         // "USER": [ "editItem", "deleteItem" ]
-                                        "USER": [ "editItemInplaced", "deleteItem"/*, "viewItem"*/ ]
+                                        "USER": [
+                                            Alfresco.constants.Citeck.userIsAdmin ? "editItemInplaced" : "",
+                                            Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : ""]
                                     },
                                 },
                                 list: {
@@ -154,10 +173,22 @@
                                         ],
                                     },
                                     buttons: {
-                                        "GROUP-group": [ "convertToBranch", "convertToRole", "editItem", "deleteItem" ],
-                                        "GROUP-branch": [ "convertToGroup", "editItem", "deleteItem" ],
-                                        "GROUP-role": [ "convertToGroup", "editItem", "deleteItem" ],
-                                        "USER": [ "editItem", "deleteItem" ]
+                                    "GROUP-group": [
+                                        Alfresco.constants.Citeck.userIsAdmin ? "convertToBranch" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "convertToRole" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : "" ],
+                                    "GROUP-branch": [
+                                        Alfresco.constants.Citeck.userIsAdmin ? "convertToGroup" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : "" ],
+                                    "GROUP-role": [
+                                        Alfresco.constants.Citeck.userIsAdmin ? "convertToGroup" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : "" ],
+                                    "USER": [
+                                        Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : "" ]
                                     },
                                 },
                             },
