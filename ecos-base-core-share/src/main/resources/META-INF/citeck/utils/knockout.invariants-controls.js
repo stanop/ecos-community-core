@@ -239,36 +239,23 @@ ko.components.register("number", {
         this.disable = params.disable;
         this.value = params.value;
 
-        this.lastSymbolIsPeriod = this.value() && this.value().indexOf(".") == this.value().length - 1;
-        this.hasPeriodSymbol = this.value() && this.value().indexOf(".") >= 0;
-        this.noValue = _.isEmpty(this.value());
-
         this.validation = function(data, event) {
-            var whiteNumbers = _.range(48, 58),
-                whiteKeys = [8, 46, 37, 39],
-                whitePeriod = [44, 46],
-                code = event.keyCode || event.charCode;
-
-            // only one period symbol in string
-            if (_.contains(whitePeriod, event.charCode)) {
-                if (self.hasPeriodSymbol) return false;
-                if (self.noValue || self.lastSymbolIsPeriod) return false;
-            };
-
-            // only predefined symbols
-            if (!_.contains(_.union(whiteNumbers, whiteKeys, whitePeriod), code)) return false;
-
-            return true;
+            var newValue = document.getElementById(self.id).value + event.key;
+            if (newValue && isFinite(newValue)) {
+                return true;
+            }
+            return false;
         };
 
-        this.value.subscribe(function(newValue) {
-            self.hasPeriodSymbol = newValue ?
-                _.any([",", "."], function(period) { return newValue.indexOf(period) >= 0 }) : false;
-            self.noValue = self.lastSymbolIsPeriod = _.isEmpty(newValue);
-        });
+        this.OnBlurEvent = function(data, event) {
+            // for Google Chrome (incorrect processing of a value with a dot at the end)
+            if (isNaN(document.getElementById(self.id).valueAsNumber)) {
+                document.getElementById(self.id).value = null;
+            }
+        };
     },
     template:
-       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
+       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation, blur: OnBlurEvent }" />'
 });
 
 // ---------------
