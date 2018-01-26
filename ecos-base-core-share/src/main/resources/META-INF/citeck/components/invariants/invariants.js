@@ -1118,22 +1118,17 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return this.invariantValid();
         })
         .computed('validDraft', function() {
-            if(this.irrelevant()) return true;
+            if(this.irrelevant() || this.empty()) return true;
             return this.invariantValid();
         })
         .computed('validationMessage', function() {
             if(this.irrelevant()) return "";
 
-            var invariantValue = this.evaluatedValid().value;
-            var invariant = this.evaluatedValid().invariant;
-            if(invariant != null && invariantValue == false) {
-                if(invariant.description()) {
-                    return Alfresco.util.message(invariant.description());
-                }
-            }
-
             if(this.empty())
                 return this.optional() || this['protected']() ? "" : Alfresco.util.message("validation-hint.mandatory");
+
+            var invariant = this.evaluatedValid().invariant;
+            return invariant != null ? Alfresco.util.message(invariant.description()) : "";
         })
         .computed('changed', function() { return this.newValue.loaded(); })
         .computed('changedByInvariant', function() {
