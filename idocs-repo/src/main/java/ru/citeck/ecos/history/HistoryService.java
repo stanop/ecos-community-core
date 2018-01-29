@@ -37,6 +37,7 @@ import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
@@ -84,6 +85,9 @@ public class HistoryService {
     private static final String DOCUMENT_VERSION = "documentVersion";
     private static final String PROPERTY_NAME = "propertyName";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
+
+    private static final Integer MAX_ITEMS_COUNT = 250;
+    private boolean isHistoryTransferring = false;
 
     /**
      * Date-time format
@@ -320,6 +324,74 @@ public class HistoryService {
             for (AssociationRef associationRef : associations) {
                 NodeRef eventRef = associationRef.getSourceRef();
                 nodeService.deleteNode(eventRef);
+            }
+        }
+    }
+
+    public String sendAndRemoveAllOldEvents(Integer offset) {
+        if (isHistoryTransferring) {
+            return "History is transferring";
+        }
+        isHistoryTransferring = true;
+        logger.info("History transferring started from position - " + offset);
+        try {
+            /** Load first documents */
+            int documentsTransferred = 0;
+            int skipCount = offset;
+            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount);
+            boolean hasMore;
+
+            /** Start processing */
+            do {
+                List<NodeRef> documents = resultSet.getNodeRefs();
+                hasMore = resultSet.hasMore();
+                /** Process each document */
+                for (NodeRef document : documents) {
+                    sendAndRemoveOldEventsByDocument(document);
+                    documentsTransferred++;
+                }
+                skipCount += documents.size();
+                resultSet = getDocumentsResultSetByOffset(skipCount);
+                logger.info("History transferring - documents have been transferred - " + documentsTransferred);
+            } while (hasMore);
+            logger.info("History transferring - all documents have been transferred - " + documentsTransferred);
+            return "History transferring - documents have been transferred - " + documentsTransferred;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return "Error during history transferring. See logs";
+        } finally {
+            isHistoryTransferring = false;
+        }
+    }
+
+    private ResultSet getDocumentsResultSetByOffset(Integer offset) {
+        SearchParameters parameters = new SearchParameters();
+        parameters.addStore(storeRef);
+        parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
+        parameters.setQuery("TYPE:\"idocs:doc\"");
+        parameters.addSort("@cm:created", true);
+        parameters.setMaxItems(MAX_ITEMS_COUNT);
+        parameters.setSkipCount(offset);
+        return searchService.query(parameters);
+    }
+
+    public void sendAndRemoveOldEventsByDocument(NodeRef documentRef) {
+        /** Check - is remote service enabled */
+        if (!isEnabledRemoteHistoryService()) {
+            throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
+        }
+        /** Check - node existing */
+        if (!nodeService.exists(documentRef)) {
+            return;
+        }
+        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
+        /** Send events to remote service or remove old nodes */
+        if (useNewHistory == null || useNewHistory == false) {
+            historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
+        } else {
+            List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
+            for (AssociationRef associationRef : associations) {
+                nodeService.deleteNode(associationRef.getSourceRef());
             }
         }
     }
