@@ -1,4 +1,5 @@
 <#assign params = viewScope.region.params!{} />
+<#assign downloadActionInViewMode = params.downloadActionInViewMode!"false" />
 
 <#if params.columns??>
     <#assign columns = params.columns?replace("\\s+", "", "rm")>
@@ -56,7 +57,7 @@
                     <!-- /ko -->
 
                     <!-- ko if: resolve("node.impl.inViewMode") -->
-                    <#if params.downloadActionInViewMode??>
+                    <#if downloadActionInViewMode == "true">
                         <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
                     </#if>
                     <!-- /ko -->
@@ -144,7 +145,7 @@
                 <!-- /ko -->
 
                 <!-- ko if: $parents[1].resolve("node.impl.inViewMode") -->
-                <#if params.downloadActionInViewMode??>
+                <#if downloadActionInViewMode == "true">
                 <td class="value-item-actions">
                     <!-- ko if: $data.node().properties['cm:content'] -->
                     <a class="download-content-item" title="${msg('actions.document.download')}"
