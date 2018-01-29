@@ -22,7 +22,8 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     titleMenu = findObjectById(model.jsonModel.widgets, "HEADER_TITLE_MENU"),
     navigationMenu = findObjectById(model.jsonModel.widgets, "HEADER_NAVIGATION_MENU_BAR"),
     customizeUserDashboard = findObjectById(model.jsonModel.widgets, "HEADER_CUSTOMIZE_USER_DASHBOARD"),
-    currentSite = page.url.templateArgs.site || getLastSiteFromCookie();
+    currentSite = page.url.templateArgs.site || getLastSiteFromCookie(),
+    accessibleSites = getSitesForUser(user.name);
 
 appMenu.config.id = "HEADER_APP_MENU_BAR";
 userMenu.config.id = "HEADER_USER_MENU_BAR";
@@ -234,7 +235,7 @@ if (siteMenuItems.length) {
 
 // APP MENU ITEMS
 var createSiteClickEvent = "Citeck.module.getCreateSiteInstance().show()";
- 
+
 // var HEADER_SITES_VARIANTS = {
 //       id: "HEADER_SITES_VARIANTS",
 //       name: "js/citeck/menus/citeckMenuGroup",
@@ -271,17 +272,17 @@ var createSiteClickEvent = "Citeck.module.getCreateSiteInstance().show()";
     //   }
     // },
 
-var HEADER_DOCUMENTLIBRARY = {
-        id: "HEADER_DOCUMENTLIBRARY",
-        name: "js/citeck/menus/citeckMenuBarItem",
-        config: {
-            id: "HEADER_DOCUMENTLIBRARY",
-            label: "header.documentlibrary.label",
-            targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
-            movable: { minWidth: 1171 }
-          }
-    },
-    HEADER_CREATE_WORKFLOW_VARIANTS = {
+// var HEADER_DOCUMENTLIBRARY = {
+//         id: "HEADER_DOCUMENTLIBRARY",
+//         name: "js/citeck/menus/citeckMenuBarItem",
+//         config: {
+//             id: "HEADER_DOCUMENTLIBRARY",
+//             label: "header.documentlibrary.label",
+//             targetUrl: buildSiteUrl(currentSite) + "documentlibrary",
+//             movable: { minWidth: 1171 }
+//           }
+//     },
+var HEADER_CREATE_WORKFLOW_VARIANTS = {
         id: "HEADER_CREATE_WORKFLOW_VARIANTS",
         name: "js/citeck/menus/citeckMenuGroup",
         config: {
@@ -420,17 +421,17 @@ if (!isMobile) {
   //     ]
   //   }
   // });
-  // appMenu.config.widgets.push({
-  //   id: "HEADER_CREATE",
-  //   name: "alfresco/header/AlfMenuBarPopup",
-  //   config: {
-  //     id: "HEADER_CREATE",
-  //     label: "header.create-variants.label",
-  //     widgets: [ HEADER_CREATE_VARIANTS ]
-  //   }
-  // });
+  appMenu.config.widgets.push({
+      id: "HEADER_CREATE_CASE",
+      name: "alfresco/header/AlfMenuBarPopup",
+      config: {
+          id: "HEADER_CREATE_CASE",
+          label: "header.create-case.label",
+          widgets: buildSitesForCreateCase(accessibleSites, true)
+      }
+  });
   //appMenu.config.widgets.push(HEADER_JOURNALS);
-  appMenu.config.widgets.push(HEADER_DOCUMENTLIBRARY);
+  //appMenu.config.widgets.push(HEADER_DOCUMENTLIBRARY);
   appMenu.config.widgets.push({
     id: "HEADER_CREATE_WORKFLOW",
     name: "alfresco/header/AlfMenuBarPopup",
@@ -441,7 +442,7 @@ if (!isMobile) {
     }
   });
 
-  appMenu.config.widgets.push(buildMorePopup(false));
+  //appMenu.config.widgets.push(buildMorePopup(false));
 
   if (loggingWidgetItems) {
     appMenu.config.widgets.push({
@@ -574,6 +575,15 @@ if (siteConfig && siteData.userIsSiteManager) {
 // FUNCTIONS
 // ---------------------
 
+function getSitesForUser(username) {
+    var result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
+
+    if (result.status == 200 && result != "{}") {
+        return eval('(' + result + ')');
+    }
+    return [];
+};
+
 function buildMorePopup(isMobile) {
     var config = {
         widgets: [buildMyGroup(isMobile)]
@@ -666,23 +676,19 @@ function buildAdminGroup(isMobile) {
   };
 };
 
-function buildSitesForUser(username) {
-    var sitesPresets = [], result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
-
-    if (result.status == 200 && result != "{}") {
-        var sites = eval('(' + result + ')');
-
-        if (sites && sites.length > 0) {
-            for (var sd = 0; sd < sites.length; sd++) {
-                sitesPresets.push({
-                    id: sites[sd].shortName,
-                    url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
-                    label: sites[sd].title,
-                    widgets: buildJournalsListForSite(sites[sd].shortName)
-                });
-            }
+function buildSitesForUser(sites) {
+    var sitesPresets = [];
+    if (sites && sites.length > 0) {
+        for (var sd = 0; sd < sites.length; sd++) {
+            sitesPresets.push({
+                id: sites[sd].shortName,
+                url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
+                label: sites[sd].title,
+                widgets: buildJournalsListForSite(sites[sd].shortName)
+            });
         }
     }
+
     sitesPresets.push({
             id: "HEADER_SITES_SEARCH",
             label: "header.find-sites.label",
@@ -697,20 +703,48 @@ function buildSitesForUser(username) {
     return sitesPresets;
 };
 
-function buildCreateVariantsForSite(sitename) {
-  var createVariantsPresets = [],
-      result = remote.call("/api/journals/create-variants/site/" + encodeURIComponent(sitename));
+function buildSitesForCreateCase(sites, forHeader) {
+    var createCases = [];
+    if (sites && sites.length > 0) {
+        for (var sd = 0; sd < sites.length; sd++) {
+            var createCase;
+            if (forHeader) {
+                createCase = {
+                    id: sites[sd].shortName,
+                    name: "js/citeck/menus/citeckMenuGroup",
+                    config: {
+                        id: sites[sd].shortName,
+                        label: sites[sd].title,
+                        widgets: buildItems(buildCreateVariantsForSite(sites[sd].shortName, true), sites[sd].shortName)
+                    }
+                };
+            } else {
+                createCase = {
+                    id: sites[sd].shortName,
+                    label: sites[sd].title,
+                    widgets: buildCreateVariantsForSite(sites[sd].shortName)
+                };
+            }
+            createCases.push(createCase);
+        }
+    }
+    return createCases;
+};
 
-  if (result.status == 200 && result != "{}") {
+function buildCreateVariantsForSite(sitename, forHeader) {
+    var createVariantsPresets = [],
+        result = remote.call("/api/journals/create-variants/site/" + encodeURIComponent(sitename));
+
+    if (result.status == 200 && result != "{}") {
     var responseData = eval('(' + result + ')'),
         createVariants = responseData.createVariants;
 
     if (createVariants && createVariants.length > 0) {
-      for (var cv = 0; cv < createVariants.length; cv++) {
-        createVariantsPresets.push({
-          label: createVariants[cv].title,
-          id: createVariants[cv].type,
-          url: "/share/page/node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
+        for (var cv = 0; cv < createVariants.length; cv++) {
+            createVariantsPresets.push({
+                label: createVariants[cv].title,
+                id: createVariants[cv].type,
+                url: (forHeader ? "" : "/share/page/") + "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
         });
       }
     }
@@ -781,7 +815,7 @@ function buildFiltersForJournal(journalType, journalUrl) {
 
 function getWidgets(isMobile) {
     // TODO: Add request
-    var mainMenu = [{
+    var section1 = {
             id: "HEADER_MENU_SECTION_1",
             sectionTitle: "header.section-1.label",
             widgets: [
@@ -795,121 +829,87 @@ function getWidgets(isMobile) {
                 }
             ]
         },
-            {
-                id: "HEADER_MENU_SECTION_2",
-                sectionTitle: "header.section-2.label",
-                widgets: [
-                    {
-                        id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS",
-                        label: "header.journal-of-attorneys.label",
-                        widgets: [
-                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
-                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
-                        ]
-                    }
-                ]
+        section2 = {
+            id: "HEADER_MENU_SECTION_2",
+            sectionTitle: "header.section-2.label",
+            widgets: [
+                {
+                    id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS",
+                    label: "header.journal-of-attorneys.label",
+                    widgets: [
+                        {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
+                        {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
+                    ]
+                }
+            ]
+        },
+        sites = {
+            id: "HEADER_MENU_SITES",
+            sectionTitle: "header.sites.label",
+            widgets: buildSitesForUser(accessibleSites)
+        },
+        createCase = {
+            id: "HEADER_CREATE_CASE",
+            sectionTitle: "header.create-case.label",
+            widgets: buildSitesForCreateCase(accessibleSites, false)
+        },
+        orgstruct = {
+            id: "HEADER_MENU_ORGSTRUCT",
+            sectionTitle: "header.orgstruct.label",
+            widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
+        },
+        documentlibrary = {
+            id: "HEADER_DOCUMENTLIBRARY",
+            sectionTitle: "header.documentlibrary.label",
+            widgets: [{id: "HEADER_DOCUMENTLIBRARY_WIDGET", label: "header.documentlibrary.label", url: "/share/page/" + buildSiteUrl(currentSite) + "documentlibrary"}]
+        },
+        myGroup = {
+            id: "HEADER_MORE_MY_GROUP",
+            sectionTitle: "header.my.label",
+            widgets: [
+                { id: "task-journals", url: "/share/page/journals2/list/tasks", label: "header.task-journals.label" },
+                { id: "my-workflows", url: "/share/page/my-workflows", label: "header.my-workflows.label" },
+                { id: "completed-workflows", url: "/share/page/completed-workflows#paging=%7C&filter=workflows%7Call", label: "header.completed-workflows.label" },
+                { id: "my-content", url: "/share/page/user/user-content", label: "header.my-content.label" },
+                { id: "my-sites", url: "/share/page/user/user-sites", label: "header.my-sites.label" },
+                { id: "my-profile", url: "/share/page/user/" + encodeURIComponent(user.name) + "/profile", label: "header.my-profile.label" },
+                { id: "my-files", url: "/share/page/context/mine/myfiles", label: "header.my-files.label" },
+                { id: "global_journals2", url: "/share/page/journals2/list/main", label: "header.global_journals2.label" }
+            ]
+        },
+        tools = {
+            id: "HEADER_MORE_TOOLS_GROUP",
+            sectionTitle: "header.tools.label",
+            widgets: [
+                { id: "repository", url: "/share/page/repository", label: "header.repository.label" },
+                { id: "application", url: "/share/page/console/admin-console/application", label: "header.application.label" },
+                { id: "groups", url: "/share/page/console/admin-console/groups", label: "header.groups.label" },
+                { id: "users", url: "/share/page/console/admin-console/users", label: "header.users.label" },
+                { id: "categories", url: "/share/page/console/admin-console/type-manager", label: "header.categories.label" },
+                { id: "system", url: "/share/page/journals2/list/system", label: "header.system.label" },
+                { id: "meta_journals", url: "/share/page/journals2/list/meta", label: "header.meta_journals.label" },
+                { id: "templates", url: "/share/page/journals2/list/templates", label: "header.templates.label" },
+                { id: "more", url: "/share/page/console/admin-console/", label: "header.more.label" }
+            ]
+        },
+        createWorkflow = {
+            id: "HEADER_CREATE_WORKFLOW",
+            sectionTitle: "header.create-workflow.label",
+            widgets: [{
+                id: "HEADER_CREATE_WORKFLOW_ADHOC",
+                label: "header.create-workflow-adhoc.label",
+                url: "/share/page/start-specified-workflow?workflowId=activiti$perform"
             },
-            {
-                id: "HEADER_MENU_SITES",
-                sectionTitle: "header.sites.label",
-                widgets: buildSitesForUser(user.name)
-            },
-            {
-                id: "HEADER_MENU_ORGSTRUCT",
-                sectionTitle: "header.orgstruct.label",
-                widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
-            }
-        ],
-        mobileMenu = [{
-                id: "HEADER_MENU_SECTION_1",
-                sectionTitle: "header.section-1.label",
-                widgets: [
-                    {
-                        id: "HEADER_MENU_JOURNAL_OF_CONTRACTS",
-                        label: "header.journal-of-contracts.label",
-                        widgets: [
-                            {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
-                            {id: "HEADER_MENU_JOURNAL_OF_CONTRACTS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
-                        ]
-                    }
-                ]
-            },
-            {
-                id: "HEADER_MENU_SECTION_2",
-                sectionTitle: "header.section-2.label",
-                widgets: [
-                    {
-                        id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS",
-                        label: "header.journal-of-attorneys.label",
-                        widgets: [
-                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_1", label: "header.filter-1.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"},
-                            {id: "HEADER_MENU_JOURNAL_OF_ATTORNEYS_FILTER_2", label: "header.filter-2.label", url: "/share/page/site/contracts/journals2/list/main#journal=workspace%3A%2F%2FSpacesStore%2F35761250-1f9c-4ba5-ba42-1f7ff3d2f402&filter=&settings=&skipCount=0&maxItems=10"}
-                        ]
-                    }
-                ]
-            },
-            {
-                id: "HEADER_MENU_SITES",
-                sectionTitle: "header.sites.label",
-                widgets: buildSitesForUser(user.name)
-            },
-            {
-                id: "HEADER_MENU_ORGSTRUCT",
-                sectionTitle: "header.orgstruct.label",
-                widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
-            },
-            {
-                id: "HEADER_DOCUMENTLIBRARY",
-                sectionTitle: "header.documentlibrary.label",
-                widgets: [{id: "HEADER_DOCUMENTLIBRARY_WIDGET", label: "header.documentlibrary.label", url: "/share/page/" + buildSiteUrl(currentSite) + "documentlibrary"}]
-            },
-            {
-                id: "HEADER_CREATE_WORKFLOW",
-                sectionTitle: "header.create-workflow.label",
-                widgets: [{
-                        id: "HEADER_CREATE_WORKFLOW_ADHOC",
-                        label: "header.create-workflow-adhoc.label",
-                        url: "/share/page/start-specified-workflow?workflowId=activiti$perform"
-                    },
-                    {
-                        id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-                        label: "header.create-workflow-confirm.label",
-                        url: "/share/page/start-specified-workflow?workflowId=activiti$confirm"
-                    }]
-            },
-            {
-                id: "HEADER_MORE_MY_GROUP",
-                sectionTitle: "header.my.label",
-                widgets: [
-                    { id: "task-journals", url: "/share/page/journals2/list/tasks", label: "header.task-journals.label" },
-                    { id: "my-workflows", url: "/share/page/my-workflows", label: "header.my-workflows.label" },
-                    { id: "completed-workflows", url: "/share/page/completed-workflows#paging=%7C&filter=workflows%7Call", label: "header.completed-workflows.label" },
-                    { id: "my-content", url: "/share/page/user/user-content", label: "header.my-content.label" },
-                    { id: "my-sites", url: "/share/page/user/user-sites", label: "header.my-sites.label" },
-                    { id: "my-profile", url: "/share/page/user/" + encodeURIComponent(user.name) + "/profile", label: "header.my-profile.label" },
-                    { id: "my-files", url: "/share/page/context/mine/myfiles", label: "header.my-files.label" },
-                    { id: "global_journals2", url: "/share/page/journals2/list/main", label: "header.global_journals2.label" }
-                ]
-            },
-            {
-                id: "HEADER_MORE_TOOLS_GROUP",
-                sectionTitle: "header.tools.label",
-                widgets: [
-                    { id: "repository", url: "/share/page/repository", label: "header.repository.label" },
-                    { id: "application", url: "/share/page/console/admin-console/application", label: "header.application.label" },
-                    { id: "groups", url: "/share/page/console/admin-console/groups", label: "header.groups.label" },
-                    { id: "users", url: "/share/page/console/admin-console/users", label: "header.users.label" },
-                    { id: "categories", url: "/share/page/console/admin-console/type-manager", label: "header.categories.label" },
-                    { id: "system", url: "/share/page/journals2/list/system", label: "header.system.label" },
-                    { id: "meta_journals", url: "/share/page/journals2/list/meta", label: "header.meta_journals.label" },
-                    { id: "templates", url: "/share/page/journals2/list/templates", label: "header.templates.label" },
-                    { id: "more", url: "/share/page/console/admin-console/", label: "header.more.label" }
-                ]
-            }
+                {
+                    id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+                    label: "header.create-workflow-confirm.label",
+                    url: "/share/page/start-specified-workflow?workflowId=activiti$confirm"
+                }]
+        };
 
-        ];
-
-    return isMobile ? mobileMenu : mainMenu;
+    return isMobile
+                   ? [section1, section2, sites, createCase, createWorkflow, orgstruct, documentlibrary, myGroup, tools]
+                   : [section1, section2, sites, orgstruct, documentlibrary, myGroup, tools] ;
 };
 
 

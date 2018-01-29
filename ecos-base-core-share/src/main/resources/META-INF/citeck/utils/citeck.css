@@ -308,6 +308,12 @@
   color: #fff;
 }
 
+.mobile #HEADER_USER_MENU:before {
+  font: 20px FontAwesome;
+  content: '\f007'; /* user */
+  color: #fff;
+}
+
 .alfresco-share .logo {
   display: inline-block;
   cursor: pointer;

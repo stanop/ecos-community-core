@@ -149,9 +149,6 @@
     #HEADER_USER_MENU_text {
         font-size: 0;
         display: block;
-        background-image: url(/share/res/components/images/header/user-profile.png);
-        width: 20px;
-        height: 20px;
         float: left;
         background-repeat: no-repeat;
         background-position: center;

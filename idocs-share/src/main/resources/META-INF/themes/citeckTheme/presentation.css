@@ -273,8 +273,8 @@ h4 .lighter
 
 .dashlet > .title {
   padding: 10px 15px;
-  background-color: #2d3541;
-  color: white;
+  background-color: #b5cfea;
+  color: #333;
   font-weight: 900;
   text-transform: uppercase;
   line-height: 100%;
@@ -1433,7 +1433,7 @@ h3.alfresco-twister-closed
 /* Preview Tooltip */
 
 .yui-skin-citeckTheme .yui-tt .bd {
-  background-color: #2d3541;
+  background-color: #b5cfea;
   color: white;
   padding: 3px 5px;
   text-align: justify;
@@ -1892,7 +1892,7 @@ body.alfresco-guest
 
 .profile .viewcolumn .header-bar,
 .profile form .header-bar {
-   background-color: #394353 !important;
+   background-color: #e8f3ff !important;
    border: none;
    margin: 0;
    color: white;
@@ -2163,7 +2163,7 @@ table td.thumbnail img
 #alf-hd .alfresco-header-Header {
    margin: 0;
    padding: 0 25px;
-   background-color: #2d3541;
+   background-color: #b5cfea;
    border-bottom: 1px solid #ccc;
 }
 
@@ -2226,11 +2226,29 @@ table td.thumbnail img
 }
 
 .alfresco-header-Header .dijitMenuBar .dijitMenuItem:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU) {
-   background-color: #2d3541;
-   color: white;
+   background-color: #b5cfea;
+   color: #333;
    margin: 0;
    padding: 10px 15px;
    height: 20px;
+}
+
+.yui-skin-citeckTheme .dijitMenuItemLabel,
+.yui-skin-citeckTheme .dijitMenuItemLabel a.alfresco-navigation-_HtmlAnchorMixin,
+.yui-skin-citeckTheme .alfresco-share .alf-header-menu-bar .dijitMenuItem,
+.yui-skin-citeckTheme .alfresco-header-CurrentUserStatus .lastUpdate {
+    color: #333;
+}
+
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .alf-menu-group .dijitMenuItemSelected,
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .dijitMenu .dijitMenuItemSelected td,
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .alf-menu-group .dijitMenuItemSelected,
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .dijitMenu .dijitMenuItemHover td {
+    background-color: #afc6dd;
+}
+
+.yui-skin-citeckTheme .alfresco-header-CurrentUserStatus .status {
+    border: none;
 }
 
 #alf-hd .alfresco-menus-AlfMenuBar .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
@@ -2265,7 +2283,7 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    border: none;
    padding: 0 15px 0 0;
-   background-color: #2d3541;
+   background-color: #b5cfea;
    color: white !important;
    line-height: normal;
    background-position-y: 3px;
@@ -2274,13 +2292,6 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar,
 .alfresco-share #alf-hd .alfresco-header-Header .alfresco-menus-AlfMenuBar .dijitMenuBar {
    padding: 0;
-}
-
-/* only for left-widgets */
-.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem,
-#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem {
-   border-left: 1px solid #394353;
-   border-right: 1px solid #1e242c;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:first-child,
@@ -2303,7 +2314,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover >
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
-   background-color: #394353;
+   background-color: #9cbee2;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
@@ -2318,7 +2329,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem {
-   background-color: #252c36;
+   background-color: #9cbee2;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
@@ -2424,6 +2435,12 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .yui-skin-citeckTheme.alfresco-share .logo img {
   max-height: 20px !important;
+}
+
+.yui-skin-citeckTheme #HEADER_SITE_MENU:before,
+.yui-skin-citeckTheme.mobile #HEADER_USER_MENU:before,
+.yui-skin-citeckTheme .hamburger-mobile-menu .hamburger-box:after {
+    color: #333;
 }
 
 #HEADER_SITE_DOCUMENTLIBRARY_text,
@@ -2560,13 +2577,13 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 #bd .header-tabs .header-tab.current > a {
     background-color: white;
-    color: #2D3541;
+    color: #b5cfea;
 }
 
 #bd .header-tabs .header-tab.current > a:hover {
    background-color: white;
    border-color: white;
-   color: #2D3541;
+   color: #b5cfea;
 }
 
 #bd .header-tabs .header-tab > a:hover {
@@ -3164,7 +3181,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .share-form .form-container .form-fields .form-field div.object-finder.inlineable .object-finder-items .itemtype-tag {
   padding: 3px 7px;
-  background-color: #394353;
+  background-color: #e8f3ff;
   border-radius: 5px;
   color: white;
   margin: 0 5px 5px 0;
@@ -4549,7 +4566,7 @@ div#HEADER_USER_STATUS {
 
 .yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
   padding: 7px 30px 0 30px;
-  background-color: #2d3541;
+  background-color: #b5cfea;
   color: white;
 }
 

@@ -435,6 +435,10 @@
     background: rgba(255,255,255,.4)
 }
 
+.mm-menu .mm-listitem_opened>.mm-panel {
+    background: rgba(255,255,255,.4);
+}
+
 /*.mm-menu .mm-listitem_opened>.mm-btn_next,.mm-menu .mm-listitem_opened>.mm-panel {*/
     /*background: rgba(0,0,0,.05)*/
 /*}*/
@@ -3514,9 +3518,12 @@ label.mm-check:before {
     opacity: 0;
 }
 
-[class*=mm-wrapper_sidebar-collapsed-]:not(.mm-wrapper_opening) .mm-panels .fa-menu-section-icon:before {
-    content: "\f068";
-    margin-right: 7px;
+[class*=mm-wrapper_sidebar-collapsed-]:not(.mm-wrapper_opening) .mm-panels .fa-menu-section-icon {
+    content: "";
+    width: 20px;
+    height: 1px;
+    background-color: grey;
+    margin-top: 9px;
 }
 
 .mm-btn_menu {
@@ -3537,20 +3544,22 @@ label.mm-check:before {
     background-color: white;
 }
 
-#bd .grid,
-#bd.static,
-#SHARE_HEADER,
-.items-list li.selected,
-#alf-filters,
-.sticky-wrapper,
-#HEADER_TITLE_BAR,
-#bd > div[id*="site-finder"],
-#bd .orgstruct-console .orgstruct-tree-resizer,
-.alfresco-header-Warning .alfresco-header-Warning__warnings {
+body:not(.mobile) #bd .grid,
+body:not(.mobile) #bd.static,
+body:not(.mobile) #bd > .share-form,
+body:not(.mobile) #bd #yui-main,
+body:not(.mobile) #SHARE_HEADER,
+body:not(.mobile) .items-list li.selected,
+body:not(.mobile) #alf-filters,
+body:not(.mobile) .sticky-wrapper,
+body:not(.mobile) #HEADER_TITLE_BAR,
+body:not(.mobile) #bd > div[id*="site-finder"],
+body:not(.mobile) #bd .orgstruct-console .orgstruct-tree-resizer,
+body:not(.mobile) .alfresco-header-Warning .alfresco-header-Warning__warnings {
     box-shadow: inset 15px -1px 10px -15px grey;
 }
 
-.sticky-footer .footer {
+body:not(.mobile) .sticky-footer .footer {
     box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
 }
 
