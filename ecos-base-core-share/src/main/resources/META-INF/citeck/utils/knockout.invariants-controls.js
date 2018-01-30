@@ -237,10 +237,15 @@ ko.components.register("number", {
         this.id = params.id;
         this.step = params.step && _.isNumber(params.step) ? params.step : "any";
         this.disable = params.disable;
+        this.isInteger = params.isInteger == true;
         this.value = params.value;
 
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
+            if (self.isInteger) {
+                var regExp = /^[0-9]*$/;
+                return regExp.test(newValue);
+            }
             if (newValue && isFinite(newValue)) {
                 return true;
             }
