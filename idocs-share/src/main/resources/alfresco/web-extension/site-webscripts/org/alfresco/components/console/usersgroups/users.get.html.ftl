@@ -34,9 +34,7 @@
                <div class="yui-u align-right">
                   <!-- New User button -->
                   <span class="newuser-button">
-                     <span class="yui-button yui-push-button" id="${el}-newuser-button">
-                        <span class="first-child"><button>${msg("button.newuser")}</button></span>
-                     </span>
+                        <a href="/share/page/node-create-page?type=cm:person">${msg("label.title-create")}</a>
                   </span>
                   <span class="uploadusers-button">
                      <span class="yui-button yui-push-button" id="${el}-uploadusers-button">
