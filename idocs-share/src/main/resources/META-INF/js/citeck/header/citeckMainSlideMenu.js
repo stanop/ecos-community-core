@@ -4,7 +4,8 @@ define(['dojo/_base/declare',
         'alfresco/core/Core',
         'alfresco/core/CoreWidgetProcessing',
         'jquery',
-        'jquerymmenu'],
+        'jquerymmenu',
+        'jqueryscrollbar'],
 
     function(declare, _WidgetBase, _TemplatedMixin, AlfCore, CoreWidgetProcessing, $) {
         return declare([_WidgetBase, _TemplatedMixin, AlfCore], {
@@ -133,7 +134,13 @@ define(['dojo/_base/declare',
                 });
             },
             postCreate: function header_citeckMainSlideMenu__postCreate() {
-
+                $(document).ready(
+                    function() {
+                        if (!this.isMobile) {
+                            $(".mm-panel").niceScroll();
+                        }
+                    }
+                );
             }
         });
     }

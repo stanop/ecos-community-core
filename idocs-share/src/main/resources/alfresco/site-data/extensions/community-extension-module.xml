@@ -13,6 +13,7 @@
                         <dojo-pages>
                             <packages>
                                 <package name='jquerymmenu' location='/share/res/js/citeck/lib' main='jquery.mmenu.all'/>
+                                <package name='jqueryscrollbar' location='/share/res/js/citeck/lib' main='jquery.nicescroll.min'/>
                             </packages>
                         </dojo-pages>
                     </web-framework>

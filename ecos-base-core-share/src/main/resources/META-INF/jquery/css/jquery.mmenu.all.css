@@ -3543,7 +3543,10 @@ label.mm-check:before {
 .hamburger-mobile-menu .hamburger-inner, .hamburger-mobile-menu .hamburger-inner::after, .hamburger-mobile-menu .hamburger-inner::before {
     background-color: white;
 }
-
+body:not(.mobile) .sticky-wrapper #alf-hd,
+body:not(.mobile) #bd .user-profile.node-view.static,
+body:not(.mobile) #bd .profile.password,
+body:not(.mobile) #bd .toolbar.userprofile,
 body:not(.mobile) #bd .grid,
 body:not(.mobile) #bd.static,
 body:not(.mobile) #bd > .share-form,

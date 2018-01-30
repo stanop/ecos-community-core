@@ -680,12 +680,18 @@ function buildSitesForUser(sites) {
     var sitesPresets = [];
     if (sites && sites.length > 0) {
         for (var sd = 0; sd < sites.length; sd++) {
-            sitesPresets.push({
+            var site = {
                 id: sites[sd].shortName,
                 url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
                 label: sites[sd].title,
                 widgets: buildJournalsListForSite(sites[sd].shortName)
+            };
+            site.widgets.push({
+                id: "HEADER_DOCUMENTLIBRARY",
+                label: "header.documentlibrary.label",
+                url: "/share/page/" + buildSiteUrl(sites[sd].shortName) + "documentlibrary"
             });
+            sitesPresets.push(site);
         }
     }
 
@@ -858,11 +864,6 @@ function getWidgets(isMobile) {
             sectionTitle: "header.orgstruct.label",
             widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
         },
-        documentlibrary = {
-            id: "HEADER_DOCUMENTLIBRARY",
-            sectionTitle: "header.documentlibrary.label",
-            widgets: [{id: "HEADER_DOCUMENTLIBRARY_WIDGET", label: "header.documentlibrary.label", url: "/share/page/" + buildSiteUrl(currentSite) + "documentlibrary"}]
-        },
         myGroup = {
             id: "HEADER_MORE_MY_GROUP",
             sectionTitle: "header.my.label",
@@ -908,8 +909,8 @@ function getWidgets(isMobile) {
         };
 
     return isMobile
-                   ? [section1, section2, sites, createCase, createWorkflow, orgstruct, documentlibrary, myGroup, tools]
-                   : [section1, section2, sites, orgstruct, documentlibrary, myGroup, tools] ;
+                   ? [section1, section2, sites, createCase, createWorkflow, orgstruct, myGroup, tools]
+                   : [section1, section2, sites, orgstruct, myGroup, tools] ;
 };
 
 
