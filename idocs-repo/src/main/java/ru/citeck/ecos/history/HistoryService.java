@@ -19,8 +19,11 @@
 package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.batch.BatchProcessWorkProvider;
+import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
@@ -29,6 +32,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +90,12 @@ public class HistoryService {
     private static final String PROPERTY_NAME = "propertyName";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
 
-    private static final Integer MAX_ITEMS_COUNT = 250;
+    private static final String TRANSFER_PROCESS_NAME = "transfer-old-history-process";
     private boolean isHistoryTransferring = false;
+
+    private static final int BATCH_SIZE = 1;
+    private static final int WORKER_THREADS = 1;
+    private static final int LOGGING_INTERVAL = 10;
 
     /**
      * Date-time format
@@ -130,6 +138,12 @@ public class HistoryService {
     private StoreRef storeRef;
 
     private NodeRef historyRoot;
+
+    private TransactionService transactionService;
+
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
         this.historyRemoteService = historyRemoteService;
@@ -328,17 +342,18 @@ public class HistoryService {
         }
     }
 
-    public String sendAndRemoveAllOldEvents(Integer offset) {
+    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount) {
         if (isHistoryTransferring) {
             return "History is transferring";
         }
         isHistoryTransferring = true;
         logger.info("History transferring started from position - " + offset);
+        logger.info("History transferring. Max load size - " + maxItemsCount);
         try {
             /** Load first documents */
             int documentsTransferred = 0;
             int skipCount = offset;
-            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount);
+            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
             boolean hasMore;
 
             /** Start processing */
@@ -346,12 +361,20 @@ public class HistoryService {
                 List<NodeRef> documents = resultSet.getNodeRefs();
                 hasMore = resultSet.hasMore();
                 /** Process each document */
-                for (NodeRef document : documents) {
-                    sendAndRemoveOldEventsByDocument(document);
-                    documentsTransferred++;
-                }
+
+                RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
+                BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
+                        TRANSFER_PROCESS_NAME,
+                        retryingTransactionHelper,
+                        new HistoryTransferProvider(documents),
+                        WORKER_THREADS, BATCH_SIZE,
+                        null, logger, LOGGING_INTERVAL
+                );
+
+                batchProcessor.process(new HistoryTransferWorker(this), true);
+                documentsTransferred += documents.size();
                 skipCount += documents.size();
-                resultSet = getDocumentsResultSetByOffset(skipCount);
+                resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
                 logger.info("History transferring - documents have been transferred - " + documentsTransferred);
             } while (hasMore);
             logger.info("History transferring - all documents have been transferred - " + documentsTransferred);
@@ -364,13 +387,13 @@ public class HistoryService {
         }
     }
 
-    private ResultSet getDocumentsResultSetByOffset(Integer offset) {
+    private ResultSet getDocumentsResultSetByOffset(Integer offset, Integer maxItemsCount) {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
         parameters.setQuery("TYPE:\"idocs:doc\"");
         parameters.addSort("@cm:created", true);
-        parameters.setMaxItems(MAX_ITEMS_COUNT);
+        parameters.setMaxItems(maxItemsCount);
         parameters.setSkipCount(offset);
         return searchService.query(parameters);
     }
@@ -546,5 +569,50 @@ public class HistoryService {
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }
         nodeService.addProperties(historyEvent, additionalProperties);
+    }
+
+    /**
+     * History batch process worker
+     */
+    private static class HistoryTransferWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
+
+        private HistoryService historyService;
+
+        HistoryTransferWorker(HistoryService historyService) {
+            this.historyService = historyService;
+        }
+
+        @Override
+        public void process(NodeRef documentRef) throws Throwable {
+            historyService.sendAndRemoveOldEventsByDocument(documentRef);
+        }
+    }
+
+    /**
+     * History transfer provider
+     */
+    private static class HistoryTransferProvider implements BatchProcessWorkProvider<NodeRef> {
+
+        private Collection<NodeRef> documents;
+        private boolean hasMore = true;
+
+        HistoryTransferProvider(Collection<NodeRef> documents) {
+            this.documents = documents;
+        }
+
+        @Override
+        public int getTotalEstimatedWorkSize() {
+            return documents.size();
+        }
+
+        @Override
+        public Collection<NodeRef> getNextWork() {
+            if (hasMore) {
+                hasMore = false;
+                return documents;
+            } else {
+                return Collections.emptyList();
+            }
+        }
     }
 }
