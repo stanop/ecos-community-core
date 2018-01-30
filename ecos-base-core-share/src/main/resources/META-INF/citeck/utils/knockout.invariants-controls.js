@@ -240,12 +240,6 @@ ko.components.register("number", {
         this.isInteger = params.isInteger == true;
         this.value = params.value;
 
-        /*if (this.isInteger) {
-            this.value = params.value.replace(/,/, "").replace(/./, "");
-        } else {
-            this.value = params.value;
-        }*/
-
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
             if (self.isInteger) {
