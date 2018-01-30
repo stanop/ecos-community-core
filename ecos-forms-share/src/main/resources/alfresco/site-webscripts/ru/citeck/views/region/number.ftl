@@ -4,7 +4,9 @@
   <#if params.step??>
     step: ${params.step},
   </#if>
-
+  <#if params.isInteger??>
+    isInteger: ${params.isInteger},
+  </#if>
   id: "${fieldId}",
   value: textValue,
   disable: protected
