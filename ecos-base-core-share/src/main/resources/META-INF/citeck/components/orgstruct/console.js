@@ -455,8 +455,10 @@
 
             /*var destItemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
             destItemId = 'workspace://SpacesStore/cef5201b-7906-4a5c-a91d-43f183ff9cc0';*/
+            var destItemId = 'workspace://SpacesStore/trt-rtr';
 
-            this.widgets.viewItem = new Citeck.forms.createUserInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id/*, destination: destItemId*/} );
+            // this.widgets.viewItem = new Citeck.forms.createUserInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id/*, destination: destItemId*/} );
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, destination: destItemId, mode: 'create'} );
             this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
         },
 
