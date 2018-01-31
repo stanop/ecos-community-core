@@ -2,10 +2,25 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
 
-    <bean id="caseActivityService" name="CaseActivityService" class="ru.citeck.ecos.icase.activity.CaseActivityServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
-        <property name="dictionaryService" ref="DictionaryService"/>
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="nodeService" ref="nodeService"/>
+    <bean id="caseActivityService" name="CaseActivityService"
+          class="ru.citeck.ecos.icase.activity.CaseActivityServiceImpl"
+          init-method="init" depends-on="idocs.dictionaryBootstrap">
+
+        <property name="dictionaryService" ref="DictionaryService" />
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="namespaceService" ref="namespaceService" />
+        <property name="messageService" ref="messageService" />
+        <property name="createMenuTypes">
+            <list>
+                <value>{http://www.citeck.ru/model/icaseTask/1.0}humanTask</value>
+                <value>{http://www.citeck.ru/model/icaseTask/1.0}processTask</value>
+                <value>{http://www.citeck.ru/model/stages/1.0}stage</value>
+                <value>{http://www.citeck.ru/model/action/1.0}action</value>
+                <value>{http://www.citeck.ru/model/case/timer/1.0}timer</value>
+                <value>{http://www.citeck.ru/model/activity/1.0}activity</value>
+            </list>
+        </property>
     </bean>
 
     <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
