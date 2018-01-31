@@ -42,10 +42,8 @@
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:documentType" default="true">
-                <option name="formatter">typeName('shortQName')</option>
-            </header>
-            <header key="wfm:documentKind"/>
+            <header key="wfm:documentTypeTitle" default="true"/>
+            <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
@@ -86,10 +84,8 @@
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:documentType" default="true">
-                <option name="formatter">typeName('shortQName')</option>
-            </header>
-            <header key="wfm:documentKind"/>
+            <header key="wfm:documentTypeTitle" default="true"/>
+            <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
@@ -122,10 +118,8 @@
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:documentType" default="true">
-                <option name="formatter">typeName('shortQName')</option>
-            </header>
-            <header key="wfm:documentKind"/>
+            <header key="wfm:documentTypeTitle" default="true"/>
+            <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:completionDate" default="true" />
@@ -167,10 +161,8 @@
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:documentType" default="true">
-                <option name="formatter">typeName('shortQName')</option>
-            </header>
-            <header key="wfm:documentKind"/>
+            <header key="wfm:documentTypeTitle" default="true"/>
+            <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
@@ -214,10 +206,8 @@
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:documentType" default="true">
-                <option name="formatter">typeName('shortQName')</option>
-            </header>
-            <header key="wfm:documentKind"/>
+            <header key="wfm:documentTypeTitle" default="true"/>
+            <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate"/>
             <header key="bpm:dueDate" default="true"/>
             <header key="bpm:comment"/>

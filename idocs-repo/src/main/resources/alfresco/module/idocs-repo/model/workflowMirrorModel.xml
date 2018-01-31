@@ -66,8 +66,14 @@
                 <property name="wfm:documentType">
                     <type>d:qname</type>
                 </property>
+                <property name="wfm:documentTypeTitle">
+                    <type>d:mltext</type>
+                </property>
                 <property name="wfm:documentKind">
                     <type>d:noderef</type>
+                </property>
+                <property name="wfm:documentKindTitle">
+                    <type>d:mltext</type>
                 </property>
                 <property name="wfm:assigneeManager">
                     <type>d:noderef</type>
