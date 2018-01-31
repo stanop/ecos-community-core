@@ -437,7 +437,7 @@
         <property name="personService" ref="PersonService"/>
         <property name="searchService" ref="searchService"/>
         <property name="historyRoot" value="workspace://SpacesStore/history-events-root"/>
-		<property name="transactionService" ref="TransactionService"/>
+        <property name="transactionService" ref="TransactionService"/>
     </bean>
 
 	<bean id="historyRemoteService" class="ru.citeck.ecos.history.impl.HistoryRemoteServiceImpl">

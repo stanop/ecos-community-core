@@ -91,16 +91,22 @@ public class HistoryService {
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
 
     private static final String TRANSFER_PROCESS_NAME = "transfer-old-history-process";
-    private boolean isHistoryTransferring = false;
-
     private static final int BATCH_SIZE = 1;
     private static final int WORKER_THREADS = 1;
     private static final int LOGGING_INTERVAL = 10;
+
+    private static Log logger = LogFactory.getLog(HistoryService.class);
+    public static final String SYSTEM_USER = "system";
+    public static final String UNKNOWN_USER = "unknown-user";
+    private static final String PROPERTY_PREFIX = "event";
+    private static final String HISTORY_ROOT = "/" + "history:events";
 
     /**
      * Date-time format
      */
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+    private boolean isHistoryTransferring = false;
 
     /**
      * Global properties
@@ -114,16 +120,6 @@ public class HistoryService {
      */
     @Autowired
     private EcosConfigService ecosConfigService;
-
-    private static Log logger = LogFactory.getLog(HistoryService.class);
-
-    public static final String SYSTEM_USER = "system";
-
-    public static final String UNKNOWN_USER = "unknown-user";
-
-    private static final String PROPERTY_PREFIX = "event";
-
-    private static final String HISTORY_ROOT = "/" + "history:events";
 
     private NodeService nodeService;
 
@@ -381,7 +377,8 @@ public class HistoryService {
             return "History transferring - documents have been transferred - " + documentsTransferred;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return "Error during history transferring. See logs";
+            throw new RuntimeException(e);
+//            return "Error during history transferring. See logs";
         } finally {
             isHistoryTransferring = false;
         }
