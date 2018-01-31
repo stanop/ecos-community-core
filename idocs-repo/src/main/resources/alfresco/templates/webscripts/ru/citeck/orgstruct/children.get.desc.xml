@@ -35,7 +35,7 @@
 	  <shortname>recurse</shortname>
 	  <description>true to get all subgroups and users, false to get only immediate (false by default)</description>
 	</arg>
-    <arg>
+	<arg>
 	  <shortname>showDisabled</shortname>
 	  <description>true to get users with no attention to "cm:personDisabled" field (true by default)</description>
 	</arg>
