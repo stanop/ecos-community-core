@@ -104,6 +104,7 @@
 		<fields datatype="d:int">
 			<regions name="input" template="number">
 				<param name="step">1</param>
+				<param name="isInteger">true</param>
 			</regions>
 		</fields>
 		

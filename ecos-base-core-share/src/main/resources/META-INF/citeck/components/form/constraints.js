@@ -529,7 +529,11 @@
         var itemKind, mode, paramName;
         formId = formId || "";
 
-        if(Citeck.utils.isNodeRef(itemId)) {
+        if (!Citeck.utils.isNodeRef(itemId) || params.mode === 'create') {
+            paramName = 'type';
+            itemKind = 'type';
+            mode = 'create';
+        } else {
             paramName = 'nodeRef';
             itemKind = 'node';
             if (params.mode === 'edit') {
@@ -537,10 +541,6 @@
             } else {
                 mode = 'view';
             }
-        } else {
-            paramName = 'type';
-            itemKind = 'type';
-            mode = 'create';
         }
 
         params = params || {};
@@ -557,6 +557,7 @@
         var newDialog = function() {
             var dataObj = { htmlid: viewId, mode: mode, viewId: formId };
             dataObj[paramName] = itemId;
+            if (mode === 'create') dataObj["destination"] = destination;
 
             for(var name in params) {
                 if(params[name] != null) dataObj['param_' + name] = params[name];
@@ -594,7 +595,7 @@
                         // define submit handler
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if (runtime.key() != viewId) return;
+                            if (mode != 'create' && runtime.key() != viewId) return;
 
                             var node = args[1].node;
 
@@ -614,7 +615,9 @@
                             YAHOO.Bubbling.fire("clearViewJunk");
 
                             // go to view mode
-                            var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
+                            if (mode != 'create') {
+                                var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
+                            }
 
                             YAHOO.Bubbling.fire("metadataRefresh");
                         };
@@ -635,7 +638,9 @@
                             YAHOO.Bubbling.fire("clearViewJunk");
 
                             // open form in view mode
-                            var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
+                            if (mode != 'create') {
+                                var viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: listId, mode: 'view'});
+                            }
                         };
 
                         YAHOO.Bubbling.on("node-view-submit", onSubmit);
@@ -649,27 +654,33 @@
             });
         };
 
-        var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
-            paramName: paramName,
-            itemId: itemId,
-            mode: mode,
-            formId: formId
-        });
+        if (mode != 'create') {
+            var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
+                paramName: paramName,
+                itemId: itemId,
+                mode: mode,
+                formId: formId
+            });
 
-        Alfresco.util.Ajax.jsonGet({
-            url: checkUrl,
-            successCallback: { fn: function(response) {
-                if (response.json.exists) {
-                    newDialog();
-                } else if(response.json.defaultExists) {
-                    formId = "";
-                    newDialog();
-                }
-            }},
-            failureCallback: { fn: function(response) {
-                console.log('Error when call Citeck.forms.showViewInplaced [2]:', response);
-            }}
-        });
+            Alfresco.util.Ajax.jsonGet({
+                url: checkUrl,
+                successCallback: { fn: function(response) {
+                    if (response.json.exists) {
+                        newDialog();
+                    } else if(response.json.defaultExists) {
+                        formId = "";
+                        newDialog();
+                    } else {
+                        oldDialog();
+                    }
+                }},
+                failureCallback: { fn: function(response) {
+                    console.log('Error when call Citeck.forms.showViewInplaced [2]:', response);
+                }}
+            });
+        } else {
+            newDialog();
+        }
     };
 
 
@@ -696,9 +707,6 @@
      *            {string} Message to display when validation fails, maybe null
      * @static
      */
-
-
-
     Alfresco.forms.validation.authorityName = function mandatory(field, args,
                                                                  event, form, silent, message) {
         if (Alfresco.logger.isDebugEnabled())

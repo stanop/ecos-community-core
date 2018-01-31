@@ -2196,6 +2196,13 @@ div[id*="multiple-text"] .multiple-text-control input {
   background-image: url(images/remove-active.png);
 }
 
+.invariants-form .template-view-table tr.value-item .value-item-actions a.download-content-item {
+  background-image: url(../dynamic-tree/icons/download.png);
+}
+
+.invariants-form .template-view-table tr.value-item .value-item-actions a.download-content-item:hover {
+  background-image: url(../dynamic-tree/icons/download-active.png);
+}
 
 @media screen and (max-width: 1000px) {
   .invariants-form.view-form .template-table [class*="template-row"] .template-label,
