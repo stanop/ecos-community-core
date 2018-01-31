@@ -86,7 +86,7 @@
                                         },
                                         "GROUP": {
                                             "format": "authority",
-                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/{shortName}/children/",
+                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/{shortName}/children/?showdisabled=false",
                                             "add": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                             "delete": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                         }
