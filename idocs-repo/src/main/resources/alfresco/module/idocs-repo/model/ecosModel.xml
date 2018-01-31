@@ -116,30 +116,30 @@
             <title>Additional Person Properties</title>
             <properties>
                 <property name="ecos:photo">
-                    <title>Фото</title>
+                    <title>Photo</title>
                     <type>d:content</type>
                 </property>
                 <property name="ecos:birthDate">
-                    <title>Дата рождения</title>
+                    <title>Birth date</title>
                     <type>d:date</type>
                 </property>
                 <property name="ecos:city">
-                    <title>Город</title>
+                    <title>City</title>
                     <type>d:text</type>
                 </property>
                 <property name="ecos:sex">
-                    <title>Пол</title>
+                    <title>Sex</title>
                     <type>d:text</type>
                     <constraints>
                         <constraint ref="ecos:sexConstraint"/>
                     </constraints>
                 </property>
                 <property name="ecos:phoneWorking">
-                    <title>Телефон рабочий</title>
+                    <title>Work phone</title>
                     <type>d:text</type>
                 </property>
                 <property name="ecos:phoneInternal">
-                    <title>Телефон внутренний</title>
+                    <title>Internal phone</title>
                     <type>d:text</type>
                 </property>
             </properties>
