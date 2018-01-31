@@ -57,14 +57,13 @@ import java.util.*;
 public class HistoryService {
 
     /**
-     * Properties constants
-     */
-    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
-
-    /**
      * Constants
      */
     public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
+    public static final String SYSTEM_USER = "system";
+    public static final String UNKNOWN_USER = "unknown-user";
+
+    private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     private static final String MODIFIER_PROPERTY = "modifier";
     private static final String VERSION_LABEL_PROPERTY = "versionLabel";
@@ -96,14 +95,9 @@ public class HistoryService {
     private static final int LOGGING_INTERVAL = 10;
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
-    public static final String SYSTEM_USER = "system";
-    public static final String UNKNOWN_USER = "unknown-user";
     private static final String PROPERTY_PREFIX = "event";
     private static final String HISTORY_ROOT = "/" + "history:events";
 
-    /**
-     * Date-time format
-     */
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     private boolean isHistoryTransferring = false;
@@ -377,8 +371,7 @@ public class HistoryService {
             return "History transferring - documents have been transferred - " + documentsTransferred;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-//            return "Error during history transferring. See logs";
+            throw e;
         } finally {
             isHistoryTransferring = false;
         }
