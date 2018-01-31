@@ -18,17 +18,18 @@
  */
 package ru.citeck.ecos.workflow.mirror;
 
+import net.sf.cglib.core.Local;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.dictionary.M2Label;
 import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.dictionary.TypeDefinition;
+import org.alfresco.service.cmr.i18n.MessageLookup;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
@@ -51,10 +52,7 @@ import ru.citeck.ecos.orgstruct.OrgStructService;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService {
 
@@ -73,6 +71,8 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private OrgStructService orgStructService;
     private SearchService searchService;
     private DictionaryService dictionaryService;
+    private MessageLookup messageLookup;
+    private NodeService mlAwareNodeService;
 
     private NodeRef taskMirrorRoot;
     private QName taskMirrorAssoc;
@@ -199,10 +199,13 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (document != null) {
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
+                nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
 
                 NodeRef documentKind = getDocumentKind(document);
-                if (documentKind != null) {
+                if (documentKind != null && nodeService.exists(documentKind)) {
                     nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
+                    nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND_TITLE,
+                            mlAwareNodeService.getProperty(documentKind, ContentModel.PROP_TITLE));
                 }
 
                 nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
@@ -351,6 +354,21 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         return null;
     }
 
+    private MLText getMlDocumentTypeTitle(NodeRef documentRef) {
+        QName documentType = nodeService.getType(documentRef);
+        TypeDefinition typeDef = dictionaryService.getType(documentType);
+        MLText mlText = new MLText();
+        putDocTypeTitleForLocale(typeDef, "ru", mlText);
+        putDocTypeTitleForLocale(typeDef, "en", mlText);
+        return mlText;
+    }
+
+    private void putDocTypeTitleForLocale(TypeDefinition typeDef, String language, MLText mlText) {
+        Locale locale = new Locale.Builder().setLanguage(language).build();
+        String title = M2Label.getLabel(locale, typeDef.getModel(), messageLookup, "type", typeDef.getName(), "title");
+        mlText.addValue(locale, title);
+    }
+
     private NodeRef getDocumentKind(NodeRef documentRef) {
         if (documentRef != null && nodeService.exists(documentRef)) {
             Serializable documentKind = nodeService.getProperty(documentRef, ClassificationModel.PROP_DOCUMENT_KIND);
@@ -404,5 +422,13 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    public void setMessageLookup(MessageLookup messageLookup) {
+        this.messageLookup = messageLookup;
+    }
+
+    public void setMlAwareNodeService(NodeService mlAwareNodeService) {
+        this.mlAwareNodeService = mlAwareNodeService;
     }
 }

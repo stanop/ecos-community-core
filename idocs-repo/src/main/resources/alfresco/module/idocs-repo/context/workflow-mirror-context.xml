@@ -29,6 +29,8 @@
 		<property name="authorityService" ref="authorityService" />
 		<property name="searchService" ref="searchService" />
 		<property name="dictionaryService" ref="dictionaryService" />
+		<property name="messageLookup" ref="messageService" />
+		<property name="mlAwareNodeService" ref="mlAwareNodeService" />
 	</bean>
 
 	<bean id="workflowMirrorBehaviour" class="ru.citeck.ecos.workflow.mirror.MirrorBehaviour" init-method="init">
