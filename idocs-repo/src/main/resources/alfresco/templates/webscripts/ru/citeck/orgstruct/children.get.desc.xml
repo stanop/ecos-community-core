@@ -2,7 +2,7 @@
   <shortname>Org.Struct children groups</shortname>
   <description>All children groups (branches, roles and ordinary groups)</description>
   <url>/api/orgstruct/group/{groupname}/children/</url>
-  <url>/api/orgstruct/group/{groupname}/children?branch={includeBranches?}&amp;role={includeRoles?}&amp;group={includeGroups?}&amp;user={includeUsers?}&amp;filter={filter?}&amp;recurse={recurse}</url>
+  <url>/api/orgstruct/group/{groupname}/children?branch={includeBranches?}&amp;role={includeRoles?}&amp;group={includeGroups?}&amp;user={includeUsers?}&amp;filter={filter?}&amp;recurse={recurse}&amp;showdisabled={showDisabled}</url>
   <format default="json">argument</format>
   <authentication>user</authentication>
   <transaction allow="readonly">required</transaction>
@@ -34,6 +34,10 @@
     <arg>
 	  <shortname>recurse</shortname>
 	  <description>true to get all subgroups and users, false to get only immediate (false by default)</description>
+	</arg>
+    <arg>
+	  <shortname>showDisabled</shortname>
+	  <description>true to get users with no attention to "cm:personDisabled" field (true by default)</description>
 	</arg>
   </args>
   <responses>

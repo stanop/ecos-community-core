@@ -11,6 +11,7 @@ function getFilterOptions() {
 		role: processOption("role"),
 		group: processOption("group"),
 		user: processOption("user"),
+        showDisabled: processOption("showdisabled"),
         subTypes: args.subTypes ? args.subTypes.split(',') : null,
 		filter: args.filter ? new RegExp(args.filter.replace(/([*?+])/, ".$1"), "i") : null,
 	};
@@ -36,10 +37,18 @@ function filterAuthorities(allAuthorities, options) {
 		var authority = allAuthorities[i], 
 			name = authority.shortName;
 		if(authority.authorityType == "USER") {
+            var enabled = people.isAccountEnabled(authority.person.properties.userName);
+
             var asGroup = groups.getGroupForFullAuthorityName(authority.userName);
-			if(!options.user || options.subTypes && filterAuthorities(asGroup.allParentGroups, getGroupOptions(options)).length == 0) {
+            if (!options.user || options.subTypes && filterAuthorities(asGroup.allParentGroups, getGroupOptions(options)).length == 0) {
                 continue;
-            }
+            };
+
+            // if (!options.incDisabled && authority.person.hasAspect('cm:personDisabled'))
+			if (!options.showDisabled && !enabled) {
+				continue;
+			};
+
 			displayName = authority.person.properties.firstName + " " + authority.person.properties.lastName;
 		} else if(authority.authorityType == "GROUP") {
 			var type = orgstruct.getGroupType(name),
