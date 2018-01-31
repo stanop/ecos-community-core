@@ -44,7 +44,6 @@ function filterAuthorities(allAuthorities, options) {
                 continue;
             }
 
-            // if (!options.incDisabled && authority.person.hasAspect('cm:personDisabled'))
             if (!options.showDisabled && !enabled) {
                 continue;
             };
