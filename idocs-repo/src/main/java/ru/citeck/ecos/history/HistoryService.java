@@ -91,7 +91,6 @@ public class HistoryService {
 
     private static final String TRANSFER_PROCESS_NAME = "transfer-old-history-process";
     private static final int BATCH_SIZE = 1;
-    private static final int WORKER_THREADS = 1;
     private static final int LOGGING_INTERVAL = 10;
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
@@ -332,11 +331,16 @@ public class HistoryService {
         }
     }
 
-    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount) {
+    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount, Integer stopCount, Integer threads) {
         if (isHistoryTransferring) {
             return "History is transferring";
         }
         isHistoryTransferring = true;
+        Integer threadsCount = 1;
+        if (threads != null && threads > 0) {
+            threadsCount = threads;
+        }
+        logger.info("History transferring started with threads " + threadsCount);
         logger.info("History transferring started from position - " + offset);
         logger.info("History transferring. Max load size - " + maxItemsCount);
         try {
@@ -357,7 +361,7 @@ public class HistoryService {
                         TRANSFER_PROCESS_NAME,
                         retryingTransactionHelper,
                         new HistoryTransferProvider(documents),
-                        WORKER_THREADS, BATCH_SIZE,
+                        threadsCount, BATCH_SIZE,
                         null, logger, LOGGING_INTERVAL
                 );
 
@@ -366,6 +370,11 @@ public class HistoryService {
                 skipCount += documents.size();
                 resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
                 logger.info("History transferring - documents have been transferred - " + documentsTransferred);
+                if (stopCount != null && stopCount > 0) {
+                    if (stopCount < documentsTransferred) {
+                        break;
+                    }
+                }
             } while (hasMore);
             logger.info("History transferring - all documents have been transferred - " + documentsTransferred);
             return "History transferring - documents have been transferred - " + documentsTransferred;
