@@ -12,8 +12,6 @@ import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -38,8 +36,6 @@ public class CaseTimerJob extends AbstractScheduledLockedJob implements Stateful
     private static final int WORKER_THREADS = 1;
     private static final int LOGGING_INTERVAL = 10;
 
-    private static final Log logger = LogFactory.getLog(CaseTimerJob.class);
-
     private static final String SEARCH_QUERY = String.format("TYPE:\"%s\" AND @%s:[MIN TO NOW]",
                                                              CaseTimerModel.TYPE_TIMER,
                                                              CaseTimerModel.PROP_OCCUR_DATE);
@@ -60,16 +56,13 @@ public class CaseTimerJob extends AbstractScheduledLockedJob implements Stateful
     @Override
     public void executeJob(JobExecutionContext context) throws JobExecutionException {
         final JobDataMap data = context.getJobDetail().getJobDataMap();
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
-                RepositoryState repositoryState = getService(serviceRegistry, AlfrescoServices.REPOSITORY_STATE);
-                if (!repositoryState.isBootstrapping()) {
-                    updateTimers(serviceRegistry);
-                }
-                return null;
+        AuthenticationUtil.runAsSystem(() -> {
+            final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
+            RepositoryState repositoryState = getService(serviceRegistry, AlfrescoServices.REPOSITORY_STATE);
+            if (!repositoryState.isBootstrapping()) {
+                updateTimers(serviceRegistry);
             }
+            return null;
         });
     }
 
@@ -81,7 +74,6 @@ public class CaseTimerJob extends AbstractScheduledLockedJob implements Stateful
         List<NodeRef> nodeRefs = findCompletedTimers(searchService);
 
         if (!nodeRefs.isEmpty()) {
-
             TransactionService transactionService = serviceRegistry.getTransactionService();
             RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
 
@@ -123,7 +115,7 @@ public class CaseTimerJob extends AbstractScheduledLockedJob implements Stateful
         }
 
         @Override
-        public void process(NodeRef timerRef) throws Throwable {
+        public void process(NodeRef timerRef) {
             caseTimerService.timerOccur(timerRef);
         }
     }

@@ -182,20 +182,25 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     public List<NodeRef> getStartedActivities(NodeRef nodeRef) {
         List<NodeRef> startedActivities = new ArrayList<>();
-        for (NodeRef activiti : getActivities(nodeRef)) {
-            String status = (String) nodeService.getProperty(activiti, LifeCycleModel.PROP_STATE);
+        for (NodeRef activity : getActivities(nodeRef)) {
+            String status = (String) nodeService.getProperty(activity, LifeCycleModel.PROP_STATE);
             if (status != null && status.equals(STATE_STARTED)) {
-                startedActivities.add(activiti);
+                startedActivities.add(activity);
             }
         }
         return startedActivities;
     }
 
     public NodeRef getActivityByTitle(NodeRef nodeRef, String title) {
-        for (NodeRef activiti : getActivities(nodeRef)) {
-            String actTitle = (String) nodeService.getProperty(activiti, ContentModel.PROP_TITLE);
+        return getActivityByTitle(nodeRef, title, false);
+    }
+
+    @Override
+    public NodeRef getActivityByTitle(NodeRef nodeRef, String title, boolean recurse) {
+        for (NodeRef activity : getActivities(nodeRef, recurse)) {
+            String actTitle = (String) nodeService.getProperty(activity, ContentModel.PROP_TITLE);
             if (actTitle.equals(title)) {
-                return activiti;
+                return activity;
             }
         }
         return null;
