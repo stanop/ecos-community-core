@@ -116,7 +116,9 @@
             </field>
         </view>
         <view>
-            <field assoc="ecos:responsible" />
+            <field assoc="ecos:responsible">
+                <invariant on="mandatory" language="explicit">true</invariant>
+            </field>
             <field assoc="idocs:legalEntity">
                 <region name="input" template="view"/>
                 <region name="select" template="select-journal">
