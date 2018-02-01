@@ -17,6 +17,10 @@
         <fields kind="mode-just-view" template="none" />
     </views>
 
+    <views mode="view">
+        <fields kind="mode-not-view" template="none" />
+    </views>
+
     <view class="cm:person">
         <param name="customClass">user-profile-custom-container</param>
         <param name="inlineEdit">false</param>
@@ -42,7 +46,7 @@
                 </view>
             </view>
 
-            <view id="cm_person_header--fio--outer" template="wide">
+            <view id="cm_person_header--fio--outer" mode="view" template="wide">
                 <param name="customClass">user-profile-header__column user-profile-header__column--fio</param>
                 <view id="cm_person_header--fio" template="blockset">
                     <field prop="cm:firstName" template="block">
@@ -137,6 +141,64 @@
                 <region name="label" template="none" />
                 <region name="mandatory" template="none" />
                 <region name="input" template="user-groups" />
+            </field>
+        </view>
+
+        <view id="cm_person_password">
+            <param name="title">person_password_title</param>
+            <field prop="ecos:pass" kind="mode-not-view">
+                <region name="input" template="password" />
+                <!--<invariant on="valid" language="javascript" description="Пароль некорректный (недопустимые символы)">
+                    <![CDATA[
+                        (function() {
+                            var val = value;
+                            &lt;!&ndash;console.log('value =', value);&ndash;&gt;
+                            return !!val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]/) && val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]/).input === val;
+                        })();
+                    ]]>
+                </invariant>
+                <invariant on="valid" language="javascript" description="Пароли должны совпадать">
+                    <![CDATA[
+                        (function() {
+                            return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                        })();
+                    ]]>
+                </invariant>-->
+                <invariant on="valid" language="javascript" description="password_incorrect">
+                    <![CDATA[
+                        (function() {
+                            if (node.impl().getAttribute("ecos:pass").value() !== node.impl().getAttribute("ecos:passVerify").value()) {
+                                return false;
+                            } else {
+                                var val = value;
+                                return !!val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/) && val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/).input === val;
+                            }
+                        })();
+                    ]]>
+                </invariant>
+            </field>
+            <field prop="ecos:passVerify" kind="mode-not-view">
+                <region name="input" template="password" />
+                <!--<invariant on="valid" language="javascript" description="passwords_must_match">-->
+                <!--<invariant on="valid" language="javascript" description="password_incorrect">
+                    <![CDATA[
+                        (function() {
+                            return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                        })();
+                    ]]>
+                </invariant>-->
+                <invariant on="valid" language="javascript" description="password_incorrect">
+                    <![CDATA[
+                        (function() {
+                            if (node.impl().getAttribute("ecos:pass").value() !== node.impl().getAttribute("ecos:passVerify").value()) {
+                                return false;
+                            } else {
+                                var val = value;
+                                return !!val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/) && val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/).input === val;
+                            }
+                        })();
+                    ]]>
+                </invariant>
             </field>
         </view>
     </view>
