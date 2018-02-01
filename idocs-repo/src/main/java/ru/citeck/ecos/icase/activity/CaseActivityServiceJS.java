@@ -5,8 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
@@ -17,7 +15,6 @@ import java.util.List;
  * @author Pavel Simonov
  */
 public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
-    private static final Log log = LogFactory.getLog(CaseActivityServiceJS.class);
 
     private CaseActivityService caseActivityService;
     private NamespaceService namespaceService;
@@ -59,8 +56,12 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     }
 
     public ScriptNode getActivityByTitle(Object nodeRef, String title) {
+        return getActivityByTitle(nodeRef, title, false);
+    }
+
+    public ScriptNode getActivityByTitle(Object nodeRef, String title, boolean recurse) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        NodeRef activity = caseActivityService.getActivityByTitle(nRef, title);
+        NodeRef activity = caseActivityService.getActivityByTitle(nRef, title, recurse);
         return JavaScriptImplUtils.wrapNode(activity, this);
     }
 
