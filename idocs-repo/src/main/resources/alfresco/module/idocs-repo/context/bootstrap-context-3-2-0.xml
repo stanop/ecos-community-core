@@ -159,7 +159,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.general-case-categories2" parent="idocs.import-spaces.3-2-0">
+    <bean id="idocs.module-component.general-case-categories3" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="general-case-categories" />
         <property name="description" value="general-case-categories" />
         <property name="dependsOn">
@@ -199,9 +199,9 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.ecos-document.cardlets" parent="idocs.import-spaces.3-2-0">
-        <property name="name" value="Cardlets for ecos documents"/>
-        <property name="description" value="Cardlets for ecos documents"/>
+    <bean id="idocs.module-component.ecos-case.cardlets2" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="Cardlets for ecos case"/>
+        <property name="description" value="Cardlets for ecos case"/>
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.system-journals.cardlets" />
@@ -212,15 +212,51 @@
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/ecos-document/node-view</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/ecos-case/node-view</prop>
                 </props>
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/ecos-document/web-preview</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/ecos-case/web-preview</prop>
                 </props>
             </list>
         </property>
     </bean>
 
+    <bean id="idocs.module-component.remove-ecos-document-cardlets" parent="idocs.import-scripts.3-2-0">
+        <property name="name" value="remove-ecos-document-cardlets"/>
+        <property name="description" value="remove-ecos-document-cardlets"/>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/remove-nodes.js"/>
+        <property name="args">
+            <map>
+                <entry key="nodes">
+                    <list>
+                        <value>/app:company_home/app:dictionary/cm:cardlets/ecos:document-node-view-left-a5</value>
+                        <value>/app:company_home/app:dictionary/cm:cardlets/ecos:document-web-preview-disabled-a5</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-case-enumeration-template" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="ecos-case-enumeration-template" />
+        <property name="description" value="ecos-case-enumeration-template" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.idocs-root" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/idocs-autonumber-templates</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-case-enumeration-template.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+    
 </beans>
