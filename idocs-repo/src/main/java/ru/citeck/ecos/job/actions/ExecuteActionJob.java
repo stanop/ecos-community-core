@@ -38,7 +38,7 @@ public class ExecuteActionJob extends AbstractScheduledLockedJob implements Stat
     @Override
     public void executeJob(JobExecutionContext context) throws JobExecutionException {
         final JobDataMap data = context.getJobDetail().getJobDataMap();
-        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+        AuthenticationUtil.runAsSystem(() -> {
             final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
             RepositoryState repositoryState = (RepositoryState) serviceRegistry.
                     getService(AlfrescoServices.REPOSITORY_STATE);
@@ -51,7 +51,7 @@ public class ExecuteActionJob extends AbstractScheduledLockedJob implements Stat
                 logger.info("Start executing actions. Number of works: " + works.size());
                 for (int i = 0; i < works.size(); i++) {
                     try {
-                        makeTransitions(serviceRegistry, works.get(i), i);
+                        executeAction(serviceRegistry, works.get(i), i);
                     } catch (Exception e) {
                         logger.error("Work #" + i + " failed", e);
                     }
@@ -61,8 +61,8 @@ public class ExecuteActionJob extends AbstractScheduledLockedJob implements Stat
         });
     }
 
-    private void makeTransitions(ServiceRegistry serviceRegistry, final ExecuteActionByDateWork executeActionData,
-                                 int index) {
+    private void executeAction(ServiceRegistry serviceRegistry, final ExecuteActionByDateWork executeActionData,
+                               int index) {
 
         if (!executeActionData.isEnabled()) {
             return;
@@ -106,8 +106,7 @@ public class ExecuteActionJob extends AbstractScheduledLockedJob implements Stat
             try {
                 executeActionByDateWork.process(entry);
             } catch (Exception e) {
-                throw new RuntimeException("Exception on execute action. nodeRef: " + entry
-                        + " action key: " + executeActionByDateWork.getActionKey(), e);
+                throw new RuntimeException("Exception on execute action. nodeRef: " + entry, e);
             }
         }
     }

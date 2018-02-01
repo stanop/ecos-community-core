@@ -56,7 +56,7 @@ public class CaseTimerJob extends AbstractScheduledLockedJob implements Stateful
     @Override
     public void executeJob(JobExecutionContext context) throws JobExecutionException {
         final JobDataMap data = context.getJobDetail().getJobDataMap();
-        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+        AuthenticationUtil.runAsSystem(() -> {
             final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
             RepositoryState repositoryState = getService(serviceRegistry, AlfrescoServices.REPOSITORY_STATE);
             if (!repositoryState.isBootstrapping()) {
@@ -74,7 +74,6 @@ public class CaseTimerJob extends AbstractScheduledLockedJob implements Stateful
         List<NodeRef> nodeRefs = findCompletedTimers(searchService);
 
         if (!nodeRefs.isEmpty()) {
-
             TransactionService transactionService = serviceRegistry.getTransactionService();
             RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
 

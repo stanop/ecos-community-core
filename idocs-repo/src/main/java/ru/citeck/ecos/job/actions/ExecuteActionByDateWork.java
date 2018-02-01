@@ -34,7 +34,6 @@ public abstract class ExecuteActionByDateWork implements ActionProcessor {
     private static final String DATE_QUERY = "@%s:[MIN TO \"%s\"]";
     private static final String STATUS_FIELD = "@icase\\:caseStatusAssoc_added:";
 
-    protected String actionKey;
     protected ServiceRegistry serviceRegistry;
 
     private QName className;
@@ -56,7 +55,6 @@ public abstract class ExecuteActionByDateWork implements ActionProcessor {
     private boolean enabled = true;
 
     public void init() {
-        ParameterCheck.mandatory("actionKey", actionKey);
         ParameterCheck.mandatory("dateField", dateField);
         ParameterCheck.mandatory("className", className);
 
@@ -170,7 +168,7 @@ public abstract class ExecuteActionByDateWork implements ActionProcessor {
         return false;
     }
 
-    protected boolean checkStatus(NodeRef nodeRef) {
+    private boolean checkStatus(NodeRef nodeRef) {
         if (includeStatuses == null && excludeStatuses == null) {
             return true;
         }
@@ -216,8 +214,8 @@ public abstract class ExecuteActionByDateWork implements ActionProcessor {
     @Override
     public String toString() {
         return String.format("ExecuteActionByDateWork:[className:%s, includeStatuses:%s, excludeStatuses:%s, " +
-                        "dateField:%s, offset:%s, actionKey:%s]",
-                className, includeStatuses, excludeStatuses, dateField, dateOffset, actionKey);
+                        "dateField:%s, offset:%s]",
+                className, includeStatuses, excludeStatuses, dateField, dateOffset);
     }
 
     public void setEnabled(boolean enabled) {
@@ -250,14 +248,6 @@ public abstract class ExecuteActionByDateWork implements ActionProcessor {
 
     public void setExecuteActionJobRegistry(ExecuteActionJobRegistry executeActionJobRegistry) {
         this.registry = executeActionJobRegistry;
-    }
-
-    public String getActionKey() {
-        return actionKey;
-    }
-
-    public void setActionKey(String actionKey) {
-        this.actionKey = actionKey;
     }
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {

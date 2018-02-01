@@ -1,7 +1,6 @@
 package ru.citeck.ecos.job;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -30,7 +29,7 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
     @Override
     public void executeJob(final JobExecutionContext jobContext) throws JobExecutionException {
         final JobDataMap data = jobContext.getJobDetail().getJobDataMap();
-        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+        AuthenticationUtil.runAsSystem(() -> {
             logger.info("AvailabilityChangeJob is started");
             if (searchService == null) {
                 searchService = (SearchService) data.get("searchService");
@@ -121,8 +120,7 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
         if (personToChangeAvailability == null) {
             throw new IllegalArgumentException("Person to change availability is null. Event nodeRef = " + event);
         }
-        transactionService.getRetryingTransactionHelper().doInTransaction(
-                (RetryingTransactionHelper.RetryingTransactionCallback<Void>) () -> {
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
             if (availability) {
                 nodeService.setProperty(event, DeputyModel.PROP_EVENT_FINISHED, true);
             } else {

@@ -1,6 +1,7 @@
 package ru.citeck.ecos.job.actions;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.util.ParameterCheck;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.icase.CaseStatusService;
@@ -13,25 +14,31 @@ public class ChangeStatusByDateWork extends ExecuteActionByDateWork {
 
     private static final Log logger = LogFactory.getLog(ChangeStatusByDateWork.class);
 
+    private String targetStatus;
+
     private CaseStatusService caseStatusService;
 
     @Override
     public void init() {
+        ParameterCheck.mandatory("targetStatus", targetStatus);
         super.init();
         this.caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
     }
 
     @Override
-    protected boolean checkStatus(NodeRef nodeRef) {
-        String status = caseStatusService.getStatus(nodeRef);
-        return !actionKey.equals(status) && super.checkStatus(nodeRef);
+    public void process(NodeRef entry) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Set status <" + targetStatus + "> on case: " + entry);
+        }
+        caseStatusService.setStatus(entry, targetStatus);
     }
 
     @Override
-    public void process(NodeRef entry) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Set status <" + actionKey + "> on case: " + entry);
-        }
-        caseStatusService.setStatus(entry, actionKey);
+    public String toString() {
+        return super.toString() + " TargetStatus: " + targetStatus;
+    }
+
+    public void setTargetStatus(String targetStatus) {
+        this.targetStatus = targetStatus;
     }
 }
