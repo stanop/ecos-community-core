@@ -10,27 +10,27 @@ import ru.citeck.ecos.service.EcosCoreServices;
 /**
  * @author Roman Makarskiy
  */
-public class StartStageByDateWork extends ExecuteActionByDateWork {
+public class StartActivityByDateWork extends ExecuteActionByDateWork {
 
-    private static final Log logger = LogFactory.getLog(StartStageByDateWork.class);
+    private static final Log logger = LogFactory.getLog(StartActivityByDateWork.class);
 
-    private String stageTitle;
+    private String activityTitle;
 
     private CaseActivityService caseActivityService;
 
     @Override
     public void init() {
-        ParameterCheck.mandatory("stageTitle", stageTitle);
+        ParameterCheck.mandatory("activityTitle", activityTitle);
         super.init();
         this.caseActivityService = EcosCoreServices.getCaseActivityService(serviceRegistry);
     }
 
     @Override
     public void process(NodeRef entry) {
-        NodeRef activity = caseActivityService.getActivityByTitle(entry, stageTitle, true);
+        NodeRef activity = caseActivityService.getActivityByTitle(entry, activityTitle, true);
         if (activity != null && serviceRegistry.getNodeService().exists(activity)) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Start stage <" + stageTitle + "> on case: " + entry);
+                logger.debug("Start activity <" + activityTitle + "> on case: " + entry);
             }
             caseActivityService.startActivity(activity);
         }
@@ -38,10 +38,10 @@ public class StartStageByDateWork extends ExecuteActionByDateWork {
 
     @Override
     public String toString() {
-        return super.toString() + " ActivityTitle: " + stageTitle;
+        return super.toString() + " ActivityTitle: " + activityTitle;
     }
 
-    public void setStageTitle(String stageTitle) {
-        this.stageTitle = stageTitle;
+    public void setActivityTitle(String activityTitle) {
+        this.activityTitle = activityTitle;
     }
 }
