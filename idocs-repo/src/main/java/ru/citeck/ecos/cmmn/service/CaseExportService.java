@@ -17,7 +17,7 @@ import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.model.ObjectFactory;
 import ru.citeck.ecos.cmmn.service.util.CasePlanModelExport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesExport;
-import ru.citeck.ecos.content.config.dao.xml.XmlConfigDAO;
+import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
@@ -53,7 +53,7 @@ public class CaseExportService {
     private CMMNUtils utils;
     @Autowired
     @Qualifier("caseTemplateConfigDAO")
-    private XmlConfigDAO<Definitions> configDAO;
+    private XmlContentDAO<Definitions> configDAO;
 
     public void init() {
         objectFactory = new ObjectFactory();

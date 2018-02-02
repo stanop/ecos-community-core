@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.content.config.dao.ConfigDAO;
+import ru.citeck.ecos.content.dao.ContentDAO;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.LazyNodeRef;
@@ -48,7 +48,7 @@ public class ContentConfigRegistry<T> {
     protected SearchService searchService;
     protected DictionaryService dictionaryService;
 
-    private ConfigDAO<T> configDAO;
+    private ContentDAO<T> configDAO;
 
     /**
      * Get config data by node with content.
@@ -165,11 +165,11 @@ public class ContentConfigRegistry<T> {
         return configNodeType;
     }
 
-    public void setConfigDAO(ConfigDAO<T> configDAO) {
+    public void setConfigDAO(ContentDAO<T> configDAO) {
         this.configDAO = configDAO;
     }
 
-    public ConfigDAO<T> getConfigDAO() {
+    public ContentDAO<T> getConfigDAO() {
         return configDAO;
     }
 

@@ -56,7 +56,7 @@
         </property>
     </bean>
 
-    <bean id="caseTemplateConfigDAO" class="ru.citeck.ecos.content.config.dao.xml.XmlConfigDAO">
+    <bean id="caseTemplateConfigDAO" class="ru.citeck.ecos.content.dao.xml.XmlContentDAO">
         <property name="rootNodeQName" value="{http://www.omg.org/spec/CMMN/20151109/MODEL}definitions" />
         <property name="rootPackage" value="ru.citeck.ecos.cmmn.model" />
         <property name="schemaFiles">
