@@ -33,10 +33,11 @@ define(['dojo/_base/declare',
                     var ul = "";
                     widgets.forEach(function (item) {
                         if (item.sectionTitle) {
-                            ul += '<li class="mm-listitem_divider" id="' + item.id + '"><i class="fa fa-menu-section-icon"/><p class="menu-section-title">' + self.message(item.sectionTitle) + '</p></li>';
+                            ul += '<li class="mm-listitem_divider" id="' + item.id + '"><i class="fa fa-menu-section-icon"/><span class="menu-section-title">' + self.message(item.sectionTitle) + '</span></li>';
                         } else {
                             ul += '<li id="' + item.id + '">';
-                            var label = '<i class="fa fa-menu-default-icon ' + item.id + '"></i>' + self.message(item.label);
+                            var label = '<i class="fa fa-menu-default-icon ' + item.id
+                                                + (item.iconImage ? '"style="background-image:url(' + item.iconImage + ')"' : "") + ' "></i>' + self.message(item.label || "header." + item.id + ".label");
                             if (item.url) {
                                 ul += '<a href="' + item.url + '" onclick="' + "$('#menu').data('mmenu').close()" + '">' + label + '</a>';
                             } else if (item.clickEvent) {
@@ -73,9 +74,9 @@ define(['dojo/_base/declare',
 
                 if (this.logoSrc) {
                     header +=
-                        '    <a href="/share/page">' +
-                        '        <img src='+ this.logoSrc + '></img>' +
-                        '    </a>';
+                        '<a href="/share/page"' + ' onclick="' + "$('#menu').data('mmenu').close()" + '">' +
+                        '    <img src='+ this.logoSrc + '></img>' +
+                        '</a>';
                 }
                 header += '</span>';
 
@@ -136,9 +137,7 @@ define(['dojo/_base/declare',
             postCreate: function header_citeckMainSlideMenu__postCreate() {
                 $(document).ready(
                     function() {
-                        if (!this.isMobile) {
-                            $(".mm-panel").niceScroll();
-                        }
+                        $(".mm-panel").niceScroll();
                     }
                 );
             }

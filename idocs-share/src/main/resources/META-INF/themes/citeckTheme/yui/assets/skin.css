@@ -5497,7 +5497,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .alf-header-menu-bar.alf-menu-groups .alf-menu-group .alf-menu-group-title {
     margin: 0 8px 5px 8px;
     font-weight: 900;
-    color: #333;
+    color: #52759d;
     border-bottom: none;
 }
 
@@ -5513,16 +5513,30 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     padding: 7px;
 }
 
+.yui-skin-citeckTheme .Popup .alf-menu-groups,
+.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu {
+    background-color: #9cbee2;
+}
+
+.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu .dijitMenuArrowCell span {
+    float: right;
+}
+
+#Share.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-menu-group-items .dijitMenuItemIconCell {
+    padding: 0;
+}
+
 .yui-skin-citeckTheme .dijitMenu .dijitMenuItemHover td,
 .yui-skin-citeckTheme .dijitMenu .dijitMenuItemSelected td,
 .yui-skin-citeckTheme .dijitMenu .dijitMenuItemHover,
 .yui-skin-citeckTheme .dijitComboBoxMenu .dijitMenuItemHover,
-.yui-skin-citeckTheme .dijitMenuItemSelected {
-    background-color: #afc6dd;
+.yui-skin-citeckTheme .dijitMenuItemSelected,
+#Share.yui-skin-citeckTheme .alf-menu-groups .dijitMenuPassive .dijitMenuItemHover td {
+    background-color: #a6c8ec;
 }
 
 .yui-skin-citeckTheme .dijitPopup .alf-header-menu-bar.alf-menu-groups .alf-menu-group .dijitMenuTable tr.dijitMenuItem.dijitMenuItemHover td {
-    background-color: #afc6dd;
+    background-color: #a6c8ec;
 }
 
 
@@ -5565,8 +5579,6 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     padding: 4px;
 }
 
-.yui-skin-citeckTheme .dijitPopup .alf-menu-groups .alf-menu-group .dijitMenuTable .dijitMenuItem td.dijitMenuItemLabel
-
 .yui-skin-citeckTheme .dijitPopup .alf-header-menu-bar.alf-menu-groups .alf-menu-group .dijitMenuTable .dijitMenuItem td.alf-checkable-menu-item.alf-selected-icon {
     background-position: right center;
 }
@@ -5579,9 +5591,10 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     margin: 7px -7px;
 }
 
+.yui-skin-citeckTheme .dijitPopup[id*="dropdown"] .alf-menu-groups,
 .yui-skin-citeckTheme .dijitPopup .alf-header-menu-bar.alf-menu-groups {
     background-color: #9cbee2;
-    box-shadow: none;
+    box-shadow: 0px 0px 9px 1px rgba(0, 0, 0, 0.3);
     border-color: #83a4c6;
 }
 

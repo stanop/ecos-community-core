@@ -301,17 +301,26 @@
 .orgstruct-control-objects .selected-object-list li.selected-object {
   line-height: 200%;
 }
-
-#HEADER_SITE_MENU:before {
+#HEADER_SITE_MENU,
+#HEADER_CREATE_CASE {
   font: 20px FontAwesome;
-  content: '\f013'; /* cog */
   color: #fff;
 }
 
-.mobile #HEADER_USER_MENU:before {
+#HEADER_SITE_MENU_text:before {
   font: 20px FontAwesome;
-  content: '\f007'; /* user */
+  content: '\f013'; /* cog */
+}
+
+#HEADER_CREATE_CASE_text:before {
+  font: 20px FontAwesome;
+  content: '\f067 '; /* plus */
+}
+
+.mobile #HEADER_USER_MENU_text:before {
+  font: 20px FontAwesome;
   color: #fff;
+  content: '\f007'; /* user */
 }
 
 .alfresco-share .logo {
@@ -319,4 +328,14 @@
   cursor: pointer;
   vertical-align: middle;
   margin: 0;
+}
+
+.alfresco-share .logo.user-photo-header img {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+}
+
+.alfresco-share #HEADER_USER_PHOTO a {
+  cursor: default;
 }

@@ -120,7 +120,9 @@
     border-radius: 0;
 }
 
-
+.mobile #alf-hd #SHARE_HEADER {
+    padding: 0 10px;
+}
 .mobile #share-header .alfresco-header-Header {
     margin: 0;
 }

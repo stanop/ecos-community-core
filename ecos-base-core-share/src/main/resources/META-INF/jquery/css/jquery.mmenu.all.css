@@ -347,6 +347,18 @@
     z-index: 2
 }
 
+.mm-panel_iconpanel-first .fa {
+    background-repeat: no-repeat;
+}
+
+.mobile #HEADER_APP_MENU_BAR > div {
+    float: right;
+}
+
+.mobile #HEADER_APP_MENU_BAR .hamburger-mobile-menu {
+    float: left;
+}
+
 .mm-listitem .mm-btn_next:before {
     content: '';
     border-left-width: 1px;
@@ -378,17 +390,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    padding: 5px 10px 5px 20px;
+    padding: 2px 10px 2px 20px;
     color: #998;
     font-weight: 600;
 }
 
-.mm-listitem_divider:after {
-    content: ' ';
-    display: none;
-    position: static;
-    display: inline-block
-}
+/*.mm-listitem_divider:after {*/
+    /*content: ' ';*/
+    /*display: none;*/
+    /*position: static;*/
+    /*display: inline-block*/
+/*}*/
 
 [class*=mm-wrapper_sidebar-collapsed-]:not(.mm-wrapper_opening) .mm-menu_hidenavbar .mm-panel_dividers .mm-listitem_divider i {
     color: inherit;
@@ -431,11 +443,11 @@
     tap-highlight-color: rgba(255,255,255,.4)
 }
 
-.mm-menu .mm-listitem_selected>a:not(.mm-btn_next),.mm-menu .mm-listitem_selected>span {
+.mm-wrapper_opening .mm-menu .mm-listitem_selected>a:not(.mm-btn_next),.mm-wrapper_opening .mm-menu .mm-listitem_selected>span {
     background: rgba(255,255,255,.4)
 }
 
-.mm-menu .mm-listitem_opened>.mm-panel {
+.mm-wrapper_opening .mm-menu .mm-listitem_opened>.mm-panel {
     background: rgba(255,255,255,.4);
 }
 
@@ -3381,14 +3393,16 @@ label.mm-check:before {
     display: inline-block;
     position: relative
 }
-.mm-btn_menu .hamburger-box:after,  .hamburger-mobile-menu .hamburger-box:after {
-    content: "\f0c9";
-    font: normal normal normal 20px/1 FontAwesome;
+.mm-btn_menu .hamburger-box:after {
+    content: "\f100"; /*angle-double-left*/
+    font: normal normal normal 25px/1 FontAwesome;
+    color: white;
 }
 
 .hamburger-mobile-menu .hamburger-box:after {
     color: white;
-    font-size: 22px;
+    content: "\f0c9";
+    font: normal normal normal 22px/1 FontAwesome;
 }
 
 .hamburger-mobile-menu .hamburger-inner {
@@ -3492,12 +3506,12 @@ label.mm-check:before {
 /*MENU ICON*/
 
 .menu-mobile-icon {
-    width: 20px;
+    width: 25px;
     left: 10px;
     top: 0;
     bottom: 0;
     position: absolute;
-    padding: 10px;
+    padding: 7px;
     opacity: 0;
     transition: opacity .1s ease;
     -moz-transition: opacity .1s ease;
@@ -3536,6 +3550,10 @@ label.mm-check:before {
     margin: 10px 10px 0 0;
 }
 
+#menu .mm-listview .menu-section-title {
+    padding: 10px 10px 10px 0;
+}
+
 .mm-wrapper_opening .mobile .hamburger-mobile-menu {
     opacity: 0;
 }
@@ -3544,14 +3562,21 @@ label.mm-check:before {
     background-color: white;
 }
 body:not(.mobile) .sticky-wrapper #alf-hd,
+body:not(.mobile) .sticky-wrapper #bd .node-header,
+body:not(.mobile) .sticky-wrapper #bd .header-tabs,
+body:not(.mobile) .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
+body:not(.mobile) .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
+body:not(.mobile) .sticky-wrapper #bd .yui-gc,
+body:not(.mobile) .sticky-wrapper #bd .yui-gc .cardlet,
 body:not(.mobile) #bd .user-profile.node-view.static,
-body:not(.mobile) #bd .profile.password,
+body:not(.mobile) #bd .profile,
+body:not(.mobile) #bd .customise-layout,
+body:not(.mobile) #bd .customise-dashlets,
 body:not(.mobile) #bd .toolbar.userprofile,
 body:not(.mobile) #bd .grid,
 body:not(.mobile) #bd.static,
 body:not(.mobile) #bd > .share-form,
 body:not(.mobile) #bd #yui-main,
-body:not(.mobile) #SHARE_HEADER,
 body:not(.mobile) .items-list li.selected,
 body:not(.mobile) #alf-filters,
 body:not(.mobile) .sticky-wrapper,
