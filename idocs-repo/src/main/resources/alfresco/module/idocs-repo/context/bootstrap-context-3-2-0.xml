@@ -258,5 +258,50 @@
             </list>
         </property>
     </bean>
-    
+
+    <bean id="idocs.module-component.site.cases" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="idocs-site-cases" />
+        <property name="description" value="idocs-site-cases" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.script.check-app-share" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/site/cases-site</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.site.cases.add-case-types-to-site" parent="idocs.import-scripts.3-2-0">
+        <property name="name" value="site.cases.add-case-types-to-site"/>
+        <property name="description" value="site.cases.add-case-types-to-site"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.site.cases"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/set-attributes.js"/>
+        <property name="args">
+            <map>
+                <entry key="node" value="/app:company_home/st:sites/cm:cases" />
+                <entry key="attributes">
+                    <map>
+                        <entry key="tk:siteDocumentTypes">
+                            <list>
+                                <value>workspace://SpacesStore/cat-doc-type-general-case</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
 </beans>
