@@ -19,7 +19,7 @@
 	  <#if user.isAdmin>
       <ul class="site-finder-menuitem<#if !user.isGuest> separator</#if>">
          <li>
-            <a href="${url.context}/page/site-finder">${msg("label.find-sites")}</a>
+            <a href="${url.context}/page/custom-site-finder">${msg("label.find-sites")}</a>
          </li>
       </ul>
       <ul class="create-site-menuitem">

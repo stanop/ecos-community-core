@@ -6,7 +6,8 @@
 	<imports>
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
-		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind" />
 	</imports>
 
 	<namespaces>
@@ -30,9 +31,9 @@
 					<type>d:boolean</type>
 				</property>
 			</properties>
-			<!--<mandatory-aspects>-->
-				<!--<aspect>grant:doNotIndexTypeCompletely</aspect>-->
-			<!--</mandatory-aspects>-->
+			<mandatory-aspects>
+				<aspect>ind:doNotIndexTypeCompletely</aspect>
+			</mandatory-aspects>
 		</type>
 	</types>
 
@@ -60,10 +61,12 @@
 				<property name="grant:owner">
 					<type>d:text</type>
 					<mandatory>true</mandatory>
+					<index enabled="false" />
 				</property>
 				<property name="grant:inherits">
 					<type>d:boolean</type>
 					<mandatory>true</mandatory>
+					<index enabled="false" />
 				</property>
 			</properties>
 		</aspect>

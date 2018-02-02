@@ -5,10 +5,11 @@
     <version>1.0</version>
 
     <imports>
-        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
-        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
-        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
-        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+        <import uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind" />
     </imports>
 
     <namespaces>
@@ -42,6 +43,9 @@
                     </target>
                 </association>
             </associations>
+            <mandatory-aspects>
+                <aspect>ind:doNotIndexTypeCompletely</aspect>
+            </mandatory-aspects>
         </type>
     </types>
     

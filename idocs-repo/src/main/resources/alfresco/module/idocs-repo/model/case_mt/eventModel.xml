@@ -7,11 +7,12 @@
     <version>1.0</version>
 
     <imports>
-        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
-        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
-        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
-        <import uri="http://www.citeck.ru/model/condition/1.0" prefix="cond"/>
-        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/condition/1.0" prefix="cond" />
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole" />
+        <import uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind" />
     </imports>
 
     <namespaces>
@@ -50,9 +51,9 @@
                     </target>
                 </child-association>
             </associations>
-            <!--<mandatory-aspects>-->
-                <!--<aspect>iEvent:doNotIndexTypeCompletely</aspect>-->
-            <!--</mandatory-aspects>-->
+            <mandatory-aspects>
+                <aspect>ind:doNotIndexTypeCompletely</aspect>
+            </mandatory-aspects>
         </type>
 
         <type name="iEvent:userAction">

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:count="http://www.citeck.ru/model/counter/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0">
+
+    <view:reference view:pathref=".">
+        <view:associations>
+            <cm:contains>
+                <count:autonumberTemplate view:childName="count:ecos-case-number-template">
+                    <view:properties>
+                        <sys:node-uuid>ecos-case-number-template</sys:node-uuid>
+                        <cm:name>ecos-case-number-template</cm:name>
+                        <count:counterTemplate>ecosCaseNumberTemplate</count:counterTemplate>
+                    </view:properties>
+                </count:autonumberTemplate>
+            </cm:contains>
+        </view:associations>
+    </view:reference>
+
+</view:view>
+
+
