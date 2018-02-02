@@ -298,7 +298,6 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 		// create node
         if (nodeType.equals(ContentModel.TYPE_PERSON)) {
             parent = nodeInfo.getParent();
-            String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
             String userName = (String) nodeInfo.getProperty(ContentModel.PROP_USERNAME);
             Map<QName,Serializable> properties = nodeInfo.getProperties();
 
@@ -306,7 +305,10 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             nodeInfo.setParentAssoc(null);
 
             nodeRef = personService.createPerson(properties);
-            authorityService.addAuthority(authName, userName);
+            if (parent != null) {
+                String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
+                authorityService.addAuthority(authName, userName);
+            }
         } else {
             ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, parentAssocName, nodeType);
             nodeRef = childAssocRef.getChildRef();
