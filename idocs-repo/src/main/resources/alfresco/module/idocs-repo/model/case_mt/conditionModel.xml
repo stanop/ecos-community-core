@@ -7,6 +7,7 @@
 		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
 		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
 		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+		<import uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind" />
 	</imports>
 
 	<namespaces>
@@ -36,6 +37,7 @@
 			<parent>cm:cmobject</parent>
 			<mandatory-aspects>
 				<aspect>cm:titled</aspect>
+				<aspect>ind:doNotIndexTypeCompletely</aspect>
 			</mandatory-aspects>
 		</type>
 		

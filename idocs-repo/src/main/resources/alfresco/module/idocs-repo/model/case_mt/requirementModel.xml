@@ -11,6 +11,7 @@
 		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
 		<import uri="http://www.citeck.ru/model/predicate/1.0" prefix="pred" />
 		<import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+		<import uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind" />
 	</imports>
 
 	<namespaces>
@@ -39,9 +40,9 @@
 					<mandatory enforced="true">true</mandatory>
 				</property>
 			</properties>
-			<!--<mandatory-aspects>-->
-				<!--<aspect>req:doNotIndexTypeCompletely</aspect>-->
-			<!--</mandatory-aspects>-->
+			<mandatory-aspects>
+				<aspect>ind:doNotIndexTypeCompletely</aspect>
+			</mandatory-aspects>
 		</type>
 
 		<type name="req:completenessLevel">
