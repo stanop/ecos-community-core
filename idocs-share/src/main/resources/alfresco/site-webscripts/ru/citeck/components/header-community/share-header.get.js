@@ -25,8 +25,8 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie(),
     currentUser = user.getUser(user.id),
     accessibleSites = getSitesForUser(user.name),
-    isSlideMenu = true, // TODO: add parameter  in config
-    isCascadCreateMenu = false, // TODO: add parameter  in config
+    isSlideMenu = getMenuConfig("default-ui-main-menu") == "left",
+    isCascadCreateMenu = getMenuConfig("default-ui-create-menu") == "cascad",
     myTools = [
         { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
         { id: "my-workflows", url: "my-workflows", iconImage: "/share/res/components/images/header/my-workflows.png" },
@@ -531,16 +531,19 @@ var HEADER_SITES_VARIANTS = {
 // Slide Menu
 // ---------------------
 if (isSlideMenu) {
-    userMenuBar.config.widgets.push({
-        id: isMobile ? "HEADER_MOBILE_USER_PHOTO" : "HEADER_USER_PHOTO",
-        name: "js/citeck/logo/citeckLogo",
-        config: {
+    if (getPhoto(user.properties.nodeRef)) {
+        userMenuBar.config.widgets.push({
             id: isMobile ? "HEADER_MOBILE_USER_PHOTO" : "HEADER_USER_PHOTO",
-            logoClasses: "alfresco-logo-only user-photo-header",
-            currentTheme: theme,
-            logoSrc: "/share/proxy/alfresco/api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
-        }
-    });
+            name: "js/citeck/logo/citeckLogo",
+            config: {
+                id: isMobile ? "HEADER_MOBILE_USER_PHOTO" : "HEADER_USER_PHOTO",
+                logoClasses: "alfresco-logo-only user-photo-header",
+                currentTheme: theme,
+                logoSrc: "/share/proxy/alfresco/api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
+            }
+        });
+    }
+
     // BUILD APP MENU
     appMenuBar.config.widgets.push({
         id: "HEADER_SLIDE_MENU",
@@ -667,6 +670,15 @@ function getSitesForUser(username) {
         return eval('(' + result + ')');
     }
     return [];
+};
+
+function getMenuConfig(configName) {
+    var result = remote.call("/citeck/ecosConfig/ecos-config-value?configName=" + configName);
+
+    if (result.status == 200 && result != "{}") {
+        return eval('(' + result + ')').value;
+    }
+    return "";
 };
 
 function buildMorePopup(isMobile) {
@@ -867,6 +879,24 @@ function buildFiltersForJournal(journalType, filterUrl) {
     return filtersResult;
 }
 
+function getPhoto(userNodeRef) {
+    var result = remote.call("/citeck/node?nodeRef=" + userNodeRef + "&props=ecos:photo");
+
+    if (result.status == 200 && result != "{}") {
+        return eval('(' + result + ')').props["ecos:photo"].size;
+    }
+    return "";
+};
+
+function buildUrl(items) {
+    if (items && items.length) {
+        for (var i = 0; i < items.length; i++) {
+            items[i].url = "/share/page/" + items[i].url;
+        }
+    }
+    return items;
+};
+
 function buildLogo(isMobile) {
     return {
         id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
@@ -882,12 +912,13 @@ function buildLogo(isMobile) {
 };
 
 function getWidgets() {
-    var tasks = {
+    return [
+        {
             id: "HEADER_MENU_TASKS",
             sectionTitle: "header.tasks.label",
             widgets: buildJournalsListForSite("tasks", "/share/page/journals2/list/tasks#journal=", "/api/journals/list?journalsList=tasks")
         },
-        sites = {
+        {
             id: "HEADER_MENU_SITES",
             sectionTitle: "header.sites.label",
             widgets: buildSitesForUser(accessibleSites,{
@@ -900,23 +931,21 @@ function getWidgets() {
                     label: "header.create-site.label"
                 })
         },
-        orgstruct = {
+        {
             id: "HEADER_MENU_ORGSTRUCT",
             sectionTitle: "header.orgstruct.label",
             widgets: [{id: "HEADER_MENU_ORGSTRUCT_WIDGET", label: "header.orgstruct.label", url: "/share/page/orgstruct"}]
         },
-        myGroup = {
+        {
             id: "HEADER_MORE_MY_GROUP",
             sectionTitle: "header.my.label",
-            widgets: myTools
+            widgets: buildUrl(myTools)
         },
-        tools = {
+        {
             id: "HEADER_MORE_TOOLS_GROUP",
             sectionTitle: "header.tools.label",
-            widgets: adminTools
-        };
-
-    return [tasks, sites, orgstruct, myGroup, tools] ;
+            widgets: buildUrl(adminTools)
+        }];
 };
 
 
