@@ -33,10 +33,10 @@
     </constraints>
 
     <types>
+
         <type name="ecos:document">
             <parent>dms:doc</parent>
             <mandatory-aspects>
-                <aspect>ecos:hasResponsible</aspect>
                 <aspect>idocs:hasNote</aspect>
                 <aspect>ecos:hasNumberAndDate</aspect>
                 <aspect>idocs:hasLegalEntity</aspect>
@@ -48,6 +48,14 @@
                 <aspect>dms:templateable</aspect>
             </mandatory-aspects>
         </type>
+
+        <type name="ecos:case">
+            <parent>ecos:document</parent>
+            <mandatory-aspects>
+                <aspect>ecos:hasResponsible</aspect>
+            </mandatory-aspects>
+        </type>
+
     </types>
 
     <aspects>

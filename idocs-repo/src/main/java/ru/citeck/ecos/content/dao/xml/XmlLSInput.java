@@ -1,4 +1,4 @@
-package ru.citeck.ecos.content.config.dao.xml;
+package ru.citeck.ecos.content.dao.xml;
 
 import org.w3c.dom.ls.LSInput;
 

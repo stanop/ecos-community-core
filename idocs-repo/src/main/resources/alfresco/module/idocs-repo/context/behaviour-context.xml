@@ -551,11 +551,11 @@
     <bean id="SiteDocumentTypesBehaviour" class="ru.citeck.ecos.behavior.tk.SiteDocumentTypesBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="NodeService"/>
+        <property name="mlAwareNodeService" ref="mlAwareNodeService" />
         <property name="siteService" ref="SiteService"/>
         <property name="namespaceService" ref="NamespaceService"/>
         <property name="searchService" ref="searchService"/>
     </bean>
-
 
 	<bean id="idocs.EventTitleGenerationBehaviour" parent="TitleGenerationBehaviour">
 		<property name="className" value="history:basicEvent"/>

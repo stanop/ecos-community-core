@@ -254,7 +254,7 @@ var HEADER_SITES_VARIANTS = {
       config: {
         id: "HEADER_SITES_SEARCH",
         label: "header.find-sites.label",
-        targetUrl: "site-finder"
+        targetUrl: "custom-site-finder"
       }
     },
     HEADER_SITES_CREATE = {

@@ -1,4 +1,4 @@
-package ru.citeck.ecos.content.config.dao;
+package ru.citeck.ecos.content.dao;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.cmr.repository.ContentWriter;
@@ -9,13 +9,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * DAO to marshal and unmarshal config
+ * DAO to marshal and unmarshal content
  *
  * @param <T> type of parsed content data
  *
  * @author Pavel Simonov
  */
-public interface ConfigDAO<T> {
+public interface ContentDAO<T> {
 
     /**
      * Unmarshal config data
