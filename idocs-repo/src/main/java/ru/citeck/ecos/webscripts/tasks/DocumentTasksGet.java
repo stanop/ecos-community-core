@@ -210,7 +210,8 @@ public class DocumentTasksGet extends DeclarativeWebScript {
     }
 
     private boolean isTaskReassignable(Map<QName, Serializable> properties, boolean hasOwner) {
-        boolean isAllowed = Boolean.TRUE.equals(properties.get(WorkflowModel.PROP_REASSIGNABLE)) && (hasOwner || properties.get(MODEL_CLAIM_OWNER_PROP) != null);
+        boolean isAllowed = Boolean.TRUE.equals(properties.get(WorkflowModel.PROP_REASSIGNABLE))
+                && (hasOwner || properties.get(MODEL_CLAIM_OWNER_PROP) != null);
         boolean isDisabled = Boolean.FALSE.equals(properties.get(CiteckWorkflowModel.PROP_IS_TASK_REASSIGNABLE));
         return isAllowed && !isDisabled;
     }
