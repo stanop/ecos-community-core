@@ -9,6 +9,8 @@
     <#assign actionIsFirstColumn = params.actionIsFirstColumn />
 </#if>
 
+<#assign duplicateButton = params.duplicateButton!"false" />
+
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
         * columns     - attributes name on string ("cm:name,tk:type") [optional]
@@ -20,6 +22,7 @@
 
         * downloadActionInViewMode - enable additional actions column in view mode with download button.
         * actionIsFirstColumn - moving action column to left
+        * duplicateButton - add duplicate button
 -->
 
 <#-- TODO:
@@ -174,7 +177,7 @@
                         baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
                         rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
                     }), clickBubble: false"></a>
-            <#if params.duplicateButton??>
+            <#if params.duplicateButton == "true">
                 <a class="duplicate-value-item" title="${msg('button.duplicate')}"
                     data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
             </#if>
