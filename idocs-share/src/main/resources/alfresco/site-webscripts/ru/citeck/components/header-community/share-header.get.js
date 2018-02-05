@@ -28,6 +28,16 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     isSlideMenu = true, // TODO: add parameter  in config
     isCascadCreateMenu = false, // TODO: add parameter  in config
     myTools = [
+        { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
+        { id: "my-workflows", url: "my-workflows", iconImage: "/share/res/components/images/header/my-workflows.png" },
+        { id: "completed-workflows", url: "completed-workflows#paging=%7C&filter=workflows%7Call", iconImage: "/share/res/components/images/header/completed-workflows.png" },
+        { id: "my-content", url: "user/user-content", iconImage: "/share/res/components/images/header/my-content.png" },
+        { id: "my-sites", url: "user/user-sites", iconImage: "/share/res/components/images/header/my-sites.png" },
+        { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
+        { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
+        { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
+    ],
+    adminTools = [
         { id: "repository", url: "repository", iconImage: "/share/res/components/images/header/repository.png" },
         { id: "application-menu", url: "console/admin-console/application", iconImage: "/share/res/components/images/header/application.png", label: "header.application.label" },
         { id: "groups", url: "console/admin-console/groups", iconImage: "/share/res/components/images/header/groups.png" },
@@ -37,16 +47,6 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
         { id: "meta_journals", url: "journals2/list/meta", iconImage: "/share/res/components/images/header/journals.png" },
         { id: "templates", url: "journals2/list/templates", iconImage: "/share/res/components/images/header/templates.png" },
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
-    ],
-    adminTools = [
-        { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
-        { id: "my-workflows", url: "my-workflows", iconImage: "/share/res/components/images/header/my-workflows.png" },
-        { id: "completed-workflows", url: "completed-workflows#paging=%7C&filter=workflows%7Call", iconImage: "/share/res/components/images/header/completed-workflows.png" },
-        { id: "my-content", url: "user/user-content", iconImage: "/share/res/components/images/header/my-content.png" },
-        { id: "my-sites", url: "user/user-sites", iconImage: "/share/res/components/images/header/my-sites.png" },
-        { id: "my-profile", url: "user/" + encodeURIComponent(user.name) + "/profile", iconImage: "/share/res/components/images/header/my-profile.png" },
-        { id: "my-files", url: "context/mine/myfiles", iconImage: "/share/res/components/images/header/my-content.png" },
-        { id: "global_journals2", url: "journals2/list/main", iconImage: "/share/res/components/images/header/journals.png" }
     ];
 
 // ---------------------
