@@ -120,7 +120,9 @@
     border-radius: 0;
 }
 
-
+.mobile #alf-hd #SHARE_HEADER {
+    padding: 0 10px;
+}
 .mobile #share-header .alfresco-header-Header {
     margin: 0;
 }
@@ -149,9 +151,6 @@
     #HEADER_USER_MENU_text {
         font-size: 0;
         display: block;
-        background-image: url(/share/res/components/images/header/user-profile.png);
-        width: 20px;
-        height: 20px;
         float: left;
         background-repeat: no-repeat;
         background-position: center;

@@ -92,6 +92,10 @@
 				<predicate>path-child</predicate>
 				<predicate>path-descendant</predicate>
 			</predicate-list>
+			<predicate-list id="any">
+				<type>any</type>
+				<predicate>string-contains</predicate>
+			</predicate-list>
 		</predicate-lists>
     </config>
 

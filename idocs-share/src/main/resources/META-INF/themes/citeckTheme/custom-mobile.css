@@ -125,7 +125,7 @@
 .yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .toolbar h2 {
     padding: 10px 15px;
     color: white;
-    background-color: #2d3541;
+    background-color: #b5cfea;
 }
 
 .yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .items-list li {
@@ -148,7 +148,7 @@
     min-height: 0;
     box-shadow: none;
     border-top: 1px solid white;
-    border-bottom: 1px solid #2d3541;
+    border-bottom: 1px solid #b5cfea;
     margin: 0 0 10px 0;
     overflow: visible;
 }

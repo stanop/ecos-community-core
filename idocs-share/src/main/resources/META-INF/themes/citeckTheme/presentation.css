@@ -273,7 +273,7 @@ h4 .lighter
 
 .dashlet > .title {
   padding: 10px 15px;
-  background-color: #2d3541;
+  background-color: #99badd;
   color: white;
   font-weight: 900;
   text-transform: uppercase;
@@ -1433,7 +1433,7 @@ h3.alfresco-twister-closed
 /* Preview Tooltip */
 
 .yui-skin-citeckTheme .yui-tt .bd {
-  background-color: #2d3541;
+  background-color: #99badd;
   color: white;
   padding: 3px 5px;
   text-align: justify;
@@ -1892,7 +1892,7 @@ body.alfresco-guest
 
 .profile .viewcolumn .header-bar,
 .profile form .header-bar {
-   background-color: #394353 !important;
+   background-color: #99badd !important;
    border: none;
    margin: 0;
    color: white;
@@ -2163,16 +2163,132 @@ table td.thumbnail img
 #alf-hd .alfresco-header-Header {
    margin: 0;
    padding: 0 25px;
-   background-color: #2d3541;
+   background-color: #99badd;
    border-bottom: 1px solid #ccc;
 }
 
+#alf-hd #SHARE_HEADER {
+    padding: 0 26px;
+}
+
+#HEADER_SLIDE_MENU {
+    margin-right: 5px;
+    float: left;
+}
+
+/*.yui-skin-citeckTheme .mm-slideout #HEADER_USER_MENU_BAR {*/
+    /*margin: 2px;*/
+/*}*/
+
+
+.fa.active-tasks-journal:before {
+    content: "\f03a";
+    color: inherit;
+}
+
+.fa.completed-tasks-journal:before {
+    content: "\f0ae";
+    color: inherit;
+}
+
+.fa.controlled-journal:before {
+    content: "\f06e";
+    color: inherit;
+}
+
+.fa.subordinate-tasks-journal:before {
+    content: "\f037";
+    color: inherit;
+}
+
+.fa.initiator-tasks-journal:before {
+    content: "\f0fe";
+    color: inherit;
+}
+
+.fa.HEADER_SITES_SEARCH:before {
+    content: "\f002";
+    color: inherit;
+}
+
+.fa.HEADER_SITES_CREATE:before {
+    content: "\f055";
+    color: inherit;
+}
+
+.fa.contracts:before {
+    content: "\f2bb";
+    color: inherit;
+}
+
+.fa.letters:before {
+    content: "\f0e0";
+    color: inherit;
+}
+
+.fa.meetings:before {
+     content: "\f0c0";
+     color: inherit;
+ }
+
+.fa.order-pass:before {
+    content: "\f207";
+    color: inherit;
+}
+
+.fa.orders:before {
+    content: "\f0c9";
+    color: inherit;
+}
+
+.fa.common-documents:before {
+    content: "\f05b";
+    color: inherit;
+}
+
+.fa.HEADER_MENU_ORGSTRUCT_WIDGET:before {
+    content: "\f0e8";
+    color: inherit;
+}
+
+.yui-skin-citeckTheme .mm-btn_menu .hamburger-box:after,
+.yui-skin-citeckTheme .mm-listitem_divider,
+.yui-skin-citeckTheme .mm-panel_iconpanel-first .fa {
+    color: #52759d;
+}
+
+.yui-skin-citeckTheme .mm-menu .mm-listview .mm-btn_next:after {
+    border-color: #52759d
+}
+
+.yui-skin-citeckTheme .mm-menu_selected-hover .mm-listitem>a.mm-btn_fullwidth:hover+span,.mm-menu_selected-hover .mm-listitem>a:not(.mm-btn_fullwidth):hover {
+    color: blue;
+}
+
 .alfresco-header-Header .dijitMenuBar .dijitMenuItem:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU) {
-   background-color: #2d3541;
+   background-color: #99badd;
    color: white;
    margin: 0;
    padding: 10px 15px;
    height: 20px;
+}
+
+.yui-skin-citeckTheme .dijitMenuItemLabel,
+.yui-skin-citeckTheme .dijitMenuItemLabel a.alfresco-navigation-_HtmlAnchorMixin,
+.yui-skin-citeckTheme .alfresco-share .alf-header-menu-bar .dijitMenuItem,
+.yui-skin-citeckTheme .alfresco-header-CurrentUserStatus .lastUpdate {
+    color: white;
+}
+
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .alf-menu-group .dijitMenuItemSelected,
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .dijitMenu .dijitMenuItemSelected td,
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .alf-menu-group .dijitMenuItemSelected,
+.yui-skin-citeckTheme.alfresco-share .alf-header-menu-bar .dijitMenu .dijitMenuItemHover td {
+    background-color: #a6c8ec;
+}
+
+.yui-skin-citeckTheme .alfresco-header-CurrentUserStatus .status {
+    border: none;
 }
 
 #alf-hd .alfresco-menus-AlfMenuBar .dijitMenuBar .dijitMenuItem.dijitMenuItemHover,
@@ -2207,7 +2323,7 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    border: none;
    padding: 0 15px 0 0;
-   background-color: #2d3541;
+   background-color: #99badd;
    color: white !important;
    line-height: normal;
    background-position-y: 3px;
@@ -2218,11 +2334,8 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    padding: 0;
 }
 
-/* only for left-widgets */
-.yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem {
-   border-left: 1px solid #394353;
-   border-right: 1px solid #1e242c;
+    border-left: 1px solid #9cbee2;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:first-child,
@@ -2245,7 +2358,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover >
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
-   background-color: #394353;
+   background-color: #9cbee2;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
@@ -2260,7 +2373,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem {
-   background-color: #252c36;
+   background-color: #9cbee2;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
@@ -2314,6 +2427,15 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     margin-top: 7px;
 }
 
+.yui-skin-citeckTheme #HEADER_APP_MENU_BAR #HEADER_CREATE_CASE {
+    display: inline-block;
+}
+
+/*.yui-skin-citeckTheme #HEADER_CREATE_CASE:hover {*/
+    /*cursor: pointer;*/
+    /*background-image: url(images/create-case-active.png);*/
+/*}*/
+
 /* end only for right-widgets*/
 
 
@@ -2364,13 +2486,24 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     border: medium none;
 }
 
-.yui-skin-citeckTheme.alfresco-share .logo img {
-  max-height: 20px !important;
+.yui-skin-citeckTheme.alfresco-share .logo.user-photo-header img {
+    height: 35px;
+    width: 35px
+}
+
+.yui-skin-citeckTheme #HEADER_SITE_MENU:before,
+.yui-skin-citeckTheme.mobile #HEADER_USER_MENU:before,
+.yui-skin-citeckTheme .hamburger-mobile-menu .hamburger-box:after {
+    color: white;
 }
 
 #HEADER_SITE_DOCUMENTLIBRARY_text,
 #HEADER_SITE_JOURNALS_text {
     width: 90%;
+}
+
+.yui-skin-citeckTheme #alfresco-documentlibrary #yui-main {
+    background-color: white;
 }
 
 .alfresco-share .alf-menu-title,
@@ -2409,6 +2542,9 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 #bd {
     padding-bottom: 0;
+}
+.yui-skin-citeckTheme #bd, .yui-skin-citeckTheme .sticky-wrapper {
+    background-color: white;
 }
 
 #bd .grid {
@@ -2495,13 +2631,20 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 #bd .header-tabs .header-tab.current > a {
     background-color: white;
-    color: #2D3541;
+    border-color: white;
+    color: #52759d;
+}
+
+#bd .header-tabs .header-tab.current > a:hover {
+    background-color: white;
+    border-color: white;
+    color: #99badd;
 }
 
 #bd .header-tabs .header-tab.current > a:hover {
    background-color: white;
    border-color: white;
-   color: #2D3541;
+   color: #99badd;
 }
 
 #bd .header-tabs .header-tab > a:hover {
@@ -2828,8 +2971,9 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 /* end card-details */
 
 
-.alfresco-twister {
-   padding-left: 25px !important;
+.yui-skin-citeckTheme .alfresco-twister {
+    padding-left: 25px !important;
+    color: #52759d;
 }
 
 
@@ -3099,7 +3243,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .share-form .form-container .form-fields .form-field div.object-finder.inlineable .object-finder-items .itemtype-tag {
   padding: 3px 7px;
-  background-color: #394353;
+  background-color: #e8f3ff;
   border-radius: 5px;
   color: white;
   margin: 0 5px 5px 0;
@@ -4213,7 +4357,8 @@ div#HEADER_USER_STATUS {
 /* ORGSTRUCT CONSOLE */
 
 #bd .orgstruct-console {
-   padding: 0;
+    padding: 0;
+    background-color: white;
 }
 
 #bd .orgstruct-console .orgstruct-tree-resizer {
@@ -4276,6 +4421,7 @@ div#HEADER_USER_STATUS {
 
 #alf-content {
   padding: 15px 25px 0px 25px;
+    background-color: #fff;
 }
 
 /* others */
@@ -4482,7 +4628,7 @@ div#HEADER_USER_STATUS {
 
 .yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
   padding: 7px 30px 0 30px;
-  background-color: #2d3541;
+  background-color: #99badd;
   color: white;
 }
 
@@ -4610,4 +4756,14 @@ div#HEADER_USER_STATUS {
 
 .template-img .img-cover {
   margin: 0;
+}
+
+/*case status*/
+.yui-skin-citeckTheme .cardlet div[id*="case-status"] span.panel-body {
+    color: #008c03;
+}
+
+/*custom scroll bar*/
+.yui-skin-citeckTheme .nicescroll-rails > div {
+    background-color: #858585 !important;
 }
