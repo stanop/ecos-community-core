@@ -38,14 +38,13 @@ function filterAuthorities(allAuthorities, options) {
             name = authority.shortName;
         if(authority.authorityType == "USER") {
             var enabled = people.isAccountEnabled(authority.person.properties.userName);
-            var userIsAdmin = people.isAdmin(people.getPerson(person.properties.userName));
 
             var asGroup = groups.getGroupForFullAuthorityName(authority.userName);
             if(!options.user || options.subTypes && filterAuthorities(asGroup.allParentGroups, getGroupOptions(options)).length == 0) {
                 continue;
             }
 
-            if (!options.showDisabled && !enabled && !userIsAdmin) {
+            if (!options.showDisabled && !enabled) {
                 continue;
             };
 

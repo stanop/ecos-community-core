@@ -86,7 +86,8 @@
                                         },
                                         "GROUP": {
                                             "format": "authority",
-                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/{shortName}/children/?showdisabled=false",
+                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/{shortName}/children/?showdisabled=" +
+                                                    (Alfresco.constants.Citeck.userIsAdmin ? "true" : "false"),
                                             "add": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                             "delete": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                         }
