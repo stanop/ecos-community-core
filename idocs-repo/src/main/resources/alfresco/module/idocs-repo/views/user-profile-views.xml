@@ -21,10 +21,18 @@
         <fields kind="mode-not-view" template="none" />
     </views>
 
-    <views mode="view">
+    <views mode="edit">
         <fields prop="ecos:isPersonDisabled">
-            <regions name="label" template="none">
-                <param name="key">ecos_isPersonDisabled-view-mode-title</param>
+            <regions name="label" template="label">
+                <param name="key">ecos_isPersonDisabled-not-view-mode-title</param>
+            </regions>
+        </fields>
+    </views>
+
+    <views mode="create">
+        <fields prop="ecos:isPersonDisabled">
+            <regions name="label" template="label">
+                <param name="key">ecos_isPersonDisabled-not-view-mode-title</param>
             </regions>
         </fields>
     </views>
