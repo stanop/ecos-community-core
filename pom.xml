@@ -609,14 +609,6 @@
                             <type>amp</type>
                         </moduleDependency>
 
-                        <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
-                        <moduleDependency>
-                            <groupId>org.alfresco</groupId>
-                            <artifactId>alfresco-trashcan-cleaner</artifactId>
-                            <version>2.1-citeck-patched</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
