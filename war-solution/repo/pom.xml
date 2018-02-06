@@ -128,6 +128,14 @@
             <type>amp</type>
         </dependency>
 
+        <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
+        <dependency>
+            <groupId>org.alfresco</groupId>
+            <artifactId>alfresco-trashcan-cleaner</artifactId>
+            <version>2.1-citeck-patched</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Uncomment if you are using SPP (SharePoint Protocol Support) for Online Edit etc -->
         <!--
         <dependency>
@@ -247,6 +255,13 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+
+                        <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
+                        <overlay>
+                            <groupId>org.alfresco</groupId>
+                            <artifactId>alfresco-trashcan-cleaner</artifactId>
                             <type>amp</type>
                         </overlay>
 
