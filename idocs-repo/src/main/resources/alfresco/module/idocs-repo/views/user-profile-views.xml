@@ -21,6 +21,14 @@
         <fields kind="mode-not-view" template="none" />
     </views>
 
+    <views mode="view">
+        <fields prop="ecos:isPersonDisabled">
+            <regions name="label" template="none">
+                <param name="key">ecos_isPersonDisabled-view-mode-title</param>
+            </regions>
+        </fields>
+    </views>
+
     <view class="cm:person">
         <param name="customClass">user-profile-custom-container</param>
         <param name="inlineEdit">false</param>
@@ -129,6 +137,48 @@
                     <invariant on="default" language="explicit">true</invariant>
                 </field>
             </view>
+            <field prop="ecos:isPersonDisabled" template="row">
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    function isAlfrescoAdmins() {
+                        // if (view && view.mode == 'view') return true;
+
+                        // var username = person.properties.userName;
+
+                        var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
+
+                        if (!window.udm_employeeId_priorityRole) {
+                            window.udm_employeeId_priorityRole = ko.observable(false);
+                            var username = Alfresco.constants.USERNAME;
+
+                            Alfresco.util.Ajax.jsonGet({
+                                url: Alfresco.constants.PROXY_URI + "api/orgstruct/people/" + username + "/groups",
+                                successCallback: {
+                                    fn: function(response) {
+                                        var roles = response.json;
+                                        for (var r in roles) {
+                                            if (window.udm_employeeId_priorityRole()) break;
+                                            for (var rwl in roleWhitelist) {
+                                                if (roles[r].shortName.indexOf(roleWhitelist[rwl]) != -1) {
+                                                    window.udm_employeeId_priorityRole(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        if (!window.udm_employeeId_priorityRole()) {
+                            return false;
+                        }
+
+                        return true;
+                    };
+
+                    isAlfrescoAdmins();
+                ]]></invariant>
+            </field>
         </view>
 
         <view id="cm_person_user_groups" kind="2-column">
