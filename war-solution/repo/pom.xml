@@ -133,7 +133,7 @@
             <groupId>org.alfresco</groupId>
             <artifactId>alfresco-trashcan-cleaner</artifactId>
             <version>2.1-citeck-patched</version>
-            <scope>provided</scope>
+            <type>amp</type>
         </dependency>
 
         <!-- Uncomment if you are using SPP (SharePoint Protocol Support) for Online Edit etc -->
