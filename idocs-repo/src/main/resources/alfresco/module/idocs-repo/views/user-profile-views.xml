@@ -27,10 +27,6 @@
         <param name="invariantsRuntimeCache">false</param>
         <param name="preloadInvariants">true</param>
 
-        <!--<view id="person-go-to-edit-mode" template="person-edit-btn">
-            <param name="preloadInvariants">true</param>
-        </view>-->
-
         <view id="cm_person_header" template="wide">
             <param name="customClass">user-profile-header</param>
             <view id="cm_person_header--ecos_photo" template="wide">
@@ -148,57 +144,41 @@
             <param name="title">person_password_title</param>
             <field prop="ecos:pass" kind="mode-not-view">
                 <region name="input" template="password" />
-                <!--<invariant on="valid" language="javascript" description="Пароль некорректный (недопустимые символы)">
-                    <![CDATA[
-                        (function() {
-                            var val = value;
-                            &lt;!&ndash;console.log('value =', value);&ndash;&gt;
-                            return !!val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]/) && val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]/).input === val;
-                        })();
-                    ]]>
-                </invariant>
-                <invariant on="valid" language="javascript" description="Пароли должны совпадать">
-                    <![CDATA[
-                        (function() {
-                            return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
-                        })();
-                    ]]>
-                </invariant>-->
-                <invariant on="valid" language="javascript" description="password_incorrect">
-                    <![CDATA[
-                        (function() {
-                            if (node.impl().getAttribute("ecos:pass").value() !== node.impl().getAttribute("ecos:passVerify").value()) {
-                                return false;
-                            } else {
-                                var val = value;
-                                return !!val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/) && val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/).input === val;
-                            }
-                        })();
-                    ]]>
-                </invariant>
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode == 'create';
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
+                    (function() {
+                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                    })();
+                ]]></invariant>
             </field>
             <field prop="ecos:passVerify" kind="mode-not-view">
                 <region name="input" template="password" />
-                <!--<invariant on="valid" language="javascript" description="passwords_must_match">-->
-                <!--<invariant on="valid" language="javascript" description="password_incorrect">
-                    <![CDATA[
-                        (function() {
-                            return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
-                        })();
-                    ]]>
-                </invariant>-->
-                <invariant on="valid" language="javascript" description="password_incorrect">
-                    <![CDATA[
-                        (function() {
-                            if (node.impl().getAttribute("ecos:pass").value() !== node.impl().getAttribute("ecos:passVerify").value()) {
-                                return false;
-                            } else {
-                                var val = value;
-                                return !!val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/) && val.match(/[0-9a-zA-Z\`\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}/).input === val;
-                            }
-                        })();
-                    ]]>
-                </invariant>
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode == 'create';
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
+                    (function() {
+                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                    })();
+                ]]></invariant>
             </field>
         </view>
     </view>
