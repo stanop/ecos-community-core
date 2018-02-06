@@ -4,47 +4,47 @@
 
 .ygtvcell.GROUP
 {
-	background-image: url(icons/group-16.png);
+    background-image: url(icons/group-16.png);
 }
 
 .ygtvcell.GROUP-branch
 {
-	background-image: url(icons/branch-16.png);
+    background-image: url(icons/branch-16.png);
 }
 
 .ygtvcell.GROUP-role
 {
-	background-image: url(icons/role-16.png);
+    background-image: url(icons/role-16.png);
 }
 
 .ygtvcell.GROUP-role.role-manager-true
 {
-	background-image: url(icons/role-manager-16.png);
+    background-image: url(icons/role-manager-16.png);
 }
 
 .ygtvcell.groupType-branch
 {
-	background-image: url(icons/branch-16.png);
+    background-image: url(icons/branch-16.png);
 }
 
 .ygtvcell.groupType-role
 {
-	background-image: url(icons/role-16.png);
+    background-image: url(icons/role-16.png);
 }
 
 .ygtvcell.branchType
 {
-	background-image: url(icons/branch-16.png);
+    background-image: url(icons/branch-16.png);
 }
 
 .ygtvcell.roleType
 {
-	background-image: url(icons/role-16.png);
+    background-image: url(icons/role-16.png);
 }
 
 .ygtvcell.USER.available-true
 {
-	background-image: url(icons/user-16.png);
+    background-image: url(icons/user-16.png);
 }
 
 .ygtvcell.USER.available-false
@@ -54,7 +54,7 @@
 
 .ygtvcell.deputy-true.available-true
 {
-	background-image: url(icons/user-deputy-16.png);
+    background-image: url(icons/user-deputy-16.png);
 }
 
 .ygtvcell.deputy-true.available-true.isAssistant-true.deputy-true-isAssistant-true {
@@ -66,7 +66,7 @@
 }
 .ygtvcell.deputy-true.available-false
 {
-	background-image: url(icons/user-deputy-unavailable-16.png);
+    background-image: url(icons/user-deputy-unavailable-16.png);
 }
 
 .ygtvcell.deputy-true.available-false.isAssistant-true {
@@ -75,12 +75,12 @@
 
 .ygtvcell.deputy-false.available-true
 {
-	background-image: url(icons/user-member-16.png);
+    background-image: url(icons/user-member-16.png);
 }
 
 .ygtvcell.deputy-false.available-false
 {
-	background-image: url(icons/user-member-unavailable-16.png);
+    background-image: url(icons/user-member-unavailable-16.png);
 }
 
 /*
@@ -166,4 +166,9 @@ button.convertToBranch
 button.convertToRole
 {
    background-image: url(icons/role-convert-16.png);
+}
+
+button.createUser
+{
+   background-image: url(icons/user-create-16.png);
 }

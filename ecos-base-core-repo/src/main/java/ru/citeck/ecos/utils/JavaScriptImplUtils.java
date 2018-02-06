@@ -25,6 +25,7 @@ import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.repo.security.authority.script.ScriptGroup;
 import org.alfresco.repo.security.authority.script.ScriptUser;
+import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
@@ -250,13 +251,9 @@ public class JavaScriptImplUtils {
 
     private static void fillAuthoritiesJava(Collection<NodeRef> collection, Object value, AuthorityService authorityService) {
         if (value == null) return;
-
         if (value instanceof NodeRef) {
-
             collection.add((NodeRef) value);
-
         } else if (value instanceof String) {
-
             String strValue = (String) value;
             if (NodeRef.isNodeRef(strValue)) {
                 collection.add(new NodeRef(strValue));
@@ -268,12 +265,12 @@ public class JavaScriptImplUtils {
                     LOGGER.warn("Authority with name '" + value + "' not found!");
                 }
             }
-
         } else if (value instanceof Collection) {
-
             for (Object item : (Collection) value) {
                 fillAuthoritiesJava(collection, item, authorityService);
             }
+        } else if (value instanceof ActivitiScriptNode) {
+            collection.add(((ActivitiScriptNode) value).getNodeRef());
         }
     }
 }

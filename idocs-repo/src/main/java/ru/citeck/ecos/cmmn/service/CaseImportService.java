@@ -13,7 +13,7 @@ import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.CmmnExportImportException;
 import ru.citeck.ecos.cmmn.model.Case;
 import ru.citeck.ecos.cmmn.model.Definitions;
-import ru.citeck.ecos.content.config.dao.xml.XmlConfigDAO;
+import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.LazyNodeRef;
@@ -46,7 +46,7 @@ public class CaseImportService {
     private CMMNUtils utils;
     @Autowired
     @Qualifier("caseTemplateConfigDAO")
-    protected XmlConfigDAO<Definitions> configDAO;
+    protected XmlContentDAO<Definitions> configDAO;
 
     private Set<QName> templatesCompareProperties = new HashSet<>();
 

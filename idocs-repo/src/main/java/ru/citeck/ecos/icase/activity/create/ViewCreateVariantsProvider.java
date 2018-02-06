@@ -51,15 +51,14 @@ public class ViewCreateVariantsProvider extends CreateVariantsProvider {
                                               .className(subType)
                                               .build();
 
-            TypeDefinition typeDef = dictionaryService.getType(subType);
-
-            ActivityCreateVariant variant = new ActivityCreateVariant();
-            variant.setType(subType);
-            variant.setId(subType.toPrefixString());
-            variant.setTitle(typeDef.getTitle(messageService));
-
             if (nodeViewService.hasNodeView(viewParams)) {
 
+                TypeDefinition typeDef = dictionaryService.getType(subType);
+
+                ActivityCreateVariant variant = new ActivityCreateVariant();
+                variant.setType(subType);
+                variant.setId(subType.toPrefixString());
+                variant.setTitle(typeDef.getTitle(messageService));
                 variant.setCanBeCreated(true);
 
                 if (dictionaryService.isSubClass(subType, ICaseTaskModel.TYPE_TASK)) {
@@ -72,9 +71,11 @@ public class ViewCreateVariantsProvider extends CreateVariantsProvider {
                     }
                     variant.setTitle(titlePrefix + variant.getTitle());
                 }
+
+                variants.add(variant);
             }
 
-            variants.add(variant);
+
             variants.addAll(getVariantsByType(subType));
         }
         return variants;

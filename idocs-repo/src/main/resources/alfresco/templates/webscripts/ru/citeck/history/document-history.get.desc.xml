@@ -4,5 +4,5 @@
     <url>/citeck/history/document?nodeRef={userNodeRef}</url>
     <format default="json"/>
     <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
+    <transaction>required</transaction>
 </webscript>

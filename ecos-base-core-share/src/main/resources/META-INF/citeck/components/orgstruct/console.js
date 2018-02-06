@@ -108,6 +108,24 @@
                     eventArgs: {
                         type: "role",
                     },
+                },
+                {
+                    id: "editItemInplaced",
+                    event: "editItemInplaced",
+                    eventArgs: {
+                        type: "orgstruct",
+                        mode: "edit"
+                    },
+                },
+                {
+                    id: "createUser",
+                    event: "createUser",
+                    eventArgs: {
+                        itemId: "cm:person",
+                        // type: "person",
+                        // formId: "person",
+                        mode: "create",
+                    },
                 }
             ]
         });
@@ -160,7 +178,10 @@
             $buttonSubscribe("addDeputy", this.onAddDeputy, this, ids);
             $buttonSubscribe("addAssistant", this.onAddAssistant, this, ids);
             $buttonSubscribe("editItem", this.onEditItem, this, ids);
+
             $buttonSubscribe("editItemInplaced", this.onEditItemInplaced, this, ids);
+            // $buttonSubscribe("editItemInplaced", this.onEditItem, this, ids);
+
             $buttonSubscribe("viewItem", this.onViewItem, this, ids);
             $buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
             $buttonSubscribe("search", this.onSearch, this, ids);
@@ -168,6 +189,8 @@
             $buttonSubscribe("convertToGroup", this.onConvertToGroup, this, ids);
             $buttonSubscribe("convertToBranch", this.onEditItem, this, ids);
             $buttonSubscribe("convertToRole", this.onEditItem, this, ids);
+
+            $buttonSubscribe("createUser", this.onCreateUser, this, ids);
 
             // subscribe on search "Enter"
             this.searchKeyListener = new YAHOO.util.KeyListener(this.id + "-search-input", { keys: 13 }, {
@@ -412,6 +435,30 @@
             this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
         },
 
+        onCreateUser: function (args) {
+            var htmlid, formId, itemId, item;
+
+            if (args.node) {
+                formId = 'orgstruct';
+                item = args.node.data._item_name_;
+            } else {
+                formId = args.type;
+                item = args.item;
+                itemId = args.itemId;
+            }
+            item = this.model.getItem(item);
+
+            // clear junc created by onViewItem
+            this._clearViewJunk(item);
+
+            htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
+
+            var destItemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
+
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, destination: destItemId, mode: 'create'} );
+            this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
+        },
+
         /**
          * Event handler - tree item was clicked.
          * Show EditItemInplaced form
@@ -419,11 +466,11 @@
         onEditItemInplaced: function(args) {
             var htmlid, mode, formId, itemId, item;
 
-            formId = 'orgstruct';
+            mode = args.mode;
             if (args.node) {
+                formId = 'orgstruct';
                 itemId = args.node.data._item_name_;
             } else {
-                mode = args.mode;
                 formId = args.type;
                 itemId = args.item;
             }
@@ -433,9 +480,9 @@
             this._clearViewJunk(item);
 
             htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
-
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: 'edit'});
+
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: mode/*'edit'*/});
             this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
         },
 

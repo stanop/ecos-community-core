@@ -10,7 +10,7 @@
 
     <!-- models -->
     <bean id="idocs.dictionaryBootstrap" parent="dictionaryModelBootstrap"
-        depends-on="dictionaryBootstrap">
+        depends-on="dictionaryBootstrap,ecos-base-core.dictionaryBootstrap">
         <property name="models">
             <list>
                 <value>alfresco/module/idocs-repo/model/constraintsModel.xml</value>

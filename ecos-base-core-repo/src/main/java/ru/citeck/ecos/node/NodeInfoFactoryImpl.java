@@ -24,6 +24,7 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
@@ -62,6 +63,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	private MimetypeService mimetypeService;
 	private NodeAttributeService nodeAttributeService;
 	private AssociationIndexing associationIndexing;
+	private PersonService personService;
 	
 	/////////////////////////////////////////////////////////////////
 	//                     GENERAL INTERFACE                       //
@@ -273,22 +275,34 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 		}
 
 		// otherwise parent / parentAssoc should be specified
-		NodeRef parent = nodeInfo.getParent();
-		QName parentAssoc = nodeInfo.getParentAssoc();
-		QName nodeType = nodeInfo.getType();
-		if(parent == null || parentAssoc == null || nodeType == null) {
-			throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
-		}
+        QName nodeType = nodeInfo.getType();
+        NodeRef parent = null;
+        QName parentAssoc = null;
+        QName parentAssocName = null;
+
+        if (!nodeType.equals(ContentModel.TYPE_PERSON)) {
+            parent = nodeInfo.getParent();
+            parentAssoc = nodeInfo.getParentAssoc();
+
+            if(parent == null || parentAssoc == null || nodeType == null) {
+                throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
+            }
+
+            parentAssocName = nodeInfo.getParentAssocName();
+            if (parentAssocName == null) {
+                parentAssocName = QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate());
+            }
+        }
 
 		// create node
-		QName parentAssocName = nodeInfo.getParentAssocName();
-		if (parentAssocName == null) {
-			parentAssocName = QName.createQName(parentAssoc.getNamespaceURI(), GUID.generate());
-		}
+        if (nodeType.equals(ContentModel.TYPE_PERSON)) {
+            Map<QName,Serializable> properties = nodeInfo.getProperties();
+            nodeRef = personService.createPerson(properties);
+        } else {
+            ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, parentAssocName, nodeType);
+            nodeRef = childAssocRef.getChildRef();
+        }
 
-		ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, parentAssocName, nodeType);
-		
-		nodeRef = childAssocRef.getChildRef();
 		persist(nodeRef, nodeInfo, full);
 		
 		return nodeRef;
@@ -511,6 +525,10 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
     public void setNodeAttributeService(NodeAttributeService nodeAttributeService) {
         this.nodeAttributeService = nodeAttributeService;
+    }
+
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
     }
 
 	public void init() {

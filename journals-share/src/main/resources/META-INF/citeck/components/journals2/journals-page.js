@@ -268,6 +268,13 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                   params: action.settings()
                 };
 
+                /** Javascript action */
+                if (action.settings().js_action) {
+                    var actionFunction = new Function('records', 'parameters', action.settings().js_action);
+                    actionFunction(dataObj.nodes, action.settings());
+                    return;
+                }
+
                 Alfresco.util.Ajax.jsonPost({
                     url: Alfresco.constants.PROXY_URI + "api/journals/group-action",
                     dataObj: dataObj,

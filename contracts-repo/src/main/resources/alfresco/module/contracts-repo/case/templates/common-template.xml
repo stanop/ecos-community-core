@@ -2,6 +2,8 @@
 <cmmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmmn="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" targetNamespace="http://www.citeck.ru/ecos/case/cmmn/1.0">
     <cmmn:case xmlns:ns8="http://www.citeck.ru/ecos/case/cmmn/1.0" name="common-template" id="id-1" ns8:elementTypes="documents,subcases,events,case-roles,case-tasks,completeness-levels" ns8:caseType="{http://www.citeck.ru/model/icase/1.0}case">
         <cmmn:casePlanModel autoComplete="true" name="Case plan model" id="id-2" ns8:completnessLevels="workspace-SpacesStore-cl-scan-documents"/>
-        <cmmn:caseRoles/>
+        <cmmn:caseRoles>
+            <cmmn:role name="Инициатор" id="id-3" ns8:roleVarName="initiator" ns8:roleAssignees="" ns8:roleScript="document.properties['cm:creator']" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
+        </cmmn:caseRoles>
     </cmmn:case>
 </cmmn:definitions>

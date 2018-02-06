@@ -1,11 +1,11 @@
-package ru.citeck.ecos.content.config.dao.xml;
+package ru.citeck.ecos.content.dao.xml;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
-import ru.citeck.ecos.content.config.dao.ConfigDAO;
+import ru.citeck.ecos.content.dao.ContentDAO;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class XmlConfigDAO<T> implements ConfigDAO<T> {
+public class XmlContentDAO<T> implements ContentDAO<T> {
 
-    private static final Log logger = LogFactory.getLog(XmlConfigDAO.class);
+    private static final Log logger = LogFactory.getLog(XmlContentDAO.class);
 
     private QName rootNodeQName;
     private String rootPackage;

@@ -73,4 +73,19 @@ public class ActivityCreateVariant {
     public void setCanBeCreated(boolean canBeCreated) {
         this.canBeCreated = canBeCreated;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ActivityCreateVariant that = (ActivityCreateVariant) o;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
