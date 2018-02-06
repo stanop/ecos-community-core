@@ -5,10 +5,7 @@
     <#assign columns = params.columns?replace("\\s+", "", "rm") />
 </#if>
 
-<#if params.actionIsFirstColumn?? && params.actionIsFirstColumn == "true">
-    <#assign actionIsFirstColumn = params.actionIsFirstColumn />
-</#if>
-
+<#assign actionIsFirstColumn = params.actionIsFirstColumn!"false" />
 <#assign duplicateButton = params.duplicateButton!"false" />
 
 <#-- Parametes:
@@ -35,7 +32,7 @@
     <table>
         <thead data-bind="with: singleValue">
             <tr data-bind="if: $data.impl">
-                <#if actionIsFirstColumn??>
+                <#if actionIsFirstColumn == "true">
                     <@actionsHeader />
                 </#if>
                 <!-- ko with: impl -->
@@ -62,7 +59,7 @@
                     </#if>
                 <!-- /ko -->
 
-                <#if !actionIsFirstColumn??>
+                <#if actionIsFirstColumn != "true">
                     <@actionsHeader />
                 </#if>
 
@@ -83,7 +80,7 @@
                     <#else>
                         <tr class="value-item">
                     </#if>
-                        <#if actionIsFirstColumn??>
+                        <#if actionIsFirstColumn == "true">
                             <@actionsBody />
                         </#if>
                         <#if params.journalType??>
@@ -129,7 +126,7 @@
                                     })"></td>
                             <!-- /ko -->
                         </#if>
-                        <#if !actionIsFirstColumn??>
+                        <#if actionIsFirstColumn != "true">
                             <@actionsBody />
                         </#if>
                     </tr>
@@ -177,7 +174,7 @@
                         baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
                         rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
                     }), clickBubble: false"></a>
-            <#if params.duplicateButton == "true">
+            <#if duplicateButton == "true">
                 <a class="duplicate-value-item" title="${msg('button.duplicate')}"
                     data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
             </#if>
