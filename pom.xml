@@ -308,14 +308,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
-            <dependency>
-                <groupId>org.alfresco</groupId>
-                <artifactId>alfresco-trashcan-cleaner</artifactId>
-                <version>2.1-citeck-patched</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- ECOS MODULES -->
 
             <!-- 1st-override -->
@@ -614,14 +606,6 @@
                             <groupId>${alfresco.groupId}</groupId>
                             <artifactId>alfresco-share-services</artifactId>
                             <version>${alfresco.share.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
-                        <moduleDependency>
-                            <groupId>org.alfresco</groupId>
-                            <artifactId>alfresco-trashcan-cleaner</artifactId>
-                            <version>2.1-citeck-patched</version>
                             <type>amp</type>
                         </moduleDependency>
 
