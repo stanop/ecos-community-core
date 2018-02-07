@@ -304,7 +304,13 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             nodeInfo.setParent(null);
             nodeInfo.setParentAssoc(null);
 
-            nodeRef = personService.createPerson(properties);
+            Map<QName,Serializable> personProperties = new HashMap<>();
+            personProperties.put(ContentModel.PROP_FIRSTNAME, properties.get(ContentModel.PROP_FIRSTNAME));
+            personProperties.put(ContentModel.PROP_LASTNAME, properties.get(ContentModel.PROP_LASTNAME));
+            personProperties.put(ContentModel.PROP_USERNAME, properties.get(ContentModel.PROP_USERNAME));
+            personProperties.put(ContentModel.PROP_EMAIL, properties.get(ContentModel.PROP_EMAIL));
+            nodeRef = personService.createPerson(personProperties);
+
             if (parent != null) {
                 String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
                 authorityService.addAuthority(authName, userName);
