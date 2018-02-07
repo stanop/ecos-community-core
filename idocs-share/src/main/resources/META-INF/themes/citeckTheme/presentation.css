@@ -2257,6 +2257,10 @@ table td.thumbnail img
     color: #52759d;
 }
 
+.yui-skin-citeckTheme.mobile .hamburger-mobile-menu .hamburger {
+    padding: 11px 10px 5px 10px;
+}
+
 .yui-skin-citeckTheme .mm-menu .mm-listview .mm-btn_next:after {
     border-color: #52759d
 }
@@ -4766,4 +4770,35 @@ div#HEADER_USER_STATUS {
 /*custom scroll bar*/
 .yui-skin-citeckTheme .nicescroll-rails > div {
     background-color: #858585 !important;
+}
+
+/*shadow of new menu*/
+body:not(.mobile).yui-skin-citeckTheme  .sticky-wrapper #alf-hd,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .node-header,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .header-tabs,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet,
+body:not(.mobile).yui-skin-citeckTheme #bd .user-profile.node-view.static,
+body:not(.mobile).yui-skin-citeckTheme #bd .profile,
+body:not(.mobile).yui-skin-citeckTheme #bd .customise-layout,
+body:not(.mobile).yui-skin-citeckTheme #bd .customise-dashlets,
+body:not(.mobile).yui-skin-citeckTheme #bd .toolbar.userprofile,
+body:not(.mobile).yui-skin-citeckTheme #bd .grid,
+body:not(.mobile).yui-skin-citeckTheme #bd.static,
+body:not(.mobile).yui-skin-citeckTheme #bd > .share-form,
+body:not(.mobile).yui-skin-citeckTheme #bd #yui-main,
+body:not(.mobile).yui-skin-citeckTheme .items-list li.selected,
+body:not(.mobile).yui-skin-citeckTheme #alf-filters,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper,
+body:not(.mobile).yui-skin-citeckTheme #HEADER_TITLE_BAR,
+body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
+body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
+body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings {
+    box-shadow: inset 15px -1px 10px -15px grey;
+}
+
+body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
+    box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
 }

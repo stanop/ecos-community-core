@@ -123,6 +123,11 @@
 .mobile #alf-hd #SHARE_HEADER {
     padding: 0 10px;
 }
+
+.mobile #SHARE_HEADER #HEADER_USER_MENU_BAR #HEADER_USER_MENU {
+    padding-left: 5px;
+}
+
 .mobile #share-header .alfresco-header-Header {
     margin: 0;
 }
