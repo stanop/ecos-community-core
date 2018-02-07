@@ -261,6 +261,10 @@
     margin: auto;
 }
 
+.mm-navbars_top .mm-navbar img:not(.menu-mobile-icon) {
+    height: 20px;
+}
+
 .mm-navbar a,.mm-navbar a:hover {
     text-decoration: none;
 }
@@ -3385,6 +3389,10 @@ label.mm-check:before {
     overflow: visible
 }
 
+.mobile .hamburger-mobile-menu .hamburger {
+    padding: 6px 10px 5px 10px;
+}
+
 .hamburger-mobile-menu .hamburger:hover {
     opacity: .8
 }
@@ -3396,7 +3404,7 @@ label.mm-check:before {
 .mm-btn_menu .hamburger-box:after {
     content: "\f100"; /*angle-double-left*/
     font: normal normal normal 25px/1 FontAwesome;
-    color: white;
+    color: inherit;
 }
 
 .hamburger-mobile-menu .hamburger-box:after {
@@ -3547,7 +3555,7 @@ label.mm-check:before {
     bottom: 0;
     position: absolute;
     padding: 0;
-    margin: 10px 10px 0 0;
+    margin: 8px 10px 0 0;
 }
 
 #menu .mm-listview .menu-section-title {
@@ -3560,35 +3568,6 @@ label.mm-check:before {
 
 .hamburger-mobile-menu .hamburger-inner, .hamburger-mobile-menu .hamburger-inner::after, .hamburger-mobile-menu .hamburger-inner::before {
     background-color: white;
-}
-body:not(.mobile) .sticky-wrapper #alf-hd,
-body:not(.mobile) .sticky-wrapper #bd .node-header,
-body:not(.mobile) .sticky-wrapper #bd .header-tabs,
-body:not(.mobile) .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
-body:not(.mobile) .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
-body:not(.mobile) .sticky-wrapper #bd .yui-gc,
-body:not(.mobile) .sticky-wrapper #bd .yui-gc .cardlet,
-body:not(.mobile) #bd .user-profile.node-view.static,
-body:not(.mobile) #bd .profile,
-body:not(.mobile) #bd .customise-layout,
-body:not(.mobile) #bd .customise-dashlets,
-body:not(.mobile) #bd .toolbar.userprofile,
-body:not(.mobile) #bd .grid,
-body:not(.mobile) #bd.static,
-body:not(.mobile) #bd > .share-form,
-body:not(.mobile) #bd #yui-main,
-body:not(.mobile) .items-list li.selected,
-body:not(.mobile) #alf-filters,
-body:not(.mobile) .sticky-wrapper,
-body:not(.mobile) #HEADER_TITLE_BAR,
-body:not(.mobile) #bd > div[id*="site-finder"],
-body:not(.mobile) #bd .orgstruct-console .orgstruct-tree-resizer,
-body:not(.mobile) .alfresco-header-Warning .alfresco-header-Warning__warnings {
-    box-shadow: inset 15px -1px 10px -15px grey;
-}
-
-body:not(.mobile) .sticky-footer .footer {
-    box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
 }
 
 #menu:not(.mm-menu) {

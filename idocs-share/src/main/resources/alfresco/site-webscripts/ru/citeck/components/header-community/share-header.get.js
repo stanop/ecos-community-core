@@ -366,7 +366,6 @@ userMenuBar.config.widgets = [
             id: "HEADER_USER_MENU",
             label: user.fullName,
             showArrow: !isSlideMenu,
-            style: isMobile ? "padding-left: 5px;" : "padding: 10px;",
             widgets: [{
                 name: "js/citeck/menus/citeckMenuGroup",
                 config: {
