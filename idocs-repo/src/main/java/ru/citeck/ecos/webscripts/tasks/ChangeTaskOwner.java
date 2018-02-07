@@ -40,7 +40,9 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             @SuppressWarnings("unchecked")
             JSONObject parameters = (JSONObject) request.parseContent();
             String owner = parameters.getString(CM_OWNER_PARAM);
-            if ("null".equals(owner)) owner = null;
+            if ("null".equals(owner)) {
+                owner = null;
+            }
 
             Action action;
             try {
@@ -51,7 +53,9 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
 
             WorkflowTask workflowTask = workflowService.getTaskById(taskId);
             String claimOwner = (String) workflowTask.getProperties().get(QName.createQName(null, CLAIM_OWNER));
-            if ("null".equals(claimOwner)) claimOwner = null;
+            if ("null".equals(claimOwner)) {
+                claimOwner = null;
+            }
 
 
             List<String> assistants = new ArrayList<>();
@@ -63,7 +67,9 @@ public class ChangeTaskOwner extends AbstractWorkflowWebscript implements Applic
             if (hasAssistants) {
                 assistants.add(action == Action.CLAIM ? owner : claimOwner);
                 TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
-                delegateListener.updatePooledActors(Collections.singletonList(workflowTask), assistants, action == Action.CLAIM);
+                delegateListener.updatePooledActors(Collections.singletonList(workflowTask),
+                        assistants,
+                        action == Action.CLAIM || action == Action.RELEASE);
             }
 
             Map<QName, Serializable> props = setOwners(action, owner, hasAssistants);

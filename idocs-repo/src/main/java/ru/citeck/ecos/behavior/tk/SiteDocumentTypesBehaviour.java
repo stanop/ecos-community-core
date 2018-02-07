@@ -39,9 +39,11 @@ public class SiteDocumentTypesBehaviour implements
 
     private PolicyComponent policyComponent;
     private NodeService nodeService;
+    private NodeService mlAwareNodeService;
     private SiteService siteService;
     private NamespaceService namespaceService;
     private SearchService searchService;
+
     
     public void init() {
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateAssociationPolicy.QNAME, 
@@ -60,11 +62,11 @@ public class SiteDocumentTypesBehaviour implements
             return;
         
         String siteName = siteService.getSiteShortName(site);
-        Serializable siteTitle = nodeService.getProperty(site, ContentModel.PROP_TITLE);
+        Serializable siteTitle = mlAwareNodeService.getProperty(site, ContentModel.PROP_TITLE);
         if(siteTitle == null) siteTitle = siteName;
         
         String typeName = RepoUtils.getProperty(type, ContentModel.PROP_NAME, nodeService);
-        Serializable typeTitle = nodeService.getProperty(type, ContentModel.PROP_TITLE);
+        Serializable typeTitle = mlAwareNodeService.getProperty(type, ContentModel.PROP_TITLE);
         if(typeTitle == null) typeTitle = typeName;
         
         // create folder in document library
@@ -230,6 +232,10 @@ public class SiteDocumentTypesBehaviour implements
     private NodeRef getNodeRef(String path) {
         NodeRef storeRoot = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         return searchService.selectNodes(storeRoot, path, null, namespaceService, false).get(0);
+    }
+
+    public void setMlAwareNodeService(NodeService nodeService) {
+        this.mlAwareNodeService = nodeService;
     }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {

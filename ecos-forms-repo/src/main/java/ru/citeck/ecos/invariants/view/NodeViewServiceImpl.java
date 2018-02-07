@@ -160,6 +160,9 @@ class NodeViewServiceImpl implements NodeViewService {
 
     @Override
     public NodeRef saveNodeView(QName typeQName, String id, Map<QName, Object> attributes, Map<String, Object> params) {
+        if (typeQName.equals(ContentModel.TYPE_PERSON)) {
+            params.put("destination", null);
+        }
         Map<QName, Object> effectiveAttributes = new HashMap<>(attributes.size() + 3);
         effectiveAttributes.putAll(attributes);
         if(effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));

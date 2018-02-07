@@ -150,6 +150,20 @@
                     <title>Internal phone</title>
                     <type>d:text</type>
                 </property>
+
+                <!--
+                    Properties "ecos:pass", "ecos:passVerify" are just to display and send value from the frontend
+                    to the server, not to store a password.
+                    The user password will be saved using the regular method.
+                -->
+                <property name="ecos:pass">
+                    <title>Password</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:passVerify">
+                    <title>Password verify</title>
+                    <type>d:text</type>
+                </property>
             </properties>
         </aspect>
     </aspects>
