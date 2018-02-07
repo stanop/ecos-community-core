@@ -148,14 +148,14 @@
             <field prop="ecos:isPersonDisabled" template="row">
                 <invariant on="relevant" language="javascript"><![CDATA[
                     function isAlfrescoAdmins() {
-                        // if (view && view.mode == 'view') return true;
-
-                        // var username = person.properties.userName;
+                        if (typeof Alfresco.constants.Citeck == "undefined" || !Alfresco.constants.Citeck) {
+                            Alfresco.constants.Citeck = {};
+                        };
 
                         var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
 
-                        if (!window.udm_employeeId_priorityRole) {
-                            window.udm_employeeId_priorityRole = ko.observable(false);
+                        if (Alfresco.constants.Citeck.userIsAdmin === undefined) {
+                            Alfresco.constants.Citeck.userIsAdminKO = ko.observable(false);
                             var username = Alfresco.constants.USERNAME;
 
                             Alfresco.util.Ajax.jsonGet({
@@ -164,10 +164,10 @@
                                     fn: function(response) {
                                         var roles = response.json;
                                         for (var r in roles) {
-                                            if (window.udm_employeeId_priorityRole()) break;
+                                            if (Alfresco.constants.Citeck.userIsAdminKO()) break;
                                             for (var rwl in roleWhitelist) {
                                                 if (roles[r].shortName.indexOf(roleWhitelist[rwl]) != -1) {
-                                                    window.udm_employeeId_priorityRole(true);
+                                                    Alfresco.constants.Citeck.userIsAdminKO(true);
                                                     break;
                                                 }
                                             }
@@ -177,11 +177,11 @@
                             });
                         }
 
-                        if (!window.udm_employeeId_priorityRole()) {
-                            return false;
+                        if (Alfresco.constants.Citeck.userIsAdmin === true || Alfresco.constants.Citeck.userIsAdminKO()) {
+                            return true;
                         }
 
-                        return true;
+                        return false;
                     };
 
                     isAlfrescoAdmins();
