@@ -269,21 +269,15 @@ function sortByName(a, b)
 
 function findUsers(searchTerm, maxResults, results)
 {
-   var paging = utils.createPaging(maxResults, -1);
-   var searchResults = groups.searchUsers(searchTerm, paging, "lastName");
-   
-   // create person object for each result
-   for each(var user in searchResults)
-   {
-      if (logger.isLoggingEnabled())
-         logger.log("found user = " + user.userName);
-      
-      // add to results
-      results.push(
-      {
-         item: createPersonResult(user.person),
-         selectable: true 
-      });
+    var personRefs = people.getPeople(searchTerm, maxResults, "lastName", true);
+
+    // create person object for each result
+    for each (var personRef in personRefs) {
+       results.push(
+           {
+               item: createPersonResult(search.findNode(personRef)),
+               selectable: true
+           });
    }
 }
 
