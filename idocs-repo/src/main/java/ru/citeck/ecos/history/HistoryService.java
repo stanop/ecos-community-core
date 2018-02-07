@@ -590,7 +590,6 @@ public class HistoryService {
         @Override
         public void process(NodeRef documentRef) throws Throwable {
             historyService.sendAndRemoveOldEventsByDocument(documentRef);
-            Thread.sleep(5000);
         }
     }
 
