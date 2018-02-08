@@ -164,6 +164,11 @@
                     <title>Password verify</title>
                     <type>d:text</type>
                 </property>
+
+                <property name="ecos:isPersonDisabled">
+                    <title>Disable Account</title>
+                    <type>d:boolean</type>
+                </property>
             </properties>
         </aspect>
     </aspects>
