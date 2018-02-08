@@ -21,6 +21,22 @@
         <fields kind="mode-not-view" template="none" />
     </views>
 
+    <views mode="edit">
+        <fields prop="ecos:isPersonDisabled">
+            <regions name="label" template="label">
+                <param name="key">ecos_isPersonDisabled-not-view-mode-title</param>
+            </regions>
+        </fields>
+    </views>
+
+    <views mode="create">
+        <fields prop="ecos:isPersonDisabled">
+            <regions name="label" template="label">
+                <param name="key">ecos_isPersonDisabled-not-view-mode-title</param>
+            </regions>
+        </fields>
+    </views>
+
     <view class="cm:person">
         <param name="customClass">user-profile-custom-container</param>
         <param name="inlineEdit">false</param>
@@ -129,6 +145,48 @@
                     <invariant on="default" language="explicit">true</invariant>
                 </field>
             </view>
+            <field prop="ecos:isPersonDisabled" template="row">
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    function isAlfrescoAdmins() {
+                        if (typeof Alfresco.constants.Citeck == "undefined" || !Alfresco.constants.Citeck) {
+                            Alfresco.constants.Citeck = {};
+                        };
+
+                        var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
+
+                        if (Alfresco.constants.Citeck.userIsAdmin === undefined) {
+                            Alfresco.constants.Citeck.userIsAdminKO = ko.observable(false);
+                            var username = Alfresco.constants.USERNAME;
+
+                            Alfresco.util.Ajax.jsonGet({
+                                url: Alfresco.constants.PROXY_URI + "api/orgstruct/people/" + username + "/groups",
+                                successCallback: {
+                                    fn: function(response) {
+                                        var roles = response.json;
+                                        for (var r in roles) {
+                                            if (Alfresco.constants.Citeck.userIsAdminKO()) break;
+                                            for (var rwl in roleWhitelist) {
+                                                if (roles[r].shortName.indexOf(roleWhitelist[rwl]) != -1) {
+                                                    Alfresco.constants.Citeck.userIsAdminKO(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        if (Alfresco.constants.Citeck.userIsAdmin === true || Alfresco.constants.Citeck.userIsAdminKO()) {
+                            return true;
+                        }
+
+                        return false;
+                    };
+
+                    isAlfrescoAdmins();
+                ]]></invariant>
+            </field>
         </view>
 
         <view id="cm_person_user_groups" kind="2-column">
