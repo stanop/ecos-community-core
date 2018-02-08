@@ -336,48 +336,54 @@ public class HistoryService {
             return "History is transferring";
         }
         isHistoryTransferring = true;
-        Integer threadsCount = 1;
+        final Integer threadsCount;
         if (threads != null && threads > 0) {
             threadsCount = threads;
+        } else {
+            threadsCount = 1;
         }
         logger.info("History transferring started with threads " + threadsCount);
         logger.info("History transferring started from position - " + offset);
         logger.info("History transferring. Max load size - " + maxItemsCount);
+
         try {
             /** Load first documents */
-            int documentsTransferred = 0;
-            int skipCount = offset;
-            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
-            boolean hasMore;
+            AuthenticationUtil.runAsSystem(() -> {
+                int documentsTransferred = 0;
+                int skipCount = offset;
+                ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+                boolean hasMore;
 
-            /** Start processing */
-            do {
-                List<NodeRef> documents = resultSet.getNodeRefs();
-                hasMore = resultSet.hasMore();
-                /** Process each document */
+                /** Start processing */
+                do {
+                    List<NodeRef> documents = resultSet.getNodeRefs();
+                    hasMore = resultSet.hasMore();
+                    /** Process each document */
 
-                RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
-                BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
-                        TRANSFER_PROCESS_NAME,
-                        retryingTransactionHelper,
-                        new HistoryTransferProvider(documents),
-                        threadsCount, BATCH_SIZE,
-                        null, logger, LOGGING_INTERVAL
-                );
+                    RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
+                    BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
+                            TRANSFER_PROCESS_NAME,
+                            retryingTransactionHelper,
+                            new HistoryTransferProvider(documents),
+                            threadsCount, BATCH_SIZE,
+                            null, logger, LOGGING_INTERVAL
+                    );
 
-                batchProcessor.process(new HistoryTransferWorker(this), true);
-                documentsTransferred += documents.size();
-                skipCount += documents.size();
-                resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
-                logger.info("History transferring - documents have been transferred - " + documentsTransferred);
-                if (stopCount != null && stopCount > 0) {
-                    if (stopCount < documentsTransferred) {
-                        break;
+                    batchProcessor.process(new HistoryTransferWorker(this), true);
+                    documentsTransferred += documents.size();
+                    skipCount += documents.size();
+                    resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+                    logger.info("History transferring - documents have been transferred - " + documentsTransferred);
+                    if (stopCount != null && stopCount > 0) {
+                        if (stopCount < documentsTransferred) {
+                            break;
+                        }
                     }
-                }
-            } while (hasMore);
-            logger.info("History transferring - all documents have been transferred - " + documentsTransferred);
-            return "History transferring - documents have been transferred - " + documentsTransferred;
+                } while (hasMore);
+                logger.info("History transferring - all documents have been transferred - " + documentsTransferred);
+                return null;
+            });
+            return "History transferring - documents have been transferred";
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
