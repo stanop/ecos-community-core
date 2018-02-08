@@ -49,10 +49,9 @@
                 <param name="customClass">user-profile-header__column user-profile-header__column--photo</param>
                 <view id="cm_person_header--ecos_photo--inner">
                     <field prop="ecos:photo">
+                        <param name="useViewTemplate">true</param>
                         <region name="label" template="none"/>
                         <region name="input" template="img-background">
-                            <param name="showInlineEditButton">true</param>
-                            <param name="inlineEdit">false</param>
                             <param name="width">90</param>
                             <param name="alt">This is user's photo</param>
                         </region>
@@ -64,15 +63,15 @@
                 <param name="customClass">user-profile-header__column user-profile-header__column--fio</param>
                 <view id="cm_person_header--fio" template="blockset">
                     <field prop="cm:firstName" template="block">
+                        <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <region name="input">
-                            <param name="inlineEdit">false</param>
-                        </region>
                     </field>
                     <field prop="cm:middleName" template="block">
+                        <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
                     </field>
                     <field prop="cm:lastName" template="block">
+                        <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
                     </field>
                 </view>
@@ -85,6 +84,7 @@
             <param name="invariantsRuntimeCache">false</param>
 
             <field prop="cm:userName" id="user-name">
+                <param name="hideInlineEditButton">true</param>
                 <invariant on="protected" language="javascript">view &amp;&amp; view.mode != "create"</invariant>
                 <invariant on="relevant" language="javascript">true</invariant>
             </field>
@@ -198,11 +198,11 @@
             <param name="customClass">user-groups</param>
             <param name="title">person_groups_title</param>
             <field prop="cm:userName" id="user-groups" kind="mode-just-view">
+                <param name="hideInlineEditButton">true</param>
+                <param name="useViewTemplate">true</param>
                 <region name="label" template="none" />
                 <region name="mandatory" template="none" />
-                <region name="input" template="user-groups">
-                    <param name="inlineEdit">false</param>
-                </region>
+                <region name="input" template="user-groups" />
             </field>
         </view>
 
