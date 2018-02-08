@@ -3,9 +3,9 @@
 
 	<#if viewScope.field.params.hideInlineEditButton?? && viewScope.field.params.hideInlineEditButton=="true">
 		<#assign hideInlineEditButton="true" />
-			<#else>
+	<#else>
 		<#assign hideInlineEditButton="false" />
-			</#if>
+	</#if>
 
 	<div class="block-region block-region-label">
 		<@views.renderRegion "label" />
