@@ -326,7 +326,7 @@
 				model: {
 					key: "${runtimeKey}",
 					parent: <#if args.param_parentRuntime?has_content>"${args.param_parentRuntime}"<#else>null</#if>,
-					virtualParent: <#if virtualParent && args.param_parentRuntime??>"${args.param_parentRuntime}"<#else>null</#if>,
+					virtualParent: <#if virtualParent>"${args.param_parentRuntime}"<#else>null</#if>,
         			baseRef: <#if baseRef??>"${baseRef}"<#else>null</#if>,
         			rootAttributeName: <#if rootAttributeName??>"${rootAttributeName}"<#else>null</#if>,
 					formTemplate: "${view.template}",
