@@ -1,5 +1,5 @@
 <#if inlineEdit!false>
-	<#assign hideInlineEditButton="true" />
+	<#assign hideInlineEditButton="false" />
 	<@views.renderRegion "label" />
 	
 	<!-- ko ifnot: inlineEditVisibility -->
