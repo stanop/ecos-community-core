@@ -1,16 +1,16 @@
 <#if inlineEdit!false>
-	<#assign showInlineEditButton="true" />
+	<#assign hideInlineEditButton="true" />
 	<@views.renderRegion "label" />
 	
 	<!-- ko ifnot: inlineEditVisibility -->
 	    <#assign defaultTemplate="" />
 	    <#list viewScope.field.regions as region>
-			<#if region.name == "input" && region.template?? && (region.template?contains("view") || (region.params.inlineEdit?? && region.params.inlineEdit=="false"))>
+			<#if region.name == "input" && region.template?? && (region.template?contains("view") || (viewScope.field.params.useViewTemplate?? && viewScope.field.params.useViewTemplate=="true"))>
 				<@views.renderElement region />
-				<#if region.params.showInlineEditButton?? && region.params.showInlineEditButton=="true">
-					<#assign showInlineEditButton="true" />
+				<#if region.params.hideInlineEditButton?? && region.params.hideInlineEditButton=="true">
+					<#assign hideInlineEditButton="true" />
 				<#else>
-					<#assign showInlineEditButton="false" />
+					<#assign hideInlineEditButton="true" />
 				</#if>
     			<#assign defaultTemplate = region.template />
     		</#if>
@@ -27,12 +27,12 @@
 		<@views.renderRegion "message" />		
 	<!-- /ko -->
 
-	<#if showInlineEditButton=="true">
-	<span class="form-field-inline-mode-changer" data-zurab="${showInlineEditButton}"
-		data-bind="click: inlineEditChanger, clickBubble: false, css: { 'save-mode': inlineEditVisibility }">
-		<!-- ko if: inlineEditVisibility --><i class="fa fa-floppy-o" aria-hidden="true"></i><!-- /ko -->
-	 	<!-- ko ifnot: inlineEditVisibility --><i class="fa fa-pencil-square-o" aria-hidden="true"></i><!-- /ko -->
-	</span>
+	<#if hideInlineEditButton=="false">
+		<span class="form-field-inline-mode-changer" data-zurab="${hideInlineEditButton}"
+			data-bind="click: inlineEditChanger, clickBubble: false, css: { 'save-mode': inlineEditVisibility }">
+			<!-- ko if: inlineEditVisibility --><i class="fa fa-floppy-o" aria-hidden="true"></i><!-- /ko -->
+			<!-- ko ifnot: inlineEditVisibility --><i class="fa fa-pencil-square-o" aria-hidden="true"></i><!-- /ko -->
+		</span>
 	</#if>
 
 	<!-- ko ifnot: inlineEditVisibility -->

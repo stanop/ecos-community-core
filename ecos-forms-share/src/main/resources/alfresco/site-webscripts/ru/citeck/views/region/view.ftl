@@ -28,7 +28,11 @@
 </#macro>
 
 <#if isViewMode && inlineEdit!false>
-    <div class="view-value" data-bind="click: showEditableField, clickBubble: false">
+    <#if (viewScope.field.params.hideInlineEditButton!"false") == "true">
+        <div class="view-value">
+    <#else>
+        <div class="view-value" data-bind="click: showEditableField, clickBubble: false">
+    </#if>
 </#if>
 
 <!-- ko foreach: multipleValues -->

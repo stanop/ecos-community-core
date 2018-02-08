@@ -202,3 +202,11 @@
 .user-profile-view-inner-container .static {
     background-color: initial;
 }
+
+.user-profile-view-inner-container .invariants-form.view-form .template-table .template-view {
+    width: auto;
+}
+
+.user-profile-view-inner-container .invariants-form.view-form .template-table .template-view .value-item{
+    padding-right: 0;
+}

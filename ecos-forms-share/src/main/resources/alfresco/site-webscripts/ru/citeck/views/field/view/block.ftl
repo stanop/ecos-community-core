@@ -1,15 +1,11 @@
 <#if inlineEdit!false>
-	<#assign showInlineEditButton="true" />
+	<#assign hideInlineEditButton="false" />
 
-	<#list viewScope.field.regions as region>
-		<#if region.name == "input" && region.template?? && (region.params.inlineEdit?? && region.params.inlineEdit=="false")>
-			<#if region.params.showInlineEditButton?? && region.params.showInlineEditButton=="true">
-				<#assign showInlineEditButton="true" />
+	<#if viewScope.field.params.hideInlineEditButton?? && viewScope.field.params.hideInlineEditButton=="true">
+		<#assign hideInlineEditButton="true" />
 			<#else>
-				<#assign showInlineEditButton="false" />
+		<#assign hideInlineEditButton="false" />
 			</#if>
-		</#if>
-	</#list>
 
 	<div class="block-region block-region-label">
 		<@views.renderRegion "label" />
@@ -18,7 +14,7 @@
 		<@views.renderRegion "help" />
 		<!-- /ko -->
 
-		<#if showInlineEditButton=="true">
+		<#if hideInlineEditButton=="false">
 			<span class="form-field-inline-mode-changer"
 				data-bind="click: inlineEditChanger, clickBubble: false, css: { 'save-mode': inlineEditVisibility }">
 				<!-- ko if: inlineEditVisibility --><i class="fa fa-floppy-o" aria-hidden="true"></i><!-- /ko -->
@@ -39,7 +35,7 @@
 	<div class="block-region block-region-input">
 		<#assign defaultTemplate="" />
 		<#list viewScope.field.regions as region>
-			<#if region.name == "input" && region.template?? && (region.template?contains("view-table") || (region.params.inlineEdit?? && region.params.inlineEdit=="false"))>
+			<#if region.name == "input" && region.template?? && ((region.template?contains("view-table") || (viewScope.field.params.useViewTemplate?? && viewScope.field.params.useViewTemplate=="true")))>
 				<@views.renderElement region />
 				<#assign defaultTemplate = region.template />
 			</#if>

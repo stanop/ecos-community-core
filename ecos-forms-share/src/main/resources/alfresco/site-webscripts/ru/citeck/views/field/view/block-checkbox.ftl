@@ -1,4 +1,12 @@
 <#if inlineEdit!false>
+	<#assign hideInlineEditButton="false" />
+
+	<#if viewScope.field.params.hideInlineEditButton?? && viewScope.field.params.hideInlineEditButton=="true">
+		<#assign hideInlineEditButton="true" />
+	<#else>
+		<#assign hideInlineEditButton="false" />
+	</#if>
+
 	<!-- ko if: inlineEditVisibility -->
 		<div class="block-region block-region-input">
 			<@views.renderRegion "input" />
@@ -6,17 +14,19 @@
 	<!-- /ko -->
 
 	<div class="block-region block-region-label">
-		<@views.renderRegion "label" />	
+		<@views.renderRegion "label" />
 
 		<!-- ko if: inlineEditVisibility -->
 			<@views.renderRegion "help" />
 		<!-- /ko -->
 
-		<span class="form-field-inline-mode-changer" 
-			data-bind="click: inlineEditChanger, clickBubble: false, css: { 'save-mode': inlineEditVisibility }">
-			<!-- ko if: inlineEditVisibility --><i class="fa fa-floppy-o" aria-hidden="true"></i><!-- /ko -->
-			<!-- ko ifnot: inlineEditVisibility --><i class="fa fa-pencil-square-o" aria-hidden="true"></i><!-- /ko -->
-		</span>
+		<#if hideInlineEditButton=="false">
+			<span class="form-field-inline-mode-changer"
+				data-bind="click: inlineEditChanger, clickBubble: false, css: { 'save-mode': inlineEditVisibility }">
+				<!-- ko if: inlineEditVisibility --><i class="fa fa-floppy-o" aria-hidden="true"></i><!-- /ko -->
+				<!-- ko ifnot: inlineEditVisibility --><i class="fa fa-pencil-square-o" aria-hidden="true"></i><!-- /ko -->
+			</span>
+		</#if>
 	</div>
 	
 	<!-- ko ifnot: inlineEditVisibility -->
