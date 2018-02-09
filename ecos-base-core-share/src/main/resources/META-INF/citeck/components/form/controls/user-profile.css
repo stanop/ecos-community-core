@@ -210,3 +210,91 @@
 .user-profile-view-inner-container .invariants-form.view-form .template-table .template-view .value-item{
     padding-right: 0;
 }
+
+/* --------------------------- user profile mobile view ----------------------------------- */
+@media (max-width: 585px) {
+    .userprofile .members-bar-links:after {
+        content: '';
+        clear: both;
+        display: table;
+    }
+
+    .userprofile .members-bar-links .link {
+        padding-top: 10px;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .user-profile.node-view.static {
+        padding: 20px 0 !important;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header {
+        margin-right: 0;
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header__column--photo {
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img-background .img-cover {
+        width: auto;
+        height: auto;
+    }
+
+    .form-view.user-profile-custom-container .template-img-background .img-cover .img-back-container,
+    .form-view.user-profile-custom-container .template-img-background .img-cover .img-back-container {
+        width: 40vw;
+        height: 40vw;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header .user-profile-header__column--fio {
+        margin-top: 20px;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header__column--fio .form-field .form-region.template-text {
+        font-size: 100%;
+    }
+
+    .ecos-form.invariants-form .user-profile-custom-container .form-view .title, .user-profile-custom-container .form-view .title {
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .ecos-form.invariants-form .form-fields .form-view.user-profile-custom-container > .form-view {
+        display: block;
+        width: auto;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view .form-field.template-half-width,
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view .form-field {
+        width: auto;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view.user-profile-header .form-field {
+        padding-left: 0;
+    }
+
+    .toolbar.userprofile {
+        padding: 0 10px 10px;
+    }
+
+    .user-profile .user-profile__edit-link  {
+        margin-left: 25px;
+    }
+
+    .sticky-footer .footer-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}

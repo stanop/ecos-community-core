@@ -27,7 +27,9 @@
                 id: '${controlId}',
                 buttonTitle: '${msg(createButtonTitle)}',
                 parentRuntime: $root.key(),
-                virtualParent: ${((params.virtualParent!"false") == "true")?string}
+                virtualParent: ${((params.virtualParent!"false") == "true")?string},
+                baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
+                rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
             }
         }" ></div>
     </#if>
