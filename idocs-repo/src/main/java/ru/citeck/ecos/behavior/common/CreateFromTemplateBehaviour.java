@@ -54,10 +54,9 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
     private Boolean enabled = null;
     private int order = 500;
 
-
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
-                new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
+            new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
     }
 
 

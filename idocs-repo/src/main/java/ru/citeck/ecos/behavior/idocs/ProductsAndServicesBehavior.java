@@ -8,6 +8,8 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
@@ -67,22 +69,24 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
         NodeRef pasEntityRef = childAssociationRef.getChildRef();
         if (!nodeService.exists(pasEntityRef)) return;
         List<NodeRef> sources = RepoUtils.getSourceNodeRefs(pasEntityRef, ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
-        List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0), ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
-        int maxOrder = -1;
-        if (!pasEntityRefs.isEmpty()) {
-            for (NodeRef entityRef : pasEntityRefs) {
-                if (!pasEntityRef.equals(entityRef)) {
-                    Integer order = (Integer) nodeService.getProperty(entityRef, ProductsAndServicesModel.PROP_ORDER);
-                    if (order != null && order > maxOrder) {
-                        maxOrder = order;
+        if (CollectionUtils.isNotEmpty(sources)) {
+            List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0), ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+            int maxOrder = -1;
+            if (!pasEntityRefs.isEmpty()) {
+                for (NodeRef entityRef : pasEntityRefs) {
+                    if (!pasEntityRef.equals(entityRef)) {
+                        Integer order = (Integer) nodeService.getProperty(entityRef, ProductsAndServicesModel.PROP_ORDER);
+                        if (order != null && order > maxOrder) {
+                            maxOrder = order;
+                        }
                     }
                 }
             }
-        }
-        if (maxOrder > 0) {
-            nodeService.setProperty(pasEntityRef, ProductsAndServicesModel.PROP_ORDER, maxOrder + 1);
-        } else {
-            nodeService.setProperty(pasEntityRef, ProductsAndServicesModel.PROP_ORDER, 1);
+            if (maxOrder > 0) {
+                nodeService.setProperty(pasEntityRef, ProductsAndServicesModel.PROP_ORDER, maxOrder + 1);
+            } else {
+                nodeService.setProperty(pasEntityRef, ProductsAndServicesModel.PROP_ORDER, 1);
+            }
         }
     }
 

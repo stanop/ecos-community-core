@@ -25,12 +25,25 @@ import org.alfresco.service.namespace.QName;
  * @author Roman.Makarskiy on 04.04.2016.
  */
 public final class PaymentsModel {
+
+    // Namespaces
     public static final String PAYMENTS_NAMESPACE = "http://www.citeck.ru/model/payments/1.0";
 
+    // Types
     public static final QName TYPE = QName.createQName(PAYMENTS_NAMESPACE, "payment");
 
+    // Props
     public static final QName PROP_PAYMENT_AMOUNT = QName.createQName(PAYMENTS_NAMESPACE, "paymentAmount");
     public static final QName PROP_PAYMENT_AMOUNT_IN_WORDS = QName.createQName(PAYMENTS_NAMESPACE, "paymentAmountInWords");
+    public static final QName PROP_PAYMENT_FOR = QName.createQName(PAYMENTS_NAMESPACE, "paymentFor");
+    public static final QName PROP_PAYMENT_NUMBER = QName.createQName(PAYMENTS_NAMESPACE, "paymentNumber");
+    public static final QName PROP_PAYMENT_BILL_DATE = QName.createQName(PAYMENTS_NAMESPACE, "billDate");
+    public static final QName PROP_PAYMENT_PLANNED_PAYMENT_DATE = QName.createQName(PAYMENTS_NAMESPACE, "plannedPaymentDate");
+    public static final QName PROP_PAYMENT_ARRANGEMENT = QName.createQName(PAYMENTS_NAMESPACE, "paymentArrangement");
+    public static final QName PROP_PAYMENT_BENEFICIARY_TYPE = QName.createQName(PAYMENTS_NAMESPACE, "beneficiaryType");
 
+    // Assocs
     public static final QName ASSOC_PAYMENT_CURRENCY = QName.createQName(PAYMENTS_NAMESPACE, "currency");
+    public static final QName ASSOC_PAYMENT_PAYER = QName.createQName(PAYMENTS_NAMESPACE, "payer");
+    public static final QName ASSOC_PAYMENT_BENEFICIARY = QName.createQName(PAYMENTS_NAMESPACE, "beneficiary");
 }
