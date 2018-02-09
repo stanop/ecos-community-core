@@ -211,7 +211,7 @@
     padding-right: 0;
 }
 
-/* --------------------------- user profile ----------------------------------- */
+/* --------------------------- user profile mobile view ----------------------------------- */
 @media (max-width: 585px) {
     .userprofile .members-bar-links:after {
         content: '';
