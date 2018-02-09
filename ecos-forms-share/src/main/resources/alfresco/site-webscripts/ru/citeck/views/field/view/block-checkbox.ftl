@@ -1,11 +1,6 @@
 <#if inlineEdit!false>
-	<#assign hideInlineEditButton="false" />
-
-	<#if viewScope.field.params.hideInlineEditButton?? && viewScope.field.params.hideInlineEditButton=="true">
-		<#assign hideInlineEditButton="true" />
-	<#else>
-		<#assign hideInlineEditButton="false" />
-	</#if>
+	<#assign fieldParams = viewScope.field.params!{} />
+	<#assign hideInlineEditButton = fieldParams.hideInlineEditButton!"false" />
 
 	<!-- ko if: inlineEditVisibility -->
 		<div class="block-region block-region-input">

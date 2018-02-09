@@ -1,18 +1,14 @@
 <#if inlineEdit!false>
-	<#assign hideInlineEditButton="false" />
-
-	<#if viewScope.field.params.hideInlineEditButton?? && viewScope.field.params.hideInlineEditButton=="true">
-		<#assign hideInlineEditButton="true" />
-	<#else>
-		<#assign hideInlineEditButton="false" />
-	</#if>
+	<#assign fieldParams = viewScope.field.params!{} />
+	<#assign hideInlineEditButton = fieldParams.hideInlineEditButton!"false" />
+	<#assign useViewTemplate = fieldParams.useViewTemplate!"false" />
 
 	<@views.renderRegion "label" />
 
 	<!-- ko ifnot: inlineEditVisibility -->
 	    <#assign defaultTemplate="" />
 	    <#list viewScope.field.regions as region>
-			<#if region.name == "input" && region.template?? && (region.template?contains("view") || (viewScope.field.params.useViewTemplate?? && viewScope.field.params.useViewTemplate=="true"))>
+			<#if region.name == "input" && region.template?? && (region.template?contains("view") || useViewTemplate=="true")>
 				<@views.renderElement region />
     			<#assign defaultTemplate = region.template />
     		</#if>
