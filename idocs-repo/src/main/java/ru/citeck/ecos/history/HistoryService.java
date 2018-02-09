@@ -404,24 +404,27 @@ public class HistoryService {
     }
 
     public void sendAndRemoveOldEventsByDocument(NodeRef documentRef) {
-        /** Check - is remote service enabled */
-        if (!isEnabledRemoteHistoryService()) {
-            throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
-        }
-        /** Check - node existing */
-        if (!nodeService.exists(documentRef)) {
-            return;
-        }
-        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
-        /** Send events to remote service or remove old nodes */
-        if (useNewHistory == null || useNewHistory == false) {
-            historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
-        } else {
-            List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
-            for (AssociationRef associationRef : associations) {
-                nodeService.deleteNode(associationRef.getSourceRef());
+        AuthenticationUtil.runAsSystem(() -> {
+            /** Check - is remote service enabled */
+            if (!isEnabledRemoteHistoryService()) {
+                throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
             }
-        }
+            /** Check - node existing */
+            if (!nodeService.exists(documentRef)) {
+                return null;
+            }
+            Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
+            /** Send events to remote service or remove old nodes */
+            if (useNewHistory == null || useNewHistory == false) {
+                historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
+            } else {
+                List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
+                for (AssociationRef associationRef : associations) {
+                    nodeService.deleteNode(associationRef.getSourceRef());
+                }
+            }
+            return null;
+        });
     }
 
     /**
