@@ -46,4 +46,5 @@ public final class PaymentsModel {
     public static final QName ASSOC_PAYMENT_CURRENCY = QName.createQName(PAYMENTS_NAMESPACE, "currency");
     public static final QName ASSOC_PAYMENT_PAYER = QName.createQName(PAYMENTS_NAMESPACE, "payer");
     public static final QName ASSOC_PAYMENT_BENEFICIARY = QName.createQName(PAYMENTS_NAMESPACE, "beneficiary");
+    public static final QName ASSOC_PAYMENT_PRODUCTS_AND_SERVICES = QName.createQName(PAYMENTS_NAMESPACE, "productsAndServices");
 }
