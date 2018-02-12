@@ -73,6 +73,7 @@
     display: none;
 }
 
+.mobile #HEADER_APP_MENU_BAR #HEADER_CREATE_CASE,
 .mobile #HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,
 #HEADER_APP_MENU_BAR .dijitMenuItem {
     display: inline-block;

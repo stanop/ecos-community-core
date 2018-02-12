@@ -2490,9 +2490,21 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     border: medium none;
 }
 
-.yui-skin-citeckTheme.alfresco-share .logo.user-photo-header img {
+.yui-skin-citeckTheme.alfresco-share .mm-slideout #HEADER_USER_MENU_text {
+    line-height: 40px;
+}
+.yui-skin-citeckTheme.mobile .mm-slideout #HEADER_USER_MENU_text:before {
+    content: "";
+}
+.yui-skin-citeckTheme.alfresco-share .mm-slideout #HEADER_USER_MENU_BAR #HEADER_USER_MENU {
+    padding: 0 15px;
+    height: 40px;
+}
+
+.yui-skin-citeckTheme.alfresco-share .mm-slideout img.user-photo-header {
     height: 35px;
-    width: 35px
+    width: 35px;
+    margin-top: 2.5px;
 }
 
 .yui-skin-citeckTheme #HEADER_SITE_MENU:before,

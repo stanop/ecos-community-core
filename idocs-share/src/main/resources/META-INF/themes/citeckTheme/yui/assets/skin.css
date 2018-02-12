@@ -5494,8 +5494,9 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     padding: 5px;
 }
 
+.yui-skin-citeckTheme .alf-menu-groups .alf-menu-group .alf-dropdown-menu .alf-menu-group-title,
 .yui-skin-citeckTheme .alf-header-menu-bar.alf-menu-groups .alf-menu-group .alf-menu-group-title {
-    margin: 0 8px 5px 8px;
+    margin: 8px 8px 0 0;
     font-weight: 900;
     color: #52759d;
     border-bottom: none;
@@ -5514,12 +5515,31 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 }
 
 .yui-skin-citeckTheme .Popup .alf-menu-groups,
-.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu {
+.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu,
+.yui-skin-citeckTheme .Popup .alf-menu-group .alf-dropdown-menu .alf-menu-group {
     background-color: #9cbee2;
 }
 
 .yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu .dijitMenuArrowCell span {
     float: right;
+    background-image: none;
+    margin: auto;
+}
+
+.yui-skin-citeckTheme #HEADER_CREATE_CASE_dropdown .alf-menu-groups .alf-dropdown-menu td.dijitMenuArrowCell {
+    padding: 2px 0 2px 5px;;
+}
+
+.yui-skin-citeckTheme #HEADER_CREATE_CASE_dropdown .alf-menu-groups .alf-dropdown-menu .dijitMenuArrowCell > span:after {
+    content: "\f105";
+    font-family: FontAwesome;
+    font-size: 15px;
+    color: #fff;
+}
+
+.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu .dijitMenuItemSelected .dijitMenuArrowCell > span:after,
+.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu .dijitMenuItemSelected td {
+    color: #52759d;
 }
 
 #Share.yui-skin-citeckTheme .Popup .alf-menu-groups .alf-menu-group-items .dijitMenuItemIconCell {
