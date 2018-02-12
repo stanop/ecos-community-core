@@ -13,7 +13,7 @@ define(['dojo/_base/declare',
             postMixInProperties: function  header_citeckMainSlideMenu__postMixInProperties() {
                 var menu = '', self = this;
                 if (this.isMobile) {
-                    $('#HEADER_APP_MENU_BAR').append(
+                    $('#HEADER_APP_MENU_BAR>div').append(
                         '<span class="hamburger-mobile-menu">'+
                             '<a href="#menu" id="hamburger" class="mm-slideout">'+
                                 '<span class="hamburger hamburger--collapse">'+
@@ -135,9 +135,12 @@ define(['dojo/_base/declare',
                 });
             },
             postCreate: function header_citeckMainSlideMenu__postCreate() {
+                var self = this;
                 $(document).ready(
                     function() {
-                        $(".mm-panel").niceScroll();
+                        if (!self.isMobile) {
+                            $(".mm-panel").niceScroll();
+                        }
                     }
                 );
             }
