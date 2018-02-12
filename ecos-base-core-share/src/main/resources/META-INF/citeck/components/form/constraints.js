@@ -546,7 +546,7 @@
         params = params || {};
         var msg = Alfresco.util.message,
             id = Alfresco.util.generateDomId(),
-            viewId = id + "-body",
+            viewId = listId,
             header = params.title || msg("actions.document.dialog-form"),
             destination = params.destination || "",
             destinationAssoc = params.destinationAssoc || "",
