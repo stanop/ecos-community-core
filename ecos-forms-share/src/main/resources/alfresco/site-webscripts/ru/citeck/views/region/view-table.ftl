@@ -2,8 +2,11 @@
 <#assign downloadActionInViewMode = params.downloadActionInViewMode!"false" />
 
 <#if params.columns??>
-    <#assign columns = params.columns?replace("\\s+", "", "rm")>
+    <#assign columns = params.columns?replace("\\s+", "", "rm") />
 </#if>
+
+<#assign actionIsFirstColumn = params.actionIsFirstColumn!"false" />
+<#assign duplicateButton = params.duplicateButton!"false" />
 
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
@@ -15,6 +18,8 @@
         * highlightedAdditionalClass - additional classes for highlighted rows. use only with 'highlightedColumnMarker' ("selected my-item") [optional]
 
         * downloadActionInViewMode - enable additional actions column in view mode with download button.
+        * actionIsFirstColumn - moving action column to left
+        * duplicateButton - add duplicate button
 -->
 
 <#-- TODO:
@@ -27,6 +32,9 @@
     <table>
         <thead data-bind="with: singleValue">
             <tr data-bind="if: $data.impl">
+                <#if actionIsFirstColumn == "true">
+                    <@actionsHeader />
+                </#if>
                 <!-- ko with: impl -->
                     <#if params.journalType??>
                         <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
@@ -51,18 +59,10 @@
                     </#if>
                 <!-- /ko -->
 
-                <!-- ko with: $parent -->
-                    <!-- ko ifnot: protected() || resolve("node.impl.inViewMode") -->
-                        <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
-                    <!-- /ko -->
+                <#if actionIsFirstColumn != "true">
+                    <@actionsHeader />
+                </#if>
 
-                    <!-- ko if: resolve("node.impl.inViewMode") -->
-                    <#if downloadActionInViewMode == "true">
-                        <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
-                    </#if>
-                    <!-- /ko -->
-
-                <!-- /ko -->
             </tr>
         </thead>
         <tbody data-bind="foreach: multipleValues">
@@ -80,18 +80,20 @@
                     <#else>
                         <tr class="value-item">
                     </#if>
-
+                        <#if actionIsFirstColumn == "true">
+                            <@actionsBody />
+                        </#if>
                         <#if params.journalType??>
                             <!-- ko with: new koutils.koclass("JournalType")("${params.journalType}") -->
                                 <!-- ko foreach: defaultAttributes -->
                                     <!-- ko with: $parents[1].attribute($data.name()) -->
                                         <td data-bind="text: ko.computed(function() {
-                                                                var value = $data.value(), title;
-                                                                if (value && value.toString().indexOf('invariants.Node') != -1) {
-                                                                    title = value.properties ? value.properties['cm:title'] : null;
-                                                                }
-                                                                return title || ($data.valueTitle() || $data.textValue())
-                                                            })"></td>
+                                                             var value = $data.value(), title;
+                                                             if (value && value.toString().indexOf('invariants.Node') != -1) {
+                                                                 title = value.properties ? value.properties['cm:title'] : null;
+                                                             }
+                                                             return title || ($data.valueTitle() || $data.textValue())
+                                            })"></td>
                                     <!-- /ko -->
                                 <!-- /ko -->
                             <!-- /ko -->
@@ -100,63 +102,33 @@
                                 <!-- ko with: attribute("${column}") -->
                                     <#if has_column_formatter(column) >
                                         <td data-bind="html: ko.computed(function() {
-                                                                    <@column_formatter column 1 />
-                                                                })"></td>
+                                            <@column_formatter column 1 />
+                                            })"></td>
                                     <#else>
                                         <td data-bind="text: ko.computed(function() {
-                                                                    var value = $data.value(), title;
-                                                                    if (value && value.toString().indexOf('invariants.Node') != -1) {
-                                                                         title = value.properties ? value.properties['cm:title'] : null;
-                                                                    }
-                                                                    return title || ($data.valueTitle() || $data.textValue())
-                                                                })"></td>
+                                                            var value = $data.value(), title;
+                                                            if (value && value.toString().indexOf('invariants.Node') != -1) {
+                                                                title = value.properties ? value.properties['cm:title'] : null;
+                                                            }
+                                                            return title || ($data.valueTitle() || $data.textValue())
+                                            })"></td>
                                     </#if>
                                 <!-- /ko -->
                             </#list>
                         <#else>
                             <!-- ko foreach: attributes -->
                                 <td data-bind="text: ko.computed(function() {
-                                                            var value = $data.value(), title;
-                                                            if (value && value.toString().indexOf('invariants.Node') != -1) {
-                                                                title = value.properties['cm:title'];
-                                                            }
-                                                            return title || ($data.valueTitle() || $data.textValue())
-                                                        })"></td>
+                                                     var value = $data.value(), title;
+                                                     if (value && value.toString().indexOf('invariants.Node') != -1) {
+                                                          title = value.properties['cm:title'];
+                                                     }
+                                                     return title || ($data.valueTitle() || $data.textValue())
+                                    })"></td>
                             <!-- /ko -->
                         </#if>
-
-                <!-- ko ifnot: $parents[1].protected() || $parents[1].resolve("node.impl.inViewMode") -->
-                <td class="value-item-actions">
-                    <a class="edit-value-item" title="${msg('button.edit')}"
-                       data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) },
-                   {
-                        baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
-                        rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
-                   }), clickBubble: false"></a>
-                <#if params.duplicateButton??>
-                    <a class="duplicate-value-item" title="${msg('button.duplicate')}"
-                       data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
-                </#if>
-                    <a class="delete-value-item" title="${msg('button.delete')}"
-                       data-bind="click: function() {
-                       Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
-                       }, clickBubble: false"></a>
-                </td>
-                <!-- /ko -->
-
-                <!-- ko if: $parents[1].resolve("node.impl.inViewMode") -->
-                <#if downloadActionInViewMode == "true">
-                <td class="value-item-actions">
-                    <!-- ko if: $data.node().properties['cm:content'] -->
-                    <a class="download-content-item" title="${msg('actions.document.download')}"
-                       data-bind="click: function() {
-                       document.location.href = Alfresco.constants.PROXY_URI + '/citeck/print/content?nodeRef=' + $data.nodeRef();
-                       }, clickBubble: false"></a>
-                    <!-- /ko -->
-                </td>
-                </#if>
-                <!-- /ko -->
-
+                        <#if actionIsFirstColumn != "true">
+                            <@actionsBody />
+                        </#if>
                     </tr>
                 <!-- /ko -->
             <!-- /ko -->
@@ -178,6 +150,52 @@
 <#macro column_formatter columnName step>
     <#assign formatter = params['formatter_' + columnName?replace(':', '_')]!''>
     <#if formatter?has_content>return (function(value) { ${formatter} })($parents[${step}]);</#if>
+</#macro>
+
+<#macro actionsHeader>
+    <!-- ko with: $parent -->
+        <!-- ko ifnot: protected() || resolve("node.impl.inViewMode") -->
+            <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
+        <!-- /ko -->
+        <!-- ko if: resolve("node.impl.inViewMode") -->
+            <#if downloadActionInViewMode == "true">
+                <th class="value-item-actions">${msg('view-table.labels.actions')}</th>
+            </#if>
+        <!-- /ko -->
+    <!-- /ko -->
+</#macro>
+
+<#macro actionsBody>
+    <!-- ko ifnot: $parents[1].protected() || $parents[1].resolve("node.impl.inViewMode") -->
+        <td class="value-item-actions">
+            <a class="edit-value-item" title="${msg('button.edit')}"
+                data-bind="click: Citeck.forms.dialog.bind(Citeck.forms, $data.nodeRef(), null, function() { $data.reset(true) },
+                    {
+                        baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
+                        rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
+                    }), clickBubble: false"></a>
+            <#if duplicateButton == "true">
+                <a class="duplicate-value-item" title="${msg('button.duplicate')}"
+                    data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
+            </#if>
+            <a class="delete-value-item" title="${msg('button.delete')}"
+                data-bind="click: function() {
+                    Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
+                }, clickBubble: false"></a>
+        </td>
+    <!-- /ko -->
+    <!-- ko if: $parents[1].resolve("node.impl.inViewMode") -->
+        <#if downloadActionInViewMode == "true">
+            <td class="value-item-actions">
+                <!-- ko if: $data.node().properties['cm:content'] -->
+                    <a class="download-content-item" title="${msg('actions.document.download')}"
+                        data-bind="click: function() {
+                            document.location.href = Alfresco.constants.PROXY_URI + '/citeck/print/content?nodeRef=' + $data.nodeRef();
+                        }, clickBubble: false"></a>
+                <!-- /ko -->
+            </td>
+        </#if>
+    <!-- /ko -->
 </#macro>
 
 <#function has_column_formatter columnName>

@@ -24,6 +24,7 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
@@ -64,7 +65,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	private NodeAttributeService nodeAttributeService;
 	private AssociationIndexing associationIndexing;
 	private PersonService personService;
-	
+    private AuthorityService authorityService;
 	/////////////////////////////////////////////////////////////////
 	//                     GENERAL INTERFACE                       //
 	/////////////////////////////////////////////////////////////////
@@ -296,8 +297,24 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
 		// create node
         if (nodeType.equals(ContentModel.TYPE_PERSON)) {
+            parent = nodeInfo.getParent();
+            String userName = (String) nodeInfo.getProperty(ContentModel.PROP_USERNAME);
             Map<QName,Serializable> properties = nodeInfo.getProperties();
-            nodeRef = personService.createPerson(properties);
+
+            nodeInfo.setParent(null);
+            nodeInfo.setParentAssoc(null);
+
+            Map<QName,Serializable> personProperties = new HashMap<>();
+            personProperties.put(ContentModel.PROP_FIRSTNAME, properties.get(ContentModel.PROP_FIRSTNAME));
+            personProperties.put(ContentModel.PROP_LASTNAME, properties.get(ContentModel.PROP_LASTNAME));
+            personProperties.put(ContentModel.PROP_USERNAME, properties.get(ContentModel.PROP_USERNAME));
+            personProperties.put(ContentModel.PROP_EMAIL, properties.get(ContentModel.PROP_EMAIL));
+            nodeRef = personService.createPerson(personProperties);
+
+            if (parent != null) {
+                String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
+                authorityService.addAuthority(authName, userName);
+            }
         } else {
             ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, parentAssocName, nodeType);
             nodeRef = childAssocRef.getChildRef();
@@ -529,6 +546,10 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
     public void setPersonService(PersonService personService) {
         this.personService = personService;
+    }
+
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
     }
 
 	public void init() {

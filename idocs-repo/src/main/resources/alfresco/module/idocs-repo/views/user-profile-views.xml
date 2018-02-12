@@ -17,15 +17,31 @@
         <fields kind="mode-just-view" template="none" />
     </views>
 
+    <views mode="view">
+        <fields kind="mode-not-view" template="none" />
+    </views>
+
+    <views mode="edit">
+        <fields prop="ecos:isPersonDisabled">
+            <regions name="label" template="label">
+                <param name="key">ecos_isPersonDisabled-not-view-mode-title</param>
+            </regions>
+        </fields>
+    </views>
+
+    <views mode="create">
+        <fields prop="ecos:isPersonDisabled">
+            <regions name="label" template="label">
+                <param name="key">ecos_isPersonDisabled-not-view-mode-title</param>
+            </regions>
+        </fields>
+    </views>
+
     <view class="cm:person">
         <param name="customClass">user-profile-custom-container</param>
         <param name="inlineEdit">false</param>
         <param name="invariantsRuntimeCache">false</param>
         <param name="preloadInvariants">true</param>
-
-        <!--<view id="person-go-to-edit-mode" template="person-edit-btn">
-            <param name="preloadInvariants">true</param>
-        </view>-->
 
         <view id="cm_person_header" template="wide">
             <param name="customClass">user-profile-header</param>
@@ -42,7 +58,7 @@
                 </view>
             </view>
 
-            <view id="cm_person_header--fio--outer" template="wide">
+            <view id="cm_person_header--fio--outer" mode="view" template="wide">
                 <param name="customClass">user-profile-header__column user-profile-header__column--fio</param>
                 <view id="cm_person_header--fio" template="blockset">
                     <field prop="cm:firstName" template="block">
@@ -129,6 +145,48 @@
                     <invariant on="default" language="explicit">true</invariant>
                 </field>
             </view>
+            <field prop="ecos:isPersonDisabled" template="row">
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    function isAlfrescoAdmins() {
+                        if (typeof Alfresco.constants.Citeck == "undefined" || !Alfresco.constants.Citeck) {
+                            Alfresco.constants.Citeck = {};
+                        };
+
+                        var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
+
+                        if (Alfresco.constants.Citeck.userIsAdmin === undefined) {
+                            Alfresco.constants.Citeck.userIsAdminKO = ko.observable(false);
+                            var username = Alfresco.constants.USERNAME;
+
+                            Alfresco.util.Ajax.jsonGet({
+                                url: Alfresco.constants.PROXY_URI + "api/orgstruct/people/" + username + "/groups",
+                                successCallback: {
+                                    fn: function(response) {
+                                        var roles = response.json;
+                                        for (var r in roles) {
+                                            if (Alfresco.constants.Citeck.userIsAdminKO()) break;
+                                            for (var rwl in roleWhitelist) {
+                                                if (roles[r].shortName.indexOf(roleWhitelist[rwl]) != -1) {
+                                                    Alfresco.constants.Citeck.userIsAdminKO(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        if (Alfresco.constants.Citeck.userIsAdmin === true || Alfresco.constants.Citeck.userIsAdminKO()) {
+                            return true;
+                        }
+
+                        return false;
+                    };
+
+                    isAlfrescoAdmins();
+                ]]></invariant>
+            </field>
         </view>
 
         <view id="cm_person_user_groups" kind="2-column">
@@ -137,6 +195,48 @@
                 <region name="label" template="none" />
                 <region name="mandatory" template="none" />
                 <region name="input" template="user-groups" />
+            </field>
+        </view>
+
+        <view id="cm_person_password">
+            <param name="title">person_password_title</param>
+            <field prop="ecos:pass" kind="mode-not-view">
+                <region name="input" template="password" />
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode == 'create';
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
+                    (function() {
+                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                    })();
+                ]]></invariant>
+            </field>
+            <field prop="ecos:passVerify" kind="mode-not-view">
+                <region name="input" template="password" />
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode == 'create';
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
+                    (function() {
+                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                    })();
+                ]]></invariant>
             </field>
         </view>
     </view>
