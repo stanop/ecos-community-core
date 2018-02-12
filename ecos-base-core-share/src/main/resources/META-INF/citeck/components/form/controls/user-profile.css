@@ -228,9 +228,13 @@
     }
 
     .user-profile.node-view.static {
-        padding: 20px 0 !important;
+        padding: 0 0 15px 0 !important;
         margin-right: -15px;
         margin-left: -15px;
+    }
+
+    .user-profile.node-view.static > .ecos-form.view-form {
+        padding-top: 0;
     }
 
     .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header {
@@ -264,8 +268,8 @@
     }
 
     .ecos-form.invariants-form .user-profile-custom-container .form-view .title, .user-profile-custom-container .form-view .title {
-        border-top-left-radius: 3px;
-        border-top-right-radius: 3px;
+        border: 0;
+        border-radius: 0;
     }
 
     .ecos-form.invariants-form .form-fields .form-view.user-profile-custom-container > .form-view {
@@ -273,6 +277,10 @@
         width: auto;
         margin-right: 0;
         margin-left: 0;
+        margin-bottom: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
     }
 
     .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view .form-field.template-half-width,
@@ -296,5 +304,16 @@
     .sticky-footer .footer-content {
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    .toolbar.userprofile .separator, .toolbar.userprofile .link {
+        float: none;
+        display: inline-block;
+        vertical-align: top;
+}
+
+    .mobile .ecos-form .form-fields .template-table .form-field:after {
+         border-bottom: 0;
+         margin-bottom: 0;
     }
 }
