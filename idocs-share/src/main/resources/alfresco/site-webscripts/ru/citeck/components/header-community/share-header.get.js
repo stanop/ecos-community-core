@@ -356,25 +356,21 @@ if (!context.externalAuthentication) {
     userMenuItems.push(logoutItemConfig);
 }
 
-// USER MENU BAR
-
-userMenuBar.config.widgets = [
-    {
+var HEADER_USER_MENU = {
+    id: "HEADER_USER_MENU",
+    name: "alfresco/header/AlfMenuBarPopup",
+    config: {
         id: "HEADER_USER_MENU",
-        name: "alfresco/header/AlfMenuBarPopup",
-        config: {
-            id: "HEADER_USER_MENU",
-            label: user.fullName,
-            showArrow: !isSlideMenu,
-            widgets: [{
-                name: "js/citeck/menus/citeckMenuGroup",
-                config: {
-                    widgets: userMenuItems
-                }
-            }]
-        }
+        label: user.fullName,
+        showArrow: !isSlideMenu,
+        widgets: [{
+            name: "js/citeck/menus/citeckMenuGroup",
+            config: {
+                widgets: userMenuItems
+            }
+        }]
     }
-];
+}
 
 // APP MENU ITEMS
 
@@ -383,6 +379,7 @@ var createSiteClickEvent = isSlideMenu ? "Citeck.module.getCreateSiteInstance().
                                        : function(event, element) {
                                             Citeck.module.getCreateSiteInstance().show();
                                          };
+
 
 var HEADER_SITES_VARIANTS = {
         id: "HEADER_SITES_VARIANTS",
@@ -508,7 +505,7 @@ var HEADER_SITES_VARIANTS = {
     },
     HEADER_CREATE_CASE = {
         id: "HEADER_CREATE_CASE",
-        name: "alfresco/header/AlfMenuBarPopup",
+        name: "alfresco/menus/AlfMenuBarPopup",
         config: {
             id: "HEADER_CREATE_CASE",
             showArrow: false,
@@ -530,18 +527,13 @@ var HEADER_SITES_VARIANTS = {
 // Slide Menu
 // ---------------------
 if (isSlideMenu) {
-    if (getPhoto(user.properties.nodeRef)) {
-        userMenuBar.config.widgets.push({
-            id: isMobile ? "HEADER_MOBILE_USER_PHOTO" : "HEADER_USER_PHOTO",
-            name: "js/citeck/logo/citeckLogo",
-            config: {
-                id: isMobile ? "HEADER_MOBILE_USER_PHOTO" : "HEADER_USER_PHOTO",
-                logoClasses: "alfresco-logo-only user-photo-header",
-                currentTheme: theme,
-                logoSrc: "/share/proxy/alfresco/api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
-            }
-        });
+
+    // USER MENU BAR
+    if (user && user.properties && getPhoto(user.properties.nodeRef)) {
+        HEADER_USER_MENU.config.iconClass = "user-photo-header";
+        HEADER_USER_MENU.config.iconSrc = "/share/proxy/alfresco/api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
     }
+    userMenuBar.config.widgets = [HEADER_USER_MENU];
 
     // BUILD APP MENU
     appMenuBar.config.widgets.push({
@@ -574,6 +566,9 @@ if (isSlideMenu) {
             appMenuBar.config.widgets.push(HEADER_LOGGING);
         }
     }
+
+    // USER MENU BAR
+    userMenuBar.config.widgets = [HEADER_USER_MENU];
 
     // BUILD MOBILE MENU
     var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
