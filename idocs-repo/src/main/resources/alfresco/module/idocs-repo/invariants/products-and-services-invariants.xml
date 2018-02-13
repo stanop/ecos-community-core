@@ -8,82 +8,6 @@
     </imports>
 
     <type name="pas:pasEntityCopied">
-        <property name="cm:title">
-            <invariant on="value" language="javascript">
-                <![CDATA[(function () {
-                    var valueToSet = value;
-                    var pasEntityOriginal = node.impl().getAttribute("pas:pasEntityOriginalAssoc").value();
-                    if (pasEntityOriginal) {
-                        valueToSet = pasEntityOriginal.properties["cm:title"];
-                    }
-                    return valueToSet;
-                })()]]>
-            </invariant>
-        </property>
-        <property name="cm:description">
-            <invariant on="value" language="javascript">
-                <![CDATA[(function () {
-                    var valueToSet = value;
-                    var pasEntityOriginal = node.impl().getAttribute("pas:pasEntityOriginalAssoc").value();
-                    if (pasEntityOriginal) {
-                        valueToSet = pasEntityOriginal.properties["cm:description"];
-                    }
-                    return valueToSet;
-                })()]]>
-            </invariant>
-        </property>
-        <property name="pas:type">
-            <invariant on="value" language="javascript">
-                <![CDATA[(function () {
-                    var valueToSet = value;
-                    var pasEntityOriginal = node.impl().getAttribute("pas:pasEntityOriginalAssoc").value();
-                    if (pasEntityOriginal) {
-                        valueToSet = pasEntityOriginal.properties["pas:type"];
-                    }
-                    return valueToSet;
-                })()]]>
-            </invariant>
-        </property>
-        <property name="pas:pricePerUnit">
-            <invariant on="value" language="javascript">
-                <![CDATA[(function () {
-                    var valueToSet = value;
-                    var pasEntityOriginal = node.impl().getAttribute("pas:pasEntityOriginalAssoc").value();
-                    if (pasEntityOriginal) {
-                        valueToSet = pasEntityOriginal.properties["pas:pricePerUnit"];
-                    }
-                    return valueToSet;
-                })()]]>
-            </invariant>
-        </property>
-        <association name="pas:entityUnit">
-            <invariant on="value" language="javascript">
-                <![CDATA[(function () {
-                    var valueToSet = value;
-                    var copiedValue = node.impl().getAttribute("pas:pasEntityOriginalAssoc").value();
-                    if (copiedValue && copiedValue.assocs["pas:entityUnit"].length > 0) {
-                        valueToSet = copiedValue.assocs["pas:entityUnit"][0];
-                    }
-                    return valueToSet;
-                })()]]>
-            </invariant>
-        </association>
-        <association name="pas:currency">
-            <invariant on="value" language="javascript">
-                <![CDATA[(function () {
-                    var valueToSet = value;
-                    var copiedValue = node.impl().getAttribute("pas:pasEntityOriginalAssoc").value();
-                    if (copiedValue && copiedValue.assocs["pas:currency"].length > 0) {
-                        valueToSet = copiedValue.assocs["pas:currency"][0];
-                    }
-                    return valueToSet;
-                })()]]>
-            </invariant>
-        </association>
-        <!--<association name="pas:pasEntityOriginalAssoc">
-            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
-        </association>-->
-
         <property name="pas:quantity">
             <invariant on="valid" language="javascript" description="Число должно быть положительным">value > 0</invariant>
             <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
@@ -95,6 +19,7 @@
             <invariant on="value" language="javascript">Math.round(node.properties["pas:pricePerUnit"] * node.properties["pas:quantity"] * 10000) / 10000</invariant>
         </property>
     </type>
+
     <type name="pas:pasEntity">
         <property name="pas:pricePerUnit">
             <invariant on="valid" language="javascript" description="Число должно быть неотрицательным">value >= 0</invariant>
@@ -105,11 +30,11 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
     </type>
+
     <type name="pas:pasEntityOriginal">
         <property name="pas:pricePerUnit">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="valid" language="javascript"
-                       description="invariants.validation.no-more-then-2-after-decimal-point">
+            <invariant on="valid" language="javascript" description="invariants.validation.no-more-then-2-after-decimal-point">
                 <![CDATA[(function() {
                         var valueStr = value.toString(),
                             index = valueStr ? valueStr.indexOf(".") : -1,
@@ -119,4 +44,5 @@
             </invariant>
         </property>
     </type>
+
 </invariants>
