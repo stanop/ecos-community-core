@@ -519,6 +519,8 @@ ko.components.register("datetime", {
         this.fieldId = params["fieldId"];
         this.value = params["value"];
         this.disabled = params["protected"];
+        this.isFocus = ko.observable(false);
+        this.intermediateValue = ko.observable();
 
         if(!this.mode || !Citeck.HTML5.supportInput("datetime-local")){
             this.calendar = function() {
@@ -602,6 +604,11 @@ ko.components.register("datetime", {
             }
         });
 
+        this.isFocus.subscribe(function(focus) {
+            if (!focus) {
+                self.value(self.intermediateValue());
+            }
+        });
         this.dateValue = ko.computed({
             read: function() {
                 return  Alfresco.util.toISO8601(self.value(), { milliseconds: false, hideTimezone: true });
@@ -611,18 +618,20 @@ ko.components.register("datetime", {
                     var newDate = new Date(newValue);
 
                     if (newDate != "Invalid Date") {
-                        self.value(newDate);
+                        self.intermediateValue(newDate);
                         return;
                     }
                 }
 
-                if (self.value() != null) self.value(null)
+                if (self.intermediateValue() != null) {
+                    self.intermediateValue(null);
+                }
             }
         });
     },
     template:
        '<!-- ko if: Citeck.HTML5.supportInput("datetime-local") && mode -->\
-            <input type="datetime-local" data-bind="value: dateValue, disable: disabled" />\
+            <input type="datetime-local" data-bind="value: dateValue, hasFocus: isFocus, disable: disabled" />\
         <!-- /ko -->\
         <!-- ko if: !mode || !Citeck.HTML5.supportInput("datetime-local") -->\
             <input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
