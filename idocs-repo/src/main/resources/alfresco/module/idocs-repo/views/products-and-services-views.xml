@@ -46,15 +46,6 @@
     </view>
 
     <view class="pas:pasEntityCopied">
-        <!--<field assoc="pas:pasEntityOriginalAssoc">
-            <region name="input" template="view" />
-            <region name="select" template="select-journal">
-                <param name="journalType">products-and-services</param>
-            </region>
-            <invariant on="value-title" language="javascript">
-                value.properties['cm:title'];
-            </invariant>
-        </field>-->
         <field prop="cm:title">
             <region name="input" template="textarea">
                 <param name="height">60px</param>

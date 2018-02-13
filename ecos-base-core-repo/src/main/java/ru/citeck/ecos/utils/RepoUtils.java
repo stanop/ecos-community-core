@@ -382,12 +382,14 @@ public class RepoUtils {
      */
     public static List<NodeRef> getChildrenByType(NodeRef nodeRef, QName type, NodeService nodeService) {
 
-        if (nodeRef == null || type == null || nodeService == null)
+        if (nodeRef == null || type == null || nodeService == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; type=" + type + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<NodeRef> result = new ArrayList<>();
 
@@ -411,12 +413,14 @@ public class RepoUtils {
      */
     public static List<NodeRef> getChildrenByAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
-        if (nodeRef == null || assocTypeQName == null || nodeService == null)
+        if (nodeRef == null || assocTypeQName == null || nodeService == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; assocTypeQName=" + assocTypeQName + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<NodeRef> result = new ArrayList<>();
 
@@ -440,12 +444,14 @@ public class RepoUtils {
      */
     public static List<NodeRef> getTargetAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
-        if (nodeRef == null || assocTypeQName == null || nodeService == null)
+        if (nodeRef == null || assocTypeQName == null || nodeService == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; assocTypeQName=" + assocTypeQName + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<NodeRef> result = new ArrayList<>();
 
@@ -469,12 +475,14 @@ public class RepoUtils {
      */
     public static NodeRef getFirstTargetAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
-        if (nodeRef == null || assocTypeQName == null || nodeService == null)
+        if (nodeRef == null || assocTypeQName == null || nodeService == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; assocTypeQName=" + assocTypeQName + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<AssociationRef> childs = nodeService.getTargetAssocs(nodeRef, assocTypeQName);
 
@@ -495,12 +503,14 @@ public class RepoUtils {
      */
     public static NodeRef getPrimaryParentRef(NodeRef nodeRef, NodeService nodeService) {
 
-        if (nodeRef == null || nodeService == null)
+        if (nodeRef == null || nodeService == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         ChildAssociationRef childAssoc = nodeService.getPrimaryParent(nodeRef);
 
@@ -517,12 +527,14 @@ public class RepoUtils {
      */
     public static void deleteNode(NodeRef nodeRef, NodeService nodeService) {
 
-        if (nodeRef == null || nodeService == null)
+        if (nodeRef == null || nodeService == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         if (!nodeService.hasAspect(nodeRef, ContentModel.ASPECT_PENDING_DELETE)) {
             nodeService.addAspect(nodeRef, ContentModel.ASPECT_TEMPORARY, null);
@@ -544,13 +556,15 @@ public class RepoUtils {
      */
     public static List<NodeRef> getSourceNodeRefs(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
-        if (nodeRef == null || nodeService == null || assocTypeQName == null)
+        if (nodeRef == null || nodeService == null || assocTypeQName == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; assocTypeQName="
                     + assocTypeQName + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<NodeRef> result = new ArrayList<>();
 
@@ -574,13 +588,15 @@ public class RepoUtils {
      */
     public static NodeRef getFirstSourceAssoc(NodeRef nodeRef, QName assocTypeQName, NodeService nodeService) {
 
-        if (nodeRef == null || nodeService == null || assocTypeQName == null)
+        if (nodeRef == null || nodeService == null || assocTypeQName == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
                     + "; assocTypeQName="
                     + assocTypeQName + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<AssociationRef> childs = nodeService.getSourceAssocs(nodeRef, assocTypeQName);
 
@@ -601,13 +617,15 @@ public class RepoUtils {
      *                                  specified or specified node reference is not exist.
      */
     public static NodeRef getFirstChildAssoc(NodeRef nodeRef, QName childAssocTypeQName, NodeService nodeService) {
-        if (nodeRef == null || nodeService == null || childAssocTypeQName == null)
+        if (nodeRef == null || nodeService == null || childAssocTypeQName == null) {
             throw new IllegalArgumentException("One of required parameters are not specified. nodeRef=" + nodeRef
-                    + "; assocTypeQName="
+                    + "; childAssocTypeQName="
                     + childAssocTypeQName + "; nodeService=" + nodeService);
+        }
 
-        if (!nodeService.exists(nodeRef))
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Specified node reference is not exist. nodeRef=" + nodeRef);
+        }
 
         List<ChildAssociationRef> childs = nodeService.getChildAssocs(nodeRef,
                 childAssocTypeQName,
