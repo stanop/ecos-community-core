@@ -62,3 +62,12 @@ function findObjectById(array, id) {
         }
     }
 };
+
+function getMenuConfig(configName) {
+    var result = remote.call("/citeck/ecosConfig/ecos-config-value?configName=" + configName);
+
+    if (result.status == 200 && result != "{}") {
+        return eval('(' + result + ')').value;
+    }
+    return "";
+};
