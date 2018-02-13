@@ -1,3 +1,6 @@
+<#assign fieldParams = viewScope.field.params!{} />
+<#assign hideInlineEditButton = fieldParams.hideInlineEditButton!"false" />
+
 <#assign params = viewScope.region.params!{} />
 <#assign isViewMode = (viewScope.view.mode == "view")/>
 <#assign completeDelete = (params.completeDelete!"false") == "true" />
@@ -28,7 +31,11 @@
 </#macro>
 
 <#if isViewMode && inlineEdit!false>
-    <div class="view-value" data-bind="click: showEditableField, clickBubble: false">
+    <#if hideInlineEditButton == "true">
+        <div class="view-value">
+    <#else>
+        <div class="view-value" data-bind="click: showEditableField, clickBubble: false">
+    </#if>
 </#if>
 
 <!-- ko foreach: multipleValues -->
@@ -51,7 +58,7 @@
             <!--ko if: $parent.inlineEditVisibility -->
         </#if>
 
-        <#if !isViewMode || inlineEdit!false>
+        <#if (!isViewMode || inlineEdit!false) && hideInlineEditButton=="false">
             <span class="value-item-actions" data-bind="ifnot: $parent.protected()">
         
             <#if editable?trim == "all" || (editable?trim == "admin" && user.isAdmin)>

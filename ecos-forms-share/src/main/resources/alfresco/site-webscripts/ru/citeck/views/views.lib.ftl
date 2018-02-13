@@ -48,8 +48,8 @@
 	</#if>
 
 	<#-- custom class name for div -->
-	<#if viewScope.view.params.customClass??>
-		<#assign customClass = viewScope.view.params.customClass!"" />
+	<#if element.params.customClass??>
+		<#assign customClass = element.params.customClass!"" />
 	<#else>
 		<#assign customClass = "" />
 	</#if>
