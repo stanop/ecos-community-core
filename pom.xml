@@ -699,6 +699,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -863,6 +871,7 @@
     </build>
 
     <modules>
+        <module>ecos-graphql-repo</module>
         <module>1st-override-repo</module>
         <module>1st-override-share</module>
         <module>ecos-base-core-repo</module>
