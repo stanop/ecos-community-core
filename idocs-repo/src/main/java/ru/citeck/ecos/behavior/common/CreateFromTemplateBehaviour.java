@@ -54,10 +54,9 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
     private Boolean enabled = null;
     private int order = 500;
 
-
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
-                new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
+            new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
     }
 
 
@@ -172,8 +171,8 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 		sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
 		sb.append("@tk\\:appliesToType:\"")
                 .append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_TYPE))
-                .append("\" AND (ISNULL:\""+ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND+"\"")
-                .append("OR ISUNSET:\""+ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND+"\")")
+                .append("\" AND (ISNULL:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\"")
+                .append("OR ISUNSET:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\")")
                 .append(")");
 		NodeRef template = getTemplate(sb);
 		return template;

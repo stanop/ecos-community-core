@@ -359,17 +359,18 @@ public class HistoryService {
                     List<NodeRef> documents = resultSet.getNodeRefs();
                     hasMore = resultSet.hasMore();
                     /** Process each document */
-
-                    RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
-                    BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
-                            TRANSFER_PROCESS_NAME,
-                            retryingTransactionHelper,
-                            new HistoryTransferProvider(documents),
-                            threadsCount, BATCH_SIZE,
-                            null, logger, LOGGING_INTERVAL
-                    );
-
-                    batchProcessor.process(new HistoryTransferWorker(this), true);
+                    for (NodeRef documentRef : documents) {
+                        RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
+                        BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
+                                TRANSFER_PROCESS_NAME,
+                                retryingTransactionHelper,
+                                new HistoryTransferProvider(getEventsByDocumentRef(documentRef)),
+                                threadsCount, BATCH_SIZE,
+                                null, null, LOGGING_INTERVAL
+                        );
+                        batchProcessor.process(new HistoryTransferWorker(historyRemoteService), true);
+                        historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
+                    }
                     documentsTransferred += documents.size();
                     skipCount += documents.size();
                     resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
@@ -392,6 +393,15 @@ public class HistoryService {
         }
     }
 
+    private List<NodeRef> getEventsByDocumentRef(NodeRef documentRef) {
+        List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
+        List<NodeRef> result = new ArrayList<>(associations.size());
+        for (AssociationRef associationRef : associations) {
+            result.add(associationRef.getSourceRef());
+        }
+        return result;
+    }
+
     private ResultSet getDocumentsResultSetByOffset(Integer offset, Integer maxItemsCount) {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
@@ -404,24 +414,27 @@ public class HistoryService {
     }
 
     public void sendAndRemoveOldEventsByDocument(NodeRef documentRef) {
-        /** Check - is remote service enabled */
-        if (!isEnabledRemoteHistoryService()) {
-            throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
-        }
-        /** Check - node existing */
-        if (!nodeService.exists(documentRef)) {
-            return;
-        }
-        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
-        /** Send events to remote service or remove old nodes */
-        if (useNewHistory == null || useNewHistory == false) {
-            historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
-        } else {
-            List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
-            for (AssociationRef associationRef : associations) {
-                nodeService.deleteNode(associationRef.getSourceRef());
+        AuthenticationUtil.runAsSystem(() -> {
+            /** Check - is remote service enabled */
+            if (!isEnabledRemoteHistoryService()) {
+                throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
             }
-        }
+            /** Check - node existing */
+            if (!nodeService.exists(documentRef)) {
+                return null;
+            }
+            Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
+            /** Send events to remote service or remove old nodes */
+            if (useNewHistory == null || useNewHistory == false) {
+                historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
+            } else {
+                List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
+                for (AssociationRef associationRef : associations) {
+                    nodeService.deleteNode(associationRef.getSourceRef());
+                }
+            }
+            return null;
+        });
     }
 
     /**
@@ -581,15 +594,18 @@ public class HistoryService {
      */
     private static class HistoryTransferWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
 
-        private HistoryService historyService;
+        private HistoryRemoteService historyService;
 
-        HistoryTransferWorker(HistoryService historyService) {
+        HistoryTransferWorker(HistoryRemoteService historyService) {
             this.historyService = historyService;
         }
 
         @Override
-        public void process(NodeRef documentRef) throws Throwable {
-            historyService.sendAndRemoveOldEventsByDocument(documentRef);
+        public void process(NodeRef eventRef) throws Throwable {
+            AuthenticationUtil.runAsSystem(() -> {
+                historyService.sendHistoryEventToRemoteService(eventRef);
+                return null;
+            });
         }
     }
 
@@ -598,23 +614,23 @@ public class HistoryService {
      */
     private static class HistoryTransferProvider implements BatchProcessWorkProvider<NodeRef> {
 
-        private Collection<NodeRef> documents;
+        private Collection<NodeRef> events;
         private boolean hasMore = true;
 
-        HistoryTransferProvider(Collection<NodeRef> documents) {
-            this.documents = documents;
+        HistoryTransferProvider(Collection<NodeRef> events) {
+            this.events = events;
         }
 
         @Override
         public int getTotalEstimatedWorkSize() {
-            return documents.size();
+            return events.size();
         }
 
         @Override
         public Collection<NodeRef> getNextWork() {
             if (hasMore) {
                 hasMore = false;
-                return documents;
+                return events;
             } else {
                 return Collections.emptyList();
             }

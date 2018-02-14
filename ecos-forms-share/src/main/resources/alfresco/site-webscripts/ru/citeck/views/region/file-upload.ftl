@@ -12,3 +12,9 @@
             class="file-upload-open-dialog-button" 
             data-bind="disable: protected">${msg(params.buttonTitle!"form.select.label")}</button>
 </div>
+
+<script type="text/javascript">//<![CDATA[
+    $(function() {
+        $('#${controlId}').parent().css({"margin-left": "50%", "transform": "translateX(-50%)"})
+    });
+//]]></script>

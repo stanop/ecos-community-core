@@ -4,7 +4,6 @@
     <imports>
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-
         <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
     </imports>
 
@@ -20,6 +19,7 @@
             <invariant on="value" language="javascript">Math.round(node.properties["pas:pricePerUnit"] * node.properties["pas:quantity"] * 10000) / 10000</invariant>
         </property>
     </type>
+
     <type name="pas:pasEntity">
         <property name="pas:pricePerUnit">
             <invariant on="valid" language="javascript" description="Число должно быть неотрицательным">value >= 0</invariant>
@@ -30,11 +30,11 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
     </type>
+
     <type name="pas:pasEntityOriginal">
         <property name="pas:pricePerUnit">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="valid" language="javascript"
-                       description="invariants.validation.no-more-then-2-after-decimal-point">
+            <invariant on="valid" language="javascript" description="invariants.validation.no-more-then-2-after-decimal-point">
                 <![CDATA[(function() {
                         var valueStr = value.toString(),
                             index = valueStr ? valueStr.indexOf(".") : -1,
@@ -44,4 +44,5 @@
             </invariant>
         </property>
     </type>
+
 </invariants>

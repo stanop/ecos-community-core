@@ -28,6 +28,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import ru.citeck.ecos.model.ContractsModel;
 import ru.citeck.ecos.model.PaymentsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
@@ -162,22 +163,23 @@ public class ProductsAndServicesBehaviorContracts implements NodeServicePolicies
         List<AssociationRef> documents = nodeService.getSourceAssocs(nodeRef,
                 ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES);
 
-        QName qName = nodeService.getType(documents.get(0).getSourceRef());
-        if (!documents.isEmpty() && qName.equals(type)) {
-            for (AssociationRef document : documents) {
-                BigDecimal totalAmount = getTotalAmount(document.getSourceRef());
-                BigDecimal currentlyAmount = BigDecimal.ZERO;
-                if (nodeService.getProperty(document.getSourceRef(), property) != null) {
-                    currentlyAmount = new BigDecimal(
-                            (double) nodeService.getProperty(document.getSourceRef(),
-                                    property), MathContext.DECIMAL64);
-                }
-                if (!Objects.equals(totalAmount, currentlyAmount)) {
-                    nodeService.setProperty(document.getSourceRef(), property, totalAmount);
+        if (CollectionUtils.isNotEmpty(documents)) {
+            QName qName = nodeService.getType(documents.get(0).getSourceRef());
+            if (!documents.isEmpty() && qName.equals(type)) {
+                for (AssociationRef document : documents) {
+                    BigDecimal totalAmount = getTotalAmount(document.getSourceRef());
+                    BigDecimal currentlyAmount = BigDecimal.ZERO;
+                    if (nodeService.getProperty(document.getSourceRef(), property) != null) {
+                        currentlyAmount = new BigDecimal(
+                                (double) nodeService.getProperty(document.getSourceRef(),
+                                        property), MathContext.DECIMAL64);
+                    }
+                    if (!Objects.equals(totalAmount, currentlyAmount)) {
+                        nodeService.setProperty(document.getSourceRef(), property, totalAmount);
+                    }
                 }
             }
         }
-
     }
 
 }
