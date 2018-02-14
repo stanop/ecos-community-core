@@ -25,6 +25,7 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
@@ -37,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.behavior.AssociationIndexing;
+import ru.citeck.ecos.model.EcosModel;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -66,6 +68,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	private AssociationIndexing associationIndexing;
 	private PersonService personService;
     private AuthorityService authorityService;
+    private MutableAuthenticationService authenticationService;
 	/////////////////////////////////////////////////////////////////
 	//                     GENERAL INTERFACE                       //
 	/////////////////////////////////////////////////////////////////
@@ -295,7 +298,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             }
         }
 
-		// create node
+		// create person node
         if (nodeType.equals(ContentModel.TYPE_PERSON)) {
             parent = nodeInfo.getParent();
             String userName = (String) nodeInfo.getProperty(ContentModel.PROP_USERNAME);
@@ -310,6 +313,14 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             personProperties.put(ContentModel.PROP_USERNAME, properties.get(ContentModel.PROP_USERNAME));
             personProperties.put(ContentModel.PROP_EMAIL, properties.get(ContentModel.PROP_EMAIL));
             nodeRef = personService.createPerson(personProperties);
+
+            authenticationService.createAuthentication((String)properties.get(ContentModel.PROP_USERNAME),
+                    ((String)properties.get(EcosModel.PROP_PASS)).toCharArray());
+            properties.remove(EcosModel.PROP_PASS);
+            properties.remove(EcosModel.PROP_PASS_VERIFY);
+
+            authenticationService.setAuthenticationEnabled(userName,
+                    Boolean.FALSE.equals((boolean)properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
 
             if (parent != null) {
                 String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
@@ -569,5 +580,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
 	public void setAssociationIndexing(AssociationIndexing associationIndexing) {
 		this.associationIndexing = associationIndexing;
+	}
+
+	public void setAuthenticationService(MutableAuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
 	}
 }
