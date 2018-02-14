@@ -362,7 +362,7 @@ public class HistoryService {
                     /** Process each document */
                     for (NodeRef documentRef : documents) {
                         if (isHistoryTransferringInterrupted) {
-                            logger.info("History transferring - documents have been transferred - " + documentsTransferred);
+                            logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
                             return null;
                         }
                         RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
@@ -375,19 +375,18 @@ public class HistoryService {
                         );
                         batchProcessor.process(new HistoryTransferWorker(historyRemoteService), true);
                         historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
-                        Thread.sleep(10000);
+                        documentsTransferred++;
                     }
-                    documentsTransferred += documents.size();
                     skipCount += documents.size();
                     resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
-                    logger.info("History transferring - documents have been transferred - " + documentsTransferred);
+                    logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
                     if (stopCount != null && stopCount > 0) {
                         if (stopCount < documentsTransferred) {
                             break;
                         }
                     }
                 } while (hasMore);
-                logger.info("History transferring - all documents have been transferred - " + documentsTransferred);
+                logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
                 return null;
             });
             return "History transferring - documents have been transferred";
@@ -400,8 +399,9 @@ public class HistoryService {
         }
     }
 
-    public void interruptHistoryTransferring() {
+    public String interruptHistoryTransferring() {
         isHistoryTransferringInterrupted = true;
+        return "History transferring - interrupting";
     }
 
     private List<NodeRef> getEventsByDocumentRef(NodeRef documentRef) {
