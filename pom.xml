@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>1.16.20</version>
             <scope>provided</scope>
         </dependency>
 
@@ -699,6 +699,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -793,6 +801,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                     </shareModules>
                 </configuration>
             </plugin>
@@ -863,6 +879,8 @@
     </build>
 
     <modules>
+        <module>ecos-graphql-repo</module>
+        <module>ecos-graphql-share</module>
         <module>1st-override-repo</module>
         <module>1st-override-share</module>
         <module>ecos-base-core-repo</module>
