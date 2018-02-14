@@ -159,7 +159,7 @@
 
                         var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
 
-                        if (Alfresco.constants.Citeck.userIsAdmin === undefined) {
+                        if (Alfresco.constants.Citeck.userIsAdmin === undefined && !Alfresco.constants.Citeck.userIsAdminKO) {
                             Alfresco.constants.Citeck.userIsAdminKO = ko.observable(false);
                             var username = Alfresco.constants.USERNAME;
 
