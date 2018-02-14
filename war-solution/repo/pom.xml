@@ -49,6 +49,15 @@
             <version>0.6</version>
             <type>amp</type>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-graphql-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+            <version>${project.version}</version>
+            <type>amp</type>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
@@ -189,6 +198,12 @@
                         <overlay>
                             <groupId>de.fmaul</groupId>
                             <artifactId>javascript-console-repo</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>

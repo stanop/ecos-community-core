@@ -7,6 +7,7 @@ import graphql.annotations.annotationTypes.GraphQLNonNull;
 import graphql.schema.DataFetchingEnvironment;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.LimitBy;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
@@ -34,12 +35,30 @@ public class GqlNodesQuery {
                                       String query,
                                       @GraphQLName("lang")
                                       @GraphQLDefaultValue(DefaultSearchLanguage.class)
-                                      String lang) {
+                                      String lang,
+                                      @GraphQLName("offset")
+                                      @GraphQLDefaultValue(DefaultZeroNumber.class)
+                                      Number offset,
+                                      @GraphQLName("first")
+                                      @GraphQLDefaultValue(DefaultZeroNumber.class)
+                                      Number first) {
 
         SearchParameters parameters = new SearchParameters();
         parameters.setQuery(query);
         parameters.setLanguage(lang);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+
+        int offsetInt = offset.intValue();
+
+        int firstInt = first.intValue();
+        if (firstInt > 0) {
+            parameters.setLimitBy(LimitBy.FINAL_SIZE);
+            parameters.setLimit(firstInt);
+        }
+
+        if (offsetInt > 0) {
+            parameters.setSkipCount(offsetInt);
+        }
 
         GqlContext context = env.getContext();
 
@@ -61,6 +80,13 @@ public class GqlNodesQuery {
         @Override
         public Object get() {
             return SearchService.LANGUAGE_FTS_ALFRESCO;
+        }
+    }
+
+    public static class DefaultZeroNumber implements Supplier<Object> {
+        @Override
+        public Object get() {
+            return 0;
         }
     }
 }
