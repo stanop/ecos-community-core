@@ -5,7 +5,7 @@ import org.alfresco.service.namespace.QName;
 public interface EcosModel {
 
     // model
-    String IDOCS_MODEL_PREFIX = "ecos";
+    String ECOS_MODEL_PREFIX = "ecos";
 
     // namespace
     String NAMESPACE = "http://www.citeck.ru/model/content/ecos/1.0";
@@ -17,6 +17,7 @@ public interface EcosModel {
 
     // properties
     QName PROP_PASS = QName.createQName(NAMESPACE, "pass");
+    QName PROP_PASS_VERIFY = QName.createQName(NAMESPACE, "passVerify");
     QName PROP_IS_PERSON_DISABLED = QName.createQName(NAMESPACE, "isPersonDisabled");
 
     // assocs

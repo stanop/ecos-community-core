@@ -24,7 +24,6 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
-import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -315,10 +314,13 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             personProperties.put(ContentModel.PROP_EMAIL, properties.get(ContentModel.PROP_EMAIL));
             nodeRef = personService.createPerson(personProperties);
 
-			authenticationService.createAuthentication((String)properties.get(ContentModel.PROP_USERNAME),
-					((String)properties.get(EcosModel.PROP_PASS)).toCharArray());
-			authenticationService.setAuthenticationEnabled(userName,
-					Boolean.FALSE.equals((boolean)properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
+            authenticationService.createAuthentication((String)properties.get(ContentModel.PROP_USERNAME),
+                    ((String)properties.get(EcosModel.PROP_PASS)).toCharArray());
+            properties.remove(EcosModel.PROP_PASS);
+            properties.remove(EcosModel.PROP_PASS_VERIFY);
+
+            authenticationService.setAuthenticationEnabled(userName,
+                    Boolean.FALSE.equals((boolean)properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
 
             if (parent != null) {
                 String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
