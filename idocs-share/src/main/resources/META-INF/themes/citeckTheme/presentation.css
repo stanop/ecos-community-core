@@ -2273,7 +2273,7 @@ table td.thumbnail img
    background-color: #99badd;
    color: white;
    margin: 0;
-   padding: 10px 15px;
+   padding: 10px 10px;
    height: 20px;
 }
 
@@ -4782,6 +4782,19 @@ div#HEADER_USER_STATUS {
 /*custom scroll bar*/
 .yui-skin-citeckTheme .nicescroll-rails > div {
     background-color: #858585 !important;
+}
+
+.yui-skin-citeckTheme.alfresco-share .alfresco-menus-AlfMenuBarPopup__arrow {
+    vertical-align: bottom;
+}
+
+.yui-skin-citeckTheme.alfresco-share #HEADER_SITE_MENU .alfresco-menus-AlfMenuBarPopup__arrow {
+    font-size: 13px;
+    vertical-align: super;
+}
+
+.yui-skin-citeckTheme .mm-slideout .alfresco-header-Header #HEADER_SITE_MENU {
+    padding-right: 5px;
 }
 
 /*shadow of new menu*/

@@ -55,6 +55,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
 
 appMenuBar.config.id = "HEADER_APP_MENU_BAR";
 userMenuBar.config.id = "HEADER_USER_MENU_BAR";
+userMenuBar.config.widgets = [];
 
 // delete the Title Bar everywhere (exept for Edit Page and Create Page)
 if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
@@ -130,17 +131,17 @@ if (titleMenu && titleMenu.config.widgets.length) {
 }
 
 if (siteMenuItems.length) {
-    userMenuBar.config.widgets.unshift({
+    userMenuBar.config.widgets = [{
         id: "HEADER_SITE_MENU",
         name: "alfresco/header/AlfMenuBarPopup",
         config: {
             id: "HEADER_SITE_MENU",
             showArrow: !isSlideMenu,
             label: "",
-            style: isMobile ? "padding-left: 5px; padding-right: 5px" :  "padding-left: 10px; padding-right: 10px",
+            style: isMobile ? "padding-left: 5px; padding-right: 5px" :  "padding-left: 10px;",
             widgets: siteMenuItems
         }
-    })
+    }];
 }
 
 
@@ -533,7 +534,7 @@ if (isSlideMenu) {
         HEADER_USER_MENU.config.iconClass = "user-photo-header";
         HEADER_USER_MENU.config.iconSrc = "/share/proxy/alfresco/api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
     }
-    userMenuBar.config.widgets = [HEADER_USER_MENU];
+    userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
     // BUILD APP MENU
     appMenuBar.config.widgets.push({
@@ -568,7 +569,7 @@ if (isSlideMenu) {
     }
 
     // USER MENU BAR
-    userMenuBar.config.widgets = [HEADER_USER_MENU];
+    userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
     // BUILD MOBILE MENU
     var HEADER_MOBILE_JOURNALS = toMobileWidget(HEADER_JOURNALS);
@@ -664,15 +665,6 @@ function getSitesForUser(username) {
         return eval('(' + result + ')');
     }
     return [];
-};
-
-function getMenuConfig(configName) {
-    var result = remote.call("/citeck/ecosConfig/ecos-config-value?configName=" + configName);
-
-    if (result.status == 200 && result != "{}") {
-        return eval('(' + result + ')').value;
-    }
-    return "";
 };
 
 function buildMorePopup(isMobile) {
