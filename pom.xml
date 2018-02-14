@@ -523,6 +523,10 @@
                                 <skip>${yuicompressor.compress.skip}</skip>
                                 <excludes>
                                     <exclude>alfresco/**</exclude>
+                                    <exclude>**/*.min.js</exclude>
+                                    <exclude>**/*-min.js</exclude>
+                                    <exclude>**/*.min.css</exclude>
+                                    <exclude>**/*-min.css</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
