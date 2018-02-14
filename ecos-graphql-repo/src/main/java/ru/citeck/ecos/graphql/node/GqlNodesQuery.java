@@ -24,8 +24,7 @@ public class GqlNodesQuery {
     public static GqlNode node(DataFetchingEnvironment env,
                                @GraphQLName("id") @GraphQLNonNull String id) {
 
-        GqlContext context = env.getContext();
-        return new GqlNode(new NodeRef(id), context.getServiceRegistry());
+        return new GqlNode(new NodeRef(id), env.getContext());
     }
 
     @GraphQLField

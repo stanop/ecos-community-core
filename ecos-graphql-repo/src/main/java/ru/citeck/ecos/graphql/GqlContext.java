@@ -22,7 +22,7 @@ public class GqlContext {
     }
 
     public GqlNode getNode(NodeRef nodeRef) {
-        return nodes.computeIfAbsent(nodeRef, r -> new GqlNode(r, serviceRegistry));
+        return nodes.computeIfAbsent(nodeRef, r -> new GqlNode(r, this));
     }
 
     public DictionaryService getDictionaryService() {
