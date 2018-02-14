@@ -69,6 +69,10 @@ public class HistoryServiceJS extends BaseProcessorExtension {
         return historyService.sendAndRemoveAllOldEvents(offset, maxItemsCount, stopCount, threads);
     }
 
+    public String interruptHistoryTransferring() {
+        return historyService.interruptHistoryTransferring();
+    }
+
     public void sendAndRemoveOldEventsByDocument(ScriptNode node) {
         NodeRef documentRef = node.getNodeRef();
         historyService.sendAndRemoveOldEventsByDocument(documentRef);
