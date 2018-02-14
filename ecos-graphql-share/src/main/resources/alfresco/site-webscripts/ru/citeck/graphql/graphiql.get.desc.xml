@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>GraphiQL</shortname>
+    <description>GraphiQL</description>
+    <url>/components/console/ecos/graphiql</url>
+    <family>admin-console</family>
+</webscript>
