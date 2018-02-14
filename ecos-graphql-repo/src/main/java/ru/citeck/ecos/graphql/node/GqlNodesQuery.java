@@ -1,9 +1,6 @@
 package ru.citeck.ecos.graphql.node;
 
-import graphql.annotations.annotationTypes.GraphQLDefaultValue;
-import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLName;
-import graphql.annotations.annotationTypes.GraphQLNonNull;
+import graphql.annotations.annotationTypes.*;
 import graphql.schema.DataFetchingEnvironment;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -11,6 +8,7 @@ import org.alfresco.service.cmr.search.LimitBy;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
+import ru.citeck.ecos.graphql.Defaults;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLQueryDefinition;
 
@@ -37,27 +35,24 @@ public class GqlNodesQuery {
                                       @GraphQLDefaultValue(DefaultSearchLanguage.class)
                                       String lang,
                                       @GraphQLName("offset")
-                                      @GraphQLDefaultValue(DefaultZeroNumber.class)
-                                      Number offset,
+                                      @GraphQLDefaultValue(Defaults.IntZero.class)
+                                      Integer offset,
                                       @GraphQLName("first")
-                                      @GraphQLDefaultValue(DefaultZeroNumber.class)
-                                      Number first) {
+                                      @GraphQLDefaultValue(Defaults.IntZero.class)
+                                      Integer first) {
 
         SearchParameters parameters = new SearchParameters();
         parameters.setQuery(query);
         parameters.setLanguage(lang);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
 
-        int offsetInt = offset.intValue();
-
-        int firstInt = first.intValue();
-        if (firstInt > 0) {
+        if (first > 0) {
             parameters.setLimitBy(LimitBy.FINAL_SIZE);
-            parameters.setLimit(firstInt);
+            parameters.setLimit(first);
         }
 
-        if (offsetInt > 0) {
-            parameters.setSkipCount(offsetInt);
+        if (offset > 0) {
+            parameters.setSkipCount(offset);
         }
 
         GqlContext context = env.getContext();
@@ -80,13 +75,6 @@ public class GqlNodesQuery {
         @Override
         public Object get() {
             return SearchService.LANGUAGE_FTS_ALFRESCO;
-        }
-    }
-
-    public static class DefaultZeroNumber implements Supplier<Object> {
-        @Override
-        public Object get() {
-            return 0;
         }
     }
 }
