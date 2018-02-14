@@ -100,6 +100,7 @@ public class HistoryService {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     private boolean isHistoryTransferring = false;
+    private boolean isHistoryTransferringInterrupted = false;
 
     /**
      * Global properties
@@ -360,6 +361,10 @@ public class HistoryService {
                     hasMore = resultSet.hasMore();
                     /** Process each document */
                     for (NodeRef documentRef : documents) {
+                        if (isHistoryTransferringInterrupted) {
+                            logger.info("History transferring - documents have been transferred - " + documentsTransferred);
+                            return null;
+                        }
                         RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
                         BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
                                 TRANSFER_PROCESS_NAME,
@@ -370,6 +375,7 @@ public class HistoryService {
                         );
                         batchProcessor.process(new HistoryTransferWorker(historyRemoteService), true);
                         historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
+                        Thread.sleep(10000);
                     }
                     documentsTransferred += documents.size();
                     skipCount += documents.size();
@@ -390,7 +396,12 @@ public class HistoryService {
             throw e;
         } finally {
             isHistoryTransferring = false;
+            isHistoryTransferringInterrupted = false;
         }
+    }
+
+    public void interruptHistoryTransferring() {
+        isHistoryTransferringInterrupted = true;
     }
 
     private List<NodeRef> getEventsByDocumentRef(NodeRef documentRef) {
