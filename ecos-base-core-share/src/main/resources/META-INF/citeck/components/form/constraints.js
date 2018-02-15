@@ -570,6 +570,8 @@
                 execScripts: true,
                 successCallback: {
                     fn: function(response) {
+                        $('.orgstruct-console .toolbar').hide();
+
                         YAHOO.Bubbling.fire("metadataRefresh");
                         // get right section - block were we will show the views
                         var showArea = $('#' + listId);
