@@ -253,6 +253,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
             Map<String, Object> transformedProperties = workflowPropertyHandlerRegistry.handleVariablesToSet(newProperties, task.getDefinition().getMetadata(),
                     null, Void.class);
             taskService.setVariablesLocal(getLocalValue(taskId), transformedProperties);
+            flowablePropertyConverter.setTaskOwner(taskInstance, properties);
             return getTaskById(taskId);
         } else {
             return null;
