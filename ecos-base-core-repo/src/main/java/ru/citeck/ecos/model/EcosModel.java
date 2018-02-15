@@ -16,6 +16,7 @@ public interface EcosModel {
     // aspects
 
     // properties
+    QName PROP_OLD_PASS = QName.createQName(NAMESPACE, "oldPass");
     QName PROP_PASS = QName.createQName(NAMESPACE, "pass");
     QName PROP_PASS_VERIFY = QName.createQName(NAMESPACE, "passVerify");
     QName PROP_IS_PERSON_DISABLED = QName.createQName(NAMESPACE, "isPersonDisabled");

@@ -208,13 +208,21 @@
 
         <view id="cm_person_password">
             <param name="title">person_password_title</param>
+            <field prop="ecos:oldPass">
+                <region name="input" template="password" />
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode != 'create';
+                    })();
+                ]]></invariant>
+            </field>
             <field prop="ecos:pass" kind="mode-not-view">
                 <region name="input" template="password" />
-                <invariant on="mandatory" language="javascript"><![CDATA[
+                <!--<invariant on="mandatory" language="javascript"><![CDATA[
                     (function() {
                         return view.mode == 'create';
                     })();
-                ]]></invariant>
+                ]]></invariant>-->
                 <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
                     (function() {
                         var val = value;
@@ -229,11 +237,11 @@
             </field>
             <field prop="ecos:passVerify" kind="mode-not-view">
                 <region name="input" template="password" />
-                <invariant on="mandatory" language="javascript"><![CDATA[
+                <!--<invariant on="mandatory" language="javascript"><![CDATA[
                     (function() {
                         return view.mode == 'create';
                     })();
-                ]]></invariant>
+                ]]></invariant>-->
                 <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
                     (function() {
                         var val = value;

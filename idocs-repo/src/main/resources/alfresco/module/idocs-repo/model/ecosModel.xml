@@ -152,10 +152,14 @@
                 </property>
 
                 <!--
-                    Properties "ecos:pass", "ecos:passVerify" are just to display and send value from the frontend
+                    Properties "ecos:pass", "ecos:oldPass", "ecos:passVerify" are just to display and send value from the frontend
                     to the server, not to store a password.
                     The user password will be saved using the regular method.
                 -->
+                <property name="ecos:oldPass">
+                    <title>Old password</title>
+                    <type>d:text</type>
+                </property>
                 <property name="ecos:pass">
                     <title>Password</title>
                     <type>d:text</type>
