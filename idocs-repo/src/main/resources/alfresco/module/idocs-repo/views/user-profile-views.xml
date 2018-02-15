@@ -236,11 +236,7 @@
             </field>
             <field prop="ecos:pass" kind="mode-not-view">
                 <region name="input" template="password" />
-                <invariant on="mandatory" language="javascript"><![CDATA[
-                    (function() {
-                        return view.mode == 'create';
-                    })();
-                ]]></invariant>
+                <invariant on="mandatory" language="javascript">!!node.impl</invariant>
                 <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
                     (function() {
                         var val = value;
@@ -255,11 +251,7 @@
             </field>
             <field prop="ecos:passVerify" kind="mode-not-view">
                 <region name="input" template="password" />
-                <invariant on="mandatory" language="javascript"><![CDATA[
-                    (function() {
-                        return view.mode == 'create';
-                    })();
-                ]]></invariant>
+                <invariant on="mandatory" language="javascript">!!node.impl</invariant>
                 <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
                     (function() {
                         var val = value;
