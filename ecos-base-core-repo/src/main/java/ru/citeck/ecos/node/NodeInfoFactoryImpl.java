@@ -18,8 +18,11 @@
  */
 package ru.citeck.ecos.node;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
+import org.alfresco.repo.security.authentication.AuthenticationException;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
@@ -37,6 +40,7 @@ import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.behavior.AssociationIndexing;
 import ru.citeck.ecos.model.EcosModel;
@@ -58,6 +62,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	private static final String CONTENT_MIMETYPE = "mimetype";
 	private static final String CONTENT_ENCODING = "encoding";
 	private static final String CONTENT_CONTENT = "content";
+
+	private static final String ERROR_BAD_CREDENTIALS = "message.error-bad-credentials";
+	private static final String ERROR_NO_PERMISSIONS = "message.error-you-have-no-permissions";
 	
 	private ServiceRegistry serviceRegistry;
 	private NodeService nodeService;
@@ -287,9 +294,18 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 				if (StringUtils.isNotEmpty(newPass)
 						&& StringUtils.isNotEmpty(newPassVerify)) {
 					if (StringUtils.isNotEmpty(oldPass)) {
-						authenticationService.updateAuthentication(userName, oldPass.toCharArray(), newPass.toCharArray());
+						try {
+							authenticationService.updateAuthentication(userName, oldPass.toCharArray(), newPass.toCharArray());
+						} catch (AuthenticationException e) {
+							throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_BAD_CREDENTIALS));
+						}
 					} else {
-						authenticationService.setAuthentication(userName, newPass.toCharArray());
+						String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
+						if (authorityService.isAdminAuthority(currentAuthUser)) {
+							authenticationService.setAuthentication(userName, newPass.toCharArray());
+						} else {
+							throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_NO_PERMISSIONS));
+						}
 					}
 				}
 				properties.remove(EcosModel.PROP_OLD_PASS);
