@@ -475,7 +475,6 @@
     -moz-transition: transform .4s ease;
     -webkit-transition: transform .4s ease;
     -o-transition: transform .4s ease;
-    z-index: 1;
     height: inherit;
 }
 
@@ -3572,4 +3571,8 @@ label.mm-check:before {
 
 #menu:not(.mm-menu) {
     display: none;
+}
+
+html:not(.mm-wrapper_opened) .nicescroll-rails {
+    z-index: -1 !important;
 }
