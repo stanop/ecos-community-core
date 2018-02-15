@@ -284,14 +284,17 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 				String oldPass = (String) properties.get(EcosModel.PROP_OLD_PASS);
 				String newPass = (String) properties.get(EcosModel.PROP_PASS);
 				String newPassVerify = (String) properties.get(EcosModel.PROP_PASS_VERIFY);
-				if (StringUtils.isNotEmpty(oldPass)
-						&& StringUtils.isNotEmpty(newPass)
+				if (StringUtils.isNotEmpty(newPass)
 						&& StringUtils.isNotEmpty(newPassVerify)) {
-					authenticationService.updateAuthentication(userName, oldPass.toCharArray(), newPass.toCharArray());
-					properties.remove(EcosModel.PROP_OLD_PASS);
-					properties.remove(EcosModel.PROP_PASS);
-					properties.remove(EcosModel.PROP_PASS_VERIFY);
+					if (StringUtils.isNotEmpty(oldPass)) {
+						authenticationService.updateAuthentication(userName, oldPass.toCharArray(), newPass.toCharArray());
+					} else {
+						authenticationService.setAuthentication(userName, newPass.toCharArray());
+					}
 				}
+				properties.remove(EcosModel.PROP_OLD_PASS);
+				properties.remove(EcosModel.PROP_PASS);
+				properties.remove(EcosModel.PROP_PASS_VERIFY);
 				Serializable isPersonDisabled = properties.get(EcosModel.PROP_IS_PERSON_DISABLED);
 				if (isPersonDisabled != null) {
 					authenticationService.setAuthenticationEnabled(userName,
