@@ -180,7 +180,6 @@
             $buttonSubscribe("editItem", this.onEditItem, this, ids);
 
             $buttonSubscribe("editItemInplaced", this.onEditItemInplaced, this, ids);
-            // $buttonSubscribe("editItemInplaced", this.onEditItem, this, ids);
 
             $buttonSubscribe("viewItem", this.onViewItem, this, ids);
             $buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
@@ -268,6 +267,9 @@
                     console.log('err on unsubscribe("node-view-cancel")', e.message)
                 }
             }
+
+            // show toolbar
+            $('.orgstruct-console .toolbar').show();
 
             // get the right section - block were we will show the views
             var showArea = $('#' + this.widgets.list.id);
@@ -484,6 +486,7 @@
 
             this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: mode/*'edit'*/});
             this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
+            $('.orgstruct-console .toolbar').hide();
         },
 
         /**

@@ -131,7 +131,7 @@
 .ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region.template-text,
 .ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region span:not(.validation-message) {
     color: white;
-    font-size: 150%;
+    font-size: 26px;
     font-weight: bold;
 }
 
@@ -201,6 +201,10 @@
 
 .ecos-form.invariants-form.view-form .user-profile-custom-container .template-view .value-item {
     padding-right: 0;
+}
+
+.orgstruct-console .ecos-form.invariants-form.edit-form .form-fields {
+    padding: 0;
 }
 
 /* --------------------------- user profile mobile view ----------------------------------- */

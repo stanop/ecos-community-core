@@ -130,6 +130,7 @@
             <view id="cm_person_contacts--el" kind="2-column">
                 <field prop="cm:skype"/>
                 <field prop="cm:email">
+                    <invariant on="mandatory" language="explicit">true</invariant>
                     <invariant on="valid" language="javascript">
                         /.+@.+\..+/.test(value)
                     </invariant>
