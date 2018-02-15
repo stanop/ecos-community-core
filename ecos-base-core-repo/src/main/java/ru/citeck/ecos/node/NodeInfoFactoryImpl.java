@@ -34,6 +34,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.util.GUID;
 import org.alfresco.util.ISO8601DateFormat;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.attr.NodeAttributeService;
@@ -273,13 +274,35 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 	@Override
 	public NodeRef persist(NodeInfo nodeInfo, boolean full) {
 	    NodeRef nodeRef = nodeInfo.getNodeRef();
+
+		QName nodeType = nodeInfo.getType();
+
 		if(nodeRef != null) {
+			if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
+				Map<QName,Serializable> properties = nodeInfo.getProperties();
+				String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
+				String oldPass = (String) properties.get(EcosModel.PROP_OLD_PASS);
+				String newPass = (String) properties.get(EcosModel.PROP_PASS);
+				String newPassVerify = (String) properties.get(EcosModel.PROP_PASS_VERIFY);
+				if (StringUtils.isNotEmpty(oldPass)
+						&& StringUtils.isNotEmpty(newPass)
+						&& StringUtils.isNotEmpty(newPassVerify)) {
+					authenticationService.updateAuthentication(userName, oldPass.toCharArray(), newPass.toCharArray());
+					properties.remove(EcosModel.PROP_OLD_PASS);
+					properties.remove(EcosModel.PROP_PASS);
+					properties.remove(EcosModel.PROP_PASS_VERIFY);
+				}
+				Serializable isPersonDisabled = properties.get(EcosModel.PROP_IS_PERSON_DISABLED);
+				if (isPersonDisabled != null) {
+					authenticationService.setAuthenticationEnabled(userName,
+							Boolean.FALSE.equals((boolean) isPersonDisabled));
+				}
+			}
 			persist(nodeRef, nodeInfo, full);
 			return nodeInfo.getNodeRef();
 		}
 
 		// otherwise parent / parentAssoc should be specified
-        QName nodeType = nodeInfo.getType();
         NodeRef parent = null;
         QName parentAssoc = null;
         QName parentAssocName = null;
@@ -315,12 +338,12 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             nodeRef = personService.createPerson(personProperties);
 
             authenticationService.createAuthentication((String)properties.get(ContentModel.PROP_USERNAME),
-                    ((String)properties.get(EcosModel.PROP_PASS)).toCharArray());
+                    ((String) properties.get(EcosModel.PROP_PASS)).toCharArray());
             properties.remove(EcosModel.PROP_PASS);
             properties.remove(EcosModel.PROP_PASS_VERIFY);
 
             authenticationService.setAuthenticationEnabled(userName,
-                    Boolean.FALSE.equals((boolean)properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
+                    Boolean.FALSE.equals((boolean) properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
 
             if (parent != null) {
                 String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);

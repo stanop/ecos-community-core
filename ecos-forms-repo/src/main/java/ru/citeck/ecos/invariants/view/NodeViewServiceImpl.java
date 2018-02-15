@@ -31,14 +31,18 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.xpath.operations.Bool;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.invariants.InvariantConstants;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.invariants.InvariantService;
 import ru.citeck.ecos.model.AttributeModel;
+import ru.citeck.ecos.model.EcosModel;
 
 class NodeViewServiceImpl implements NodeViewService {
 
@@ -47,6 +51,7 @@ class NodeViewServiceImpl implements NodeViewService {
     private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
     private InvariantService invariantService;
+    private MutableAuthenticationService authenticationService;
     private NodeViewsParser parser;
     private NodeViewsFilter filter;
     private static NodeRef defaultParent = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "attachments-root");
@@ -127,6 +132,10 @@ class NodeViewServiceImpl implements NodeViewService {
         this.invariantService = invariantService;
     }
 
+    public void setAuthenticationService(MutableAuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
     public void setParser(NodeViewsParser parser) {
         this.parser = parser;
     }
@@ -162,10 +171,19 @@ class NodeViewServiceImpl implements NodeViewService {
     public NodeRef saveNodeView(QName typeQName, String id, Map<QName, Object> attributes, Map<String, Object> params) {
         if (typeQName.equals(ContentModel.TYPE_PERSON)) {
             params.put("destination", null);
+            /*String userName = (String) attributes.get(ContentModel.PROP_USERNAME);
+            String password = (String) attributes.get(EcosModel.PROP_PASS);
+            Boolean isPersonDisabled = (boolean) attributes.get(EcosModel.PROP_IS_PERSON_DISABLED);
+            if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
+                authenticationService.createAuthentication(userName, password.toCharArray());
+            }
+            authenticationService.setAuthenticationEnabled(userName, Boolean.FALSE.equals(isPersonDisabled));*/
         }
         Map<QName, Object> effectiveAttributes = new HashMap<>(attributes.size() + 3);
         effectiveAttributes.putAll(attributes);
-        if(effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));
+        if (effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) {
+            effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));
+        }
         if (effectiveAttributes.get(AttributeModel.ATTR_PARENT) == null &&
             !typeQName.equals(ContentModel.TYPE_PERSON)) {
             effectiveAttributes.put(AttributeModel.ATTR_PARENT, defaultParent);
@@ -177,8 +195,8 @@ class NodeViewServiceImpl implements NodeViewService {
                     parentObj instanceof String ? new NodeRef((String) parentObj) :
                             null;
             QName parentType = nodeService.getType(parent);
-            for(QName className : defaultParentAssocs.keySet()) {
-                if(dictionaryService.isSubClass(parentType, className) || nodeService.hasAspect(parent, className)) {
+            for (QName className : defaultParentAssocs.keySet()) {
+                if (dictionaryService.isSubClass(parentType, className) || nodeService.hasAspect(parent, className)) {
                     effectiveAttributes.put(AttributeModel.ATTR_PARENT_ASSOC, defaultParentAssocs.get(className));
                     break;
                 }
