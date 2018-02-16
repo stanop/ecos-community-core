@@ -2211,6 +2211,7 @@ table td.thumbnail img
 .fa.HEADER_MY_SITES:before,
 .fa[class*="_JOURNALS"]:before,
 .fa.HEADER_REPOSITORY:before,
+.fa.HEADER_MY_PROFILE:before,
 .fa.HEADER_APPLICATION_MENU:before,
 .fa.HEADER_GROUPS:before,
 .fa.HEADER_USERS:before,
@@ -2323,6 +2324,7 @@ table td.thumbnail img
     content: "\f24d";
 }
 
+.yui-skin-citeckTheme .fa.HEADER_MY_PROFILE:before,
 .yui-skin-citeckTheme .fa.HEADER_USERS:before {
     content: "\f007";
 }
