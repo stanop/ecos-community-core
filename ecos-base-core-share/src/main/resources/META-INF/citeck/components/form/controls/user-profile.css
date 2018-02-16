@@ -207,6 +207,11 @@
     padding: 0;
 }
 
+.ecos-form .form-errors {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 /* --------------------------- user profile mobile view ----------------------------------- */
 @media (max-width: 585px) {
     .userprofile .members-bar-links:after {

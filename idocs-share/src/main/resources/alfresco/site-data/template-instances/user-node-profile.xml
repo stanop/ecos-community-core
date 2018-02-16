@@ -21,7 +21,7 @@
             <url>/citeck/components/profile/user-profile</url>
             <properties>
                 <mode>{mode}</mode>
-                <runtimeKey>user-profile-container</runtimeKey>
+                <runtimeKey>profile-view</runtimeKey>
             </properties>
         </component>
 

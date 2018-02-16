@@ -158,6 +158,8 @@
                             Alfresco.constants.Citeck = {};
                         };
 
+                        var username = Alfresco.constants.USERNAME;
+
                         var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
 
                         if (Alfresco.constants.Citeck.userIsAdmin === undefined && !Alfresco.constants.Citeck.userIsAdminKO) {
@@ -209,11 +211,34 @@
 
         <view id="cm_person_password">
             <param name="title">person_password_title</param>
+            <field prop="ecos:oldPass" kind="mode-not-view">
+                <region name="input" template="password" />
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    (function() {
+                        var nodeUserName = node.impl().getAttribute("cm:userName").value(),
+                            authorisedUserName = Alfresco.constants.USERNAME;
+
+                        return view.mode == 'edit' && authorisedUserName == nodeUserName;
+                    })();
+                ]]></invariant>
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        var nodeUserName = node.impl().getAttribute("cm:userName").value(),
+                            authorisedUserName = Alfresco.constants.USERNAME;
+
+                        return view.mode == 'edit' &&
+                               authorisedUserName == nodeUserName &&
+                               ( (!!node.impl().getAttribute("ecos:pass").value() && node.impl().getAttribute("ecos:pass").value().length) ||
+                                 (!!node.impl().getAttribute("ecos:passVerify").value() && node.impl().getAttribute("ecos:passVerify").value().length)
+                               );
+                    })();
+                ]]></invariant>
+            </field>
             <field prop="ecos:pass" kind="mode-not-view">
                 <region name="input" template="password" />
                 <invariant on="mandatory" language="javascript"><![CDATA[
                     (function() {
-                        return view.mode == 'create';
+                        return view.mode == "create" && !!node.impl;
                     })();
                 ]]></invariant>
                 <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
@@ -232,7 +257,7 @@
                 <region name="input" template="password" />
                 <invariant on="mandatory" language="javascript"><![CDATA[
                     (function() {
-                        return view.mode == 'create';
+                        return view.mode == "create" && !!node.impl;
                     })();
                 ]]></invariant>
                 <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[

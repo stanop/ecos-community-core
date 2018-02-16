@@ -143,6 +143,7 @@
 		<property name="invariantService" ref="invariantService" />
 		<property name="parser" ref="nodeViewsParser" />
 		<property name="filter" ref="nodeViewsFilter" />
+		<property name="authenticationService" ref="AuthenticationService" />
 	</bean>
 	
 	<bean id="nodeViewServiceJS" class="ru.citeck.ecos.invariants.view.NodeViewServiceJS" parent="baseJavaScriptExtension">
