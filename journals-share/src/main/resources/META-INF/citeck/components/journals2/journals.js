@@ -22,6 +22,7 @@ var logger = Alfresco.logger,
 		noneActionGroupId = "none",
 		buttonsActionGroupId = "buttons",
 		defaultActionGroupId = "injournal",
+        customRecordLoader = ko.observable(),
 		BulkLoader = Citeck.utils.BulkLoader,
 		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
 		koclass = koutils.koclass,
@@ -1671,7 +1672,10 @@ JournalsWidget
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json;
+                        var data = response.json, self = this;
+
+                        customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
+
                         this.model({
                             records: data.results,
                             skipCount: data.paging.skipCount,
@@ -1686,13 +1690,12 @@ JournalsWidget
 		load.call(this);
 	})
 	;
-
-var recordLoader = new Citeck.utils.DoclibRecordLoader(defaultActionGroupId);
+    
 Record
 	// TODO define load method - to load selected records
 	.load('doclib', function(record) {
 		if(record.isDoclibNode() === true) {
-			recordLoader.load(record.nodeRef(), function(id, model) {
+            customRecordLoader().load(record.nodeRef(), function(id, model) {
 				record.model({ doclib: model });
 			});
 		} else if(record.isDoclibNode() === false) {
