@@ -100,12 +100,8 @@
 		</view>
 
 		<view>
-			<field prop="idocs:registrationNumber">
-				<invariant on="protected" language="explicit">true</invariant>
-			</field>
-			<field prop="idocs:registrationDate">
-				<invariant on="protected" language="explicit">true</invariant>
-			</field>
+			<field prop="idocs:registrationNumber"/>
+			<field prop="idocs:registrationDate"/>
 		</view>
 
 		<field prop="idocs:summary" />
