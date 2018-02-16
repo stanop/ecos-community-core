@@ -273,7 +273,7 @@ h4 .lighter
 
 .dashlet > .title {
   padding: 10px 15px;
-  background-color: #99badd;
+  background-color: #758faa;
   color: white;
   font-weight: 900;
   text-transform: uppercase;
@@ -1433,7 +1433,7 @@ h3.alfresco-twister-closed
 /* Preview Tooltip */
 
 .yui-skin-citeckTheme .yui-tt .bd {
-  background-color: #99badd;
+  background-color: #758faa;
   color: white;
   padding: 3px 5px;
   text-align: justify;
@@ -1892,7 +1892,7 @@ body.alfresco-guest
 
 .profile .viewcolumn .header-bar,
 .profile form .header-bar {
-   background-color: #99badd !important;
+   background-color: #758faa !important;
    border: none;
    margin: 0;
    color: white;
@@ -2163,7 +2163,7 @@ table td.thumbnail img
 #alf-hd .alfresco-header-Header {
    margin: 0;
    padding: 0 25px;
-   background-color: #99badd;
+   background-color: #758faa;
    border-bottom: 1px solid #ccc;
 }
 
@@ -2180,76 +2180,212 @@ table td.thumbnail img
     /*margin: 2px;*/
 /*}*/
 
+/* SLIDE MENU ICON*/
+#menu.mm-menu .mm-listview i.fa {
+    background-image: none !important;
+}
 
-.fa.active-tasks-journal:before {
+.fa.HEADER_ACTIVE_TASKS_JOURNAL:before,
+.fa.HEADER_COMPLETED_TASKS_JOURNAL:before,
+.fa.HEADER_COMPLETED_TASKS_JOURNAL:before,
+.fa.HEADER_CONTROLLED_JOURNAL:before,
+.fa.HEADER_SUBORDINATE_TASKS_JOURNAL:before,
+.fa.HEADER_INITIATOR_TASKS_JOURNAL:before,
+.fa.HEADER_INCOME_PACKAGE_TASKS_JOURNAL:before,
+.fa.HEADER_SITES_SEARCH:before,
+.fa.HEADER_SITES_CREATE:before,
+.fa.HEADER_CONTRACTS:before,
+.fa.HEADER_CASES:before,
+.fa.HEADER_LETTERS:before,
+.fa.HEADER_MEETINGS:before,
+.fa.HEADER_ORDER_PASS:before,
+.fa.HEADER_ORDERS:before,
+.fa.HEADER_COMMON_DOCUMENTS:before,
+.fa.HEADER_ECOS_FINANCE:before,
+.fa.HEADER_COMMON_DOCUMENTS:before,
+.fa.HEADER_MENU_ORGSTRUCT_WIDGET:before,
+.fa.HEADER_COMPLETED_WORKFLOWS:before,
+.fa.HEADER_MY_WORKFLOWS:before,
+.fa.HEADER_MY_CONTENT:before,
+.fa.HEADER_MY_FILES:before,
+.fa.HEADER_MY_SITES:before,
+.fa[class*="_JOURNALS"]:before,
+.fa.HEADER_REPOSITORY:before,
+.fa.HEADER_APPLICATION_MENU:before,
+.fa.HEADER_GROUPS:before,
+.fa.HEADER_USERS:before,
+.fa.HEADER_CATEGORIES:before,
+.fa.HEADER_SYSTEM:before,
+.fa.HEADER_TEMPLATES:before,
+.fa.HEADER_MORE:before,
+.fa.HEADER_LIFECYCLE_EDITOR:before {
+    color: inherit;
+}
+
+.yui-skin-citeckTheme .fa.HEADER_ACTIVE_TASKS_JOURNAL:before {
     content: "\f03a";
-    color: inherit;
 }
 
-.fa.completed-tasks-journal:before {
-    content: "\f0ae";
-    color: inherit;
+.yui-skin-citeckTheme .fa.HEADER_COMPLETED_TASKS_JOURNAL:before {
+    content: "\f187";
 }
 
-.fa.controlled-journal:before {
+.yui-skin-citeckTheme .fa.HEADER_CONTROLLED_JOURNAL:before {
     content: "\f06e";
-    color: inherit;
 }
 
-.fa.subordinate-tasks-journal:before {
+.yui-skin-citeckTheme .fa.HEADER_SUBORDINATE_TASKS_JOURNAL:before {
     content: "\f037";
-    color: inherit;
 }
 
-.fa.initiator-tasks-journal:before {
+.yui-skin-citeckTheme .fa.HEADER_INITIATOR_TASKS_JOURNAL:before {
     content: "\f0fe";
-    color: inherit;
 }
 
-.fa.HEADER_SITES_SEARCH:before {
+.yui-skin-citeckTheme .fa.HEADER_INCOME_PACKAGE_TASKS_JOURNAL:before {
+    content: "\f265";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_SITES_SEARCH:before {
     content: "\f002";
-    color: inherit;
 }
 
-.fa.HEADER_SITES_CREATE:before {
+.yui-skin-citeckTheme .fa.HEADER_SITES_CREATE:before {
     content: "\f055";
-    color: inherit;
 }
 
-.fa.contracts:before {
+.yui-skin-citeckTheme .fa.HEADER_CONTRACTS:before {
     content: "\f2bb";
-    color: inherit;
 }
 
-.fa.letters:before {
+.yui-skin-citeckTheme .fa.HEADER_CASES:before {
+    content: "\f0f2";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_LETTERS:before {
     content: "\f0e0";
-    color: inherit;
 }
 
-.fa.meetings:before {
+.yui-skin-citeckTheme .fa.HEADER_MEETINGS:before {
      content: "\f0c0";
-     color: inherit;
  }
 
-.fa.order-pass:before {
+.yui-skin-citeckTheme .fa.HEADER_ORDER_PASS:before {
     content: "\f207";
-    color: inherit;
 }
 
-.fa.orders:before {
+.yui-skin-citeckTheme .fa.HEADER_ORDERS:before {
     content: "\f0c9";
-    color: inherit;
 }
 
-.fa.common-documents:before {
+.yui-skin-citeckTheme .fa.HEADER_COMMON_DOCUMENTS:before {
     content: "\f05b";
-    color: inherit;
 }
 
-.fa.HEADER_MENU_ORGSTRUCT_WIDGET:before {
-    content: "\f0e8";
-    color: inherit;
+.yui-skin-citeckTheme .fa.HEADER_ECOS_FINANCE:before {
+    content: "\f09d";
 }
+
+.yui-skin-citeckTheme .fa.HEADER_MENU_ORGSTRUCT_WIDGET:before {
+    content: "\f0e8";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_COMPLETED_WORKFLOWS:before,
+.yui-skin-citeckTheme .fa.HEADER_MY_WORKFLOWS:before {
+    content: "\f247";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_MY_CONTENT:before {
+    content: "\f0db";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_MY_FILES:before {
+    content: "\f15b";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_MY_SITES:before {
+    content: "\f0ac";
+}
+
+.yui-skin-citeckTheme .fa[class*="_JOURNALS"]:before {
+    content: "\f1ea";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_REPOSITORY:before {
+    content: "\f0ae";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_APPLICATION_MENU:before {
+    content: "\f108";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_GROUPS:before {
+    content: "\f24d";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_USERS:before {
+    content: "\f007";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_CATEGORIES:before {
+    content: "\f2a1";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_SYSTEM:before {
+    content: "\f085";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_TEMPLATES:before {
+    content: "\f121";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_MORE:before {
+    content: "\f141";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_LIFECYCLE_EDITOR:before {
+    content: "\f079";
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_REPORTISSUE span,
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_MY_PROFILE span,
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_AVAILABILITY span,
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_PASSWORD span,
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_FEEDBACK span,
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_LOGOUT span {
+    background-image: none !important;
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown span:after {
+    font-family: FontAwesome;
+    font-size: 17px;
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_PASSWORD span:after {
+    content: "\f084";
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_REPORTISSUE span:after {
+    content: "\f27a";
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_MY_PROFILE span:after {
+    content: "\f007";
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_AVAILABILITY span:after {
+    content: "\f235";
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_FEEDBACK span:after {
+    content: "\f06a";
+}
+
+.yui-skin-citeckTheme #HEADER_USER_MENU_dropdown #HEADER_USER_MENU_LOGOUT span:after {
+    content: "\f057";
+}
+
+
 
 .yui-skin-citeckTheme .mm-btn_menu .hamburger-box:after,
 .yui-skin-citeckTheme .mm-listitem_divider,
@@ -2270,7 +2406,7 @@ table td.thumbnail img
 }
 
 .alfresco-header-Header .dijitMenuBar .dijitMenuItem:not(#HEADER_SEARCH_BOX_DROPDOWN_MENU) {
-   background-color: #99badd;
+   background-color: #758faa;
    color: white;
    margin: 0;
    padding: 10px 10px;
@@ -2327,7 +2463,7 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
    border: none;
    padding: 0 15px 0 0;
-   background-color: #99badd;
+   background-color: #758faa;
    color: white !important;
    line-height: normal;
    background-position-y: 3px;
@@ -2339,7 +2475,7 @@ span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
 }
 
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem {
-    border-left: 1px solid #9cbee2;
+    border-left: 1px solid #88a5c3;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem:first-child,
@@ -2362,7 +2498,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-hover >
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button {
-   background-color: #9cbee2;
+   background-color: #88a5c3;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active,
@@ -2377,7 +2513,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem {
-   background-color: #9cbee2;
+   background-color: #88a5c3;
 }
 
 .yui-skin-citeckTheme #ALF_STICKY_FOOTER .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.yui-menu-button-active >
@@ -2654,13 +2790,13 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 #bd .header-tabs .header-tab.current > a:hover {
     background-color: white;
     border-color: white;
-    color: #99badd;
+    color: #758faa;
 }
 
 #bd .header-tabs .header-tab.current > a:hover {
    background-color: white;
    border-color: white;
-   color: #99badd;
+   color: #758faa;
 }
 
 #bd .header-tabs .header-tab > a:hover {
@@ -4644,7 +4780,7 @@ div#HEADER_USER_STATUS {
 
 .yui-skin-citeckTheme .invariants-form .template-tabs .tabs-title {
   padding: 7px 30px 0 30px;
-  background-color: #99badd;
+  background-color: #758faa;
   color: white;
 }
 
