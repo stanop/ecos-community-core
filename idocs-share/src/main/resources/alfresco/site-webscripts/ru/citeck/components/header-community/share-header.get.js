@@ -733,7 +733,7 @@ function buildSitesForUser(sites, anotherItems) {
         for (var sd = 0; sd < sites.length; sd++) {
             if (isSlideMenu) {
                 var site = {
-                    id: sites[sd].shortName,
+                    id: "HEADER_" + (sites[sd].shortName.replace(/\-/g, "_")).toUpperCase(),
                     url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
                     label: sites[sd].title,
                     widgets: buildJournalsListForSite(sites[sd].shortName)
@@ -783,11 +783,12 @@ function buildCreateVariants(sites) {
         }];
     if (sites && sites.length > 0) {
         for (var sd = 0; sd < sites.length; sd++) {
+            var siteId = "HEADER_" + (sites[sd].shortName.replace(/\-/g, "_")).toUpperCase();
             createCases.push({
-                id: sites[sd].shortName,
+                id: siteId,
                 name: isCascadCreateMenu ? "alfresco/menus/AlfCascadingMenu" : "js/citeck/menus/citeckMenuGroup",
                 config: {
-                    id: sites[sd].shortName,
+                    id: siteId,
                     label: sites[sd].title,
                     widgets: buildItems(buildCreateVariantsForSite(sites[sd].shortName, true), sites[sd].shortName)
                 }
@@ -809,7 +810,7 @@ function buildCreateVariantsForSite(sitename, forSlideMenu) {
             for (var cv = 0; cv < createVariants.length; cv++) {
                 createVariantsPresets.push({
                     label: createVariants[cv].title,
-                    id: createVariants[cv].type.replace(":", "_"),
+                    id: "HEADER_" + (createVariants[cv].type.replace(/\-/g, "_")).toUpperCase(),
                     url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
                 });
             }
@@ -832,7 +833,7 @@ function buildJournalsListForSite(sitename, journalUrl, request) {
                 var url = (journalUrl ? journalUrl : "/share/page/site/" + sitename + "/journals2/list/main#journal=") + journals[j].nodeRef;
                 journalsResult.push({
                     label: journals[j].title,
-                    id: journals[j].type + "-journal",
+                    id: "HEADER_" + (journals[j].type.replace(/\-/g, "_")).toUpperCase() + "_JOURNAL",
                     url: url + "&filter=",
                     widgets: buildFiltersForJournal(journals[j].type, url)
                 });
@@ -856,6 +857,7 @@ function buildFiltersForJournal(journalType, filterUrl) {
                 filtersResult.push({
                     label: filters[f].title,
                     id: filters[f].type + "-filter",
+                    id: "HEADER_" + (filters[f].title.replace(/\-/g, "_")).toUpperCase() + "_FILTER",
                     url: filterUrl + "&filter=" + filters[f].nodeRef
                 });
             }
@@ -874,11 +876,16 @@ function getPhoto(userNodeRef) {
     return "";
 };
 
-function buildUrl(items) {
+function buildToolsItems(items, excludeItems) {
     if (items && items.length) {
-        for (var i = 0; i < items.length; i++) {
-            items[i].url = "/share/page/" + items[i].url;
-        }
+        items = items.filter(function(item) {
+            if (!excludeItems || excludeItems.indexOf(item.id) == -1) {
+                item.label = item.label ? item.label : "header." + item.id + ".label";
+                item.id = "HEADER_" + (item.id.replace(/\-/g, "_")).toUpperCase();
+                item.url = "/share/page/" + item.url;
+                return item;
+            }
+        });
     }
     return items;
 };
@@ -925,12 +932,12 @@ function getWidgets() {
         {
             id: "HEADER_MORE_MY_GROUP",
             sectionTitle: "header.my.label",
-            widgets: buildUrl(myTools)
+            widgets: buildToolsItems(myTools, "task-journals, my-profile")
         },
         {
             id: "HEADER_MORE_TOOLS_GROUP",
             sectionTitle: "header.tools.label",
-            widgets: buildUrl(adminTools)
+            widgets: buildToolsItems(adminTools)
         }];
 };
 
