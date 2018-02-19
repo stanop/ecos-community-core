@@ -734,7 +734,7 @@ function buildSitesForUser(sites, anotherItems) {
             if (isSlideMenu) {
                 var site = {
                     id: "HEADER_" + (sites[sd].shortName.replace(/\-/g, "_")).toUpperCase(),
-                    url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
+                    url: "/share/page?site=" + sites[sd].shortName,
                     label: sites[sd].title,
                     widgets: buildJournalsListForSite(sites[sd].shortName)
                 };
