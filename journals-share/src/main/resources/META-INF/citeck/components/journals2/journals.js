@@ -132,7 +132,7 @@ CreateVariant
 		// redirect back after submit from journal page only
 		var options = this.resolve("journal.type.options");
 		if (window.location.pathname.indexOf("journals2") != -1 && options) {
-			var redirectionMethod = options["createVariantRedirectionMethod"] || "back";
+			var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
 			urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
 		}
 
