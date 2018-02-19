@@ -36,6 +36,12 @@
 		<property name="letters:receiver">
 			<invariant on="mandatory" language="explicit">true</invariant>
 		</property>
+		<property name="idocs:registrationNumber">
+			<invariant on="relevant" language="javascript">view.mode != "create"</invariant>
+		</property>
+		<property name="idocs:registrationDate">
+			<invariant on="relevant" language="javascript">view.mode != "create"</invariant>
+		</property>
 		<property name="letters:copiesCount">
 			<invariant on="valid" language="javascript" description="Это поле должно содержать неотрицательное число.">+value >= 0 ? true : false</invariant>
 		</property>

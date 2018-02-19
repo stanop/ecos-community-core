@@ -734,7 +734,7 @@ function buildSitesForUser(sites, anotherItems) {
             if (isSlideMenu) {
                 var site = {
                     id: "HEADER_" + (sites[sd].shortName.replace(/\-/g, "_")).toUpperCase(),
-                    url: "/share/page/site/" + sites[sd].shortName + "/dashboard",
+                    url: "/share/page?site=" + sites[sd].shortName,
                     label: sites[sd].title,
                     widgets: buildJournalsListForSite(sites[sd].shortName)
                 };
@@ -905,7 +905,7 @@ function buildLogo(isMobile) {
 };
 
 function getWidgets() {
-    return [
+    var widgets = [
         {
             id: "HEADER_MENU_TASKS",
             sectionTitle: "header.tasks.label",
@@ -917,7 +917,7 @@ function getWidgets() {
             widgets: buildSitesForUser(accessibleSites,{
                     id: "HEADER_SITES_SEARCH",
                     label: "header.find-sites.label",
-                    url: "/share/page/site-finder"
+                    url: "/share/page/custom-site-finder"
                 },
                 {
                     id: "HEADER_SITES_CREATE",
@@ -933,12 +933,17 @@ function getWidgets() {
             id: "HEADER_MORE_MY_GROUP",
             sectionTitle: "header.my.label",
             widgets: buildToolsItems(myTools, "task-journals, my-profile")
-        },
-        {
+        }];
+
+    if (user.isAdmin) {
+        widgets.push({
             id: "HEADER_MORE_TOOLS_GROUP",
             sectionTitle: "header.tools.label",
             widgets: buildToolsItems(adminTools)
-        }];
+        });
+    }
+
+    return widgets;
 };
 
 
