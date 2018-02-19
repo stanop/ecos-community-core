@@ -2514,7 +2514,7 @@ span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf
 span.alf-header-js-wrapper-outer > span.alf-header-js-wrapper-inner > button.alf-header-js-wrapper-button,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused,
 #alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__left .dijitMenuBar .dijitMenuItem.dijitMenuItemSelected.dijitMenuItemFocused button,
-#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItem {
+#alf-hd .alfresco-header-Header .alfresco-layout-LeftAndRight__right .dijitMenuBar.dijitMenuActive .dijitMenuItemHover {
    background-color: #88a5c3;
 }
 
@@ -4923,7 +4923,7 @@ div#HEADER_USER_STATUS {
 }
 
 .yui-skin-citeckTheme.alfresco-share .alfresco-menus-AlfMenuBarPopup__arrow {
-    vertical-align: bottom;
+    vertical-align: top;
 }
 
 .yui-skin-citeckTheme.alfresco-share #HEADER_SITE_MENU .alfresco-menus-AlfMenuBarPopup__arrow {
