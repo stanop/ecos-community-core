@@ -32,6 +32,7 @@
         <option name="type">idocs:legalEntity</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:fullOrganizationName" default="true" />
             <header key="idocs:shortOrganizationName" />
@@ -50,6 +51,7 @@
         <option name="type">idocs:contractor</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:fullOrganizationName" default="true" />
             <header key="idocs:shortOrganizationName" />
@@ -70,6 +72,7 @@
         <!--option name="actionGroupId">listInjournal</option -->
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:fileIndex" default="true" />
             <header key="idocs:fileName" default="true" />
@@ -80,6 +83,7 @@
         <option name="type">idocs:currency</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:currencyCode" default="true" />
             <header key="idocs:currencyName" />
@@ -91,6 +95,7 @@
         <option name="type">idocs:currencyRateRecord</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:crrBaseCurrency" default="true" />
             <header key="idocs:crrTargetCurrency" default="true" />
@@ -102,6 +107,7 @@
         <option name="type">idocs:bankAccount</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:legalEntity" default="true" />
             <header key="idocs:bankTitle" default="true" />
@@ -116,6 +122,7 @@
         <option name="type">budget:item</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="budget:itemCode" default="true" />
             <header key="budget:itemName" default="true" />
@@ -125,6 +132,7 @@
         <option name="type">pass:passport</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="pass:person" default="true" />
             <header key="tk:kind" default="true" />
@@ -223,6 +231,7 @@
         <option name="type">pas:unit</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="pas:unitShortName" default="true"/>
             <header key="pas:unitName" default="true"/>
@@ -233,6 +242,7 @@
         <option name="type">pas:pasEntityOriginal</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="cm:title" default="true"/>
             <header key="pas:pricePerUnit" default="true"/>
@@ -286,6 +296,7 @@
         <option name="type">deputy:absenceReason</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="deputy:reason" default="true"/>
         </headers>
@@ -295,6 +306,7 @@
         <option name="type">idocs:legalForm</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:legalFormName" default="true"/>
             <header key="idocs:legalFormDescription" default="true"/>
@@ -305,6 +317,7 @@
         <option name="type">idocs:personAttorney</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="idocs:personFullName" default="true"/>
             <header key="idocs:numberPass" default="true"/>
@@ -317,6 +330,7 @@
         <option name="type">idocs:countryISO3166</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="cm:title" default="true"/>
             <header key="idocs:countryISO3166Alpha2" default="true"/>

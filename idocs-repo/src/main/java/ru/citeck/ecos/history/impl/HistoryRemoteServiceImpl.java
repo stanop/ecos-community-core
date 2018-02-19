@@ -56,7 +56,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             "taskEventInstanceId", "documentVersion", "propertyName", "expectedPerformTime"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
-    private static final String DELIMETER = ";";
+    private static final String DELIMITER = "||";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
     private static final SimpleDateFormat importDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     private static final String SEND_NEW_RECORD_QUEUE = "send_new_record_queue";
@@ -285,7 +285,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         StringBuilder csvResult = new StringBuilder();
         for (String key : KEYS) {
             Object value = requestParams.get(key);
-            csvResult.append((value != null ? value.toString() : "") + DELIMETER);
+            csvResult.append((value != null ? value.toString() : "") + DELIMITER);
         }
         /** Create file */
         String currentDate = dateFormat.format(new Date());

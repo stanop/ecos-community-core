@@ -18,10 +18,12 @@
 
         <@markup id="html">
             <div id="${el}-body" class="user-profile node-view static" <#if mode == "view">style="padding: 20px 40px;"</#if>>
-                <@views.renderViewContainer view args.htmlid />
-                <#if mode == "view" && writeMode>
-                    <a class="user-profile__edit-link" href="${page.url.getUrl() + "?mode=edit"}">${msg("profile.edit")}</a>
-                </#if>
+                <div id="profile-view">
+                    <@views.renderViewContainer view args.htmlid />
+                    <#if mode == "view" && writeMode>
+                        <a class="user-profile__edit-link" href="${page.url.getUrl() + "?mode=edit"}">${msg("profile.edit")}</a>
+                    </#if>
+                </div>
             </div>
         </@>
     </@>

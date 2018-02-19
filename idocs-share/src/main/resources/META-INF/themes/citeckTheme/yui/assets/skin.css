@@ -995,7 +995,7 @@ p#clear {
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .hd {
     padding: 10px 15px;
-    background-color: #99badd;
+    background-color: #758faa;
     text-align: left;
     color: white;
     font-weight: 900;
@@ -5498,7 +5498,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .alf-header-menu-bar.alf-menu-groups .alf-menu-group .alf-menu-group-title {
     margin: 8px 8px 0 0;
     font-weight: 900;
-    color: #52759d;
+    color: white;
     border-bottom: none;
 }
 
@@ -5509,7 +5509,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .alf-header-menu-bar.alf-menu-groups,
 .yui-skin-citeckTheme .alf-header .yuimenu .bd,
 .yui-skin-citeckTheme  #create-menu.yuimenu .bd {
-    background-color: #9cbee2;
+    background-color: #88a5c3;
     border: 1px solid #1e242c;
     padding: 7px;
 }
@@ -5517,7 +5517,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .Popup .alf-menu-groups,
 .yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu,
 .yui-skin-citeckTheme .Popup .alf-menu-group .alf-dropdown-menu .alf-menu-group {
-    background-color: #9cbee2;
+    background-color: #88a5c3;
 }
 
 .yui-skin-citeckTheme .Popup .alf-menu-groups .alf-dropdown-menu .dijitMenuArrowCell span {
@@ -5613,7 +5613,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 
 .yui-skin-citeckTheme .dijitPopup[id*="dropdown"] .alf-menu-groups,
 .yui-skin-citeckTheme .dijitPopup .alf-header-menu-bar.alf-menu-groups {
-    background-color: #9cbee2;
+    background-color: #88a5c3;
     box-shadow: 0px 0px 9px 1px rgba(0, 0, 0, 0.3);
     border-color: #83a4c6;
 }
@@ -5623,7 +5623,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 }
 
 .yui-skin-citeckTheme .dijitPopup .alf-header-menu-bar.alf-menu-groups .alf-menu-group .dijitMenuTable {
-    background-color: #9cbee2;
+    background-color: #88a5c3;
 }
 
 

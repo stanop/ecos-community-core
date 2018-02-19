@@ -128,10 +128,11 @@
   </config>
 
   <config evaluator="string-compare" condition="TaskEditDependencies">
-    <dependencies>
-      <js src="/citeck/components/workflow/task-edit-header.js" />
-      <messages resource="alfresco.site-messages.idocs.task-edit-header" />
-    </dependencies>
+      <dependencies>
+          <css src="/citeck/components/invariants/invariants.css" />
+          <js src="/citeck/components/workflow/task-edit-header.js" />
+          <messages resource="alfresco.site-messages.idocs.task-edit-header" />
+      </dependencies>
   </config>
 
   <config evaluator="string-compare" condition="ChromeFixesDependencies">

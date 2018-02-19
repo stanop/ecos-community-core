@@ -14,7 +14,7 @@
     margin: 0 20px 25px 15px;
     width: 410px;
     border: 1px solid #e1e1e1;
-    box-shadow: 0 0 0px 1px #f5f5f5;
+    box-shadow: 0 0 0 1px #f5f5f5;
     border-radius: 3px;
     vertical-align: top;
     background-color: #fff;
@@ -43,7 +43,7 @@
 
 .ecos-form .form-fields .user-profile-custom-container .form-field {
     /*margin: 0 15px 20px;*/
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 20px;
     margin-left: 15px;
     padding-right: 15px;
@@ -131,7 +131,7 @@
 .ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region.template-text,
 .ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region span:not(.validation-message) {
     color: white;
-    font-size: 150%;
+    font-size: 26px;
     font-weight: bold;
 }
 
@@ -188,27 +188,28 @@
 }
 
 .user-profile .ecos-form:not(.edit-form) .form-fields {
-    padding: 15px 40px 0 0px;
+    padding: 15px 40px 0 0;
 }
 
-.user-profile-view-inner-container .edit-form .user-profile-custom-container.form-view {
+.ecos-form .edit-form .user-profile-custom-container.form-view {
     margin-left: -30px;
 }
 
-.user-profile-view-inner-container .sticky-footer {
-    display: none;
-}
-
-.user-profile-view-inner-container .static {
-    background-color: initial;
-}
-
-.user-profile-view-inner-container .invariants-form.view-form .template-table .template-view {
+.ecos-form.invariants-form .user-profile-custom-container .block-region .form-region.template-view {
     width: auto;
 }
 
-.user-profile-view-inner-container .invariants-form.view-form .template-table .template-view .value-item{
+.ecos-form.invariants-form.view-form .user-profile-custom-container .template-view .value-item {
     padding-right: 0;
+}
+
+.orgstruct-console .ecos-form.invariants-form.edit-form .form-fields {
+    padding: 0;
+}
+
+.ecos-form .form-errors {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 /* --------------------------- user profile mobile view ----------------------------------- */

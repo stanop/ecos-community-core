@@ -67,6 +67,7 @@
         <property name="associationIndexing" ref="associationIndexing" />
         <property name="personService" ref="PersonService" />
         <property name="authorityService" ref="authorityService" />
+        <property name="authenticationService" ref="AuthenticationService" />
     </bean>
 
     <bean name="NodeInfoFactory" class="ru.citeck.ecos.node.NodeInfoFactoryImpl" init-method="init">

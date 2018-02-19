@@ -31,6 +31,7 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
@@ -165,7 +166,9 @@ class NodeViewServiceImpl implements NodeViewService {
         }
         Map<QName, Object> effectiveAttributes = new HashMap<>(attributes.size() + 3);
         effectiveAttributes.putAll(attributes);
-        if(effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));
+        if (effectiveAttributes.get(AttributeModel.ATTR_TYPES) == null) {
+            effectiveAttributes.put(AttributeModel.ATTR_TYPES, Collections.singletonList(typeQName));
+        }
         if (effectiveAttributes.get(AttributeModel.ATTR_PARENT) == null &&
             !typeQName.equals(ContentModel.TYPE_PERSON)) {
             effectiveAttributes.put(AttributeModel.ATTR_PARENT, defaultParent);
@@ -177,8 +180,8 @@ class NodeViewServiceImpl implements NodeViewService {
                     parentObj instanceof String ? new NodeRef((String) parentObj) :
                             null;
             QName parentType = nodeService.getType(parent);
-            for(QName className : defaultParentAssocs.keySet()) {
-                if(dictionaryService.isSubClass(parentType, className) || nodeService.hasAspect(parent, className)) {
+            for (QName className : defaultParentAssocs.keySet()) {
+                if (dictionaryService.isSubClass(parentType, className) || nodeService.hasAspect(parent, className)) {
                     effectiveAttributes.put(AttributeModel.ATTR_PARENT_ASSOC, defaultParentAssocs.get(className));
                     break;
                 }
